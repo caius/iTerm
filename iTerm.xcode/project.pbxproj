@@ -1335,7 +1335,6 @@
 				8742064C0564169600CFC3F1,
 				8742064D0564169600CFC3F1,
 				DD57633705653C5F00F1905E,
-				F64B59FB05ED4AA800FE8ACB,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2061,12 +2060,6 @@
 			path = website/header.html;
 			refType = 4;
 			sourceTree = "<group>";
-		};
-		F64B59FB05ED4AA800FE8ACB = {
-			fileRef = F64B59FA05ED4AA800FE8ACB;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		F64B5A1705ED4AF000FE8ACB = {
 			fileEncoding = 4;

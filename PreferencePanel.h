@@ -78,6 +78,7 @@
     
     NSUserDefaults *prefs;
 
+    int defaultColorScheme;
     NSColor* defaultBackground;
     NSColor* defaultForeground;
     NSColor* defaultSelectionColor;

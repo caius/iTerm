@@ -2,6 +2,8 @@
 
     * Fixed setting of tab position preference 
       in previous commit.
+      
+    * Fixed some quirks in color scheme selection in IB file.
 
 
 2003-04-25	fabian

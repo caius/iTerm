@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.36 2003-04-26 00:05:37 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.37 2003-04-26 05:47:53 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -243,6 +243,8 @@ static int TRANSPARENCY  =10;
     [defaultShell release];    
     defaultShell=[([prefs objectForKey:@"Shell"]?[prefs objectForKey:@"Shell"]:SHELL) copy];
 
+    defaultColorScheme = [prefs integerForKey: @"ColorScheme"];
+    
     [defaultForeground release];                        
     defaultForeground=[([prefs objectForKey:@"Foreground"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Foreground"]]:iTermForeground) copy];
@@ -335,6 +337,8 @@ static int TRANSPARENCY  =10;
         p++;
     }
     [encoding selectItemAtIndex:r];
+
+    [colorScheme selectItemAtIndex: defaultColorScheme];
     
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
@@ -460,7 +464,8 @@ static int TRANSPARENCY  =10;
         [defaultColorTable[0][i] autorelease];
         [defaultColorTable[1][i] autorelease];
     }
-    
+
+    defaultColorScheme = [colorScheme indexOfSelectedItem];
     defaultBackground=[[background color] copy];
     defaultForeground=[[foreground color] copy];
     defaultSelectionColor = [[selectionColor color] copy];
@@ -508,7 +513,8 @@ static int TRANSPARENCY  =10;
     [prefs setObject:[NSNumber numberWithUnsignedInt:defaultEncoding] forKey:@"Encoding"];
     [prefs setObject:defaultShell forKey:@"Shell"];
     [prefs setInteger:defaultTransparency forKey:@"Transparency"];
-               
+
+    [prefs setInteger:defaultColorScheme forKey:@"ColorScheme"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultForeground]
               forKey:@"Foreground"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultBackground]
@@ -584,7 +590,8 @@ static int TRANSPARENCY  =10;
         [defaultColorTable[0][i] autorelease];
         [defaultColorTable[1][i] autorelease];
     }
-    
+
+    defaultColorScheme = 0; // Custom
     defaultBackground=[iTermBackground copy];
     defaultForeground=[iTermForeground copy];
     defaultSelectionColor=[iTermSelection copy];
@@ -623,7 +630,9 @@ static int TRANSPARENCY  =10;
         p++;
     }
     [encoding selectItemAtIndex:r];
-    
+
+
+    [colorScheme selectItemAtIndex: defaultColorScheme];
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
     [selectionColor setColor: defaultSelectionColor];

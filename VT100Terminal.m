@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.52 2003-04-11 18:23:38 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.53 2003-04-18 21:45:09 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1152,46 +1152,14 @@ static VT100TCC decode_string(unsigned char *datap,
     ENCODING = NSASCIIStringEncoding;
     STREAM   = [[NSMutableData alloc] init];
     
-    colorTable[0]  = [[NSColor colorWithCalibratedRed:0.0f
-                                                   green:0.0f
-                                                    blue:0.0f
-                                                   alpha:1.0f]
-        retain];
-    colorTable[1]  = [[NSColor colorWithCalibratedRed:0.7f
-                                                   green:0.0f
-                                                    blue:0.0f
-                                                   alpha:1.0f]
-        retain];
-    colorTable[2]  = [[NSColor colorWithCalibratedRed:0.0f
-                                                   green:0.7f
-                                                    blue:0.0f
-                                                   alpha:1.0f]
-        retain];
-    colorTable[3] = [[NSColor colorWithCalibratedRed:0.7f
-                                                  green:0.7f
-                                                   blue:0.0f
-                                                  alpha:1.0f]
-        retain];
-    colorTable[4] = [[NSColor colorWithCalibratedRed:0.0f
-                                                  green:0.0f
-                                                   blue:0.7f
-                                                  alpha:1.0f]
-        retain];
-    colorTable[5] = [[NSColor colorWithCalibratedRed:0.7f
-                                                  green:0.0f
-                                                   blue:0.7f
-                                                  alpha:1.0f]
-        retain];
-    colorTable[6]  = [[NSColor colorWithCalibratedRed:0.45f
-                                                   green:0.45f
-                                                    blue:0.7f
-                                                   alpha:1.0f]
-        retain];
-    colorTable[7]  = [[NSColor colorWithCalibratedRed:0.7f
-                                                   green:0.7f
-                                                    blue:0.7f
-                                                   alpha:1.0f]
-        retain]; 
+    colorTable[0]  = [[NSColor blackColor] retain];
+    colorTable[1]  = [[NSColor redColor] retain];
+    colorTable[2]  = [[NSColor greenColor] retain];
+    colorTable[3] = [[NSColor yellowColor] retain];
+    colorTable[4] = [[NSColor blueColor] retain];
+    colorTable[5] = [[NSColor magentaColor] retain];
+    colorTable[6]  = [[NSColor cyanColor] retain];
+    colorTable[7]  = [[NSColor whiteColor] retain]; 
     
 
     LINE_MODE = NO;

@@ -1,3 +1,8 @@
+2003-04-18	ujwal
+
+    * Using named color contants instead of building our own 
+      in VT100Terminal.
+
 2003-04-15	ujwal
 
     * Implemented NSApplication delegate applicationDidUnide: 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.31 2003-02-21 22:51:21 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.32 2003-02-23 00:37:54 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1178,6 +1178,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
     strictAnsiMode = NO;
 
+    defaultCharacterAttributeDictionary = [[NSMutableDictionary alloc] init];
+
     return self;
 }
 
@@ -1629,6 +1631,10 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSMutableDictionary *)characterAttributeDictionary
 {
+
+    if(CHARATTR == 0)
+	return(defaultCharacterAttributeDictionary);
+
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     int under = 0,blink=0, bold = 0;
     NSFont *aFont;
@@ -1670,6 +1676,21 @@ static VT100TCC decode_string(unsigned char *datap,
     [dic setObject:aFont forKey:NSFontAttributeName];
 
     return dic;
+}
+
+- (NSMutableDictionary *)defaultCharacterAttributeDictionary
+{
+    return (defaultCharacterAttributeDictionary);
+}
+
+- (void) initDefaultCharacterAttributeDictionary
+{
+    [defaultCharacterAttributeDictionary setObject:[self colorWithCode:FG_COLORCODE]
+			  forKey:NSForegroundColorAttributeName];
+    [defaultCharacterAttributeDictionary setObject:[self colorWithCode:BG_COLORCODE]
+			  forKey:NSBackgroundColorAttributeName];
+    [defaultCharacterAttributeDictionary setObject:[SCREEN font] forKey:NSFontAttributeName];
+
 }
 
 - (void)_setMode:(VT100TCC)token
@@ -1844,6 +1865,9 @@ static VT100TCC decode_string(unsigned char *datap,
                 }
             }
         }
+
+	// reset our default character attributes
+	[self initDefaultCharacterAttributeDictionary];
     }
 }
 

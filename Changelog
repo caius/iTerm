@@ -1,10 +1,13 @@
-2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed a bug in resizing tabs and window when closing 
       a session.
       
     * Using smaller icon for popup menu in toolbar when 
       toolbar size mode is NSToolbarSizeModeSmall.
+      
+    * Further speed optimizations by caching rarely changing 
+      character attribute dictionaries.
       
 
 2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>

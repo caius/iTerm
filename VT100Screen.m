@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.47 2003-02-22 02:05:42 ujwal Exp $
+// $Id: VT100Screen.m,v 1.48 2003-02-23 00:37:54 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -362,6 +362,8 @@ static BOOL PLAYBELL = YES;
 
     int i;
 
+    [TERMINAL initDefaultCharacterAttributeDictionary];
+
     for(i=0;i<HEIGHT-1;i++) {
         [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
         [BUFFER appendAttributedString:[self defaultAttrString:@"\n"]];
@@ -383,6 +385,8 @@ static BOOL PLAYBELL = YES;
     [BUFFER addAttribute:NSFontAttributeName
                    value:FONT
                    range:NSMakeRange(0, [BUFFER length])];
+
+    [TERMINAL initDefaultCharacterAttributeDictionary];
 }
 
 - (NSFont *)font
@@ -1525,8 +1529,11 @@ static BOOL PLAYBELL = YES;
         NSLog(@"attrString: nil received!");
         str=@"";
     }
-    if (!asc) [dic setObject:NAFONT forKey:NSFontAttributeName];
-    [dic setObject:[NSNumber numberWithInt:(asc?1:2)] forKey:NSCharWidthAttributeName];
+    if (!asc)
+    {
+	[dic setObject:NAFONT forKey:NSFontAttributeName];
+	[dic setObject:[NSNumber numberWithInt:(asc?1:2)] forKey:NSCharWidthAttributeName];
+    }
     attr = [[NSAttributedString alloc]
                initWithString:str
                    attributes:dic];
@@ -1539,22 +1546,15 @@ static BOOL PLAYBELL = YES;
 - (NSAttributedString *)defaultAttrString:(NSString *)str
 {
     NSMutableAttributedString *attr;
-    NSMutableDictionary *dic=[NSMutableDictionary dictionary];
 
     if (str==nil) {
         NSLog(@"defaultAttrString: nil received!");
         str=@"";
     }
-    [dic setObject:FONT forKey:NSFontAttributeName];
-    [dic setObject:[NSNumber numberWithInt:1] forKey:NSCharWidthAttributeName];
-    [dic setObject:[TERMINAL defaultFGColor]
-            forKey:NSForegroundColorAttributeName];
-    [dic setObject:[TERMINAL defaultBGColor]
-            forKey:NSBackgroundColorAttributeName];
     
     attr = [[NSAttributedString alloc]
                initWithString:str
-                   attributes:dic];
+                   attributes:[TERMINAL defaultCharacterAttributeDictionary]];
 
     [attr autorelease];
 

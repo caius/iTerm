@@ -150,7 +150,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setName:@"Shell"];
 
     ai_code=0;
-    timer =[[NSTimer scheduledTimerWithTimeInterval:0.1
+    timer =[[NSTimer scheduledTimerWithTimeInterval:0.075
                                              target:self
                                            selector:@selector(timerTick:)
                                            userInfo:nil

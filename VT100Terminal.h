@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.13 2003-02-19 19:28:40 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.14 2003-02-23 00:37:54 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -228,6 +228,8 @@ typedef struct {
     BOOL TRACE;
 
     BOOL strictAnsiMode;
+
+    NSMutableDictionary *defaultCharacterAttributeDictionary;
 }
 
 + (void)initialize;
@@ -299,6 +301,8 @@ typedef struct {
 
 - (unsigned int)characterAttribute;
 - (NSMutableDictionary *)characterAttributeDictionary;
+- (NSMutableDictionary *)defaultCharacterAttributeDictionary;
+- (void) initDefaultCharacterAttributeDictionary;
 
 - (void)_setMode:(VT100TCC)token;
 - (void)_setCharAttr:(VT100TCC)token;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.298 2004-10-10 16:34:35 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.299 2004-11-15 02:09:47 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -113,6 +113,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSFont *aFont1, *aFont2;
     NSSize contentSize;
 	NSString *displayProfile;
+	
+	// sanity check
+	if(TABVIEW != nil)
+		return (TABVIEW);
     
     // Create the tabview
     TABVIEW = [[PTYTabView alloc] initWithFrame: frame];
@@ -150,6 +154,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Do not use both initViewWithFrame and initWindow
 - (void)initWindow
 {
+	// sanity check
     if(TABVIEW != nil)
 		return;
 	
@@ -521,12 +526,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[_sessionMgr currentSession] startProgram:program
 									 arguments:[NSArray array]
 								   environment:[NSDictionary dictionary]];
-	
-    if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
-	
-	//    [window center];
-    if([self windowInited])
-		[[self window] makeKeyAndOrderFront: self];
+		
 }
 
 - (void)startProgram:(NSString *)program arguments:(NSArray *)prog_argv
@@ -538,12 +538,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[_sessionMgr currentSession] startProgram:program
 									 arguments:prog_argv
 								   environment:[NSDictionary dictionary]];
-	
-    if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
-	
-	//    [window center];
-    if([self windowInited])
-		[[self window] makeKeyAndOrderFront: self];
+		
 }
 
 - (void)startProgram:(NSString *)program
@@ -558,11 +553,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 									 arguments:prog_argv
 								   environment:prog_env];
 	
-    if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
-	
-    //    [window center];
-    if([self windowInited])
-		[[self window] makeKeyAndOrderFront: self];
+    if ([[[self window] title] compare:@"Window"]==NSOrderedSame) 
+		[self setWindowTitle];
+
 }
 
 - (void) setWidth: (int) width height: (int) height

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.12 2004-03-19 01:43:45 ujwal Exp $
+// $Id: iTermController.h,v 1.13 2004-11-15 02:09:48 ujwal Exp $
 /*
  **  iTermController.h
  **
@@ -42,12 +42,6 @@
 }
 
 + (iTermController*)sharedInstance;
-
-// NSApplication Delegate methods
-- (BOOL) applicationShouldTerminate: (NSNotification *) theNotification;
-- (BOOL)applicationOpenUntitledFile:(NSApplication *)app;
-- (NSMenu *)applicationDockMenu:(NSApplication *)sender;
-- (void)applicationDidUnhide:(NSNotification *)aNotification;
 
 // actions are forwarded form application
 - (IBAction)newWindow:(id)sender;

@@ -1,3 +1,7 @@
+2004-11-14  ujwal
+
+	* Re-organized some code.
+
 2004-11-09  ujwal
 	
 	* Fixed more reverse video issues on OpenVMS: in [VT100Screen: -eraseInLine]; if 

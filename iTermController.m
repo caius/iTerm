@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.43 2004-04-12 23:13:34 ujwal Exp $
+// $Id: iTermController.m,v 1.44 2004-11-15 02:09:47 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -44,12 +44,9 @@
 #import <iTerm/ITConfigPanelController.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
-static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
 static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
 static NSStringEncoding const *encodingList=nil;
-
-static BOOL usingAutoLaunchScript = NO;
 
 @implementation iTermController
 
@@ -63,82 +60,6 @@ static BOOL usingAutoLaunchScript = NO;
     return shared;
 }
 
-- (BOOL)applicationShouldTerminate: (NSNotification *) theNotification
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController applicationShouldTerminate]",
-          __FILE__, __LINE__);
-#endif
-
-    if(([terminalWindows count] > 0) && [[PreferencePanel sharedInstance] promptOnClose] && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
-	return (NO);
-    
-	// save preferences
-	[[PreferencePanel sharedInstance] savePreferences];
-	
-    return (YES);
-}
-
-- (BOOL)applicationOpenUntitledFile:(NSApplication *)app
-{
-    // Check if we have an autolauch script to execute. Do it only once, i.e. at application launch.
-    if(usingAutoLaunchScript == NO &&
-       [[NSFileManager defaultManager] fileExistsAtPath: [AUTO_LAUNCH_SCRIPT stringByExpandingTildeInPath]] != nil)
-    {
-	usingAutoLaunchScript = YES;
-	
-	NSAppleScript *autoLaunchScript;
-	NSDictionary *errorInfo = [NSDictionary dictionary];
-	NSURL *aURL = [NSURL fileURLWithPath: [AUTO_LAUNCH_SCRIPT stringByExpandingTildeInPath]];
-
-	usingAutoLaunchScript = YES;
-
-	// Make sure our script suite registry is loaded
-	[NSScriptSuiteRegistry sharedScriptSuiteRegistry];
-
-	autoLaunchScript = [[NSAppleScript alloc] initWithContentsOfURL: aURL error: &errorInfo];
-	[autoLaunchScript executeAndReturnError: &errorInfo];
-	[autoLaunchScript release];
-		
-	return (YES);
-    }
-
-	[self newWindow:nil];
-    
-    return YES;
-}
-
-// sent when application is made visible after a hide operation. Should not really need to implement this,
-// but some users reported that keyboard input is blocked after a hide/unhide operation.
-- (void)applicationDidUnhide:(NSNotification *)aNotification
-{
-    // Make sure that the first responder stuff is set up OK.
-    [FRONT selectSessionAtIndex: [FRONT currentSessionIndex]];
-}
-
-// Creates the dock menu
-- (NSMenu *)applicationDockMenu:(NSApplication *)sender
-{
-    NSMenu *aMenu, *abMenu;
-    NSMenuItem *newTabMenuItem, *newWindowMenuItem;
-    
-    aMenu = [[NSMenu alloc] initWithTitle: @"Dock Menu"];
-    newTabMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
-    newWindowMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
-    [aMenu addItem: newTabMenuItem];
-    [aMenu addItem: newWindowMenuItem];
-    [newTabMenuItem release];
-    [newWindowMenuItem release];
-    
-    // Create the addressbook submenus for new tabs and windows.
-    abMenu = [self buildAddressBookMenuWithTarget: FRONT withShortcuts: NO]; // target the top terminal window.
-    [newTabMenuItem setSubmenu: abMenu];
-    
-    abMenu = [self buildAddressBookMenuWithTarget: nil withShortcuts: NO]; // target the top terminal window.
-    [newWindowMenuItem setSubmenu: abMenu];
-            
-    return ([aMenu autorelease]);
-}
 
 // init
 - (id) init
@@ -227,7 +148,7 @@ static BOOL usingAutoLaunchScript = NO;
     else
 	currentIndex--;
 
-    // make that terminal's window active
+    // make sure that terminal's window active
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
     
 }
@@ -248,7 +169,7 @@ static BOOL usingAutoLaunchScript = NO;
     else
 	currentIndex++;
 
-    // make that terminal's window active
+    // make sure that terminal's window active
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
 }
 
@@ -470,8 +391,8 @@ NSString *terminalsKey = @"terminals";
     FRONT = thePseudoTerminal;
 
     // make sure this window is the key window
-    if([[thePseudoTerminal window] isKeyWindow] == NO)
-	[[thePseudoTerminal window] makeKeyAndOrderFront: self];
+    if([thePseudoTerminal windowInited] && [[thePseudoTerminal window] isKeyWindow] == NO)
+		[[thePseudoTerminal window] makeKeyAndOrderFront: self];
 
     // Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
@@ -499,7 +420,7 @@ NSString *terminalsKey = @"terminals";
 -(void)insertInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
 {
     if([terminalWindows containsObject: object] == YES)
-	return;
+		return;
     [terminalWindows insertObject: object atIndex: index];
     // make sure we have a window
     [object initWindow];

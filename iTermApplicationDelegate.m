@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.26 2004-10-10 07:04:12 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.27 2004-11-15 02:09:47 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -38,6 +38,10 @@
 #import <iTerm/PTYWindow.h>
 
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
+static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
+
+static BOOL usingAutoLaunchScript = NO;
+
 
 @implementation iTermApplicationDelegate
 
@@ -78,10 +82,10 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
     NSString *file;
     while (file = [directoryEnumerator nextObject])
     {
-	NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: file action: @selector(launchScript:) keyEquivalent: @""];
-	[scriptItem setTarget: [iTermController sharedInstance]];
-	[scriptMenu addItem: scriptItem];
-	[scriptItem release];
+		NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: file action: @selector(launchScript:) keyEquivalent: @""];
+		[scriptItem setTarget: [iTermController sharedInstance]];
+		[scriptMenu addItem: scriptItem];
+		[scriptItem release];
     }
     [scriptMenu release];
 
@@ -104,7 +108,19 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification
 {
-    return [[iTermController sharedInstance] applicationShouldTerminate:theNotification];
+	NSArray *terminals;
+	
+	// Display prompt if we need to
+	terminals = [[iTermController sharedInstance] terminals];
+    if(([terminals count] > 0) && 
+	   [[PreferencePanel sharedInstance] promptOnClose] && 
+	   ![[terminals objectAtIndex: 0] showCloseWindow])
+		return (NO);
+    
+	// save preferences
+	[[PreferencePanel sharedInstance] savePreferences];
+	
+    return (YES);
 }
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
@@ -132,14 +148,38 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app
 {
-    return [[iTermController sharedInstance] applicationOpenUntitledFile:app];
+    // Check if we have an autolauch script to execute. Do it only once, i.e. at application launch.
+    if(usingAutoLaunchScript == NO &&
+       [[NSFileManager defaultManager] fileExistsAtPath: [AUTO_LAUNCH_SCRIPT stringByExpandingTildeInPath]] != nil)
+    {
+		usingAutoLaunchScript = YES;
+		
+		NSAppleScript *autoLaunchScript;
+		NSDictionary *errorInfo = [NSDictionary dictionary];
+		NSURL *aURL = [NSURL fileURLWithPath: [AUTO_LAUNCH_SCRIPT stringByExpandingTildeInPath]];
+		
+		// Make sure our script suite registry is loaded
+		[NSScriptSuiteRegistry sharedScriptSuiteRegistry];
+		
+		autoLaunchScript = [[NSAppleScript alloc] initWithContentsOfURL: aURL error: &errorInfo];
+		[autoLaunchScript executeAndReturnError: &errorInfo];
+		[autoLaunchScript release];
+		
+		return (YES);
+    }
+	
+	[self newWindow:nil];
+    
+    return YES;
 }
 
 // sent when application is made visible after a hide operation. Should not really need to implement this,
 // but some users reported that keyboard input is blocked after a hide/unhide operation.
 - (void)applicationDidUnhide:(NSNotification *)aNotification
 {
-    [[iTermController sharedInstance] applicationDidUnhide:aNotification];
+	PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
+    // Make sure that the first responder stuff is set up OK.
+    [frontTerminal selectSessionAtIndex: [frontTerminal currentSessionIndex]];
 }
 
 // init
@@ -217,7 +257,27 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
 {
-    return [[iTermController sharedInstance] applicationDockMenu:sender];
+    NSMenu *aMenu, *abMenu;
+    NSMenuItem *newTabMenuItem, *newWindowMenuItem;
+	PseudoTerminal *frontTerminal;
+    
+    aMenu = [[NSMenu alloc] initWithTitle: @"Dock Menu"];
+    newTabMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
+    newWindowMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
+    [aMenu addItem: newTabMenuItem];
+    [aMenu addItem: newWindowMenuItem];
+    [newTabMenuItem release];
+    [newWindowMenuItem release];
+    
+    // Create the addressbook submenus for new tabs and windows.
+	frontTerminal = [[iTermController sharedInstance] currentTerminal];
+    abMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: frontTerminal withShortcuts: NO]; // target the top terminal window.
+    [newTabMenuItem setSubmenu: abMenu];
+    
+    abMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: nil withShortcuts: NO];
+    [newWindowMenuItem setSubmenu: abMenu];
+	
+    return ([aMenu autorelease]);
 }
 
 // font control

@@ -1455,6 +1455,11 @@ static NSString *PWD_ENVVALUE = @"~";
     remapDeleteKey = flag;
 }
 
+- (NSTextStorage *) textStorage
+{
+    return ([TEXTVIEW textStorage]);
+}
+
 
 @end
 

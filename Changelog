@@ -1,3 +1,8 @@
+2003-08-01	ujwal
+
+    * Added Michael Johnston's patch to access text storage of session via 
+      Applescript.
+
 2003-07-21	fabian
     * Fixed a bug that messes up deadkey input with alternative OPTION key options.
     

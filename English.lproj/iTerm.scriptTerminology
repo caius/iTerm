@@ -82,6 +82,13 @@
 					<key>Name</key>
 					<string>number</string>
 				</dict>
+				<key>textStorage</key>
+				<dict>
+					<key>Description</key>
+					<string>text of the session</string>
+					<key>Name</key>
+					<string>contents</string>
+				</dict>
 				<key>tty</key>
 				<dict>
 					<key>Description</key>

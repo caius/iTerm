@@ -193,6 +193,7 @@
 - (float) transparency;
 - (void)setTransparency:(float)transparency;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
+- (NSTextStorage *) textStorage;
 
 
 // Session status

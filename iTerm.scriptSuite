@@ -105,6 +105,15 @@
 					<key>Type</key>
 					<string>NSNumber&lt;Int&gt;</string>
 				</dict>
+				<key>textStorage</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>ctxt</string>
+					<key>ReadOnly</key>
+					<string>YES</string>
+					<key>Type</key>
+					<string>NSTextStorage</string>
+				</dict>
 				<key>tty</key>
 				<dict>
 					<key>AppleEventCode</key>

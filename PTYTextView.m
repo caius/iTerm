@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.166 2004-03-11 01:24:38 ujwal Exp $
+// $Id: PTYTextView.m,v 1.167 2004-03-11 06:17:57 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1146,7 +1146,7 @@
 						if(buf[i] != 0)
 							endOfLine = NO;
 					}
-					if(endOfLine)
+					if(endOfLine && y < endy)
 					{
 						temp[j] = '\n'; // hard break
 						j++;
@@ -1216,7 +1216,8 @@
 		for(x=0; x <width; x++) 
 		{
 			if (bg[x] & SELECTION_MASK) {
-				if (buf[x] != 0xffff) {
+				if (buf[x] != 0xffff) 
+				{
 					temp[last] = buf[x]; 
 					if(buf[x] == 0)
 					{
@@ -1252,10 +1253,10 @@
 	}
 	else
 	{
-		// strip last carriage return if there is one
-		if(temp[last] == '\n')
+		// strip trailing carriage return if there is one
+		if(temp[last-1] == '\n')
 		{
-			temp[last] = 0;
+			temp[last-1] = 0;
 			last--;
 		}
 		str = [NSString stringWithCharacters:temp length:last];

@@ -1,6 +1,7 @@
 2004-03-10  ujwal
 
 	* Adjusted selection code to accommodate newly added margin.
+	* Fixed yet another selection/CR problem.
 
 2004-03-09  fabian
 

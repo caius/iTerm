@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.226 2003-09-10 20:36:44 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.227 2003-09-11 15:17:40 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -609,17 +609,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			      hasVerticalScroller:YES
 			   	       borderType:NSNoBorder];
 
-    for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
+    for (i = 0; i < [_sessionMgr numberOfSessions]; i++)
     {
-        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: [[[_sessionMgr currentSession] SCREEN] characterSize].height];
-        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setVerticalLineScroll: [[[_sessionMgr currentSession] SCREEN] characterSize].height];
+        [[[_sessionMgr sessionAtIndex: i] SCROLLVIEW] setLineScroll: [[[_sessionMgr currentSession] SCREEN] characterSize].height];
+        [[[_sessionMgr sessionAtIndex: i] SCROLLVIEW] setVerticalLineScroll: [[[_sessionMgr currentSession] SCREEN] characterSize].height];
 	if(resizeContentFrames)
 	{
-	    [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setFrameSize: size];
-	    [[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] documentView] setFrameSize:vsize];
+	    [[[_sessionMgr sessionAtIndex: i] SCROLLVIEW] setFrameSize: size];
+	    [[[[_sessionMgr sessionAtIndex: i] SCROLLVIEW] documentView] setFrameSize:vsize];
 	}
     }
-
+    
     thisWindow = [[[_sessionMgr currentSession] SCROLLVIEW] window];
     winSize = size;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)

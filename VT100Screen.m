@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.160 2003-09-25 06:27:03 ujwal Exp $
+// $Id: VT100Screen.m,v 1.161 2003-09-25 15:34:35 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1392,16 +1392,24 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen showCursor (%d,%d)]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y);
 #endif
 
+    // grab the lock on the screen
+    [self setScreenLock];
+
 #if DEBUG_USE_BUFFER
     NSMutableDictionary *dic;
-
+    
     // Show cursor at new position by reversing foreground/background colors
     if (CURSOR_X >= 0 && CURSOR_X < WIDTH &&
         CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
     {
 	int idx;
         idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];
-        //NSLog(@"showCursor: %d(%d)(%d+%d)(%d)",idx,[[STORAGE string] length],[self getIndexAtX:CURSOR_X y:CURSOR_Y], updateIndex,[BUFFER length]);
+	if(idx > [[STORAGE string] length])
+	{
+	    [self removeScreenLock];
+	    return;
+	}
+        //NSLog(@"showCursor: %d(%d)(%d)(%d)",idx,[[STORAGE string] length],[self getTVIndex:CURSOR_X y:CURSOR_Y],[BUFFER length]);
         if (idx>=[[STORAGE string] length])
             [STORAGE appendAttributedString:[self defaultAttrString:@" "]];
         else if ([[STORAGE string] characterAtIndex:idx]=='\n') 
@@ -1428,11 +1436,14 @@ static BOOL PLAYBELL = YES;
 		[dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
 	    }
 	}
-        //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
+	//NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
     }
     
 #endif
+
+    // release the screen lock
+    [self removeScreenLock];
 
 #if DEBUG_USE_ARRAY
 #endif
@@ -2658,10 +2669,6 @@ static BOOL PLAYBELL = YES;
     //NSLog(@"renewed: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
     cursorIndex = [self getTVIndex:CURSOR_X y:CURSOR_Y];
     [[SESSION TEXTVIEW] setCursorIndex: cursorIndex];
-    //NSLog(@"showCursor");
-    [self showCursor];
-    //NSLog(@"shown");
-
 
     // re-select any previous text selection unless text has changed
     //if(selectedRange.length > 0 && [[[[SESSION TEXTVIEW] string] substringWithRange: selectedRange] isEqualToString: selectedString])
@@ -2669,6 +2676,10 @@ static BOOL PLAYBELL = YES;
     
     // release lock
     [self removeScreenLock];
+
+    //NSLog(@"showCursor");
+    [self showCursor];
+    //NSLog(@"shown");    
 #endif
 
 #if DEBUG_USE_ARRAY

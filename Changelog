@@ -1,3 +1,7 @@
+2003-09-25	ujwal
+
+    * Fixed bug in showCursor accessing attribute at invalid index.
+    
 2003-09-24	ujwal
 
     * Disabled re-selection of text since that was interfering with copy/paste 

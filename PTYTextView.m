@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.142 2004-02-24 19:49:13 ujwal Exp $
+// $Id: PTYTextView.m,v 1.143 2004-02-24 22:49:50 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -514,6 +514,28 @@
     }
 }
 
+- (void)scrollToLine:(int)line
+{
+	NSRect aFrame;
+	aFrame.origin.x = 0;
+	aFrame.origin.y = line * lineHeight;
+	aFrame.size.width = [self frame].size.width;
+	aFrame.size.height = lineHeight;
+	//forceUpdate = YES;
+	[self scrollRectToVisible: aFrame];
+}
+
+- (void)scrollToSelection
+{
+	NSRect aFrame;
+	aFrame.origin.x = 0;
+	aFrame.origin.y = startY * lineHeight;
+	aFrame.size.width = [self frame].size.width;
+	aFrame.size.height = (endY - startY + 1) *lineHeight;
+	//forceUpdate = YES;
+	[self scrollRectToVisible: aFrame];
+}
+
 -(void) hideCursor
 {
     CURSOR=NO;
@@ -551,7 +573,7 @@
 } // renderChar
 
 #define  CELLSIZE (CACHESIZE/256)
-- (NSImage *) getCharImage:(unichar) code color:(int)fg
+- (NSImage *) getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw
 {
 	int i;
 	int j;
@@ -562,7 +584,7 @@
 	
 	c= fg&(BOLD_MASK|0x1f);
 	if (!code) return nil;
-	width=ISDOUBLEWIDTHCHARACTER(code)?2:1;
+	width=dw?2:1;
 	seed=code;
 	seed<<=6;
 	srand( seed + c );
@@ -613,14 +635,15 @@
 	
 }
 
-- (void) drawCharacter:(unichar)c fgColor:(int)fg AtX:(int)X Y:(int)Y
+- (void) drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
 {
 	NSImage *image;
 	
 	if (c) {
 		//NSLog(@"%c(%d)",c,c);
 		image=[self getCharImage:c 
-						   color:fg];
+						   color:fg
+					 doubleWidth:dw];
 		[image compositeToPoint:NSMakePoint(X,Y) operation:NSCompositeSourceOver];
 	}
 }	
@@ -645,6 +668,7 @@
     float curX, curY;
 	char bgcode, sel, fgcode;
 	int y1,y2,x1,x2;
+	BOOL double_width;
 	
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
@@ -806,16 +830,17 @@
 		//draw all char
 		for(j=0;j<WIDTH;j++) {
 			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
+			double_width = (buf[j+1] == 0xffff);
 			if (need_draw) { 	
 				if (fg[j]&BLINK_MASK) { //if blink is set, switch the fg/bg color
 					if (bg[j]&BLINK_MASK) {				
-						[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
+						[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY doubleWidth: double_width];
 						bg[j] &= ~BLINK_MASK;
 					}
 					else bg[j] |= BLINK_MASK;
 				}
 				else {
-					[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
+					[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY doubleWidth: double_width];
 					if(line>=startScreenLineIndex) 
 						dirty[j]=0;
 				}
@@ -855,10 +880,12 @@
 					x1--;
 					aChar = [dataSource screenLines][i];
 				}
+				double_width = ([dataSource screenLines][i+1] == 0xffff);
 				[self drawCharacter: aChar 
-							fgColor:[dataSource screenFGColor][i] 
-								AtX:x1*charWidth 
-								  Y:(y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight];
+							fgColor: [dataSource screenFGColor][i] 
+								AtX: x1*charWidth 
+								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
+						doubleWidth: double_width];
 			}
 		}
 		[dataSource dirty][i] = 1; //cursor loc is dirty
@@ -1772,12 +1799,14 @@
 	//[self refresh];
 }
 
-- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck
+- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase
 {
-/*	int j, line, scline;
+	int j, line, scline;
 	int startx, starty, endx, endy;
 	int width, y, x1, x2;
-	int fx, fy, tx, tp;
+	int first_match;
+	int start, bound;
+	int inc = direction ? 1: -1;
 	unichar *buf;
 		
 	if ([aString length] <= 0)
@@ -1788,27 +1817,36 @@
 
 	width = [dataSource width];
 	scline = [dataSource numberOfLines]-[dataSource height];
-	if (lastFindX==-1) {				
-		startx=0;
-		starty=0;
-		endx=[dataSource width];
-		endy=[dataSource numberOfLines]-1;
+	if (lastFindX==-1) {		// no previous match, starting from the beginning
+		if (direction) {
+			startx=0;
+			starty=0;
+			endx=[dataSource width];
+			endy=[dataSource numberOfLines];
+		}
+		else {
+			endx=0;
+			endy=-1;
+			startx=[dataSource width];
+			starty=[dataSource numberOfLines]-1;
+		}			
 	}
-	else if (direction) {
+	else if (direction) {		// starting from previous match, forwards search
 		startx=lastFindX+1;
 		starty=lastFindY;
 		endx=[dataSource width];
-		endy=[dataSource numberOfLines]-1;
+		endy=[dataSource numberOfLines];
 	}
-	else {
-		startx=0;
-		starty=0;
-		endx=lastFindX-1;
-		endY=lastFindY;
+	else {						// backwards search
+		endx=0;
+		endy=-1;
+		startx=lastFindX-1;
+		starty=lastFindY;
 	}
 	
-	fx=-1;
-	for (y=starty;y<=endy;y++) {
+	start = direction ? 0 : [aString length] - 1;
+	bound = direction ? [aString length] : -1;
+	for (y=starty;y!=endy;y+=inc) {
 		if (y<scline) {
 			line=[dataSource lastBufferLineIndex]-scline+y;
 			if (line<0) line+=[dataSource scrollbackLines];
@@ -1817,39 +1855,41 @@
 			line=y-scline;
 			buf=[dataSource screenLines]+line*width;
 		}
-		x1=0; x2=width;
+		/* by default, we search the whole line */
+		if (direction ) { x1=0; x2=width; }
+		else { x2=-1; x1=width-1; }
+		/* not if when we are in the first/last line */
 		if (y==starty) x1=startx;
-		if (y==endy) x2=endx;
-		for(;x1<x2;x1++) {
+		if (y==endy) x2=endx + direction ? 0 : -1;
+		j=start;
+		first_match=-1;
+		for(;x1!=x2;x1+=inc) {
 			if (buf[x1]!=0xffff) {
-				if (buf[x1]==[aString characterAtIndex:j]) {
-					j++;
-					NSLog(@"%d",j);
-					if (fx==-1) { fx=x1; fy=y; }
-					startx=x1+1;
-					starty=y;
-					if (startx>=width) { startx=0; starty++; }
-					if (j>=[aString length]) break;
+				if (buf[x1]==[aString characterAtIndex:j] ||
+					(ignoreCase && toupper(buf[x1])==toupper([aString characterAtIndex:j]))) {
+					j+=inc;
+					if (first_match==-1) { first_match=x1; }
+					if (j == bound) break;
 				}
 				else {
-					if (j) {
-						j=0;
-						y=starty--;
+					if (j!=start) {
+						j=start;
+						x1=first_match;
+						first_match=-1;
 					}
-					fx=-1;
 				}
 			}
 		}		
-		if (j>=[aString length]) { // Found!
-			startX=lastFindX=fx;
-			startY=lastFindY=fy;
+		if (j == bound ) { // Found!
+			lastFindX=startX=first_match;
+			lastFindY=startY=y;
 			endX=x1;
 			endY=y;
+			[self scrollToLine:y];
 			return;
 		}
 	}
-	lastFindX = -1;
-	NSBeep(); */
+	NSBeep();
 }
 @end
 

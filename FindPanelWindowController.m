@@ -227,12 +227,7 @@ static FindPanelWindowController *sharedInstance = nil;
     PTYTextView* textView = [self currentTextView];
     if (textView)
     {        
-        NSRange aRange = [textView selectedRange];
-        
-        if(aRange.length > 0)
-            [textView scrollRangeToVisible: aRange];
-        else
-            NSBeep();
+		[textView scrollToSelection];
     }
     else
         NSBeep();

@@ -1,3 +1,8 @@
+2004-02-24  fabian
+
+	* Fixed a double-width character handling bug in PTYTextView
+	* Find Panel is now working. Limitation: doesn't search across lines.
+	
 2004-02-24  ujwal
 
 	* Added back support for blinking cursor. Reduced blink frequency.

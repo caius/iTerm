@@ -6,7 +6,7 @@
 
     * Added support for background images including transparency.
     * Fixed showCursor bug.
-    * Not setting minIndex = 0; causes screen contents to be lost on man and vi.
+    * Not setting updateIndex = 0 in restoreBuffer; causes screen contents to be lost on man and vi.
 
 2003-09-11	fabian
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.3 2002-12-08 20:22:34 ujwal Exp $
+// $Id: PTYTextView.m,v 1.4 2002-12-16 17:19:11 yfabian Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -10,7 +10,7 @@
 
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
-#define GREED_KEYDOWN         0
+#define GREED_KEYDOWN         1
 
 #import "PTYTextView.h"
 
@@ -73,9 +73,8 @@
 #endif
     
     if (IMEnable) {
-	//BOOL prev = [self hasMarkedText];
+	BOOL prev = [self hasMarkedText];
 	IM_INPUT_INSERT = NO;
-
 	[self interpretKeyEvents:[NSArray arrayWithObject:event]];
 
 #if GREED_KEYDOWN

@@ -2,7 +2,9 @@
     * Change version number to 0.5.6
     * Make author name localized strings in About panel.
     * Add a "Report a Bug" link in About panel.
-    
+    * Turn on the GREED_KEYDOWN flag in PTYTextView.m to allow special key
+      to work when IM is turned on.
+      
 2002-12-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added popup button in toolbar for quick access to 

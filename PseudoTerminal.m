@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.146 2003-04-24 15:57:11 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.147 2003-04-24 22:24:08 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -45,6 +45,10 @@
 @implementation PseudoTerminal
 
 #define NIB_PATH  @"PseudoTerminal"
+
+#define TABVIEW_TOP_BOTTOM_OFFSET	29
+#define TABVIEW_LEFT_RIGHT_OFFSET	25
+#define TOOLBAR_OFFSET			0
 
 static NSString *NewToolbarItem = @"New";
 static NSString *ABToolbarItem = @"Address";
@@ -662,18 +666,19 @@ static NSString *ConfigToolbarItem = @"Config";
     thisWindow = [[currentPtySession SCROLLVIEW] window];
     winSize = size;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
-	winSize.height = size.height + 29;
+	winSize.height = size.height + TABVIEW_TOP_BOTTOM_OFFSET;
     else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
-	winSize.width = size.width + 25;
+	winSize.width = size.width + TABVIEW_LEFT_RIGHT_OFFSET;
     else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
-	winSize.height = size.height + 29;
+	winSize.height = size.height + TABVIEW_TOP_BOTTOM_OFFSET;
     else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
-	winSize.width = size.width + 25;
+	winSize.width = size.width + TABVIEW_LEFT_RIGHT_OFFSET;
     else
         winSize.height = size.height + 0;
     if([[thisWindow toolbar] isVisible] == YES)
-	winSize.height += 9;
+	winSize.height += TOOLBAR_OFFSET;
     [thisWindow setContentSize:winSize];
+    [self windowDidResize: nil];
 }
 
 
@@ -876,19 +881,19 @@ static NSString *ConfigToolbarItem = @"Config";
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
 
     if([[[self window] toolbar] isVisible] == YES)
-	contentSize.height -= 9;
+	contentSize.height -= TOOLBAR_OFFSET;
 
     
     // Calculate scrollview size
     scrollviewSize = contentSize;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
-	scrollviewSize.height = contentSize.height - 29;
+	scrollviewSize.height = contentSize.height - TABVIEW_TOP_BOTTOM_OFFSET;
     else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
-	scrollviewSize.width = contentSize.width - 25;
+	scrollviewSize.width = contentSize.width - TABVIEW_LEFT_RIGHT_OFFSET;
     else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
-	scrollviewSize.height = contentSize.height - 29;
+	scrollviewSize.height = contentSize.height - TABVIEW_TOP_BOTTOM_OFFSET;
     else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
-	scrollviewSize.width = contentSize.width - 25;
+	scrollviewSize.width = contentSize.width - TABVIEW_LEFT_RIGHT_OFFSET;
     else
         scrollviewSize.height = contentSize.height - 0;    
     //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
@@ -903,7 +908,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
                                        
     // Now calculate an appropriate terminal height for this in integers.
-    h = floor(textviewSize.height/[[currentPtySession SCREEN] characterSize].height);
+    h = floor(textviewSize.height/[[currentPtySession SCREEN] characterSize].height) - 1;
     //NSLog(@"h = %d", h);
     
     // Now do the reverse calculation
@@ -922,20 +927,20 @@ static NSString *ConfigToolbarItem = @"Config";
     // Calculate the window content size
     contentSize = scrollviewSize;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
-	contentSize.height = scrollviewSize.height + 29;
+	contentSize.height = scrollviewSize.height + TABVIEW_TOP_BOTTOM_OFFSET;
     else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
-	contentSize.width = scrollviewSize.width + 25;
+	contentSize.width = scrollviewSize.width + TABVIEW_LEFT_RIGHT_OFFSET;
     else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
-	contentSize.height = scrollviewSize.height + 29;
+	contentSize.height = scrollviewSize.height + TABVIEW_TOP_BOTTOM_OFFSET;
     else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
-	contentSize.width = scrollviewSize.width + 25;
+	contentSize.width = scrollviewSize.width + TABVIEW_LEFT_RIGHT_OFFSET;
     else
 	contentSize.height = scrollviewSize.height + 0;
     //NSLog(@"WillResize:content size: width = %f; height = %f", contentSize.width, contentSize.height);
 
 
     if([[[self window] toolbar] isVisible] == YES)
-	contentSize.height += 9;    
+	contentSize.height += TOOLBAR_OFFSET;    
     
     // Finally calculate the window frame size
     winSize = [NSWindow frameRectForContentRect: NSMakeRect(0, 0, contentSize.width, contentSize.height) styleMask: [WINDOW styleMask]].size;
@@ -973,11 +978,12 @@ static NSString *ConfigToolbarItem = @"Config";
     vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] tallerFont]
                                        width:w
                                       height:h];
+    vsize.width = [[currentPtySession SCROLLVIEW] frame].size.width;
 
     for(i=0;i<[ptyList count]; i++) {
         [[[ptyList objectAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[ptyList objectAtIndex:i] SHELL] setWidth:w  height:h];
-        //[[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
+        //[[[ptyList objectAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
     }
     
     WIDTH = w;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.56 2003-04-29 17:11:03 yfabian Exp $
+// $Id: MainMenu.m,v 1.57 2003-05-05 14:44:07 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -266,15 +266,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     }
             
     return s;
-}
-
-// this message is called when the user double-clicks on a row in the table
-- (void)tableView:(NSTableView*)table  setObjectValue:(id)object
-                                       forTableColumn:(NSTableColumn*)col
-                                                  row:(int)rowIndex
-{
-    [self saveAddressBook];
-    [NSApp stopModal];
 }
 
 

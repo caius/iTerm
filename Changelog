@@ -1,3 +1,7 @@
+2003-11-09	ujwal
+
+    * Removed hardcoded references to Osaka-Mono font.
+
 2003-11-06	ujwal
 
     * Fixed bug causing incorrect number of columns.

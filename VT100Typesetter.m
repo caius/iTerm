@@ -36,6 +36,12 @@
 
 @implementation VT100Typesetter
 
+// we should really be asking the NSTextContainer, butit may not exist yet, and there is no class method.
++ (float) lineFragmentPadding
+{
+    return (5);
+}
+
 
 - (float)baselineOffsetInLayoutManager:(NSLayoutManager *)layoutMgr glyphIndex:(unsigned)glyphIndex
 {

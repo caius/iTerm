@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.102 2003-06-10 23:20:38 ujwal Exp $
+// $Id: VT100Screen.m,v 1.103 2003-06-11 00:13:18 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -34,6 +34,7 @@
 
 #import "iTerm.h"
 #import "VT100Screen.h"
+#import "VT100Typesetter.h"
 #import "NSStringITerm.h"
 #import "PseudoTerminal.h"
 #import "PTYTextView.h"
@@ -106,7 +107,7 @@ static BOOL PLAYBELL = YES;
     sz = [VT100Screen fontSize:font];
 //    NSLog(@"--------fontsize:%f,%f, %f,%f",sz.width,sz.height);
 #if USE_CUSTOM_LAYOUT
-    return NSMakeSize((sz.width * width) + 10, (float) height * sz.height);
+    return NSMakeSize((sz.width * width) + 2*[VT100Typesetter lineFragmentPadding], (float) height * sz.height);
 #else
     return NSMakeSize(sz.width * (width +2), (float) height * sz.height);
 #endif
@@ -139,8 +140,11 @@ static BOOL PLAYBELL = YES;
 	  font);
 #endif
     sz = [VT100Screen fontSize:font];
-
+#if USE_CUSTOM_LAYOUT
+    w = (int)(frame.size.width  - 2*[VT100Typesetter lineFragmentPadding])/sz.width;
+#else
     w = (int)(frame.size.width / sz.width + 0.5) - 2;
+#endif
     h = (int)(frame.size.height / sz.height) ;
 
     return NSMakeSize(w, h);

@@ -422,8 +422,8 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)keyDown:(NSEvent *)event
 {
     unsigned char *send_str = NULL;
-    unsigned char *dataPtr;
-    int dataLength;
+    unsigned char *dataPtr = NULL;
+    int dataLength = 0;
     size_t send_strlen = 0;
     int send_chr = -1;
     int send_pchr = -1;

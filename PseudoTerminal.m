@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.160 2003-04-28 22:40:35 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.161 2003-04-28 22:45:56 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -291,6 +291,7 @@ static int windowCount = 0;
     if (sessionIndex<0||sessionIndex >= [ptyList count]) return;
 
     aSession = [ptyList objectAtIndex: sessionIndex];
+    [self selectSession: aSession];
 
 }
 

@@ -1,3 +1,12 @@
+2003-01-08	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Save menu item in contextual menu is always validated. 
+      Saves selection if there is one, save everything if not.
+      
+    * Added "Close" menu item to contextual menu to close 
+      current session.
+      
+    
 2003-01-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Adjusted some visual sizing glitches when going from 

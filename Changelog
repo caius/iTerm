@@ -1,3 +1,7 @@
+2003-02-23	fabian
+    * Changed version number to 0.6.4
+    * Updated help files
+    
 2003-02-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed a bug in resizing tabs and window when closing 

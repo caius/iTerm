@@ -675,7 +675,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)moveLastLine
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession moveLastLine]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[PTYSession moveLastLine] %d", __FILE__, __LINE__, [[SCREEN textStorage] length] );
 #endif
     
     [TEXTVIEW scrollRangeToVisible:NSMakeRange([[SCREEN textStorage] length],0)];
@@ -683,7 +683,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-    static int blink=0, output=0;
+    static int blink=0, output=3;
 
     iIdleCount++; oIdleCount++; blink++; output++;
     if (antiIdle) {
@@ -697,17 +697,20 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     if (blink>5) { [SCREEN blink]; blink=0; }
-    if (oIdleCount<3&&output>1) {
-        [SCREEN updateScreen];
-        [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-        [SCREEN showCursor];
-        // If the user has not scrolled up, move to the end
-        if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-            [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-           ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
+    if (oIdleCount<3||output>4) {
+        if (output>2) {
+            [SCREEN updateScreen];
+            [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+            [SCREEN showCursor];
+            // If the user has not scrolled up, move to the end
+            /*       if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height)) */
             [self moveLastLine];
-        output=0;
+            output=0;
+        }else output=4;
     }
+    else output%=4;
 }
 
 - (void) setLabelAttribute

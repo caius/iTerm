@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.61 2003-05-13 21:33:36 ujwal Exp $
+// $Id: PTYTextView.m,v 1.62 2003-05-16 17:49:14 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2251,9 +2251,11 @@ static BOOL ignoreCase = NO;
     }
     else
     {
-	searchRange = NSMakeRange(0, lastSearchLocation + 1);
+	searchRange = NSMakeRange(0, lastSearchLocation);
 	searchOptions |= NSBackwardsSearch;
     }
+    if(searchRange.length <= 0)
+	searchRange.length = 1;
 
     if(caseCheck == YES)
 	searchOptions |= NSCaseInsensitiveSearch;
@@ -2261,12 +2263,12 @@ static BOOL ignoreCase = NO;
     foundRange = [contentString rangeOfString: subString options: searchOptions range: searchRange];
     if(foundRange.length > 0)
     {
-	[self setSelectedRange: foundRange];
-	[self jumpToSelection: self];
 	if(direction == YES)
 	    lastSearchLocation = foundRange.location + 1;
 	else
-	    lastSearchLocation = foundRange.location - 1;
+	    lastSearchLocation = foundRange.location + foundRange.length - 1;
+	[self setSelectedRange: foundRange];
+	[self jumpToSelection: self];
 	[[self window] makeKeyAndOrderFront: self];
     }
     else
@@ -2283,6 +2285,8 @@ static BOOL ignoreCase = NO;
     {
 	[searchString release];
 	searchString = nil;
+	if([aString isEqualToString: searchString] == NO)
+	    lastSearchLocation = 0;
     }
     if(aString != nil)
     {

@@ -482,6 +482,7 @@ static NSColor* xtermColorTable[2][8];
     // background image
     [useBackgroundImage setState:([entry objectForKey:@"UseBackgroundImage"]==nil?NO:[[entry objectForKey:@"UseBackgroundImage"] boolValue])?NSOnState:NSOffState];
     backgroundImagePath = [[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
+    [backgroundImage setEditable: NO];
     if([[entry objectForKey:@"UseBackgroundImage"] boolValue] && [backgroundImagePath length] > 0)
     {
 	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
@@ -754,6 +755,11 @@ static NSColor* xtermColorTable[2][8];
 - (IBAction) useBackgroundImage: (id) sender
 {
     [adBackground setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
+    if([useBackgroundImage state]==NSOffState)
+    {
+	backgroundImagePath = @"";
+	[backgroundImage setImage: nil];
+    }
 }
 
 - (IBAction) chooseBackgroundImage: (id) sender
@@ -925,7 +931,7 @@ static NSColor* xtermColorTable[2][8];
 	[NSNumber numberWithBool:([adRemapDeleteKey state]==NSOnState)],@"RemapDeleteKey",
 	[NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
         [NSNumber numberWithInt:[adScrollback intValue]], @"Scrollback",
-	[NSNumber numberWithBool:([useBackgroundImage state]==NSOnState)],@"UseBackgroundImage",
+	[NSNumber numberWithBool:([useBackgroundImage state]==NSOnState && [backgroundImagePath length] > 0)],@"UseBackgroundImage",
 	[NSString stringWithString: backgroundImagePath],@"BackgroundImagePath",
 	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
 	NULL];

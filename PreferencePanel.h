@@ -2,6 +2,10 @@
 
 #import <Cocoa/Cocoa.h>
 
+#define OPT_NORMAL 0
+#define OPT_META   1
+#define OPT_ESC    2
+
 @interface PreferencePanel : NSResponder
 {
     IBOutlet id background;
@@ -16,6 +20,7 @@
     IBOutlet id terminal;
     IBOutlet id transparency;
     IBOutlet id autoclose;
+    IBOutlet id optionKey;
     
     NSUserDefaults *prefs;
 
@@ -34,6 +39,7 @@
     float defaultTransparency;
 
     BOOL defaultAutoclose;
+    int defaultOption;
 
     BOOL changingNA;
 
@@ -67,6 +73,7 @@
 - (BOOL) ai;
 - (int) aiCode;
 - (BOOL) autoclose;
+- (int) option;	
 
 
 @end

@@ -82,7 +82,7 @@ static int TRANSPARENCY  =10;
                    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"NAFont"]]:FONT)
         copy] retain];
     defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
-    
+    defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
     changingNA=NO;
                  
     return self;
@@ -127,6 +127,7 @@ static int TRANSPARENCY  =10;
     [nafontExample setFont:defaultNAFont];
     [nafontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultNAFont fontName], [defaultNAFont pointSize]]];
     [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
+    [optionKey selectCellAtRow:0 column:defaultOption];
     
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -202,6 +203,9 @@ static int TRANSPARENCY  =10;
     
     defaultTransparency=[transparency intValue];
 
+    defaultAutoclose=([autoclose state]==NSOnState);
+    defaultOption=[optionKey selectedColumn];
+
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
     [prefs setObject:defaultTerminal forKey:@"Terminal"];
@@ -217,8 +221,9 @@ static int TRANSPARENCY  =10;
               forKey:@"Font"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultNAFont]
               forKey:@"NAFont"];
-    defaultAutoclose=([autoclose state]==NSOnState);
-
+    [prefs setBool:defaultAutoclose forKey:@"AutoClose"];
+    [prefs setInteger:defaultOption forKey:@"OptionKey"];
+    
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
     [[NSFontPanel sharedFontPanel] close];
@@ -247,6 +252,7 @@ static int TRANSPARENCY  =10;
     
     defaultTransparency=TRANSPARENCY;
     defaultAutoclose=YES;
+    defaultOption=0;
 
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
@@ -272,6 +278,8 @@ static int TRANSPARENCY  =10;
     [fontExample setFont:defaultFont];
     [fontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultFont fontName], [defaultFont pointSize]]];
     defaultAutoclose=([autoclose state]==NSOnState);
+    defaultOption=[optionKey selectedColumn];
+
 }
 
 - (NSColor*) background
@@ -337,6 +345,11 @@ static int TRANSPARENCY  =10;
 - (BOOL) autoclose
 {
     return defaultAutoclose;
+}
+
+- (int) option
+{
+    return defaultOption;
 }
 
 @end

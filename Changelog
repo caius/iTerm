@@ -1,4 +1,6 @@
 2002-12-19	fabian
+    * Alt/Option key now can be used as Meta or to add ESC
+    * Fixed the "not saving auto-close option" bug
     * Fixed enter key on numeric keyboard problem
     * Fixed a problem that causes transparency settings lost
     * Fixed a lot of bugs related to VT100 emulation.

@@ -84,6 +84,7 @@
                 fontExample = id; 
                 foreground = id; 
                 nafontExample = id; 
+                optionKey = id; 
                 prefPanel = id; 
                 row = id; 
                 shell = id; 

@@ -329,6 +329,26 @@ static NSString *PWD_ENVVALUE = @"~";
                 send_strlen = [data length];
             }
         }
+        else if ([pref option] != OPT_NORMAL &&
+                 modflag & NSAlternateKeyMask)
+        {
+            NSData *keydat = (modflag & NSControlKeyMask)?
+            [keystr dataUsingEncoding:NSUTF8StringEncoding]:
+            [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
+                    // META combination
+            if (keydat != nil) {
+                send_str = (char *)[keydat bytes];
+                send_strlen = [keydat length];
+            }
+            if ([pref option] == OPT_ESC)
+                send_pchr = '\e';
+            else if ([pref option] == OPT_META && send_str != NULL) {
+                int i;
+                for (i = 0; i < send_strlen; ++i) {
+                    send_str[i] |= 0x80;
+                }
+            }
+        }
         else {
             NSData *data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
 
@@ -337,14 +357,14 @@ static NSString *PWD_ENVVALUE = @"~";
                 send_strlen = [data length];
             }
             if (modflag & NSNumericPadKeyMask &&
-                     send_strlen == 1 &&
-                     send_str[0] == 0x03)
+                send_strlen == 1 &&
+                send_str[0] == 0x03)
             {
                 send_str = "\012";  // NumericPad Entry -> 0x0a
                 send_strlen = 1;
             }
         }
-        
+
         if (EXIT == NO ) {
             if (send_pchr >= 0) {
                 char c = send_pchr;

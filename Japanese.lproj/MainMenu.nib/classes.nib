@@ -65,6 +65,7 @@
                 adTextExample = NSTextField; 
                 adTransparency = id; 
                 adTransparency2 = id; 
+                openInNewWindow = id; 
             }; 
             SUPERCLASS = NSObject; 
         }, 

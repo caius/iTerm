@@ -5,7 +5,10 @@
     * Localized GPL license statement for zh_CN and zn_TW
     * Fixed a bug in PseudoTerminal.nib, zh_TW
     * Cleaned up unused outlets in PseudoTerminal
-    
+    * Changed Address Book behavior:
+        double click opens a new session
+        new window is specified using a switch
+        
 2003-03-12	fabian
     * Fixed a bug that causes incorrect process of color.
     * Cleaned up the color code

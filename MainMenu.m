@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.35 2003-03-13 18:50:17 yfabian Exp $
+// $Id: MainMenu.m,v 1.36 2003-03-13 20:10:49 yfabian Exp $
 /*
  **  MainMenu.m
  **
@@ -187,7 +187,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[adTable selectRow: 0 byExtendingSelection: NO];
 	[AB_PANEL makeFirstResponder: adTable];
     }
-    [adTable setDoubleAction: @selector(adbEditEntry:)];
+    [adTable setDoubleAction: @selector(executeABCommand:)];
     r= [NSApp runModalForWindow:AB_PANEL];
     [AB_PANEL close];
 }
@@ -206,7 +206,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
     [NSApp stopModal];
 
-    if(sender==adNewWindow)
+    if([openInNewWindow state]==NSOnState)
         [self executeABCommandAtIndex: [adTable selectedRow] inTerminal: nil];
     else
         [self executeABCommandAtIndex: [adTable selectedRow] inTerminal: FRONT];

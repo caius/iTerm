@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.14 2003-02-12 07:52:46 ujwal Exp $
+// $Id: MainMenu.h,v 1.15 2003-03-13 20:10:49 yfabian Exp $
 /*
  **  MainMenu.h
  **
@@ -36,6 +36,7 @@
    
     // address book window
     IBOutlet id AB_PANEL;
+    IBOutlet id openInNewWindow;
     IBOutlet NSTableView *adTable;
 
     // address entry window

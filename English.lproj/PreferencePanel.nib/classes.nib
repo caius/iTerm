@@ -18,27 +18,32 @@
         }, 
         {
             ACTIONS = {
+                displayChangeColor = id; 
+                displayProfileChanged = id; 
+                displaySelectFont = id; 
+                displaySelectNAFont = id; 
+                displaySetAntiAlias = id; 
                 kbEntryAdd = id; 
                 kbEntryAddCancel = id; 
                 kbEntryAddConfirm = id; 
                 kbEntryDelete = id; 
                 kbEntrySelectorChanged = id; 
                 kbOptionKeyChanged = id; 
-                kbProfileAdd = id; 
-                kbProfileAddCancel = id; 
-                kbProfileAddConfirm = id; 
                 kbProfileChanged = id; 
-                kbProfileDelete = id; 
-                kbProfileDeleteCancel = id; 
-                kbProfileDeleteConfirm = id; 
+                profileAdd = id; 
+                profileAddCancel = id; 
+                profileAddConfirm = id; 
+                profileDelete = id; 
+                profileDeleteCancel = id; 
+                profileDeleteConfirm = id; 
                 showProfilesWindow = id; 
             }; 
             CLASS = iTermProfileWindowController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addKBEntry = NSPanel; 
-                addKBProfile = NSPanel; 
-                deleteKBProfile = NSPanel; 
+                addProfile = NSPanel; 
+                deleteProfile = NSPanel; 
                 displayAnsi0Color = NSColorWell; 
                 displayAnsi0HColor = NSColorWell; 
                 displayAnsi1Color = NSColorWell; 
@@ -85,6 +90,7 @@
                 kbProfileDeleteButton = NSButton; 
                 kbProfileName = NSTextField; 
                 kbProfileSelector = NSPopUpButton; 
+                profileTabView = NSTabView; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

@@ -33,11 +33,15 @@
 
 @interface iTermProfileWindowController : NSWindowController 
 {
+	IBOutlet NSTabView *profileTabView;
+	
+	// Profile editing
+	IBOutlet NSPanel *addProfile;
+	IBOutlet NSPanel *deleteProfile;
+
 	// Keybinding profile UI
 	IBOutlet NSPopUpButton *kbProfileSelector;
 	IBOutlet NSTextField *kbProfileName;
-	IBOutlet NSPanel *addKBProfile;
-	IBOutlet NSPanel *deleteKBProfile;
 	IBOutlet NSPanel *addKBEntry;
 	IBOutlet NSPopUpButton *kbEntryKey;
 	IBOutlet NSButton *kbEntryKeyModifierOption;
@@ -90,20 +94,31 @@
 
 - (IBAction) showProfilesWindow: (id) sender;
 
+// profile editing
+- (IBAction) profileAdd: (id) sender;
+- (IBAction) profileDelete: (id) sender;
+- (IBAction) profileAddConfirm: (id) sender;
+- (IBAction) profileAddCancel: (id) sender;
+- (IBAction) profileDeleteConfirm: (id) sender;
+- (IBAction) profileDeleteCancel: (id) sender;
+
+
 // Keybinding profile UI
 - (void) kbOptionKeyChanged: (id) sender;
 - (IBAction) kbProfileChanged: (id) sender;
-- (IBAction) kbProfileAdd: (id) sender;
-- (IBAction) kbProfileDelete: (id) sender;
-- (IBAction) kbProfileAddConfirm: (id) sender;
-- (IBAction) kbProfileAddCancel: (id) sender;
-- (IBAction) kbProfileDeleteConfirm: (id) sender;
-- (IBAction) kbProfileDeleteCancel: (id) sender;
 - (IBAction) kbEntryAdd: (id) sender;
 - (IBAction) kbEntryAddConfirm: (id) sender;
 - (IBAction) kbEntryAddCancel: (id) sender;
 - (IBAction) kbEntryDelete: (id) sender;
 - (IBAction) kbEntrySelectorChanged: (id) sender;
+
+// Display profile UI
+- (IBAction) displayProfileChanged: (id) sender;
+- (IBAction) displaySetAntiAlias: (id) sender;
+- (IBAction) displayChangeColor: (id) sender;
+- (IBAction) displaySelectFont: (id) sender;
+- (IBAction) displaySelectNAFont: (id) sender;
+
 
 @end
 

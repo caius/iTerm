@@ -52,6 +52,49 @@
     [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
 }
 
+// Profile editing
+- (IBAction) profileAdd: (id) sender
+{
+	[NSApp beginSheet: addProfile
+       modalForWindow: [self window]
+        modalDelegate: self
+       didEndSelector: @selector(_addKBProfileSheetDidEnd:returnCode:contextInfo:)
+          contextInfo: nil];        
+}
+
+- (IBAction) profileDelete: (id) sender
+{
+	[NSApp beginSheet: deleteProfile
+       modalForWindow: [self window]
+        modalDelegate: self
+       didEndSelector: @selector(_deleteKBProfileSheetDidEnd:returnCode:contextInfo:)
+          contextInfo: nil];        
+}
+
+- (IBAction) profileAddConfirm: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:addProfile returnCode:NSOKButton];
+}
+
+- (IBAction) profileAddCancel: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:addProfile returnCode:NSCancelButton];
+}
+
+- (IBAction) profileDeleteConfirm: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:deleteProfile returnCode:NSOKButton];
+}
+
+- (IBAction) profileDeleteCancel: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:deleteProfile returnCode:NSCancelButton];
+}
+
 
 // Keybinding profile UI
 - (void) kbOptionKeyChanged: (id) sender
@@ -72,48 +115,6 @@
     [kbOptionKey selectCellAtRow:0 column:[[iTermKeyBindingMgr singleInstance] optionKeyForProfile: selectedKBProfile]];
 	
 	[kbEntryTableView reloadData];
-}
-
-- (IBAction) kbProfileAdd: (id) sender
-{
-	[NSApp beginSheet: addKBProfile
-       modalForWindow: [self window]
-        modalDelegate: self
-       didEndSelector: @selector(_addKBProfileSheetDidEnd:returnCode:contextInfo:)
-          contextInfo: nil];        
-}
-
-- (IBAction) kbProfileDelete: (id) sender
-{
-	[NSApp beginSheet: deleteKBProfile
-       modalForWindow: [self window]
-        modalDelegate: self
-       didEndSelector: @selector(_deleteKBProfileSheetDidEnd:returnCode:contextInfo:)
-          contextInfo: nil];        
-}
-
-- (IBAction) kbProfileAddConfirm: (id) sender
-{
-	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	[NSApp endSheet:addKBProfile returnCode:NSOKButton];
-}
-
-- (IBAction) kbProfileAddCancel: (id) sender
-{
-	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	[NSApp endSheet:addKBProfile returnCode:NSCancelButton];
-}
-
-- (IBAction) kbProfileDeleteConfirm: (id) sender
-{
-	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	[NSApp endSheet:deleteKBProfile returnCode:NSOKButton];
-}
-
-- (IBAction) kbProfileDeleteCancel: (id) sender
-{
-	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	[NSApp endSheet:deleteKBProfile returnCode:NSCancelButton];
 }
 
 - (IBAction) kbEntryAdd: (id) sender
@@ -257,6 +258,32 @@
 		[kbEntryDeleteButton setEnabled: YES];
 }
 
+// Display profile UI
+- (IBAction) displayProfileChanged: (id) sender
+{
+	// load the profile
+}
+
+- (IBAction) displaySetAntiAlias: (id) sender
+{
+	
+}
+
+- (IBAction) displayChangeColor: (id) sender
+{
+}
+
+- (IBAction) displaySelectFont: (id) sender
+{
+	
+}
+
+- (IBAction) displaySelectNAFont: (id) sender
+{
+	
+}
+
+
 
 @end
 
@@ -321,7 +348,7 @@
 		[self kbProfileChanged: nil];
 	}
 	
-	[addKBProfile close];
+	[addProfile close];
 }
 
 - (void)_deleteKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
@@ -342,7 +369,7 @@
 		[self kbProfileChanged: nil];
 	}
 	
-	[deleteKBProfile close];
+	[deleteProfile close];
 }
 
 

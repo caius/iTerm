@@ -345,6 +345,34 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 }
 
+- (BOOL) hasKeyMappingForEvent: (NSEvent *) event
+{
+    unsigned int modflag;
+    unsigned short keycode;
+    NSString *keystr;
+    NSString *unmodkeystr;
+    unichar unicode, unmodunicode;
+	int keyBindingAction;
+	NSString *keyBindingText;
+        
+    modflag = [event modifierFlags];
+    keycode = [event keyCode];
+    keystr  = [event characters];
+    unmodkeystr = [event charactersIgnoringModifiers];
+    unicode = [keystr length]>0?[keystr characterAtIndex:0]:0;
+	unmodunicode = [unmodkeystr length]>0?[unmodkeystr characterAtIndex:0]:0;
+    
+	//NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c) <%d>", event,modflag,keycode,keystr,unmodkeystr,unicode,unicode,(modflag & NSNumericPadKeyMask));
+	
+	// Check if we have a custom key mapping for this event
+	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unmodunicode 
+																   modifiers: modflag 
+																		text: &keyBindingText 
+																	 profile: [[self addressBookEntry] objectForKey: KEY_KEYBOARD_PROFILE]];
+	
+	return (keyBindingAction >= 0);
+}
+
 // PTYTextView
 - (void)keyDown:(NSEvent *)event
 {
@@ -360,7 +388,7 @@ static NSString *PWD_ENVVALUE = @"~";
     unsigned short keycode;
     NSString *keystr;
     NSString *unmodkeystr;
-    unichar unicode;
+    unichar unicode, unmodunicode;
     
 #if DEBUG_METHOD_TRACE || DEBUG_KEYDOWNDUMP
     NSLog(@"%s(%d):-[PseudoTerminal keyDown:%@]",
@@ -372,6 +400,7 @@ static NSString *PWD_ENVVALUE = @"~";
     keystr  = [event characters];
     unmodkeystr = [event charactersIgnoringModifiers];
     unicode = [keystr length]>0?[keystr characterAtIndex:0]:0;
+	unmodunicode = [unmodkeystr length]>0?[unmodkeystr characterAtIndex:0]:0;
     
     iIdleCount=0;
     
@@ -381,7 +410,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setBell: NO];
 	
 	// Check if we have a custom key mapping for this event
-	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unicode 
+	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unmodunicode 
 																   modifiers: modflag 
 																		 text: &keyBindingText 
 																	 profile: [[self addressBookEntry] objectForKey: KEY_KEYBOARD_PROFILE]];

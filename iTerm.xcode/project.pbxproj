@@ -50,6 +50,7 @@
 		0464AB0E006CD2EC7F000001 = {
 			children = (
 				DD4BAB7C0470C44C00A8A065,
+				DDF0FD64062916F70080EF74,
 				20D5CC6404E7AA0500000106,
 				E8A66F030272453F03A80106,
 				DD46BAC405FD689F00027283,
@@ -85,6 +86,7 @@
 				872EBC6B04E42E320073D10E,
 				872EBC6804E42E320073D10E,
 				872EBC6A04E42E320073D10E,
+				DDF0FD63062916F70080EF74,
 				20D5CC6304E7AA0500000106,
 				872EBC6204E42E320073D10E,
 				DD46BB5405FD6B9B00027283,
@@ -1263,6 +1265,7 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = iTerm.plist;
+				MACOSX_DEPLOYMENT_TARGET = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = iTerm;
@@ -1284,6 +1287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				874206490564169600CFC3F1,
+				DDF0FD65062916F70080EF74,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1329,6 +1333,7 @@
 			files = (
 				8742064F0564169600CFC3F1,
 				874206500564169600CFC3F1,
+				DDF0FD66062916F70080EF74,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1726,6 +1731,34 @@
 				ATTRIBUTES = (
 					Public,
 				);
+			};
+		};
+		DDF0FD63062916F70080EF74 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = iTermApplication.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DDF0FD64062916F70080EF74 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = iTermApplication.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DDF0FD65062916F70080EF74 = {
+			fileRef = DDF0FD63062916F70080EF74;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDF0FD66062916F70080EF74 = {
+			fileRef = DDF0FD64062916F70080EF74;
+			isa = PBXBuildFile;
+			settings = {
 			};
 		};
 		DDF28988047764E300A8A065 = {

@@ -3,6 +3,10 @@
 	* Removed obsolete code activating fonts.
 	* Migrating name, command, and working directories of old 
 	  addressbook to new format. Default profiles will be used.
+	* Subclassed NSApplication to override sendEvent: so that 
+	  custom key bindings with command key mask would work correctly. 
+	  Take care not to define key mappings that override something 
+	  important like cmd-q.
 
 2004-04-08  ujwal
 

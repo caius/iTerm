@@ -103,6 +103,7 @@
 - (void)brokenPipe;
 
 // PTYTextView
+- (BOOL) hasKeyMappingForEvent: (NSEvent *) event;
 - (void)keyDown:(NSEvent *)event;
 - (BOOL)willHandleEvent: (NSEvent *) theEvent;
 - (void)handleEvent: (NSEvent *) theEvent;

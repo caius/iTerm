@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.125 2003-08-29 16:11:20 ujwal Exp $
+// $Id: VT100Screen.m,v 1.126 2003-08-29 18:16:52 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1520,7 +1520,6 @@ static BOOL PLAYBELL = YES;
 	    [STORAGE setAttributes:dic range:NSMakeRange(cursorIndex,1)];
 	}
 	[STORAGE endEditing];
-	[self removeOverLine];
 	[self removeScreenLock];
 	[[SESSION TEXTVIEW] scrollEnd];
 

@@ -1,0 +1,152 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                clearBuffer = id; 
+                closeCurrentSession = id; 
+                logStart = id; 
+                logStop = id; 
+                nextSession = id; 
+                previousSession = id; 
+                saveSession = id; 
+                showConfigWindow = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                aboutOK = id; 
+                adEditBackground = id; 
+                adEditCancel = id; 
+                adEditFont = id; 
+                adEditForeground = id; 
+                adEditNAFont = id; 
+                adEditOK = id; 
+                adbAddEntry = id; 
+                adbCancel = id; 
+                adbEditEntry = id; 
+                adbOk = id; 
+                adbRemoveEntry = id; 
+                executeABCommand = id; 
+                newSession = id; 
+                newWindow = id; 
+                showABWindow = id; 
+                showAbout = id; 
+                showPrefWindow = id; 
+            }; 
+            CLASS = MainMenu; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                ABOUT = id; 
+                "AB_PANEL" = id; 
+                "AE_PANEL" = id; 
+                AUTHORS = NSTextView; 
+                FRONT = id; 
+                "PREF_PANEL" = id; 
+                adAI = id; 
+                adAICode = id; 
+                adBackground = NSColorWell; 
+                adClose = id; 
+                adCol = id; 
+                adCommand = NSTextField; 
+                adDir = id; 
+                adDoubleWidth = id; 
+                adEncoding = NSComboBox; 
+                adForeground = NSColorWell; 
+                adNATextExample = NSTextField; 
+                adName = NSTextField; 
+                adNewWindow = id; 
+                adRow = id; 
+                adSelection = NSColorWell; 
+                adTable = NSTableView; 
+                adTermType = id; 
+                adTextExample = NSTextField; 
+                adTransparency = id; 
+                adTransparency2 = id; 
+                openInNewWindow = id; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
+        {
+            ACTIONS = {
+                cancel = id; 
+                changeBackground = id; 
+                changeFontButton = id; 
+                changeForeground = id; 
+                changeNAFontButton = id; 
+                ok = id; 
+                restore = id; 
+            }; 
+            CLASS = PreferencePanel; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                antiAlias = id; 
+                autoclose = id; 
+                background = id; 
+                col = id; 
+                copySelection = id; 
+                doubleWidth = id; 
+                encoding = id; 
+                fontExample = id; 
+                foreground = id; 
+                hideTab = id; 
+                nafontExample = id; 
+                openAddressBook = id; 
+                optionKey = id; 
+                prefPanel = id; 
+                promptOnClose = id; 
+                remapDeleteKey = id; 
+                row = id; 
+                selectionColor = id; 
+                shell = id; 
+                silenceBell = id; 
+                tabViewType = id; 
+                terminal = id; 
+                transparency = id; 
+                "transparency_control" = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }, 
+        {
+            ACTIONS = {
+                clearBuffer = id; 
+                closeCurrentSession = id; 
+                logStart = id; 
+                logStop = id; 
+                newSession = id; 
+                nextSession = id; 
+                previousSession = id; 
+                setMainMenu = id; 
+                switchSession = id; 
+                windowConfigBackground = id; 
+                windowConfigCancel = id; 
+                windowConfigFont = id; 
+                windowConfigForeground = id; 
+                windowConfigOk = id; 
+            }; 
+            CLASS = PseudoTerminal; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "AI_CODE" = id; 
+                "AI_ON" = id; 
+                "CONFIG_BACKGROUND" = id; 
+                "CONFIG_COL" = id; 
+                "CONFIG_ENCODING" = id; 
+                "CONFIG_EXAMPLE" = id; 
+                "CONFIG_FOREGROUND" = id; 
+                "CONFIG_NAME" = id; 
+                "CONFIG_PANEL" = id; 
+                "CONFIG_ROW" = id; 
+                "CONFIG_TRANS2" = id; 
+                "CONFIG_TRANSPARENCY" = id; 
+                SCROLLVIEW = id; 
+                WINDOW = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }
+    ); 
+    IBVersion = 1; 
+}

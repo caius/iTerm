@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.162 2004-03-08 08:56:26 ujwal Exp $
+// $Id: PTYTextView.m,v 1.163 2004-03-09 20:59:59 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1090,6 +1090,8 @@
 	int width, y, x1, x2;
 	NSString *str;
 	unichar *buf;
+	BOOL endOfLine;
+	int i;
 	
 	width = [dataSource width];
 	scline = [dataSource numberOfLines]-[dataSource height];
@@ -1113,10 +1115,27 @@
 		for(; x1 <= x2; x1++) 
 		{
 			if (buf[x1]!=0xffff) {
-				temp[j++]=buf[x1]?buf[x1]:'\n'; // insert line break on hard wrap
+				temp[j]=buf[x1];
+				if(buf[x1] == 0)
+				{
+					// if there is no text after this, insert a hard line break
+					endOfLine = YES;
+					for(i = x1+1; i <= x2; i++)
+					{
+						if(buf[i] != 0)
+							endOfLine = NO;
+					}
+					if(endOfLine)
+					{
+						temp[j] = '\n'; // hard break
+						j++;
+						break; // continue to next line
+					}
+					else
+						temp[j] = ' '; // represent blank with space
+				}
+				j++;
 			}
-			if(buf[x1] == 0)
-				break; // continue to next line
 		}		
 	}
 	
@@ -1153,6 +1172,8 @@
 	NSString *str;
 	int last = 0;
 	BOOL keep_going = YES;
+	BOOL endOfLine;
+	int i;
 	
 	width = [dataSource width];
 	height = [dataSource numberOfLines];
@@ -1175,10 +1196,27 @@
 		{
 			if (bg[x] & SELECTION_MASK) {
 				if (buf[x] != 0xffff) {
-					temp[last++] = buf[x] ? buf[x]:'\n'; // insert hard line break if line ends with 0
+					temp[last] = buf[x]; 
+					if(buf[x] == 0)
+					{
+						// if there is no text after this, insert a hard line break
+						endOfLine = YES;
+						for(i = x+1; i < width; i++)
+						{
+							if(buf[i] != 0)
+								endOfLine = NO;
+						}
+						if(endOfLine)
+						{
+							temp[last] = '\n'; // hard break
+							last++;
+							break; // continue to next line
+						}
+						else
+							temp[last] = ' '; // represent blank with space
+					}
+					last++;
 				}
-				if(buf[x] == 0)
-					break; // continue onto next line
 			}
 			else if (last) {
 				keep_going = NO;

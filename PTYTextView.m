@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.194 2004-04-03 01:23:55 yfabian Exp $
+// $Id: PTYTextView.m,v 1.195 2004-04-06 18:42:23 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1926,12 +1926,13 @@ static SInt32 systemVersion;
 	NSAttributedString  *crap;
 	NSDictionary *attrib;
 		
+	//NSLog(@"%@",NSStrokeWidthAttributeName);
 	if (systemVersion >= 0x00001030)
 	{
 		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
 			aFont, NSFontAttributeName,
 			color, NSForegroundColorAttributeName,
-			[NSNumber numberWithFloat: (float)bold*(-0.1)], NSStrokeWidthAttributeName,
+			[NSNumber numberWithFloat: (float)bold*(-0.1)], @"NSStrokeWidth",
 			nil];
 	}
 	else

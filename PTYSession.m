@@ -143,21 +143,23 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCREEN setSession:self];
     [self setName:@"Shell"];
 
+    // allocate an imageview for the background image
+    imageView = [[iTermImageView alloc] initWithFrame: aRect];
+    [imageView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [imageView setImageScaling: NSScaleToFit];
+
     // Allocate a scrollview
-    SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: aRect];
+    SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
     [SCROLLVIEW setHasVerticalScroller:YES];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 
-    // allocate an imageview for the background image
-    //imageView = [[iTermImageView alloc] initWithFrame: aRect];
-    //[imageView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];    
-    //[imageView addSubview: SCROLLVIEW];
-    //[SCROLLVIEW release];
+    // add the scrollview as a subview to the imageview
+    [imageView addSubview: SCROLLVIEW];
+    [SCROLLVIEW release];
 
     // assign the main view
-    //view = imageView;
-    view = SCROLLVIEW;
+    view = imageView;
     
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];

@@ -29,6 +29,20 @@
 					<key>Name</key>
 					<string>bold color</string>
 				</dict>
+				<key>cursorColor</key>
+				<dict>
+					<key>Description</key>
+					<string>Cursor color</string>
+					<key>Name</key>
+					<string>cursor color</string>
+				</dict>
+				<key>cursorTextColor</key>
+				<dict>
+					<key>Description</key>
+					<string>Cursor text color</string>
+					<key>Name</key>
+					<string>cursor_text color</string>
+				</dict>
 				<key>foregroundColor</key>
 				<dict>
 					<key>Description</key>

@@ -33,6 +33,20 @@
 					<key>Type</key>
 					<string>NSColor</string>
 				</dict>
+				<key>cursorColor</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Ccol</string>
+					<key>Type</key>
+					<string>NSColor</string>
+				</dict>
+				<key>cursorTextColor</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Ctxt</string>
+					<key>Type</key>
+					<string>NSColor</string>
+				</dict>
 				<key>foregroundColor</key>
 				<dict>
 					<key>AppleEventCode</key>

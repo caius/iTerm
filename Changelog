@@ -1,3 +1,7 @@
+2004-05-11  ujwal
+	
+	* Added support to set cursor color and cursor text color from applescript.
+
 2004-05-08  ujwal
 
 	* Fixed printing.

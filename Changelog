@@ -1,6 +1,7 @@
 2002-01-13	fabian
     * bold is now enabled when font with appropriate bold
       size is used.
+    * bug fixes in VT100Screen
       
 2003-01-13	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

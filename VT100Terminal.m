@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.13 2003-01-14 16:48:41 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.14 2003-01-14 17:08:06 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -905,11 +905,7 @@ static VT100TCC decode_other_enc(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<=0x7f) {
-            p++;
-            len--;
-        }
-        else if (*p>0x7f) {
+        if (*p>=0x20) {
             p++;
             len--;
         }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.55 2003-01-01 02:55:32 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.56 2003-01-01 02:57:54 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -828,7 +828,7 @@ static NSString *ConfigToolbarItem = @"Config";
         [[[ptyList objectAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[ptyList objectAtIndex:i] SCREEN] endEditing];
         [[[ptyList objectAtIndex:i] SHELL] setWidth:w  height:h];
-        [[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
+        //[[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
     
     WIDTH = w;

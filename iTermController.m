@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.19 2003-09-14 18:46:50 ujwal Exp $
+// $Id: iTermController.m,v 1.20 2003-09-15 15:28:25 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -327,7 +327,7 @@ static BOOL usingAutoLaunchScript = NO;
 	[self setFrontPseudoTerminal: nil];
 
     if(theTerminalWindow)
-        [terminalWindows removeObject: theTerminalWindow];
+        [self removeFromTerminalsAtIndex: [terminalWindows indexOfObject: theTerminalWindow]];
 }
 
 - (NSStringEncoding const*) encodingList

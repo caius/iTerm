@@ -93,7 +93,8 @@
 	 environment:(NSDictionary *)prog_env;
 - (void) terminate;
 - (void) timerTick:(NSTimer*)sender;
-            
+- (void) startTimer;
+
 // Preferences
 - (void)setPreference:(id)preference;
 

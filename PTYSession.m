@@ -154,18 +154,22 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setName:@"Shell"];
 
     ai_code=0;
+    antiIdle = NO;
+    REFRESHED = NO;
+
+//    [TEXTVIEW setCursorIndex:[SCREEN getIndex:0 y:0]];
+    [tabViewItem setLabelAttributes: chosenStateAttribute];
+
+        
+}
+
+- (void) startTimer
+{
     timer =[[NSTimer scheduledTimerWithTimeInterval:0.075
                                              target:self
                                            selector:@selector(timerTick:)
                                            userInfo:nil
                                             repeats:YES] retain];
-    antiIdle = NO;
-    REFRESHED = NO;
-
-    [TEXTVIEW setCursorIndex:[SCREEN getIndex:0 y:0]];
-    [tabViewItem setLabelAttributes: chosenStateAttribute];
-
-        
 }
 
 - (void)startProgram:(NSString *)program

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.32 2003-02-25 16:06:14 ujwal Exp $
+// $Id: PTYTextView.m,v 1.33 2003-02-26 17:30:33 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -241,9 +241,9 @@
 	    return;
 
 	numLines = rect.size.height/lineHeight;
-	lineOffset = rect.origin.y/lineHeight;
+	lineOffset = rect.origin.y/lineHeight+1;
 
-	for(i = 0; i < numLines; i++)
+	for(i = 0; i <numLines; i++)
 	{
 	    aLine = [[self dataSource] stringAtLine: i + lineOffset];
 	    if(aLine == nil)

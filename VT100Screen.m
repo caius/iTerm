@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.53 2003-02-26 00:54:18 yfabian Exp $
+// $Id: VT100Screen.m,v 1.54 2003-02-26 17:30:36 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -32,8 +32,8 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#define DEBUG_USE_BUFFER	1
-#define DEBUG_USE_ARRAY		0
+#define DEBUG_USE_BUFFER	0
+#define DEBUG_USE_ARRAY		1
 
 #import "VT100Screen.h"
 #import "NSStringITerm.h"
@@ -447,7 +447,6 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
-        NSLog(@"Line added");
 	aLine = [[NSMutableAttributedString alloc] init];
 	[screenLines addObject: aLine];
 	[aLine release];
@@ -2378,9 +2377,8 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
-#endif
-    
     [(PTYTextView *)display refresh];
+#endif
 
 }
 

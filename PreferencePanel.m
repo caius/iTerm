@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.78 2004-03-03 01:39:07 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.79 2004-03-04 00:34:23 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -129,6 +129,7 @@ static float versionNumber;
 		[kbProfileSelector addItemWithTitle: aString];
 	
 	[self kbProfileChanged: nil];
+	[self tableViewSelectionDidChange: nil];
     
 	[[self window] setDelegate: self];
 	[self showWindow: self];
@@ -397,6 +398,14 @@ static float versionNumber;
 	}
 }
 
+// NSTableView delegate
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
+{
+	if([kbEntryTableView selectedRow] < 0)
+		[kbEntryDeleteButton setEnabled: NO];
+	else
+		[kbEntryDeleteButton setEnabled: YES];
+}
 
 
 // accessors for preferences

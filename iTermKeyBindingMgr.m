@@ -569,21 +569,21 @@ static iTermKeyBindingMgr *singleInstance = nil;
 {
 	int retCode = -1;
 	NSString *commonProfile;
-	
-	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
-
-	
-	// search the common profile first
-	if([commonProfile length] > 0)
-		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: commonProfile];
+			
+	// search the specified profile first
+	if([profile length] > 0)
+		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: profile];
 	
 	// If we found something in the common profile, return that
 	if(retCode >= 0)
 		return (retCode);
 	
-	// otherwise search in the specified profile
-	if([profile length] > 0)
-		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: profile];
+	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+	
+	// search the common profile if a match was not found
+	if([commonProfile length] > 0)
+		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: commonProfile];	
+	
 	
 	return (retCode);
 }

@@ -61,6 +61,7 @@
 	IBOutlet NSTextField *kbEntryKeyCode;
 	IBOutlet NSTableView *kbEntryTableView;
 	IBOutlet NSButton *kbProfileDeleteButton;
+	IBOutlet NSButton *kbEntryDeleteButton;
     
     NSUserDefaults *prefs;
 

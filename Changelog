@@ -1,6 +1,7 @@
 2004-03-03  ujwal
 
 	* Made application of transparency more consistent.
+	* Common keymapping profile is searched last for a keybinding match.
 
 2004-03-03  fabian
 

@@ -19,7 +19,8 @@
 <FONT SIZE="5"><STRONG>Additional Resource:</STRONG></FONT><BR>
 <BR>
 <FONT SIZE="4"><STRONG>Fonts:</STRONG></FONT> <BR><BR>
-As a terminal emulator, iTerm requires monospace fonts. Additionally, The font
+Starting from 0.8.0, iTerm no longer requires monospace fonts. For older versions, you
+need a monospace font for correct display. In Addition, the font
 should include all the graphical characters if you plan to use curses based programs
 that use them, such as mc. Unfortunately, there are not many such fonts
 available. The fonts we tested to work well are listed here. If you have
@@ -49,7 +50,7 @@ from sinomac.com<br>
 
 <TD VALIGN="TOP">
 <CENTER>
-<a href="iTerm.png"><image src="iTerm-un.png"></a><br>
+<a href="iTerm-un.png"><image src="iTerm-un.png"></a><br>
 iTerm with UN symbol<br>
 by Edward Daze<br>
 </CENTER>
@@ -88,6 +89,40 @@ to edit the characters.<BR><BR>
 Download from <A HREF="ftp://ftp.tba.org.tohoku.ac.jp/pub/tcsh-6.12-utf8.patch.gz"> here </A>
 
 <BR><BR>
+
+<FONT SIZE="4"><STRONG>Tips for using zsh with iTerm</STRONG></FONT><BR>
+Provided by Marius Wyx<BR><BR>
+There are people with hints on ways to customize the title bar 
+and tabs, a much simpler way when using zsh is to do the following:<BR>
+<PRE>
+
+   precmd () {
+     echo -n "\033]1;$USERNAME@$HOST^G\033]2;$PWD>    - $USERNAME@$HOST
+  
+($status)^G"
+   }
+   PROMPT='%m %B%3c%(#.#.>)%b '
+   RPROMPT=''
+</PRE>
+
+<BR>
+(NOTE: ^G is CTRL-G, you need to basically enter it using ^V^G)<BR>
+
+Much simpler and does not require anything special. (apart from zsh)<BR>
+
+Also in zsh, the command line completion I have expanded to be 
+/Applications/ aware:<BR>
+<PRE>
+if [ "`uname`" = "Darwin" ]; then
+   compctl -f -x 'p[2]' -s "`/bin/ls -d1 /Applications/*/*.app 
+/Applications/*.app | sed 's|^.*/\([^/]*\)\.app.*|\\1|;s/ /\\\\ /g'`" 
+-- open
+   alias run='open -a'
+fi
+</PRE>
+<BR>
+typing: "open -a " and then pressing tab will try and complete any 
+application... (added an alias run as well)<BR><BR>
 
 <FONT SIZE="4"><STRONG>Interesting Links...</STRONG></FONT><BR>
 Here are some links to some iTerm related websites.<BR>

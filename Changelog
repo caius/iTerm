@@ -3,6 +3,10 @@
 	* Added Rendezvous support.
 	* Fixed bug in selection in reverse direction.
 
+2004-03-27  fabian
+
+	* Updated zh_CN translation
+	
 2004-03-26  fabian
 
 	* Merged in the French localization by Matt Anton

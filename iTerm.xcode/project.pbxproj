@@ -2015,6 +2015,14 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		F63C178E0616010F00C79EBB = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = "iTerm-un.png";
+			path = "website/iTerm-un.png";
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		F645F2B00557B868005F354A = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -2357,6 +2365,7 @@
 				FBDF6B91042A6BD801F955DB,
 				FBDF6B92042A6BD801F955DB,
 				FBDF6B93042A6BD801F955DB,
+				F63C178E0616010F00C79EBB,
 				FBDF6B94042A6BD801F955DB,
 				FBDF6B95042A6BD801F955DB,
 				FBDF6B96042A6BD801F955DB,

@@ -164,3 +164,8 @@
 "page down"="page down";
 "page up"="page up";
 "unknown key"="unknown key";
+
+/* Save Confirmation */
+"Display Profile Saved To: %@"="Display Profile Saved To: %@";
+"Terminal Profile Saved To: %@"="Terminal Profile Saved To: %@";
+"All bookmarks associated with this profile are effected"="All bookmarks associated with this profile are effected";

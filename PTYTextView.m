@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.168 2004-03-11 15:46:48 ujwal Exp $
+// $Id: PTYTextView.m,v 1.169 2004-03-11 22:40:26 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -588,8 +588,14 @@
         return;
     
 	if (forceUpdate) {
-		[[self colorForCode:DEFAULT_BG_COLOR_CODE] set];
-		NSRectFill(rect);
+		if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
+		{
+			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
+		}
+		else {
+			[[self colorForCode:DEFAULT_BG_COLOR_CODE] set];
+			NSRectFill(rect);
+		}
 	}
 	WIDTH=[dataSource width];
 
@@ -652,12 +658,12 @@
 					
 					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
 					NSRectFill(bgRect);
-					
 					// if we have a background image and we are using the background image, redraw image
-					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
+					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
 					{
 						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
+					
 				}						
 				if (ulstart>=0) {
 					[[self colorForCode:fgcode] set];
@@ -678,14 +684,12 @@
 					
 					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
 					NSRectFill(bgRect);
-					
-					// if we have a background image and we are using the background image, redraw image
-					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
+					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
 					{
 						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
-					bgcode=bg[j];
-					bgstart=j;
+					bgstart = j; 
+					bgcode = bg[j]; 
 				}
 				
 				if (ulstart<0 && (fg[j]&UNDER_MASK) && buf[j]) { 
@@ -709,12 +713,10 @@
 			
 			bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
 			NSRectFill(bgRect);
-			
-			// if we have a background image and we are using the background image, redraw image
-			if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
+			if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
 			{
 				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-			}			
+			}
 		}
 		
 		if (ulstart>=0) {

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.28 2004-03-09 21:33:33 yfabian Exp $
+// $Id: PTYTextView.h,v 1.29 2004-03-11 22:40:30 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -31,7 +31,7 @@
 #import <Cocoa/Cocoa.h>
 #import <iTerm/iTerm.h>
 
-#define MARGIN  6
+#define MARGIN  5
 
 
 @class VT100Screen;

@@ -1,3 +1,7 @@
+2004-03-10  fabian
+
+	* Fixed bug in scrolling
+	
 2004-03-10  ujwal
 
 	* Adjusted selection code to accommodate newly added margin.

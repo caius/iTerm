@@ -164,7 +164,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
     if (data == nil)
     {
-        [[self parent] closeSession: self];
+//        [[self parent] closeSession: self];
         return;
     }
 

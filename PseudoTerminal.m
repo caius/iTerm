@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.1.1.1 2002-11-26 04:56:48 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.2 2002-11-26 18:03:45 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -875,11 +875,11 @@ static NSDictionary *newOutputStateAttribute;
         [toolbarItem setAction: @selector(showABWindow:)];
     }
     else if ([itemIdent isEqual: CloseToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Close the window",@"iTerm",@"Toolbar Item Tip: Close")];
+        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Close the current session",@"iTerm",@"Toolbar Item Tip: Close")];
         [toolbarItem setImage: [NSImage imageNamed: @"close"]];
         [toolbarItem setTarget: self];
-        [toolbarItem setAction: @selector(closeWindow:)];
+        [toolbarItem setAction: @selector(closeSession:)];
     }
    else if ([itemIdent isEqual: ConfigToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Configure",@"iTerm",@"Toolbar Item:Configure") ];
@@ -988,12 +988,14 @@ static NSDictionary *newOutputStateAttribute;
         attr=normalStateAttribute;
         if(i == currentSessionIndex)
         {
-            [aButton highlight: YES];
+//            [aButton highlight: YES];
+            [aButton setBordered: YES];
             [self setWindowTitle];
             attr=chosenStateAttribute;
         }
         else {
-            [aButton highlight: NO];
+//            [aButton highlight: NO];
+            [aButton setBordered: NO];
             if ([[ptyList objectAtIndex: i] refreshed])
                 attr=([[ptyList objectAtIndex: i] idle])?idleStateAttribute:newOutputStateAttribute;
         }

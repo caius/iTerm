@@ -165,6 +165,7 @@
 - (int) number;
 
 - (void)clearBuffer;
+- (void)clearScrollbackBuffer;
 - (void)logStart;
 - (void)logStop;
 - (NSColor *) foregroundColor;

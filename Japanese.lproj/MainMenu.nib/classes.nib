@@ -3,6 +3,7 @@
         {
             ACTIONS = {
                 clearBuffer = id; 
+                clearScrollbackBuffer = id; 
                 closeCurrentSession = id; 
                 logStart = id; 
                 logStop = id; 

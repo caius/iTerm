@@ -1255,6 +1255,11 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL writeTask:[NSData dataWithBytes:&formFeed length:1]];
 }
 
+- (void)clearScrollbackBuffer
+{
+    [SCREEN clearScrollbackBuffer];
+}
+
 - (BOOL)refreshed
 {
     return REFRESHED;

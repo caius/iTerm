@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.46 2003-04-28 22:40:35 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.47 2003-04-28 23:04:29 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -128,6 +128,7 @@
 // MainMenu
 - (void)setMainMenu:(id) sender;
 - (void)clearBuffer:(id)sender;
+- (void)clearScrollbackBuffer:(id)sender;
 - (IBAction)logStart:(id)sender;
 - (IBAction)logStop:(id)sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;

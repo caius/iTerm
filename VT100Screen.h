@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.27 2003-03-27 02:14:29 yfabian Exp $
+// $Id: VT100Screen.h,v 1.28 2003-04-28 23:04:30 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -111,6 +111,7 @@
 // edit screen buffer
 - (void)putToken:(VT100TCC)token;
 - (void)clearBuffer;
+- (void)clearScrollbackBuffer;
 
 // internal
 - (void)setDoubleWidthString:(NSString *)s;

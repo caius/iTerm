@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.161 2003-04-28 22:45:56 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.162 2003-04-28 23:04:29 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -748,6 +748,11 @@ static int windowCount = 0;
 - (void)clearBuffer:(id)sender
 {
     [currentPtySession clearBuffer];
+}
+
+- (void)clearScrollbackBuffer:(id)sender
+{
+    [currentPtySession clearScrollbackBuffer];
 }
 
 - (IBAction)logStart:(id)sender

@@ -34,7 +34,7 @@ static NSString *PWD_ENVVALUE = @"~";
         return (nil);
     
     iIdleCount=oIdleCount=0;
-    waiting=antiIdle=NO;
+    waiting=antiIdle=EXIT=NO;
     
     return (self);
     
@@ -164,7 +164,6 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
     if (data == nil)
     {
-//        [[self parent] closeSession: self];
         return;
     }
 
@@ -210,7 +209,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [timer release];
         timer=nil;
     }
-    if ([WINDOW isVisible]) [parent setWindowTitle];
+    [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
 }
 
 // PTYTextView
@@ -766,6 +765,11 @@ static NSString *PWD_ENVVALUE = @"~";
 - (BOOL)idle
 {
     return waiting;
+}
+
+- (BOOL)exited
+{
+    return EXIT;
 }
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.7 2002-12-07 20:42:11 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.8 2002-12-09 02:29:45 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -65,7 +65,6 @@
     VT100Screen   *SCREEN;
     int WIDTH,HEIGHT;
     NSFont *FONT;
-    BOOL EXIT;
     PTYTextView *TEXTVIEW;
     BOOL pending;
     float alpha;
@@ -93,7 +92,6 @@
 - (void) selectPopupSession: (id) anObject;
 - (void) switchSession: (id) sender;
 - (void) selectSession: (int) sessionIndex;
-- (void) closeSession: (PTYSession *)theSession;
 - (IBAction) closeCurrentSession: (id) sender;
 - (IBAction) previousSession:(id)sender;
 - (IBAction) nextSession:(id)sender;

@@ -122,5 +122,6 @@
 - (BOOL)refreshed;
 - (BOOL)idle;
 - (void) resetStatus;
+- (BOOL)exited;
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.19 2002-12-08 19:03:38 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.20 2002-12-09 02:29:45 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -35,6 +35,8 @@ static NSDictionary *normalStateAttribute;
 static NSDictionary *chosenStateAttribute;
 static NSDictionary *idleStateAttribute;
 static NSDictionary *newOutputStateAttribute;
+static NSDictionary *deadStateAttribute;
+
 
 + (PseudoTerminal *)newTerminalWindow: (id) sender
 {
@@ -95,16 +97,19 @@ static NSDictionary *newOutputStateAttribute;
     ptyList = [[NSMutableArray alloc] init];
     buttonList = [[NSMutableArray alloc] init];
     ptyListLock = [[NSLock alloc] init];
-    
-    normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-        [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
-    chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-        [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
-    idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-        [NSColor redColor],NSForegroundColorAttributeName,nil] retain];
-    newOutputStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-        [NSColor blueColor],NSForegroundColorAttributeName,nil] retain];
-        
+
+    if (normalStateAttribute == nil) {
+        normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor darkGrayColor],NSForegroundColorAttributeName,nil] retain];
+        chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
+        idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor redColor],NSForegroundColorAttributeName,nil] retain];
+        newOutputStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor blueColor],NSForegroundColorAttributeName,nil] retain];
+        deadStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
+    }
     return self;
 }
 
@@ -180,10 +185,7 @@ static NSDictionary *newOutputStateAttribute;
     SCREEN = [aSession SCREEN];
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
 
-/*    cMenu = [[NSMenu alloc] initWithTitle:@"test"];
-    [cMenu addItemWithTitle:@"Configure" action:@selector(showConfigWindow:) keyEquivalent:@""];
-    [TEXTVIEW setMenu:cMenu]; */
-    
+   
     TEXTVIEW = [aSession TEXTVIEW];
     [TEXTVIEW setDelegate: aSession];
     
@@ -206,6 +208,7 @@ static NSDictionary *newOutputStateAttribute;
     [SCREEN setTextStorage:[TEXTVIEW textStorage]];
     [SCREEN setWindow:WINDOW];
     [SCREEN setWidth:WIDTH height:HEIGHT];
+//    NSLog(@"%d,%d",WIDTH,HEIGHT);
     [SCREEN initScreen];
     
 
@@ -219,7 +222,6 @@ static NSDictionary *newOutputStateAttribute;
     [WINDOW makeFirstResponder:TEXTVIEW];
     [WINDOW setNextResponder:self];
 
-    EXIT = NO;
     pending = NO;
     if (title) 
     {
@@ -283,7 +285,7 @@ static NSDictionary *newOutputStateAttribute;
         sessionIndex = 0;
     if(sessionIndex >= [ptyList count])
         sessionIndex = [ptyList count] - 1;
-    
+
     aSession = [ptyList objectAtIndex: sessionIndex];
     if(([SCROLLVIEW backgroundColor] != [[aSession TERMINAL] defaultBGColor]) || 
         ([[SCROLLVIEW backgroundColor] alphaComponent] != [[[aSession TERMINAL] defaultBGColor] alphaComponent]))
@@ -295,7 +297,7 @@ static NSDictionary *newOutputStateAttribute;
     SHELL = [aSession SHELL];
     TERMINAL = [aSession TERMINAL];
     SCREEN = [aSession SCREEN];
-    [currentPtySession resetStatus];
+    if (currentPtySession) [currentPtySession resetStatus];
     currentSessionIndex = sessionIndex;
     currentPtySession = aSession;
     [currentPtySession moveLastLine];
@@ -306,41 +308,42 @@ static NSDictionary *newOutputStateAttribute;
 
 }
 
-- (void) closeSession: (PTYSession *)theSession
+- (IBAction) closeCurrentSession: (id) sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal closeSession]",
+    NSLog(@"%s(%d):-[PseudoTerminal closeCurrentSession]",
           __FILE__, __LINE__);
 #endif
 
     if(ptyList == nil)
         return;
-    
+
+    if ([currentPtySession exited]==NO) {
+       if (NSRunAlertPanel(NSLocalizedStringFromTable(@"The current session will be closed",@"iTerm",@"Close Session"),
+                         NSLocalizedStringFromTable(@"All unsaved data will be lost",@"iTerm",@"Close window"),
+                         NSLocalizedStringFromTable(@"Cancel",@"iTerm",@"Cancel"),
+                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK")
+                         ,nil)) return;
+    }
+        
     if([ptyList count] == 1)
     {
         [WINDOW close];
         return;
     }
-    
-    [ptyListLock lock];    
+
+    [ptyListLock lock];
     [[ptyList objectAtIndex: currentSessionIndex] terminate];
     [ptyList removeObjectAtIndex: currentSessionIndex];
     [ptyListLock unlock];
-    
-    if (currentSessionIndex == 0)
-        currentSessionIndex = 0;    
-    else if (currentSessionIndex >= [ptyList count])
+    currentSessionIndex++;
+    if (currentSessionIndex >= [ptyList count])
         currentSessionIndex = [ptyList count] - 1;
-            
+
+    currentPtySession = nil;
     [self selectSession: currentSessionIndex];
     
 }
-
-- (void) closeCurrentSession: (PTYSession *)theSession
-{
-    [self closeSession: currentPtySession];
-}
-
 
 - (IBAction) previousSession:(id)sender
 {
@@ -383,16 +386,16 @@ static NSDictionary *newOutputStateAttribute;
     NSLog(@"%s(%d):-[PseudoTerminal setCurrentSessionName]",
           __FILE__, __LINE__);
 #endif
+    NSMutableString *title = [NSMutableString string];
     
     if(theSessionName != nil)
     {
         [currentPtySession setName: theSessionName];
     }
     else {
-        NSMutableString *title = [NSMutableString string];
-        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [SHELL path], currentSessionIndex];
+        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[SHELL path] pathComponents] lastObject], currentSessionIndex];
 
-        if (EXIT)
+        if ([currentPtySession exited])
             [title appendString:@"Finish"];
         else
             [title appendString:progpath];
@@ -670,17 +673,23 @@ static NSDictionary *newOutputStateAttribute;
     NSLog(@"%s(%d):-[PseudoTerminal windowShouldClose:%@]",
 	  __FILE__, __LINE__, aNotification);
 #endif
-    return EXIT||[self showCloseWindow];
+    return [self showCloseWindow];
 }
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+    int i,sessionCount;
+    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowWillClose:%@]",
 	  __FILE__, __LINE__, aNotification);
 #endif
-    if (EXIT == NO) {
-	[SHELL stopNoWait];
+    sessionCount = [ptyList count];
+    for (i = 0; i < sessionCount; i++)
+    {
+        if ([[ptyList objectAtIndex: i] exited]==NO) {
+            [[[ptyList objectAtIndex: i] SHELL] stopNoWait];
+        }
     }
     
     [self releaseObjects];
@@ -753,7 +762,8 @@ static NSDictionary *newOutputStateAttribute;
     
     WIDTH = w;
     HEIGHT = h;
-    
+//    NSLog(@"%d,%d",WIDTH,HEIGHT);
+
     [self _drawSessionButtons];
 
 }
@@ -839,6 +849,8 @@ static NSDictionary *newOutputStateAttribute;
     }
     WIDTH=w;
     HEIGHT=h;
+//    NSLog(@"resize window: %d,%d",WIDTH,HEIGHT);
+
     [self setWindowSize];
 }
 
@@ -1029,7 +1041,7 @@ static NSDictionary *newOutputStateAttribute;
         [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Close the current session",@"iTerm",@"Toolbar Item Tip: Close")];
         [toolbarItem setImage: [NSImage imageNamed: @"close"]];
         [toolbarItem setTarget: self];
-        [toolbarItem setAction: @selector(closeSession:)];
+        [toolbarItem setAction: @selector(closeCurrentSession:)];
     }
    else if ([itemIdent isEqual: ConfigToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Configure",@"iTerm",@"Toolbar Item:Configure") ];
@@ -1170,7 +1182,9 @@ static NSDictionary *newOutputStateAttribute;
                 if ([[ptyList objectAtIndex: i] refreshed])
                     attr=([[ptyList objectAtIndex: i] idle])?idleStateAttribute:newOutputStateAttribute;
             }
-    
+
+            if ([[ptyList objectAtIndex: i] exited])
+                attr=deadStateAttribute;
             if ([[[ptyList objectAtIndex: i] name] length]<=15) {
                 [aButton setAttributedTitle:[[NSAttributedString alloc] initWithString:[[ptyList objectAtIndex: i] name]
                                                                 attributes:attr]];

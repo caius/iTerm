@@ -23,8 +23,8 @@ static int TRANSPARENCY  =10;
 
 + (void)initialize
 {
-    BACKGROUND  = [[NSColor blackColor] retain];
-    FOREGROUND  = [[NSColor whiteColor] retain];
+    BACKGROUND  = [[NSColor textBackgroundColor] retain];
+    FOREGROUND  = [[NSColor textColor] retain];
     FONT = [[NSFont fontWithName:DEFAULT_FONTNAME
 			    size:DEFAULT_FONTSIZE] retain];
 }

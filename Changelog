@@ -1,3 +1,14 @@
+2002-12-08	fabian
+    * fixed a bug that causes crash when a ended session 
+      is manually closed
+    * now a warning panel will pop out when you try to 
+      close an active session
+    * session button uses gray to suggest the session has 
+      ended, and session name is enclosed in []
+    * fixed a bug in screenSizeInFrame() in VT100Screen.m,
+      which makes row/col smaller than it should be
+      (this one need more test)
+      
 2002-12-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Re-implemented transparency code to affect only text 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.2 2002-12-06 03:03:29 yfabian Exp $
+// $Id: VT100Screen.m,v 1.3 2002-12-09 02:29:46 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -96,8 +96,8 @@ static BOOL PLAYBELL = YES;
 #endif
     sz = [VT100Screen fontSize:font];
 
-    w = frame.size.width / sz.width - 3;
-    h = frame.size.height / sz.height - 2;
+    w = frame.size.width / sz.width - 2;
+    h = frame.size.height / sz.height - 1;
 
     return NSMakeSize(w, h);
 }
@@ -671,6 +671,7 @@ static BOOL PLAYBELL = YES;
         if ([STORAGE attribute:NSReversedAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil]==@"YES") {
             fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
             bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
+//            NSLog(@"fg=%@\nbg=%@",fg,bg);
             dic=[NSDictionary dictionaryWithObjectsAndKeys:fg,NSBackgroundColorAttributeName,bg,NSForegroundColorAttributeName,@"NO",NSReversedAttributeName,nil];
 //            NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX],[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX]);
             [STORAGE setAttributes:dic range:NSMakeRange(OLD_CURSOR_INDEX,1)];

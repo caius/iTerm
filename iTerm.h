@@ -28,6 +28,9 @@
 #ifndef _ITERM_H_
 #define _ITERM_H_
 
+#define USE_CUSTOM_LAYOUT	1	// for custom typesetter and layout in text system
+
+
 #define USE_CUSTOM_DRAWING	0
 
 #if USE_CUSTOM_DRAWING

@@ -62,6 +62,7 @@
 				F5E533B403B2959201A8A066,
 				F5E533B303B2959201A8A066,
 				F56B230B03A1B36701A8A066,
+				DDA86B9E048EFCF500A8A065,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -86,6 +87,7 @@
 				E8CF756A026DDA6303A80106,
 				E8A66F040272453F03A80106,
 				E8E901A302743CA303A80106,
+				DDA86B9C048EFCEA00A8A065,
 			);
 			isa = PBXGroup;
 			name = Headers;
@@ -596,6 +598,7 @@
 				DD1E48BF0431503900A8A065,
 				87D5C491043229390073D10E,
 				DD4BAB7D0470C44C00A8A065,
+				DDA86B9D048EFCEA00A8A065,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -642,6 +645,7 @@
 				DD1E48AF0431501C00A8A065,
 				87D5C492043229390073D10E,
 				DD4BAB7E0470C44C00A8A065,
+				DDA86B9F048EFCF500A8A065,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1192,6 +1196,30 @@
 		};
 		DD8CF2EE03CDD34C00A8A065 = {
 			fileRef = DD8CF2DD03CDD34B00A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDA86B9C048EFCEA00A8A065 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = VT100Typesetter.h;
+			refType = 4;
+		};
+		DDA86B9D048EFCEA00A8A065 = {
+			fileRef = DDA86B9C048EFCEA00A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDA86B9E048EFCF500A8A065 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = VT100Typesetter.m;
+			refType = 4;
+		};
+		DDA86B9F048EFCF500A8A065 = {
+			fileRef = DDA86B9E048EFCF500A8A065;
 			isa = PBXBuildFile;
 			settings = {
 			};

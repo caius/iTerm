@@ -38,6 +38,10 @@
 #import "PTYTabViewitem.h"
 #import "AddressBookWindowController.h"
 
+#import "VT100Typesetter.h"
+#import "GSHorizontalTypesetter.h"
+#import "GSLayoutManager.h"
+
 #include <unistd.h>
 
 #define DEBUG_ALLOC           0
@@ -113,6 +117,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)initScreen: (NSRect) aRect
 {
     NSSize aSize;
+     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession initScreen]",
           __FILE__, __LINE__);
@@ -133,6 +138,15 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setEditable:YES]; // For NSTextInput protocol
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+
+#if USE_CUSTOM_LAYOUT
+    VT100Typesetter *aTypesetter;
+
+    aTypesetter = [[VT100Typesetter alloc] init];
+    [[TEXTVIEW layoutManager] setTypesetter: aTypesetter];
+    [aTypesetter release];
+#endif
+    
 #endif
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [pref antiAlias]];

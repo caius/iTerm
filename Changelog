@@ -1,3 +1,8 @@
+2003-06-05	ujwal
+
+    * Custom typesetter to speed up display. Needs more testing. 
+      To activate, turn on USE_CUSTOM_LAYOUT in iTerm.h
+
 2003-06-01	ujwal
 
     * Updated Korean translation from TaeYoung Oh.

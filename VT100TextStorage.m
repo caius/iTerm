@@ -63,23 +63,76 @@
 }
 
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)str
-{
+{    
 #if DEBUG_METHOD_TRACE
     NSLog(@"VT100TextStorage: replaceCharactersInRange: (%d,%d) withString:",
 	  range.location, range.length);
     NSLog(@"old str = \n'%@'", [[contents attributedSubstringFromRange: range] string]);
     NSLog(@"new str = \n'%@'", str);
 #endif
-    //if([str isEqualToString: [[contents attributedSubstringFromRange: range] string]] == NO)
+
+    // get the original length before edit
+    int origLen = [self length];
+
+    // if the length did not change, check what really changed
+    if(range.length == [str length])
     {
-	int origLen = [self length];
-	[contents replaceCharactersInRange:range withString:str];
-	[self edited:NSTextStorageEditedCharacters range:range changeInLength:[self length] - origLen];
+	NSString *origSubstring, *commonString;
+
+	// strip out the common stuff
+	origSubstring = [[contents attributedSubstringFromRange: range] string];
+	commonString = [origSubstring commonPrefixWithString: str options: NSLiteralSearch];
+
+	if([commonString length] > 0)
+	{
+
+	    NSString *origDiffString, *newDiffString;
+
+	    if([commonString isEqualToString: origSubstring])
+		origDiffString = @"";
+	    else
+		origDiffString = [origSubstring substringFromIndex: [commonString length]];
+
+	    if([commonString isEqualToString: str])
+		newDiffString = @"";
+	    else
+		newDiffString = [str substringFromIndex: [commonString length]];
+
+	    //NSLog(@"Common string = \n'%@'", commonString);
+	    //NSLog(@"origDiff string = \n'%@'", origDiffString);
+	    //NSLog(@"newDiff string = \n'%@'", newDiffString);
+
+	    // Now replace only the diff 
+	    if([origDiffString length] > 0 && [newDiffString length] > 0)
+	    {
+		NSRange aRange = [[contents string] rangeOfString: origDiffString];
+		[contents replaceCharactersInRange: aRange withString: newDiffString];
+		[self edited:NSTextStorageEditedCharacters range:aRange changeInLength:[self length] - origLen];
+		return;
+	    }
+
+	}
+	
     }
+
+    // else do the usual stuff.
+    [contents replaceCharactersInRange:range withString:str];
+    [self edited:NSTextStorageEditedCharacters range:range changeInLength:[self length] - origLen];
+    
 }
 
 - (void)setAttributes:(NSDictionary *)attrs range:(NSRange)range
 {
+    // do a simple check on whether we are re-applying the same attributes
+    NSDictionary *currentAttributes;
+    NSRange longestEffectiveRange;
+
+    currentAttributes = [contents attributesAtIndex: range.location longestEffectiveRange: &longestEffectiveRange inRange: range];
+    if([currentAttributes isEqualToDictionary: attrs] && longestEffectiveRange.length == range.length)
+    {
+	return;
+    }
+    
     [contents setAttributes:attrs range:range];
     [self edited:NSTextStorageEditedAttributes range:range changeInLength:0];
 }

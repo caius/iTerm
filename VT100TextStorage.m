@@ -27,7 +27,7 @@
 #import "iTerm.h"
 #import "VT100TextStorage.h"
 
-#define DEBUG_METHOD_TRACE    0
+#define DEBUG_METHOD_TRACE    1
 
 
 @implementation VT100TextStorage
@@ -67,6 +67,8 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"VT100TextStorage: replaceCharactersInRange: (%d,%d) withString: '%@'",
 	  range.location, range.length, str);
+    NSLog(@"old str = '%@'", [[contents attributedSubstringFromRange: range] string]);
+    NSLog(@"new str = '%@'", str);
 #endif
     //if([str isEqualToString: [[contents attributedSubstringFromRange: range] string]] == NO)
     {

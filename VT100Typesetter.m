@@ -29,6 +29,9 @@
 #import "VT100Screen.h"
 
 #define DEBUG_METHOD_TRACE    0
+#if DEBUG_METHOD_TRACE
+static unsigned int invocationId = 0;
+#endif
 
 #define ISDOUBLEWIDTHCHARACTER(idx) ([[textStorage attribute:@"NSCharWidthAttributeName" atIndex:(idx) effectiveRange:nil] intValue]==2)
 #define ISGRAPHICALCHARACTER(idx) ([[textStorage attribute:@"VT100GraphicalCharacter" atIndex:(idx) effectiveRange:nil] boolValue])
@@ -52,8 +55,10 @@
 {
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"PTYTypesetter: layoutGlyphsInLayoutManager: startGlyphIndex = %d; maxNumberOfLineFragments = %d",
-	  startGlyphIndex, maxNumLines);
+    unsigned int callId = invocationId++;
+    
+    NSLog(@"VT100Typesetter (%d): layoutGlyphsInLayoutManager: startGlyphIndex = %d; maxNumberOfLineFragments = %d",
+	  callId, startGlyphIndex, maxNumLines);
 #endif
     
     NSRect lineRect;
@@ -111,9 +116,6 @@
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
 	if(isValidIndex == NO)
 	{
-#if DEBUG_METHOD_TRACE
-	    NSLog(@"Invalid glyph index %d", glyphIndex);
-#endif
 	    return;
 	}
 	
@@ -197,7 +199,8 @@
 	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont], [textContainer containerSize].width, [font defaultLineHeightForFont]);
 	}
 #if DEBUG_METHOD_TRACE
-	NSLog(@"Laying out line %f; numLines = %d", lineRect.origin.y/[font defaultLineHeightForFont] + 1, numLines);
+	NSLog(@"(%d) Laying out line %f; numLines = %d", callId, lineRect.origin.y/[font defaultLineHeightForFont] + 1, numLines);
+	NSLog(@"(%d) Line = '%@'", callId, [theString substringWithRange: characterRange]);
 #endif
 	
 	
@@ -259,7 +262,7 @@
     // set the next glyph to be laid out
     if(nextGlyph)
 	*nextGlyph = glyphIndex;
-    
+
 }
 
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.150 2003-09-14 21:39:07 yfabian Exp $
+// $Id: VT100Screen.m,v 1.151 2003-09-14 22:30:48 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1336,7 +1336,8 @@ static BOOL PLAYBELL = YES;
     if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) {
         CURSOR_Y++;
         idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:NO];
-        [BUFFER setAttributes:[TERMINAL characterAttributeDictionary:YES] range:NSMakeRange(idx-1,1)];
+	if(idx > 0)
+	    [BUFFER setAttributes:[TERMINAL characterAttributeDictionary:YES] range:NSMakeRange(idx-1,1)];
     }
     // if top of scrolling area is the same as the screen, add a new line at the bottom of the scrolling area so that
     // the top line goes into the scrollback buffer.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.104 2003-06-11 18:38:16 ujwal Exp $
+// $Id: VT100Screen.m,v 1.105 2003-06-27 19:17:06 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1275,7 +1275,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)-[%d,%d]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y, SCROLL_TOP, SCROLL_BOTTOM);
 #endif
 
-    if (CURSOR_Y  < SCROLL_BOTTOM) {
+    if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) {
         CURSOR_Y++;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
@@ -1609,7 +1609,10 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen cursorUp:%d]", 
 	  __FILE__, __LINE__, n);
 #endif
-    CURSOR_Y=y<SCROLL_TOP?SCROLL_TOP:y;
+    if(CURSOR_Y >= SCROLL_TOP)
+	CURSOR_Y=y<SCROLL_TOP?SCROLL_TOP:y;
+    else
+	CURSOR_Y = y;
 }
 
 - (void)cursorDown:(int)n
@@ -1617,10 +1620,13 @@ static BOOL PLAYBELL = YES;
     int y = CURSOR_Y + (n>0?n:1);
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen cursorDown:%d]", 
-	  __FILE__, __LINE__, n);
+    NSLog(@"%s(%d):-[VT100Screen cursorDown:%d, Y = %d; SCROLL_BOTTOM = %d]", 
+	  __FILE__, __LINE__, n, CURSOR_Y, SCROLL_BOTTOM);
 #endif
-    CURSOR_Y=y>SCROLL_BOTTOM?SCROLL_BOTTOM:y;
+    if(CURSOR_Y <= SCROLL_BOTTOM)
+	CURSOR_Y=y>SCROLL_BOTTOM?SCROLL_BOTTOM:y;
+    else
+	CURSOR_Y = y;
 }
 
 - (void) cursorToX: (int) x

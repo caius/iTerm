@@ -40,8 +40,12 @@
 
 /* Context menu */
 "Copy" = "コピー";
-"Print..." = "Print...";
-"Print Selection..." = "Print Selection...";
+
+/* Context menu */
+"New Tab"="新規ターミナル";
+
+/* Context menu */
+"New Window"="新規ウインドウ";
 
 
 /* Removal Alert */
@@ -65,6 +69,12 @@
 /* Context menu */
 "Save" = "保存";
 
+/* Context menu */
+"Select" = "Select";
+
+/* Context menu */
+"Move to new window" = "Move to new window";
+
 /* Anti-Idle: wrong input */
 "Please enter a valid code (0~255)" = "正しいコードを入力して下さい (0~255)";
 
@@ -76,8 +86,9 @@
 
 /* Context menu */
 "Select All" = "すべてを選択";
-"New Tab"="新規ターミナル";
-"New Window"="新規ウインドウ";
+"Save" = "保存";
+"Print..." = "プリント...";
+"Print Selection..." = "選択範囲をプリント...";
 
 /* Removal Alert */
 "There is no undo for this operation." = "この操作は取り消しできません.";

@@ -1,14 +1,14 @@
 /* Context menu */
-"-> Browser" = "-> Aller à";
+"-> Browser" = "-> Aller ‡";
 
 /* Context menu */
-"-> Mail" = "-> Envoyer à";
+"-> Mail" = "-> Envoyer ‡";
 
 /* Toolbar Item:Bookmarks */
-"Bookmarks" = "Configurations";
+"Bookmarks" = "Signets";
 
 /* Close window */
-"All sessions will be closed" = "Toutes les sessions seront fermées";
+"All sessions will be closed" = "Toutes les sessions seront fermÈes";
 
 /* Cancel */
 "Cancel" = "Annuler";
@@ -23,48 +23,45 @@
 "Close the current session" = "Fermer la session actuelle";
 
 /* Close window */
-"Close Window?" = "Fermer la fenêtre ?";
+"Close Window?" = "Fermer la fenÍtre ?";
 
 /* Close Session */
-"The current session will be closed"="La session actuelle sera fermée";
-"All unsaved data will be lost"="Toutes les données non enregistrées seront perdues";
+"The current session will be closed"="La session actuelle sera fermÈe";
+"All unsaved data will be lost"="Toute donnÈe non enregistrÈe sera perdue";
 
 /* Toolbar Item:Configure */
 "Configure" = "Configurer";
 
 /* Toolbar Item Tip:Configure */
-"Configure current window" = "Configurer la fenêtre actuelle";
+"Configure current window" = "Configurer la fenÍtre actuelle";
 
 /* Context menu */
 "Configure..." = "Configurer...";
 
 /* Context menu */
 "Copy" = "Copier";
-"Print..." = "Print...";
-"Print Selection..." = "Print Selection...";
-
 
 /* Context menu */
 "New Tab" = "Nouvel onglet";
 
 /* Context menu */
-"New Window" = "Nouvelle fenêtre";
+"New Window" = "Nouvelle fenÍtre";
 
 
 /* Removal Alert */
-"Do you really want to remove this item?" = "Voulez-vous réellement effacer cet élément ?";
+"Do you really want to remove this item?" = "Voulez-vous rÈellement effacer cet ÈlÈment ?";
 
 /* Toolbar Item:New */
-"Default Session"="Session par défaut";
+"Default Session"="Session par dÈfaut";
 "New" = "Nouvelle";
-"Open in a new window"="Ouvrir dans une nouvelle fenêtre";
+"Open in a new window"="Ouvrir dans une nouvelle fenÍtre";
 "Open a new session"="Ouvrir une nouvelle session";
 
 /* OK */
 "OK" = "OK";
 
 /* Toolbar Item Tip:Bookmarks */
-"Open the address book" = "Voir les configurations personnalisées";
+"Open the address book" = "Ouvrir la fenÍtre des signets";
 
 /* Context menu */
 "Paste" = "Coller";
@@ -73,50 +70,52 @@
 "Save" = "Enregistrer";
 
 /* Context menu */
-"Select" = "Sélectionner";
+"Select" = "SÈlectionner";
 
 /* Context menu */
-"Move to new window" = "Déplacer vers une nouvelle fenêtre";
+"Move to new window" = "DÈplacer vers une nouvelle fenÍtre";
 
 /* Anti-Idle: wrong input */
 "Please enter a valid code (0~255)" = "Entrez svp un code valide (0~255)";
 
 /* wrong input */
-"Please enter a valid window size" = "Entrez svp une taille de fenêtre valide";
+"Please enter a valid window size" = "Entrez svp une taille de fenÍtre valide";
 
 /* Remove */
 "Remove" = "Effacer";
 
 /* Context menu */
-"Select All" = "Tout sélectionner";
+"Select All" = "Tout sÈlectionner";
 "Save" = "Enregistrer";
+"Print..." = "Imprimer...";
+"Print Selection..." = "Imprimer la sÈlection...";
 
 /* Removal Alert */
-"There is no undo for this operation." = "Aucune annulation possible pour cette opération.";
+"There is no undo for this operation." = "Aucune annulation possible pour cette opÈration.";
 
 /* wrong input */
-"Wrong Input" = "Mauvaise entrée";
+"Wrong Input" = "Mauvaise entrÈe";
 
 /* Upgrade */
-"Upgrade Warning: New language encodings available!"="Avertissement de màj : De nouveaux encodages sont disponibles !";
-"Please reset all the encoding settings in your preference and address book"="Réinitialisez svp tous vos réglages liés aux encodages des jeux de caractères dans les préférences générales ainsi que dans vos configurations personnalisées";
+"Upgrade Warning: New language encodings available!"="Upgrade Warning: New language encodings available!";
+"Please reset all the encoding settings in your preference and address book"="Please reset all the encoding settings in your preference and address book";
 
 /* Author */
 "fabian"="fabian";
 "Ujwal S. Sathyam"="Ujwal S. Sathyam";
 
 /* About */
-"Report A Bug"="Envoyer un rapport de bogue";
+"Report A Bug"="Signaler un bogue";
 
 /* Config */
-"Configuration saved as a new entry in Bookmarks"="La configuration a été enrgistrée comme nouvelle entrée dans les Configurations";
-"Configuration saved"="Configuration enregistrée";
+"Configuration saved as a new entry in Bookmarks"="Configuration enregistrÈe comme nouvelle entrÈe dans les signets";
+"Configuration saved"="Configuration enregistrÈe";
 
 /* OS Version */
-"Minimum_OS"="iTerm requiert OS X version 10.2 ou supérieure pour fonctionner. Cette application va donc quitter à présent";
+"Minimum_OS"="iTerm requiert OS X version 10.2 ou supÈrieure pour fonctionner. Cette application va ‡ prÈsent se fermer.";
 
 /* Sorry */
-"Sorry"="Désolé";
+"Sorry"="DÈsolÈ";
 
 /* Quit */
 "Quit"="Quitter";
@@ -124,5 +123,5 @@
 /* PreferencePanel */
 "Display"="Affichage";
 "Shell"="Shell";
-"Emulation"="Émulation";
+"Emulation"="…mulation";
 "Color"="Couleur";

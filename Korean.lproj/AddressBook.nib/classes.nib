@@ -8,6 +8,7 @@
                 adEditForeground = id; 
                 adEditNAFont = id; 
                 adEditOK = id; 
+                adbAddEntry = id; 
                 adbCancel = id; 
                 adbDuplicateEntry = id; 
                 adbEditEntry = id; 

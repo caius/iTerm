@@ -3,6 +3,8 @@
     * Fixed printSelection where unnecessary white space was being printed.
     * Fixed setting up menus. AddressBook menu is now available under the 
       Shell->New Window and Shell->New Tab menu items.
+    * Reworked line padding code in VT100Typesetter to avoid possible recursive 
+      loop with layout manager.
 
 2003-09-07	fabian
 

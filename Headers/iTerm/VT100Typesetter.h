@@ -42,6 +42,9 @@
     float lineFragmentPadding;
     unsigned int previousLength;
     VT100Screen *screen;
+    int originCharIndex, originGlyphIndex, usedScreenLines;
+    NSRect originLineFragmentRect;
+
 
     NSMutableArray *_glyphRanges, *_lineRects;
     int _numLines;

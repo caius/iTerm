@@ -119,6 +119,12 @@ static unsigned int invocationId = 0;
 	return;
     }
 
+    // grab the origin of the screen
+    originCharIndex = [screen getTVIndex: 0 y: 0];
+    originGlyphIndex = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(originCharIndex, 1) actualCharacterRange: nil].location;
+    if(originGlyphIndex == 0)
+	originLineFragmentRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
+
     // process lines
     glyphIndex = startGlyphIndex;
 
@@ -244,6 +250,11 @@ static unsigned int invocationId = 0;
 	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
 	}
 
+	// cache the line rect for the screen origin if we processed it.
+	if (originGlyphIndex >= glyphRange.location && originGlyphIndex < (glyphRange.location + glyphRange.length))
+	    originLineFragmentRect = lineRect;
+	
+
 	// set the glyphIndex for the next run
 	glyphIndex = glyphRange.location + glyphRange.length;
 
@@ -259,8 +270,6 @@ static unsigned int invocationId = 0;
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
 	if(atEnd == YES || isValidIndex == NO)
 	{
-	    // pad with empty lines if we need to
-	    float displayHeight = [textView frame].size.height;
 
 	    // if our content size has decreased, we should not be padding so that the layout manager
 	    // can resize the textview.
@@ -268,17 +277,8 @@ static unsigned int invocationId = 0;
 		break;
 
 	    // check how many lines of the screen we are filling. Pad any unused space.
-	    int originCharIndex, originGlyphIndex, usedScreenLines;
-	    NSRect originLineFragmentRect;
-	    originCharIndex = [screen getTVIndex: 0 y: 0];
 	    if(originCharIndex < [theString length])
 	    {
-		originGlyphIndex = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(originCharIndex, 1) actualCharacterRange: nil].location;
-		if(originGlyphIndex == 0)
-		    originLineFragmentRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
-		else
-		    originLineFragmentRect = [layoutMgr lineFragmentRectForGlyphAtIndex: originGlyphIndex effectiveRange: nil];
-
                 usedScreenLines = floor((lineRect.origin.y + lineRect.size.height - originLineFragmentRect.origin.y)/[font defaultLineHeightForFont]);
 		if(usedScreenLines < [screen height])
 		{
@@ -288,14 +288,6 @@ static unsigned int invocationId = 0;
 		}
 	    }
 	    
-	    else if (lineRect.origin.y + lineRect.size.height < displayHeight)
-	    {
-		lineRect.origin.y += [font defaultLineHeightForFont];
-		lineRect.size.height = displayHeight - lineRect.origin.y;
-		// coercing to multiple of line height.
-		lineRect.size.height = floor(lineRect.size.height/[font defaultLineHeightForFont]) * [font defaultLineHeightForFont];
-		[layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
-	    }
 	    break;
 	}
     }

@@ -91,6 +91,8 @@
 				<string>handleExecScriptCommand:</string>
 				<key>select</key>
 				<string>handleSelectScriptCommand:</string>
+				<key>terminate</key>
+				<string>handleTerminateScriptCommand:</string>
 				<key>write</key>
 				<string>handleWriteScriptCommand:</string>
 			</dict>
@@ -212,6 +214,15 @@
 			<string>ITRM</string>
 			<key>AppleEventCode</key>
 			<string>Slct</string>
+			<key>CommandClass</key>
+			<string>NSScriptCommand</string>
+		</dict>
+		<key>terminate</key>
+		<dict>
+			<key>AppleEventClassCode</key>
+			<string>ITRM</string>
+			<key>AppleEventCode</key>
+			<string>Strm</string>
 			<key>CommandClass</key>
 			<string>NSScriptCommand</string>
 		</dict>

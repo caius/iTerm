@@ -366,6 +366,19 @@
 					<key>xmlEncodingVersion</key>
 					<string>2.0</string>
 				</dict>
+				<key>terminate</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict/>
+					<key>methodName</key>
+					<string>handleTerminateScriptCommand:</string>
+					<key>name</key>
+					<string>terminate</string>
+					<key>presentationOrder</key>
+					<integer>3</integer>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
 				<key>write</key>
 				<dict>
 					<key>English.lproj</key>
@@ -819,6 +832,32 @@
 			<string>NSScriptCommand</string>
 			<key>presentationOrder</key>
 			<integer>2</integer>
+			<key>resultAppleEventCode</key>
+			<string></string>
+			<key>type</key>
+			<string></string>
+			<key>xmlEncodingVersion</key>
+			<string>2.0</string>
+		</dict>
+		<key>terminate</key>
+		<dict>
+			<key>English.lproj</key>
+			<dict>
+				<key>description</key>
+				<string>Terminates a session</string>
+				<key>humanReadableName</key>
+				<string>terminate</string>
+				<key>isVerb</key>
+				<string>YES</string>
+			</dict>
+			<key>appleEventClassCode</key>
+			<string>ITRM</string>
+			<key>appleEventCode</key>
+			<string>Strm</string>
+			<key>commandClass</key>
+			<string>NSScriptCommand</string>
+			<key>presentationOrder</key>
+			<integer>4</integer>
 			<key>resultAppleEventCode</key>
 			<string></string>
 			<key>type</key>

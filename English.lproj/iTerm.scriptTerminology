@@ -171,6 +171,13 @@
 			<key>Name</key>
 			<string>select</string>
 		</dict>
+		<key>terminate</key>
+		<dict>
+			<key>Description</key>
+			<string>Terminates a session</string>
+			<key>Name</key>
+			<string>terminate</string>
+		</dict>
 		<key>write</key>
 		<dict>
 			<key>Arguments</key>

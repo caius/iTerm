@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.10 2003-01-09 20:34:17 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.11 2003-01-09 20:37:39 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -1423,7 +1423,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	    forKey:NSUnderlineStyleAttributeName];
     [dic setObject:[NSNumber numberWithInt:blink]
                    forKey:NSBlinkAttributeName];
-    if(bold)
+    if(bold && [[NSFontManager  sharedFontManager] fontNamed: [[SCREEN font] fontName] hasTraits: NSBoldFontMask])
     {
         aFont = [[NSFontManager sharedFontManager] convertFont: [SCREEN font] toHaveTrait: NSBoldFontMask];
     }

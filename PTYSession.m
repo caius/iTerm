@@ -500,9 +500,9 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 
 	    // trigger an update of the display.
-	    [SCREEN updateScreen];
-	    [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-	    [SCREEN showCursor];
+	    //[SCREEN updateScreen];
+	    //[TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+	    //[SCREEN showCursor];
 	    
 	}
     }

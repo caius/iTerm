@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.51 2003-04-28 15:18:55 ujwal Exp $
+// $Id: MainMenu.m,v 1.52 2003-04-28 15:38:18 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -194,7 +194,10 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [MainMenu breakDown:[PREF_PANEL shell] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
     aSession = [[PTYSession alloc] init];
-    [term setupSession: aSession title: nil];
+    // Add this session to our term and make it current
+    [term addInSessions: aSession];
+    [aSession release];
+    
     [aSession setForegroundColor: [PREF_PANEL foreground]];
     [aSession setBackgroundColor: [[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]];
     [aSession setSelectionColor: [PREF_PANEL selectionColor]];
@@ -203,9 +206,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     // term value
     [aSession setTERM_VALUE: [PREF_PANEL terminalType]];
 
-    // Add this session to our term and make it current
-    [term addInSessions: aSession];
-    [aSession release];    
     
     [term startProgram:cmd arguments:arg];
     [term setCurrentSessionName:nil];
@@ -591,7 +591,10 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     
     // Initialize a new session
     aSession = [[PTYSession alloc] init];
-    [term setupSession: aSession title: [entry objectForKey:@"Name"]];
+    // Add this session to our term and make it current
+    [term addInSessions: aSession];
+    [aSession release];
+    
     [aSession setForegroundColor: [entry objectForKey:@"Foreground"]];
     [aSession setBackgroundColor: [[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]];
     [aSession setSelectionColor: [entry objectForKey:@"SelectionColor"]];
@@ -602,9 +605,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [aSession setEncoding: encoding];
     [aSession setTERM_VALUE: [entry objectForKey:@"Term Type"]];
 
-    // Add this session to our term and make it current
-    [term addInSessions: aSession];
-    [aSession release];    
     
     NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
     

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.156 2003-04-28 15:18:57 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.157 2003-04-28 15:38:19 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -74,7 +74,6 @@ static int windowCount = 0;
     [MainMenu breakDown:[pref shell] cmdPath:&cmd cmdArgs:&arg];
 
     aSession = [[PTYSession alloc] init];
-    [self setupSession:aSession title: nil];
     // Add this session to our list and make it current
     [self addInSessions: aSession];
     [aSession release];

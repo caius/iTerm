@@ -276,6 +276,7 @@
 			files = (
 				E813FB7F0297522703A80106,
 				DD8CF2EE03CDD34C00A8A065,
+				8793D53C05581DE10073D10E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1107,6 +1108,12 @@
 		};
 		8793A10404992C7D0073D10E = {
 			fileRef = 8793A10204992C7D0073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8793D53C05581DE10073D10E = {
+			fileRef = E8EDCE69015E0A5703000001;
 			isa = PBXBuildFile;
 			settings = {
 			};

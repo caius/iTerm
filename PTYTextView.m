@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.108 2004-02-17 05:59:08 ujwal Exp $
+// $Id: PTYTextView.m,v 1.109 2004-02-17 20:39:44 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -590,11 +590,11 @@
 
 - (void)drawRect:(NSRect)rect
 {
-#if DEBUG_METHOD_TRACE
+//#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView drawRect:(%f,%f,%f,%f)]",
           __FILE__, __LINE__,
           rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
-#endif
+//#endif
 	
 		
     int numLines, i, j, t, lineOffset, WIDTH;
@@ -605,6 +605,8 @@
 	char bgcode, sel, fgcode;
 	int bgstart, ulstart;
 	int y1,y2,x1,x2;
+	NSColor *aColor;
+	NSRect bgRect;
 	
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
@@ -619,8 +621,7 @@
 	
 	// Starting from which line?
 	lineOffset = floor(rect.origin.y/lineHeight);
-	
-	
+		
 	// Which line is our screen start?
 	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
     //NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
@@ -649,13 +650,15 @@
 		x1 = -1;
 	
 	// starting Y of drawing; make sure we are at an integer multiple of a line
-	curY=floor(rect.origin.y/lineHeight)*lineHeight +lineHeight;
+	curY=floor(rect.origin.y/lineHeight)*lineHeight + lineHeight;
 	
     for(i = 0; i < numLines; i++)
     {
 		// current line we are processing
 		line = i + lineOffset;
 		
+		// sanity check
+		NSLog(@"line = %d; numLines = %d", line, [dataSource numberOfLines]);
 		if(line >= [dataSource numberOfLines])
 			break;
 
@@ -699,10 +702,22 @@
 			{
 				if (bgstart >= 0) {
 					if (bgcode>=0) 
-						[[self colorForCode:bgcode] set];
+						aColor = [self colorForCode:bgcode];
 					else 
-						[selectionColor set];
-					NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
+						aColor = selectionColor;
+					
+					[aColor set];
+					
+					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);					
+					NSRectFill(bgRect);
+					
+					// if we have a background image and we are using the background image, redraw image
+					if([[self delegate] image] != nil && [aColor isEqual: defaultBGColor])
+					{
+						bgRect.origin.y -= [self visibleRect].origin.y;
+						[[[self delegate] view] drawRect: bgRect];
+					}
+					
 				}						
 				if (ulstart >= 0) 
 				{
@@ -723,10 +738,22 @@
 				else if (sel != bgcode) 
 				{
 					if (bgcode>=0) 
-						[[self colorForCode:bgcode] set]; //normal background
+						aColor = [self colorForCode:bgcode]; //normal background
 					else 
-						[selectionColor set];   //selected background
-					NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
+						aColor = selectionColor;   //selected background
+					
+					[aColor set];
+					
+					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
+					NSRectFill(bgRect);
+					
+					// if we have a background image and we are using the background image, redraw image
+					if([[self delegate] image] != nil && [aColor isEqual: defaultBGColor])
+					{
+						bgRect.origin.y -= [self visibleRect].origin.y;
+						[[[self delegate] view] drawRect: bgRect];
+					}
+					
 					bgcode=sel;
 					bgstart=j;
 				}
@@ -749,10 +776,19 @@
 		}
 		
 		if (bgcode>=0) 
-			[[self colorForCode:bgcode] set];
+			aColor = [self colorForCode:bgcode];
 		else 
-			[selectionColor set];
-		NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
+			aColor = selectionColor;
+		[aColor set];
+		bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
+		NSRectFill(bgRect);
+		// if we have a background image and we are using the background image, redraw image
+		if([[self delegate] image] != nil && [aColor isEqual: defaultBGColor])
+		{
+			bgRect.origin.y -= [self visibleRect].origin.y;
+			[[[self delegate] view] drawRect: bgRect];
+		}
+		
 		if (ulstart>=0) {
 			[[self colorForCode:fgcode] set];
 			NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));

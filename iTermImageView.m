@@ -24,6 +24,7 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#import <iTerm/iTerm.h>
 #import <iTerm/iTermImageView.h>
 
 #define DEBUG_ALLOC		0
@@ -47,17 +48,48 @@
     [super dealloc];
 }
 
--(void)drawRect:(NSRect)rect
+- (void)setImage:(NSImage *)image
 {
+	// rotate the image 180 degrees
+	NSImage *targetImage = [[NSImage alloc] initWithSize: [image size]];
+	NSAffineTransform *trans = [NSAffineTransform transform];
+	
+	[targetImage lockFocus];
+	[trans translateXBy:[image size].width/2 yBy:[image size].height/2];
+	[trans rotateByDegrees: 180];
+	[trans translateXBy:-[image size].width/2 yBy:-[image size].height/2];
+	[trans set];
+	[image drawInRect:NSMakeRect(0,0,[image size].width,[image size].height) 
+			 fromRect:NSMakeRect(0,0,[image size].width,[image size].height) 
+			operation:NSCompositeSourceOver
+			 fraction:1];
+	[targetImage unlockFocus];
+	[targetImage setScalesWhenResized: YES];
+	
+	// set the image
+	[super setImage: targetImage];
+	[targetImage release];
+}
+
+- (BOOL) isFlipped
+{
+	return YES;
+}
+
+-(void)drawRect:(NSRect)rect
+{		
     if([self image] == nil)
-	return;
-    
-    [[NSColor clearColor] set];
-    NSRectFill([self bounds]);
-    if([[self image] size].width != [self bounds].size.width ||
+		return;
+	
+	if([[self image] size].width != [self bounds].size.width ||
        [[self image] size].height != [self bounds].size.height)
-	[[self image] setSize: [self bounds].size];
-    [[self image] dissolveToPoint:NSZeroPoint fraction: (1.0 - [self transparency])];
+		[[self image] setSize: [self bounds].size];
+	
+	[[NSColor redColor] set];
+	NSFrameRect([self bounds]);
+	return;
+	
+    [[self image] drawInRect: rect fromRect: rect operation: NSCompositeSourceOver fraction: (1.0 - [self transparency])];
 }
 
 

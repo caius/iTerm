@@ -38,6 +38,8 @@
 - (id) initWithFrame:(NSRect)frame;
 - (void) dealloc;
 
+- (void)setImage:(NSImage *)image;
+
 - (void) drawRect: (NSRect) rect;
 
 - (float) transparency;

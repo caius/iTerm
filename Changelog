@@ -1,3 +1,9 @@
+2003-01-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed common bugs in insertLines, scrollDown in 
+      VT100Screen.
+      
+
 2003-01-15	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Removed adjustScroll override in PTYTextView.

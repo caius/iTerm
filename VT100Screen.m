@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.21 2003-01-15 20:20:53 yfabian Exp $
+// $Id: VT100Screen.m,v 1.22 2003-01-16 23:27:18 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -1118,6 +1118,7 @@ static BOOL PLAYBELL = YES;
 - (void)scrollUp
 {
     int idx, idx2;
+    NSRange aRange;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen scrollUp]", __FILE__, __LINE__);
@@ -1131,7 +1132,10 @@ static BOOL PLAYBELL = YES;
     [self showCursor:NO];
     idx=[self getIndex:0 y:SCROLL_TOP];
     idx2=[self getIndex:0 y:SCROLL_TOP+1];
-    [STORAGE deleteCharactersInRange:NSMakeRange(idx,idx2-idx)];
+    aRange = NSMakeRange(idx,idx2-idx);
+    if(aRange.length <= 0)
+        aRange.length = 1;
+    [STORAGE deleteCharactersInRange:aRange];
 
     if (SCROLL_BOTTOM>=HEIGHT-1) {
         [STORAGE appendAttributedString:[self attrString:@"\n"]];
@@ -1145,6 +1149,7 @@ static BOOL PLAYBELL = YES;
 - (void)scrollDown
 {
     int idx, idx2;
+    NSRange aRange;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen scrollDown]", __FILE__, __LINE__);
@@ -1153,19 +1158,24 @@ static BOOL PLAYBELL = YES;
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
 
-//    NSLog(@"SCROLL-DOWN[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
+    //NSLog(@"SCROLL-DOWN[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
     [self showCursor:NO];
     idx=[self getIndex:0 y:SCROLL_TOP];
     [STORAGE insertAttributedString:[self attrString:@"\n"] atIndex:idx];
     if (SCROLL_BOTTOM>=HEIGHT-1) {
         idx=[self getIndex:0 y:SCROLL_BOTTOM];
-        [STORAGE deleteCharactersInRange:NSMakeRange(idx-1,[STORAGE length]-idx)];
+        aRange = NSMakeRange(idx-1, [STORAGE length]-idx);
+        if(aRange.length <= 0)
+            aRange.length = 1;
     }
     else {
         idx=[self getIndex:0 y:SCROLL_BOTTOM];
         idx2=[self getIndex:0 y:SCROLL_BOTTOM+1];
-        [STORAGE deleteCharactersInRange:NSMakeRange(idx,idx2-idx)];
+        aRange = NSMakeRange(idx,idx2-idx);
+        if(aRange.length <= 0)
+            aRange.length = 1;
     }
+    [STORAGE deleteCharactersInRange:aRange];
     
 }
 
@@ -1199,6 +1209,7 @@ static BOOL PLAYBELL = YES;
 - (void) insertLines: (int)n
 {
     int idx, idx2;
+    NSRange aRange;
     
 //    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
     [self showCursor:NO];
@@ -1207,13 +1218,18 @@ static BOOL PLAYBELL = YES;
         [STORAGE insertAttributedString:[self attrString:@"\n"] atIndex:idx];
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
             idx=[self getIndex:0 y:SCROLL_BOTTOM];
-            [STORAGE deleteCharactersInRange:NSMakeRange(idx,[STORAGE length]-idx)];
+            aRange = NSMakeRange(idx-1,[STORAGE length]-idx);
+            if(aRange.length <= 0)
+                aRange.length = 1;
         }
         else {
             idx=[self getIndex:0 y:SCROLL_BOTTOM];
             idx2=[self getIndex:0 y:SCROLL_BOTTOM+1];
-            [STORAGE deleteCharactersInRange:NSMakeRange(idx,idx2-idx)];
+            aRange = NSMakeRange(idx,idx2-idx);
+            if(aRange.length <= 0)
+                aRange.length = 1;
         }
+        [STORAGE deleteCharactersInRange: aRange];
     }
 //    [self showCursor];
 }
@@ -1221,13 +1237,17 @@ static BOOL PLAYBELL = YES;
 - (void) deleteLines: (int)n
 {
     int idx, idx2;
+    NSRange aRange;
 
 //    NSLog(@"deleteLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
     [self showCursor:NO];
     for(;n>0;n--) {
         idx=[self getIndex:0 y:CURSOR_Y];
         idx2=[self getIndex:0 y:CURSOR_Y+1];
-        [STORAGE deleteCharactersInRange:NSMakeRange(idx,idx2-idx)];
+        aRange = NSMakeRange(idx, idx2-idx);
+        if(aRange.length <= 0)
+            aRange.length = 1;
+        [STORAGE deleteCharactersInRange:aRange];
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
             [STORAGE appendAttributedString:[self attrString:@"\n"]];
         }

@@ -1,3 +1,8 @@
+2004-08-04  ujwal
+
+	* Cmd-click on selection is activated only if mouseDown and mouseUp are 
+	  in the same location.
+
 2004-07-07  ujwal
 
 	* Reimplemented print-to-ansi feature to use standard printing. Should 

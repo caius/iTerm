@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.221 2004-07-06 02:40:06 ujwal Exp $
+// $Id: PTYTextView.m,v 1.222 2004-08-04 18:47:21 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1191,7 +1191,9 @@ static SInt32 systemVersion;
         if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
         // handle command click on URL
-        if(([event modifierFlags] & NSCommandKeyMask) && [[PreferencePanel sharedInstance] cmdSelection])
+        if(([event modifierFlags] & NSCommandKeyMask) && [[PreferencePanel sharedInstance] cmdSelection] &&
+		   [mouseDownEvent locationInWindow].x == [event locationInWindow].x &&
+		   [mouseDownEvent locationInWindow].y == [event locationInWindow].y)
         {
             [self _openURL: [self selectedText]];
         }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.142 2003-09-11 00:49:30 yfabian Exp $
+// $Id: VT100Screen.m,v 1.143 2003-09-11 00:53:23 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -760,20 +760,23 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen clearBuffer]",  __FILE__, __LINE__ );
 #endif
 
+    // clear everything up to the current line
 #if DEBUG_USE_BUFFER
-    [STORAGE deleteCharactersInRange:NSMakeRange(0, [STORAGE length])];
-    [BUFFER deleteCharactersInRange:NSMakeRange(0, [BUFFER length])];
+    int idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:NO];
+
+    [STORAGE deleteCharactersInRange:NSMakeRange(0, idx+updateIndex)];
+    [BUFFER deleteCharactersInRange:NSMakeRange(0, idx)];
     updateIndex=0;
     minIndex=0;
 #endif
 
 #if DEBUG_USE_ARRAY
-    [screenLines removeAllObjects];
+    int i;
+
+    for(i = 0; i < TOP_LINE + CURSOR_Y; i++)
+        [screenLines removeObjectAtIndex: 0];
 #endif
-    
-    [self clearScreen];
-    [self initScreen];
-    CURSOR_X = CURSOR_Y = 0;
+    TOP_LINE = 0;
     clearingBuffer = YES;
 }
 

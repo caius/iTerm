@@ -7,6 +7,7 @@
 
     * Fixed massive memory leaks.
     * Fixed "Prompt on Close" preference bug.
+    * Clear Buffer is not local: clears clears everything up the current line.
 
 2003-09-09	ujwal
 

@@ -1358,15 +1358,15 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void)clearBuffer
 {
-    char formFeed = 0x0c; // ^L
+    //char formFeed = 0x0c; // ^L
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession clearBuffer:...]", __FILE__, __LINE__);
 #endif
-    [TERMINAL cleanStream];
+    //[TERMINAL cleanStream];
 
     [SCREEN clearBuffer];
     // tell the shell to clear the screen
-    [SHELL writeTask:[NSData dataWithBytes:&formFeed length:1]];
+    //[SHELL writeTask:[NSData dataWithBytes:&formFeed length:1]];
 }
 
 - (void)clearScrollbackBuffer

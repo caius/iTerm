@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.24 2002-12-11 23:22:23 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.25 2002-12-12 16:12:32 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1048,7 +1048,7 @@ static NSDictionary *deadStateAttribute;
 
 //    NSLog(@"Toolbar created");
 
-    return toolbar;
+    return [toolbar autorelease];
 }
 
 

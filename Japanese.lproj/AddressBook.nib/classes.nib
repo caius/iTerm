@@ -36,6 +36,7 @@
                 adName = NSTextField; 
                 adRemapDeleteKey = NSButton; 
                 adRow = id; 
+                adScrollback = id; 
                 adSelection = NSColorWell; 
                 adShortcut = id; 
                 adTable = NSTableView; 

@@ -51,6 +51,7 @@
     IBOutlet id adAI;
     IBOutlet id adAICode;
     IBOutlet id adClose;
+    IBOutlet id adScrollback;
     IBOutlet NSButton *adRemapDeleteKey;
     IBOutlet id adDoubleWidth;
     IBOutlet id adShortcut;
@@ -125,7 +126,7 @@
 - (IBAction)adEditNAFont:(id)sender;
 - (IBAction)adEditForeground:(id)sender;
 - (IBAction)adEditOK:(id)sender;
-- (IBAction) changeTab: (id) sender;
+- (IBAction)changeTab: (id) sender;
 - (IBAction)changeColorScheme:(id)sender;
 - (IBAction)editColorScheme: (id) sender;
 

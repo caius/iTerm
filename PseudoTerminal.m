@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.217 2003-08-13 20:34:39 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.218 2003-09-02 05:53:04 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -218,7 +218,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
 #endif
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
-    [[aSession SCREEN] setScrollback:[[PreferencePanel sharedInstance] scrollbackLines]];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
     
     // initialize the screen

@@ -77,7 +77,6 @@
 
 - (void)run;
 
-- (unsigned int) scrollbackLines;
 - (BOOL) antiAlias;
 - (int) option;
 - (BOOL) macnavkeys;

@@ -448,7 +448,13 @@ static NSColor* xtermColorTable[2][8];
     else {
         [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
     }
-
+    if ([entry objectForKey:@"Scrollback"]) {
+        [adScrollback setIntValue:[[entry objectForKey:@"Scrollback"] intValue]];
+    }
+    else {
+        [adScrollback setIntValue: 100000];
+    }
+        
     aeFont=[entry objectForKey:@"Font"];
     [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
     [adTextExample setTextColor:[entry objectForKey:@"Foreground"]];
@@ -839,6 +845,7 @@ static NSColor* xtermColorTable[2][8];
 	[NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
 	[NSNumber numberWithBool:([adRemapDeleteKey state]==NSOnState)],@"RemapDeleteKey",
 	[NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
+        [NSNumber numberWithInt:[adScrollback intValue]], @"Scrollback",
 	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
 	NULL];
 

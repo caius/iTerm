@@ -15,8 +15,6 @@
                 openAddressBook = id; 
                 optionKey = id; 
                 prefPanel = id; 
-                promptOnClose = id; 
-                scrollbackLines = id; 
                 silenceBell = id; 
                 tabViewType = id; 
             }; 

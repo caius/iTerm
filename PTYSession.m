@@ -277,7 +277,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
     if (data == nil)
         return;
-    
+
     [TERMINAL putStreamData:data];
     
 #warning is this pending stuff necessary
@@ -302,7 +302,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	if (token.type != VT100_SKIP)
 	    [SCREEN putToken:token];
     }
-
+    
     oIdleCount=0;
     if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);

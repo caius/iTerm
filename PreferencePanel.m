@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.61 2003-08-13 05:03:54 sgehrman Exp $
+// $Id: PreferencePanel.m,v 1.62 2003-09-02 05:53:04 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -31,7 +31,6 @@
 #import <iTerm/iTermController.h>
 #import <iTerm/ITAddressBookMgr.h>
 
-static unsigned int  SCROLLBACK = 1000000;
 
 static float versionNumber;
 
@@ -86,7 +85,6 @@ static float versionNumber;
 {
     prefs = [NSUserDefaults standardUserDefaults];
 
-    defaultScrollback=([prefs objectForKey:@"Scrollback"]?[prefs integerForKey:@"Scrollback"]:SCROLLBACK);
     defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
         
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
@@ -109,7 +107,6 @@ static float versionNumber;
 
     [prefPanel center];
     
-    [scrollbackLines setIntValue:defaultScrollback];
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
@@ -134,9 +131,7 @@ static float versionNumber;
 }
 
 - (IBAction)ok:(id)sender
-{
-    defaultScrollback=[scrollbackLines intValue];
-    
+{    
     defaultAntiAlias = ([antiAlias state]==NSOnState);
 
     defaultMacNavKeys=([macnavkeys state]==NSOnState);
@@ -149,8 +144,6 @@ static float versionNumber;
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultBlinkingCursor = ([blinkingCursor state] == NSOnState);
     defaultEnforceCharacterAlignment = ([enforceCharacterAlignment state] == NSOnState);
-
-    [prefs setInteger:defaultScrollback forKey:@"Scrollback"];
 
     [prefs setBool:defaultMacNavKeys forKey:@"MacNavKeys"];
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
@@ -169,8 +162,6 @@ static float versionNumber;
 
 - (IBAction)restore:(id)sender
 {    
-    defaultScrollback=SCROLLBACK;
-    
     defaultMacNavKeys=YES;
     defaultOption=0;
     defaultHideTab=YES;
@@ -180,8 +171,6 @@ static float versionNumber;
     defaultOpenAddressBook = NO;
     defaultBlinkingCursor = NO;
     defaultEnforceCharacterAlignment = YES;
-
-    [scrollbackLines setIntValue:defaultScrollback];
 
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
@@ -193,11 +182,6 @@ static float versionNumber;
     [tabViewType selectCellWithTag: defaultTabViewType];
     [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
     [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];    
-}
-
-- (unsigned int) scrollbackLines
-{
-    return SCROLLBACK; //defaultScrollback;
 }
 
 - (BOOL) antiAlias

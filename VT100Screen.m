@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.130 2003-09-01 09:06:06 ujwal Exp $
+// $Id: VT100Screen.m,v 1.131 2003-09-02 05:53:04 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -354,6 +354,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)setScrollback:(unsigned int)lines;
 {
+//    NSLog(@"Scrollback set: %d", lines);
     scrollbackLines=lines;
 }
 
@@ -2228,11 +2229,9 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
         for(i=0,idx=0;i<over;idx++)
             if ([s characterAtIndex:idx]=='\n') i++;
-
 	[STORAGE beginEditing];
         [STORAGE deleteCharactersInRange:NSMakeRange(0, idx)];
 	[STORAGE endEditing];
-	
         if (idx<updateIndex) updateIndex-=idx;
         else {
             [BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];

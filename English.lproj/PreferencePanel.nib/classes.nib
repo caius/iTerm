@@ -21,6 +21,7 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addBookmarkFolderPanel = NSPanel; 
+                bookmarkCommand = NSTextField; 
                 bookmarkDeleteButton = NSButton; 
                 bookmarkDeleteFolderButton = NSButton; 
                 bookmarkDisplayProfile = NSPopUpButton; 
@@ -28,9 +29,8 @@
                 bookmarkKeyboardProfile = NSPopUpButton; 
                 bookmarkName = NSTextField; 
                 bookmarkTerminalProfile = NSPopUpButton; 
+                bookmarkWorkingDirectory = NSTextField; 
                 bookmarksView = NSOutlineView; 
-                boomarkCommand = NSTextField; 
-                boomarkWorkingDirectory = NSTextField; 
                 deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
                 focusFollowsMouse = NSButton; 

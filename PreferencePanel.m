@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.92 2004-03-18 08:54:40 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.93 2004-03-18 16:45:11 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -196,6 +196,13 @@ static float versionNumber;
     return [[ITAddressBookMgr sharedInstance] objectForKey:[tableColumn identifier] inItem: item];
 }
 
+// Optional method: needed to allow editing.
+- (void)outlineView:(NSOutlineView *)olv setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item  
+{
+	[[ITAddressBookMgr sharedInstance] setObjectValue: object forKey:[tableColumn identifier] inItem: item];	
+}
+
+
 // Bookmark actions
 - (IBAction) addBookmarkFolder: (id) sender
 {
@@ -239,27 +246,39 @@ static float versionNumber;
 
 - (IBAction) addBookmark: (id) sender
 {
-	
+	[self editBookmark: self];
 }
 
 - (IBAction) addBookmarkConfirm: (id) sender
 {
-	
+	[NSApp endSheet:editBookmarkPanel returnCode:NSOKButton];
 }
 
 - (IBAction) addBookmarkCancel: (id) sender
 {
-	
+	[NSApp endSheet:editBookmarkPanel returnCode:NSCancelButton];
 }
 
 - (IBAction) deleteBookmark: (id) sender
 {
-	
+	[NSApp beginSheet: deleteBookmarkPanel
+	   modalForWindow: [self window]
+		modalDelegate: self
+	   didEndSelector: @selector(_deleteBookmarkSheetDidEnd:returnCode:contextInfo:)
+		  contextInfo: nil];        
 }
 
 - (IBAction) editBookmark: (id) sender
 {
 	
+	// load our profiles
+	[self _loadProfiles];
+	
+	[NSApp beginSheet: editBookmarkPanel
+	   modalForWindow: [self window]
+		modalDelegate: self
+	   didEndSelector: @selector(_editBookmarkSheetDidEnd:returnCode:contextInfo:)
+		  contextInfo: nil];        
 }
 
 
@@ -402,6 +421,79 @@ static float versionNumber;
 		[bookmarksView reloadData];
 	}
 	[deleteBookmarkPanel close];
+}
+
+- (void)_editBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	NSMutableDictionary *aDict;
+	TreeNode *parentNode;
+	int selectedRow;
+		
+	
+	if(returnCode == NSOKButton)
+	{
+		if([[bookmarkName stringValue] length] <= 0)
+		{
+			NSBeep();
+			return;
+		}
+		if([[bookmarkCommand stringValue] length] <= 0)
+		{
+			NSBeep();
+			return;
+		}
+		if([[bookmarkWorkingDirectory stringValue] length] <= 0)
+		{
+			NSBeep();
+			return;
+		}
+		
+		aDict = [[NSMutableDictionary alloc] init];
+		
+		[aDict setObject: [bookmarkName stringValue] forKey: KEY_NAME];
+		[aDict setObject: [bookmarkCommand stringValue] forKey: KEY_DESCRIPTION];
+		[aDict setObject: [bookmarkCommand stringValue] forKey: KEY_COMMAND];
+		[aDict setObject: [bookmarkWorkingDirectory stringValue] forKey: KEY_WORKING_DIRECTORY];
+		[aDict setObject: [bookmarkTerminalProfile titleOfSelectedItem] forKey: KEY_TERMINAL_PROFILE];
+		[aDict setObject: [bookmarkKeyboardProfile titleOfSelectedItem] forKey: KEY_KEYBOARD_PROFILE];
+		[aDict setObject: [bookmarkDisplayProfile titleOfSelectedItem] forKey: KEY_DISPLAY_PROFILE];
+		
+		selectedRow = [bookmarksView selectedRow];
+		
+		// if no row is selected, new node is child of root
+		if(selectedRow == -1)
+			parentNode = nil;
+		else
+			parentNode = [bookmarksView itemAtRow: selectedRow];
+		
+		// If a leaf node is selected, make new node its sibling
+		if([bookmarksView isExpandable: parentNode] == NO)
+			parentNode = [parentNode nodeParent];
+		
+		[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: parentNode];
+
+		[aDict release];
+	}
+	
+	[editBookmarkPanel close];
+}
+
+- (void) _loadProfiles
+{
+	NSArray *profileArray;
+	
+	profileArray = [[[iTermTerminalProfileMgr singleInstance] profiles] allKeys];
+	[bookmarkTerminalProfile removeAllItems];
+	[bookmarkTerminalProfile addItemsWithTitles: profileArray];
+	
+	profileArray = [[[iTermKeyBindingMgr singleInstance] profiles] allKeys];
+	[bookmarkKeyboardProfile removeAllItems];
+	[bookmarkKeyboardProfile addItemsWithTitles: profileArray];
+	
+	profileArray = [[[iTermDisplayProfileMgr singleInstance] profiles] allKeys];
+	[bookmarkDisplayProfile removeAllItems];
+	[bookmarkDisplayProfile addItemsWithTitles: profileArray];
+	
 }
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.m,v 1.1 2004-03-18 08:48:33 ujwal Exp $
+// $Id: Tree.m,v 1.2 2004-03-18 16:45:11 ujwal Exp $
 //
 /*
  **  Tree.m
@@ -104,6 +104,7 @@
 		{
 			data = [entry objectForKey: KEY_DATA];
             child = [[[TreeNode alloc] initWithData: data parent:nil children: [NSArray array]] autorelease];
+			[child setIsLeaf: YES];
 		}
         [self insertChild: child atIndex: [self numberOfChildren]];
     }

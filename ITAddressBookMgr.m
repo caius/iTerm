@@ -160,6 +160,7 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 
 - (BOOL) isExpandable:(id)item
 {
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, item);
 	return (![SAFENODE(item) isLeaf]);
 }
 
@@ -174,6 +175,16 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 	NSDictionary *data = [SAFENODE(item) nodeData];
 	
 	return ([data objectForKey: key]);
+}
+
+- (void) setObjectValue: (id) object forKey: (id) key inItem: (id) item
+{
+	NSMutableDictionary *aDict;
+	
+	aDict = [[NSMutableDictionary alloc] initWithDictionary: [SAFENODE(item) nodeData]];
+	[aDict setObject: object forKey: key];
+	[SAFENODE(item) setNodeData: aDict];
+	[aDict release];
 }
 
 - (void) addFolder: (NSString *) folderName toNode: (TreeNode *) aNode
@@ -197,9 +208,27 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 	
 }
 
-- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDictToNode: (TreeNode *) aNode;
+- (void) addBookmarkWithData: (NSDictionary *) data toNode: (TreeNode *) aNode;
 {
-	NSLog(@"%s", __PRETTY_FUNCTION__);
+	TreeNode *targetNode, *childNode;
+	NSMutableDictionary *aDict;
+		
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+	if(data == nil)
+		return;
+	
+	targetNode = SAFENODE(aNode);
+	
+	aDict = [[NSMutableDictionary alloc] initWithDictionary: data];
+	
+	childNode = [[TreeNode alloc] initWithData: aDict parent: nil children: [NSArray array]];
+	[childNode setIsLeaf: YES];
+	[targetNode insertChild: childNode atIndex: [targetNode numberOfChildren]];
+	[aDict release];
+	[childNode release];
+	
+
 }
 
 - (void) deleteBookmarkNode: (TreeNode *) aNode

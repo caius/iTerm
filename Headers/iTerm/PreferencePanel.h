@@ -52,8 +52,8 @@
 	IBOutlet NSButton *bookmarkDeleteButton;
 	IBOutlet NSTextField *bookmarkFolderName;
 	IBOutlet NSTextField *bookmarkName;
-	IBOutlet NSTextField *boomarkCommand;
-	IBOutlet NSTextField *boomarkWorkingDirectory;
+	IBOutlet NSTextField *bookmarkCommand;
+	IBOutlet NSTextField *bookmarkWorkingDirectory;
 	IBOutlet NSPopUpButton *bookmarkTerminalProfile;
 	IBOutlet NSPopUpButton *bookmarkKeyboardProfile;
 	IBOutlet NSPopUpButton *bookmarkDisplayProfile;
@@ -112,5 +112,6 @@
 
 - (void)_addBookmarkFolderSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 - (void)_deleteBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-
+- (void)_editBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+- (void) _loadProfiles;
 @end

@@ -26,9 +26,15 @@
 
 #import <Foundation/Foundation.h>
 
-#define KEY_CHILDREN		@"Children"
-#define KEY_NAME			@"Name"
-#define KEY_DESCRIPTION		@"Description"
+#define KEY_CHILDREN			@"Children"
+#define KEY_NAME				@"Name"
+#define KEY_DESCRIPTION			@"Description"
+#define KEY_COMMAND				@"Command"
+#define KEY_WORKING_DIRECTORY   @"Working Directory"
+#define KEY_TERMINAL_PROFILE	@"Terminal Profile"
+#define KEY_KEYBOARD_PROFILE	@"Keyboard Profile"
+#define KEY_DISPLAY_PROFILE		@"Display Profile"
+
 
 extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
 extern BOOL isDefaultEntry( NSDictionary *entry );
@@ -59,8 +65,9 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 - (BOOL) isExpandable:(id)item;
 - (int) numberOfChildrenOfItem:(id)item;
 - (id) objectForKey: (id) key inItem: (id) item;
+- (void) setObjectValue: (id) object forKey: (id) key inItem: (id) item;
 - (void) addFolder: (NSString *) folderName toNode: (TreeNode *) aNode;
-- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDictToNode: (TreeNode *) aNode;
+- (void) addBookmarkWithData: (NSDictionary *) data toNode: (TreeNode *) aNode;
 - (void) deleteBookmarkNode: (TreeNode *) aNode;
 
 @end

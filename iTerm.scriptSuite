@@ -115,6 +115,8 @@
 			<dict>
 				<key>launch</key>
 				<string>handleLaunchScriptCommand:</string>
+				<key>select</key>
+				<string>handleSelectScriptCommand:</string>
 			</dict>
 			<key>ToManyRelationships</key>
 			<dict>
@@ -124,6 +126,16 @@
 					<string>Pssn</string>
 					<key>LocationRequiredToCreate</key>
 					<string>NO</string>
+					<key>Type</key>
+					<string>PTYSession</string>
+				</dict>
+			</dict>
+			<key>ToOneRelationships</key>
+			<dict>
+				<key>currentSession</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Cssn</string>
 					<key>Type</key>
 					<string>PTYSession</string>
 				</dict>
@@ -165,6 +177,36 @@
 					<string>Pssn</string>
 					<key>Type</key>
 					<string>NSString</string>
+				</dict>
+			</dict>
+			<key>CommandClass</key>
+			<string>NSScriptCommand</string>
+		</dict>
+		<key>select</key>
+		<dict>
+			<key>AppleEventClassCode</key>
+			<string>ITRM</string>
+			<key>AppleEventCode</key>
+			<string>Slct</string>
+			<key>Arguments</key>
+			<dict>
+				<key>sessionName</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Snme</string>
+					<key>Optional</key>
+					<string>YES</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
+				<key>sessionNumber</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Snum</string>
+					<key>Optional</key>
+					<string>YES</string>
+					<key>Type</key>
+					<string>NSNumber&lt;Int&gt;</string>
 				</dict>
 			</dict>
 			<key>CommandClass</key>

@@ -1078,6 +1078,11 @@ static NSString *PWD_ENVVALUE = @"~";
     [TERMINAL setEncoding:encoding];
 }
 
+- (int) number
+{
+    return ([[tabViewItem tabView] indexOfTabViewItem: tabViewItem]);
+}
+
 - (NSColor *) foregroundColor
 {
     return ([TERMINAL defaultFGColor]);

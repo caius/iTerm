@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.158 2003-04-28 17:17:36 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.159 2003-04-28 19:52:31 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1829,6 +1829,45 @@ static int windowCount = 0;
 
     
     return;
+}
+
+-(void)handleSelectScriptCommand: (NSScriptCommand *)command
+{
+    // Get the command's arguments:
+    NSDictionary *args = [command evaluatedArguments];
+    // optional argument follows (might be nil):
+    NSString *sessionName = [args objectForKey:@"sessionName"];
+    // optional argument follows (might be nil):
+    NSNumber *sessionNumber = [args objectForKey:@"sessionNumber"];
+
+    // don't allow both to be set
+    if(sessionName != nil && sessionNumber != nil)
+    {
+	NSBeep();
+	return;
+    }
+
+    // check if we have an index first
+    if(sessionNumber != nil)
+    {
+	[self selectSession: [sessionNumber intValue]];
+	return;
+    }
+
+    int i;
+
+    for (i = 0; i < [ptyList count]; i++)
+    {
+	PTYSession *aSession;
+
+	aSession = [ptyList objectAtIndex: i];
+
+	if([[aSession name] isEqualToString: sessionName] == YES)
+	{
+	    [self selectSession: i];
+	    break;
+	}
+    }
 }
 
 

@@ -162,6 +162,7 @@
 - (void) setDoubleWidth:(BOOL)set;
 - (NSDictionary *) addressBookEntry;
 - (void) setAddressBookEntry:(NSDictionary*) entry;
+- (int) number;
 
 - (void)clearBuffer;
 - (void)logStart;

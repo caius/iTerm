@@ -55,7 +55,7 @@
 				<key>transparency</key>
 				<dict>
 					<key>Description</key>
-					<string>Transparency</string>
+					<string>Transparency (%)</string>
 					<key>Name</key>
 					<string>transparency</string>
 				</dict>
@@ -92,6 +92,14 @@
 			<string>terminal</string>
 			<key>PluralName</key>
 			<string>terminals</string>
+			<key>ToOneRelationships</key>
+			<dict>
+				<key>currentSession</key>
+				<dict>
+					<key>Name</key>
+					<string>current session</string>
+				</dict>
+			</dict>
 		</dict>
 	</dict>
 	<key>Commands</key>
@@ -129,6 +137,30 @@
 			<string>Launches a default or saved session</string>
 			<key>Name</key>
 			<string>launch</string>
+		</dict>
+		<key>select</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>sessionName</key>
+				<dict>
+					<key>Description</key>
+					<string>Name of session to be selected</string>
+					<key>Name</key>
+					<string>session name</string>
+				</dict>
+				<key>sessionNumber</key>
+				<dict>
+					<key>Description</key>
+					<string>Index of session to be selected</string>
+					<key>Name</key>
+					<string>session number</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>Selects a specified session</string>
+			<key>Name</key>
+			<string>select</string>
 		</dict>
 	</dict>
 	<key>Description</key>

@@ -25,7 +25,6 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-
 #import "PTToolbarController.h"
 #import "iTermController.h"
 #import "PseudoTerminal.h"
@@ -114,7 +113,7 @@ NSString *ConfigToolbarItem = @"Config";
         anImage = [[NSImage alloc] initByReferencingFile: imagePath];
         [toolbarItem setImage: anImage];
         [anImage release];
-        [toolbarItem setTarget: [iTermController sharedInstance]];
+        [toolbarItem setTarget: nil];
         [toolbarItem setAction: @selector(showABWindow:)];
     }
     else if ([itemIdent isEqual: CloseToolbarItem]) 

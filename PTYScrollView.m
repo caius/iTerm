@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.11 2003-09-10 20:36:45 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.12 2004-01-28 16:44:32 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -40,6 +40,18 @@
 {
     userScroll=NO;
     return [super init];
+}
+
+- (void) mouseDown: (NSEvent *)theEvent
+{
+    //NSLog(@"PTYScroller: mouseDown");
+    
+    [super mouseDown: theEvent];
+    
+    if([self floatValue] != 1)
+	userScroll=YES;
+    else
+	userScroll = NO;    
 }
 
 - (void)trackScrollButtons:(NSEvent *)theEvent
@@ -115,6 +127,18 @@
     [super scrollWheel: theEvent];
 
     //NSLog(@"PTYScrollView: scrollWheel: %f", [verticalScroller floatValue]);
+    if([verticalScroller floatValue] < 1.0)
+	[verticalScroller setUserScroll: YES];
+    else
+	[verticalScroller setUserScroll: NO];
+}
+
+- (void)detectUserScroll
+{
+    PTYScroller *verticalScroller = (PTYScroller *)[self verticalScroller];
+
+    //NSLog(@"PTYScrollView: detectUserScroll: %f", [verticalScroller floatValue]);
+    
     if([verticalScroller floatValue] < 1.0)
 	[verticalScroller setUserScroll: YES];
     else

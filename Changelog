@@ -1,3 +1,7 @@
+2004-01-23  ujwal
+
+	* Fixed some error handling for unknown tokens.
+
 2004-01-22	ujwal
 
     * Added support for tab bonding, i.e. inout is sent to all tabs in 

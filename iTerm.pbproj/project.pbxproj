@@ -140,6 +140,7 @@
 				DD6ACB0304112FB700A8A065,
 				FB094A18033D58BD01F955DB,
 				FB896717038D935801F955DB,
+				8786A96E052CEC220073D10E,
 				DD48F1C703EBB1C400A8A065,
 				DD48F1CC03EBB20500A8A065,
 				FB151F2903648AC401F955DB,
@@ -277,6 +278,7 @@
 				E813FB7F0297522703A80106,
 				DD8CF2EE03CDD34C00A8A065,
 				DD1E48DC0431521800A8A065,
+				8786A96F052CEC220073D10E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1067,6 +1069,18 @@
 			name = Korean;
 			path = Korean.lproj/AddressBook.nib;
 			refType = 4;
+		};
+		8786A96E052CEC220073D10E = {
+			isa = PBXFileReference;
+			name = script.png;
+			path = images/script.png;
+			refType = 4;
+		};
+		8786A96F052CEC220073D10E = {
+			fileRef = 8786A96E052CEC220073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		87898DDD0444F9070073D10E = {
 			isa = PBXFileReference;

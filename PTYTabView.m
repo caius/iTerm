@@ -43,8 +43,7 @@
 
     // Create a menu with a submenu to navigate between tabs
     cMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
-    anotherMenuItem = [[NSMenuItem alloc] initWithTitle:@"Select"
-					   action:nil keyEquivalent:@""];
+    anotherMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Select",@"iTerm",@"Context menu") action:nil keyEquivalent:@""];
     [cMenu addItem: anotherMenuItem];
     [anotherMenuItem release];
 

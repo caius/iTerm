@@ -37,6 +37,7 @@
 {
 	IBOutlet NSPopUpButton *tabPosition;
     IBOutlet NSButton *selectionCopiesText;
+	IBOutlet NSButton *middleButtonPastesFromClipboard;
     IBOutlet id hideTab;
     IBOutlet id promptOnClose;
     IBOutlet NSButton *focusFollowsMouse;
@@ -65,6 +66,7 @@
 
 
     BOOL defaultCopySelection;
+	BOOL defaultPasteFromClipboard;
     BOOL defaultHideTab;
     int defaultTabViewType;
     BOOL defaultPromptOnClose;
@@ -99,6 +101,8 @@
 
 - (BOOL) copySelection;
 - (void) setCopySelection: (BOOL) flag;
+- (BOOL) pasteFromClipboard;
+- (void) setPasteFromClipboard: (BOOL) flag;
 - (BOOL) hideTab;
 - (NSTabViewType) tabViewType;
 - (void) setTabViewType: (NSTabViewType) type;

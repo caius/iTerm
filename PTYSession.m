@@ -1022,7 +1022,10 @@ static NSString *PWD_ENVVALUE = @"~";
 		[self setBackgroundImagePath: imageFilePath];
 	
     // transparency
-    [self setTransparency: [displayProfileMgr transparencyForProfile: displayProfile]];    
+    [self setTransparency: [displayProfileMgr transparencyForProfile: displayProfile]];  
+	
+	// bold
+	[self setDisableBold: [displayProfileMgr disableBoldForProfile: displayProfile]];
 	
     // set up the rest of the preferences
     [SCREEN setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
@@ -1448,6 +1451,17 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     autoClose=set;
 }
+
+- (BOOL) disableBold
+{
+	return ([TEXTVIEW disableBold]);
+}
+
+- (void) setDisableBold: (BOOL) boldFlag
+{
+	[TEXTVIEW setDisableBold: boldFlag];
+}
+
 
 - (BOOL) doubleWidth
 {

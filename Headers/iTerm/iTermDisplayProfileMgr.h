@@ -80,6 +80,9 @@
 - (NSString *) backgroundImageForProfile: (NSString *) profileName;
 - (void) setBackgroundImage: (NSString *) imagePath forProfile: (NSString *) profileName;
 
+- (BOOL) disableBoldForProfile: (NSString *) profileName;
+- (void) setDisableBold: (BOOL) bFlag forProfile: (NSString *) profileName;
+
 - (int) windowColumnsForProfile: (NSString *) profileName;
 - (void) setWindowColumns: (int) columns forProfile: (NSString *) profileName;
 - (int) windowRowsForProfile: (NSString *) profileName;

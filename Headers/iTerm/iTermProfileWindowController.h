@@ -93,6 +93,7 @@
 	IBOutlet NSSlider *displayFontSpacingWidth;
 	IBOutlet NSSlider *displayFontSpacingHeight;
 	IBOutlet NSButton *displayAntiAlias;
+	IBOutlet NSButton *displayDisableBold;
 	
 	BOOL changingNAFont;
 	
@@ -133,6 +134,7 @@
 // Display profile UI
 - (IBAction) displayProfileChanged: (id) sender;
 - (IBAction) displaySetAntiAlias: (id) sender;
+- (IBAction) displaySetDisableBold: (id) sender;
 - (IBAction) displayChangeColor: (id) sender;
 - (IBAction) displayBackgroundImage: (id) sender;
 - (IBAction) displaySelectFont: (id) sender;

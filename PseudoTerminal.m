@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.287 2004-04-16 07:05:21 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.288 2004-04-20 15:42:59 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1475,6 +1475,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		displayProfile = [displayProfileMgr defaultProfileName];	
 	
 	[displayProfileMgr setTransparency: [current transparency] forProfile: displayProfile];
+	[displayProfileMgr setDisableBold: [current disableBold] forProfile: displayProfile];
 	[displayProfileMgr setBackgroundImage: [current backgroundImagePath] forProfile: displayProfile];
 	[displayProfileMgr setWindowColumns: [self columns] forProfile: displayProfile];
 	[displayProfileMgr setWindowRows: [self rows] forProfile: displayProfile];

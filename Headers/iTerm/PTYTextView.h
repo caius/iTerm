@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.41 2004-04-18 22:26:08 yfabian Exp $
+// $Id: PTYTextView.h,v 1.42 2004-04-20 15:43:10 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -62,6 +62,9 @@ typedef struct
 
     // anti-alias flag
     BOOL antiAlias;
+	
+	// option to not render in bold
+	BOOL disableBold;
 
 	// NSTextInput support
     BOOL IM_INPUT_INSERT;
@@ -151,6 +154,8 @@ typedef struct
 - (void) setFont:(NSFont*)aFont nafont:(NSFont*)naFont;
 - (BOOL) antiAlias;
 - (void) setAntiAlias: (BOOL) antiAliasFlag;
+- (BOOL) disableBold;
+- (void) setDisableBold: (BOOL) boldFlag;
 - (BOOL) blinkingCursor;
 - (void) setBlinkingCursor: (BOOL) bFlag;
 

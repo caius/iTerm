@@ -65,6 +65,9 @@
     IBOutlet NSButton *useBackgroundImage;
     IBOutlet NSImageView *backgroundImageView;
     NSString *backgroundImagePath;
+	
+	// disable bold
+	IBOutlet NSButton *disableBoldButton;
 }
 
 + (void)show;
@@ -93,5 +96,6 @@
 - (IBAction) windowConfigFont:(id)sender;
 - (IBAction) windowConfigNAFont:(id)sender;
 - (IBAction) useBackgroundImage: (id) sender;
+- (IBAction) setDisableBold: (id) sender;
 
 @end

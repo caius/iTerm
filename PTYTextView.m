@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.209 2004-04-18 22:26:02 yfabian Exp $
+// $Id: PTYTextView.m,v 1.210 2004-04-20 15:42:59 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -180,7 +180,22 @@ static SInt32 systemVersion;
     antiAlias = antiAliasFlag;
 	forceUpdate = YES;
 	[self resetCharCache];
+	[self setNeedsDisplay: YES];
 }
+
+- (BOOL) disableBold
+{
+	return (disableBold);
+}
+
+- (void) setDisableBold: (BOOL) boldFlag
+{
+	disableBold = boldFlag;
+	forceUpdate = YES;
+	[self resetCharCache];
+	[self setNeedsDisplay: YES];
+}
+
 
 - (BOOL) blinkingCursor
 {
@@ -980,8 +995,10 @@ static SInt32 systemVersion;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s: %@]", __PRETTY_FUNCTION__, sender );
 #endif
-    
-	[self pasteSelection: nil];
+	if([[PreferencePanel sharedInstance] pasteFromClipboard])
+		[self paste: nil];
+	else
+		[self pasteSelection: nil];
 }
 
 - (void)mouseExited:(NSEvent *)event
@@ -1933,13 +1950,17 @@ static SInt32 systemVersion;
 	NSDictionary *attrib;
 	NSFont *theFont;
 	float strokeWidth = 0;
+	BOOL renderBold;
 		
 	//NSLog(@"%@",NSStrokeWidthAttributeName);
 	
 	theFont = aFont;
+	renderBold = bold;
+	if([self disableBold])
+		renderBold = NO;
 	
 	// Check if there is native bold support
-	if(bold)
+	if(renderBold)
 	{
 		theFont = [[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask];
 		
@@ -1976,7 +1997,7 @@ static SInt32 systemVersion;
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	[crap drawAtPoint:NSMakePoint(0,0)];
 	// on older systems, for bold, redraw the character offset by 1 pixel
-	if (bold && (systemVersion < 0x00001030 || !antiAlias))
+	if (renderBold && (systemVersion < 0x00001030 || !antiAlias))
 	{
 		[crap drawAtPoint:NSMakePoint(1,0)];
 	}

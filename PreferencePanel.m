@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.116 2004-04-13 19:26:33 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.117 2004-04-20 15:42:59 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -115,6 +115,7 @@ static BOOL editingBookmark = NO;
          
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
+	defaultPasteFromClipboard=[[prefs objectForKey:@"PasteFromClipboard"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
@@ -150,6 +151,7 @@ static BOOL editingBookmark = NO;
 - (void) savePreferences
 {
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
+	[prefs setBool:defaultPasteFromClipboard forKey:@"PasteFromClipboard"];
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
@@ -172,6 +174,7 @@ static BOOL editingBookmark = NO;
 	
 	[tabPosition selectItemAtIndex: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
+	[middleButtonPastesFromClipboard setState:defaultPasteFromClipboard?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
@@ -192,6 +195,7 @@ static BOOL editingBookmark = NO;
 
     defaultTabViewType=[tabPosition indexOfSelectedItem];
     defaultCopySelection=([selectionCopiesText state]==NSOnState);
+	defaultPasteFromClipboard=([middleButtonPastesFromClipboard state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
@@ -482,6 +486,16 @@ static BOOL editingBookmark = NO;
 - (void) setCopySelection: (BOOL) flag
 {
 	defaultCopySelection = flag;
+}
+
+- (BOOL) pasteFromClipboard
+{
+	return (defaultPasteFromClipboard);
+}
+
+- (void) setPasteFromClipboard: (BOOL) flag
+{
+	defaultPasteFromClipboard = flag;
 }
 
 - (BOOL) hideTab

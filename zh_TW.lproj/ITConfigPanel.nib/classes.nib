@@ -11,6 +11,7 @@
                 setCharacterSpacing = id; 
                 setCursorColor = id; 
                 setCursorTextColor = id; 
+                setDisableBold = id; 
                 setForegroundColor = id; 
                 setSelectedTextColor = id; 
                 setSelectionColor = id; 
@@ -47,6 +48,7 @@
                 backgroundImageView = NSImageView; 
                 charHorizontalSpacing = NSSlider; 
                 charVerticalSpacing = NSSlider; 
+                disableBoldButton = NSButton; 
                 useBackgroundImage = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 

@@ -537,6 +537,17 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	[self _setIntValue: antiAlias forKey: @"Anti Alias" inProfile: profileName];
 }
 
+- (BOOL) disableBoldForProfile: (NSString *) profileName
+{
+	return ([self _intValueForKey: @"Disable Bold" inProfile: profileName]);
+}
+
+- (void) setDisableBold: (BOOL) bFlag forProfile: (NSString *) profileName
+{
+	[self _setIntValue: bFlag forKey: @"Disable Bold" inProfile: profileName];
+}
+
+
 
 @end
 

@@ -153,6 +153,11 @@ static ITConfigPanelController *singleInstance = nil;
 		[CONFIG_TRANS2 setFloatValue:([[_pseudoTerminal currentSession] transparency]*100)];
 }
 
+- (IBAction) setDisableBold: (id) sender
+{
+	[[_pseudoTerminal currentSession] setDisableBold: ([disableBoldButton state] == NSOnState)];
+}
+
 - (IBAction) setForegroundColor: (id) sender
 {
 	[CONFIG_EXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
@@ -402,6 +407,8 @@ static ITConfigPanelController *singleInstance = nil;
     [AI_CODE setIntValue:[currentSession antiCode]];
     
     [CONFIG_ANTIALIAS setState: [[currentSession TEXTVIEW] antiAlias]];
+	
+	[disableBoldButton setState: [currentSession disableBold]];
 	
     // background image
     backgroundImagePath = [[currentSession backgroundImagePath] copy];

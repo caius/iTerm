@@ -1,3 +1,9 @@
+2004-04-20  ujwal
+
+	* Added an option to have middle mouse button paste from clipboard.
+	* Added an option to disable bold font rendering in display profile 
+	  and config panel.
+
 2004-04-18  fabian
 
     * Fix for dead key and related issues.

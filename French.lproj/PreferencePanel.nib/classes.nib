@@ -36,6 +36,7 @@
                 editBookmarkPanel = NSPanel; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
+                middleButtonPastesFromClipboard = NSButton; 
                 profilesWindow = NSWindow; 
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 
@@ -52,6 +53,7 @@
                 displaySelectFont = id; 
                 displaySelectNAFont = id; 
                 displaySetAntiAlias = id; 
+                displaySetDisableBold = id; 
                 displaySetFontSpacing = id; 
                 kbEntryAdd = id; 
                 kbEntryAddCancel = id; 
@@ -105,6 +107,7 @@
                 displayColTextField = NSTextField; 
                 displayCursorColor = NSColorWell; 
                 displayCursorTextColor = NSColorWell; 
+                displayDisableBold = NSButton; 
                 displayFGColor = NSColorWell; 
                 displayFontAccessoryView = NSView; 
                 displayFontSpacingHeight = NSSlider; 

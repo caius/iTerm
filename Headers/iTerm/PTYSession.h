@@ -197,6 +197,10 @@
 - (void) setCursorTextColor: (NSColor *) aColor;
 - (float) transparency;
 - (void)setTransparency:(float)transparency;
+- (BOOL) disableBold;
+- (void) setDisableBold: (BOOL) boldFlag;
+- (BOOL) disableBold;
+- (void) setDisableBold: (BOOL) boldFlag;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
 - (int) optionKey;
 

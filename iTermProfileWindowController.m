@@ -378,6 +378,9 @@ static NSStringEncoding const *encodingList = nil;
 	[displayTransparency setStringValue: [NSString stringWithFormat: @"%d", 
 		(int)(100*[[iTermDisplayProfileMgr singleInstance] transparencyForProfile: theProfile])]];
 	
+	// disable bold
+	[displayDisableBold setState: [[iTermDisplayProfileMgr singleInstance] disableBoldForProfile: theProfile]];
+	
 	// fonts
 	[self _updateFontsDisplay];
 	
@@ -393,6 +396,15 @@ static NSStringEncoding const *encodingList = nil;
 	[displayProfileDeleteButton setEnabled: ![[iTermDisplayProfileMgr singleInstance] isDefaultProfile: theProfile]];
 
 	
+}
+
+- (IBAction) displaySetDisableBold: (id) sender
+{
+	if(sender == displayDisableBold)
+	{
+		[[iTermDisplayProfileMgr singleInstance] setDisableBold: [sender state] 
+														 forProfile: [displayProfileSelector titleOfSelectedItem]];
+	}
 }
 
 - (IBAction) displaySetAntiAlias: (id) sender

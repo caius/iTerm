@@ -27,6 +27,7 @@
 #import <iTerm/AddressBookWindowController.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/iTermController.h>
+#import <iTerm/ITAddressBookMgr.h>
 
 #define DEBUG_ALLOC	0
 
@@ -43,30 +44,6 @@ static NSColor *xtermForeground;
 static NSColor *xtermSelection;
 static NSColor *xtermBold;
 static NSColor* xtermColorTable[2][8];
-
-// comaparator function for addressbook entries
-BOOL isDefaultEntry( NSDictionary *entry )
-{
-    return [entry objectForKey: @"DefaultEntry"] && [[entry objectForKey: @"DefaultEntry"] boolValue];
-}
-
-NSString *entryVisibleName( NSDictionary *entry, id sender )
-{
-    if ( isDefaultEntry( entry ) ) {
-        return NSLocalizedStringFromTableInBundle(@"Default Session",@"iTerm", [NSBundle bundleForClass: [sender class]], @"Default Session");
-    } else {
-        return [entry objectForKey:@"Name"];
-    }
-}
-
-NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
-{
-    // Default entry is always first
-    if ( isDefaultEntry( entry1 ) ) return -1;
-    if ( isDefaultEntry( entry2 ) ) return 1;
-    
-    return ([(NSString *)[entry1 objectForKey: @"Name"] caseInsensitiveCompare: (NSString *)[entry2 objectForKey: @"Name"]]);
-}
 
 @implementation AddressBookWindowController
 
@@ -305,7 +282,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     }
 
     // Save the bookmarks.
-    [[iTermController sharedInstance] saveAddressBook];
+    [[ITAddressBookMgr sharedInstance] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
     [[NSNotificationCenter defaultCenter]
@@ -501,7 +478,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
  //              __FILE__, __LINE__, ae );
 
 	// Save the bookmarks.
-	[[iTermController sharedInstance] saveAddressBook];
+	[[ITAddressBookMgr sharedInstance] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
@@ -556,7 +533,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
 	// Save the bookmarks.
-	[[iTermController sharedInstance] saveAddressBook];
+	[[ITAddressBookMgr sharedInstance] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]

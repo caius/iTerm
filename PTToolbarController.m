@@ -1,10 +1,30 @@
-//
-//  PTToolbarController.m
-//  iTerm
-//
-//  Created by Steve Gehrman on Mon Aug 11 2003.
-//  Copyright (c) 2003 __MyCompanyName__. All rights reserved.
-//
+/*
+ **  PTToolbarController.m
+ **
+ **  Copyright (c) 2002, 2003
+ **
+ **  Author: Fabian, Ujwal S. Sathyam
+ **	     Initial code by Kiichi Kusama
+ **
+ **  Project: iTerm
+ **
+ **  Description: manages an the toolbar.
+ **
+ **  This program is free software; you can redistribute it and/or modify
+ **  it under the terms of the GNU General Public License as published by
+ **  the Free Software Foundation; either version 2 of the License, or
+ **  (at your option) any later version.
+ **
+ **  This program is distributed in the hope that it will be useful,
+ **  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ **  GNU General Public License for more details.
+ **
+ **  You should have received a copy of the GNU General Public License
+ **  along with this program; if not, write to the Free Software
+ **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 
 #import "PTToolbarController.h"
 #import "iTermController.h"
@@ -197,7 +217,7 @@ NSString *ConfigToolbarItem = @"Config";
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
     
-    [[iTermController sharedInstance] buildAddressBookMenu: [aPopUpButton menu] forTerminal: (newwin?nil:_pseudoTerminal)];
+    [[iTermController sharedInstance] buildAddressBookMenu: [aPopUpButton menu] target: (newwin?nil:_pseudoTerminal)];
     
     [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
     [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(toggleNewWindowState:) keyEquivalent: @""];
@@ -227,7 +247,7 @@ NSString *ConfigToolbarItem = @"Config";
     // build a menu representation for text only.
     item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New") action: nil keyEquivalent: @""];
     aMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [[iTermController sharedInstance] buildAddressBookMenu: aMenu forTerminal: (newwin?nil:_pseudoTerminal)];
+    [[iTermController sharedInstance] buildAddressBookMenu: aMenu target: (newwin?nil:_pseudoTerminal)];
     [aMenu addItem: [NSMenuItem separatorItem]];
     [aMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(toggleNewWindowState:) keyEquivalent: @""];
     newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];

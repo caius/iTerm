@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.31 2003-01-31 23:35:42 ujwal Exp $
+// $Id: VT100Screen.m,v 1.32 2003-02-05 07:52:49 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -619,7 +619,7 @@ static BOOL PLAYBELL = YES;
 - (void)setASCIIString:(NSString *)string
 {
     int i,j,idx,idx2,len,x,x2;
-    BOOL doubleWidth=[SESSION doubleWidth];
+    BOOL doubleWidth=[SESSION doubleWidth], didWrap = NO;
     
     NSString *s=(charset[[TERMINAL charset]]?[self translate:string]:string);
 //    NSLog(@"%d(%d):%@",[TERMINAL charset],charset[[TERMINAL charset]],string);
@@ -640,6 +640,7 @@ static BOOL PLAYBELL = YES;
          store=[STORAGE string];
         if (CURSOR_X>=WIDTH) {
             if ([TERMINAL wraparoundMode]) {
+		didWrap = YES;
                 [self setNewLine];
                 CURSOR_X=0;
             }
@@ -708,6 +709,14 @@ static BOOL PLAYBELL = YES;
             }
             idx2+=j;
         }
+    }
+
+    // if we did a wrapAround, mark the position so that we can strip them out when copying
+    if(didWrap)
+    {
+	if([[STORAGE string] characterAtIndex: ([self getIndex: CURSOR_X y: CURSOR_Y] - 2)] == VT100CC_LF)
+	    [STORAGE addAttribute: @"VT100LineWrap" value: @"YES"
+						 range: NSMakeRange(([self getIndex: CURSOR_X y: CURSOR_Y] - 2), 1)];
     }
 }
 

@@ -10,6 +10,11 @@
       code by moving a bunch of it into addSession which 
       is called by other stuff.
       
+    * Fixed multi-line copy paste problem that was caused by
+      line feed that is inserted when a command wraps over to 
+      the next line. Now marking the position where the line 
+      feed is inserted and removing it in the copy operation.
+      
 
 2003-02-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

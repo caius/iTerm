@@ -42,8 +42,6 @@
 				0464AB2E006CD2EC7F000001,
 				8750B974046717F40073D10E,
 				0464AB32006CD2EC7F000001,
-				874206420564168A00CFC3F1,
-				874206590564169600CFC3F1,
 			);
 			isa = PBXGroup;
 			name = JTerminal;
@@ -152,6 +150,8 @@
 				DD48F1C703EBB1C400A8A065,
 				DD48F1CC03EBB20500A8A065,
 				FB151F2903648AC401F955DB,
+				DD57633005653C2E00F1905E,
+				DD57633605653C5F00F1905E,
 			);
 			isa = PBXGroup;
 			name = Interfaces;
@@ -720,7 +720,7 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				INFOPLIST_FILE = "Info-iTerm_Framework__Upgraded_-1.plist";
+				INFOPLIST_FILE = iTerm_Framework.plist;
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				JAVA_COMPILER_DEBUGGING_SYMBOLS = NO;
 				OTHER_CFLAGS = "";
@@ -1032,6 +1032,7 @@
 				8742061C0564168A00CFC3F1,
 				8742061D0564168A00CFC3F1,
 				8742061E0564168A00CFC3F1,
+				DD57633105653C2E00F1905E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1390,13 +1391,6 @@
 			settings = {
 			};
 		};
-		874206420564168A00CFC3F1 = {
-			expectedFileType = text.plist;
-			isa = PBXFileReference;
-			path = "Info-iTerm_Framework__Upgraded_-1.plist";
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		874206430564168A00CFC3F1 = {
 			expectedFileType = wrapper.framework;
 			includeInIndex = 0;
@@ -1421,7 +1415,7 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				INFOPLIST_FILE = "Info-iTerm__Upgraded_-1.plist";
+				INFOPLIST_FILE = iTerm.plist;
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = iTerm;
@@ -1459,6 +1453,7 @@
 				8742064B0564169600CFC3F1,
 				8742064C0564169600CFC3F1,
 				8742064D0564169600CFC3F1,
+				DD57633705653C5F00F1905E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1540,13 +1535,6 @@
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
-		};
-		874206590564169600CFC3F1 = {
-			expectedFileType = text.plist;
-			isa = PBXFileReference;
-			path = "Info-iTerm__Upgraded_-1.plist";
-			refType = 4;
-			sourceTree = "<group>";
 		};
 		8742065A0564169600CFC3F1 = {
 			expectedFileType = wrapper.application;
@@ -1831,6 +1819,34 @@
 			path = iTermImageView.m;
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		DD57633005653C2E00F1905E = {
+			expectedFileType = text.plist;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = iTerm_Framework.plist;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DD57633105653C2E00F1905E = {
+			fileRef = DD57633005653C2E00F1905E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD57633605653C5F00F1905E = {
+			expectedFileType = text.plist;
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = iTerm.plist;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DD57633705653C5F00F1905E = {
+			fileRef = DD57633605653C5F00F1905E;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		DD6ACB0204112FB700A8A065 = {
 			expectedFileType = image.png;

@@ -18,7 +18,7 @@
 - (void) dealloc;
 
 // contextual menu
-- (NSMenu *) menuForEvent: (NSEvent *) theEvent;
+//- (NSMenu *) menuForEvent: (NSEvent *) theEvent;
 - (void) selectTab: (id) sender;
 
 @end

@@ -1,7 +1,8 @@
 2003-01-06	fabian
     * Fixed the display problem related to "bold"
-    * Updated Chinese nib files for anti-aliasing
+    * Updated Chinese nib files for anti-aliasing and print&save
     * Chinese strings files updated for new contextual menu item
+    * Set the version number to 0.6.1
     
 2003-01-05	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

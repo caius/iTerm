@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.2 2002-11-27 17:26:44 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.3 2002-12-10 18:26:29 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -33,6 +33,16 @@ static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
                          ((c) >= 0xe0 && (c) <= 0xef))
 #define iseuckr(c)   ((c) >= 0xa1 && (c) <= 0xfe)
 
+#define isGBEncoding(e) 	((e)==0x80000019||(e)==0x80000421|| \
+                                 (e)==0x80000631||(e)==0x80000632|| \
+                                 (e)==0x80000930)
+#define isBig5Encoding(e) 	((e)==0x80000002||(e)==0x80000423|| \
+                                 (e)==0x80000931||(e)==0x80000a03|| \
+                                 (e)==0x80000a06)
+#define isJPEncoding(e) 	((e)==0x80000001||(e)==0x8||(e)==0x15)
+#define isSJISEncoding(e)	((e)==0x80000628||(e)==0x80000a01)
+#define isKREncoding(e)		((e)==0x80000422||(e)==0x80000003|| \
+                                 (e)==0x80000840||(e)==0x80000940)
 #define ESC  0x1b
 #define DEL  0x7f
 
@@ -122,27 +132,29 @@ static BOOL isString(unsigned char *code,
         if (*code >= 0x80)
             result = YES;
     }
-    else if (encoding == NSStringEUCCNEncoding) {
+    else if (isGBEncoding(encoding)) {
         if (iseuccn(*code))
             result = YES;
     }
-    else if (encoding == NSStringBig5Encoding) {
+    else if (isBig5Encoding(encoding)) {
         if (isbig5(*code))
             result = YES;
     }
-    else if (encoding == NSJapaneseEUCStringEncoding) {
+    else if (isJPEncoding(encoding)) {
         if (*code ==0x8e || *code==0x8f|| (*code>=0xa1&&*code<=0xfe))
             result = YES;
     }
-    else if (encoding == NSShiftJISStringEncoding) {
+    else if (isSJISEncoding(encoding)) {
         if (*code >= 0x80)
             result = YES;
     }
-    else if (encoding == NSEUCKRStringEncoding) {
+    else if (isKREncoding(encoding)) {
         if (iseuckr(*code))
             result = YES;
     }
-    
+    else if (*code>=0x20) {
+        result = YES;
+    }
 
     return result;
 }
@@ -396,7 +408,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
     VT100TCC result;
     NSData *data;
     BOOL unrecognized=NO;
-    char s[100]={0}, *c;
+    char s[100]={0}, *c=nil;
 
     NSCParameterAssert(datap != NULL);
     NSCParameterAssert(datalen >= 2);
@@ -736,6 +748,7 @@ static VT100TCC decode_euccn(unsigned char *datap,
                 len -= 2;
             }
             else {
+                *p='?';
                 p++;
                 len--;
             }
@@ -773,6 +786,7 @@ static VT100TCC decode_big5(unsigned char *datap,
                 len -= 2;
             }
             else {
+                *p='?';
                 p++;
                 len--;
             }
@@ -817,10 +831,6 @@ static VT100TCC decode_euc_jp(unsigned char *datap,
             len -= 2;
         }
         else break;
-    }
-    while (len > 1 && *p == 0x8e) {
-        p += 2;
-        len -= 2;
     }
     if (len == datalen) {
         *rmlen = 0;
@@ -903,6 +913,33 @@ static VT100TCC decode_euckr(unsigned char *datap,
     return result;
 }
 
+static VT100TCC decode_other_enc(unsigned char *datap,
+                             size_t datalen,
+                             size_t *rmlen)
+{
+    VT100TCC result;
+    unsigned char *p = datap;
+    size_t len = datalen;
+
+    while (len > 0) {
+        if (*p>=0x20) {
+            p++;
+            len--;
+        }
+        else break;
+    }
+    if (len == datalen) {
+        *rmlen = 0;
+        result.type = VT100TCC_WAIT;
+    }
+    else {
+        *rmlen = datalen - len;
+        result.type = VT100TCC_STRING;
+    }
+
+    return result;
+}
+
 static VT100TCC decode_string(unsigned char *datap,
 			     size_t datalen,
 			     size_t *rmlen,
@@ -918,72 +955,43 @@ static VT100TCC decode_string(unsigned char *datap,
 //    NSLog(@"data: %@",[NSData dataWithBytes:datap length:datalen]);
     if (encoding == NSUTF8StringEncoding) {
         result = decode_utf8(datap, datalen, rmlen);
-        if (result.type != VT100TCC_WAIT) {
-            data = [NSData dataWithBytes:datap length:*rmlen];
-            result.u.string = [[[NSString alloc]
-                                   initWithData:data
-                                       encoding:NSUTF8StringEncoding]
-                autorelease];
-        }
     }
-    else if (encoding == NSStringEUCCNEncoding) {
+//    else if (encoding == 0x80000930) {
+    else if (isGBEncoding(encoding)) {
+//        NSLog(@"Chinese-GB!");
         result = decode_euccn(datap, datalen, rmlen);
-        if (result.type != VT100TCC_WAIT) {
-            data = [NSData dataWithBytes:datap length:*rmlen];
-            result.u.string = [[[NSString alloc]
-                                   initWithData:data
-                                       encoding:NSStringEUCCNEncoding]
-                autorelease];
-        }
     }
-    else if (encoding == NSStringBig5Encoding) {
+    else if (isBig5Encoding(encoding)) {
         result = decode_big5(datap, datalen, rmlen);
-        if (result.type != VT100TCC_WAIT) {
-            data = [NSData dataWithBytes:datap length:*rmlen];
-            result.u.string = [[[NSString alloc]
-                                   initWithData:data
-                                       encoding:NSStringBig5Encoding]
-                autorelease];
-        }
     }
-    else if (encoding==NSJapaneseEUCStringEncoding) {
+    else if (isJPEncoding(encoding)) {
 //        NSLog(@"decoding euc-jp");
         result = decode_euc_jp(datap, datalen, rmlen);
-
-        if (result.type != VT100TCC_WAIT) {
-            data = [NSData dataWithBytes:datap length:*rmlen];
-            result.u.string = [[[NSString alloc]
-                                   initWithData:data
-                                       encoding:NSJapaneseEUCStringEncoding]
-                autorelease];
-        }
     }
-    else if (encoding==NSShiftJISStringEncoding) {
+    else if (isSJISEncoding(encoding)) {
 //        NSLog(@"decoding j-jis");
         result = decode_sjis(datap, datalen, rmlen);
-
-        if (result.type != VT100TCC_WAIT) {
-            data = [NSData dataWithBytes:datap length:*rmlen];
-            result.u.string = [[[NSString alloc]
-                                   initWithData:data
-                                       encoding:NSShiftJISStringEncoding]
-                autorelease];
-        }
     }
-    else if (encoding==NSEUCKRStringEncoding) {
+    else if (isKREncoding(encoding)) {
 //        NSLog(@"decoding korean");
         result = decode_euckr(datap, datalen, rmlen);
-        if (result.type != VT100TCC_WAIT) {
-            data = [NSData dataWithBytes:datap length:*rmlen];
-            result.u.string = [[[NSString alloc]
-                                   initWithData:data
-                                       encoding:NSEUCKRStringEncoding]
-                autorelease];
-        }
     }
     else {
-        NSLog(@"%s(%d):decode_string() no-support character encoding(%d)",
-              __FILE__, __LINE__, encoding);
+//        NSLog(@"%s(%d):decode_string()-support character encoding(%@d)",
+//              __FILE__, __LINE__, [NSString localizedNameOfStringEncoding:encoding]);
+        result = decode_other_enc(datap, datalen, rmlen);
+    }
+
+    if (result.type != VT100TCC_WAIT) {
+        data = [NSData dataWithBytes:datap length:*rmlen];
+        result.u.string = [[[NSString alloc]
+                                   initWithData:data
+                                       encoding:encoding]
+            autorelease];
+
+        if (result.u.string==nil) {
+            NSLog(@"Null:%@",data);
+        }
     }
     return result;
 }

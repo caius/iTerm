@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.1.1.1 2002-11-26 04:56:45 ujwal Exp $
+// $Id: MainMenu.h,v 1.2 2002-12-10 18:26:28 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -88,7 +88,6 @@
 - (IBAction)adEditForeground:(id)sender;
 - (IBAction)adEditOK:(id)sender;
 - (void)changeFont:(id)fontManager;
-- (NSPanel *)aePanel;
 - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 // About window
 - (IBAction)showAbout:(id)sender;
@@ -102,6 +101,7 @@
 - (PseudoTerminal *) frontPseudoTerminal;
 - (void) addTerminalWindow: (PseudoTerminal *) theTerminalWindow;
 - (void) removeTerminalWindow: (PseudoTerminal *) theTerminalWindow;
+- (NSStringEncoding*) encodingList;
 
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender;

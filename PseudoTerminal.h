@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.8 2002-12-09 02:29:45 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.9 2002-12-10 18:26:29 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -103,7 +103,9 @@
 - (void)startProgram:(NSString *)program;
 - (void)startProgram:(NSString *)program
            arguments:(NSArray *)prog_argv;
-
+- (void)startProgram:(NSString *)program
+                  arguments:(NSArray *)prog_argv
+                environment:(NSDictionary *)prog_env;
 - (void)setWindowSize;
 - (void)setWindowTitle;
 - (void)setWindowTitle: (NSString *)title;

@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.h,v 1.2 2002-11-27 17:26:44 yfabian Exp $
+// $Id: NSStringITerm.h,v 1.3 2002-12-10 18:26:28 yfabian Exp $
 //
 //  NSStringJTerminal.h
 //
@@ -9,21 +9,10 @@
 
 #import <Foundation/Foundation.h>
 
-#ifdef NSSTRINGJTERMINAL_CLASS_COMPILE
-# define EXTERN 
-#else
-# define EXTERN extern
-#endif
-
-EXTERN NSStringEncoding  NSStringEUCCNEncoding;
-EXTERN NSStringEncoding  NSStringBig5Encoding;
-EXTERN NSStringEncoding  NSEUCKRStringEncoding;
 
 @interface NSString (iTerm)
 
-+ (void)initialize;
 + (NSString *)stringWithInt:(int)num;
-+ (NSString *)shortEncodingName:(NSStringEncoding)encoding;
 + (BOOL)isDoubleWidthCharacter:(unichar)unicode;
 
 - (NSMutableString *) stringReplaceSubstringFrom:(NSString *)oldSubstring to:(NSString *)newSubstring;

@@ -23,7 +23,7 @@
     int defaultCol;
     int defaultRow;
     
-    NSString* defaultEncoding;
+    NSStringEncoding defaultEncoding;
     NSString* defaultShell;
     NSString* defaultTerminal;
     

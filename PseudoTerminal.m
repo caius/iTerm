@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.21 2002-12-09 07:59:39 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.22 2002-12-10 18:26:29 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -119,7 +119,7 @@ static NSDictionary *deadStateAttribute;
 {
     WIDTH=width;
     HEIGHT=height;
-    NSColor *bgColor;
+//    NSColor *bgColor;
     NSRect scrollViewFrame;
 
     if (!font)
@@ -148,9 +148,9 @@ static NSDictionary *deadStateAttribute;
     [sessionPopup setTransparent: YES];
     [sessionPopup setEnabled: NO];
     
-    // set the background color for the scrollview with the appropriate transparency
+/*    // set the background color for the scrollview with the appropriate transparency
     bgColor = [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)];
-    [SCROLLVIEW setBackgroundColor: bgColor];
+    [SCROLLVIEW setBackgroundColor: bgColor]; */
     
     [WINDOW setDelegate: self];
          
@@ -192,6 +192,7 @@ static NSDictionary *deadStateAttribute;
     // Set the colors
     if (fg) [aSession setFGColor:fg];
     if (bg) [aSession setBGColor:bg];
+    [SCROLLVIEW setBackgroundColor: bg];
     
     [self setFont:FONT];
     if (term) 
@@ -498,6 +499,26 @@ static NSDictionary *deadStateAttribute;
 
 }
 
+- (void)startProgram:(NSString *)program
+                  arguments:(NSArray *)prog_argv
+                environment:(NSDictionary *)prog_env
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@ arguments:%@]",
+          __FILE__, __LINE__, program, prog_argv );
+#endif
+    [currentPtySession startProgram:program
+                          arguments:prog_argv
+                        environment:prog_env];
+
+    if ([[WINDOW title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
+
+    //    [window center];
+    [WINDOW makeKeyAndOrderFront:self];
+
+}
+
+                
 - (void)setWindowSize
 {
     NSSize size, vsize, winSize;
@@ -792,7 +813,8 @@ static NSDictionary *deadStateAttribute;
 
 - (IBAction)showConfigWindow:(id)sender
 {
-    int ec;
+    int r;
+    NSStringEncoding *p=[MAINMENU encodingList];
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal showConfigWindow:%@]",
@@ -807,13 +829,15 @@ static NSDictionary *deadStateAttribute;
     [CONFIG_COL setIntValue:[SCREEN width]];
     [CONFIG_ROW setIntValue:[SCREEN height]];
     [CONFIG_NAME setStringValue:[self currentSessionName]];
-    ec=[TERMINAL encoding];
-    if (ec==NSStringEUCCNEncoding)
-        [CONFIG_ENCODING selectItemAtIndex:1];
-    else if (ec==NSStringBig5Encoding)
-        [CONFIG_ENCODING selectItemAtIndex:2];
-    else if (ec==NSUTF8StringEncoding)
-        [CONFIG_ENCODING selectItemAtIndex:0];
+    [CONFIG_ENCODING removeAllItems];
+    r=0;
+    while (*p) {
+        //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
+        [CONFIG_ENCODING addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        if (*p==[TERMINAL encoding]) r=p-[MAINMENU encodingList];
+        p++;
+    }
+    [CONFIG_ENCODING selectItemAtIndex:r];
     [CONFIG_TRANSPARENCY setIntValue:100-[[TERMINAL defaultBGColor] alphaComponent]*100];
     [CONFIG_TRANS2 setIntValue:100-[[TERMINAL defaultBGColor] alphaComponent]*100];
     [AI_ON setState:[[self currentSession] antiIdle]?NSOnState:NSOffState];
@@ -867,26 +891,7 @@ static NSDictionary *deadStateAttribute;
                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
                         nil,nil);
     }else {
-        switch ([CONFIG_ENCODING indexOfSelectedItem]) {
-            case 0:
-                [[self currentSession] setEncoding:NSUTF8StringEncoding];
-                break;
-            case 1:
-                [[self currentSession] setEncoding:NSStringEUCCNEncoding];
-                break;
-            case 2:
-                [[self currentSession] setEncoding:NSStringBig5Encoding];
-                break;
-            case 3:
-                [[self currentSession] setEncoding:NSJapaneseEUCStringEncoding];
-                break;
-            case 4:
-                [[self currentSession] setEncoding:NSShiftJISStringEncoding];
-                break;
-            case 5:
-                [[self currentSession] setEncoding:NSEUCKRStringEncoding];
-                break;
-        }
+        [[self currentSession] setEncoding:[MAINMENU encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
         if (configFont != nil&&[SCREEN font]!=configFont) {
             [self setAllFont:configFont];
         }
@@ -897,8 +902,8 @@ static NSDictionary *deadStateAttribute;
             ([TERMINAL defaultBGColor] != [CONFIG_BACKGROUND color]))
         {
             NSColor *bgColor;
-            int i;
-            PTYSession *aSession;
+/*            int i;
+            PTYSession *aSession; */
                 
             // set the background color for the scrollview with the appropriate transparency
             bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
@@ -906,7 +911,7 @@ static NSDictionary *deadStateAttribute;
             [currentPtySession setFGColor:  [CONFIG_FOREGROUND color]];
             [currentPtySession setBGColor:  bgColor]; 
             
-            // Change the transparency for all the sessions.
+/*            // Change the transparency for all the sessions.
             if([pref transparency] != (100-[[TERMINAL defaultBGColor] alphaComponent]*100))
             {
                 for(i = 0; i < [ptyList count]; i++)
@@ -914,7 +919,7 @@ static NSDictionary *deadStateAttribute;
                     aSession = [ptyList objectAtIndex: i];
                     [aSession setBackgroundAlpha: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
                 }
-            }
+            } */
             [SCROLLVIEW setNeedsDisplay: YES];
             
         }

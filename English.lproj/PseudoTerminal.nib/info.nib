@@ -8,7 +8,11 @@
 	<string>283.0</string>
 	<key>IBLockedObjects</key>
 	<array/>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>168</integer>
+	</array>
 	<key>IBSystem Version</key>
-	<string>6C115</string>
+	<string>6F21</string>
 </dict>
 </plist>

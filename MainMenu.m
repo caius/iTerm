@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.5 2002-12-07 20:13:50 ujwal Exp $
+// $Id: MainMenu.m,v 1.6 2002-12-10 18:26:28 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -23,8 +23,7 @@
 #define DEFAULT_FONTSIZE  12
 
 static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
-static NSImage *waitImage=nil;
-static NSImage *normImage=nil;
+static NSStringEncoding *encodingList=nil;
 static BOOL newWindow=YES;
 
 @implementation MainMenu
@@ -36,8 +35,8 @@ static BOOL newWindow=YES;
           __FILE__, __LINE__);
 #endif
     [self initAddressBook];
-    waitImage=[[NSImage imageNamed: @"iTerm-wait"] retain];
-    normImage=[[NSImage imageNamed: @"iTerm"] retain];
+    encodingList=[NSString availableStringEncodings];
+//    systemEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     terminalWindows = [[NSMutableArray alloc] init];
 //  [self showQOWindow:self];
 
@@ -126,6 +125,7 @@ static BOOL newWindow=YES;
     else if (r == NSRunStoppedResponse) {
         NSDictionary *env=[NSDictionary dictionaryWithObject:[QO_DIR stringValue] forKey:@"PWD"];
         if (newWindow||FRONT==nil) {
+            NSLog(@"new window!");
             term = [PseudoTerminal newTerminalWindow: self];
             [term setPreference:PREF_PANEL];
             [term initWindow:[PREF_PANEL col]
@@ -133,6 +133,7 @@ static BOOL newWindow=YES;
                         font:[PREF_PANEL font]];
         }
         else term=FRONT;
+//        NSLog(@"%@",term);
         
         [MainMenu breakDown:[QO_COMMAND stringValue] cmdPath:&cmd cmdArgs:&arg];
 //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
@@ -141,10 +142,12 @@ static BOOL newWindow=YES;
          backgroundColor:[[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
                 encoding:[PREF_PANEL encoding]
                     term:[PREF_PANEL terminalType]];
-        [[term currentSession] startProgram:cmd arguments:arg environment:env];
-        if (newWindow) {
-            [term setWindowSize];
-        };
+        [term startProgram:cmd arguments:arg environment:env];
+        [term startProgram:cmd arguments:arg];
+
+//        if (newWindow) {
+//            [term setWindowSize];
+//        };
         [term setCurrentSessionName:nil];
         
     }
@@ -196,7 +199,6 @@ static BOOL newWindow=YES;
     NSString *cmd;
     NSArray *arg;
     NSDictionary *entry;
-    NSString *enc;
     NSStringEncoding encoding;
     
 #if DEBUG_METHOD_TRACE
@@ -217,13 +219,7 @@ static BOOL newWindow=YES;
         entry = [addressBook objectAtIndex:[adTable selectedRow]];
         [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
 //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-        enc=[entry objectForKey:@"Encoding"];
-        if ([enc compare:@"Chinese (GB)"]==NSOrderedSame)
-            encoding=NSStringEUCCNEncoding;
-        else if ([enc compare:@"Chinese (Big 5)"]==NSOrderedSame)
-            encoding=NSStringBig5Encoding;
-        else //([enc compare:@"Unicode"]==NSOrderedSame)
-            encoding=NSUTF8StringEncoding;
+        encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
 
         if (newWindow||FRONT==nil) {
             term = [PseudoTerminal newTerminalWindow: self];
@@ -234,30 +230,17 @@ static BOOL newWindow=YES;
         }
         else term=FRONT;
         [term initSession:[entry objectForKey:@"Name"]
-         foregroundColor:[entry objectForKey:@"Foreground"]
-         backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
-                encoding:encoding
-                    term:[entry objectForKey:@"Term Type"]];
-
+          foregroundColor:[entry objectForKey:@"Foreground"]
+          backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]
+                 encoding:encoding
+                     term:[entry objectForKey:@"Term Type"]];
+        
         NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
             
-        [[term currentSession] startProgram:cmd arguments:arg environment:env];
-        enc=[entry objectForKey:@"Encoding"];
-        if ([enc compare:@"Unicode"]==NSOrderedSame)
-            [[term currentSession] setEncoding:NSUTF8StringEncoding];
-        else if ([enc compare:@"Chinese (GB)"]==NSOrderedSame) 
-            [[term currentSession] setEncoding:NSStringEUCCNEncoding];
-        else if ([enc compare:@"Chinese (Big 5)"]==NSOrderedSame)
-            [[term currentSession] setEncoding:NSStringBig5Encoding];
-        else if ([enc compare:@"Japanese (EUC-JP)"]==NSOrderedSame)
-            [[term currentSession] setEncoding:NSJapaneseEUCStringEncoding];
-        else if ([enc compare:@"Japanese (Shift_JIS)"]==NSOrderedSame)
-            [[term currentSession] setEncoding:NSShiftJISStringEncoding];
-        else if ([enc compare:@"Korea (EUC_KR)"]==NSOrderedSame)
-            [[term currentSession] setEncoding:NSEUCKRStringEncoding];
+        [term startProgram:cmd arguments:arg environment:env];
+        encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
+        [[term currentSession] setEncoding:encoding];
         
-        [[term currentSession] setFGColor:[entry objectForKey:@"Foreground"]];
-        [[term currentSession] setBGColor:[entry objectForKey:@"Background"]];
         if (newWindow) {
             [term setWindowSize];
         };
@@ -269,11 +252,20 @@ static BOOL newWindow=YES;
 - (IBAction)adbAddEntry:(id)sender
 {
     int r;
+    NSStringEncoding *p=encodingList;
     
     [AE_PANEL center];
     [adName setStringValue:@""];
     [adCommand setStringValue:[PREF_PANEL shell]];
-    [adEncoding selectItemAtIndex:0];
+    [adEncoding removeAllItems];
+    r=0;
+    while (*p) {
+//        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
+        [adEncoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        if (*p==[PREF_PANEL encoding]) r=p-encodingList;
+        p++;
+    }
+    [adEncoding selectItemAtIndex:r];
     [adTermType selectItemAtIndex:0];
     [adRow setIntValue:[PREF_PANEL row]];
     [adCol setIntValue:[PREF_PANEL col]];
@@ -298,7 +290,7 @@ static BOOL newWindow=YES;
         ae=[[NSDictionary alloc] initWithObjectsAndKeys:
             [adName stringValue],@"Name",
             [adCommand stringValue],@"Command",
-            [adEncoding stringValue],@"Encoding",
+            [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
             [adForeground color],@"Foreground",
             [adBackground color],@"Background",
             [adRow stringValue],@"Row",
@@ -326,6 +318,7 @@ static BOOL newWindow=YES;
 - (IBAction)adbEditEntry:(id)sender
 {
     int r;
+    NSStringEncoding *p=encodingList;
     id entry;
 
     if ([adTable selectedRow]<0) return
@@ -333,7 +326,15 @@ static BOOL newWindow=YES;
     entry=[addressBook objectAtIndex:[adTable selectedRow]];
     [adName setStringValue:[entry objectForKey:@"Name"]];
     [adCommand setStringValue:[entry objectForKey:@"Command"]];
-    [adEncoding setStringValue:[entry objectForKey:@"Encoding"]];
+    [adEncoding removeAllItems];
+    r=0;
+    while (*p) {
+        //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
+        [adEncoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        if (*p==[[entry objectForKey:@"Encoding"] unsignedIntValue]) r=p-encodingList;
+        p++;
+    }
+    [adEncoding selectItemAtIndex:r];
     if ([entry objectForKey:@"Term Type"])
         [adTermType setStringValue:[entry objectForKey:@"Term Type"]];
     else
@@ -371,7 +372,7 @@ static BOOL newWindow=YES;
         ae=[[NSDictionary alloc] initWithObjectsAndKeys:
             [adName stringValue],@"Name",
             [adCommand stringValue],@"Command",
-            [adEncoding stringValue],@"Encoding",
+            [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
             [adForeground color],@"Foreground",
             [adBackground color],@"Background",
             [adRow stringValue],@"Row",
@@ -469,12 +470,6 @@ static BOOL newWindow=YES;
     }
 }
 
-- (NSPanel *)aePanel
-{
-    return AE_PANEL;
-}
-
-
 - (void)changeFont:(id)fontManager
 {
     [aeFont autorelease];
@@ -494,10 +489,32 @@ static BOOL newWindow=YES;
                                                           row:(int)rowIndex
 {
     NSDictionary *theRecord;
+    NSString *s=nil;
 
     NSParameterAssert(rowIndex >= 0 && rowIndex < [addressBook count]);
     theRecord = [addressBook objectAtIndex:rowIndex];
-    return [theRecord objectForKey:[col identifier]];
+    switch ([[col identifier] intValue]) {
+        case 0:
+            s=[theRecord objectForKey:@"Name"];
+            break;
+        case 1:
+            s=[theRecord objectForKey:@"Command"];
+            break;
+        case 2:
+            // this is for compatibility with old address book
+            if ([[theRecord objectForKey:@"Encoding"] isKindOfClass:[NSString class]]) {
+                NSMutableDictionary *new=[theRecord mutableCopy]; //[NSMutableDictionary dictionaryWithDictionary:theRecord];
+                [new setObject:[NSNumber numberWithUnsignedInt:[PREF_PANEL encoding]] forKey:@"Encoding"];
+                theRecord=new;
+                [addressBook replaceObjectAtIndex:rowIndex withObject:new];
+                
+            }
+            
+            s=[NSString localizedNameOfStringEncoding:(NSStringEncoding)[[theRecord objectForKey:@"Encoding"] unsignedIntValue]];
+            break;
+    }
+            
+    return s;
 }
 
 // this message is called when the user double-clicks on a row in the table
@@ -633,7 +650,9 @@ static BOOL newWindow=YES;
     }
 }
 
-
-
+- (NSStringEncoding*) encodingList
+{
+    return encodingList;
+}
 
 @end

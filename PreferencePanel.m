@@ -13,9 +13,9 @@ static NSFont* FONT;
 static int   COL   = 80;
 static int   ROW   = 25;
 
-static NSString* ENCODING=@"Chinese (GB)";
 static NSString* TERM    =@"vt100";
 static NSString* SHELL   =@"/bin/bash --login";
+static NSStringEncoding *encodingList=nil;
 
 static int TRANSPARENCY  =10;
 
@@ -23,8 +23,10 @@ static int TRANSPARENCY  =10;
 
 + (void)initialize
 {
-    BACKGROUND  = [[NSColor textBackgroundColor] retain];
-    FOREGROUND  = [[NSColor textColor] retain];
+//    BACKGROUND  = [[NSColor textBackgroundColor] retain];
+//    FOREGROUND  = [[NSColor textColor] retain];
+    BACKGROUND = [NSColor blackColor];
+    FOREGROUND = [NSColor whiteColor];
     FONT = [[NSFont fontWithName:DEFAULT_FONTNAME
 			    size:DEFAULT_FONTSIZE] retain];
 }
@@ -38,6 +40,7 @@ static int TRANSPARENCY  =10;
         return nil;
 
     prefs = [NSUserDefaults standardUserDefaults];
+    encodingList=[NSString availableStringEncodings];
 
     defaultCol=([prefs integerForKey:@"Col"]?[prefs integerForKey:@"Col"]:COL);
     defaultRow=([prefs integerForKey:@"Row"]?[prefs integerForKey:@"Row"]:ROW);
@@ -45,8 +48,19 @@ static int TRANSPARENCY  =10;
 
     defaultTerminal=[[([prefs objectForKey:@"Terminal"]?[prefs objectForKey:@"Terminal"]:TERM)
                     copy] retain];
-    defaultEncoding=[[([prefs objectForKey:@"Encoding"]?[prefs objectForKey:@"Encoding"]:ENCODING)
-                    copy] retain];
+
+    // This is for compatibility with out pref
+    if ([[prefs objectForKey:@"Encoding"] isKindOfClass:[NSString class]]) {
+        NSRunAlertPanel(NSLocalizedStringFromTable(@"Upgrade Warning: New language encodings available",@"iTerm",@"Upgrade"),
+                        NSLocalizedStringFromTable(@"Please reset all the encoding settings in your preference and address book",@"iTerm",@"Upgrade"),
+                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+                        nil,nil);
+        defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
+    }
+    else {
+        defaultEncoding=[prefs objectForKey:@"Encoding"]?[[prefs objectForKey:@"Encoding"] unsignedIntValue]:CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
+    }
+    
     defaultShell=[[([prefs objectForKey:@"Shell"]?[prefs objectForKey:@"Shell"]:SHELL)
                  copy] retain];
                     
@@ -69,10 +83,21 @@ static int TRANSPARENCY  =10;
 
 - (void)run
 {
+    NSStringEncoding *p=encodingList;
+    int r;
+    
     [prefPanel center];
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
-    [encoding setStringValue:defaultEncoding];
+    [encoding removeAllItems];
+    r=0;
+    while (*p) {
+        //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
+        [encoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        if (*p==defaultEncoding) r=p-encodingList;
+        p++;
+    }
+    [encoding selectItemAtIndex:r];
     
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
@@ -135,7 +160,7 @@ static int TRANSPARENCY  =10;
     defaultCol=[col intValue];
     defaultRow=[row intValue];
     
-    defaultEncoding=[encoding stringValue];
+    defaultEncoding=encodingList[[encoding indexOfSelectedItem]];
     defaultShell=[shell stringValue];
     defaultTerminal=[terminal stringValue];
     
@@ -144,7 +169,7 @@ static int TRANSPARENCY  =10;
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
     [prefs setObject:defaultTerminal forKey:@"Terminal"];
-    [prefs setObject:defaultEncoding forKey:@"Encoding"];
+    [prefs setObject:[NSNumber numberWithUnsignedInt:defaultEncoding] forKey:@"Encoding"];
     [prefs setObject:defaultShell forKey:@"Shell"];
     [prefs setInteger:defaultTransparency forKey:@"Transparency"];
                
@@ -163,6 +188,9 @@ static int TRANSPARENCY  =10;
 
 - (IBAction)restore:(id)sender
 {
+    int r;
+    NSStringEncoding *p=encodingList;
+    
     if (defaultBackground) [defaultBackground autorelease];
     if (defaultForeground) [defaultForeground autorelease];
     if (defaultFont) [defaultFont autorelease];
@@ -174,7 +202,7 @@ static int TRANSPARENCY  =10;
     defaultCol=COL;
     defaultRow=ROW;
     
-    defaultEncoding=[[ENCODING copy] retain];
+    defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     defaultShell=[[SHELL copy] retain];
     defaultTerminal=[[TERM copy] retain];
     
@@ -182,7 +210,15 @@ static int TRANSPARENCY  =10;
 
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
-    [encoding setStringValue:defaultEncoding];
+    [encoding removeAllItems];
+    r=0;
+    while (*p) {
+        //NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
+        [encoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        if (*p==defaultEncoding) r=p-encodingList;
+        p++;
+    }
+    [encoding selectItemAtIndex:r];
     
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
@@ -221,15 +257,7 @@ static int TRANSPARENCY  =10;
 
 - (NSStringEncoding) encoding
 {
-    NSStringEncoding enc;
-if ([defaultEncoding compare:@"Chinese (GB)"]==NSOrderedSame)
-        enc=NSStringEUCCNEncoding;
-    else if ([defaultEncoding compare:@"Chinese (Big 5)"]==NSOrderedSame)
-        enc=NSStringBig5Encoding;
-    else //([defaultEncoding compare:@"Unicode"]==NSOrderedSame)
-        enc=NSUTF8StringEncoding;
-    
-    return enc;
+    return defaultEncoding;
 }
 
 - (NSString*) shell

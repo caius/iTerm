@@ -667,7 +667,7 @@ static NSString *PWD_ENVVALUE = @"~";
         return;
         
     [TEXTVIEW setBackgroundColor: color];
-        
+    
     if(([TERMINAL defaultBGColor] != color) || 
         ([[TERMINAL defaultBGColor] alphaComponent] != [color alphaComponent]))
     {

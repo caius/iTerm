@@ -19,7 +19,7 @@
 2003-02-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added submenus to tabview contextual menu. Tabview 
-      contextual menu is not built and controlled by 
+      contextual menu is now built and controlled by 
       the tabview delegate.
       
 

@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>iTerm: FAQ</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" LINK="#696969" ALINK="#696969" VLINK="#696969" BACKGROUND=stripes.gif>
+<LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
+<CENTER>
+<!--#include virtual="/header.html" -->
+<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<TR>
+<TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF" BACKGROUND=darkstripes.gif>
+<!--#include virtual="/sidebar.html" -->
+</TD>
+
+
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF" BACKGROUND=darkerstripes.gif>
+<FONT SIZE="5"><STRONG>FAQ</STRONG></FONT><BR>
+<UL>
+<LI><STRONG>Does iTerm require mono-space fonts?</STRONG><BR>
+	Versions before 0.8 require monospace fonts. New version no longer requires monospace 
+	fonts. All fonts will be displayed in correct alignment.<BR><BR></LI>
+<LI><STRONG>Where does iTerm store its settings?</STRONG><BR>
+	The settings is stored in ~/Library/Preferences/iTerm.plist. The bookmarks data file is
+	~/Library/Application Support/iTerm/Addressbook. In case something goes wrong, you can
+	delete these files and iTerm will generate new copies that should always work.<BR><BR></LI>
+<LI><STRONG>My iTerm is too slow. What can I do to improve its performance?</STRONG><BR>
+	First of all, upgrade to the latest version. We are constantly updating the program to
+	improve its performance. The latest version should run at least as fast as Apple's Terminal.app.
+	Secondly, there are a couple of things you can tweak. iTerm does the fast drawing by 
+	caching the images of glyphs in the memory. Anything that helps to save memory helps 
+	the performance. Avoid using a big scrollback buffer. This would use a lot of memory 
+	especially if you have lots of tab open. Keeping windows geometry and font size small 
+	helps too. Disable anti-aliasing does a minimal effect on speed.<BR><BR></LI>
+<LI><STRONG>My settings of bookmarks do not seem to always work. Why?</STRONG><BR>
+	For various reasons, some settings like numbers of row/col, fonts, etc. are enforced
+	to be the same among all the tabs within a window. Therefore, only the settings of first
+	tab in the window will be honored. You can however specifiy different terminal types,
+	different colors, etc.<BR><BR></LI>
+<LI><STRONG>The fonts are looking weird. What should I do?</STRONG><BR>
+	iTerm lets you to specify two fonts. If you only use English or western european languages,
+	you probably only need to set the font for ASCII characters. For other languages, you
+	need to specify a font that works with your language as the Non-ASCII font. You need to
+	make sure the size (height) of two fonts do not differ greatly, so iTerm won't display
+	a mess of mixed glyphs.<BR><BR></LI>
+<LI><STRONG>Characters on screen are not aligned correctly.</STRONG><BR>
+	Check the option for "use double width for Non-ASCII characters.<BR><BR></LI>
+<LI><STRONG>I can't input Chinese/Japanese/Umlauts/Accents, why?</STRONG><BR>
+	First of all, make sure your encoding settings is correct. For example, there
+	are several encoding standards for Chinese, you need to know which one is used on
+	your system. If you are running a local session, unicode is the standard of Mac OS X.
+	Secondly, if you are running a telnet session, be sure you turned on the 8-bit data path.
+	Try using "telnet -8 yourhost" in your command.<BR><BR></LI>
+<LI><STRONG>Can I completely hide the toolbar?</STRONG><BR>
+	Yes, you can. The oblong button on the top right corner of the window does the trick.<BR><BR></LI>
+	
+</UL>
+</TD>
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF" BACKGROUND=darkstripes.gif>
+<script type="text/javascript"><!--
+google_ad_client = "pub-5743532873543938";
+google_ad_width = 120;
+google_ad_height = 600;
+google_ad_format = "120x600_as";
+google_color_border = "B0E0E6";
+google_color_bg = "ffffff";
+google_color_link = "000000";
+google_color_url = "336699";
+google_color_text = "333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</TD>
+</TR>
+</TABLE>
+
+<!--#include virtual="/footer.html" -->
+
+</CENTER>
+</BODY>
+</HTML>

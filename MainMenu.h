@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.21 2003-05-07 17:53:31 yfabian Exp $
+// $Id: MainMenu.h,v 1.22 2003-05-13 15:32:58 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -31,6 +31,7 @@
 
 @class PseudoTerminal;
 @class PreferencePanel;
+@class PTYTextView;
 
 @interface MainMenu : NSObject
 {
@@ -83,6 +84,7 @@
 - (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender;
 - (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm;
 - (void) interpreteKey: (int) code newWindow:(BOOL) newWin;
+- (PTYTextView *) frontTextView;
 
 // Preference Panel
 - (void) initPreferences;

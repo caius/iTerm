@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.63 2003-05-12 15:22:24 ujwal Exp $
+// $Id: MainMenu.m,v 1.64 2003-05-13 15:32:58 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -35,6 +35,7 @@
 #import "MainMenu.h"
 #import "PreferencePanel.h"
 #import "PseudoTerminal.h"
+#import "PTYSession.h"
 #import "NSStringITerm.h"
 #import "AddressBookWindowController.h"
 
@@ -808,6 +809,10 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             
 }
 
+- (PTYTextView *) frontTextView
+{
+    return ([[FRONT currentSession] TEXTVIEW]);
+}
 
 @end
 

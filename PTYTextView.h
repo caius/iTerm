@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.25 2003-04-01 22:12:27 yfabian Exp $
+// $Id: PTYTextView.h,v 1.26 2003-05-13 15:32:58 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -267,6 +267,19 @@
 - (void) saveDocumentAs: (id) sender;
 
 @end
+
+//
+// find functionality
+//
+@interface PTYTextView (Find)
+- (IBAction) showFindPanel: (id) sender;
+- (IBAction) findNext: (id) sender;
+- (IBAction) findPrevious: (id) sender;
+- (IBAction) findWithSelection: (id) sender;
+- (IBAction) jumpToSelection: (id) sender;
+- (void) setSearchString: (NSString *) aString;
+@end
+
 
 //
 // private methods

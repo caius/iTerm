@@ -48,6 +48,7 @@
 		0464AB0E006CD2EC7F000001 = {
 			children = (
 				87D5C490043229390073D10E,
+				DD4BAB7C0470C44C00A8A065,
 				FBD0AD0A0337A5B701F955DB,
 				E8CF755F026DDA6303A80106,
 				E8CF7561026DDA6303A80106,
@@ -69,6 +70,7 @@
 		0464AB15006CD2EC7F000001 = {
 			children = (
 				87D5C48F043229390073D10E,
+				DD4BAB7B0470C44C00A8A065,
 				FB8D9E6503D6136101F955DB,
 				DD6ACB000410746C00A8A065,
 				FB019DE203670C6501F955DB,
@@ -593,6 +595,7 @@
 				DD1E48BE0431503800A8A065,
 				DD1E48BF0431503900A8A065,
 				87D5C491043229390073D10E,
+				DD4BAB7D0470C44C00A8A065,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -638,6 +641,7 @@
 				DD1E48AE0431501C00A8A065,
 				DD1E48AF0431501C00A8A065,
 				87D5C492043229390073D10E,
+				DD4BAB7E0470C44C00A8A065,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1127,6 +1131,30 @@
 			name = English;
 			path = English.lproj/iTerm.scriptTerminology;
 			refType = 4;
+		};
+		DD4BAB7B0470C44C00A8A065 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = FindPanelWindowController.h;
+			refType = 4;
+		};
+		DD4BAB7C0470C44C00A8A065 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = FindPanelWindowController.m;
+			refType = 4;
+		};
+		DD4BAB7D0470C44C00A8A065 = {
+			fileRef = DD4BAB7B0470C44C00A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD4BAB7E0470C44C00A8A065 = {
+			fileRef = DD4BAB7C0470C44C00A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		DD6ACB000410746C00A8A065 = {
 			fileEncoding = 4;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.56 2003-04-22 01:44:17 ujwal Exp $
+// $Id: PTYTextView.m,v 1.57 2003-05-13 15:32:58 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -35,6 +35,7 @@
 #import "PTYTextView.h"
 #import "PTYSession.h"
 #import "PseudoTerminal.h"
+#import "FindPanelWindowController.h"
 
 #if USE_CUSTOM_DRAWING
 @implementation PTYTextView
@@ -2108,6 +2109,64 @@
 }
 
 @end
+
+//
+// find functionality
+//
+
+static NSString *searchString = nil;
+
+@implementation PTYTextView (Find)
+
+- (IBAction) showFindPanel: (id) sender
+{
+    FindPanelWindowController *findWindowController;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView showFindPanel:%@]",
+          __FILE__, __LINE__, sender);
+#endif
+
+    findWindowController = [FindPanelWindowController singleInstance];
+    [findWindowController showWindow: self];
+}
+
+- (IBAction) findNext: (id) sender
+{
+    
+}
+
+- (IBAction) findPrevious: (id) sender
+{
+    
+}
+
+- (IBAction) findWithSelection: (id) sender
+{
+    
+}
+
+- (IBAction) jumpToSelection: (id) sender
+{
+    
+}
+
+- (void) setSearchString: (NSString *) aString
+{
+    if(searchString != nil)
+    {
+	[searchString release];
+	searchString = nil;
+    }
+    if(aString != nil)
+    {
+	[aString retain];
+	searchString = aString;
+    }
+}
+
+@end
+
 
 //
 // private methods

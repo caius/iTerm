@@ -243,6 +243,21 @@
 	return;
     }
 
+    // Drag only if we have moved the mouse about 8 pixels
+    float x1, y1, x2, y2, dx, dy;
+    x1 = [mouseEvent locationInWindow].x;
+    y1 = [mouseEvent locationInWindow].y;
+    x2 = [theEvent locationInWindow].x;
+    y2 = [theEvent locationInWindow].y;
+    dx = x1 - x2;
+    dy = y1 - y2;
+    if((dx*dx + dy*dy) < 64)
+    {
+	[super mouseDragged: theEvent];
+	return;
+    }
+
+
     // get the tabViewItem we want to drag
     windowPoint = [[self window] convertScreenToBase: [NSEvent mouseLocation]];
     localPoint = [self convertPoint: windowPoint fromView: nil];

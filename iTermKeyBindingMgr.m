@@ -145,6 +145,118 @@ static iTermKeyBindingMgr *singleInstance = nil;
 				profile: (NSString *) profile
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+	NSMutableDictionary *aProfile, *keyBinding;
+	unsigned int keyModifiers;
+	unichar keyUnicode;
+	NSString *keyString;
+	
+	aProfile = [profiles objectForKey: profile];
+	keyModifiers = modifiers;
+	
+	if(key >= KEY_NUMERIC_0 && key <= KEY_NUMERIC_PERIOD)
+		keyModifiers |= NSNumericPadKeyMask;
+	
+	switch (key)
+	{
+		case KEY_CURSOR_DOWN:
+			keyUnicode = NSDownArrowFunctionKey;
+			break;
+		case KEY_CURSOR_LEFT:
+			keyUnicode = NSLeftArrowFunctionKey;
+			break;
+		case KEY_CURSOR_RIGHT:
+			keyUnicode = NSRightArrowFunctionKey;
+			break;
+		case KEY_CURSOR_UP:
+			keyUnicode = NSUpArrowFunctionKey;
+			break;
+		case KEY_DEL:
+			keyUnicode = NSDeleteFunctionKey;
+			break;
+		case KEY_DELETE:
+			keyUnicode = 0x7f;
+			break;
+		case KEY_END:
+			keyUnicode = NSEndFunctionKey;
+			break;
+		case KEY_F1:
+		case KEY_F2:
+		case KEY_F3:
+		case KEY_F4:
+		case KEY_F5:
+		case KEY_F6:
+		case KEY_F7:
+		case KEY_F8:
+		case KEY_F9:
+		case KEY_F10:
+		case KEY_F11:
+		case KEY_F12:
+		case KEY_F13:
+		case KEY_F14:
+		case KEY_F15:
+		case KEY_F16:
+		case KEY_F17:
+		case KEY_F18:
+		case KEY_F19:
+		case KEY_F20:
+			keyUnicode = NSF1FunctionKey + (key - KEY_F1);
+			break;
+		case KEY_HOME:
+			keyUnicode = NSHomeFunctionKey;
+			break;
+		case KEY_NUMERIC_0:
+		case KEY_NUMERIC_1:
+		case KEY_NUMERIC_2:
+		case KEY_NUMERIC_3:
+		case KEY_NUMERIC_4:
+		case KEY_NUMERIC_5:
+		case KEY_NUMERIC_6:
+		case KEY_NUMERIC_7:
+		case KEY_NUMERIC_8:
+		case KEY_NUMERIC_9:
+			keyUnicode = '0' + (key - KEY_NUMERIC_0);
+			break;
+		case KEY_NUMERIC_EQUAL:
+			keyUnicode = '=';
+			break;
+		case KEY_NUMERIC_DIVIDE:
+			keyUnicode = '/';
+			break;
+		case KEY_NUMERIC_MULTIPLY:
+			keyUnicode = '*';
+			break;
+		case KEY_NUMERIC_MINUS:
+			keyUnicode = '-';
+			break;
+		case KEY_NUMERIC_PLUS:
+			keyUnicode = '+';
+			break;
+		case KEY_NUMERIC_PERIOD:
+			keyUnicode = '.';
+			break;
+		case KEY_NUMLOCK:
+			keyUnicode = NSClearLineFunctionKey;
+			break;
+		case KEY_PAGE_DOWN:
+			keyUnicode = NSPageDownFunctionKey;
+			break;
+		case KEY_PAGE_UP:
+			keyUnicode = NSPageUpFunctionKey;
+			break;
+		default:
+			NSLog(@"%s: unknown key %d", __PRETTY_FUNCTION__, key);
+			return;
+	}
+	
+	keyString = [NSString stringWithFormat: @"0x%x-0x%x", keyUnicode, keyModifiers];
+	keyBinding = [[NSMutableDictionary alloc] init];
+	[keyBinding setObject: [NSNumber numberWithInt: action] forKey: @"Action"];
+	if([text length] > 0)
+		[keyBinding setObject:[[text copy] autorelease] forKey: @"Text"];
+	[aProfile setObject: keyBinding forKey: keyString];
+	[keyBinding release];
+	
 }
 
 - (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.73 2004-03-02 07:08:41 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.74 2004-03-02 08:22:47 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -427,7 +427,7 @@ static float versionNumber;
 
 - (void)_addKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
-	if(returnCode == NSOKButton)
+	if(returnCode == NSOKButton && [[kbProfileName stringValue] length] > 0)
 	{
 		NSEnumerator *kbProfileEnumerator;
 		NSString *aString;

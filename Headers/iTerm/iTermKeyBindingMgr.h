@@ -67,7 +67,7 @@
 #define KEY_NUMERIC_8					37
 #define KEY_NUMERIC_9					38
 #define KEY_NUMERIC_EQUAL				39
-#define KEY_NUMERIC__DIVIDE				40
+#define KEY_NUMERIC_DIVIDE				40
 #define KEY_NUMERIC_MULTIPLY			41
 #define KEY_NUMERIC_MINUS				42
 #define KEY_NUMERIC_PLUS				43
@@ -102,7 +102,7 @@
 - (id) init;
 - (void) dealloc;
 
-- (NSMutableDictionary *) profiles;
+- (NSDictionary *) profiles;
 - (void) setProfiles: (NSMutableDictionary *) aDict;
 - (NSDictionary *) currentProfile;
 - (void) setCurrentProfile: (NSMutableDictionary *) aDict;

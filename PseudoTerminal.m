@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.193 2003-06-26 21:07:32 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.194 2003-06-28 19:11:26 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -998,7 +998,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     r=0;
     while (*p) {
         //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
-        [CONFIG_ENCODING addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        [CONFIG_ENCODING addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
         if (*p==[[currentPtySession TERMINAL] encoding]) r=p-[MAINMENU encodingList];
         p++;
     }

@@ -39,7 +39,6 @@
                 logStart = id; 
                 logStop = id; 
                 moveTabToNewWindowContextualMenuAction = id; 
-                newSession = id; 
                 nextSession = id; 
                 previousSession = id; 
                 saveSession = id; 
@@ -61,7 +60,7 @@
                 "CONFIG_BACKGROUND" = id; 
                 "CONFIG_BOLD" = id; 
                 "CONFIG_COL" = id; 
-                "CONFIG_ENCODING" = id; 
+                "CONFIG_ENCODING" = NSPopUpButton; 
                 "CONFIG_EXAMPLE" = id; 
                 "CONFIG_FOREGROUND" = id; 
                 "CONFIG_NAEXAMPLE" = id; 

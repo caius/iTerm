@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.55 2003-05-30 01:05:17 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.56 2003-06-28 19:11:26 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -51,7 +51,7 @@
     IBOutlet id CONFIG_PANEL;
     IBOutlet id CONFIG_COL;
     IBOutlet id CONFIG_ROW;
-    IBOutlet id CONFIG_ENCODING;
+    IBOutlet NSPopUpButton *CONFIG_ENCODING;
     IBOutlet id CONFIG_BACKGROUND;
     IBOutlet id CONFIG_FOREGROUND;
     IBOutlet id CONFIG_EXAMPLE;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.100 2004-02-13 22:13:14 ujwal Exp $
+// $Id: PTYTextView.m,v 1.101 2004-02-14 00:58:34 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -825,7 +825,9 @@
 			for(j = 0; j < WIDTH; j++) 
 			{
 				if ((forceUpdate || dirty[j]) && buf[j] && buf[j] != 0xffff) 
+				{
 					[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
+				}
 				if (fg[j] & BLINK_MASK) 
 				{ //if blink is set, switch the fg/bg color
 					t=fg[j] & 0x1f;

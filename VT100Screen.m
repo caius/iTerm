@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.178 2004-02-13 22:13:14 ujwal Exp $
+// $Id: VT100Screen.m,v 1.179 2004-02-14 00:58:34 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -721,14 +721,14 @@ static BOOL PLAYBELL = YES;
 }
 
 - (void) saveBuffer
-{
+{	
 	if (tempBuffer) free(tempBuffer);
 	tempBuffer=(unichar*)malloc(WIDTH*HEIGHT*sizeof(unichar));
 	memcpy(tempBuffer, screenLines, WIDTH*HEIGHT*sizeof(unichar));
 }
 
 - (void) restoreBuffer
-{
+{	
 	if (!tempBuffer) return;
 	memcpy(screenLines, tempBuffer, WIDTH*HEIGHT*sizeof(unichar));
 	free(tempBuffer);
@@ -817,6 +817,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)setNewLine
 {
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)-[%d,%d]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y, SCROLL_TOP, SCROLL_BOTTOM);
 #endif
@@ -908,7 +909,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)eraseInDisplay:(VT100TCC)token
 {
-    int x1, y1, x2, y2;
+    int x1, y1, x2, y2;	
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen eraseInDisplay:(param=%d)]",
@@ -938,15 +939,26 @@ static BOOL PLAYBELL = YES;
         y2 = HEIGHT - 1;
         break;
     }
-
-#if DEBUG_USE_BUFFER    
-    // if we are clearing the entire screen, move the current screen into the scrollback buffer
-#endif
+	
 
 	int idx1, idx2;
 	
 	idx1=y1*WIDTH+x1;
 	idx2=y2*WIDTH+x2;
+	
+	// If we are the top of the screen, move the contents to the scollback buffer
+	if(y1 == 0 && bufferLines)
+	{
+		memcpy(bufferLines+lastBufferLineIndex*WIDTH, screenLines+idx1, (idx2-idx1)*sizeof(unichar));
+		memcpy(bufferFGColor+lastBufferLineIndex*WIDTH, screenFGColor+idx1, (idx2-idx1)*sizeof(char));
+		memcpy(bufferBGColor+lastBufferLineIndex*WIDTH, screenBGColor+idx1, (idx2-idx1)*sizeof(char));
+		lastBufferLineIndex += (idx2-idx1)/WIDTH;
+		if (lastBufferLineIndex>scrollbackLines) {
+			lastBufferLineIndex=0;
+			bufferWrapped=1;
+		}		
+	}
+	
 	memset(screenLines+idx1,0,(idx2-idx1)*sizeof(unichar));
 	memset(screenFGColor+idx1,[TERMINAL foregroundColorCode],(idx2-idx1)*sizeof(char));
 	memset(screenBGColor+idx1,[TERMINAL backgroundColorCode],(idx2-idx1)*sizeof(char));
@@ -1176,11 +1188,11 @@ static BOOL PLAYBELL = YES;
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
 
-    if (SCROLL_BOTTOM>=HEIGHT-1&&bufferLines) {
+    if ((SCROLL_BOTTOM >= HEIGHT-1 || SCROLL_TOP == 0) && bufferLines) {
 		// move a line to buffer
-		memcpy(bufferLines,screenLines+SCROLL_TOP*WIDTH,WIDTH*sizeof(unichar));
-		memcpy(bufferFGColor,screenFGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
-		memcpy(bufferBGColor,screenBGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
+		memcpy(bufferLines+lastBufferLineIndex*WIDTH,screenLines+SCROLL_TOP*WIDTH,WIDTH*sizeof(unichar));
+		memcpy(bufferFGColor+lastBufferLineIndex*WIDTH,screenFGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
+		memcpy(bufferBGColor+lastBufferLineIndex*WIDTH,screenBGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
 		if (++lastBufferLineIndex>scrollbackLines) {
 			lastBufferLineIndex=0;
 			bufferWrapped=1;

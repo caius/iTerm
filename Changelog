@@ -1,6 +1,7 @@
 2004-02-13  ujwal
 
 	* Fixed "Kill Buffer" crash.
+	* Fixed "moving into buffer" in eraseInDisplay and scrollUp.
 
 2004-02-13  fabian
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.91 2003-01-30 16:10:33 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.92 2003-01-31 07:45:39 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -178,6 +178,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [aTabViewItem setView: aScrollView];
     [aScrollView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [aScrollView setLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [aScrollView setVerticalLineScroll: ([VT100Screen fontSize: FONT].height)];
     [aScrollView release];
 
     // Init the rest of the session
@@ -632,6 +633,7 @@ static NSString *ConfigToolbarItem = @"Config";
     for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
     {
         [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: ([VT100Screen fontSize: FONT].height)];
+[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setVerticalLineScroll: ([VT100Screen fontSize: FONT].height)];
 	if(resizeContentFrames)
 	{
 	    [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setFrameSize: size];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.17 2003-09-14 17:49:00 ujwal Exp $
+// $Id: iTermController.m,v 1.18 2003-09-14 17:50:25 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -405,13 +405,12 @@ static BOOL usingAutoLaunchScript = NO;
     
     // Initialize a new session
     aSession = [[PTYSession alloc] init];
+    // set our preferences
     [aSession setAddressBookEntry:entry];
     // Add this session to our term and make it current
     [term addInSessions: aSession];
     [aSession release];
 
-    // set our preferences
-    [aSession setPreferencesFromAddressBookEntry: entry];
     if ([entry objectForKey: @"Scrollback"])
         [[aSession SCREEN] setScrollback:[[entry objectForKey: @"Scrollback"] intValue]];
     else

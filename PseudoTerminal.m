@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.219 2003-09-05 00:10:42 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.220 2003-09-06 17:17:45 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -939,7 +939,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     WIDTH=w;
     HEIGHT=h;
-    NSLog(@"resize window: %d,%d",WIDTH,HEIGHT);
 
     [self setWindowSize: YES];
 /*    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {

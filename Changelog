@@ -1,3 +1,7 @@
+2003-09-06	ujwal
+
+    * Fixed check whether user has scrolled up in PTYSession: timerTick.
+
 2003-09-05	fabian
 
     * Fixed lost scrollback buffer size UI.

@@ -859,10 +859,10 @@ static NSString *PWD_ENVVALUE = @"~";
 
 #if USE_CUSTOM_DRAWING
     if (output>10&&dirty) {
-        if([TEXTVIEW resized]||([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-                                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-           ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-            [TEXTVIEW scrollEnd];
+	// If the user has not scrolled up, move to the end
+	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
+    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
+	    [TEXTVIEW scrollEnd];
         output=0;
         dirty=NO;
     }
@@ -878,10 +878,10 @@ static NSString *PWD_ENVVALUE = @"~";
         if (output>3) 
         {
             [SCREEN updateScreen];
+	    //NSLog(@"floatValue = %f", [[SCROLLVIEW verticalScroller] floatValue]);
             // If the user has not scrolled up, move to the end
-            if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-               ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
+	    if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
+	|| [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
                 [TEXTVIEW scrollEnd];
             output=0;
             dirty=NO;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.217 2004-05-09 22:02:38 ujwal Exp $
+// $Id: PTYTextView.m,v 1.218 2004-05-24 17:51:43 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1126,6 +1126,7 @@ static SInt32 systemVersion;
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
 	[self setNeedsDisplay: YES];
+	
 }
 
 - (void)mouseUp:(NSEvent *)event
@@ -1162,7 +1163,7 @@ static SInt32 systemVersion;
             [self _openURL: [self selectedText]];
         }
     }
-
+	
     selectMode = SELECT_CHAR;
 	[self setNeedsDisplay: YES];
 }
@@ -2034,6 +2035,39 @@ static SInt32 systemVersion;
 	transparency = fVal;
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
+}
+
+// service stuff
+- (id)validRequestorForSendType:(NSString *)sendType returnType:(NSString *)returnType
+{
+	//NSLog(@"%s: %@, %@", __PRETTY_FUNCTION__, sendType, returnType);
+	
+	if(sendType != nil && [sendType isEqualToString: NSStringPboardType])
+		return (self);
+	
+	return ([super validRequestorForSendType: sendType returnType: returnType]);
+}
+
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+    NSString *copyString;
+        
+    copyString=[self selectedText];
+    
+    if (copyString && [copyString length]>0) {
+        [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];
+        [pboard setString: copyString forType: NSStringPboardType];
+		return (YES);
+    }
+	
+	return (NO);
+}
+
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	return (NO);
 }
 
 @end

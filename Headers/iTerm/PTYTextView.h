@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.46 2004-05-09 20:38:12 ujwal Exp $
+// $Id: PTYTextView.h,v 1.47 2004-05-24 17:51:44 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -254,6 +254,11 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (unsigned int)characterIndexForPoint:(NSPoint)thePoint;
 - (long)conversationIdentifier;
 - (NSRect)firstRectForCharacterRange:(NSRange)theRange;
+
+	// service stuff
+- (id)validRequestorForSendType:(NSString *)sendType returnType:(NSString *)returnType;
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types;
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;	
 
 - (void)resetCharCache;
 

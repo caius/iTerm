@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.22 2004-04-11 02:05:43 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.23 2004-05-24 17:51:43 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -93,6 +93,11 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[self buildAddressBookMenu:nil];
+	
+	// register for services
+	[NSApp registerServicesMenuSendTypes: [NSArray arrayWithObjects: NSStringPboardType, nil]
+							 returnTypes: [NSArray arrayWithObjects: NSFilenamesPboardType, NSStringPboardType, nil]];
+	
 }
 
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification

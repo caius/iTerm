@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.135 2003-03-26 17:59:48 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.136 2003-03-27 21:08:42 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -207,8 +207,8 @@ static NSString *ConfigToolbarItem = @"Config";
     [[aSession SCREEN]  setFont:FONT nafont:NAFONT];
     
     // set the srolling
-    [[aSession SCROLLVIEW] setLineScroll: [[aSession SCREEN] characterSize].height];
     [[aSession SCROLLVIEW] setVerticalLineScroll: [[aSession SCREEN] characterSize].height];
+    [[aSession SCROLLVIEW] setVerticalPageScroll: [[aSession TEXTVIEW] frame].size.height];
     
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![pref silenceBell]];

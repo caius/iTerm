@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.77 2003-03-27 02:14:30 yfabian Exp $
+// $Id: VT100Screen.m,v 1.78 2003-03-27 21:08:43 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -804,7 +804,7 @@ static BOOL PLAYBELL = YES;
     if (idx<0) {
         NSLog(@"getIndexAtX Error! x:%d, y:%d",x,y);
     }
-    [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
+    //[(PTYTextView*)display setDirtyLine:TOP_LINE+y];
 #endif
 
 //    NSLog(@"index:%d[%d] (CURSOR_IN_MIDDLE:%d)",idx,[s length],CURSOR_IN_MIDDLE);
@@ -887,6 +887,8 @@ static BOOL PLAYBELL = YES;
 	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
 	    [aLine replaceCharactersInRange:NSMakeRange(idx,j)
 			      withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)] ascii:YES]];
+            [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
+
 #endif
 	    
             CURSOR_X=x;
@@ -979,6 +981,7 @@ static BOOL PLAYBELL = YES;
                 //      [s substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
                 [aLine replaceCharactersInRange:NSMakeRange(idx,i)
                             withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
+                [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
                 
 	    }
 #endif
@@ -1050,6 +1053,7 @@ static BOOL PLAYBELL = YES;
 	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
 	    [aLine replaceCharactersInRange:NSMakeRange(idx,x-idx)
 		    withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
+            [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
 #endif
 	    
             CURSOR_X=x;
@@ -1140,7 +1144,7 @@ static BOOL PLAYBELL = YES;
                 //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]); 
                 [aLine replaceCharactersInRange:NSMakeRange(idx,i)
                         withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];	    
-		
+		[(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
 	    }
 #endif
 	    
@@ -1177,7 +1181,7 @@ static BOOL PLAYBELL = YES;
 - (void)setNewLine
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)", __FILE__, __LINE__, CURSOR_X, CURSOR_Y);
+    NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)-[%d,%d]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y, SCROLL_TOP, SCROLL_BOTTOM);
 #endif
 
     if (CURSOR_Y  < SCROLL_BOTTOM) {
@@ -1285,6 +1289,10 @@ static BOOL PLAYBELL = YES;
 #endif
         }
     }
+#if DEBUG_USE_ARRAY
+    [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
+#endif
+
 }
 
 - (void)backSpace
@@ -1375,6 +1383,7 @@ static BOOL PLAYBELL = YES;
 	    // erase in our line
 	    aLine = [screenLines objectAtIndex: TOP_LINE  + y];
             if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length]-idx)];
+            [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
 #endif
 
         }
@@ -1393,6 +1402,7 @@ static BOOL PLAYBELL = YES;
 	    aLine = [screenLines objectAtIndex: TOP_LINE  + y];
            // NSLog(@"whole line %d(%d,%d)",y,idx,i);
             if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(0,[aLine length])];
+            [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
 #endif
 	    
         }
@@ -1436,6 +1446,7 @@ static BOOL PLAYBELL = YES;
 	aLine = [screenLines objectAtIndex: TOP_LINE  + CURSOR_Y];
         idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
         if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length] - idx)];
+        [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
 #endif
 	    
         
@@ -1625,6 +1636,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
+    int y;
     NSMutableAttributedString *aLine;
 #endif
 
@@ -1677,7 +1689,9 @@ static BOOL PLAYBELL = YES;
 	[aLine release];
 #endif
     }
-    
+#if DEBUG_USE_ARRAY
+    for(y=SCROLL_TOP;y<=SCROLL_BOTTOM; y++) [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
+#endif
 }
 
 - (void)scrollDown
@@ -1688,6 +1702,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
+    int y;
     NSMutableAttributedString *aLine;
 #endif
     
@@ -1741,7 +1756,9 @@ static BOOL PLAYBELL = YES;
 	
     }
     
-#if DEBUG_USE_BUFFER
+#if USE_CUSTOM_DRAWING
+    for(y=SCROLL_TOP;y<=SCROLL_BOTTOM; y++) [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
+#else
     [BUFFER deleteCharactersInRange:aRange];
 #endif
     
@@ -1835,6 +1852,8 @@ static BOOL PLAYBELL = YES;
 #endif
     
     [self trimLine:CURSOR_Y];
+    [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
+
 }
 
 - (void) insertLines: (int)n
@@ -1849,6 +1868,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
+    int y,y2;
     NSMutableAttributedString *aLine=[[NSMutableAttributedString alloc] init];
 #endif
     
@@ -1899,6 +1919,8 @@ static BOOL PLAYBELL = YES;
     }
 #if DEBUG_USE_ARRAY
     [aLine release];
+    y2=SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1?SCROLL_BOTTOM:HEIGHT-1;
+    for(y=CURSOR_Y;y<=y2;y++)     [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
 #endif
 }
 
@@ -1914,6 +1936,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
+    int y,y2;
     NSMutableAttributedString *aLine;
 #endif
 
@@ -1952,7 +1975,9 @@ static BOOL PLAYBELL = YES;
 #endif
         }
 #if DEBUG_USE_ARRAY
-	[aLine release];
+        [aLine release];
+        y2=SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1?SCROLL_BOTTOM:HEIGHT-1;
+        for(y=CURSOR_Y;y<=y2;y++)     [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
 #endif
 
     }

@@ -1,3 +1,7 @@
+2003-03-27	fabian
+    * Bug fixes in ARRAY mode
+    * back to periodic update mode with some improvement
+    
 2003-03-26	fabian
     * Bug fixes in ARRAY mode
     * No long uses periodic update

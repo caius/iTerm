@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.44 2003-03-27 02:14:29 yfabian Exp $
+// $Id: PTYTextView.m,v 1.45 2003-03-27 21:08:41 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -58,7 +58,9 @@
     deadkey = NO;
     startIndex=-1;
     for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
-         
+    [[self window] useOptimizedDrawing:YES];
+    [[self window] setAutodisplay:NO];
+    
     return (self);
 }
 
@@ -82,7 +84,8 @@
     deadkey = NO;
     startIndex=-1;
     for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
-
+    [[self window] useOptimizedDrawing:YES];
+    
     return (self);
 
 }
@@ -265,6 +268,7 @@
 
 - (void) setDirtyLine: (int) y
 {
+//    NSLog(@"setDirtyline:%d",y);
     [self setNeedsDisplayInRect:NSMakeRect(0,y*lineHeight,[self frame].size.width,(y+1)*lineHeight)];
 }
 
@@ -288,32 +292,44 @@
             [self setNeedsDisplayInRect:NSMakeRect(0,aSize.height,aSize.width,height)];
         }
     }
+//    [self displayIfNeeded];
 }
 
 -(void) scrollLineUp:(id) receiver
 {
-    NSRect scrollRect = [self frame];
+    NSRect scrollRect;
 
-    scrollRect.origin.y+=lineHeight;
-    scrollRect.size.height=lineHeight;
+    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll];
+    NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
     [self scrollRectToVisible: scrollRect];
 }
 
 -(void) scrollLineDown:(id) receiver
 {
-    NSRect scrollRect = [self frame];
+    NSRect scrollRect;
 
-    scrollRect.origin.y-=lineHeight;
-    scrollRect.size.height=lineHeight;
+    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect.origin.y+=[[self enclosingScrollView] verticalLineScroll];
     [self scrollRectToVisible: scrollRect];
 }
 
 -(void) scrollPageUp:(id) receiver
 {
+    NSRect scrollRect;
+
+    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
+    [self scrollRectToVisible: scrollRect];
 }
 
 -(void) scrollPageDown:(id) receiver;
 {
+    NSRect scrollRect;
+
+    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect.origin.y+=[[self enclosingScrollView] verticalPageScroll];
+    [self scrollRectToVisible: scrollRect];
 }
 
 -(void) hideCursor
@@ -1028,7 +1044,7 @@
                                        [(NSAttributedString *)aString length]);
     IM_INPUT_SELRANGE = selRange;
 
-    [self setNeedsDisplay:YES];
+    [self setDirtyLine:y];
 }
 
 - (void)unmarkText

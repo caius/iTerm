@@ -25,7 +25,7 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#define USE_CUSTOM_DRAWING	0
+#define USE_CUSTOM_DRAWING	1
 
 #if USE_CUSTOM_DRAWING
 #define DEBUG_USE_ARRAY		1

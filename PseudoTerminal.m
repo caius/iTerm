@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.20 2002-12-09 02:29:45 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.21 2002-12-09 07:59:39 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -75,8 +75,8 @@ static NSDictionary *deadStateAttribute;
     [MainMenu breakDown:[pref shell] cmdPath:&cmd cmdArgs:&arg];
 
     [self initSession:nil
-     foregroundColor:[pref foreground]
-     backgroundColor:[[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]
+     foregroundColor:[TERMINAL defaultFGColor]
+     backgroundColor:[[TERMINAL defaultBGColor] colorWithAlphaComponent: [[TERMINAL defaultBGColor] alphaComponent]]
             encoding:[pref encoding]
                 term:[pref terminalType]];
     [self startProgram:cmd arguments:arg];

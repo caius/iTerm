@@ -100,6 +100,13 @@
 		<dict>
 			<key>Attributes</key>
 			<dict>
+				<key>antiAlias</key>
+				<dict>
+					<key>Description</key>
+					<string>Anti alias for window</string>
+					<key>Name</key>
+					<string>anti alias</string>
+				</dict>
 				<key>columns</key>
 				<dict>
 					<key>Description</key>

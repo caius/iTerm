@@ -119,6 +119,13 @@
 			<string>Ptrm</string>
 			<key>Attributes</key>
 			<dict>
+				<key>antiAlias</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Aals</string>
+					<key>Type</key>
+					<string>NSNumber&lt;Bool&gt;</string>
+				</dict>
 				<key>columns</key>
 				<dict>
 					<key>AppleEventCode</key>

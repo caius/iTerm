@@ -40,7 +40,6 @@
 				0464AB22006CD2EC7F000001,
 				0464AB27006CD2EC7F000001,
 				0464AB2E006CD2EC7F000001,
-				8750B974046717F40073D10E,
 				0464AB32006CD2EC7F000001,
 			);
 			isa = PBXGroup;
@@ -50,7 +49,6 @@
 		};
 		0464AB0E006CD2EC7F000001 = {
 			children = (
-				87D5C490043229390073D10E,
 				DD4BAB7C0470C44C00A8A065,
 				20D5CC6404E7AA0500000106,
 				E8A66F030272453F03A80106,
@@ -84,7 +82,6 @@
 		};
 		0464AB15006CD2EC7F000001 = {
 			children = (
-				872EBC5904E42E320073D10E,
 				872EBC6B04E42E320073D10E,
 				872EBC6804E42E320073D10E,
 				872EBC6A04E42E320073D10E,
@@ -131,7 +128,6 @@
 			children = (
 				E813FB7D0297522703A80106,
 				E813FB86029754BB03A80106,
-				87D5C471043227820073D10E,
 				870EAAB504325A880073D10E,
 				870BCD83047070AC0073D10E,
 				8723EDEC04EAADBB0073D10E,
@@ -550,15 +546,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		872EBC5904E42E320073D10E = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = AddressBookWindowController.h;
-			path = Headers/iTerm/AddressBookWindowController.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		872EBC5A04E42E320073D10E = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -716,7 +703,6 @@
 				874205F10564168A00CFC3F1,
 				874205F30564168A00CFC3F1,
 				874205F40564168A00CFC3F1,
-				874205F50564168A00CFC3F1,
 				874205F60564168A00CFC3F1,
 				874205F70564168A00CFC3F1,
 				874205F90564168A00CFC3F1,
@@ -772,15 +758,6 @@
 		};
 		874205F40564168A00CFC3F1 = {
 			fileRef = 872EBC5804E42E320073D10E;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		874205F50564168A00CFC3F1 = {
-			fileRef = 872EBC5904E42E320073D10E;
 			isa = PBXBuildFile;
 			settings = {
 				ATTRIBUTES = (
@@ -949,7 +926,6 @@
 				874206170564168A00CFC3F1,
 				874206180564168A00CFC3F1,
 				874206190564168A00CFC3F1,
-				8742061A0564168A00CFC3F1,
 				8742061B0564168A00CFC3F1,
 				8742061C0564168A00CFC3F1,
 				8742061D0564168A00CFC3F1,
@@ -1043,12 +1019,6 @@
 			settings = {
 			};
 		};
-		8742061A0564168A00CFC3F1 = {
-			fileRef = 87D5C471043227820073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		8742061B0564168A00CFC3F1 = {
 			fileRef = 870EAAB504325A880073D10E;
 			isa = PBXBuildFile;
@@ -1089,7 +1059,6 @@
 				8742062A0564168A00CFC3F1,
 				8742062B0564168A00CFC3F1,
 				8742062C0564168A00CFC3F1,
-				8742062D0564168A00CFC3F1,
 				8742062E0564168A00CFC3F1,
 				874206320564168A00CFC3F1,
 				874206330564168A00CFC3F1,
@@ -1183,12 +1152,6 @@
 			settings = {
 			};
 		};
-		8742062D0564168A00CFC3F1 = {
-			fileRef = 87D5C490043229390073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		8742062E0564168A00CFC3F1 = {
 			fileRef = DD4BAB7C0470C44C00A8A065;
 			isa = PBXBuildFile;
@@ -1258,37 +1221,9 @@
 			dstPath = Fonts;
 			dstSubfolderSpec = 7;
 			files = (
-				8742063D0564168A00CFC3F1,
-				8742063E0564168A00CFC3F1,
-				8742063F0564168A00CFC3F1,
-				874206400564168A00CFC3F1,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8742063D0564168A00CFC3F1 = {
-			fileRef = 8750B975046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		8742063E0564168A00CFC3F1 = {
-			fileRef = 8750B976046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		8742063F0564168A00CFC3F1 = {
-			fileRef = 8750B977046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		874206400564168A00CFC3F1 = {
-			fileRef = 8750B978046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		874206430564168A00CFC3F1 = {
 			explicitFileType = wrapper.framework;
@@ -1479,59 +1414,11 @@
 			settings = {
 			};
 		};
-		8750B974046717F40073D10E = {
-			children = (
-				8750B975046717F40073D10E,
-				8750B976046717F40073D10E,
-				8750B977046717F40073D10E,
-				8750B978046717F40073D10E,
-			);
-			isa = PBXGroup;
-			path = Fonts;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		8750B975046717F40073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = file;
-			path = FreeMono.ttf;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		8750B976046717F40073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = file;
-			path = FreeMonoBold.ttf;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		8750B977046717F40073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = file;
-			path = FreeMonoBoldOblique.ttf;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		8750B978046717F40073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = file;
-			path = FreeMonoOblique.ttf;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		876DBBC1043277AF0073D10E = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.nib;
 			name = zh_CN;
 			path = zh_CN.lproj/PreferencePanel.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		876DBBC204327A170073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = zh_CN;
-			path = zh_CN.lproj/AddressBook.nib;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1543,14 +1430,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		876DBBC404327E9D0073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = zh_TW;
-			path = zh_TW.lproj/AddressBook.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		876DBBC5043281250073D10E = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.nib;
@@ -1559,27 +1438,11 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		876DBBC6043282C80073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = Japanese;
-			path = Japanese.lproj/AddressBook.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		876DBBC7043284990073D10E = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.nib;
 			name = Korean;
 			path = Korean.lproj/PreferencePanel.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		876DBBC80432860A0073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = Korean;
-			path = Korean.lproj/AddressBook.nib;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -1628,14 +1491,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		87898DDE0444F92A0073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = French;
-			path = French.lproj/AddressBook.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		87898DDF0444F93C0073D10E = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.nib;
@@ -1649,38 +1504,6 @@
 			lastKnownFileType = wrapper.nib;
 			name = French;
 			path = French.lproj/PseudoTerminal.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		87D5C471043227820073D10E = {
-			children = (
-				87D5C472043227820073D10E,
-				876DBBC204327A170073D10E,
-				876DBBC404327E9D0073D10E,
-				876DBBC6043282C80073D10E,
-				876DBBC80432860A0073D10E,
-				87898DDE0444F92A0073D10E,
-				F61DBB370557A773005F354A,
-			);
-			isa = PBXVariantGroup;
-			name = AddressBook.nib;
-			path = "";
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		87D5C472043227820073D10E = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = English;
-			path = English.lproj/AddressBook.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		87D5C490043229390073D10E = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.objc;
-			path = AddressBookWindowController.m;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2100,14 +1923,6 @@
 			lastKnownFileType = wrapper.nib;
 			name = German;
 			path = German.lproj/PseudoTerminal.nib;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F61DBB370557A773005F354A = {
-			isa = PBXFileReference;
-			lastKnownFileType = wrapper.nib;
-			name = German;
-			path = German.lproj/AddressBook.nib;
 			refType = 4;
 			sourceTree = "<group>";
 		};

@@ -35,7 +35,6 @@
                 editBookmarkPanel = NSPanel; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
-                openAddressBook = id; 
                 profilesWindow = NSWindow; 
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.11 2004-03-18 22:29:59 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.12 2004-03-19 08:11:55 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -64,7 +64,6 @@
 - (IBAction)showAbout:(id)sender;
 - (IBAction)aboutOK:(id)sender;
 
-- (IBAction)showABWindow:(id)sender;
 - (IBAction)showPrefWindow:(id)sender;
 
     // navigation

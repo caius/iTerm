@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.272 2004-03-19 01:43:37 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.273 2004-03-19 08:11:54 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -41,7 +41,6 @@
 #import <iTerm/VT100Screen.h>
 #import <iTerm/PTYTabView.h>
 #import <iTerm/PTYTabViewItem.h>
-#import <iTerm/AddressBookWindowController.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/iTermController.h>
 #import <iTerm/PTYTask.h>
@@ -54,6 +53,8 @@
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/ITConfigPanelController.h>
 #import <iTerm/ITSessionMgr.h>
+#import <iTerm/iTermTerminalProfileMgr.h>
+#import <iTerm/iTermDisplayProfileMgr.h>
 
 // keys for attributes:
 NSString *columnsKey = @"columns";
@@ -111,6 +112,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     NSFont *aFont1, *aFont2;
     NSSize contentSize;
+	NSString *displayProfile;
     
     // Create the tabview
     TABVIEW = [[PTYTabView alloc] initWithFrame: frame];
@@ -122,9 +124,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     aFont1 = FONT;
     if(aFont1 == nil)
     {
-		NSDictionary *defaultSession = [[ITAddressBookMgr sharedInstance] defaultAddressBookEntry];
-		aFont1 = [defaultSession objectForKey:@"Font"];
-		aFont2 = [defaultSession objectForKey:@"NAFont"];
+		NSDictionary *defaultSession = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
+		displayProfile = [defaultSession objectForKey: KEY_DISPLAY_PROFILE];
+		if(displayProfile == nil)
+			displayProfile = [[iTermDisplayProfileMgr singleInstance] defaultProfileName];
+		aFont1 = [[iTermDisplayProfileMgr singleInstance] windowFontForProfile: displayProfile];
+		aFont2 = [[iTermDisplayProfileMgr singleInstance] windowNAFontForProfile: displayProfile];
 		[self setFont: aFont1 nafont: aFont2];
     }
     
@@ -173,8 +178,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
 {
-    NSMutableDictionary *addressBookPreferences;
+    NSDictionary *addressBookPreferences;
     NSDictionary *tempPrefs;
+	NSString *terminalProfile, *displayProfile;
+	iTermTerminalProfileMgr *terminalProfileMgr;
+	iTermDisplayProfileMgr *displayProfileMgr;
+	ITAddressBookMgr *bookmarkManager;
+		
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -183,6 +193,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     NSParameterAssert(aSession != nil);    
 	
+	// get our shared managers
+	terminalProfileMgr = [iTermTerminalProfileMgr singleInstance];
+	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+	bookmarkManager = [ITAddressBookMgr sharedInstance];	
+	
     // Init the rest of the session
     [aSession setParent: self];
 	
@@ -190,37 +205,33 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if([aSession addressBookEntry] == nil)
     {
 		// get the default entry
-		addressBookPreferences = [NSMutableDictionary dictionaryWithDictionary: [[ITAddressBookMgr sharedInstance] addressBookEntry: 0]];
-		[addressBookPreferences removeObjectForKey: @"BackgroundImagePath"];
+		addressBookPreferences = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
 		[aSession setAddressBookEntry:addressBookPreferences];
-		//[aSession setPreferencesFromAddressBookEntry: addressBookPreferences];
 		tempPrefs = addressBookPreferences;
     }
     else
     {
-		//[aSession setPreferencesFromAddressBookEntry: [aSession addressBookEntry]];
 		tempPrefs = [aSession addressBookEntry];
     }
 	
+	terminalProfile = [tempPrefs objectForKey: KEY_TERMINAL_PROFILE];
+	displayProfile = [tempPrefs objectForKey: KEY_DISPLAY_PROFILE];
+	
     if(WIDTH == 0 && HEIGHT == 0)
     {
-		[self setColumns: [[tempPrefs objectForKey:@"Col"]intValue]];
-		[self setRows: [[tempPrefs objectForKey:@"Row"]intValue]];
+		[self setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
+		[self setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
     }
     [aSession initScreen: [TABVIEW contentRect] width:WIDTH height:HEIGHT];
-    if(FONT == nil) {
-		[self setFont: [tempPrefs objectForKey:@"Font"] nafont: [tempPrefs objectForKey:@"NAFont"]];
+    if(FONT == nil) 
+	{
+		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
+			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
     }
     
     [aSession setPreferencesFromAddressBookEntry: tempPrefs];
 	
-    
-    // Set the bell option
-    [VT100Screen setPlayBellFlag: ![[PreferencePanel sharedInstance] silenceBell]];
-	
-    // Set the blinking cursor option
-    [[aSession SCREEN] setBlinkingCursor: [[PreferencePanel sharedInstance] blinkingCursor]];
-	
+	 	
 	[self setCharSizeUsingFont: FONT];
     [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
 	[[aSession TEXTVIEW] setFont:FONT nafont:NAFONT];
@@ -1398,76 +1409,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] performClose:sender];
 }
 
-- (IBAction)saveSession:(id)sender
-{
-    NSMutableDictionary *currentABEntry;
-	
-    currentABEntry=[NSMutableDictionary dictionaryWithDictionary:[[_sessionMgr currentSession] addressBookEntry]];
-	
-    if(currentABEntry != nil)
-    {
-		[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[[_sessionMgr currentSession] TERMINAL] encoding]] forKey: @"Encoding"];
-		[currentABEntry setObject: [[_sessionMgr currentSession] foregroundColor] forKey: @"Foreground"];
-		[currentABEntry setObject: [[_sessionMgr currentSession] backgroundColor] forKey: @"Background"];
-		[currentABEntry setObject: [[_sessionMgr currentSession] boldColor] forKey: @"BoldColor"];
-		[currentABEntry setObject: [[_sessionMgr currentSession] cursorColor] forKey: @"CursorColor"];
-		[currentABEntry setObject: [[_sessionMgr currentSession] selectionColor] forKey: @"SelectionColor"];
-		[currentABEntry setObject: [NSString stringWithInt:WIDTH] forKey: @"Col"];
-		[currentABEntry setObject: [NSString stringWithInt:HEIGHT] forKey: @"Row"];
-		[currentABEntry setObject: [NSNumber numberWithInt: [[_sessionMgr currentSession] transparency]*100] forKey: @"Transparency"];
-		[currentABEntry setObject: [[self currentSession] TERM_VALUE] forKey: @"Term Type"];
-		[currentABEntry setObject: FONT forKey: @"Font"];
-		[currentABEntry setObject: NAFONT forKey: @"NAFont"];
-		[currentABEntry setObject: [NSNumber numberWithBool:[[self currentSession] antiIdle]] forKey: @"AntiIdle"];
-		[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]] forKey: @"AICode"];
-		[currentABEntry setObject: [[_sessionMgr currentSession] backgroundImagePath]?[[_sessionMgr currentSession] backgroundImagePath]:@"" forKey: @"BackgroundImagePath"];
-		
-		
-		[[[ITAddressBookMgr sharedInstance] addressBook] replaceObjectAtIndex: [[[ITAddressBookMgr sharedInstance] addressBook] indexOfObject: [[_sessionMgr currentSession] addressBookEntry]] withObject: currentABEntry];
-		[[_sessionMgr currentSession] setAddressBookEntry: currentABEntry];
-		
-		NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
-						[currentABEntry objectForKey:@"Name"],
-						NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
-						nil,nil);
-		
-    }
-    else
-    {
-		NSMutableDictionary *new;
-		
-		new=[[NSMutableDictionary alloc] initWithObjectsAndKeys:
-			[[_sessionMgr currentSession] name],@"Name",
-			[[[_sessionMgr currentSession] SHELL] path],@"Command",
-			[NSNumber numberWithUnsignedInt:[[[_sessionMgr currentSession] TERMINAL] encoding]],@"Encoding",
-			[[_sessionMgr currentSession] foregroundColor],@"Foreground",
-			[[_sessionMgr currentSession] backgroundColor],@"Background",
-			[[_sessionMgr currentSession] boldColor],@"BoldColor",
-			[[_sessionMgr currentSession] cursorColor],@"CursorColor",
-			[[_sessionMgr currentSession] selectionColor],@"SelectionColor",
-			[NSString stringWithInt:WIDTH],@"Col",
-			[NSString stringWithInt:HEIGHT],@"Row",
-			[NSNumber numberWithInt:100-[[[[_sessionMgr currentSession] TEXTVIEW] defaultBGColor] alphaComponent]*100],@"Transparency",
-			[[self currentSession] TERM_VALUE],@"Term Type",
-			@"",@"Directory",
-			FONT,@"Font",
-			NAFONT,@"NAFont",
-			[NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
-			[NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
-			[NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
-			[NSNumber numberWithBool:[[self currentSession] doubleWidth]],@"DoubleWidth",
-			NULL];
-        [[ITAddressBookMgr sharedInstance] addAddressBookEntry: new];
-        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
-                        [new objectForKey:@"Name"],
-                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
-                        nil,nil);
-		[new release];
-		[[_sessionMgr currentSession] setAddressBookEntry: new];
-    }
-    
-    [[ITAddressBookMgr sharedInstance] saveAddressBook];
-}
 
 @end
 

@@ -38,7 +38,6 @@
 	IBOutlet NSMatrix *tabPosition;
     IBOutlet NSButton *selectionCopiesText;
     IBOutlet id hideTab;
-    IBOutlet id openAddressBook;
     IBOutlet id promptOnClose;
     IBOutlet NSButton *focusFollowsMouse;
 	IBOutlet NSTextField *wordChars;
@@ -67,7 +66,6 @@
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
     int defaultTabViewType;
-    BOOL defaultOpenAddressBook;
     BOOL defaultPromptOnClose;
     BOOL defaultFocusFollowsMouse;
 }
@@ -96,16 +94,12 @@
 - (IBAction) deleteBookmark: (id) sender;
 - (IBAction) editBookmark: (id) sender;
 
-- (BOOL) antiAlias;
 - (BOOL) copySelection;
 - (void) setCopySelection: (BOOL) flag;
 - (BOOL) hideTab;
-- (BOOL) silenceBell;
 - (NSTabViewType) tabViewType;
 - (void) setTabViewType: (NSTabViewType) type;
 - (BOOL) promptOnClose;
-- (BOOL) openAddressBook;
-- (BOOL) blinkingCursor;
 - (BOOL) focusFollowsMouse;
 - (NSString *) wordChars;
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.171 2004-03-19 06:50:31 ujwal Exp $
+// $Id: PTYTextView.m,v 1.172 2004-03-19 08:11:54 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -170,6 +170,17 @@
 #endif
     antiAlias = antiAliasFlag;
 }
+
+- (BOOL) blinkingCursor
+{
+	return (blinkingCursor);
+}
+
+- (void) setBlinkingCursor: (BOOL) bFlag
+{
+	blinkingCursor = bFlag;
+}
+
 
 - (NSDictionary*) markedTextAttributes
 {
@@ -790,7 +801,7 @@
 	x1=[dataSource cursorX]-1;
 	y1=[dataSource cursorY]-1;
 	//draw cursor
-	if([[PreferencePanel sharedInstance] blinkingCursor])
+	if([self blinkingCursor])
 		showCursor = !showCursor;
 	else
 		showCursor = YES;

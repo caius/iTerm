@@ -36,16 +36,10 @@
 #define KEY_DISPLAY_PROFILE		@"Display Profile"
 #define KEY_DEFAULT_BOOKMARK	@"Default Bookmark"
 
-
-extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
-extern BOOL isDefaultEntry( NSDictionary *entry );
-extern NSString *entryVisibleName( NSDictionary *entry, id sender );
-
 @class TreeNode;
 
 @interface ITAddressBookMgr : NSObject 
 {
-    NSMutableArray *_addressBookArray;
 	TreeNode *bookmarks;
 }
 
@@ -53,13 +47,6 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 
 - (void) setBookmarks: (NSDictionary *) aDict;
 - (NSDictionary *) bookmarks;
-- (void)showABWindow;
-- (NSArray *)addressBook;
-- (NSMutableDictionary *) defaultAddressBookEntry;
-- (NSMutableDictionary *)addressBookEntry: (int) entryIndex;
-- (void)saveAddressBook;
-- (void) addAddressBookEntry: (NSDictionary *) entry;
-- (NSArray *)addressBookNames;
 
 // Model for NSOutlineView tree structure
 - (id) child:(int)index ofItem:(id)item;
@@ -79,9 +66,6 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 @end
 
 @interface ITAddressBookMgr (Private)
-
-- (void)initAddressBook;
-- (NSDictionary *)newDefaultAddressBookEntry;
 
 - (BOOL) _checkForDefaultBookmark: (TreeNode *) rootNode defaultBookmark: (TreeNode **)defaultBookmark;
 

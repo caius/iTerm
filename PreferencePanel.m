@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.97 2004-03-19 01:43:37 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.98 2004-03-19 08:11:54 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -27,7 +27,6 @@
 
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/NSStringITerm.h>
-#import <iTerm/AddressBookWindowController.h>
 #import <iTerm/iTermController.h>
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/iTermKeyBindingMgr.h>
@@ -101,7 +100,6 @@ static BOOL editingBookmark = NO;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
-    defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 	
@@ -117,7 +115,6 @@ static BOOL editingBookmark = NO;
     [tabPosition selectCellWithTag: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
-    [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
 	[wordChars setStringValue: [prefs objectForKey: @"WordCharacters"]?[prefs objectForKey: @"WordCharacters"]:@""];
@@ -139,14 +136,12 @@ static BOOL editingBookmark = NO;
     defaultTabViewType=[[tabPosition selectedCell] tag];
     defaultCopySelection=([selectionCopiesText state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
-    defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
-    [prefs setBool:defaultOpenAddressBook forKey:@"OpenAddressBook"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
 	[prefs setObject: [wordChars stringValue] forKey: @"WordCharacters"];
@@ -422,10 +417,6 @@ static BOOL editingBookmark = NO;
 
 
 // accessors for preferences
-- (BOOL) antiAlias
-{
-    return YES; // fix me
-}
 
 
 - (BOOL) copySelection
@@ -443,11 +434,6 @@ static BOOL editingBookmark = NO;
     return (defaultHideTab);
 }
 
-- (BOOL) silenceBell
-{
-    return (NO); // fix me
-}
-
 - (void) setTabViewType: (NSTabViewType) type
 {
     defaultTabViewType = type;
@@ -458,19 +444,9 @@ static BOOL editingBookmark = NO;
     return (defaultTabViewType);
 }
 
-- (BOOL)openAddressBook
-{
-    return (defaultOpenAddressBook);
-}
-
 - (BOOL)promptOnClose
 {
     return (defaultPromptOnClose);
-}
-
-- (BOOL) blinkingCursor
-{
-    return (NO); // fix me
 }
 
 - (BOOL) focusFollowsMouse
@@ -483,21 +459,6 @@ static BOOL editingBookmark = NO;
 	return ([prefs objectForKey: @"WordCharacters"]);
 }
 
-- (IBAction) editDefaultSession: (id) sender
-{
-    AddressBookWindowController *abWindowController;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController showABWindow:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-
-    abWindowController = [AddressBookWindowController singleInstance];
-    if([[abWindowController window] isVisible] == NO)
-	[abWindowController setAddressBook: [[ITAddressBookMgr sharedInstance] addressBook]];
-    
-    [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
-}
 
 @end
 

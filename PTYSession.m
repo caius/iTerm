@@ -36,7 +36,6 @@
 #import <iTerm/iTermController.h>
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/PTYTabViewitem.h>
-#import <iTerm/AddressBookWindowController.h>
 #import <iTerm/iTermKeyBindingMgr.h>
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
@@ -168,7 +167,6 @@ static NSString *PWD_ENVVALUE = @"~";
 	
     [TEXTVIEW setDataSource: SCREEN];
     [TEXTVIEW setDelegate: self];
-    [TEXTVIEW setAntiAlias: [[PreferencePanel sharedInstance] antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
     [TEXTVIEW release];
     [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
@@ -997,6 +995,10 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setTransparency: [displayProfileMgr transparencyForProfile: displayProfile]];    
 	
     // set up the rest of the preferences
+    [VT100Screen setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
+	[SCREEN setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
+	[TEXTVIEW setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
+	[TEXTVIEW setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
     [self setEncoding: [terminalProfileMgr encodingForProfile: terminalProfile]];
     [self setTERM_VALUE: [terminalProfileMgr typeForProfile: terminalProfile]];
     [self setAntiCode: [terminalProfileMgr idleCharForProfile: terminalProfile]];

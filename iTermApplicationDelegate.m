@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.18 2004-03-19 01:43:40 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.19 2004-03-19 08:11:55 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -178,11 +178,6 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 - (IBAction) nextTerminal: (id) sender
 {
     [[iTermController sharedInstance] nextTerminal:sender];
-}
-
-- (IBAction)showABWindow:(id)sender
-{
-    [[ITAddressBookMgr sharedInstance] showABWindow];
 }
 
 - (IBAction)showPrefWindow:(id)sender

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.31 2004-03-19 01:43:40 ujwal Exp $
+// $Id: iTermController.m,v 1.32 2004-03-19 08:11:55 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -37,7 +37,6 @@
 #import <iTerm/PTYSession.h>
 #import <iTerm/VT100Screen.h>
 #import <iTerm/NSStringITerm.h>
-#import <iTerm/AddressBookWindowController.h>
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
@@ -100,11 +99,7 @@ static BOOL usingAutoLaunchScript = NO;
 	return (YES);
     }
 
-    // else do the usual default stuff.
-    if ([[PreferencePanel sharedInstance] openAddressBook])
-        [[ITAddressBookMgr sharedInstance] showABWindow];
-    else
-        [self newWindow:nil];
+	[self newWindow:nil];
     
     return YES;
 }
@@ -178,6 +173,9 @@ static BOOL usingAutoLaunchScript = NO;
     
     encodingList=[NSString availableStringEncodings];
     terminalWindows = [[NSMutableArray alloc] init];
+	
+	// read preferences
+	[[PreferencePanel sharedInstance] readPreferences];
     
     return (self);
 }

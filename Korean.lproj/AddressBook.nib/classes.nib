@@ -63,7 +63,7 @@
                 ansiRed = NSColorWell; 
                 ansiWhite = NSColorWell; 
                 ansiYellow = NSColorWell; 
-                backgroundImage = NSButton; 
+                backgroundImage = NSImageView; 
                 colorScheme = id; 
                 deleteButton = NSButton; 
                 duplicateButton = NSButton; 

@@ -88,7 +88,7 @@
 
     // background image
     IBOutlet NSButton *useBackgroundImage;
-    IBOutlet NSButton *backgroundImage;
+    IBOutlet NSImageView *backgroundImage;
 
     NSFont *aeFont, *aeNAFont;
     BOOL changingNA;

@@ -146,7 +146,6 @@ static NSString *PWD_ENVVALUE = @"~";
     // allocate an imageview for the background image
     imageView = [[iTermImageView alloc] initWithFrame: aRect];
     [imageView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-    [imageView setImageScaling: NSScaleToFit];
 
     // Allocate a scrollview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
@@ -1031,6 +1030,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    [SCROLLVIEW setDrawsBackground: NO];
 	    [self setBackgroundColor: [[NSColor whiteColor]  colorWithAlphaComponent: 1.0]];
 	    [imageView setImage: anImage];
+	    [imageView setImageScaling: NSScaleToFit];
 	    [imageView setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];
 	    [anImage release];
 	    //[SCREEN initScreen];

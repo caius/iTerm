@@ -7,6 +7,7 @@
       
 
 2002-01-13	fabian
+    * Version number is now 0.6.2
     * New command in Tools menu: Save Config
     * Add Hide-Tab as an option
     * Updated Chinese nib files(Japanese nib files need

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.76 2003-01-15 07:54:27 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.77 2003-01-15 17:56:16 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1362,31 +1362,53 @@ static NSString *ConfigToolbarItem = @"Config";
 
 - (IBAction)saveSession:(id)sender
 {
-    NSDictionary *ae;
+    NSDictionary *new, *old=[currentPtySession addressBookEntry];
 
-    ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-        [self currentSessionName],@"Name",
-        [SHELL path],@"Command",
-        [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
-        [TERMINAL defaultFGColor],@"Foreground",
-        [TERMINAL defaultBGColor],@"Background",
-        [NSString stringWithInt:WIDTH],@"Row",
-        [NSString stringWithInt:HEIGHT],@"Col",
-        [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
-        [[self currentSession] TERM_VALUE],@"Term Type",
-        @"",@"Directory",
-        [SCREEN font],@"Font",
-        [SCREEN nafont],@"NAFont",
-        [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
-        [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
-        [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
-        NULL];
-//    NSLog(@"new entry:%@",ae);
-    [MAINMENU addAddressBookEntry: ae];
+    if (old&&[[old objectForKey:@"Name"] isEqualToString:[currentPtySession name]]) {
+        new=[[NSDictionary alloc] initWithObjectsAndKeys:
+            [old objectForKey:@"Name"],@"Name",
+            [old objectForKey:@"Command"],@"Command",
+            [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
+            [TERMINAL defaultFGColor],@"Foreground",
+            [TERMINAL defaultBGColor],@"Background",
+            [NSString stringWithInt:WIDTH],@"Row",
+            [NSString stringWithInt:HEIGHT],@"Col",
+            [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
+            [[self currentSession] TERM_VALUE],@"Term Type",
+            [old objectForKey:@"Directory"],@"Directory",
+            [SCREEN font],@"Font",
+            [SCREEN nafont],@"NAFont",
+            [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
+            [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
+            [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
+            NULL];
+        //    NSLog(@"new entry:%@",ae);
+        [MAINMENU replaceAddressBookEntry:old with:new];
+    }
+    else {
+        new=[[NSDictionary alloc] initWithObjectsAndKeys:
+            [self currentSessionName],@"Name",
+            (old?[old objectForKey:@"Command"]:[SHELL path]),@"Command",
+            [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
+            [TERMINAL defaultFGColor],@"Foreground",
+            [TERMINAL defaultBGColor],@"Background",
+            [NSString stringWithInt:WIDTH],@"Row",
+            [NSString stringWithInt:HEIGHT],@"Col",
+            [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
+            [[self currentSession] TERM_VALUE],@"Term Type",
+            (old?[old objectForKey:@"Directory"]:@""),@"Directory",
+            [SCREEN font],@"Font",
+            [SCREEN nafont],@"NAFont",
+            [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
+            [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
+            [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
+            NULL];
+        //    NSLog(@"new entry:%@",ae);
+        [MAINMENU addAddressBookEntry: new];
+    }
     [MAINMENU saveAddressBook];
+
 }
-
-
 
 @end
 
@@ -1547,6 +1569,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [[term currentSession] setAntiCode:[[anEntry objectForKey:@"AICode"] intValue]];
     [[term currentSession] setAntiIdle:[[anEntry objectForKey:@"AntiIdle"] boolValue]];
     [[term currentSession] setAutoClose:[[anEntry objectForKey:@"AutoClose"] intValue]];
+    [[term currentSession] setAddressBookEntry:anEntry];
     
 }
 

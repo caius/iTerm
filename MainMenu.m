@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.24 2003-01-15 16:08:05 ujwal Exp $
+// $Id: MainMenu.m,v 1.25 2003-01-15 17:56:16 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -191,7 +191,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [term setWindowSize];
     };
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
-    
+    [[term currentSession] setAddressBookEntry:entry];    
 }
 
 - (IBAction)adbAddEntry:(id)sender
@@ -742,4 +742,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [addressBook sortUsingFunction: addressBookComparator context: nil];
     [adTable reloadData];
 }
+
+- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new
+{
+    [addressBook replaceObjectAtIndex:[addressBook indexOfObject:old] withObject:new];
+}
+
 @end

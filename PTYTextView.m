@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.15 2003-01-13 16:04:26 ujwal Exp $
+// $Id: PTYTextView.m,v 1.16 2003-01-15 17:56:16 yfabian Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -618,6 +618,13 @@
     
 }
 
+- (void)otherMouseDown:(NSEvent *)theEvent
+{
+    NSLog(@"otherMouseDown");
+    //[self paste];
+}
+
+
 
 @end
 
@@ -664,7 +671,6 @@
     [(NSData *)theContextInfo release];
     
 }
-
 
 @end
 

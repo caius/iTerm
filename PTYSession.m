@@ -53,6 +53,7 @@ static NSString *PWD_ENVVALUE = @"~";
         deadStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
     }
+    addressBookEntry=nil;
     
     return (self);
     
@@ -974,6 +975,16 @@ static NSString *PWD_ENVVALUE = @"~";
 - (BOOL)exited
 {
     return EXIT;
+}
+
+- (void) setAddressBookEntry:(NSDictionary*) entry
+{
+    addressBookEntry=entry;
+}
+
+- (NSDictionary *) addressBookEntry
+{
+    return addressBookEntry;
 }
 
 @end

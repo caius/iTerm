@@ -57,7 +57,7 @@
     BOOL autoClose;
     NSFont *configFont;
     PreferencePanel *pref;
-
+    NSDictionary *addressBookEntry;
 }
 
 // init/dealloc
@@ -130,6 +130,8 @@
 - (void) setAntiCode:(int)code;
 - (BOOL) autoClose;
 - (void) setAutoClose:(BOOL)set;
+- (NSDictionary *) addressBookEntry;
+- (void) setAddressBookEntry:(NSDictionary*) entry;
 
 - (void)clearBuffer;
 - (void)logStart;

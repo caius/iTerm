@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.9 2003-01-14 19:11:53 yfabian Exp $
+// $Id: MainMenu.h,v 1.10 2003-01-15 17:56:16 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -99,6 +99,7 @@
 - (NSArray *)addressBookNames;
 - (NSDictionary *)addressBookEntry: (int) entryIndex;
 - (void) addAddressBookEntry: (NSDictionary *) entry;
+- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new;
 
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender;

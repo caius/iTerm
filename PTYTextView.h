@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.7 2003-01-10 16:08:11 ujwal Exp $
+// $Id: PTYTextView.h,v 1.8 2003-01-15 17:56:16 yfabian Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -40,6 +40,7 @@
 - (BOOL)shouldDrawInsertionPoint;
 - (void)drawRect:(NSRect)rect;
 - (void)keyDown:(NSEvent *)event;
+- (void)otherMouseDown:(NSEvent *)theEvent;
 - (void)doCommandBySelector:(SEL)aSelector;
 - (void)insertText:(id)aString;
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange;

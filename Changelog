@@ -1,6 +1,7 @@
 2003-09-12	ujwal
 
     * Changed preview of background image to a real NSImageView.
+    * Fixed image scaling issue.
 
 2003-09-11	ujwal
 

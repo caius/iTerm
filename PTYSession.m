@@ -1030,6 +1030,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    [SCROLLVIEW setDrawsBackground: NO];
 	    [self setBackgroundColor: [[NSColor whiteColor]  colorWithAlphaComponent: 1.0]];
 	    [imageView setImage: anImage];
+	    [anImage setScalesWhenResized: YES];
 	    [imageView setImageScaling: NSScaleToFit];
 	    [imageView setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];
 	    [anImage release];

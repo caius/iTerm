@@ -51,6 +51,7 @@
 {
     [[NSColor clearColor] set];
     NSRectFill([self bounds]);
+    [[self image] setSize: [self bounds].size];
     [[self image] dissolveToPoint:NSZeroPoint fraction: (1.0 - [self transparency])];
 }
 

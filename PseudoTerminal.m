@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.42 2002-12-20 00:06:44 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.43 2002-12-20 00:34:41 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1086,7 +1086,7 @@ static NSString *ConfigToolbarItem = @"Config";
     SHELL = [aSession SHELL];
     TERMINAL = [aSession TERMINAL];
     SCREEN = [aSession SCREEN];
-    if (currentPtySession) [currentPtySession resetStatus];
+    [aSession resetStatus];
     currentSessionIndex = [TABVIEW indexOfTabViewItem: tabViewItem];
     currentPtySession = aSession;
     [self setWindowTitle];

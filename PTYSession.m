@@ -211,7 +211,6 @@ static NSDictionary *deadStateAttribute;
                 [tabViewItem setLabelAttributes: newOutputStateAttribute];
             [tabViewItem redrawLabel];
         }
-        //[parent _drawSessionButtons];
     }
     
     [TERMINAL putStreamData:data];
@@ -589,28 +588,26 @@ static NSDictionary *deadStateAttribute;
         }
     }
     if (oIdleCount>5&&!waiting) {
-        waiting=YES;
         if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
         {
+            waiting=YES;
             if ([self idle])
                 [tabViewItem setLabelAttributes: idleStateAttribute];
             else
                 [tabViewItem setLabelAttributes: newOutputStateAttribute];
             [tabViewItem redrawLabel];
         }
-        //[parent _drawSessionButtons];
     }
     else if (waiting&&oIdleCount<=5) {
-        waiting=NO;
         if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
         {
+            waiting=NO;
             if ([self idle])
                 [tabViewItem setLabelAttributes: idleStateAttribute];
             else
                 [tabViewItem setLabelAttributes: newOutputStateAttribute];
             [tabViewItem redrawLabel];
         }
-        //[parent _drawSessionButtons];
     }
     [SCREEN blink];
 
@@ -682,7 +679,6 @@ static NSDictionary *deadStateAttribute;
         name = theName;
     }
     [tabViewItem setLabel: theName];
-    //[parent _drawSessionButtons];
 }
 
 - (PTYTask *) SHELL
@@ -893,7 +889,6 @@ static NSDictionary *deadStateAttribute;
 
 - (void) resetStatus;
 {
-    iIdleCount=oIdleCount=0;
     waiting=REFRESHED=NO;
     [tabViewItem setLabelAttributes: chosenStateAttribute];
     [tabViewItem redrawLabel];

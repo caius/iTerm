@@ -2,6 +2,8 @@
     
     * When preferences are read, if the selected font is not 
       found, fall back on the default fixed pit font for the user.
+      
+    * Increased the width of the encoding combo-box in all nibs.
 
 2003-04-18	ujwal
 

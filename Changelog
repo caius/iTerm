@@ -1,3 +1,8 @@
+2003-01-10	fabian
+    * Better resize behavior
+    * Tab title changes when an icon title change
+      request is received
+    
 2003-01-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed some scrolling/sizing issues by overriding 
@@ -7,6 +12,8 @@
 
 2003-01-09 	fabian
     * help docs updated. Removed unnecessary links and pics
+    * Fixed a bug in scrollDown
+    * Fixed a bug in putToken(), NEL
     
 2003-01-08	fabian
     * Added new option in address book entries that allow

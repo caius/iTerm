@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.11 2003-01-09 20:37:39 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.12 2003-01-10 18:30:01 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -491,7 +491,15 @@ static VT100TCC decode_xterm(unsigned char *datap,
         data = [NSData dataWithBytes:s length:c-s];
         result.u.string = [[[NSString alloc] initWithData:data
                                                  encoding:enc] autorelease];
-        result.type = XTERMCC_TITLE;
+        switch (mode) {
+            case 0:
+               result.type = XTERMCC_WINICON_TITLE;
+            case 1:
+               result.type = XTERMCC_ICON_TITLE;
+            case 2:
+            default:
+                result.type = XTERMCC_WIN_TITLE;
+        }
 //        NSLog(@"result: %d[%@],%d",result.type,result.u.string,*rmlen);
     }
 
@@ -1426,6 +1434,7 @@ static VT100TCC decode_string(unsigned char *datap,
     if(bold && [[NSFontManager  sharedFontManager] fontNamed: [[SCREEN font] fontName] hasTraits: NSBoldFontMask])
     {
         aFont = [[NSFontManager sharedFontManager] convertFont: [SCREEN font] toHaveTrait: NSBoldFontMask];
+        NSLog(@"%@->%@",[SCREEN font], aFont);
     }
     else
     {

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.17 2003-01-10 16:08:14 ujwal Exp $
+// $Id: VT100Screen.m,v 1.18 2003-01-10 18:30:01 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -210,38 +210,32 @@ static BOOL PLAYBELL = YES;
 #endif
 
     if (width >= MIN_WIDTH && height >= MIN_HEIGHT) {
-
+        if (height>=HEIGHT) {
+            for(i=HEIGHT;i<height;i++)
+                [STORAGE appendAttributedString:[self attrString:@"\n"]];
+        }
+        else {
+            TOP_LINE+=HEIGHT-height;
+            CURSOR_Y-=HEIGHT-height;
+            if (CURSOR_Y<0) CURSOR_Y=0;
+            SAVE_CURSOR_Y-=HEIGHT-height;
+            if (SAVE_CURSOR_Y<0) SAVE_CURSOR_Y=0;
+        }
+        
         if (width>=WIDTH) {
-            if (height>=HEIGHT) {
-                for(i=HEIGHT;i<height;i++)
-                    [STORAGE appendAttributedString:[self attrString:@"\n"]];
-            }
-            else {
-                TOP_LINE+=HEIGHT-height;
-                CURSOR_Y-=HEIGHT-height;
-                if (CURSOR_Y<0) CURSOR_Y=0;
-                SAVE_CURSOR_Y-=HEIGHT-height;
-                if (SAVE_CURSOR_Y<0) SAVE_CURSOR_Y=0;
-
-            }
-
             HEIGHT=height;
             WIDTH=width;
             SCROLL_TOP = 0;
             SCROLL_BOTTOM = HEIGHT - 1;
         }
         else {
-            TOP_LINE+=HEIGHT;
             WIDTH = width;
             HEIGHT = height;
-
-            CURSOR_X = CURSOR_Y = 0;
-            SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
+            for(i=0;i<height;i++) [self trimLine:i];
+            if (CURSOR_X>=width) CURSOR_X=width-1;
+            if (SAVE_CURSOR_X>=width) SAVE_CURSOR_X=width-1;
             SCROLL_TOP = 0;
             SCROLL_BOTTOM = HEIGHT - 1;
-
-
-            [self initScreen];
         }
     }
 }
@@ -405,7 +399,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen putToken:%d]",__FILE__, __LINE__, token);
 #endif
-    static unichar s[300];
+    static unichar s[300]={0};
     int i;
     NSString *str;
     
@@ -445,7 +439,9 @@ static BOOL PLAYBELL = YES;
     case VT100CSI_CUU: [self cursorUp:token.u.csi.p[0]]; break;
     case VT100CSI_DA:   [self deviceAttribute:token]; break;
     case VT100CSI_DECALN:
-        for (i=0;i<WIDTH;i++) s[i]='E';
+        if (!s[0]) {
+            for (i=0;i<WIDTH;i++) s[i]='E';
+        }
         str=[NSString stringWithCharacters:s length:WIDTH];
         for(i=0;i<HEIGHT;i++)
             [self setStringToX:0 Y:i string:str];
@@ -521,9 +517,12 @@ static BOOL PLAYBELL = YES;
         break;
         
     // XTERM extensions
-    case XTERMCC_TITLE:
+    case XTERMCC_WIN_TITLE:
+    case XTERMCC_WINICON_TITLE:
+    case XTERMCC_ICON_TITLE:
         //[SESSION setName:token.u.string];
-        [WINDOW setTitle:token.u.string];
+        if (token.type==XTERMCC_WIN_TITLE||token.type==XTERMCC_WINICON_TITLE) [WINDOW setTitle:token.u.string];
+        if (token.type==XTERMCC_ICON_TITLE||token.type==XTERMCC_WINICON_TITLE) [SESSION setName:token.u.string];
         break;
     case XTERMCC_INSBLNK: [self insertBlank:token.u.csi.p[0]]; break;
     case XTERMCC_INSLN: [self insertLines:token.u.csi.p[0]]; break;
@@ -1171,7 +1170,7 @@ static BOOL PLAYBELL = YES;
     idx=[self getIndex:0 y:y];
     for(x=0;x<WIDTH&&idx<[store length]&&[store characterAtIndex:idx]!='\n';idx++,x++)
         if (ISDOUBLEWIDTHCHARACTER([store characterAtIndex:idx])) x++;
-    for(i=idx;idx<[store length]&&[store characterAtIndex:idx]!='\n';i++);
+    for(i=idx;idx<[store length]&&[store characterAtIndex:i]!='\n';i++);
     if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
 }    
     

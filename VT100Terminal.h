@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.2 2002-12-19 21:02:22 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.3 2003-01-10 18:30:01 yfabian Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -77,7 +77,9 @@
 
 
 // some xterm extension
-#define XTERMCC_TITLE	     86	      // Set window title
+#define XTERMCC_WIN_TITLE	     86	      // Set window title
+#define XTERMCC_ICON_TITLE	     91
+#define XTERMCC_WINICON_TITLE	     92
 #define XTERMCC_INSBLNK	     87       // Insert blank
 #define XTERMCC_INSLN	     88	      // Insert lines
 #define XTERMCC_DELCH	     89       // delete blank

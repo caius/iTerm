@@ -192,11 +192,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) startTimer
 {
-    timer =[[NSTimer scheduledTimerWithTimeInterval:0.02
-                                             target:self
-                                           selector:@selector(timerTick:)
-                                           userInfo:nil
-                                            repeats:YES] retain];
+	[NSThread detachNewThreadSelector: @selector(updateDisplayThread:) toTarget: self withObject: nil];
+	
 }
 
 - (void)startProgram:(NSString *)program
@@ -258,15 +255,9 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW removeFromSuperview];
     [self setTabViewItem: nil];    
 	
-    
-    if (timer)
-    {
-        [timer invalidate];
-        [timer release];
-        timer = nil;
-    }  
-    
+        
     parent = nil;
+	EXIT = YES;
 	
 }
 
@@ -336,14 +327,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL sendSignal:SIGKILL];
     [SHELL stop];
     EXIT = YES;
-	
-    if (timer) 
-    {
-        [timer invalidate];
-        [timer release];
-        timer=nil;
-    }
-    
+	    
     if (autoClose)
         [parent closeSession:self];
     else 
@@ -634,6 +618,8 @@ static NSString *PWD_ENVVALUE = @"~";
 						
 		}
     }
+	
+	//[self updateDisplay];
 }
 
 
@@ -737,7 +723,9 @@ static NSString *PWD_ENVVALUE = @"~";
 				 allowLossyConversion:YES];
 
     if (data != nil) 
-	[self writeTask:data];
+		[self writeTask:data];
+
+	//[self updateDisplay];
 }
 
 - (void)insertNewline:(id)sender
@@ -888,40 +876,6 @@ static NSString *PWD_ENVVALUE = @"~";
 	
     [[self parent] windowDidResize: nil];
     [textView scrollEnd];
-}
-
-- (void) timerTick:(NSTimer*)sender
-{
-	BOOL key = [[TEXTVIEW window] isKeyWindow];
-	
-    iIdleCount++; oIdleCount++; blink++;
-    if (++output>1000) output=1000;
-    
-    if (antiIdle) 
-    {
-        if (iIdleCount>=6000)
-        {
-            [self writeTask:[NSData dataWithBytes:&ai_code length:1]];
-            iIdleCount=0;
-        }
-    }
-    if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
-        [self setLabelAttribute];
-	
-    if (blink>30) {
-		if (key) [SCREEN blink];
-		blink=0;
-    }
-    if (oIdleCount<2||dirty) 
-    {
-        if (output>(key&&iIdleCount<10?3:6)) 
-        {
-            [TEXTVIEW refresh];
-            output=0;
-            dirty=NO;
-        }
-        else dirty=YES;
-    }    
 }
 
 - (void) setLabelAttribute
@@ -1553,6 +1507,55 @@ static NSString *PWD_ENVVALUE = @"~";
     return addressBookEntry;
 }
 
+- (void) updateDisplayThread:(void*)incoming
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	while (EXIT == NO)
+	{
+		[self updateDisplay];
+		usleep(15000);
+	}
+	
+	[pool release];
+}
+
+
+- (void) updateDisplay
+{
+	BOOL key = [[TEXTVIEW window] isKeyWindow];
+	
+	iIdleCount++; oIdleCount++; blink++;
+	if (++output>1000) output=1000;
+	
+	if (antiIdle) 
+	{
+		if (iIdleCount>=6000)
+		{
+			[self writeTask:[NSData dataWithBytes:&ai_code length:1]];
+			iIdleCount=0;
+		}
+	}
+	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
+		[self setLabelAttribute];
+	
+	if (blink>30) {
+		if (key) [SCREEN blink];
+		blink=0;
+	}
+	if (oIdleCount<2||dirty) 
+	{
+		if (output>(key&&iIdleCount<10?3:6)) 
+		{
+			[TEXTVIEW refresh];
+			output=0;
+			dirty=NO;
+		}
+		else dirty=YES;
+	}  
+	
+}
+
 
 @end
 
@@ -1672,5 +1675,6 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     [self writeTask: data];
 }
+
 
 @end

@@ -52,6 +52,9 @@
 - (void)insertSession:(PTYSession*)session atIndex:(int)index;
 - (void)replaceSessionAtIndex:(int)index withSession:(PTYSession*)session;
 
+- (void) acquireLock;
+- (void) releaseLock;
+
 - (NSArray*)sessionList;
 
 @end

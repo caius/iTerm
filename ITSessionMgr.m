@@ -148,4 +148,15 @@
     return [_sessionList containsObject:session];
 }
 
+- (void) acquireLock
+{
+	[_threadLock lock];
+}
+
+- (void) releaseLock
+{
+	[_threadLock unlock];
+}
+
+
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.23 2004-04-14 00:25:33 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.24 2004-05-08 18:26:00 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -52,6 +52,8 @@
     BOOL tabViewDragOperationInProgress;
     BOOL windowInited;
 	BOOL sendInputToAllSessions;
+	
+	BOOL EXIT;
 }
 
 - (id)init;
@@ -176,6 +178,14 @@
 
 @end
 
+@interface PseudoTerminal (Private)
+
+- (void) _commonInit;
+- (void) _updateDisplayThread: (void *) incoming;
+
+@end
+
+
 @interface PseudoTerminal (ScriptingSupport)
 
 // Object specifier
@@ -185,9 +195,5 @@
 
 -(void)handleLaunchScriptCommand: (NSScriptCommand *)command;
 
-@end
-
-@interface PseudoTerminal (Private)
-- (void) _toggleNewWindowState: (id) sender;
 @end
 

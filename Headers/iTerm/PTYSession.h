@@ -67,7 +67,6 @@
     NSView *view;
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
-    NSTimer *timer;
     int	iIdleCount,oIdleCount, blink, output;
     BOOL dirty;
     BOOL REFRESHED;
@@ -90,7 +89,7 @@
 	   arguments:(NSArray *)prog_argv
 	 environment:(NSDictionary *)prog_env;
 - (void) terminate;
-- (void) timerTick:(NSTimer*)sender;
+- (void) updateDisplayThread: (void *) incoming;
 - (void) startTimer;
 - (BOOL) isActiveSession;
 
@@ -212,6 +211,8 @@
 - (void)setBell;
 - (void)setBell: (BOOL) flag;
 
+- (void) updateDisplay;
+
 @end
 
 @interface PTYSession (ScriptingSupport)
@@ -227,6 +228,6 @@
 
 @interface PTYSession (Private)
 
--(void)_waitToWriteToTask: (NSData *) data;
+- (void) _waitToWriteToTask: (NSData *) data;
 
 @end

@@ -1,3 +1,12 @@
+2004-05-08  ujwal
+
+	* Re-implemented display update thread using NSThread instead of NSTimer 
+	  to avoid posting frequent event so n main run loop. Hopefully this 
+	  should reduce CPU usage seen on laptops. Also, the thread is called 
+	  from the controlling Pseudoterminal instead of in each tab. Thread 
+	  updates all tabs in the controlling PseudoTerminal. This should reduce 
+	  the number of threads to one per PseudoTerminal.
+
 2004-04-27  fabian
 
     * Added support for double/triple click and drag to copy.

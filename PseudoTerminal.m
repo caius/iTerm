@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.289 2004-05-02 02:09:16 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.290 2004-05-08 18:25:59 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -55,6 +55,7 @@
 #import <iTerm/ITSessionMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
+#include <unistd.h>
 
 // keys for attributes:
 NSString *columnsKey = @"columns";
@@ -90,12 +91,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			break;
 		}
     }
+	     
+	[self _commonInit];
 	
-    _sessionMgr = [[ITSessionMgr alloc] init];
-	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
-	
-    tabViewDragOperationInProgress = NO;
-     
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal init: 0x%x]", __FILE__, __LINE__, self);
 #endif
@@ -243,9 +241,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession TEXTVIEW] setLineWidth: WIDTH * charWidth];
 	[[aSession TEXTVIEW] setCharWidth: charWidth];
 	// NSLog(@"%d,%d",WIDTH,HEIGHT);
-	
-    [aSession startTimer];
-	
+		
     [[aSession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
 	
     // tell the shell about our size
@@ -1004,6 +1000,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillClose:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
+	EXIT = YES;
     sessionCount = [_sessionMgr numberOfSessions];
     for (i = 0; i < sessionCount; i++)
     {
@@ -1528,6 +1525,39 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 }
 
 @end
+
+@implementation PseudoTerminal (Private)
+
+- (void) _commonInit
+{
+	_sessionMgr = [[ITSessionMgr alloc] init];
+	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
+	
+    tabViewDragOperationInProgress = NO;
+	
+	[NSThread detachNewThreadSelector: @selector(_updateDisplayThread:) toTarget: self withObject: nil];
+	
+}
+
+- (void) _updateDisplayThread: (void *) incoming
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	int i, n;
+	
+	while (EXIT == NO)
+	{
+		n = [_sessionMgr numberOfSessions];
+		for (i = 0; i < n; i++)
+			[[_sessionMgr sessionAtIndex: i] updateDisplay];
+		
+		usleep(15000);
+	}
+	
+	[pool release];
+}
+
+@end
+
 
 @implementation PseudoTerminal (KeyValueCoding)
 

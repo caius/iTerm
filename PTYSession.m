@@ -1107,6 +1107,11 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 }
 
+- (void)setBoldColor:(NSColor*) color
+{
+    [[self TERMINAL] setBoldColor: color];
+}
+
 // Changes transparency
 - (void)setBackgroundAlpha:(float)bgAlpha
 {

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.38 2003-04-26 22:17:49 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.39 2003-04-27 07:56:25 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -33,10 +33,12 @@
 static NSColor *iTermBackground;
 static NSColor *iTermForeground;
 static NSColor *iTermSelection;
+static NSColor *iTermBold;
 static NSColor* iTermColorTable[2][8];
 static NSColor *xtermBackground;
 static NSColor *xtermForeground;
 static NSColor *xtermSelection;
+static NSColor *xtermBold;
 static NSColor* xtermColorTable[2][8];
 
 static NSString *DEFAULT_FONTNAME = @"Osaka-Mono";
@@ -70,9 +72,12 @@ static int TRANSPARENCY  =10;
                                                alpha:1.0f]
         retain];
 
+    iTermBold = [[NSColor redColor] retain];
+
     xtermBackground = [[NSColor whiteColor] retain];
     xtermForeground = [[NSColor blackColor] retain];
     xtermSelection = [NSColor selectedTextBackgroundColor];
+    xtermBold = [[NSColor redColor] retain];
     
     xtermColorTable[0][0]  = [[NSColor blackColor] retain];
     xtermColorTable[0][1]  = [[NSColor redColor] retain];
@@ -256,6 +261,10 @@ static int TRANSPARENCY  =10;
     [defaultSelectionColor release];                        
     defaultSelectionColor=[([prefs objectForKey:@"SelectionColor"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"SelectionColor"]]:iTermSelection) copy];
+
+    [defaultBoldColor release];
+    defaultBoldColor=[([prefs objectForKey:@"BoldColor"]?
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"BoldColor"]]:iTermBold) copy];    
                       
     [defaultFont release];                        
     defaultFont=[([prefs objectForKey:@"Font"]?
@@ -343,6 +352,7 @@ static int TRANSPARENCY  =10;
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
     [selectionColor setColor: defaultSelectionColor];
+    [boldColor setColor: defaultBoldColor];
     [ansiBlack setColor:defaultColorTable[0][0]];
     [ansiRed setColor:defaultColorTable[0][1]];
     [ansiGreen setColor:defaultColorTable[0][2]];
@@ -458,6 +468,7 @@ static int TRANSPARENCY  =10;
     [defaultBackground autorelease];
     [defaultForeground autorelease];
     [defaultSelectionColor autorelease];
+    [defaultBoldColor autorelease];
     [defaultShell autorelease];
     [defaultTerminal autorelease];
     for(i=0;i<8;i++) {
@@ -469,6 +480,7 @@ static int TRANSPARENCY  =10;
     defaultBackground=[[background color] copy];
     defaultForeground=[[foreground color] copy];
     defaultSelectionColor = [[selectionColor color] copy];
+    defaultBoldColor = [[boldColor color] copy];
     defaultColorTable[0][0] = [[ansiBlack color] copy];
     defaultColorTable[0][1] = [[ansiRed color] copy];
     defaultColorTable[0][2] = [[ansiGreen color] copy];
@@ -521,6 +533,8 @@ static int TRANSPARENCY  =10;
               forKey:@"Background"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultSelectionColor]
               forKey:@"SelectionColor"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultBoldColor]
+              forKey:@"BoldColor"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][0]]
               forKey:@"AnsiBlack"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][1]]
@@ -585,6 +599,7 @@ static int TRANSPARENCY  =10;
     [defaultBackground autorelease];
     [defaultForeground autorelease];
     [defaultSelectionColor autorelease];
+    [defaultBoldColor autorelease];
     [defaultFont autorelease];
     for(i=0;i<8;i++) {
         [defaultColorTable[0][i] autorelease];
@@ -595,6 +610,7 @@ static int TRANSPARENCY  =10;
     defaultBackground=[iTermBackground copy];
     defaultForeground=[iTermForeground copy];
     defaultSelectionColor=[iTermSelection copy];
+    defaultBoldColor=[iTermBold copy];
     defaultFont=[FONT copy];
     for(i=0;i<8;i++) {
         defaultColorTable[0][i]=[iTermColorTable[0][i] copy];
@@ -774,6 +790,11 @@ static int TRANSPARENCY  =10;
 - (NSColor *) selectionColor
 {
     return (defaultSelectionColor);
+}
+
+- (NSColor *) boldColor
+{
+    return (defaultBoldColor);
 }
 
 - (NSTabViewType) tabViewType

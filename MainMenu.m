@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.48 2003-04-27 00:46:36 ujwal Exp $
+// $Id: MainMenu.m,v 1.49 2003-04-27 07:56:25 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -638,6 +638,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             [[term currentSession] setColorTable:i highLight:YES color:[PREF_PANEL colorFromTable:i highLight:YES]];
         }
     }
+    [[term currentSession] setBoldColor: [entry objectForKey:@"BoldColor"]];
     
 }
 

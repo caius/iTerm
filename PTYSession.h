@@ -167,6 +167,7 @@
 - (void)logStop;
 - (void)setFGColor:(NSColor*) color;
 - (void)setBGColor:(NSColor*) color;
+- (void)setBoldColor:(NSColor*) color;
 - (void)setBackgroundAlpha:(float)bgAlpha;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
 

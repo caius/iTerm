@@ -34,8 +34,10 @@
             ACTIONS = {
                 clearBuffer = id; 
                 closeCurrentSession = id; 
+                closeTabContextualMenuAction = id; 
                 logStart = id; 
                 logStop = id; 
+                moveTabToNewWindowContextualMenuAction = id; 
                 newSession = id; 
                 nextSession = id; 
                 previousSession = id; 
@@ -56,6 +58,7 @@
                 "AI_ON" = id; 
                 "CONFIG_ANTIALIAS" = id; 
                 "CONFIG_BACKGROUND" = id; 
+                "CONFIG_BOLD" = id; 
                 "CONFIG_COL" = id; 
                 "CONFIG_ENCODING" = id; 
                 "CONFIG_EXAMPLE" = id; 
@@ -67,6 +70,7 @@
                 "CONFIG_SELECTION" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
+                TABVIEW = id; 
                 WINDOW = id; 
             }; 
             SUPERCLASS = NSWindowController; 

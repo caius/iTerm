@@ -36,6 +36,7 @@
                 antiAlias = id; 
                 autoclose = id; 
                 background = id; 
+                boldColor = id; 
                 col = id; 
                 colorScheme = id; 
                 copySelection = id; 

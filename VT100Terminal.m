@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.56 2003-04-27 06:38:32 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.57 2003-04-27 07:56:25 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1930,6 +1930,12 @@ static VT100TCC decode_string(unsigned char *datap,
 
 }
 
+- (void) setBoldColor: (NSColor*)color
+{
+    [defaultBoldColor release];
+    defaultBoldColor=[color copy];
+}
+
 - (NSColor *) defaultFGColor
 {
     return defaultFGColor;
@@ -1938,6 +1944,11 @@ static VT100TCC decode_string(unsigned char *datap,
 - (NSColor *) defaultBGColor
 {
      return defaultBGColor;
+}
+
+- (NSColor *) defaultBoldColor
+{
+    return defaultBoldColor;
 }
 
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
@@ -1957,21 +1968,25 @@ static VT100TCC decode_string(unsigned char *datap,
 
     if (index==DEFAULT_FG_COLOR_CODE)
     {
-        color=(SCREEN_MODE?defaultBGColor:defaultFGColor);
 	if(b)
 	{
-	    NSColor *otherColor = (SCREEN_MODE?defaultFGColor:defaultBGColor);
-	    color = [color blendedColorWithFraction: 0.2 ofColor: otherColor];
+	    color = [self defaultBoldColor];
+	}
+	else
+	{
+	    color=(SCREEN_MODE?defaultBGColor:defaultFGColor);
 	}
     }
     else if (index==DEFAULT_BG_COLOR_CODE)
     {
-	color=(SCREEN_MODE?defaultFGColor:defaultBGColor);
 	if(b)
 	{
-	    NSColor *otherColor = (SCREEN_MODE?defaultBGColor:defaultFGColor);
-	    color = [color blendedColorWithFraction: 0.2 ofColor: otherColor];
-	}	
+	    color = [self defaultBoldColor];
+	}
+	else
+	{
+	    color=(SCREEN_MODE?defaultFGColor:defaultBGColor);
+	}
     }
     else
     {

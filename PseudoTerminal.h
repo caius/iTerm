@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.43 2003-04-25 01:49:38 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.44 2003-04-27 07:56:25 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -60,6 +60,7 @@
     IBOutlet id CONFIG_NAME;
     IBOutlet id CONFIG_ANTIALIAS;
     IBOutlet id CONFIG_SELECTION;
+    IBOutlet id CONFIG_BOLD;
     
     // anti-idle
     IBOutlet id AI_CODE;

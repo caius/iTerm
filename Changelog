@@ -5,8 +5,7 @@
       
     * Now checking for minimum OS version on startup.
     
-    * When displaying bold for default colors, using a blend of 
-      foreground and background colors.
+    * Added UI to customize color for bold output.
 
 2003-04-25	ujwal
 

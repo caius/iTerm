@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.152 2003-04-26 00:05:37 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.153 2003-04-27 07:56:25 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -232,6 +232,7 @@ static NSString *ConfigToolbarItem = @"Config";
     else
         [[aSession TEXTVIEW] setSelectionColor: [pref selectionColor]];
     [[aSession SCROLLVIEW] setBackgroundColor: bg];
+    [aSession setBoldColor: [pref boldColor]];
 
 
     // set the terminal type
@@ -986,6 +987,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [CONFIG_FOREGROUND setColor:[[currentPtySession TERMINAL] defaultFGColor]];
     [CONFIG_BACKGROUND setColor:[[currentPtySession TERMINAL] defaultBGColor]];
     [CONFIG_SELECTION setColor:[[currentPtySession TEXTVIEW] selectionColor]];
+    [CONFIG_BOLD setColor: [[currentPtySession TERMINAL] defaultBoldColor]];
     configFont=[[currentPtySession SCREEN] font];
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
     [CONFIG_EXAMPLE setTextColor:[[currentPtySession TERMINAL] defaultFGColor]];
@@ -1093,6 +1095,10 @@ static NSString *ConfigToolbarItem = @"Config";
         // set the selection color if it has changed
         if([[currentPtySession TEXTVIEW] selectionColor] != [CONFIG_SELECTION color])
             [[currentPtySession TEXTVIEW] setSelectionColor: [CONFIG_SELECTION color]];
+
+        // set the bold color if it has changed
+        if([[currentPtySession TERMINAL] defaultBoldColor] != [CONFIG_BOLD color])
+            [[currentPtySession TERMINAL] setBoldColor: [CONFIG_BOLD color]];	
             
         if(([pref transparency] != (100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100)) || 
             ([[currentPtySession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 

@@ -156,6 +156,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             [adForeground color],@"Foreground",
             [adBackground color],@"Background",
             [adSelection color],@"SelectionColor",
+	    [adBold color],@"BoldColor",
             [adRow stringValue],@"Row",
             [adCol stringValue],@"Col",
             [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
@@ -221,6 +222,11 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         [adSelection setColor:[entry objectForKey:@"SelectionColor"]];
     else
         [adSelection setColor: [[self preferences] selectionColor]];
+    if([entry objectForKey:@"BoldColor"])
+        [adBold setColor:[entry objectForKey:@"BoldColor"]];
+    else
+        [adBold setColor: [[self preferences] boldColor]];
+    
     [adRow setStringValue:[entry objectForKey:@"Row"]];
     [adCol setStringValue:[entry objectForKey:@"Col"]];
     if ([entry objectForKey:@"Transparency"]) {
@@ -267,6 +273,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             [adForeground color],@"Foreground",
             [adBackground color],@"Background",
             [adSelection color],@"SelectionColor",
+	    [adBold color],@"BoldColor",
             [adRow stringValue],@"Row",
             [adCol stringValue],@"Col",
             [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",

@@ -75,6 +75,7 @@
     IBOutlet id terminal;
     IBOutlet id transparency;
     IBOutlet id transparency_control;
+    IBOutlet id boldColor;
     
     NSUserDefaults *prefs;
 
@@ -82,6 +83,7 @@
     NSColor* defaultBackground;
     NSColor* defaultForeground;
     NSColor* defaultSelectionColor;
+    NSColor* defaultBoldColor;
     NSColor* defaultColorTable[2][8];
     
     int defaultCol;
@@ -156,5 +158,6 @@
 - (BOOL)remapDeleteKey;
 - (BOOL)openAddressBook;
 - (BOOL) promptOnClose;
+- (NSColor *) boldColor;
 
 @end

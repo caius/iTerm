@@ -23,6 +23,7 @@
                 adAI = id; 
                 adAICode = id; 
                 adBackground = NSColorWell; 
+                adBold = NSColorWell; 
                 adClose = id; 
                 adCol = id; 
                 adCommand = NSTextField; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.133 2003-09-04 18:56:37 yfabian Exp $
+// $Id: VT100Screen.m,v 1.134 2003-09-05 00:10:42 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -325,6 +325,7 @@ static BOOL PLAYBELL = YES;
             SCROLL_BOTTOM = HEIGHT - 1;
         }
     }
+    //[[SESSION TEXTVIEW] scrollEnd];
     
 }
 

@@ -1,6 +1,6 @@
 2003-09-04	fabian
 
-    * Fixed a bug that causes problems in TEXTVIEW scrolling position
+    * Added support for mid-button paste.
     
 2003-09-02	fabian
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.4 2003-08-12 06:29:58 sgehrman Exp $
+// $Id: PTYTextView.h,v 1.5 2003-09-05 00:10:45 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -229,6 +229,7 @@
 - (void)drawRect:(NSRect)rect;
 - (void)keyDown:(NSEvent *)event;
 - (void)mouseDown:(NSEvent *)theEvent;
+- (void)otherMouseDown:(NSEvent *)theEvent;
 - (void)doCommandBySelector:(SEL)aSelector;
 - (void)insertText:(id)aString;
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange;

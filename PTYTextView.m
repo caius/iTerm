@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.83 2003-08-29 15:34:56 ujwal Exp $
+// $Id: PTYTextView.m,v 1.84 2003-09-05 00:10:42 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -28,7 +28,7 @@
  */
 
 #define DEBUG_ALLOC           0
-#define DEBUG_METHOD_TRACE    0
+#define DEBUG_METHOD_TRACE    1
 #define GREED_KEYDOWN         1
 
 #import <iTerm/iTerm.h>
@@ -1512,20 +1512,8 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView scrollEnd]", __FILE__, __LINE__ );
 #endif
-    
-    if (numberOfLines > 0)
-    {
-        NSRect aFrame;
-        
-        aFrame.origin.x = 0;
-        aFrame.origin.y = (numberOfLines - 1) * lineHeight;
-        aFrame.size.width = [self frame].size.width;
-        aFrame.size.height = lineHeight;
-        
-        [self scrollRectToVisible: aFrame];
-    }
-    else
-        [self scrollRangeToVisible:NSMakeRange([[self textStorage] length],0)];
+
+    [self scrollRangeToVisible:NSMakeRange([[self textStorage] length]-1,1)];
 }
 
 - (void)drawRect:(NSRect)rect
@@ -1750,7 +1738,7 @@
     int i = 0;
     
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView copyAsString:%@]", __FILE__, __LINE__, sender );
+    NSLog(@"%s(%d):-[PTYTextView copyAsString]", __FILE__, __LINE__ );
 #endif
     
     aMutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString: [[self textStorage] attributedSubstringFromRange: [self selectedRange]]];
@@ -1962,6 +1950,7 @@
             _inFrameChanged = NO;
         }
     }
+    [self scrollRangeToVisible:NSMakeRange([[self textStorage] length]-1,1)];
 }
 
 //
@@ -2199,12 +2188,29 @@
 - (void)mouseDown:(NSEvent *)theEvent
 {
     // Check if the delegate will handle the event
+    
     id delegate = [self delegate];
     if([delegate respondsToSelector: @selector(willHandleEvent:)] &&
        [delegate willHandleEvent: theEvent])
         [delegate handleEvent: theEvent];
     else
         [super mouseDown: theEvent];
+}
+
+- (void)otherMouseDown:(NSEvent *)theEvent
+{
+    //NSLog(@"other mouse");
+
+    /*
+    // Check if the delegate will handle the event
+    id delegate = [self delegate];
+    if([delegate respondsToSelector: @selector(willHandleEvent:)] &&
+       [delegate willHandleEvent: theEvent])
+        [delegate handleEvent: theEvent];
+    else
+        [super mouseDown: theEvent]; */
+    
+    [self paste:nil];
 }
 
 - (void) setCursorIndex:(int) idx

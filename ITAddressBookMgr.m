@@ -337,6 +337,7 @@ static TreeNode *defaultBookmark = nil;
 	TreeNode *serviceNode, *childNode, *parentNode;
 	NSDictionary *nodeData;
 	NSEnumerator *anEnumerator;
+	BOOL sshService = NO;
 	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
 	
@@ -353,17 +354,49 @@ static TreeNode *defaultBookmark = nil;
 		nodeData = [childNode nodeData];
 		if([[nodeData objectForKey: KEY_NAME] isEqualToString: [aNetService name]])
 		{
+			// check for ssh service to remove sftp service below
+			if([[[serviceNode nodeData] objectForKey: KEY_RENDEZVOUS_SERVICE] isEqualToString: @"ssh"])
+				sshService = YES;
 			parentNode = [childNode nodeParent];
 			[childNode removeFromParent];
 			if([parentNode numberOfChildren] == 0)
 				[parentNode removeFromParent];
 			
-			// Post a notification for all listeners that bookmarks have changed
-			[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
-			
 			break;			
 		}
 	}
+	
+	// if this was an ssh service, remove associated sftp service also
+	if(sshService == YES)
+	{
+		// grab the service group node in the tree
+		serviceNode = [self _getRendezvousServiceTypeNode: @"_sftp.tcp."];
+		
+		// remove host entry from this group
+		anEnumerator = [[serviceNode children] objectEnumerator];
+		while ((childNode = [anEnumerator nextObject]))
+		{
+			nodeData = [childNode nodeData];
+			if([[nodeData objectForKey: KEY_NAME] isEqualToString: [aNetService name]])
+			{
+				parentNode = [childNode nodeParent];
+				[childNode removeFromParent];
+				if([parentNode numberOfChildren] == 0)
+					[parentNode removeFromParent];
+				
+				
+				break;			
+			}
+		}
+	}
+	
+	// if rendezvous group is empty, remove it
+	if([rendezvousGroup numberOfChildren] == 0)
+		[rendezvousGroup removeFromParent];
+	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
+
 	
 }
 

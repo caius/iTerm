@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.161 2003-09-25 15:34:35 ujwal Exp $
+// $Id: VT100Screen.m,v 1.162 2003-09-25 15:47:02 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2437,12 +2437,16 @@ static BOOL PLAYBELL = YES;
     NSColor *fg, *bg,*fgBlink, *bgBlink;
     NSDictionary *dic;
     NSRange range;
-    int len=[[STORAGE string] length];
-    int idx=len-1;
+    int len;
+    int idx;
 
     if ([self screenIsLocked]) return;
 
     [self setScreenLock];
+
+    len=[[STORAGE string] length];
+    idx=len-1;
+    
 //    NSLog(@"blink!!");
     
     [STORAGE beginEditing];

@@ -28,13 +28,22 @@
                 aboutOK = id; 
                 newSession = id; 
                 newWindow = id; 
+                nextTerminal = id; 
+                previousTerminal = id; 
                 showABWindow = id; 
                 showAbout = id; 
                 showPrefWindow = id; 
             }; 
             CLASS = MainMenu; 
             LANGUAGE = ObjC; 
-            OUTLETS = {ABOUT = id; AUTHORS = NSTextView; FRONT = id; selectTab = NSMenuItem; }; 
+            OUTLETS = {
+                ABOUT = id; 
+                AUTHORS = NSTextView; 
+                FRONT = id; 
+                nextTerminal = NSMenuItem; 
+                previousTerminal = NSMenuItem; 
+                selectTab = NSMenuItem; 
+            }; 
             SUPERCLASS = NSObject; 
         }, 
         {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 

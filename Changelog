@@ -3,6 +3,10 @@
     * Updated documentation.
     
     * Remapping of delete key can be toggled with Alt-Delete sequence.
+    
+    * Fixed a bug in [VT100TextStorage replaceCharactersInRange] optimization.
+    
+    * Added keyboard shortcut to cycle through terminal windows.
 
 2003-06-21	ujwal
 

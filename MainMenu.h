@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.26 2003-06-22 18:18:37 ujwal Exp $
+// $Id: MainMenu.h,v 1.27 2003-06-23 05:54:54 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -45,6 +45,8 @@
 
     // Menu items
     IBOutlet NSMenuItem *selectTab;
+    IBOutlet NSMenuItem *previousTerminal;
+    IBOutlet NSMenuItem *nextTerminal;
     
     // bookmarks data
     NSMutableArray *addressBook;
@@ -69,6 +71,10 @@
 // About window
 - (IBAction)showAbout:(id)sender;
 - (IBAction)aboutOK:(id)sender;
+
+// navigation
+- (IBAction) previousTerminal: (id) sender;
+- (IBAction) nextTerminal: (id) sender;
 
 // Utility methods
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;

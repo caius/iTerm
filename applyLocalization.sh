@@ -8,7 +8,7 @@ LOCALIZATIONS=`ls | fgrep lproj`
 for LANGUAGE in $LOCALIZATIONS
 do
 	if [[ -d $LANGUAGE && $LANGUAGE != $MASTER ]]; then
-		echo "Processing $LANGUAGE localization"
+		echo -e "\nProcessing $LANGUAGE localization"
 		cd $LANGUAGE
 
 		NIB_DICTS=`ls *.strings`

@@ -150,7 +150,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setName:@"Shell"];
 
     ai_code=0;
-    timer =[[NSTimer scheduledTimerWithTimeInterval:0.5
+    timer =[[NSTimer scheduledTimerWithTimeInterval:0.2
                                              target:self
                                            selector:@selector(timerTick:)
                                            userInfo:nil
@@ -234,6 +234,7 @@ static NSString *PWD_ENVVALUE = @"~";
         return;
     }
 
+    [TERMINAL putStreamData:data];
     if ([parent pending]) return;
 
     oIdleCount=0;
@@ -245,9 +246,8 @@ static NSString *PWD_ENVVALUE = @"~";
         }
     }
     
-    [TERMINAL putStreamData:data];
 
-    [SCREEN beginEditing];
+//    [SCREEN beginEditing];
     [SCREEN showCursor:NO];
     
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
@@ -261,14 +261,14 @@ static NSString *PWD_ENVVALUE = @"~";
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
     [SCREEN showCursor:YES];
-    [SCREEN endEditing];
+/*    [SCREEN endEditing];
     [TEXTVIEW setCursorIndex:[SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
 
     // If the user has not scrolled up, move to the end
     if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
 	[[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
        ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-	[self moveLastLine];
+	[self moveLastLine]; */
 }
 
 - (void)brokenPipe
@@ -692,10 +692,11 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-    
-    iIdleCount++; oIdleCount++;
+    static int blink=0;
+
+    iIdleCount++; oIdleCount++; blink++;
     if (antiIdle) {
-        if (iIdleCount>=240) {
+        if (iIdleCount>=600) {
             [SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
             iIdleCount=0;
         }
@@ -703,9 +704,17 @@ static NSString *PWD_ENVVALUE = @"~";
     if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
         [self setLabelAttribute];
     }
-    
-    [SCREEN blink];
 
+    if (blink>3) { [SCREEN blink]; blink=0; }
+    if (oIdleCount<2) {
+        [SCREEN updateScreen];
+        [TEXTVIEW setCursorIndex:[SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+        // If the user has not scrolled up, move to the end
+        if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+            [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+           ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
+            [self moveLastLine];
+    }
 }
 
 - (void) setLabelAttribute
@@ -714,14 +723,14 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabelAttributes: deadStateAttribute];
     }
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
-        if (oIdleCount>5&&!waiting) {
+        if (oIdleCount>10&&!waiting) {
             waiting=YES;
             if (REFRESHED)
                 [tabViewItem setLabelAttributes: idleStateAttribute];
             else
                 [tabViewItem setLabelAttributes: normalStateAttribute];
         }
-        else if (waiting&&oIdleCount<=5) {
+        else if (waiting&&oIdleCount<=10) {
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
         }

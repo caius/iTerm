@@ -1,3 +1,8 @@
+2003-02-21	fabian
+    * Perfromace improvement. Now a buffer is used in
+      displaying the text. Significantly improve the
+      overall speed. Need more test.
+      
 2003-02-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added and implemented tabViewWillPerformDragOperation 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.42 2003-02-21 17:14:12 ujwal Exp $
+// $Id: VT100Screen.m,v 1.43 2003-02-21 21:00:31 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -53,12 +53,13 @@
 #define WIDTH_REAL   (WIDTH + 1)
 
 //#define ISDOUBLEWIDTHCHARACTER(c) ((c)>=0x1000)
-#define ISDOUBLEWIDTHCHARACTER(idx) ([SESSION doubleWidth]&&[[STORAGE attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue]==2)
+#define ISDOUBLEWIDTHCHARACTER(idx) ([SESSION doubleWidth]&&[[BUFFER attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue]==2)
 
 static NSString *NSReversedAttributeName=@"NSReversedAttributeName";
 static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 static NSString *NSBlinkColorAttributeName=@"NSBlinkColorAttributeName";
 static NSString *NSCharWidthAttributeName=@"NSCharWidthAttributeName";
+static NSString *NSCursorAttributeName=@"NSCursorAttributeName";
 
 static unichar spaces[300]={0};
 
@@ -172,6 +173,8 @@ static BOOL PLAYBELL = YES;
 
     for(i=0;i<300;i++) spaces[i]=' ';
     for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
+
+    BUFFER=[[[NSMutableAttributedString alloc] init] retain];
     
     return self;
 }
@@ -237,7 +240,7 @@ static BOOL PLAYBELL = YES;
     if (width >= MIN_WIDTH && height >= MIN_HEIGHT) {
         if (height>=HEIGHT) {
             for(i=HEIGHT;i<height;i++)
-                [STORAGE appendAttributedString:[self attrString:@"\n" ascii:YES]];
+                [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
         }
         else {
             TOP_LINE+=HEIGHT-height;
@@ -263,6 +266,7 @@ static BOOL PLAYBELL = YES;
             SCROLL_BOTTOM = HEIGHT - 1;
         }
     }
+    
 }
 
 - (int)width
@@ -357,7 +361,10 @@ static BOOL PLAYBELL = YES;
 
     int i;
 
-    for(i=0;i<HEIGHT-1;i++) [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
+    for(i=0;i<HEIGHT-1;i++) {
+        [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
+        [BUFFER appendAttributedString:[self defaultAttrString:@"\n"]];
+    }
 }
     
 - (void)beginEditing
@@ -365,7 +372,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen beginEditing]", __FILE__, __LINE__ );
 #endif
-    [STORAGE beginEditing];
+//    [STORAGE beginEditing];
 }
 
 - (void)endEditing
@@ -373,7 +380,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen endEditing]", __FILE__, __LINE__ );
 #endif
-    [STORAGE endEditing];
+//    [STORAGE endEditing];
 }
 
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
@@ -541,10 +548,10 @@ static BOOL PLAYBELL = YES;
     case VT100CSI_DECSET:
     case VT100CSI_DECRST:
         if (token.u.csi.p[0]==3) {	// set the column
-            [STORAGE endEditing];
+//            [STORAGE endEditing];
             [[SESSION parent] resizeWindow:([TERMINAL columnMode]?132:80)
                                     height:HEIGHT];
-            [STORAGE beginEditing];
+//            [STORAGE beginEditing];
         }
         break;
 
@@ -590,6 +597,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen clearBuffer]",  __FILE__, __LINE__ );
 #endif
     [STORAGE deleteCharactersInRange:NSMakeRange(0, [STORAGE length])];
+    [BUFFER deleteCharactersInRange:NSMakeRange(0, [BUFFER length])];
     [self clearScreen];
     [self initScreen];
     CURSOR_X = CURSOR_Y = 0;
@@ -602,7 +610,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen getIndex]:(%d,%d)",  __FILE__, __LINE__ , x, y );
 #endif
 
-    NSString *s=[STORAGE string];
+    NSString *s=[BUFFER string];
     int len=[s length];
     int idx=len-1;
 
@@ -613,7 +621,7 @@ static BOOL PLAYBELL = YES;
     for(;y<HEIGHT&&idx>=0;idx--) {
         if ([s characterAtIndex:idx]=='\n') y++;
     }
-    if (y<HEIGHT) idx=0; else idx+=2;
+    if (y<HEIGHT) idx++; else idx+=2;
     
     for(;x>0&&idx<len&&[s characterAtIndex:idx]!='\n';idx++) {
 //        if (ISDOUBLEWIDTHCHARACTER([s characterAtIndex:idx])) {
@@ -625,7 +633,7 @@ static BOOL PLAYBELL = YES;
     }
     if (x>0) {
 //        NSLog(@"%d blanks inserted",x);
-        [STORAGE insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:x]] atIndex:idx];
+        [BUFFER insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:x]] atIndex:idx];
         idx+=x;
     }
 
@@ -661,10 +669,10 @@ static BOOL PLAYBELL = YES;
     len = [s length];
     if (len<1) return;
 
-    NSString *store=[STORAGE string];
+    NSString *store=[BUFFER string];
 
     for(idx2=0;idx2<len;) {
-         store=[STORAGE string];
+         store=[BUFFER string];
         if (CURSOR_X>=WIDTH) {
             if ([TERMINAL wraparoundMode]) {
 		didWrap = YES;
@@ -686,21 +694,13 @@ static BOOL PLAYBELL = YES;
             }
             [self insertBlank:j];
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
-            [STORAGE replaceCharactersInRange:NSMakeRange(idx,j)
+            [BUFFER replaceCharactersInRange:NSMakeRange(idx,j)
                          withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)] ascii:YES]];
             CURSOR_X=x;
             idx2+=j;
         }
         else {
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
-            if (CURSOR_IN_MIDDLE) {
-                //NSLog(@"setASCIIString: Start from middle of a hanzi");
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx,1)
-                             withAttributedString:[self attrString:@"??"  ascii:YES]];
-                store=[STORAGE string];
-                idx++;
-            }
-            //            NSLog(@"index {%d,%d]->%d",CURSOR_X,CURSOR_Y,idx);
             if(WIDTH-CURSOR_X<=len-idx2) x=WIDTH;
             else x=CURSOR_X+len-idx2;
             j=x-CURSOR_X;
@@ -708,32 +708,42 @@ static BOOL PLAYBELL = YES;
                 //NSLog(@"setASCIIString1: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
                 break;
             }
-            //NSLog(@"%d+%d->%d",idx2,j,len);
-            for(i=0,x2=CURSOR_X;x2<x&&idx+i<[store length]&&[store characterAtIndex:idx+i]!='\n';x2++,i++)
-                if (doubleWidth&&[[STORAGE attribute:NSCharWidthAttributeName atIndex:(idx+i) effectiveRange:nil] intValue]==2)  x2++;
-            CURSOR_X=x;
-            if (x2>x) {
-                //NSLog(@"setASCIIString: End in the middle of a hanzi");
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx+i-1,1)
-                             withAttributedString:[self attrString:@"??" ascii:YES]];
-                store=[STORAGE string];
-            }
-            //            NSLog(@"%d,%d(%d)->(%d,%d)",idx,i,[store length],idx2,j);
             if (idx>=[store length]) {
-                [STORAGE appendAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
+                //NSLog(@"setASCIIString: About to append [%@](%d+%d),  (%d)",
+                //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
+                [BUFFER appendAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
             }
-            else if (i==0) {
+            else if ([store characterAtIndex:idx]=='\n') {
                 //NSLog(@"setASCIIString: About to insert [%@](%d+%d),  (%d)",
                 //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
-                [STORAGE insertAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES] atIndex:idx];
+                [BUFFER insertAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES] atIndex:idx];
             }
             else {
+                if (CURSOR_IN_MIDDLE) {
+                    //NSLog(@"setASCIIString: Start from middle of a hanzi");
+                    [BUFFER replaceCharactersInRange:NSMakeRange(idx,1)
+                                 withAttributedString:[self attrString:@"??"  ascii:YES]];
+                    store=[BUFFER string];
+                    idx++;
+                }
+                //            NSLog(@"index {%d,%d]->%d",CURSOR_X,CURSOR_Y,idx);
+                //NSLog(@"%d+%d->%d",idx2,j,len);
+                for(i=0,x2=CURSOR_X;x2<x&&idx+i<[store length]&&[store characterAtIndex:idx+i]!='\n';x2++,i++)
+                    if (doubleWidth&&[[BUFFER attribute:NSCharWidthAttributeName atIndex:(idx+i) effectiveRange:nil] intValue]==2)  x2++;
+                if (x2>x) {
+                    //NSLog(@"setASCIIString: End in the middle of a hanzi");
+                    [BUFFER replaceCharactersInRange:NSMakeRange(idx+i-1,1)
+                                 withAttributedString:[self attrString:@"??" ascii:YES]];
+                    store=[BUFFER string];
+                }
+                
                 //NSLog(@"setASCIIString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
                 //      [store substringWithRange:NSMakeRange(idx,i)],idx,i,
                 //      [s substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx,i)
+                [BUFFER replaceCharactersInRange:NSMakeRange(idx,i)
                              withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
             }
+            CURSOR_X=x;
             idx2+=j;
         }
     }
@@ -743,10 +753,10 @@ static BOOL PLAYBELL = YES;
     {
 	int anIndex = [self getIndex: CURSOR_X y: CURSOR_Y] - 2;
 
-	if(anIndex < [[STORAGE string] length] && anIndex >= 0)
+	if(anIndex < [[BUFFER string] length] && anIndex>=0)
 	{
-	    if([[STORAGE string] characterAtIndex: anIndex] == VT100CC_LF)
-		[STORAGE addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange(([self getIndex: CURSOR_X y: CURSOR_Y] - 2), 1)];
+	    if([[BUFFER string] characterAtIndex: anIndex] == VT100CC_LF)
+		[BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange(([self getIndex: CURSOR_X y: CURSOR_Y] - 2), 1)];
 	}
     }
 }
@@ -768,7 +778,7 @@ static BOOL PLAYBELL = YES;
     NSString *store;
 
     for(idx2=0;idx2<len;) {
-        store=[STORAGE string];
+        store=[BUFFER string];
         if (CURSOR_X>=WIDTH) {
             if ([TERMINAL wraparoundMode]) {
                 [self setNewLine];
@@ -789,56 +799,56 @@ static BOOL PLAYBELL = YES;
             }
             [self insertBlank:x-CURSOR_X];
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
-            [STORAGE replaceCharactersInRange:NSMakeRange(idx,x-CURSOR_X)
+            [BUFFER replaceCharactersInRange:NSMakeRange(idx,x-CURSOR_X)
                          withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
             CURSOR_X=x;
             idx2+=j;
         }
         else {
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
-            if (CURSOR_IN_MIDDLE) {
-                //NSLog(@"setDoubleWidthString: Start from middle of a hanzi");
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx,1)
-                             withAttributedString:[self attrString:@"??"  ascii:YES]];
-                store=[STORAGE string];
-                idx++;
-            }
             if(WIDTH-CURSOR_X<=(len-idx2)*2) x=WIDTH;
             else x=CURSOR_X+(len-idx2)*2;
             j=(x-CURSOR_X+1)/2;
-
             if (j<=0) {
                 //NSLog(@"setDoubleWidthString:1: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
                 break;
             }
-            for(i=0,x2=CURSOR_X;x2<x&&idx+i<[store length]&&[store characterAtIndex:idx+i]!='\n';x2++,i++)
-                if (ISDOUBLEWIDTHCHARACTER(idx+i)) x2++;
-            CURSOR_X=x;
-            if (x2>x) {
-                //NSLog(@"setDoubleWidthString: End in the middle of a hanzi");
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx+i-1,1)
-                             withAttributedString:[self attrString:@"??"  ascii:YES]];
-                store=[STORAGE string];
-            }
-//            NSLog(@"%d,%d(%d)->(%d,%d)",idx,i,[store length],idx2,j);
             if (idx>=[store length]) {
                 //NSLog(@"setDoubleWidthString: About to append [%@](%d+%d),(%d)",
                 //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
 
-                [STORAGE appendAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
+                [BUFFER appendAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
             }
-            else if (i==0) {
+            else if ([store characterAtIndex:idx]=='\n') {
                 //NSLog(@"setDoubleWidthString: About to insert [%@](%d+%d),  (%d)",
                 //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
-                [STORAGE insertAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO] atIndex:idx];
+                [BUFFER insertAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO] atIndex:idx];
             }
             else {
-                //NSLog(@"setDoubleWidthString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
+            if (CURSOR_IN_MIDDLE) {
+                //NSLog(@"setDoubleWidthString: Start from middle of a hanzi");
+                [BUFFER replaceCharactersInRange:NSMakeRange(idx,1)
+                             withAttributedString:[self attrString:@"??"  ascii:YES]];
+                store=[BUFFER string];
+                idx++;
+            }
+            for(i=0,x2=CURSOR_X;x2<x&&idx+i<[store length]&&[store characterAtIndex:idx+i]!='\n';x2++,i++)
+                if (ISDOUBLEWIDTHCHARACTER(idx+i)) x2++;
+            if (x2>x) {
+                //NSLog(@"setDoubleWidthString: End in the middle of a hanzi");
+                [BUFFER replaceCharactersInRange:NSMakeRange(idx+i-1,1)
+                             withAttributedString:[self attrString:@"??"  ascii:YES]];
+                store=[BUFFER string];
+            }
+//            NSLog(@"%d,%d(%d)->(%d,%d)",idx,i,[store length],idx2,j);
+
+            //NSLog(@"setDoubleWidthString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
                 //      [store substringWithRange:NSMakeRange(idx,i)],idx,i,
                 //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]); 
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx,i)
+                [BUFFER replaceCharactersInRange:NSMakeRange(idx,i)
                              withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
             }
+            CURSOR_X=x;
             idx2+=j;
         }
     }
@@ -876,7 +886,7 @@ static BOOL PLAYBELL = YES;
 	CURSOR_Y++;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
-        [STORAGE appendAttributedString:[self attrString:@"\n"  ascii:YES]];
+        [BUFFER appendAttributedString:[self attrString:@"\n"  ascii:YES]];
         TOP_LINE++;
         [self removeOverLine];
     }
@@ -903,18 +913,22 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"----showCursor: (%d,%d):%d",CURSOR_X,CURSOR_Y,show);
 
     // Erase cursor at old position by resetting foreground/background colors
-    if (OLD_CURSOR_INDEX>=0&&OLD_CURSOR_INDEX<[[STORAGE string] length]) {
-        if ([[STORAGE attribute:NSReversedAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil] isEqualToString:@"YES"]) {
-            dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:OLD_CURSOR_INDEX effectiveRange:nil]];
-            fg=[dic objectForKey:NSBackgroundColorAttributeName];
-            bg=[dic objectForKey:NSForegroundColorAttributeName];
-//            NSLog(@"reset fg=%@\nbg=%@",fg,bg);
-            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-            [dic setObject:fg forKey:NSForegroundColorAttributeName];
-            [dic setObject:@"NO" forKey:NSReversedAttributeName];
-//            NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX],[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX]);
-            [STORAGE setAttributes:dic range:NSMakeRange(OLD_CURSOR_INDEX,1)];
-            OLD_CURSOR_INDEX=-1;
+    if (OLD_CURSOR_INDEX>=0&&OLD_CURSOR_INDEX<[[BUFFER string] length]) {
+        if ([[BUFFER attribute:NSReversedAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil] isEqualToString:@"YES"]) {
+            if ([[BUFFER attribute:NSCursorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil] isEqualToString:@"YES"]) {
+                [BUFFER deleteCharactersInRange:NSMakeRange(OLD_CURSOR_INDEX, 1)];
+            } else {
+                dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:OLD_CURSOR_INDEX effectiveRange:nil]];
+                fg=[dic objectForKey:NSBackgroundColorAttributeName];
+                bg=[dic objectForKey:NSForegroundColorAttributeName];
+                //            NSLog(@"reset fg=%@\nbg=%@",fg,bg);
+                [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+                [dic setObject:fg forKey:NSForegroundColorAttributeName];
+                [dic setObject:@"NO" forKey:NSReversedAttributeName];
+                //            NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:OLD_CURSOR_INDEX],[[BUFFER string] characterAtIndex:OLD_CURSOR_INDEX]);
+                [BUFFER setAttributes:dic range:NSMakeRange(OLD_CURSOR_INDEX,1)];
+            }
+OLD_CURSOR_INDEX=-1;
         }
     }
 
@@ -923,17 +937,45 @@ static BOOL PLAYBELL = YES;
         CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
     {
         int idx = [self getIndex:CURSOR_X y:CURSOR_Y];
-        if (idx>=[[STORAGE string] length]||[[STORAGE string] characterAtIndex:idx]=='\n') [self insertBlank:1];
-	// reverse the video on the position where the cursor is supposed to be shown.
-        dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
-        fg=[dic objectForKey:NSBackgroundColorAttributeName];
-        bg=[dic objectForKey:NSForegroundColorAttributeName];
-//        NSLog(@"set fg=%@\nbg=%@",fg,bg);
-        [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-        [dic setObject:fg forKey:NSForegroundColorAttributeName];
-        [dic setObject:@"YES" forKey:NSReversedAttributeName];
-//        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
-        [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
+        if (idx>=[[BUFFER string] length]) {
+            [BUFFER appendAttributedString:[self defaultAttrString:@" "]];
+            dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:idx effectiveRange:nil]];
+            fg=[dic objectForKey:NSBackgroundColorAttributeName];
+            bg=[dic objectForKey:NSForegroundColorAttributeName];
+            //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
+            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+            [dic setObject:fg forKey:NSForegroundColorAttributeName];
+            [dic setObject:@"YES" forKey:NSReversedAttributeName];
+            [dic setObject:@"YES" forKey:NSCursorAttributeName];
+            //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:idx],[[BUFFER string] characterAtIndex:idx]);
+            [BUFFER setAttributes:dic range:NSMakeRange(idx,1)];
+            
+        }
+        else if ([[BUFFER string] characterAtIndex:idx]=='\n') {
+            [BUFFER insertAttributedString:[self defaultAttrString:@" "] atIndex:idx];
+            dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:idx effectiveRange:nil]];
+            fg=[dic objectForKey:NSBackgroundColorAttributeName];
+            bg=[dic objectForKey:NSForegroundColorAttributeName];
+            //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
+            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+            [dic setObject:fg forKey:NSForegroundColorAttributeName];
+            [dic setObject:@"YES" forKey:NSReversedAttributeName];
+            [dic setObject:@"YES" forKey:NSCursorAttributeName];
+            //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:idx],[[BUFFER string] characterAtIndex:idx]);
+            [BUFFER setAttributes:dic range:NSMakeRange(idx,1)];
+        }
+        else {
+            // reverse the video on the position where the cursor is supposed to be shown.
+            dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:idx effectiveRange:nil]];
+            fg=[dic objectForKey:NSBackgroundColorAttributeName];
+            bg=[dic objectForKey:NSForegroundColorAttributeName];
+            //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
+            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+            [dic setObject:fg forKey:NSForegroundColorAttributeName];
+            [dic setObject:@"YES" forKey:NSReversedAttributeName];
+            //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:idx],[[BUFFER string] characterAtIndex:idx]);
+            [BUFFER setAttributes:dic range:NSMakeRange(idx,1)];
+        }
         OLD_CURSOR_INDEX=idx;
 
     }
@@ -955,10 +997,10 @@ static BOOL PLAYBELL = YES;
             int idx = [self getIndex:CURSOR_X y:CURSOR_Y];
             int width;
 
-            width = [[STORAGE attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
-            [STORAGE deleteCharactersInRange:NSMakeRange(idx, 1)];
+            width = [[BUFFER attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
+            [BUFFER deleteCharactersInRange:NSMakeRange(idx, 1)];
 
-            if (width==2)  [STORAGE insertAttributedString:[self attrString:@"?" ascii:YES] atIndex:idx];
+            if (width==2)  [BUFFER insertAttributedString:[self attrString:@"?" ascii:YES] atIndex:idx];
         }
     }
 }
@@ -996,7 +1038,7 @@ static BOOL PLAYBELL = YES;
     int x1, y1, x2, y2;
     int y;
     int idx,i;
-    NSString *store=[STORAGE string];
+    NSString *store=[BUFFER string];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen eraseInDisplay:(param=%d)]",
@@ -1036,7 +1078,7 @@ static BOOL PLAYBELL = YES;
             i=idx=[self getIndex:x1 y:y];
             for(;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
 //            NSLog(@"start: %d,%d",idx,i);
-            if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
+            if (i>idx) [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
         }
         else if (y == y2) {
             [self setASCIIStringToX:0  Y:y  string:[NSString stringWithCharacters:spaces length:x2+1]];
@@ -1045,7 +1087,7 @@ static BOOL PLAYBELL = YES;
             i=idx=[self getIndex:0 y:y];
             for(;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
            // NSLog(@"whole line %d(%d,%d)",y,idx,i);
-            if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
+            if (i>idx) [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
         }
     }
 }
@@ -1069,9 +1111,9 @@ static BOOL PLAYBELL = YES;
 
     case 0:
         i=idx=[self getIndex:CURSOR_X y:CURSOR_Y];
-        s=[STORAGE string];
+        s=[BUFFER string];
         for(;i<[s length]&&[s characterAtIndex:i]!='\n';i++);
-        if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
+        if (i>idx) [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
         
         break;
     default:
@@ -1298,19 +1340,19 @@ static BOOL PLAYBELL = YES;
 
     //NSLog(@"SCROLL-UP[%d-%d]; Y = %d",SCROLL_TOP,SCROLL_BOTTOM, CURSOR_Y);
     idx=[self getIndex:0 y:SCROLL_TOP];
-    if (SCROLL_TOP==HEIGHT-1) idx2=[STORAGE length];
+    if (SCROLL_TOP==HEIGHT-1) idx2=[BUFFER length];
     else idx2=[self getIndex:0 y:SCROLL_TOP+1];
     aRange = NSMakeRange(idx,idx2-idx);
     if(aRange.length <= 0)
         aRange.length = 1;
-    [STORAGE deleteCharactersInRange:aRange];
+    [BUFFER deleteCharactersInRange:aRange];
 
     if (SCROLL_BOTTOM>=HEIGHT-1) {
-        [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
+        [BUFFER appendAttributedString:[self defaultAttrString:@"\n"]];
     }
     else if(CURSOR_Y <= SCROLL_BOTTOM) {
         idx=[self getIndex:0 y:SCROLL_BOTTOM+1];
-        [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+        [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
     }
 }
 
@@ -1328,10 +1370,10 @@ static BOOL PLAYBELL = YES;
 
     //NSLog(@"SCROLL-DOWN[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
     idx=[self getIndex:0 y:SCROLL_TOP];
-    [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+    [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
     if (SCROLL_BOTTOM>=HEIGHT-1) {
         idx=[self getIndex:0 y:SCROLL_BOTTOM];
-        aRange = NSMakeRange(idx-1, [STORAGE length]-idx);
+        aRange = NSMakeRange(idx-1, [BUFFER length]-idx);
         if(aRange.length <= 0)
             aRange.length = 1;
     }
@@ -1342,21 +1384,21 @@ static BOOL PLAYBELL = YES;
         if(aRange.length <= 0)
             aRange.length = 1;
     }
-    [STORAGE deleteCharactersInRange:aRange];
+    [BUFFER deleteCharactersInRange:aRange];
     
 }
 
 - (void) trimLine: (int) y
 {
     int idx,i,x;
-    NSString *store=[STORAGE string];
+    NSString *store=[BUFFER string];
 
     idx=[self getIndex:0 y:y];
     for(x=0;x<WIDTH&&idx<[store length]&&[store characterAtIndex:idx]!='\n';idx++,x++)
 //        if (ISDOUBLEWIDTHCHARACTER([store characterAtIndex:idx])) x++;
         if (ISDOUBLEWIDTHCHARACTER(idx)) x++;
     for(i=idx;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
-    if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
+    if (i>idx) [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
 }    
     
 
@@ -1368,14 +1410,14 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"insertBlank[%d@(%d,%d)]",n,CURSOR_X,CURSOR_Y);
     idx=[self getIndex:CURSOR_X y:CURSOR_Y];
     if (CURSOR_IN_MIDDLE) {
-        [STORAGE replaceCharactersInRange:NSMakeRange(idx,1)
+        [BUFFER replaceCharactersInRange:NSMakeRange(idx,1)
                      withAttributedString:[self defaultAttrString:@"??"]];
         idx++;
     }
-    if (idx<[STORAGE length])
-        [STORAGE insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]] atIndex:idx];
+    if (idx<[BUFFER length])
+        [BUFFER insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]] atIndex:idx];
     else
-        [STORAGE appendAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]  ]];
+        [BUFFER appendAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]]];
     [self trimLine:CURSOR_Y];
 }
 
@@ -1387,10 +1429,10 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
     for(;n>0;n--) {
         idx=[self getIndex:0 y:CURSOR_Y];
-        [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+        [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
             idx=[self getIndex:0 y:SCROLL_BOTTOM];
-            aRange = NSMakeRange(idx-1,[STORAGE length]-idx);
+            aRange = NSMakeRange(idx-1,[BUFFER length]-idx);
             if(aRange.length <= 0)
                 aRange.length = 1;
         }
@@ -1401,7 +1443,7 @@ static BOOL PLAYBELL = YES;
             if(aRange.length <= 0)
                 aRange.length = 1;
         }
-        [STORAGE deleteCharactersInRange: aRange];
+        [BUFFER deleteCharactersInRange: aRange];
     }
 }
 
@@ -1417,13 +1459,13 @@ static BOOL PLAYBELL = YES;
         aRange = NSMakeRange(idx, idx2-idx);
         if(aRange.length <= 0)
             aRange.length = 1;
-        [STORAGE deleteCharactersInRange:aRange];
+        [BUFFER deleteCharactersInRange:aRange];
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
-            [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
+            [BUFFER appendAttributedString:[self defaultAttrString:@"\n"]];
         }
         else {
             idx=[self getIndex:0 y:SCROLL_BOTTOM+1];
-            [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+            [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
         }
     }
 }
@@ -1447,11 +1489,11 @@ static BOOL PLAYBELL = YES;
     if (TOP_LINE + HEIGHT > LINE_LIMIT) {
 	int over = TOP_LINE + HEIGHT - LINE_LIMIT;
         int i,idx;
-        NSString *s=[STORAGE string];
+        NSString *s=[BUFFER string];
 
         for(i=0,idx=0;i<over;idx++)
             if ([s characterAtIndex:idx]=='\n') i++;
-        [STORAGE deleteCharactersInRange:NSMakeRange(0, idx+1)];
+        [BUFFER deleteCharactersInRange:NSMakeRange(0, idx+1)];
         TOP_LINE -= over;
 
         NSParameterAssert(TOP_LINE >= 0);
@@ -1583,14 +1625,22 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
 #endif
     
-    int idx=[self getIndex:0 y:0];
     static BOOL show=YES;
-    int len=[[STORAGE string] length];
     NSColor *fg, *bg,*blink;
     NSDictionary *dic;
     NSRange range;
+    NSString *s=[STORAGE string];
+    int len=[s length];
+    int idx=len-1;
+    int y=0;
 
+    for(;y<HEIGHT&&idx>=0;idx--) {
+        if ([s characterAtIndex:idx]=='\n') y++;
+    }
+    if (y<HEIGHT) idx++; else idx+=2;
+    
 //    NSLog(@"blink!!");
+    [STORAGE beginEditing];
     for(;idx<len;) {
         if ([[STORAGE attribute:NSBlinkAttributeName atIndex:idx effectiveRange:&range] intValue]) {
 //            NSLog(@"true blink!!");
@@ -1613,6 +1663,7 @@ static BOOL PLAYBELL = YES;
         }
         else idx+=range.length;
     }
+    [STORAGE endEditing];
     show=!(show);
 }
 
@@ -1645,5 +1696,38 @@ static BOOL PLAYBELL = YES;
     return ts;
    
 }
+
+- (void) renewBuffer
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen renewBuffer]",  __FILE__, __LINE__ );
+#endif
+
+    NSString *s=[STORAGE string];
+    int len=[s length];
+    int idx=len-1;
+    int y=0;
+    
+    for(;y<HEIGHT&&idx>=0;idx--) {
+        if ([s characterAtIndex:idx]=='\n') y++;
+    }
+    if (y<HEIGHT) idx++; else idx+=2;
+
+    updateIndex=idx;
+//    NSLog(@"renew: %d, %d",updateIndex, len-updateIndex);
+    [BUFFER  replaceCharactersInRange:NSMakeRange(0,[BUFFER length])
+                 withAttributedString:[STORAGE attributedSubstringFromRange:NSMakeRange(updateIndex,len-updateIndex)]];
+}
+
+- (void) updateScreen
+{
+//    NSLog(@"changing %d,%d,%d",updateIndex,[STORAGE length]-updateIndex,[BUFFER length]);
+    [STORAGE beginEditing];
+    [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex,[STORAGE length]-updateIndex)
+                 withAttributedString:BUFFER];
+    [STORAGE endEditing];
+    [self renewBuffer];
+}
+
 @end
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.12 2003-02-12 07:52:47 ujwal Exp $
+// $Id: VT100Screen.h,v 1.13 2003-02-21 21:00:27 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -55,6 +55,8 @@
     PTYSession *SESSION;
     NSWindow *WINDOW;
     int charset[4], saveCharset[4];
+    NSMutableAttributedString *BUFFER;
+    int updateIndex;
     
     unsigned int  TOP_LINE;
     unsigned int  LINE_LIMIT;
@@ -139,6 +141,9 @@
 - (void)blink;
 - (int) cursorX;
 - (int) cursorY;
+
+- (void) updateScreen;
+- (void) renewBuffer;
 
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (NSAttributedString *)defaultAttrString:(NSString *)str;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.5 2002-12-06 03:26:06 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.6 2002-12-07 19:59:18 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -18,7 +18,7 @@
 #import "VT100Screen.h"
 #import "PTYSession.h"
 
-@interface PseudoTerminal : NSResponder
+@interface PseudoTerminal : NSWindowController
 {
     /// MainMenu reference
     MainMenu *MAINMENU;
@@ -77,6 +77,7 @@
 - (void) newSession: (id) sender;
 
 - (id)init;
+- (id) initWithWindowNibName: (NSString *) windowNibName owner: (id) owner;
 - (void)dealloc;
 - (void)releaseObjects;
 

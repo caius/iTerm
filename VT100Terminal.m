@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.85 2004-02-13 21:36:16 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.86 2004-02-22 09:56:25 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1701,12 +1701,12 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (int)foregroundColorCode
 {
-	return (reversed?BG_COLORCODE:FG_COLORCODE)+highlight*8+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
+	return (reversed?BG_COLORCODE:FG_COLORCODE+(highlight?1:bold)*8)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
 }
 
 - (int)backgroundColorCode
 {
-    return reversed?FG_COLORCODE:BG_COLORCODE;
+    return (reversed?FG_COLORCODE:BG_COLORCODE);
 }
 
 - (NSData *)reportActivePositionWithX:(int)x Y:(int)y

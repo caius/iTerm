@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.129 2004-02-20 09:52:01 yfabian Exp $
+// $Id: PTYTextView.m,v 1.130 2004-02-22 09:56:17 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -529,10 +529,10 @@
 	int width;
 	int c;
 	
-	c= fg&(BOLD_MASK|31);
+	c= fg&(BOLD_MASK|0x1f);
 	if (!code) return nil;
 	width=ISDOUBLEWIDTHCHARACTER(code)?2:1;
-	srand(code);
+	srand( code<<5 + c );
 	i=rand()%(CACHESIZE-CELLSIZE);
 	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {

@@ -1,3 +1,8 @@
+2004-02-21  fabian
+
+	* Fixed highlight color display
+	* Now including color code in the hash function
+	
 2004-02-20  ujwal
 
 	* Minor updates to selection stuff. Re-enabled "select all".

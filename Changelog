@@ -1,3 +1,10 @@
+2003-03-02	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed a screen update bug. Sometimes screen HAS to be 
+      updated even if minIndex == [BUFFER length], e.g. when 
+      doing ^u on the last line.
+      
+
 2003-03-01	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed a warning bell orientation bug.

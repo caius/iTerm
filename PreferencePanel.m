@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.37 2003-04-26 05:47:53 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.38 2003-04-26 22:17:49 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -794,6 +794,12 @@ static int TRANSPARENCY  =10;
 - (BOOL)promptOnClose
 {
     return (defaultPromptOnClose);
+}
+
+- (IBAction)editColorScheme: (id) sender
+{
+    // set the color scheme to custom
+    [colorScheme selectItemAtIndex: 0];
 }
 
 - (IBAction)changeColorScheme:(id)sender

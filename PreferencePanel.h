@@ -120,6 +120,7 @@
 
 - (IBAction)changeBackground:(id)sender;
 - (IBAction)changeColorScheme:(id)sender;
+- (IBAction)editColorScheme: (id) sender;
 - (IBAction)changeFontButton:(id)sender;
 - (IBAction)changeForeground:(id)sender;
 - (IBAction)changeNAFontButton:(id)sender;

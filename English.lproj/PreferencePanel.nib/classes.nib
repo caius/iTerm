@@ -10,6 +10,7 @@
                 changeForeground = id; 
                 changeNAFontButton = id; 
                 changeTab = id; 
+                editColorScheme = id; 
                 ok = id; 
                 restore = id; 
             }; 

@@ -145,6 +145,7 @@
 "scroll page up"="scroll page up";
 "send ^["="send ^[";
 "send hex code"="send hex code";
+"ignore"="ignore";
 "unknown action ID"="unknown action ID";
 
 /* Key Names */

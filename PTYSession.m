@@ -442,6 +442,8 @@ static NSString *PWD_ENVVALUE = @"~";
 					[self writeTask:[NSData dataWithBytes:&hexCode length: sizeof(hexCode)]];
 				}
 				break;
+			case KEY_ACTION_IGNORE:
+				break;
 			default:
 				NSLog(@"Unknown key action %d", keyBindingAction);
 				break;

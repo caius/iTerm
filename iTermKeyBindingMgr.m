@@ -427,6 +427,11 @@ static iTermKeyBindingMgr *singleInstance = nil;
 															  @"Key Binding Actions"),
 				auxText];
 			break;			
+		case KEY_ACTION_IGNORE:
+			actionString = NSLocalizedStringFromTableInBundle(@"ignore",@"iTerm", 
+															  [NSBundle bundleForClass: [self class]], 
+															  @"Key Binding Actions");
+			break;
 		default:
 			actionString = [NSString stringWithFormat: @"%@ %d", 
 				NSLocalizedStringFromTableInBundle(@"unknown action ID",@"iTerm", 

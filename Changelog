@@ -4,6 +4,7 @@
 	  Terminal, and Bookmark editor still needs to be done.
 	* Fixed [PTYTextView selectedText] and [PTYTextView contentFromX: Y: ToX: Y:] 
 	  so that '\n' is inserted only on a hard wrap.
+	* Added key mapping action "ignore" to throw away key events.
 
 2004-03-06  fabian
 

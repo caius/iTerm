@@ -1,3 +1,12 @@
+2004-10-20  ujwal
+
+	* Fixed reverse video problem in OpenVMS again. Hopefully, this time it 
+	  is the correct fix. In [VT100Screen: -scrollUp] and [VT100Screen: -scrollDown], 
+	  new lines have DEFAULT_FG_COLOR_CODE DEFAULT_BG_COLOR_CODE for foreground and 
+	  background colors respectively instead of using the terminal's current fg and bg 
+	  colors. T am not sure why OpenVMS does not set the video properties appropriately 
+	  when scrolling.
+
 2004-10-10  ujwal
 
 	* Added support to display Bookmarks in drawer of terminal window.

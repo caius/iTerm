@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.207 2004-07-07 07:30:37 ujwal Exp $
+// $Id: VT100Screen.m,v 1.208 2004-10-21 03:43:32 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -889,9 +889,9 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)-[%d,%d]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y, SCROLL_TOP, SCROLL_BOTTOM);
 #endif
-
+	
     if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) {
-        CURSOR_Y++;
+		CURSOR_Y++;	
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
 		//move a line into buffer
@@ -1286,12 +1286,11 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		memmove(screenFGColor+SCROLL_TOP*WIDTH, screenFGColor+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
 		memmove(screenBGColor+SCROLL_TOP*WIDTH, screenBGColor+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
 	}
+	// new line with default settings
 	memset(screenLines+SCROLL_BOTTOM*WIDTH,0,WIDTH*sizeof(unichar));
-	// don't change the fg and bg colors of this new line. Let it inherit the properties of what was there before.
-	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
+	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
+	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
-//    else if(CURSOR_Y <= SCROLL_BOTTOM) {
 }
 
 - (void)scrollDown
@@ -1308,10 +1307,10 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		memmove(screenFGColor+(SCROLL_TOP+1)*WIDTH, screenFGColor+(SCROLL_TOP)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
 		memmove(screenBGColor+(SCROLL_TOP+1)*WIDTH, screenBGColor+(SCROLL_TOP)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
 	}
+	// new line with default settings
 	memset(screenLines+SCROLL_TOP*WIDTH,0,WIDTH*sizeof(unichar));
-	// don't change the fg and bg colors of this new line. Let it inherit the properties of what was there before.
-	memset(screenFGColor+SCROLL_TOP*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_TOP*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
+	memset(screenFGColor+SCROLL_TOP*WIDTH,DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
+	memset(screenBGColor+SCROLL_TOP*WIDTH,DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));    
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.107 2004-02-17 00:42:36 ujwal Exp $
+// $Id: PTYTextView.m,v 1.108 2004-02-17 05:59:08 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -673,17 +673,47 @@
 			buf = [dataSource bufferLines] + (lineIndex*WIDTH);
 			fg = [dataSource bufferFGColor] + (lineIndex*WIDTH);
 			bg = [dataSource bufferBGColor] + (lineIndex*WIDTH);
+		} 		
+		// line is on the current screen
+		else 
+		{
+			lineIndex=line-startScreenLineIndex;
+			buf=[dataSource screenLines]+lineIndex*WIDTH;
+			fg=[dataSource screenFGColor]+lineIndex*WIDTH;
+			bg=[dataSource screenBGColor]+lineIndex*WIDTH;
+			dirty=[dataSource dirty]+lineIndex*WIDTH;			
+		}	
+		
+		//draw background and underline here
+		bgstart=-1;
+		ulstart=-1;
+		for(j = 0; j < WIDTH; j++) 
+		{
+			if (buf[j]==0xffff) 
+				continue;
+			/* find out if the current char is being selected; adjust background color accordingly */
+			sel=(x1!=-1&&((line>y1&&line<y2)||(line==y1&&y1==y2&&j>=x1&&j<x2)||(line==y1&&y1!=y2&&j>=x1)||(line==y2&&y1!=y2&&j<x2)))?-1:bg[j];
 			
-			//draw background and underline here
-			bgstart=-1;
-			ulstart=-1;
-			for(j = 0; j < WIDTH; j++) 
+			// check if we have to update
+			if (line >= startScreenLineIndex && !forceUpdate && !dirty[j])
 			{
-				if (buf[j]==0xffff) 
-					continue;
-				/* find out if the current char is being selected; adjust background color accordingly */
-				sel=(x1!=-1&&((line>y1&&line<y2)||(line==y1&&y1==y2&&j>=x1&&j<x2)||(line==y1&&y1!=y2&&j>=x1)||(line==y2&&y1!=y2&&j<x2)))?-1:bg[j];
+				if (bgstart >= 0) {
+					if (bgcode>=0) 
+						[[self colorForCode:bgcode] set];
+					else 
+						[selectionColor set];
+					NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
+				}						
+				if (ulstart >= 0) 
+				{
+					[[self colorForCode:fgcode] set];
+					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
+				}
 				
+				bgstart = ulstart = -1;
+			}
+			else
+			{
 				if (bgstart<0) 
 				{ 
 					// we are at the beginning of the line
@@ -714,135 +744,37 @@
 					fgcode=fg[j];
 					ulstart=(fg[j]&UNDER_MASK||buf[j])?j:-1;
 				}
-			}
-			
-			if (bgcode>=0) 
-				[[self colorForCode:bgcode] set];
-			else 
-				[selectionColor set];
-			NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
-			if (ulstart>=0) {
-				[[self colorForCode:fgcode] set];
-				NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
-			}
-			
-			//draw all char
-			for(j = 0; j < WIDTH; j++) 
-			{
-				if (buf[j] && buf[j] != 0xffff) 	
-					[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
-				if (fg[j] & BLINK_MASK) 
-				{ 
-					//if blink is set, switch the fg/bg color
-					t = fg[j] & 0x1f;
-					fg[j] = (fg[j] & 0xe0) + bg[j];
-					bg[j] = t;
-				}
-				curX += charWidth;
-			}
-		} // scrollback buffer display ends
-		
-		// line is on the current screen
-		else 
-		{
-			lineIndex=line-startScreenLineIndex;
-			buf=[dataSource screenLines]+lineIndex*WIDTH;
-			fg=[dataSource screenFGColor]+lineIndex*WIDTH;
-			bg=[dataSource screenBGColor]+lineIndex*WIDTH;
-			dirty=[dataSource dirty]+lineIndex*WIDTH;
-			
-			//draw background and underline
-			bgstart=-1;
-			ulstart=-1;
-			for(j = 0; j < WIDTH; j++) 
-			{
-				if (buf[j]==0xffff) 
-					continue;
-				/* find out if the current char is being selected */
-				sel=(x1!=-1&&((line>y1&&line<y2)||(line==y1&&y1==y2&&j>=x1&&j<x2)||(line==y1&&y1!=y2&&j>=x1)||(line==y2&&y1!=y2&&j<x2)))?-1:bg[j];
 				
-				// check if we have to update
-				if (!forceUpdate && !dirty[j])
-				{
-					if (bgstart >= 0) {
-						if (bgcode>=0) 
-							[[self colorForCode:bgcode] set];
-						else 
-							[selectionColor set];
-						NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
-					}						
-					if (ulstart >= 0) 
-					{
-						[[self colorForCode:fgcode] set];
-						NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
-					}
-					
-					bgstart = ulstart = -1;
-				}
-				else 
-				{
-					if (bgstart < 0) 
-					{
-						bgstart = j;
-						bgcode = sel;
-					}
-					else if (bgcode!=sel) 
-					{
-						if (bgcode >= 0) 
-							[[self colorForCode:bgcode] set];
-						else 
-							[selectionColor set];
-						NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
-						bgcode = sel;
-						bgstart = j;
-					}
-					if ((fg[j] & UNDER_MASK) && buf[j] && ulstart<0) 
-					{ 
-						ulstart = j; 
-						fgcode = fg[j]; 
-					}
-					else if (ulstart >= 0 && (fg[j] != fgcode || !buf[j])) 
-					{
-						[[self colorForCode:fgcode] set];
-						NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
-						fgcode = fg[j];
-						ulstart = ((fg[j] & UNDER_MASK) && buf[j]) ? j:-1;
-					}
-				}
-								
 			}
-			
-			if (bgstart >= 0) 
-			{
-				if (bgcode >= 0) 
-					[[self colorForCode:bgcode] set];
-				else 
-					[selectionColor set];
-				NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
+		}
+		
+		if (bgcode>=0) 
+			[[self colorForCode:bgcode] set];
+		else 
+			[selectionColor set];
+		NSRectFill(NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight));
+		if (ulstart>=0) {
+			[[self colorForCode:fgcode] set];
+			NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
+		}
+		
+		//draw all char
+		for(j = 0; j < WIDTH; j++) 
+		{
+			if (buf[j] && buf[j] != 0xffff) 	
+				[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
+			if (fg[j] & BLINK_MASK) 
+			{ 
+				//if blink is set, switch the fg/bg color
+				t = fg[j] & 0x1f;
+				fg[j] = (fg[j] & 0xe0) + bg[j];
+				bg[j] = t;
 			}
-			if (ulstart >= 0) 
-			{
-				[[self colorForCode:fgcode] set];
-				NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
-			}
-			
-			// draw char
-			for(j = 0; j < WIDTH; j++) 
-			{
-				if ((forceUpdate || dirty[j]) && buf[j] && buf[j] != 0xffff) 
-				{
-					[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
-				}
-				if (fg[j] & BLINK_MASK) 
-				{ //if blink is set, switch the fg/bg color
-					t=fg[j] & 0x1f;
-					fg[j] = (fg[j] & 0xe0) + bg[j];
-					bg[j] = t;
-				}
-				curX += charWidth;
-			}
+			curX += charWidth;
+		}
+		
+		if(line >= startScreenLineIndex)
 			memset(dirty,0,WIDTH);
-		}	
 		
 		curY += lineHeight;
 	}

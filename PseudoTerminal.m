@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.78 2003-01-16 08:14:44 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.79 2003-01-17 20:59:36 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1578,13 +1578,6 @@ static NSString *ConfigToolbarItem = @"Config";
     [[term currentSession] setAntiIdle:[[anEntry objectForKey:@"AntiIdle"] boolValue]];
     [[term currentSession] setAutoClose:[[anEntry objectForKey:@"AutoClose"] intValue]];
     [[term currentSession] setAddressBookEntry:anEntry];
-    
-}
-
-// Called by session popup to switch sessions
-- (void) _sessionPopupSelectionDidChange: (id) sender
-{
-    [self selectSession: ([sender indexOfSelectedItem] - 1)];
     
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.27 2003-01-16 08:14:44 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.28 2003-01-17 20:59:34 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -177,7 +177,6 @@
 - (void) _executeABMenuCommandInNewTab: (id) sender;
 - (void) _executeABMenuCommandInNewWindow: (id) sender;
 - (void) _executeABMenuCommand: (int) commandIndex newWindow: (BOOL) theFlag;
-- (void) _sessionPopupSelectionDidChange: (id) sender;
 
 
 @end

@@ -1,3 +1,7 @@
+2003-10-07	ujwal
+
+    * Fixed bug in VT100Screen: clearBuffer.
+
 2003-10-05	ujwal
 
     * Put in a Scripts menu in the main menu to run user defined scripts.

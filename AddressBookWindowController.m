@@ -355,6 +355,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
     if ([adTable selectedRow]<0) return;
     [AE_PANEL center];
+
+    [tabView selectTabViewItemAtIndex: [tabSelection indexOfSelectedItem]];
     
     entry=[[self addressBook] objectAtIndex:[adTable selectedRow]];
     defaultEntry = isDefaultEntry( entry );
@@ -734,16 +736,15 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [[self window] center];
     [adTable setDataSource: self];
     [adTable setDelegate: self];
-    if([adTable numberOfRows] > 0){
+    if([adTable numberOfRows] > 0 && [adTable numberOfSelectedRows] <= 0){
 	[adTable selectRow: 0 byExtendingSelection: NO];
-	[[self window] makeFirstResponder: adTable];
     }
+    [[self window] makeFirstResponder: adTable];
+
     [adTable setDoubleAction: @selector(executeABCommand:)];
     [adTable setAllowsColumnReordering: NO];
     //r= [NSApp runModalForWindow:[self window]];
     //[[self window] close];
-    [tabSelection selectItemAtIndex: 0];
-    [tabView selectTabViewItemAtIndex: 0];
     [self showWindow: self];
 }
 

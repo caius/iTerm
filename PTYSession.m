@@ -200,7 +200,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) startTimer
 {
-    timer =[[NSTimer scheduledTimerWithTimeInterval:0.01
+    timer =[[NSTimer scheduledTimerWithTimeInterval:0.02
                                              target:self
                                            selector:@selector(timerTick:)
                                            userInfo:nil
@@ -576,9 +576,9 @@ static NSString *PWD_ENVVALUE = @"~";
 #if USE_CUSTOM_DRAWING
             [TEXTVIEW scrollEnd];
 #else
-	    // trigger an update of the display.
+	    // scroll to the end
             [TEXTVIEW scrollEnd];
-	    [SCREEN updateScreen];
+	    //[SCREEN updateScreen];
 #endif
     
 	}

@@ -1,3 +1,9 @@
+2004-04-11  ujwal
+	
+	* PTYTask is back to blocking read since we are not doing any 
+	  idle processing anymore. This should cut down onthe number 
+	  of select calls.
+
 2004-04-11  fabian
 
     * Check in correct Japanese localization.

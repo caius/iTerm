@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.21 2004-03-24 05:15:44 ujwal Exp $
+// $Id: PTYTask.m,v 1.22 2004-04-12 19:02:03 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -30,7 +30,7 @@
 
 // Debug option
 #define DEBUG_THREAD          0
-#define DEBUG_ALLOC           0
+#define DEBUG_ALLOC           1
 #define DEBUG_METHOD_TRACE    0
 
 #import <stdio.h>
@@ -48,7 +48,7 @@
 
 #define CTRLKEY(c)   ((c)-'A'+1)
 
-#define MEASURE_PROCESSING_TIME		1
+#define MEASURE_PROCESSING_TIME		0
 
 static void setup_tty_param(struct termios *term,
 			    struct winsize *win,

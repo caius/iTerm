@@ -294,9 +294,12 @@
 
 	if(backgroundImagePath != nil)
 	{
-	    NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
-	    [backgroundImage setImage: anImage];
-	    [anImage release];
+	    NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+	    if(anImage != nil)
+	    {
+		[backgroundImage setImage: anImage];
+		[anImage release];
+	    }
 	}
 	else
 	    [useBackgroundImage setState: NSOffState];

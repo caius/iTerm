@@ -484,11 +484,18 @@ static NSColor* xtermColorTable[2][8];
     [backgroundImage setEditable: NO];
     if([backgroundImagePath length] > 0)
     {
-	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
-	[backgroundImage setImage: anImage];
-	[anImage release];
-	[adBackground setEnabled: (anImage == nil)?YES:NO];
-	[useBackgroundImage setState: (anImage == nil)?NSOffState:NSOnState];
+	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+	if(anImage != nil)
+	{
+	    [backgroundImage setImage: anImage];
+	    [anImage release];
+	    [adBackground setEnabled: (anImage == nil)?YES:NO];
+	    [useBackgroundImage setState: (anImage == nil)?NSOffState:NSOnState];
+	}
+	else
+	{
+	    [useBackgroundImage setState: NSOffState];
+	}	
     }
     else
     {
@@ -815,9 +822,14 @@ static NSColor* xtermColorTable[2][8];
 
 	if(backgroundImagePath != nil)
 	{
-	    NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
-	    [backgroundImage setImage: anImage];
-	    [anImage release];
+	    NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+	    if(anImage != nil)
+	    {
+		[backgroundImage setImage: anImage];
+		[anImage release];
+	    }
+	    else
+		[useBackgroundImage setState: NSOffState];
 	}
 	else
 	    [useBackgroundImage setState: NSOffState];

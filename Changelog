@@ -2,6 +2,8 @@
 
     * When PTYSession: terminate is called, we wait for shell task to exit 
       after sending it the SIGHUP signal.
+    * Changed some NSImage calls of initByReferencingFile to initWithContentsOfDile 
+      so that an attempt to init the image is made immediately.
 
 2003-09-16	ujwal
 

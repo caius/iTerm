@@ -1285,7 +1285,7 @@ static NSString *PWD_ENVVALUE = @"~";
     backgroundImagePath = imageFilePath;
     if([backgroundImagePath length] > 0)
     {
-	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
+	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
 	if(anImage != nil)
 	{
 	    [SCROLLVIEW setDrawsBackground: NO];
@@ -1298,6 +1298,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	{
 	    [backgroundImagePath release];
 	    backgroundImagePath = nil;
+	    [SCROLLVIEW setDrawsBackground: YES];
 	}
     }
     else

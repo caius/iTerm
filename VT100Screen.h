@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.17 2003-02-25 20:31:56 yfabian Exp $
+// $Id: VT100Screen.h,v 1.18 2003-02-27 19:53:10 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -147,6 +147,7 @@
 - (void)blink;
 - (int) cursorX;
 - (int) cursorY;
+- (int) topLines;
 
 - (NSMutableAttributedString *) buffer;
 - (NSArray *) screenLines;

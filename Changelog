@@ -1,3 +1,8 @@
+2003-02-27	fabian
+   * Fixed cursor code in ARRAY mode
+   * Fixed more double-width character stuff, display should be 
+     fully working now
+    
 2003-02-26	fabian
     * Fixed general double-width character processing in ARRAY mode
     * Fixed "last line missing" bug in ARRAY mode

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.15 2003-02-25 16:06:11 ujwal Exp $
+// $Id: PTYTextView.h,v 1.16 2003-02-27 19:53:09 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -65,7 +65,6 @@
     // data source
     id dataSource;
     int numberOfLines;
-
 }
 
 - (id)init;
@@ -88,7 +87,6 @@
 - (void) browse:(id)sender;
 - (void) mail:(id)sender;
 - (void) setCursorIndex:(int)idx;
-
 
 // get/set methods
 - (BOOL) antiAlias;

@@ -39,7 +39,6 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-
 @implementation PTYSession
 
 static NSString *TERM_ENVNAME = @"TERM";
@@ -261,6 +260,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	if (token.type != VT100_SKIP)
 	    [SCREEN putToken:token];
     }
+
     oIdleCount=0;
     if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
@@ -697,7 +697,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
     }
 
-    //if (blink>8) { [SCREEN blink]; blink=0; }
+    if (blink>8) { [SCREEN blink]; blink=0; }
     if (oIdleCount<3||dirty) {
         if (output>3) {
             // sometimes showCursor will change buffer too
@@ -715,6 +715,7 @@ static NSString *PWD_ENVVALUE = @"~";
         }
         else dirty=YES;
     }
+
 }
 
 - (void) setLabelAttribute

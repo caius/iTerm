@@ -1,6 +1,7 @@
 2003-09-11	ujwal
 
     * Put in preliminary infrastructure for background image support.
+    * Fixed showCursor bug.
 
 2003-09-11	fabian
 

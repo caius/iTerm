@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.145 2003-09-11 07:35:40 yfabian Exp $
+// $Id: VT100Screen.m,v 1.146 2003-09-11 18:16:38 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1373,7 +1373,7 @@ static BOOL PLAYBELL = YES;
     
     // Show cursor at new position by reversing foreground/background colors
     if (CURSOR_X >= 0 && CURSOR_X < WIDTH &&
-        CURSOR_Y >= 0 && CURSOR_Y < HEIGHT && !updateIndex)
+        CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
     {
 	int idx;
         idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];

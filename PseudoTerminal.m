@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.301 2004-11-20 23:52:52 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.302 2004-11-21 00:41:03 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -126,16 +126,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	textViewSize.height = ch * rows;
 	
 	scrollViewSize = [PTYScrollView frameSizeForContentSize:textViewSize
-							hasHorizontalScroller:NO
-							  hasVerticalScroller:YES
-									   borderType:NSNoBorder];
+									  hasHorizontalScroller:NO
+										hasVerticalScroller:YES
+												 borderType:NSNoBorder];
 	
 	tabViewSize = scrollViewSize;
 	tabViewSize.height = scrollViewSize.height + 20;
-
+	
 	return (tabViewSize);
-
+	
 }
+
 
 // Do not use both initViewWithFrame and initWindow
 // initViewWithFrame is mainly meant for embedding a terminal view in a non-iTerm window.
@@ -1139,6 +1140,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)windowDidResize:(NSNotification *)aNotification
 {
     NSRect frame;
+    int i, w, h;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowDidResize: width = %f, height = %f]",
@@ -1165,23 +1167,42 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			nafont = [self _getMaxFont:nafont height:frame.size.height lines:HEIGHT];
 			
 			[self setFont:font nafont:nafont];
+			//[self resizeWindow:WIDTH height:HEIGHT];
 			NSString *aTitle = [NSString stringWithFormat:@"%@ (@%.0f)", [[_sessionMgr currentSession] name], [font pointSize]];
 			[self setWindowTitle: aTitle];    
+			//for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+			//	[[[_sessionMgr sessionAtIndex:i] TEXTVIEW] setFrameSize:frame.size];		
+			//}
 			[self setWindowSize: YES];
 
 		}
-		
+		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
+		h = (int)(frame.size.height/charHeight);
+		if (w!=WIDTH || h!=HEIGHT) {
+			for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+				[[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
+				[[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
+			}
+		}
 	}
 	else {	    
+		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
+		h = (int)(frame.size.height/charHeight);
+
+		for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+			[[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
+			[[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
+		}
 		
-		WIDTH = (int)((frame.size.width - MARGIN * 2)/charWidth);
-		HEIGHT = (int)(frame.size.height/charHeight);
-		
+		WIDTH = w;
+		HEIGHT = h;
 		// Display the new size in the window title.
 		NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[_sessionMgr currentSession] name], WIDTH, HEIGHT];
 		[self setWindowTitle: aTitle];    
 	}	
-
+	// Reset the scrollbar to the bottom
+    [[[_sessionMgr currentSession] TEXTVIEW] scrollEnd];
+	
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
 	
@@ -1255,10 +1276,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     int i;
     NSSize vsize;
 	
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal resizeWindow:%d,%d]",
           __FILE__, __LINE__, w, h);
-//#endif
+#endif
     
     vsize.width = charWidth * w + MARGIN *2;
 	vsize.height = charHeight * h;
@@ -1277,7 +1298,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Contextual menu
 - (BOOL) suppressContextualMenu
 {
-	return suppressContextualMenu;
+	return (suppressContextualMenu);
 }
 
 - (void) setSuppressContextualMenu: (BOOL) aBool

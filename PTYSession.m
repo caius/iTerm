@@ -185,10 +185,10 @@ static NSString *PWD_ENVVALUE = @"~";
                                                  name:@"iTermTabViewWillRedraw"
                                                object:nil];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(textViewResized:)
-                                                 name:NSViewFrameDidChangeNotification
-                                               object:SCROLLVIEW];		
+	//[[NSNotificationCenter defaultCenter] addObserver:self
+    //                                         selector:@selector(textViewResized:)
+    //                                             name:NSViewFrameDidChangeNotification
+    //                                           object:SCROLLVIEW];		
 	
     [tabViewItem setLabelAttributes: chosenStateAttribute];
 }

@@ -49,16 +49,17 @@
     NSLog(@"VT100LayoutManager: aTextStorage: edited: (0x%x) range: (%d,%d) changeInLength: (%d) invalidatedRange: (%d,%d)", mask, range.location, range.length, lengthChange, invalidatedCharRange.location, invalidatedCharRange.length);
 #endif
     
+
+#if 0
     // don't do anything if we just had attribute changes
     if(mask == NSTextStorageEditedAttributes)
     {
 	//NSRange glyphRange;
 	//glyphRange = [self glyphRangeForCharacterRange: range actualCharacterRange: nil];
 	//[self invalidateDisplayForGlyphRange: glyphRange];
-	return;	
+	return;
     }
-
-#if 0
+    
     if (lengthChange == 0 && range.location == invalidatedCharRange.location && range.length == invalidatedCharRange.length)
     {
 	// get the glyph range

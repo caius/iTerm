@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.32 2003-03-27 01:36:22 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.33 2003-03-28 03:06:08 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -70,9 +70,6 @@ static int TRANSPARENCY  =10;
 #endif
     if ((self = [super init]) == nil)
         return nil;
-
-    if ([NSBundle loadNibNamed:@"PreferencePanel" owner:self] == NO)
-	return nil;
     
     // Get the user's default shell
     if((thisUser = getenv("USER")) != NULL)
@@ -173,6 +170,10 @@ static int TRANSPARENCY  =10;
 {
     NSStringEncoding const *p=encodingList;
     int r;
+
+    // Load our bundle
+    if ([NSBundle loadNibNamed:@"PreferencePanel" owner:self] == NO)
+	return;
     
     [prefPanel center];
     [shell setStringValue:defaultShell];

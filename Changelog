@@ -3,6 +3,8 @@
     * Protected some ARRAY specific code in #if USE_CUSTOM_DRAWING
       ...#endif so that BUFFER code does not crash.
       
+    * Fixed bug in loading preferences nib.
+      
 
 2003-03-27	fabian
     * Bug fixes in ARRAY mode

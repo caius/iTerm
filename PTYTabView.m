@@ -64,6 +64,7 @@
     // Apply the offset to the given frame size
     return (NSMakeSize(frameSize.width - widthOffset, frameSize.height - heightOffset));
 }
+
 + (NSSize) frameSizeForContentSize: (NSSize) contentSize tabViewType: (NSTabViewType) type controlSize: (NSControlSize) controlSize
 {
     NSRect aRect, contentRect;

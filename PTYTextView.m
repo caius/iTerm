@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.156 2004-03-04 00:47:27 ujwal Exp $
+// $Id: PTYTextView.m,v 1.157 2004-03-04 20:10:28 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -923,8 +923,13 @@
     
     x = locationInTextView.x/charWidth;
     if (x>=[dataSource width]) x=[dataSource width] - 1;
-    if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
+	if(locationInTextView.x < 0)
+	{
+		// complete selection of previous line
+		x = [dataSource width] - 1;
+		y--;
+	}	
     if (y<0) y=0;
     if (y>=[dataSource numberOfLines]) y=numberOfLines-1;
     endX=x;
@@ -1027,9 +1032,7 @@
     NSRect  rectInTextView = [self visibleRect];
     int x, y;
     
-    /*   NSLog(@"(%f,%f)->(%f,%f)->(%f,%f)",locationInWindow.x,locationInWindow.y,
-        locationInTextView.x,locationInTextView.y,
-        locationInScrollView.x,locationInScrollView.y); */
+	// NSLog(@"(%f,%f)->(%f,%f)",locationInWindow.x,locationInWindow.y,locationInTextView.x,locationInTextView.y); 
     if (locationInTextView.y<rectInTextView.origin.y) {
         rectInTextView.origin.y=locationInTextView.y;
         [self scrollRectToVisible: rectInTextView];
@@ -1041,8 +1044,13 @@
     
     x = locationInTextView.x/charWidth;
     if (x>=[dataSource width]) x=[dataSource width] - 1;
-    if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
+	if(locationInTextView.x < 0)
+	{
+		// complete selection of previous line
+		x = [dataSource width] - 1;
+		y--;
+	}
     if (y<0) y=0;
     if (y>=[dataSource numberOfLines]) y=numberOfLines - 1;
     endX=x;

@@ -1,6 +1,7 @@
 2004-03-04  ujwal
 
 	* Fixed "Send Inout to All Tabs" and "Paste".
+	* Fixed selection of complete line by dragging.
 
 2004-03-03  ujwal
 

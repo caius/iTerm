@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Commands</key>
+	<dict>
+		<key>LaunchSession</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>target</key>
+				<dict>
+					<key>Description</key>
+					<string>This is where the session will be opened.</string>
+					<key>Name</key>
+					<string>in</string>
+					<key>Number</key>
+					<string>singular</string>
+					<key>Sex</key>
+					<string>none</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>This launches a new session</string>
+			<key>IsVerb</key>
+			<string>YES</string>
+			<key>Name</key>
+			<string>launch session</string>
+		</dict>
+	</dict>
+	<key>Description</key>
+	<string>Commands to control iTerm</string>
+	<key>Enumerations</key>
+	<dict>
+		<key>location</key>
+		<dict>
+			<key>tab</key>
+			<dict>
+				<key>Description</key>
+				<string>Opens session in a new tab.</string>
+				<key>Name</key>
+				<string>tab</string>
+			</dict>
+			<key>terminal</key>
+			<dict>
+				<key>Description</key>
+				<string>Opens session in a new terminal window.</string>
+				<key>Name</key>
+				<string>terminal</string>
+			</dict>
+		</dict>
+	</dict>
+	<key>Name</key>
+	<string>iTerm commands</string>
+</dict>
+</plist>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AppleEventCode</key>
+	<string>ITRM</string>
+	<key>Commands</key>
+	<dict>
+		<key>LaunchSession</key>
+		<dict>
+			<key>AppleEventClassCode</key>
+			<string>LNCH</string>
+			<key>AppleEventCode</key>
+			<string>LNCH</string>
+			<key>Arguments</key>
+			<dict>
+				<key>target</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>TRGT</string>
+					<key>Optional</key>
+					<string>NO</string>
+					<key>Type</key>
+					<string>NSObject</string>
+				</dict>
+			</dict>
+			<key>CommandClass</key>
+			<string>iTermScriptCommand</string>
+		</dict>
+	</dict>
+	<key>Enumerations</key>
+	<dict>
+		<key>location</key>
+		<dict>
+			<key>AppleEventCode</key>
+			<string>LOCN</string>
+			<key>Enumerators</key>
+			<dict>
+				<key>tab</key>
+				<string>TAB </string>
+				<key>terminal</key>
+				<string>TERM</string>
+			</dict>
+		</dict>
+	</dict>
+	<key>Name</key>
+	<string>iTerm</string>
+</dict>
+</plist>

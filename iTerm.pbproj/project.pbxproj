@@ -11,6 +11,7 @@
 				05A162CF006CD5FC7F000001,
 				FB094A1A033D71D501F955DB,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -46,6 +47,7 @@
 		0464AB0E006CD2EC7F000001 = {
 			children = (
 				FBD0AD0A0337A5B701F955DB,
+				DD48F1D103EBBC2200A8A065,
 				E8CF755F026DDA6303A80106,
 				E8CF7561026DDA6303A80106,
 				E8CF7560026DDA6303A80106,
@@ -66,6 +68,7 @@
 		0464AB15006CD2EC7F000001 = {
 			children = (
 				FB8D9E6503D6136101F955DB,
+				DD48F1D003EBBC2200A8A065,
 				FB019DE203670C6501F955DB,
 				E8CF7565026DDA6303A80106,
 				E8CF7566026DDA6303A80106,
@@ -104,6 +107,8 @@
 				FB47BCC403686CAC01F955DB,
 				FB094A18033D58BD01F955DB,
 				FB896717038D935801F955DB,
+				DD48F1C703EBB1C400A8A065,
+				DD48F1CC03EBB20500A8A065,
 				FB151F2903648AC401F955DB,
 			);
 			isa = PBXGroup;
@@ -191,7 +196,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.6.1</string>
+	<string>0.6.2</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>iTerm Help</string>
 	<key>CFBundleHelpBookName</key>
@@ -207,11 +212,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.6.1</string>
+	<string>0.6.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.6.1</string>
+	<string>0.6.2</string>
+	<key>NSAppleScriptEnabled</key>
+	<string>YES</string>
 	<key>NSExtensions</key>
 	<dict/>
 	<key>NSMainNibFile</key>
@@ -221,7 +228,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -240,6 +246,7 @@
 				F5E533B603B2959201A8A066,
 				F5E533B903B2959201A8A066,
 				FB8D9E6603D6136101F955DB,
+				DD48F1D203EBBC2200A8A065,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,6 +267,8 @@
 				F500A65E0395269C01A8A066,
 				FBBB8B61039FC04E01F955DB,
 				DD8CF2EE03CDD34C00A8A065,
+				DD48F1C803EBB1C400A8A065,
+				DD48F1CE03EBB20500A8A065,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -281,6 +290,7 @@
 				F56B230D03A1B36701A8A066,
 				F5E533B703B2959201A8A066,
 				F5E533B803B2959201A8A066,
+				DD48F1D303EBBC2200A8A065,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -352,6 +362,62 @@
 //DD2
 //DD3
 //DD4
+		DD48F1C703EBB1C400A8A065 = {
+			isa = PBXFileReference;
+			path = iTerm.scriptSuite;
+			refType = 4;
+		};
+		DD48F1C803EBB1C400A8A065 = {
+			fileRef = DD48F1C703EBB1C400A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD48F1CC03EBB20500A8A065 = {
+			children = (
+				DD48F1CD03EBB20500A8A065,
+			);
+			isa = PBXVariantGroup;
+			name = iTerm.scriptTerminology;
+			path = "";
+			refType = 4;
+		};
+		DD48F1CD03EBB20500A8A065 = {
+			isa = PBXFileReference;
+			name = English;
+			path = English.lproj/iTerm.scriptTerminology;
+			refType = 4;
+		};
+		DD48F1CE03EBB20500A8A065 = {
+			fileRef = DD48F1CC03EBB20500A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD48F1D003EBBC2200A8A065 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = iTermScriptCommand.h;
+			refType = 4;
+		};
+		DD48F1D103EBBC2200A8A065 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = iTermScriptCommand.m;
+			refType = 4;
+		};
+		DD48F1D203EBBC2200A8A065 = {
+			fileRef = DD48F1D003EBBC2200A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD48F1D303EBBC2200A8A065 = {
+			fileRef = DD48F1D103EBBC2200A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		DD8CF2DD03CDD34B00A8A065 = {
 			children = (
 				DD8CF2DE03CDD34C00A8A065,
@@ -982,7 +1048,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		FB7EECDB0340D3CD01F955DB = {
 			buildActionMask = 2147483647;

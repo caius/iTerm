@@ -1,3 +1,30 @@
+2003-02-02	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added basic Applescript support. One can now write 
+      Applescripts to open on or more default or addressbook 
+      sessions in a new tab or window. The syntax is:
+      
+      To open a new session in a new tab:
+      launch "<session_name>" in tab
+      
+      To open a new session in a new window:
+      launch "<session_name>" in terminal
+      
+      The <session_name> is either the name of a stored 
+      addressbook session or "default session" for a 
+      default session.
+      
+      Here is a sample Applescript:
+      
+      tell application "iTerm"
+	activate
+	launch "default session" in tab
+	launch "Fink list" in terminal
+      end tell
+      
+      These scripts can then be save as executable scripts.
+      
+
 2003-01-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed bug in showing cursor when going up in command 

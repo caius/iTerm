@@ -26,7 +26,7 @@
 
 #import <iTerm/iTermImageView.h>
 
-#define DEBUG_ALLOC		1
+#define DEBUG_ALLOC		0
 
 @implementation iTermImageView
 

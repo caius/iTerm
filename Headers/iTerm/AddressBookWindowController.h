@@ -86,6 +86,10 @@
     IBOutlet NSButton *openInTab;
     IBOutlet NSButton *openInWindow;
 
+    // background image
+    IBOutlet NSButton *useBackgroundImage;
+    IBOutlet NSButton *backgroundImage;
+
     NSFont *aeFont, *aeNAFont;
     BOOL changingNA;
     BOOL defaultEntry;
@@ -129,6 +133,7 @@
 - (IBAction)changeTab: (id) sender;
 - (IBAction)changeColorScheme:(id)sender;
 - (IBAction)editColorScheme: (id) sender;
+- (IBAction) chooseBackgroundImage: (id) sender;
 
 // misc
 - (void) run;

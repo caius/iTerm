@@ -475,6 +475,9 @@ static NSColor* xtermColorTable[2][8];
     [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?0:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
     [adRemapDeleteKey setState:([entry objectForKey:@"RemapDeleteKey"]==nil?NO:[[entry objectForKey:@"RemapDeleteKey"] boolValue])?NSOnState:NSOffState];
 
+    // background image
+    [useBackgroundImage setState:([entry objectForKey:@"UseBackgroundImage"]==nil?NO:[[entry objectForKey:@"UseBackgroundImage"] boolValue])?NSOnState:NSOffState];
+
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
     if (r == NSRunStoppedResponse) {
@@ -735,6 +738,11 @@ static NSColor* xtermColorTable[2][8];
     }
 }
 
+- (IBAction) chooseBackgroundImage: (id) sender
+{
+    NSLog(@"AddressBookWindowController: chooseBackgroundImage");
+}
+
 // Table data source
 - (int)numberOfRowsInTableView:(NSTableView*)table
 {
@@ -847,6 +855,7 @@ static NSColor* xtermColorTable[2][8];
 	[NSNumber numberWithBool:([adRemapDeleteKey state]==NSOnState)],@"RemapDeleteKey",
 	[NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
         [NSNumber numberWithInt:[adScrollback intValue]], @"Scrollback",
+	[NSNumber numberWithBool:([useBackgroundImage state]==NSOnState)],@"UseBackgroundImage",
 	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
 	NULL];
 

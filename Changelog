@@ -7,7 +7,7 @@
     * Preferences shortcut is not cmd-, in line with new Apple guidelines.
     * Overrode PTYTextView: -mouseEntered method to avoid activation of 
       I-beam cursor.
-    * Added menu item to toggle toolbar visibility.
+    * Added menu item to toggle toolbar visibility with shortcut.
 
 2004-01-01	ujwal
 

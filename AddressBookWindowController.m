@@ -334,22 +334,16 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	    break;
 	}
     }
-    
-}
 
-- (IBAction)adbCancel:(id)sender
-{
-
-    [[self window] close];
-    
-    // Re-init the address book.
-    [[NSApp delegate] initAddressBook];
+    // Save the address book.
+    [[NSApp delegate] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
     [[NSNotificationCenter defaultCenter]
     postNotificationName: @"Reload AddressBook"
 				object: nil
 			      userInfo: nil];
+    
     
 }
 
@@ -508,6 +502,15 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
 	//        NSLog(@"%s(%d):-[Address entry replaced:%@]",
  //              __FILE__, __LINE__, ae );
+
+	// Save the address book.
+	[[NSApp delegate] saveAddressBook];
+
+	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
+	[[NSNotificationCenter defaultCenter]
+    postNotificationName: @"Reload AddressBook"
+					      object: nil
+				     userInfo: nil];	
         [adTable reloadData];
         [ae release];
     }
@@ -517,24 +520,18 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 {
     [adTable selectRow: 0 byExtendingSelection: NO];
     [self adbDuplicateEntry: nil];
-    [self adbEditEntry: nil];
-}
-
-- (IBAction)adbOk:(id)sender
-{
-
     // Save the address book.
     [[NSApp delegate] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
     [[NSNotificationCenter defaultCenter]
     postNotificationName: @"Reload AddressBook"
-		  object: nil
-		userInfo: nil];
-
-    [[self window] close];
-
+				object: nil
+			      userInfo: nil];
+    
+    [self adbEditEntry: nil];
 }
+
 
 - (IBAction)adbRemoveEntry:(id)sender
 {
@@ -564,6 +561,15 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [[self addressBook] removeObjectAtIndex:[adTable selectedRow]];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
+	// Save the address book.
+	[[NSApp delegate] saveAddressBook];
+
+	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
+	[[NSNotificationCenter defaultCenter]
+    postNotificationName: @"Reload AddressBook"
+				object: nil
+			      userInfo: nil];
+	
     }
 }
 
@@ -579,6 +585,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [NSApp abortModal];
     [[NSColorPanel sharedColorPanel] close];
     [[NSFontPanel sharedFontPanel] close];
+    
 }
 
 - (IBAction)adEditFont:(id)sender
@@ -614,7 +621,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     else {
         [NSApp stopModal];
         [[NSColorPanel sharedColorPanel] close];
-        [[NSFontPanel sharedFontPanel] close];
+        [[NSFontPanel sharedFontPanel] close];	
     }
 }
 

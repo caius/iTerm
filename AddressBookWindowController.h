@@ -116,10 +116,8 @@
 // Address book window
 - (IBAction)adbDuplicateEntry:(id)sender;
 - (IBAction)adbRemoveEntry:(id)sender;
-- (IBAction)adbCancel:(id)sender;
 - (IBAction)adbEditEntry:(id)sender;
 - (IBAction)adbAddEntry:(id)sender;
-- (IBAction)adbOk:(id)sender;
 - (IBAction) executeABCommand: (id) sender;
 
 // Address entry window

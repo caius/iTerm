@@ -9,10 +9,8 @@
                 adEditNAFont = id; 
                 adEditOK = id; 
                 adbAddEntry = id; 
-                adbCancel = id; 
                 adbDuplicateEntry = id; 
                 adbEditEntry = id; 
-                adbOk = id; 
                 adbRemoveEntry = id; 
                 changeColorScheme = id; 
                 changeTab = id; 

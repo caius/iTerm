@@ -50,6 +50,7 @@
                 selectionCopiesText = NSButton; 
                 silenceBell = id; 
                 tabPosition = NSMatrix; 
+                wordChars = NSTextField; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.82 2004-03-08 02:37:20 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.83 2004-03-08 08:56:27 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -123,6 +123,7 @@ static float versionNumber;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [blinkingCursor setState: defaultBlinkingCursor?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
+	[wordChars setStringValue: [prefs objectForKey: @"WordCharacters"]?[prefs objectForKey: @"WordCharacters"]:@""];
 	
 	[kbProfileSelector removeAllItems];
 	kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
@@ -165,6 +166,7 @@ static float versionNumber;
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
+	[prefs setObject: [wordChars stringValue] forKey: @"WordCharacters"];
 	[[iTermKeyBindingMgr singleInstance] setOptionKey: [optionKey selectedColumn] 
 										   forProfile: [kbProfileSelector titleOfSelectedItem]];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
@@ -458,6 +460,11 @@ static float versionNumber;
 - (BOOL) focusFollowsMouse
 {
     return (defaultFocusFollowsMouse);
+}
+
+- (NSString *) wordChars
+{
+	return ([prefs objectForKey: @"WordCharacters"]);
 }
 
 - (IBAction) editDefaultSession: (id) sender

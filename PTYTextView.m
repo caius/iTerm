@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.161 2004-03-08 07:38:59 ujwal Exp $
+// $Id: PTYTextView.m,v 1.162 2004-03-08 08:56:26 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -894,6 +894,8 @@
     
     NSPoint locationInWindow, locationInTextView;
     int x, y;
+	
+	mouseDragged = NO;
     
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
@@ -917,7 +919,7 @@
 #endif
     NSPoint locationInWindow, locationInTextView;
     int x, y, tmpX, tmpY;
-	NSString *aString;
+	NSString *aString, *wordChars;
     
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
@@ -939,19 +941,26 @@
         y=startY; startY=endY; endY=y;
         y=startX; startX=endX; endX=y;
     }
-    else if (startY==endY&&startX==endX) startX=-1;
+    else if (startY==endY&&startX==endX&&!mouseDragged) startX=-1;
 	
 	// Handle double and triple click
 	if([event clickCount] == 2)
 	{
 		// double-click; select word
+		
+		// grab our preference for extra characters to be included in a word
+		wordChars = [[PreferencePanel sharedInstance] wordChars];
+		if(wordChars == nil)
+			wordChars = @"";		
 		// find the beginning of the word
 		tmpX = x;
 		tmpY = y;
 		while(tmpX >= 0)
 		{
 			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
-			if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0)
+			if(([aString length] == 0 || 
+				[aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0) &&
+			   [wordChars rangeOfString: aString].length == 0)
 				break;
 			tmpX--;
 			if(tmpX < 0 && tmpY > 0)
@@ -975,9 +984,11 @@
 			tmpY = [dataSource numberOfLines] - 1;		
 		startX = tmpX;
 		startY = tmpY;
-		// if we are on a blank, deselect.
+		// if we are on a non-word char, deselect.
 		aString = [self contentFromX:startX Y:startY ToX:startX Y:startY];
-		if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0)
+		if(([aString length] == 0 || 
+			[aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0) &&
+		   [wordChars rangeOfString: aString].length == 0)
 			startX = -1;
 		
 		
@@ -987,7 +998,9 @@
 		while(tmpX < [dataSource width])
 		{
 			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
-			if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet whitespaceCharacterSet]].length > 0)
+			if(([aString length] == 0 || 
+				[aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0) &&
+			   [wordChars rangeOfString: aString].length == 0)
 				break;
 			tmpX++;
 			if(tmpX >= [dataSource width] && tmpY < [dataSource numberOfLines])
@@ -1022,6 +1035,7 @@
 
 	[self _selectFromX:startX Y:startY toX:endX Y:endY];
     if (startX!=-1&&_delegate) {
+		// if we want to copy our selection, do so
         if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
     }
@@ -1038,6 +1052,8 @@
     NSPoint locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     NSRect  rectInTextView = [self visibleRect];
     int x, y;
+	
+	mouseDragged = YES;
     
 	// NSLog(@"(%f,%f)->(%f,%f)",locationInWindow.x,locationInWindow.y,locationInTextView.x,locationInTextView.y); 
     if (locationInTextView.y<rectInTextView.origin.y) {

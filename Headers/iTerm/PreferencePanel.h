@@ -44,6 +44,7 @@
     IBOutlet id silenceBell;
     IBOutlet id blinkingCursor;
     IBOutlet NSButton *focusFollowsMouse;
+	IBOutlet NSTextField *wordChars;
 	
 	IBOutlet NSWindow *profilesWindow;
 	
@@ -118,6 +119,7 @@
 - (BOOL) openAddressBook;
 - (BOOL) blinkingCursor;
 - (BOOL) focusFollowsMouse;
+- (NSString *) wordChars;
 
 @end
 

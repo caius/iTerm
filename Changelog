@@ -1,3 +1,10 @@
+2002-12-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Removed ugly hack of spinning off a new thread when 
+      switching sessions using popup menu. Calling selectSession: 
+      directly now works.
+      
+
 2002-12-16	fabian
     * Got the addressbook popup button icon to work
     * Updated strings files for Chinese

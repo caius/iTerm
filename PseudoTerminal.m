@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.33 2002-12-17 01:50:03 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.34 2002-12-17 05:35:33 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -149,7 +149,7 @@ static NSDictionary *deadStateAttribute;
     // Init the session pulldown menu button
     [sessionPopup setBordered: NO];
     [sessionPopup setTarget: self];
-    [sessionPopup setAction: @selector(sessionPopupSelectionDidChange:)];
+    [sessionPopup setAction: @selector(_sessionPopupSelectionDidChange:)];
     [sessionPopup setTransparent: YES];
     [sessionPopup setEnabled: NO];
     
@@ -256,34 +256,6 @@ static NSDictionary *deadStateAttribute;
     [self selectSession: [sender tag]];
 }
 
-- (void) sessionPopupSelectionDidChange: (id) sender
-{
-    NSNumber *sessionIndex;
-    
-    // For some reason, calling selectSession directly causes the the text view not
-    // to be redrawn. It looks like a stack problem. I tried creating a separate 
-    // autorelease pool before calling selectSession:, but it still did not work.
-    // Doing this in a separate thread seems to work. Weird!!
-    
-    //[self selectSession: ([sender indexOfSelectedItem] - 1)];
-    sessionIndex = [NSNumber numberWithInt: [sender indexOfSelectedItem] - 1];
-    [NSThread detachNewThreadSelector: @selector(selectPopupSession:) toTarget: self 
-                withObject: sessionIndex];
-    
-}
-
-- (void) selectPopupSession: (id) anObject
-{
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    int sessionIndex;
-    
-    sessionIndex = [(NSNumber *)anObject intValue];
-    [self selectSession: sessionIndex];
-    
-    [pool release];
-        
-}
-
 - (void) selectSession: (int) sessionIndex
 {
     PTYSession *aSession;
@@ -293,10 +265,6 @@ static NSDictionary *deadStateAttribute;
           __FILE__, __LINE__, sessionIndex);
 #endif
     
-/*    if(sessionIndex < 0)
-        sessionIndex = 0;
-    if(sessionIndex >= [ptyList count])
-        sessionIndex = [ptyList count] - 1; */
     if (sessionIndex<0||sessionIndex >= [ptyList count]) return;
 
     aSession = [ptyList objectAtIndex: sessionIndex];
@@ -1341,5 +1309,13 @@ static NSDictionary *deadStateAttribute;
     }
     
 }
+
+// Called by session popup to switch sessions
+- (void) _sessionPopupSelectionDidChange: (id) sender
+{
+    [self selectSession: ([sender indexOfSelectedItem] - 1)];
+    
+}
+
 
 @end

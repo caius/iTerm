@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.12 2002-12-16 23:10:54 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.13 2002-12-17 05:35:33 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -89,8 +89,6 @@
           encoding:(NSStringEncoding)encoding
               term:(NSString *)term;
 
-- (void) sessionPopupSelectionDidChange: (id) sender;
-- (void) selectPopupSession: (id) anObject;
 - (void) switchSession: (id) sender;
 - (void) selectSession: (int) sessionIndex;
 - (IBAction) closeCurrentSession: (id) sender;
@@ -163,6 +161,8 @@
 
 - (void) _addressbookPopupSelectionDidChange: (id) sender;
 - (void) _reloadAddressBookMenu: (NSNotification *) aNotification;
+- (void) _sessionPopupSelectionDidChange: (id) sender;
+
 
 @end
 

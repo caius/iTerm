@@ -112,6 +112,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [name release];
     [windowTitle release];
     [addressBookEntry release];
+    [backgroundImagePath release];
         
     [normalStateAttribute release];
     normalStateAttribute = nil;
@@ -983,11 +984,12 @@ static NSString *PWD_ENVVALUE = @"~";
     
     NSColor *colorTable[2][8];
     int i;
-    NSString *backgroundImagePath;
     BOOL useBackgroundImage;
+    NSString *imageFilePath;
 
+    // colors
     [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
-    [self setBackgroundColor: [[aePrefs objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[aePrefs objectForKey: @"Transparency"] intValue]/100.0)]];
+    [self setBackgroundColor: [aePrefs objectForKey: @"Background"]];
     if([aePrefs objectForKey: @"SelectionColor"] != nil)
 	[self setSelectionColor: [aePrefs objectForKey: @"SelectionColor"]];
     else
@@ -1032,7 +1034,16 @@ static NSString *PWD_ENVVALUE = @"~";
     //[[self SCREEN] setFont: [aePrefs objectForKey:@"Font"] nafont: [aePrefs objectForKey:@"NAFont"]];
     // set the scrolling
     [[self SCROLLVIEW] setVerticalLineScroll: [[self SCREEN] characterSize].height];
-    [[self SCROLLVIEW] setVerticalPageScroll: [[self TEXTVIEW] frame].size.height];    
+    [[self SCROLLVIEW] setVerticalPageScroll: [[self TEXTVIEW] frame].size.height];
+
+    // background image
+    useBackgroundImage = [[aePrefs objectForKey:@"UseBackgroundImage"] boolValue];
+    imageFilePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
+    if(useBackgroundImage && [imageFilePath length] > 0)
+	[self setBackgroundImagePath: imageFilePath];
+
+    // transparency
+    [self setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];    
 
     // set up the rest of the preferences
     [self setEncoding: [[aePrefs objectForKey:@"Encoding"] unsignedIntValue]];
@@ -1042,27 +1053,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setAutoClose:[[aePrefs objectForKey:@"AutoClose"] boolValue]];
     [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
     [self setRemapDeleteKey: [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue]];
-
-    useBackgroundImage = [[aePrefs objectForKey:@"UseBackgroundImage"] boolValue];
-    backgroundImagePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
-    if(useBackgroundImage && [backgroundImagePath length] > 0)
-    {
-	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
-	if(anImage != nil)
-	{
-	    [SCROLLVIEW setDrawsBackground: NO];
-	    [imageView setImage: anImage];
-	    [anImage setScalesWhenResized: YES];
-	    [imageView setImageScaling: NSScaleToFit];
-	    [imageView setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];
-	    [anImage release];
-	}
-    }
-    else
-    {
-	[imageView setImage: nil];
-	[SCROLLVIEW setDrawsBackground: YES];
-    }
     
 }
 
@@ -1277,6 +1267,36 @@ static NSString *PWD_ENVVALUE = @"~";
     return ([[tabViewItem tabView] indexOfTabViewItem: tabViewItem]);
 }
 
+- (NSString *) backgroundImagePath
+{
+    return (backgroundImagePath);
+}
+
+- (void) setBackgroundImagePath: (NSString *) imageFilePath
+{
+    [backgroundImagePath release];
+    [imageFilePath retain];
+    backgroundImagePath = imageFilePath;
+    if([backgroundImagePath length] > 0)
+    {
+	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
+	if(anImage != nil)
+	{
+	    [SCROLLVIEW setDrawsBackground: NO];
+	    [imageView setImage: anImage];
+	    [anImage setScalesWhenResized: YES];
+	    [imageView setImageScaling: NSScaleToFit];
+	    [anImage release];
+	}
+    }
+    else
+    {
+	[imageView setImage: nil];
+	[SCROLLVIEW setDrawsBackground: YES];
+    }
+}
+
+
 - (NSColor *) foregroundColor
 {
     return ([TERMINAL defaultFGColor]);
@@ -1364,7 +1384,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     else
     {
-	newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency/100)];
+	newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency)];
 	if (newcolor != nil && newcolor != [TERMINAL defaultBGColor])
 	{
 	    [self setBackgroundColor: newcolor];

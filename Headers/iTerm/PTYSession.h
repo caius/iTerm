@@ -82,6 +82,7 @@
     BOOL autoClose;
     BOOL doubleWidth;
     BOOL remapDeleteKey;
+    NSString *backgroundImagePath;
     //NSFont *configFont;
     NSDictionary *addressBookEntry;
 }
@@ -182,6 +183,8 @@
 - (void)clearScrollbackBuffer;
 - (void)logStart;
 - (void)logStop;
+- (NSString *) backgroundImagePath;
+- (void) setBackgroundImagePath: (NSString *) imageFilePath;
 - (NSColor *) foregroundColor;
 - (void)setForegroundColor:(NSColor*) color;
 - (NSColor *) backgroundColor;

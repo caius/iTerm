@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.64 2003-05-13 15:32:58 ujwal Exp $
+// $Id: MainMenu.m,v 1.65 2003-05-15 17:54:32 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -221,8 +221,14 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     }
     //activate the font file using the file spec
     osstatus = FMActivateFonts( &fsSpec, NULL, NULL, kFMLocalActivationContext);
-    
 
+    // create the iTerm directory if it does not exist
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
+    {
+	[fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
+    }    
+    
     [self initAddressBook];
     [self initPreferences];
     encodingList=[NSString availableStringEncodings];
@@ -551,12 +557,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if([fileManager fileExistsAtPath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
     {
-	// create the iTerm directory if it does not exist
-	if([fileManager fileExistsAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
-	{
-	    [fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
-	}
-
 	// move the addressbook to the new location
 	[fileManager movePath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]
 			      toPath: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath] handler: nil];

@@ -1,10 +1,15 @@
+2003-05-15	ujwal
+
+    * making sure we have a ~/Library/Application Support/iTerm 
+      directory on startup.
+
 2003-05-14	fabian
     * Fixed a japanese keyboard input problem. Cleaned up the
       keyDown code in PTYSession.
       
 2003-05-13	ujwal
 
-    * Fixed a pretty big memory leak where the text views were 
+    * Fixed a pretty big memory leak where the text views were not 
       being released and freed.
       
     * Implemented "Find" functionality to search through the text 

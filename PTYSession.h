@@ -98,6 +98,7 @@
 
 // Preferences
 - (void)setPreference:(id)preference;
+- (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs;
 
 // PTYTask
 - (void)readTask:(NSData *)data;

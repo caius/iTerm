@@ -98,6 +98,8 @@
 
 // other class methods
 + (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili;
++ (NSColor *) defaultSelectionColor;
++ (NSColor *) defaultBoldColor;
 
 // NSWindow delegate methods
 - (void)windowWillClose:(NSNotification *)aNotification;

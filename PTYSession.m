@@ -36,6 +36,7 @@
 #import "MainMenu.h"
 #import "NSStringITerm.h"
 #import "PTYTabViewitem.h"
+#import "AddressBookWindowController.h"
 
 #include <unistd.h>
 
@@ -869,6 +870,63 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)setPreference:(id)preference;
 {
     pref=preference;
+}
+
+- (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs
+{
+    NSColor *colorTable[2][8];
+    int i;
+    
+    [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
+    [self setBackgroundColor: [[aePrefs objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[aePrefs objectForKey: @"Transparency"] intValue]/100.0)]];
+    if([aePrefs objectForKey: @"SelectionColor"] != nil)
+	[self setSelectionColor: [aePrefs objectForKey: @"SelectionColor"]];
+    else
+	[self setSelectionColor: [AddressBookWindowController defaultSelectionColor]];
+    if([aePrefs objectForKey: @"BoldColor"] != nil)
+	[self setBoldColor: [aePrefs objectForKey: @"BoldColor"]];
+    else
+	[self setBoldColor: [AddressBookWindowController defaultBoldColor]];
+    if([aePrefs objectForKey: @"AnsiBlackColor"] == nil)
+    {
+	for(i = 0; i < 8; i++)
+	{
+	    colorTable[0][i] = [AddressBookWindowController colorFromTable: i highLight: NO];
+	    colorTable[1][i] = [AddressBookWindowController colorFromTable: i highLight: YES];
+	}
+    }
+    else
+    {
+	colorTable[0][0]= [aePrefs objectForKey:@"AnsiBlackColor"];
+	colorTable[0][1]= [aePrefs objectForKey:@"AnsiRedColor"];
+	colorTable[0][2]= [aePrefs objectForKey:@"AnsiGreenColor"];
+	colorTable[0][3]= [aePrefs objectForKey:@"AnsiYellowColor"];
+	colorTable[0][4]= [aePrefs objectForKey:@"AnsiBlueColor"];
+	colorTable[0][5]= [aePrefs objectForKey:@"AnsiMagentaColor"];
+	colorTable[0][6]= [aePrefs objectForKey:@"AnsiCyanColor"];
+	colorTable[0][7]= [aePrefs objectForKey:@"AnsiWhiteColor"];
+	colorTable[1][0]= [aePrefs objectForKey:@"AnsiHiBlackColor"];
+	colorTable[1][1]= [aePrefs objectForKey:@"AnsiHiRedColor"];
+	colorTable[1][2]= [aePrefs objectForKey:@"AnsiHiGreenColor"];
+	colorTable[1][3]= [aePrefs objectForKey:@"AnsiHiYellowColor"];
+	colorTable[1][4]= [aePrefs objectForKey:@"AnsiHiBlueColor"];
+	colorTable[1][5]= [aePrefs objectForKey:@"AnsiHiMagentaColor"];
+	colorTable[1][6]= [aePrefs objectForKey:@"AnsiHiCyanColor"];
+	colorTable[1][7]= [aePrefs objectForKey:@"AnsiHiWhiteColor"];
+    }
+    for(i=0;i<8;i++) {
+        [self setColorTable:i highLight:NO color:colorTable[0][i]];
+        [self setColorTable:i highLight:YES color:colorTable[1][i]];
+    }
+
+    // set up the rest of the preferences
+    [self setEncoding: [[aePrefs objectForKey:@"Encoding"] unsignedIntValue]];
+    [self setTERM_VALUE: [aePrefs objectForKey:@"Term Type"]];
+    [self setAntiCode:[[aePrefs objectForKey:@"AICode"] intValue]];
+    [self setAntiIdle:[[aePrefs objectForKey:@"AntiIdle"] boolValue]];
+    [self setAutoClose:[[aePrefs objectForKey:@"AutoClose"] boolValue]];
+    [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
+    
 }
 
 // Contextual menu

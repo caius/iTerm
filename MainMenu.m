@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.69 2003-05-19 14:46:53 ujwal Exp $
+// $Id: MainMenu.m,v 1.70 2003-05-19 15:41:58 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -729,15 +729,11 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSString *cmd;
     NSArray *arg;
     NSDictionary *entry;
-    NSStringEncoding encoding;
-    int i;
-    NSColor *colorTable[2][8];
 
     // Grab the addressbook command
     entry = [addressBook objectAtIndex:theIndex];
     [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-    encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
     
     
     // Where do we execute this command?
@@ -761,90 +757,20 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [term addInSessions: aSession];
     [aSession release];
 
-    // set our saved colors
-    [aSession setForegroundColor: [entry objectForKey:@"Foreground"]];
-    [aSession setBackgroundColor: [[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]];
-    [aSession setSelectionColor: [entry objectForKey:@"SelectionColor"]];
-    if([entry objectForKey:@"BoldColor"] != nil)
-	[aSession setBoldColor: [entry objectForKey:@"BoldColor"]];
-    else
-	[aSession setBoldColor: [PREF_PANEL boldColor]];
-    if([entry objectForKey: @"AnsiBlack"] == nil)
-    {
-	for(i = 0; i < 8; i++)
-	{
-	    colorTable[0][i] = [AddressBookWindowController colorFromTable: i highLight: NO];
-	    colorTable[1][i] = [AddressBookWindowController colorFromTable: i highLight: YES];
-	}
-    }
-    else
-    {
-	colorTable[0][0]= [entry objectForKey:@"AnsiBlack"];
-	colorTable[0][1]= [entry objectForKey:@"AnsiRed"];
-	colorTable[0][2]= [entry objectForKey:@"AnsiGreen"];
-	colorTable[0][3]= [entry objectForKey:@"AnsiYellow"];
-	colorTable[0][4]= [entry objectForKey:@"AnsiBlue"];
-	colorTable[0][5]= [entry objectForKey:@"AnsiMagenta"];
-	colorTable[0][6]= [entry objectForKey:@"AnsiCyan"];
-	colorTable[0][7]= [entry objectForKey:@"AnsiWhite"];
-	colorTable[1][0]= [entry objectForKey:@"AnsiHiBlack"];
-	colorTable[1][1]= [entry objectForKey:@"AnsiHiRed"];
-	colorTable[1][2]= [entry objectForKey:@"AnsiHiGreen"];
-	colorTable[1][3]= [entry objectForKey:@"AnsiHiYellow"];
-	colorTable[1][4]= [entry objectForKey:@"AnsiHiBlue"];
-	colorTable[1][5]= [entry objectForKey:@"AnsiHiMagenta"];
-	colorTable[1][6]= [entry objectForKey:@"AnsiHiCyan"];
-	colorTable[1][7]= [entry objectForKey:@"AnsiHiWhite"];
-    }
-    for(i=0;i<8;i++) {
-        [aSession setColorTable:i highLight:NO color:colorTable[0][i]];
-        [aSession setColorTable:i highLight:YES color:colorTable[1][i]];
-    }
-    
-    [aSession setEncoding: encoding];
-    [aSession setTERM_VALUE: [entry objectForKey:@"Term Type"]];
-
+    // set our preferences
+    [aSession setAddressBookEntry:entry];
+    [aSession setPreferencesFromAddressBookEntry: entry];
     
     NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
     
     // Start the command        
     [term startProgram:cmd arguments:arg environment:env];
-    [aSession setEncoding:encoding];
-    [aSession setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
-    [aSession setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
-    [aSession setAutoClose:[[entry objectForKey:@"AutoClose"] boolValue]];
     
     // If we created a new window, set the size
     if (theTerm == nil) {
         [term setWindowSize: NO];
     };
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
-    [aSession setAddressBookEntry:entry];
-    [aSession setDoubleWidth:[[entry objectForKey:@"DoubleWidth"] boolValue]];
-    if ([entry objectForKey:@"ansiBlack"]) {
-    [aSession setColorTable:0 highLight:NO color:[entry objectForKey:@"ansiBlack"]];
-    [aSession setColorTable:1 highLight:NO color:[entry objectForKey:@"ansiRed"]];
-    [aSession setColorTable:2 highLight:NO color:[entry objectForKey:@"ansiGreen"]];
-    [aSession setColorTable:3 highLight:NO color:[entry objectForKey:@"ansiYellow"]];
-    [aSession setColorTable:4 highLight:NO color:[entry objectForKey:@"ansiBlue"]];
-    [aSession setColorTable:5 highLight:NO color:[entry objectForKey:@"ansiMagenta"]];
-    [aSession setColorTable:6 highLight:NO color:[entry objectForKey:@"ansiCyan"]];
-    [aSession setColorTable:7 highLight:NO color:[entry objectForKey:@"ansiWhite"]];
-    [aSession setColorTable:0 highLight:YES color:[entry objectForKey:@"ansiHiBlack"]];
-    [aSession setColorTable:1 highLight:YES color:[entry objectForKey:@"ansiHiRed"]];
-    [aSession setColorTable:2 highLight:YES color:[entry objectForKey:@"ansiHiGreen"]];
-    [aSession setColorTable:3 highLight:YES color:[entry objectForKey:@"ansiHiYellow"]];
-    [aSession setColorTable:4 highLight:YES color:[entry objectForKey:@"ansiHiBlue"]];
-    [aSession setColorTable:5 highLight:YES color:[entry objectForKey:@"ansiHiMagenta"]];
-    [aSession setColorTable:6 highLight:YES color:[entry objectForKey:@"ansiHiCyan"]];
-    [aSession setColorTable:7 highLight:YES color:[entry objectForKey:@"ansiHiWhite"]];
-    }
-    else {
-        for(i=0;i<8;i++) {
-            [aSession setColorTable:i highLight:NO color:[PREF_PANEL colorFromTable:i highLight:NO]];
-            [aSession setColorTable:i highLight:YES color:[PREF_PANEL colorFromTable:i highLight:YES]];
-        }
-    }
     
 }
 

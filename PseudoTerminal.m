@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.178 2003-05-19 14:46:53 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.179 2003-05-19 15:41:59 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -41,6 +41,7 @@
 #import "VT100Screen.h"
 #import "PTYTabView.h"
 #import "PTYTabViewItem.h"
+#import "AddressBookWindowController.h"
 
 // keys for attributes:
 NSString *columnsKey = @"columns";
@@ -171,9 +172,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
 {
-    int i;
     NSDictionary *defaultParameters;
-    NSColor *defaultColorTable[2][8];
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -188,33 +187,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession setMainMenu: MAINMENU];
     [aSession initScreen: [TABVIEW contentRect]];
 
-    // set some default colors
+    // set some default parameters
     defaultParameters = [MAINMENU addressBookEntry: 0];
-    [aSession setForegroundColor: [defaultParameters objectForKey: @"Foreground"]];
-    [aSession setBackgroundColor: [[defaultParameters objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[defaultParameters objectForKey: @"Transparency"] intValue]/100.0)]];
-    [aSession setSelectionColor: [defaultParameters objectForKey: @"SelectionColor"]];
-    [aSession setBoldColor: [defaultParameters objectForKey: @"BoldColor"]];
-    defaultColorTable[0][0]= [defaultParameters objectForKey:@"AnsiBlack"];
-    defaultColorTable[0][1]= [defaultParameters objectForKey:@"AnsiRed"];
-    defaultColorTable[0][2]= [defaultParameters objectForKey:@"AnsiGreen"];
-    defaultColorTable[0][3]= [defaultParameters objectForKey:@"AnsiYellow"];
-    defaultColorTable[0][4]= [defaultParameters objectForKey:@"AnsiBlue"];
-    defaultColorTable[0][5]= [defaultParameters objectForKey:@"AnsiMagenta"];
-    defaultColorTable[0][6]= [defaultParameters objectForKey:@"AnsiCyan"];
-    defaultColorTable[0][7]= [defaultParameters objectForKey:@"AnsiWhite"];
-    defaultColorTable[1][0]= [defaultParameters objectForKey:@"AnsiHiBlack"];
-    defaultColorTable[1][1]= [defaultParameters objectForKey:@"AnsiHiRed"];
-    defaultColorTable[1][2]= [defaultParameters objectForKey:@"AnsiHiGreen"];
-    defaultColorTable[1][3]= [defaultParameters objectForKey:@"AnsiHiYellow"];
-    defaultColorTable[1][4]= [defaultParameters objectForKey:@"AnsiHiBlue"];
-    defaultColorTable[1][5]= [defaultParameters objectForKey:@"AnsiHiMagenta"];
-    defaultColorTable[1][6]= [defaultParameters objectForKey:@"AnsiHiCyan"];
-    defaultColorTable[1][7]= [defaultParameters objectForKey:@"AnsiHiWhite"];
-    
-    for(i=0;i<8;i++) {
-        [aSession setColorTable:i highLight:NO color:defaultColorTable[0][i]];
-        [aSession setColorTable:i highLight:YES color:defaultColorTable[1][i]];
-    }    
+    [aSession setAddressBookEntry:defaultParameters];
+    [aSession setPreferencesFromAddressBookEntry: defaultParameters];
 
     // set the font
 #if USE_CUSTOM_DRAWING    
@@ -245,11 +221,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
     [[aSession SCREEN] setScrollback:[pref scrollbackLines]];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
-
-    // set up default encoding and terminal type
-    [aSession setEncoding: [pref encoding]];
-    [aSession setTERM_VALUE: [pref terminalType]];
-
+    
     // initialize the screen
     [[aSession SCREEN] initScreen];
 
@@ -259,11 +231,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // tell the shell about our size
     [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
-    
-    // Set up misc prefs 
-    [aSession setAutoClose: [pref autoclose]];
-    [aSession setDoubleWidth:[pref doubleWidth]];
-    
+        
 
     pending = NO;
     

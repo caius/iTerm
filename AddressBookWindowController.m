@@ -243,6 +243,21 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     else return nil;    
 }
 
++ (NSColor *) defaultSelectionColor
+{
+    if(iTermSelection == nil)
+	[self initialize];
+    return (iTermSelection);
+}
+
++ (NSColor *) defaultBoldColor
+{
+    if(iTermBold == nil)
+	[self initialize];
+    return (iTermBold);
+}
+
+
 - (void) awakeFromNib
 {
     //    NSLog(@ "initAddressBook: %d\n%@",[addressBook count], addressBook);

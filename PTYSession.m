@@ -1103,7 +1103,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem
 {
-    [tabViewItem autorelease];
+    [tabViewItem release];
     tabViewItem = [theTabViewItem retain];
 }
 

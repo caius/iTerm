@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.18 2003-09-14 17:50:25 ujwal Exp $
+// $Id: iTermController.m,v 1.19 2003-09-14 18:46:50 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -490,6 +490,8 @@ NSString *terminalsKey = @"terminals";
     if([terminalWindows containsObject: object] == YES)
 	return;
     [terminalWindows insertObject: object atIndex: index];
+    // make sure we have a window
+    [object initWindow];
 }
 
 -(void)removeFromTerminalsAtIndex:(unsigned)index

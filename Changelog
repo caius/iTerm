@@ -1,3 +1,7 @@
+2003-10-03	fabian
+
+    * Put in a link to nightly CVS tarball and CVS build in webpages
+    
 2003-10-03	ujwal
 
     * Put in exception handlers in VT100Screen wherever screen lock is 

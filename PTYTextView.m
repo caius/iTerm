@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.7 2002-12-21 23:28:19 ujwal Exp $
+// $Id: PTYTextView.m,v 1.8 2002-12-22 02:39:59 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -235,16 +235,25 @@
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView validateMenuItem:%@]", __FILE__, __LINE__, item );
+    NSLog(@"%s(%d):-[PTYTextView validateMenuItem:%@; supermenu = %@]", __FILE__, __LINE__, item, [[item menu] supermenu] );
 #endif
 
     if ([item action] == @selector(paste:))
         return YES;
     else if ([item action ] == @selector(cut:))
         return NO;
+    else if ([item action]==@selector(saveDocumentAs:))
+    {
+        // If we are calling from the main menu, we validate it always
+        if([[item menu] supermenu] != nil)
+            return YES;
+        // Else this is being called from the contextual menu; validate only if there is a selection.
+        else 
+            return ([self selectedRange].length>0);
+    }
     else if ([item action]==@selector(mail:) || 
-             [item action]==@selector(browse:) || 
-             [item action]==@selector(saveDocumentAs:)) {
+             [item action]==@selector(browse:)) 
+    {
 //        NSLog(@"selected range:%d",[self selectedRange].length);
 	return ([self selectedRange].length>0);
     }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.2 2002-11-26 18:03:45 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.3 2002-11-27 16:17:51 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -276,6 +276,11 @@ static NSDictionary *newOutputStateAttribute;
             
     [self selectSession: currentSessionIndex];
     
+}
+
+- (void) closeCurrentSession: (PTYSession *)theSession
+{
+    [self closeSession: currentPtySession];
 }
 
 

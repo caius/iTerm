@@ -103,6 +103,7 @@
 		};
 		0464AB27006CD2EC7F000001 = {
 			children = (
+				F500A65D0395269C01A8A066,
 			);
 			isa = PBXGroup;
 			name = "Supporting Files";
@@ -239,6 +240,7 @@
 				FB47BCC503686CAC01F955DB,
 				FB754C60036EFC5301F955DB,
 				FB896718038D935801F955DB,
+				F500A65E0395269C01A8A066,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -576,6 +578,17 @@
 //F52
 //F53
 //F54
+		F500A65D0395269C01A8A066 = {
+			isa = PBXFileReference;
+			path = Changelog;
+			refType = 4;
+		};
+		F500A65E0395269C01A8A066 = {
+			fileRef = F500A65D0395269C01A8A066;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F52ED8DC037F0A7D01A8A066 = {
 			isa = PBXFileReference;
 			path = PTYSession.h;

@@ -3,6 +3,7 @@
         {
             ACTIONS = {
                 clearBuffer = id; 
+                closeCurrentSession = id; 
                 logStart = id; 
                 logStop = id; 
                 nextSession = id; 
@@ -101,6 +102,7 @@
         {
             ACTIONS = {
                 clearBuffer = id; 
+                closeCurrentSession = id; 
                 logStart = id; 
                 logStop = id; 
                 newSession = id; 
@@ -130,6 +132,7 @@
                 "CONFIG_ENCODING" = id; 
                 "CONFIG_EXAMPLE" = id; 
                 "CONFIG_FOREGROUND" = id; 
+                "CONFIG_NAME" = id; 
                 "CONFIG_PANEL" = id; 
                 "CONFIG_ROW" = id; 
                 "CONFIG_TRANS2" = id; 

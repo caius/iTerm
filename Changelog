@@ -1,3 +1,8 @@
+2004-02-26  fabian
+
+	* Fixed reversed screen mode bug
+	* Now blinking characters on screen are synchronized
+	
 2004-02-26  ujwal
 
 	* Fixed a couple of emulation problems with reverse video on 
@@ -8,7 +13,6 @@
 
 	* Fixed display bug in scrollUp.
 	* Change cursor when window becomes/resigns key.
-	* Fixed an underline drawing bug
 
 2004-02-25  fabian
 

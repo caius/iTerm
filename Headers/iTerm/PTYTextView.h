@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.22 2004-02-26 08:18:26 yfabian Exp $
+// $Id: PTYTextView.h,v 1.23 2004-02-26 22:06:37 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -106,6 +106,7 @@ typedef struct
 	
 	// blinking cursor
 	BOOL showCursor;
+	BOOL blinkShow;
 	
 	// trackingRect tab
 	NSTrackingRectTag trackingRectTag;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.149 2004-02-26 08:18:26 yfabian Exp $
+// $Id: PTYTextView.m,v 1.150 2004-02-26 22:06:37 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -273,11 +273,11 @@
 		}
 		else if(index&BOLD_MASK)
 		{
-			color = [self defaultBoldColor];
+			color = (reversed?defaultBGColor:[self defaultBoldColor]);
 		}
 		else
 		{
-			color=(reversed?defaultBGColor:defaultFGColor);
+			color = (reversed?defaultBGColor:defaultFGColor);
 		}
     }
     else
@@ -676,13 +676,7 @@
 			if (buf[j]==0xffff) continue;
 			// Check if we need to redraw next char
 			need_draw = line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK);
-			// find out if the current char is being selected
-			sel=(x1 != -1 && x2 != -1 &&
-				 ((line > y1 && line < y2) ||
-				  (line == y1 && y1 == y2 && j >= x1 && j <= x2) ||
-				  (line == y1 && y1 != y2 && j >= x1) ||
-				  (line == y2 && y1 != y2 && j <= x2)))?-1:bg[j];
-			
+
 			// if we don't have to update next char, finish pending jobs
 			if (!need_draw){
 				if (bgstart>=0) {
@@ -705,8 +699,18 @@
 				bgstart=ulstart=-1;
 			}
 			else {
-				if (bgstart<0) { bgstart=j; bgcode=sel; }
-				else if (sel!=bgcode) {
+				// find out if the current char is being selected
+				sel=(x1 != -1 && x2 != -1 &&
+					 ((line > y1 && line < y2) ||
+					  (line == y1 && y1 == y2 && j >= x1 && j <= x2) ||
+					  (line == y1 && y1 != y2 && j >= x1) ||
+					  (line == y2 && y1 != y2 && j <= x2)))?-1:bg[j];
+								
+				if (bgstart<0) {
+					bgstart = j; 
+					bgcode = sel; 
+				}
+				else if (sel!=bgcode || (ulstart>=0 && (fg[j]!=fgcode || !buf[j]))) { //background or underline property change?
 					aColor = (bgcode>=0)? [self colorForCode:bgcode] : selectionColor; 
 					[aColor set];
 					
@@ -721,22 +725,12 @@
 					bgcode=sel;
 					bgstart=j;
 				}
-				if (ulstart<0 && fg[j]&UNDER_MASK && buf[j]) { ulstart=j; fgcode=fg[j]; }
-				else if (ulstart>=0 && (fg[j]!=fgcode || !buf[j])) {
-					aColor = (bgcode>=0)? [self colorForCode:bgcode] : selectionColor; 
-					[aColor set];
-					
-					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
-					NSRectFill(bgRect);
-					
-					// if we have a background image and we are using the background image, redraw image
-					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
-					{
-						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-					}
-					bgcode=sel;
-					bgstart=j;
-
+				
+				if (ulstart<0 && (fg[j]&UNDER_MASK) && buf[j]) { 
+					ulstart = j;
+					fgcode = fg[j]; 
+				}
+				else if ( ulstart>=0 && (fg[j]!=fgcode || !buf[j])) { //underline or fg color property change?
 					[[self colorForCode:fgcode] set];
 					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
 					fgcode=fg[j];
@@ -744,6 +738,8 @@
 				}
 			}
 		}
+		
+		// finish pending jobs
 		if (bgstart>=0) {
 			aColor = (bgcode>=0)? [self colorForCode:bgcode] : selectionColor; 
 			[aColor set];
@@ -768,12 +764,10 @@
 			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
 			double_width = (buf[j+1] == 0xffff);
 			if (need_draw) { 	
-				if (fg[j]&BLINK_MASK) { //if blink is set, switch the fg/bg color
-					if (bg[j]&BLINK_MASK) {				
+				if (fg[j]&BLINK_MASK) {
+					if (blinkShow) {				
 						[self _drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY doubleWidth: double_width];
-						bg[j] &= ~BLINK_MASK;
 					}
-					else bg[j] |= BLINK_MASK;
 				}
 				else {
 					[self _drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY doubleWidth: double_width];
@@ -790,6 +784,7 @@
 		curY+=lineHeight;
 	}
 	
+	blinkShow = !blinkShow;
 	x1=[dataSource cursorX]-1;
 	y1=[dataSource cursorY]-1;
 	//draw cursor
@@ -1878,10 +1873,12 @@
 	int j;
 	NSImage *image;
 	int width;
-	unsigned char c;
+	unsigned char c = fg;
 	int seed;
 	
-	c= fg&(BOLD_MASK|0x1f);
+	if ([[dataSource terminal] screenMode] && (fg&DEFAULT_FG_COLOR_CODE)) // reversed screen mode?
+		c = fg | DEFAULT_BG_COLOR_CODE;
+	c= c & (BOLD_MASK|0x1f);
 	if (!code) return nil;
 	width=dw?2:1;
 	seed=code;

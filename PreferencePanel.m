@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.105 2004-03-24 21:11:52 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.106 2004-03-24 21:14:22 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -164,8 +164,6 @@ static BOOL editingBookmark = NO;
     defaultHideTab=([hideTab state]==NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
-
-	[self savePreferences];
 
     [[self window] performClose: self];
 }

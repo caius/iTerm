@@ -1,4 +1,5 @@
 2003-02-21	fabian
+    * Fixed a bug affecting CJK input
     * Perfromace improvement. Now a buffer is used in
       displaying the text. Significantly improve the
       overall speed. Need more test.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.43 2003-02-21 21:00:31 yfabian Exp $
+// $Id: VT100Screen.m,v 1.44 2003-02-21 21:30:47 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -395,9 +395,9 @@ static BOOL PLAYBELL = YES;
     NAFONT = [nafont copy];
     FONT_SIZE = [VT100Screen fontSize:FONT];
 
-    [STORAGE addAttribute:NSFontAttributeName
-                    value:FONT
-                    range:NSMakeRange(0, [STORAGE length])];
+    [BUFFER addAttribute:NSFontAttributeName
+                   value:FONT
+                   range:NSMakeRange(0, [BUFFER length])];
 }
 
 - (NSFont *)font
@@ -650,6 +650,16 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"index:%d[%d] (CURSOR_IN_MIDDLE:%d)",idx,[s length],CURSOR_IN_MIDDLE);
     
     return idx;
+}
+
+- (int) getTVIndex:(int)x y:(int)y
+{
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen getTVIndex]:(%d,%d)",  __FILE__, __LINE__ , x, y );
+#endif
+
+    return [self getIndex:x y:y]+updateIndex;
 }
 
 - (void)setASCIIString:(NSString *)string

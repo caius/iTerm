@@ -708,7 +708,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (blink>3) { [SCREEN blink]; blink=0; }
     if (oIdleCount<2) {
         [SCREEN updateScreen];
-        [TEXTVIEW setCursorIndex:[SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+        [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
         // If the user has not scrolled up, move to the end
         if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
             [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.30 2003-02-14 23:41:44 ujwal Exp $
+// $Id: PTYTextView.m,v 1.31 2003-02-21 21:30:47 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -721,7 +721,7 @@
     [cursor setOnMouseEntered:YES];
 }
 
-- (void) setCursorIndex:(int)idx
+- (void) setCursorIndex:(int) idx
 {
     cursorIndex=idx;
 }

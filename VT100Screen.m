@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.186 2004-02-19 02:50:18 yfabian Exp $
+// $Id: VT100Screen.m,v 1.187 2004-02-19 02:52:15 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1426,8 +1426,6 @@ static BOOL PLAYBELL = YES;
 #endif
 	int i;
 	
-	return;
-		
 	for (i=0; i<WIDTH*HEIGHT; i++) {
 		if (dirty[i]) break;
 	}

@@ -1,3 +1,7 @@
+2002-12-18	fabian
+    * change the shortcut key to close terminal to command-w
+      and close window to shift-command-w, a la mozilla
+      
 2002-12-18	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Page up/down scrolling keys now need Shift key down 

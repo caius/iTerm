@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.h,v 1.1.1.1 2002-11-26 04:56:48 ujwal Exp $
+// $Id: PTYScrollView.h,v 1.2 2002-12-07 01:53:36 ujwal Exp $
 //
 //  PTYScrollView.h
 //  JTerminal
@@ -14,6 +14,7 @@
 {
 }
 
+- (void) dealloc;
 - (id)initWithFrame:(NSRect)frame;
 
 @end

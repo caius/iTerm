@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.1.1.1 2002-11-26 04:56:48 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.2 2002-12-07 01:53:36 ujwal Exp $
 //
 //  PTYScrollView.m
 //  JTerminal
@@ -16,6 +16,17 @@
 #import "PTYTextView.h"
 
 @implementation PTYScrollView
+
+- (void) dealloc
+{
+
+#if DEBUG_ALLOC
+    NSLog(@"%s(%d):-[PTYScrollView dealloc");
+#endif
+    
+    [super dealloc];
+
+}
 
 - (id)initWithFrame:(NSRect)frame
 {

@@ -1561,6 +1561,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				DDE6FBF604EB4BF700A8A067,
 			);
 			isa = PBXCopyFilesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1686,6 +1687,12 @@
 			refType = 3;
 		};
 		DDE6FB5904EA89D600A8A067 = {
+			fileRef = DDE6FB5804EA89D600A8A067;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDE6FBF604EB4BF700A8A067 = {
 			fileRef = DDE6FB5804EA89D600A8A067;
 			isa = PBXBuildFile;
 			settings = {

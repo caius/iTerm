@@ -962,10 +962,10 @@ static NSString *PWD_ENVVALUE = @"~";
 	
 	// grab the profiles
 	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
-	if(displayProfile == nil)
+	if(displayProfile == nil || [[displayProfileMgr profiles] objectForKey: displayProfile] == nil)
 		displayProfile = [displayProfileMgr defaultProfileName];
 	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
-	if(terminalProfile == nil)
+	if(terminalProfile == nil || [[terminalProfileMgr profiles] objectForKey: terminalProfile] == nil)
 		terminalProfile = [terminalProfileMgr defaultProfileName];	
 	
 	

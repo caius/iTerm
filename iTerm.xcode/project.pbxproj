@@ -160,6 +160,7 @@
 				FBDF6B63042A6B3101F955DB,
 				F500A65D0395269C01A8A066,
 				DD8CF2DD03CDD34B00A8A065,
+				DDB79A9A0612BBBF00EAE159,
 			);
 			isa = PBXGroup;
 			name = "Supporting Files";
@@ -931,6 +932,7 @@
 				8742061D0564168A00CFC3F1,
 				8742061E0564168A00CFC3F1,
 				DD57633105653C2E00F1905E,
+				DDB79A9B0612BBBF00EAE159,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1679,6 +1681,20 @@
 			path = "images/iTerm-Aqua.jpg";
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		DDB79A9A0612BBBF00EAE159 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = Profiles.plist;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DDB79A9B0612BBBF00EAE159 = {
+			fileRef = DDB79A9A0612BBBF00EAE159;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		DDDB7ABD05D7736600E197C2 = {
 			fileEncoding = 4;

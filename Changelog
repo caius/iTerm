@@ -1,3 +1,9 @@
+2004-03-24  ujwal
+
+	* Embedding default profiles for keyboard, display, and terminal 
+	  in the application package to be loaded if there no profiles 
+	  already defined.
+
 2004-03-23  ujwal
 
 	* Fixed bug in saving display and terminal profiles.

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.108 2004-03-24 21:28:44 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.109 2004-03-25 07:37:32 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -102,6 +102,9 @@ static BOOL editingBookmark = NO;
 
 - (void) readPreferences
 {
+	NSString *plistFile;
+	NSMutableDictionary *profilesDictionary, *keybindingProfiles, *displayProfiles, *terminalProfiles;
+		
     prefs = [NSUserDefaults standardUserDefaults];
 
          
@@ -113,9 +116,26 @@ static BOOL editingBookmark = NO;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
 	
-	[[iTermKeyBindingMgr singleInstance] setProfiles: [prefs objectForKey: @"KeyBindings"]];
-	[[iTermDisplayProfileMgr singleInstance] setProfiles: [prefs objectForKey: @"Displays"]];
-	[[iTermTerminalProfileMgr singleInstance] setProfiles: [prefs objectForKey: @"Terminals"]];
+	// load saved profiles or default if we don't have any
+	keybindingProfiles = [prefs objectForKey: @"KeyBindings"];
+	displayProfiles = [prefs objectForKey: @"Displays"];
+	terminalProfiles = [prefs objectForKey: @"Terminals"];
+	
+	// if we got no profiles, load from our embedded plist
+	plistFile = [[NSBundle bundleForClass: [self class]] pathForResource:@"Profiles" ofType:@"plist"];
+	profilesDictionary = [NSMutableDictionary dictionaryWithContentsOfFile: plistFile];
+	if([keybindingProfiles count] == 0)
+		keybindingProfiles = [profilesDictionary objectForKey: @"KeyBindings"];
+	if([displayProfiles count] == 0)
+		displayProfiles = [profilesDictionary objectForKey: @"Displays"];
+	if([terminalProfiles count] == 0)
+		terminalProfiles = [profilesDictionary objectForKey: @"Terminals"];
+		
+	[[iTermKeyBindingMgr singleInstance] setProfiles: keybindingProfiles];
+	[[iTermDisplayProfileMgr singleInstance] setProfiles: displayProfiles];
+	[[iTermTerminalProfileMgr singleInstance] setProfiles: terminalProfiles];
+	
+	// load bookmarks
 	[[ITAddressBookMgr sharedInstance] setBookmarks: [prefs objectForKey: @"Bookmarks"]];
 }
 

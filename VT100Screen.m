@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.29 2003-01-22 01:50:29 ujwal Exp $
+// $Id: VT100Screen.m,v 1.30 2003-01-23 07:57:59 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -1588,7 +1588,7 @@ static BOOL PLAYBELL = YES;
     int i;
 
     for(i=0;i<strlen(sc);i++) t[i]=charmap[(int)sc[i]];
-    ts=[[NSString stringWithCharacters:t length:strlen(sc)] retain];
+    ts=[NSString stringWithCharacters:t length:strlen(sc)];
 
     return ts;
    

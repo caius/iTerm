@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.51 2003-03-30 17:06:42 ujwal Exp $
+// $Id: PTYTextView.m,v 1.52 2003-04-01 01:03:09 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1854,8 +1854,18 @@
 {
     NSString *s = [[self string] substringWithRange:[self selectedRange]];
     NSURL *url;
-    
-    if (![s hasPrefix:@"http://"])
+
+    // Check for common types of URLs
+    if ([s hasPrefix:@"file://"])
+	url = [NSURL URLWithString:s];
+    else if ([s hasPrefix:@"ftp"])
+    {
+	if (![s hasPrefix:@"ftp://"])
+	    url = [NSURL URLWithString:[@"ftp://" stringByAppendingString:s]];
+	else
+	    url = [NSURL URLWithString:s];
+    }
+    else if (![s hasPrefix:@"http"])
     	url = [NSURL URLWithString:[@"http://" stringByAppendingString:s]];
     else
     	url = [NSURL URLWithString:s];

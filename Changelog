@@ -1,3 +1,8 @@
+2003-03-31	ujwal
+
+    * Made URL parsing in PTYTextView slightly more 
+      intelligent.
+
 2003-03-30	ujwal
 
     * When dragging a text clipping onto iTerm, we 

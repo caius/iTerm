@@ -27,7 +27,4 @@
 - (NSDictionary *) labelAttributes;
 - (void) setLabelAttributes: (NSDictionary *) theLabelAttributes;
 
-// misc
-- (void) redrawLabel;
-
 @end

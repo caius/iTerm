@@ -94,6 +94,12 @@
 
 - (void) setLabelAttributes: (NSDictionary *) theLabelAttributes
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"PTYTabViewItem: -setLabelAttributes");
+#endif
+
+    if(labelAttributes == theLabelAttributes)
+        return;
     
     if(labelAttributes != nil)
     {
@@ -105,17 +111,10 @@
         [theLabelAttributes retain];
         labelAttributes = theLabelAttributes;
     }
-}
-
-// misc
-
-- (void) redrawLabel
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"PTYTabViewItem: -redrawLabel");
-#endif
-
+    
+    // redraw the label
     [self setLabel: [self label]];
+    
 }
 
 

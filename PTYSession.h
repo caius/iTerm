@@ -29,6 +29,14 @@
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
     
+    // tab label attributes
+    NSDictionary *normalStateAttribute;
+    NSDictionary *chosenStateAttribute;
+    NSDictionary *idleStateAttribute;
+    NSDictionary *newOutputStateAttribute;
+    NSDictionary *deadStateAttribute;
+
+    
     PseudoTerminal *parent;  // parent controller
     NSString *name;
     

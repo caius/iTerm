@@ -1,3 +1,14 @@
+2002-12-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed a bug that cause the tabview item label 
+      attributes to be released when any session was 
+      closed. Dictionaries had been static class variables 
+      instead of belonging to specific instances.
+      
+    * Optimized code for setting tab label attributes so 
+      that the drawing code is not called unnecessarily.
+      
+
 2002-12-20	fabian
     * Fixed the session status display problem
     

@@ -27,13 +27,6 @@ static NSString *TERM_ENVNAME = @"TERM";
 static NSString *PWD_ENVNAME = @"PWD";
 static NSString *PWD_ENVVALUE = @"~";
 
-static NSDictionary *normalStateAttribute;
-static NSDictionary *chosenStateAttribute;
-static NSDictionary *idleStateAttribute;
-static NSDictionary *newOutputStateAttribute;
-static NSDictionary *deadStateAttribute;
-
-
 // init/dealloc
 - (id) init
 {
@@ -212,7 +205,6 @@ static NSDictionary *deadStateAttribute;
         if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
         {
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
-            [tabViewItem redrawLabel];
         }
     }
     
@@ -258,7 +250,6 @@ static NSDictionary *deadStateAttribute;
     {
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
         [tabViewItem setLabelAttributes: deadStateAttribute];
-        [tabViewItem redrawLabel];
     }
 
 }
@@ -620,7 +611,6 @@ static NSDictionary *deadStateAttribute;
     else {
         [tabViewItem setLabelAttributes: chosenStateAttribute];
     }
-    [tabViewItem redrawLabel];
 }
 
 // Preferences
@@ -914,11 +904,6 @@ static NSDictionary *deadStateAttribute;
 - (void) resetStatus;
 {
     waiting=REFRESHED=NO;
-/*    if([self exited] == NO)
-    {
-        [tabViewItem setLabelAttributes: chosenStateAttribute];
-        [tabViewItem redrawLabel];
-    } */
 }
 
 - (BOOL)exited

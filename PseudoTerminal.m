@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.256 2004-02-16 19:31:02 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.257 2004-02-18 07:07:27 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -609,7 +609,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		tabviewRect.origin.x -= 10;
 		tabviewRect.size.width += 20;
 		tabviewRect.origin.y -= 13;
-		tabviewRect.size.height += 10;
+		tabviewRect.size.height += 9;
     }
     else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
     {

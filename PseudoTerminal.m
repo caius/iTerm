@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.261 2004-02-24 00:14:21 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.262 2004-02-24 21:54:01 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -713,6 +713,85 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] setTitle:title];
 }
 
+// increases or dcreases font size
+- (void) changeFontSize: (BOOL) increase
+{
+	
+    float newFontSize;
+    
+	    
+    float asciiFontSize = [[self font] pointSize];
+    if(increase == YES)
+		newFontSize = [self largerSizeForSize: asciiFontSize];
+    else
+		newFontSize = [self smallerSizeForSize: asciiFontSize];	
+    NSFont *newAsciiFont = [NSFont fontWithName: [[self font] fontName] size: newFontSize];
+    
+    float nonAsciiFontSize = [[self nafont] pointSize];
+    if(increase == YES)
+		newFontSize = [self largerSizeForSize: nonAsciiFontSize];
+    else
+		newFontSize = [self smallerSizeForSize: nonAsciiFontSize];	    
+    NSFont *newNonAsciiFont = [NSFont fontWithName: [[self nafont] fontName] size: newFontSize];
+    
+    if(newAsciiFont != nil && newNonAsciiFont != nil)
+    {
+		[self setFont: newAsciiFont nafont: newNonAsciiFont];		
+		[self resizeWindow: [self width] height: [self height]];
+    }
+    
+	
+}
+
+- (float) largerSizeForSize: (float) aSize 
+    /*" Given a font size of aSize, return the next larger size.   Uses the 
+    same list of font sizes as presented in the font panel. "*/ 
+{
+    
+    if (aSize <= 8.0) return 9.0;
+    if (aSize <= 9.0) return 10.0;
+    if (aSize <= 10.0) return 11.0;
+    if (aSize <= 11.0) return 12.0;
+    if (aSize <= 12.0) return 13.0;
+    if (aSize <= 13.0) return 14.0;
+    if (aSize <= 14.0) return 18.0;
+    if (aSize <= 18.0) return 24.0;
+    if (aSize <= 24.0) return 36.0;
+    if (aSize <= 36.0) return 48.0;
+    if (aSize <= 48.0) return 64.0;
+    if (aSize <= 64.0) return 72.0;
+    if (aSize <= 72.0) return 96.0;
+    if (aSize <= 96.0) return 144.0;
+	
+    // looks odd, but everything reasonable should have been covered above
+    return 288.0; 
+} 
+
+- (float) smallerSizeForSize: (float) aSize 
+    /*" Given a font size of aSize, return the next smaller size.   Uses 
+    the same list of font sizes as presented in the font panel. "*/
+{
+    
+    if (aSize >= 288.0) return 144.0;
+    if (aSize >= 144.0) return 96.0;
+    if (aSize >= 96.0) return 72.0;
+    if (aSize >= 72.0) return 64.0;
+    if (aSize >= 64.0) return 48.0;
+    if (aSize >= 48.0) return 36.0;
+    if (aSize >= 36.0) return 24.0;
+    if (aSize >= 24.0) return 18.0;
+    if (aSize >= 18.0) return 14.0;
+    if (aSize >= 14.0) return 13.0;
+    if (aSize >= 13.0) return 12.0;
+    if (aSize >= 12.0) return 11.0;
+    if (aSize >= 11.0) return 10.0;
+    if (aSize >= 10.0) return 9.0;
+    
+    // looks odd, but everything reasonable should have been covered above
+    return 8.0; 
+} 
+
+
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
 {
 	int i;
@@ -729,7 +808,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[session TEXTVIEW]  setFont:FONT nafont:NAFONT];
 		[[session TEXTVIEW] setCharWidth: charWidth];
 		[[session TEXTVIEW] setLineHeight: charHeight];
-		//[[self window] setContentResizeIncrements: NSMakeSize(charWidth, charHeight)];
+		[[self window] setResizeIncrements: NSMakeSize(charWidth, charHeight)];
     }
 }
 

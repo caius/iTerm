@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.148 2004-02-26 05:03:19 ujwal Exp $
+// $Id: PTYTextView.m,v 1.149 2004-02-26 08:18:26 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -547,6 +547,19 @@
 	[self scrollRectToVisible: aFrame];
 }
 
+- (void) adjustSelection: (int) lines
+{
+	if (!lines) {   //clear selection
+		startX = -1;
+	}
+	else if (startX != -1) {  //screen scrolled, move selection accordingly
+		startY += lines;
+		endY += lines;
+		if (endY<0) startX = -1;
+		else if (startY<0) startX = startY = 0;
+	}
+}
+
 -(void) hideCursor
 {
     CURSOR=NO;
@@ -710,6 +723,20 @@
 				}
 				if (ulstart<0 && fg[j]&UNDER_MASK && buf[j]) { ulstart=j; fgcode=fg[j]; }
 				else if (ulstart>=0 && (fg[j]!=fgcode || !buf[j])) {
+					aColor = (bgcode>=0)? [self colorForCode:bgcode] : selectionColor; 
+					[aColor set];
+					
+					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
+					NSRectFill(bgRect);
+					
+					// if we have a background image and we are using the background image, redraw image
+					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
+					{
+						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+					}
+					bgcode=sel;
+					bgstart=j;
+
 					[[self colorForCode:fgcode] set];
 					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
 					fgcode=fg[j];

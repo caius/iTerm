@@ -43,11 +43,9 @@
 
 <FONT SIZE="5"><STRONG>About Panther Compatibility:</STRONG></FONT><BR>
 <UL>
-iTerm is developed under Jaguar. We have not yet tested it under Panther,
-although we have received users' feedback that it does work.
-Since both developers are still using Jaguar, we cannot provide
-support for iTerm under Panther yet. We will provide such support
-once we have a machine running the new OS.
+Version 0.7.8 and under was developed under Jaguar. Development of newer 
+versions has been moved to under Panther. We will still try to keep the
+Jaguar compatibility. Thanks for support.
 </UL>
 
 <FONT SIZE="5"><STRONG>Screen shot:</STRONG></FONT><BR>

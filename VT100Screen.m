@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.191 2004-02-26 08:11:51 ujwal Exp $
+// $Id: VT100Screen.m,v 1.192 2004-02-26 08:18:26 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -862,11 +862,15 @@ static BOOL PLAYBELL = YES;
 			memcpy(bufferFGColor+lastBufferLineIndex*WIDTH, screenFGColor, WIDTH*sizeof(char));
 			memcpy(bufferBGColor+lastBufferLineIndex*WIDTH, screenBGColor, WIDTH*sizeof(char));
 			lastBufferLineIndex++;
+			if (bufferWrapped) {
+				[(PTYTextView *)display adjustSelection:-1];
+			}
 			if (lastBufferLineIndex>scrollbackLines) {
 				lastBufferLineIndex=0;
 				bufferWrapped=1;
 			}
 		}
+		else [(PTYTextView *)display adjustSelection:-1];
 		// move screen buffer one line up with its attributes
 		memmove(screenLines,screenLines+WIDTH,(HEIGHT-1)*WIDTH*sizeof(unichar));
 		memmove(screenFGColor,screenFGColor+WIDTH,(HEIGHT-1)*WIDTH*sizeof(char));
@@ -937,6 +941,7 @@ static BOOL PLAYBELL = YES;
 	memset(screenFGColor,DEFAULT_FG_COLOR_CODE,HEIGHT*WIDTH*sizeof(char));
 	memset(screenBGColor,DEFAULT_BG_COLOR_CODE,HEIGHT*WIDTH*sizeof(char));
 	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));
+	[(PTYTextView *)display adjustSelection:0];  //clear the selection
 
 	CURSOR_X = CURSOR_Y = 0;
 

@@ -7,10 +7,13 @@
 
 	* Fixed display bug in scrollUp.
 	* Change cursor when window becomes/resigns key.
+	* Fixed an underline drawing bug
 
 2004-02-25  fabian
 
 	* Changed all the html docs into shtml
+	* Made some attempt to allow selections to follow changes on screen
+	* Fixed an underline drawing bug
 	
 2004-02-24  fabian
 

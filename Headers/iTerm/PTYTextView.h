@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.21 2004-02-25 00:39:17 ujwal Exp $
+// $Id: PTYTextView.h,v 1.22 2004-02-26 08:18:26 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -205,6 +205,7 @@ typedef struct
 - (void) scrollHome;
 - (void) scrollEnd;
 - (void) scrollToSelection;
+- (void) adjustSelection: (int) lines;
 
     // Save method
 - (void) saveDocumentAs: (id) sender;

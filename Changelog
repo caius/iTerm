@@ -1,3 +1,15 @@
+2003-03-26	ujwal
+
+    * Created a new target "iTerm Framework" in the 
+      project. This is the core of iTerm.app. The 
+      iTerm application target just contains the 
+      entry point source file and images. It then 
+      links against the iTerm framework. This enables 
+      other applications to link against iTerm framework 
+      to embed iTerm functionality. Localizations need 
+      to be fixed.
+
+
 2003-03-25	fabian
     * PTYTextView is now a subclass of NSView under ARRAY 
       mode. Text input works properly. 

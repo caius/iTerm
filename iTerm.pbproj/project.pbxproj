@@ -90,6 +90,7 @@
 				E813FB7D0297522703A80106,
 				E813FB86029754BB03A80106,
 				E8EDCE69015E0A5703000001,
+				FBBB8B60039FC04E01F955DB,
 				FB094A14033D58AE01F955DB,
 				FB094A16033D58B601F955DB,
 				FB754C5F036EFC5301F955DB,
@@ -242,6 +243,7 @@
 				FB754C60036EFC5301F955DB,
 				FB896718038D935801F955DB,
 				F500A65E0395269C01A8A066,
+				FBBB8B61039FC04E01F955DB,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -912,6 +914,7 @@
 				FB47BCC603686CAC01F955DB,
 				FB754C61036EFC5301F955DB,
 				FB896719038D935801F955DB,
+				FBBB8B62039FC04E01F955DB,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1116,6 +1119,24 @@
 			name = zh_TW;
 			path = zh_TW.lproj/PseudoTerminal.nib;
 			refType = 4;
+		};
+		FBBB8B60039FC04E01F955DB = {
+			isa = PBXFileReference;
+			name = iTerm.png;
+			path = images/iTerm.png;
+			refType = 4;
+		};
+		FBBB8B61039FC04E01F955DB = {
+			fileRef = FBBB8B60039FC04E01F955DB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FBBB8B62039FC04E01F955DB = {
+			fileRef = FBBB8B60039FC04E01F955DB;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		FBD0AD0A0337A5B701F955DB = {
 			fileEncoding = 4;

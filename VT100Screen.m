@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.174 2004-02-05 16:58:41 ujwal Exp $
+// $Id: VT100Screen.m,v 1.175 2004-02-05 17:01:21 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2786,7 +2786,7 @@ static BOOL PLAYBELL = YES;
 - (void) textViewDidChangeSelection: (NSRange) selectedRange
 {
 #if DEBUG_USE_BUFFER
-	if(selectedRange.length <= 0)
+	if(selectedRange.length <= 0 || selectedRange.location < updateIndex)
 	{
 		selectionStartColumn = 0;
 		selectionStartRow = 0;

@@ -1,3 +1,13 @@
+2003-08-011	sgehrman
+
+    * fixed a bug when setting tabs to the right or left.
+    * made iTermApplicationDelegate to further separate that code from the iTermController
+    * added [iTermController sharedInstance] to make it simple to use one instance of this
+    * added some missing [super dealloc] calls
+    * cleaned up some formatting
+    * cleaned up addressbookcontroller
+
+
 2003-08-09	ujwal
 
     * Fixed resizing when terminal view is not in an iTerm window.

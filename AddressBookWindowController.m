@@ -204,18 +204,17 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     return color;
 }
 
+- (void)windowWillLoad;
+{
+    // We finally set our autosave window frame name and restore the one from the user's defaults.
+    [self setWindowFrameAutosaveName: @"Bookmarks"];
+}
+
 - (void)windowDidLoad;
 {
     encodingList=[NSString availableStringEncodings];
     
-    // We finally set our autosave window frame name and restore the one from the user's defaults.
-    [[self window] setFrameAutosaveName: @"Bookmarks"];
-    if (![[self window] setFrameUsingName: @"Bookmarks"])
-        [[self window] center];
-    
     [[self window] setDelegate: self];
-    
-    [adTable noteNumberOfRowsChanged];
 }
 
 - (void) dealloc
@@ -225,6 +224,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 #endif
 
     singleInstance = nil;
+    [super dealloc];
 }
 
 + (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili
@@ -266,16 +266,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 - (void) setAddressBook: (NSMutableArray *) anAddressBook
 {
     addressBook = anAddressBook;
-}
-
-- (PreferencePanel *) preferences
-{
-    return (preferences);
-}
-
-- (void) setPreferences: (PreferencePanel *) thePreferences
-{
-    preferences = thePreferences;
 }
 
 // Action methods
@@ -658,7 +648,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     }
 
     // close the bookmarks window
-    [[self window] close];
+    [self close];
 }
 
 - (IBAction)editColorScheme: (id) sender

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.212 2003-08-11 13:01:27 sgehrman Exp $
+// $Id: PseudoTerminal.m,v 1.213 2003-08-11 16:36:55 sgehrman Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -206,7 +206,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     // Init the rest of the session
     [aSession setParent: self];
-    [aSession setPreference: pref];
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set some default parameters
@@ -227,10 +226,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession SCROLLVIEW] setVerticalPageScroll: [[aSession TEXTVIEW] frame].size.height];
     
     // Set the bell option
-    [VT100Screen setPlayBellFlag: ![pref silenceBell]];
+    [VT100Screen setPlayBellFlag: ![[PreferencePanel sharedInstance] silenceBell]];
 
     // Set the blinking cursor option
-    [[aSession SCREEN] setBlinkingCursor: [pref blinkingCursor]];
+    [[aSession SCREEN] setBlinkingCursor: [[PreferencePanel sharedInstance] blinkingCursor]];
 
     // assign terminal and task objects
     [[aSession SCREEN] setTerminal:[aSession TERMINAL]];
@@ -244,7 +243,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
 #endif
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
-    [[aSession SCREEN] setScrollback:[pref scrollbackLines]];
+    [[aSession SCREEN] setScrollback:[[PreferencePanel sharedInstance] scrollbackLines]];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
     
     // initialize the screen
@@ -411,7 +410,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         return;
 
     if ([currentPtySession exited]==NO) {
-       if ([pref promptOnClose] &&
+       if ([[PreferencePanel sharedInstance] promptOnClose] &&
 	   NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"The current session will be closed",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
                          NSLocalizedStringFromTableInBundle(@"All unsaved data will be lost",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
 			NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
@@ -835,7 +834,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	  __FILE__, __LINE__, aNotification);
 #endif
 
-    if([pref promptOnClose])
+    if([[PreferencePanel sharedInstance] promptOnClose])
 	return [self showCloseWindow];
     else
 	return (YES);
@@ -1555,7 +1554,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     if ([TABVIEW numberOfTabViewItems] == 1)
     {
-	if([pref hideTab])
+	if([[PreferencePanel sharedInstance] hideTab])
 	{
             PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
 
@@ -1569,17 +1568,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 	else
 	{
-	    [TABVIEW setTabViewType: [pref tabViewType]];
+	    [TABVIEW setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
 	    [self setWindowSize: NO];
 	}
 
     }
     else if([TABVIEW numberOfTabViewItems] == 2)
     {
-	[TABVIEW setTabViewType: [pref tabViewType]];
+	[TABVIEW setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
 	[self setWindowSize: NO];
     }
-    
 }
 
 - (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
@@ -1635,7 +1633,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return;
 
     // create a new terminal window
-    term = [[PseudoTerminal alloc] init];
+    term = [[[PseudoTerminal alloc] init] autorelease];
     if(term == nil)
 	return;
 
@@ -1647,12 +1645,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[term setFont: FONT nafont: NAFONT];
 	[term initWindow];
     }
-
-
-    [term release];
-    
-    [term setPreference:pref];
-
 
     // If this is the current session, make previous one active.
     if(aSession == currentPtySession)
@@ -1673,23 +1665,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // release the tabViewItem
     [aTabViewItem release];
-
 }
 
 - (IBAction)closeWindow:(id)sender
 {
     [[self window] performClose:sender];
-}
-
-// Preferences
-- (void)setPreference:(id)preference;
-{
-    pref=preference;
-}
-
-- (id) preference
-{
-    return (pref);
 }
 
 - (IBAction)saveSession:(id)sender

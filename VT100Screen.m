@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.120 2003-08-11 13:02:59 sgehrman Exp $
+// $Id: VT100Screen.m,v 1.121 2003-08-11 16:37:05 sgehrman Exp $
 //
 /*
  **  VT100Screen.m
@@ -214,7 +214,6 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[VT100Screen dealloc]", __FILE__, __LINE__);
 #endif
-
 
     if([self screenIsLocked])
 	[self removeScreenLock];
@@ -2313,7 +2312,7 @@ static BOOL PLAYBELL = YES;
                    attributes:[TERMINAL characterAttributeDictionary:asc]];
 
     // Mark graphical characters and use our embedded font that has the necessary glyphs
-    if(charset[[TERMINAL charset]] && [[SESSION preference] enforceCharacterAlignment])
+    if(charset[[TERMINAL charset]] && [[PreferencePanel sharedInstance] enforceCharacterAlignment])
     {
 	[attr addAttribute: NSFontAttributeName value: [NSFont fontWithName:@"FreeMonoBold" size:[[self font] pointSize]] range: NSMakeRange(0, [attr length])];
 	[attr addAttribute: @"VT100GraphicalCharacter" value: [NSNumber numberWithInt:1] range: NSMakeRange(0, [attr length])];

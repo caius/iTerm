@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.9 2003-08-11 14:56:40 sgehrman Exp $
+// $Id: iTermController.m,v 1.10 2003-08-11 16:37:11 sgehrman Exp $
 /*
  **  iTermController.m
  **
@@ -72,7 +72,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
           __FILE__, __LINE__);
 #endif
 
-    if(([terminalWindows count] > 0) && [PREF_PANEL promptOnClose] && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
+    if(([terminalWindows count] > 0) && [[PreferencePanel sharedInstance] promptOnClose] && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
 	return (NO);
     
     return (YES);
@@ -102,7 +102,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     }
 
     // else do the usual default stuff.
-    if ([PREF_PANEL openAddressBook])
+    if ([[PreferencePanel sharedInstance] openAddressBook])
         [self showABWindow:nil];
     else
         [self newWindow:nil];
@@ -185,7 +185,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     }    
     
     [self initAddressBook];
-    [self initPreferences];
     encodingList=[NSString availableStringEncodings];
     terminalWindows = [[NSMutableArray alloc] init];
 
@@ -201,8 +200,8 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     
     [terminalWindows removeAllObjects];
     [terminalWindows release];
-
-    [PREF_PANEL release];
+    
+    [super dealloc];
 }
 
 // Action methods
@@ -285,17 +284,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender
 {
-    [PREF_PANEL run];
-}
-
-- (PreferencePanel *) preferencePanel
-{
-    return (PREF_PANEL);
-}
-
-- (void) initPreferences
-{
-    PREF_PANEL = [[PreferencePanel alloc] init];
+    [[PreferencePanel sharedInstance] run];
 }
 
 // Utility
@@ -475,7 +464,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 	[self addInTerminals: term];
 	[term release];
 
-	[term setPreference:PREF_PANEL];
 	[term setColumns: [[entry objectForKey:@"Col"]intValue]];
 	[term setRows: [[entry objectForKey:@"Row"]intValue]];
 	[term setAllFont: [entry objectForKey:@"Font"] nafont: [entry objectForKey:@"NAFont"]];
@@ -547,7 +535,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
     abWindowController = [AddressBookWindowController singleInstance];
     [abWindowController setAddressBook: [self addressBook]];
-    [abWindowController setPreferences: PREF_PANEL];
     [abWindowController run];
 }
 
@@ -756,7 +743,6 @@ NSString *terminalsKey = @"terminals";
 {
     if([terminalWindows containsObject: object] == YES)
 	return;
-    [object setPreference:PREF_PANEL];
     [terminalWindows insertObject: object atIndex: index];
 }
 

@@ -87,6 +87,7 @@ static FindPanelWindowController *singleInstance = nil;
     [[NSNotificationCenter defaultCenter] removeObserver: self name: NSWindowDidResignKeyNotification object: nil];
     [[NSNotificationCenter defaultCenter] removeObserver: self name: NSWindowWillCloseNotification object: nil];
 
+    [super dealloc];
 }
 
 // NSWindow delegate methods

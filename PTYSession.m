@@ -56,7 +56,6 @@ static NSString *PWD_ENVVALUE = @"~";
 // init/dealloc
 - (id) init
 {
-
     if((self = [super init]) == nil)
         return (nil);
 
@@ -86,11 +85,10 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif    
     
     return (self);
-    
 }
+
 - (void) dealloc
 {
-
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession dealloc 0x%x]", __FILE__, __LINE__, self);
 #endif
@@ -110,7 +108,6 @@ static NSString *PWD_ENVVALUE = @"~";
     newOutputStateAttribute = nil;
         
     [super dealloc];    
-    
 }
 
 // Session specific methods
@@ -144,7 +141,7 @@ static NSString *PWD_ENVVALUE = @"~";
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 #else
 
-    if([pref enforceCharacterAlignment] == YES)
+    if([[PreferencePanel sharedInstance] enforceCharacterAlignment] == YES)
     {
 	VT100LayoutManager *aLayoutManager;
 	VT100Typesetter *aTypesetter;
@@ -179,7 +176,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #endif
     [TEXTVIEW setDelegate: self];
-    [TEXTVIEW setAntiAlias: [pref antiAlias]];
+    [TEXTVIEW setAntiAlias: [[PreferencePanel sharedInstance] antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
     [TEXTVIEW release];
     [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
@@ -377,9 +374,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
     // Clear the bell
     [self setBell: NO];
-    
 
-    if ( (modflag & NSFunctionKeyMask) && [pref macnavkeys] && ((unicode == NSPageUpFunctionKey) || (unicode == NSPageDownFunctionKey) || (unicode == NSHomeFunctionKey) || (unicode == NSEndFunctionKey)) ) {
+    if ( (modflag & NSFunctionKeyMask) && [[PreferencePanel sharedInstance] macnavkeys] && ((unicode == NSPageUpFunctionKey) || (unicode == NSPageDownFunctionKey) || (unicode == NSHomeFunctionKey) || (unicode == NSEndFunctionKey)) ) {
         modflag ^= NSShiftKeyMask; // Toggle meaning of shift key for
     }
 
@@ -486,7 +482,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_strlen = [data length];
 	    }
 	}
-	else if ([pref option] != OPT_NORMAL &&
+	else if ([[PreferencePanel sharedInstance] option] != OPT_NORMAL &&
 		    modflag & NSAlternateKeyMask)
 	{
 	    NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
@@ -497,11 +493,11 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_str = (char *)[keydat bytes];
 		send_strlen = [keydat length];
 	    }
-            if ([pref option] == OPT_ESC) {
+            if ([[PreferencePanel sharedInstance] option] == OPT_ESC) {
 		send_pchr = '\e';
 //                send_chr=unmodkeystr;
             }
-	    else if ([pref option] == OPT_META && send_str != NULL) {
+	    else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) {
 		int i;
 		for (i = 0; i < send_strlen; ++i) {
 		    send_str[i] |= 0x80;
@@ -831,7 +827,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	  __FILE__, __LINE__);
 #endif
 
-    if([[parent preference] copySelection])
+    if([[PreferencePanel sharedInstance] copySelection])
 	[TEXTVIEW copy: self];
     
 }
@@ -931,18 +927,6 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setBell: (BOOL) flag
 {
     [tabViewItem setBell:flag];
-}
-
-
-// Preferences
-- (id) preference
-{
-    return pref;
-}
-
-- (void)setPreference:(id)preference
-{
-    pref=preference;
 }
 
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs

@@ -67,8 +67,7 @@
 
 - (IBAction) editDefaultSession: (id) sender;
 
-- (id)init;
-- (void)dealloc;
++ (PreferencePanel*)sharedInstance;
 
 - (void) readPreferences;
 

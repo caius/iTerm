@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.3 2003-08-11 14:57:17 sgehrman Exp $
+// $Id: iTermController.h,v 1.4 2003-08-11 16:38:05 sgehrman Exp $
 /*
  **  iTermController.h
  **
@@ -35,9 +35,6 @@
 
 @interface iTermController : NSObject
 {
-    // preference window
-    PreferencePanel *PREF_PANEL;
-
     // about window
     IBOutlet id ABOUT;
     IBOutlet NSTextView *AUTHORS;
@@ -84,9 +81,7 @@
 - (PTYTextView *) frontTextView;
 
 // Preference Panel
-- (void) initPreferences;
 - (IBAction)showPrefWindow:(id)sender;
-- (PreferencePanel *) preferencePanel;
 
 @end
 

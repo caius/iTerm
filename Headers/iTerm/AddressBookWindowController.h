@@ -91,9 +91,6 @@
 
     // bookmarks data
     NSMutableArray *addressBook;
-
-    // default values from preference
-    PreferencePanel *preferences;
 }
 
 // init
@@ -110,10 +107,8 @@
 - (void)windowWillClose:(NSNotification *)aNotification;
 
 // get/set methods
-- (NSMutableArray *) addressBook;
-- (void) setAddressBook: (NSMutableArray *) anAddressBook;
-- (PreferencePanel *) preferences;
-- (void) setPreferences: (PreferencePanel *) thePreferences;
+- (NSMutableArray *)addressBook;
+- (void)setAddressBook: (NSMutableArray *) anAddressBook;
 
 // Address book window
 - (IBAction)adbDuplicateEntry:(id)sender;
@@ -133,7 +128,6 @@
 - (IBAction) changeTab: (id) sender;
 - (IBAction)changeColorScheme:(id)sender;
 - (IBAction)editColorScheme: (id) sender;
-
 
 // misc
 - (void) run;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.77 2003-08-11 09:55:39 sgehrman Exp $
+// $Id: PTYTextView.m,v 1.78 2003-08-11 16:36:31 sgehrman Exp $
 /*
  **  PTYTextView.m
  **
@@ -1677,12 +1677,11 @@
 	  __FILE__, __LINE__, event );
 #endif
 
-
     // Hide the cursor
     [NSCursor setHiddenUntilMouseMoves: YES];    
 
     // Check for dead keys if OPTION key is used as normal
-    if ([[delegate preference] option]==0) {
+    if ([[PreferencePanel sharedInstance] option]==0) {
         if (deadkey) {
             [self interpretKeyEvents:[NSArray arrayWithObject:event]];
             deadkey=[self hasMarkedText];

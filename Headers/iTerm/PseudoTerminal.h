@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.2 2003-08-11 13:40:11 sgehrman Exp $
+// $Id: PseudoTerminal.h,v 1.3 2003-08-11 16:37:53 sgehrman Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -61,7 +61,6 @@
     IBOutlet id AI_ON;
     char ai_code;
 
-       
     // Session list
     NSMutableArray *ptyList;
     int currentSessionIndex;
@@ -76,7 +75,6 @@
     NSFont *configFont, *configNAFont;
     BOOL changingNA;
     BOOL newwin;
-    PreferencePanel *pref;
     BOOL tabViewDragOperationInProgress;
     BOOL resizeInProgress;
     BOOL windowInited;
@@ -104,7 +102,6 @@
 - (NSString *) currentSessionName;
 - (void) setCurrentSessionName: (NSString *) theSessionName;
 
-
 - (void)startProgram:(NSString *)program;
 - (void)startProgram:(NSString *)program
            arguments:(NSArray *)prog_argv;
@@ -117,7 +114,6 @@
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (void)setAllFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (void)setWidth: (int) width height: (int) height;
-
 
 // iTermController
 - (void)clearBuffer:(id)sender;
@@ -163,7 +159,6 @@
 - (void) closeTabContextualMenuAction: (id) sender;
 - (void) moveTabToNewWindowContextualMenuAction: (id) sender;
 
-
 // Config Window
 - (IBAction)windowConfigOk:(id)sender;
 - (IBAction)windowConfigCancel:(id)sender;
@@ -173,11 +168,6 @@
 - (IBAction)windowConfigBackground:(id)sender;
 - (void) resizeWindow:(int) w height:(int)h;
 - (BOOL) pending;
-
-// Preferences
-- (void)setPreference:(id)pref;
-- (id) preference;
-
 
 @end
 

@@ -80,7 +80,6 @@
     BOOL doubleWidth;
     BOOL remapDeleteKey;
     NSFont *configFont;
-    PreferencePanel *pref;
     NSDictionary *addressBookEntry;
 }
 
@@ -99,8 +98,6 @@
 - (BOOL) isActiveSession;
 
 // Preferences
-- (id) preference;
-- (void) setPreference:(id)preference;
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs;
 
 // PTYTask

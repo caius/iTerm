@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.59 2003-08-11 13:43:17 sgehrman Exp $
+// $Id: PreferencePanel.m,v 1.60 2003-08-11 16:36:39 sgehrman Exp $
 /*
  **  PreferencePanel.m
  **
@@ -35,6 +35,16 @@ static unsigned int  SCROLLBACK = 1000000;
 static float versionNumber;
 
 @implementation PreferencePanel
+
++ (PreferencePanel*)sharedInstance;
+{
+    static PreferencePanel* shared = nil;
+    
+    if (!shared)
+        shared = [[PreferencePanel alloc] init];
+    
+    return shared;
+}
 
 - (id)init
 {
@@ -255,10 +265,7 @@ static float versionNumber;
 
     abWindowController = [AddressBookWindowController singleInstance];
     if([[abWindowController window] isVisible] == NO)
-    {
 	[abWindowController setAddressBook: [[iTermController sharedInstance] addressBook]];
-	[abWindowController setPreferences: self];
-    }
     
     [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
 }

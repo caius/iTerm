@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.5 2003-08-08 20:12:56 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.6 2003-08-11 16:35:59 sgehrman Exp $
 /*
  **  PTYScrollView.m
  **
@@ -38,13 +38,11 @@
 
 - (void) dealloc
 {
-
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYScrollView dealloc", __FILE__, __LINE__);
 #endif
     
     [super dealloc];
-
 }
 
 - (id)initWithFrame:(NSRect)frame

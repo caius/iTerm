@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.128 2003-08-31 04:17:40 ujwal Exp $
+// $Id: VT100Screen.m,v 1.129 2003-08-31 08:48:52 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2148,7 +2148,8 @@ static BOOL PLAYBELL = YES;
 	    idx = [BUFFER length] - 1;
 	if(idx2 < 0 || idx >= [BUFFER length])
 	{
-	    idx--; // include the last '\n' in the buffer
+	    if([[BUFFER string] characterAtIndex: idx] != '\n')
+		idx--; // include the last '\n' in the buffer
 	    idx2 = [BUFFER length];
 	}
 	//NSLog(@"idx = %d; idx2 = %d", idx, idx2);

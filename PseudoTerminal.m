@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.290 2004-05-08 18:25:59 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.291 2004-05-08 18:49:00 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1550,7 +1550,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		for (i = 0; i < n; i++)
 			[[_sessionMgr sessionAtIndex: i] updateDisplay];
 		
-		usleep(15000);
+		usleep(30000);
 	}
 	
 	[pool release];

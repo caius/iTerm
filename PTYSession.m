@@ -619,7 +619,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		}
     }
 	
-	//[self updateDisplay];
+	[self updateDisplay];
 }
 
 
@@ -725,7 +725,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (data != nil) 
 		[self writeTask:data];
 
-	//[self updateDisplay];
+	[self updateDisplay];
 }
 
 - (void)insertNewline:(id)sender

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.125 2004-02-20 01:40:42 ujwal Exp $
+// $Id: PTYTextView.m,v 1.126 2004-02-20 06:14:27 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -522,7 +522,7 @@
 #define  CELLSIZE (CACHESIZE/256)
 - (NSImage *) getCharImage:(unichar) code color:(int)fg
 {
-	int i = code % 256 * CELLSIZE + code/256 % CELLSIZE;
+	int i;
 	int j;
 	NSImage *image;
 	int width;
@@ -531,7 +531,9 @@
 	c= fg&(BOLD_MASK|31);
 	if (!code) return nil;
 	width=ISDOUBLEWIDTHCHARACTER(code)?2:1;
-	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++,j++);
+	srand(code);
+	i=rand()%(CACHESIZE-CELLSIZE);
+	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
 		image=charImages[i].image=[[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)] retain];
@@ -558,7 +560,7 @@
 		for(j=1; j<=CELLSIZE; j++) {	//reset the cache
 			charImages[i-j].count-=charImages[i-c].count;
 		}
-		charImages[i].count=1;
+		charImages[c].count=1;
 
 		[self renderChar: image 
 				withChar: code
@@ -570,11 +572,6 @@
 	else {
 		//		NSLog(@"already in cache");
 		charImages[i].count++;
-		/*compactflag++;
-		if (compactflag>CACHESIZE*4) {
-			compactflag=0;
-			//[self compactCache];
-		}*/
 		return charImages[i].image;
 	}
 	
@@ -778,8 +775,13 @@
 							  charWidth,lineHeight));
 		// draw any character on cursor if we need to
 		unichar aChar = [dataSource screenLines][i];
-		if(aChar && aChar!=0xffff)
+		if (aChar)
 		{
+			if (aChar==0xffff && x1>0) {
+				i--;
+				x1--;
+				aChar = [dataSource screenLines][i];
+			}
 			[self drawCharacter: aChar 
 						fgColor:[dataSource screenFGColor][i] 
 							AtX:x1*charWidth 

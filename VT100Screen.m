@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.182 2004-02-16 18:59:55 ujwal Exp $
+// $Id: VT100Screen.m,v 1.183 2004-02-16 23:58:14 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -860,8 +860,8 @@ static BOOL PLAYBELL = YES;
 		}
 		// move screen buffer one line up with its attributes
 		memmove(screenLines,screenLines+WIDTH,(HEIGHT-1)*WIDTH*sizeof(unichar));
-		memmove(screenFGColor,screenFGColor+WIDTH,(HEIGHT-1)*WIDTH*sizeof(unichar));
-		memmove(screenBGColor,screenBGColor+WIDTH,(HEIGHT-1)*WIDTH*sizeof(unichar));
+		memmove(screenFGColor,screenFGColor+WIDTH,(HEIGHT-1)*WIDTH*sizeof(char));
+		memmove(screenBGColor,screenBGColor+WIDTH,(HEIGHT-1)*WIDTH*sizeof(char));
 
 		// set last blank line to default
 		memset(screenLines+WIDTH*(HEIGHT-1),0,WIDTH*sizeof(unichar));

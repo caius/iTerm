@@ -2,6 +2,8 @@
 
 	* Fixed a double-width character handling bug in PTYTextView
 	* Find Panel is now working. Limitation: doesn't search across lines.
+	* Blink now only happens for key window.
+	* Non-key or no-input windows now have a slower refresh rate.
 	
 2004-02-24  ujwal
 

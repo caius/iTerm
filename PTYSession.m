@@ -861,6 +861,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
+	BOOL key = [[TEXTVIEW window] isKeyWindow];
+	
     iIdleCount++; oIdleCount++; blink++;
     if (++output>1000) output=1000;
     
@@ -876,12 +878,12 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
 	
     if (blink>30) {
-		[SCREEN blink];
+		if (key) [SCREEN blink];
 		blink=0;
     }
     if (oIdleCount<2||dirty) 
     {
-        if (output>3) 
+        if (output>(key&&iIdleCount<10?3:6)) 
         {
             [TEXTVIEW refresh];
             output=0;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.28 2002-12-16 21:11:24 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.29 2002-12-16 21:16:01 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -961,6 +961,7 @@ static NSDictionary *deadStateAttribute;
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
+    [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
     [itemIdentifiers addObject: ABToolbarItem];
 
     return itemIdentifiers;

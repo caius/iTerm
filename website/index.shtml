@@ -18,7 +18,7 @@
 
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
-<FONT SIZE="5"><STRONG>iTerm:</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>Introduction:</STRONG></FONT><BR>
 <UL>iTerm is a full featured terminal emulation program written for OS X using 
 	Cocoa. We are aiming at providing users with best command line experience
 	under OS X. The letter <STRONG>i</STRONG> represents a native Apple look 
@@ -80,6 +80,13 @@ This is a major update of iTerm. New features include:<BR>
 <LI>Other bug fixes and GUI enhancements as usual.</LI>
 For more detail, see <A HREF="history.shtml">Version History</A><BR>
 </UL>
+
+<FONT SIZE="5"><STRONG>Notice:</STRONG></FONT><BR>
+<UL>Due a change of bookmark organizations introduced in 0.8.0, old bookmark settings are
+no longer recognized. You have to re-enter these bookmarks manually into the new version.</UL>
+<UL>Version 0.8.0 comes with a couple of predefined keymapping/display/terminal profiles.
+If you do not see them, please delete your iTerm.plist file in ~/Library/Preferences and
+restart the program.</UL>
 
 </TD>
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">

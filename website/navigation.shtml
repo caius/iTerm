@@ -16,9 +16,11 @@
 
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
-<FONT SIZE="5"><STRONG>Profiles</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>Basic Usage of Bookmarks</STRONG></FONT><BR>
 <UL>
-The session settings are organized through profiles. There are 3 kinds of profiles associated with
+The new organization of bookmarks depends on <STRONG>profiles</STRONG>. Bascially you need
+to create profiles first (there are several pre-defined profiles if you install iTerm from
+scratch), and then create your bookmarks. There are 3 kinds of profiles associated with
 each bookmark:
 <STRONG>Keyboard</STRONG>, the <STRONG>Terminal</STRONG>, and <STRONG>Display</STRONG>.
 By using profiles, you can conveniently create bookmarks that share same properties.

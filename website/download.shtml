@@ -19,23 +19,29 @@
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Download:</STRONG></FONT><BR>
-<UL>For Mac OS X 10.3 (Panther)<BR>
-	<A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">0.8.0</A></UL>
-<UL>For Mac OS X 10.2 (Jaguar)<BR>
-	<A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">0.8.0</A></UL>
-
-<FONT SIZE="5"><STRONG>Installation:</STRONG></FONT><BR>
-<UL>Mount the image file and copy iTerm.app to anywhere you want. If you have an older version, 
-amke sure it's either over-written or completely gone (i.e. not in trash). OS X sometimes has 
-weird behavior about that.
+<UL><A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">iTerm 0.8.0</A><IMG src="new.gif"> The latest iTerm release<BR>
+<A HREF="http://cvs.sourceforge.net/cvstarballs/iterm-cvsroot.tar.bz2">Nightly Tarball</A><BR>
+<A HREF="iTerm.app.sitx">Recent CVS build</A><BR>
 </UL>
 
-<FONT SIZE="5"><STRONG>Notice:</STRONG></FONT><BR>
-<UL>Due a change of bookmark organizations introduced in 0.8.0, old bookmark settings are
-no longer recognized. You have to re-enter these bookmarks manually into the new version.</UL>
-<UL>Version 0.8.0 comes with a couple of predefined keymapping/display/terminal profiles.
-If you do not see them, please delete your iTerm.plist file in ~/Library/Preferences and
-restart the program.</UL>
+<FONT SIZE="5"><STRONG>Installation:</STRONG></FONT><BR>
+<UL>Mount the image file and copy iTerm.app to anywhere you want.</UL>
+
+
+<FONT SIZE="5"><STRONG>Support iTerm:</STRONG></FONT><BR>
+<UL>
+iTerm.app has come a long way since it was released more than a year ago. We have spent
+ considerable amount of time adding features, fixing bugs, and making it faster and more
+robust. We believe we have a great relationship with the user community and respond quickly 
+to their bug reports and feature requests. So we would greatly appreciate any donations in 
+light of our ongoing efforts. iTerm will always be free, and any donations will are entirely 
+voluntary. Any donations will go towards making iTerm better. Thank you.<BR><BR>
+<a href="http://sourceforge.net/donate/index.php?group_id=67789">
+<img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support This Project" /> 
+</a>
+<BR><BR>
+You can also help out by visiting our advertisers -----><BR>
+</UL>
 
  
 </TD>

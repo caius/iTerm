@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.103 2004-02-15 09:44:46 ujwal Exp $
+// $Id: PTYTextView.m,v 1.104 2004-02-16 18:25:36 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -596,6 +596,7 @@
           rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 #endif
 	
+		
     int numLines, i, j, t, lineOffset, WIDTH;
 	int startScreenLineIndex,line, lineIndex;
     unichar *buf;
@@ -607,14 +608,18 @@
 	
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
+	
+	// temporarily force update of whole screen while we work out some drawing issues.
+	forceUpdate = YES;
     
 	WIDTH=[dataSource width];
 	
 	// How many lines do we need to draw?
-    numLines=rect.size.height/lineHeight;
+    numLines = ceil(rect.size.height/lineHeight);
 	
 	// Starting from which line?
-	lineOffset = rect.origin.y/lineHeight;
+	lineOffset = floor(rect.origin.y/lineHeight);
+	
 	
 	// Which line is our screen start?
 	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
@@ -643,8 +648,8 @@
 	else 
 		x1 = -1;
 	
-	// starting Y of drawing
-	curY=rect.origin.y +lineHeight;
+	// starting Y of drawing; make sure we are at an integer multiple of a line
+	curY=floor(rect.origin.y/lineHeight)*lineHeight +lineHeight;
 	
     for(i = 0; i < numLines; i++)
     {

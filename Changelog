@@ -1,4 +1,5 @@
 2003-02-21	fabian
+    * Fixed a bug in function key mapping: F1~F12
     * Fixed a bug in showCursor. Cleaned overall cursor
       Code.
     * Fixed bugs related to color/font settings in buffer

@@ -150,7 +150,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setName:@"Shell"];
 
     ai_code=0;
-    timer =[[NSTimer scheduledTimerWithTimeInterval:0.2
+    timer =[[NSTimer scheduledTimerWithTimeInterval:0.1
                                              target:self
                                            selector:@selector(timerTick:)
                                            userInfo:nil
@@ -374,7 +374,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		    break;
 
 		case NSInsertFunctionKey:
-		    //                case NSHelpFunctionKey:
+		    // case NSHelpFunctionKey:
 		    data = [TERMINAL keyInsert]; break;
 		case NSDeleteFunctionKey:
 		    data = [TERMINAL keyDelete]; break;
@@ -679,9 +679,9 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-    static int blink=0;
+    static int blink=0, output=0;
 
-    iIdleCount++; oIdleCount++; blink++;
+    iIdleCount++; oIdleCount++; blink++; output++;
     if (antiIdle) {
         if (iIdleCount>=600) {
             [SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
@@ -692,8 +692,8 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
     }
 
-    if (blink>3) { [SCREEN blink]; blink=0; }
-    if (oIdleCount<2) {
+    if (blink>5) { [SCREEN blink]; blink=0; }
+    if (oIdleCount<3&&output>1) {
         [SCREEN updateScreen];
         [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
         [SCREEN showCursor];
@@ -702,6 +702,7 @@ static NSString *PWD_ENVVALUE = @"~";
             [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
            ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
             [self moveLastLine];
+        output=0;
     }
 }
 
@@ -711,14 +712,14 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabelAttributes: deadStateAttribute];
     }
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
-        if (oIdleCount>10&&!waiting) {
+        if (oIdleCount>30&&!waiting) {
             waiting=YES;
             if (REFRESHED)
                 [tabViewItem setLabelAttributes: idleStateAttribute];
             else
                 [tabViewItem setLabelAttributes: normalStateAttribute];
         }
-        else if (waiting&&oIdleCount<=10) {
+        else if (waiting&&oIdleCount<=30) {
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
         }

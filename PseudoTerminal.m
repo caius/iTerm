@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.43 2002-12-20 00:34:41 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.44 2002-12-20 08:08:25 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -289,6 +289,9 @@ static NSString *ConfigToolbarItem = @"Config";
     int i;
     int n=[ptyList count];
     
+    if((ptyList == nil) || ([ptyList containsObject: aSession] == NO))
+        return;
+    
     if(n == 1)
     {
         [WINDOW close];
@@ -299,7 +302,11 @@ static NSString *ConfigToolbarItem = @"Config";
     {
         if ([ptyList objectAtIndex:i]==aSession)
         {
+                    
             [ptyListLock lock];
+            // remove from tabview before terminating!! Terminating will
+            // set the internal tabview object in the session to nil.
+            [TABVIEW removeTabViewItem: [aSession tabViewItem]];
             [[ptyList objectAtIndex: i] terminate];
             [ptyList removeObjectAtIndex: i];
             [ptyListLock unlock];
@@ -312,12 +319,11 @@ static NSString *ConfigToolbarItem = @"Config";
             }
             else if (i<currentSessionIndex) currentSessionIndex--;
             
-            [TABVIEW removeTabViewItem: [aSession tabViewItem]];
-            
+                        
             break;
         }
     }
-
+    
 }
 
 - (IBAction) closeCurrentSession: (id) sender
@@ -330,20 +336,16 @@ static NSString *ConfigToolbarItem = @"Config";
     if(ptyList == nil)
         return;
 
-    if ([currentPtySession exited]==NO&&![pref autoclose]) {
-       if (NSRunAlertPanel(NSLocalizedStringFromTable(@"The current session will be closed",@"iTerm",@"Close Session"),
+    if ([currentPtySession exited]==NO) {
+       if (![pref autoclose] && 
+            NSRunAlertPanel(NSLocalizedStringFromTable(@"The current session will be closed",@"iTerm",@"Close Session"),
                          NSLocalizedStringFromTable(@"All unsaved data will be lost",@"iTerm",@"Close window"),
                          NSLocalizedStringFromTable(@"Cancel",@"iTerm",@"Cancel"),
                          NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK")
                          ,nil)) return;
+                         
     }
         
-    if([ptyList count] == 1)
-    {
-        [WINDOW close];
-        return;
-    }
-
     [self closeSession: currentPtySession];
     
 }
@@ -416,6 +418,7 @@ static NSString *ConfigToolbarItem = @"Config";
 {
     return (currentPtySession);
 }
+
 
 - (void)dealloc
 {

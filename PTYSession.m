@@ -37,6 +37,11 @@ static NSDictionary *deadStateAttribute;
 // init/dealloc
 - (id) init
 {
+
+#if DEBUG_ALLOC
+    NSLog(@"%s(%d):-[PTYSession init]", __FILE__, __LINE__);
+#endif
+
     if((self = [super init]) == nil)
         return (nil);
     
@@ -68,7 +73,7 @@ static NSDictionary *deadStateAttribute;
 
     if(parent)
         [parent release];
-                
+                        
     if(TERM_VALUE)
         [TERM_VALUE release];
     
@@ -161,7 +166,13 @@ static NSDictionary *deadStateAttribute;
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession -terminate]", __FILE__, __LINE__);
 #endif
-    [SHELL sendSignal: SIGQUIT];
+
+    [SHELL sendSignal: SIGHUP];
+    if(tabViewItem)
+    {
+        [tabViewItem release];
+        tabViewItem = nil;
+    }
     if(SHELL != nil)
         [SHELL release];
     if(TERMINAL != nil)
@@ -178,6 +189,7 @@ static NSDictionary *deadStateAttribute;
     TERMINAL = nil;
     SCREEN   = nil;
     timer = nil;
+
 }
 
 - (void)readTask:(NSData *)data
@@ -251,6 +263,7 @@ static NSDictionary *deadStateAttribute;
         [tabViewItem setLabelAttributes: deadStateAttribute];
         [tabViewItem redrawLabel];
     }
+
 }
 
 // PTYTextView
@@ -652,7 +665,22 @@ static NSDictionary *deadStateAttribute;
 
 - (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem
 {
-    tabViewItem = theTabViewItem;
+
+    //tabViewItem = theTabViewItem;
+
+#if 1
+    if(tabViewItem)
+    {
+        [tabViewItem release];
+        tabViewItem = nil;
+    }
+    if(theTabViewItem)
+    {
+        [theTabViewItem retain];
+        tabViewItem = theTabViewItem;
+    }
+#endif
+
 }
 
 

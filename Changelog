@@ -3,6 +3,10 @@
     * changed UI from button based to real-tab based 
       using NSTabView based on user feedback.
       
+    * Fixed bug causing a crash when a session was closed 
+      without the shell exiting with the "autoclose" 
+      preference off.
+      
 
 2002-12-19	fabian
     * Changed version number to 0.6.0

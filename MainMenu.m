@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.52 2003-04-28 15:38:18 ujwal Exp $
+// $Id: MainMenu.m,v 1.53 2003-04-28 17:17:37 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -190,6 +190,9 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 #endif
 
     term = [[PseudoTerminal alloc] init];
+    [self addInTerminals: term];
+    [term release];
+    
     [term setPreference:PREF_PANEL];
     [MainMenu breakDown:[PREF_PANEL shell] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
@@ -483,14 +486,13 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     return (FRONT);
 }
 
-- (void) removeTerminalWindow: (PseudoTerminal *) theTerminalWindow
+- (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow
 {
     if(FRONT == theTerminalWindow)
         FRONT = nil;
     if(theTerminalWindow)
     {
         [terminalWindows removeObject: theTerminalWindow];
-        [theTerminalWindow autorelease];
     }
 }
 
@@ -581,6 +583,9 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     if(theTerm == nil)
     {
         term = [[PseudoTerminal alloc] init];
+	[self addInTerminals: term];
+	[term release];
+
 	[term setPreference:PREF_PANEL];
 	[term setColumns: [[entry objectForKey:@"Col"]intValue]];
 	[term setRows: [[entry objectForKey:@"Row"]intValue]];

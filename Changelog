@@ -2,6 +2,9 @@
 
     * Massive code re-organization for revamped 
       Applescript support.
+      
+    * Fixed some memory related crashes when closing 
+      windows created from Applescript.
 
 
 2003-04-27	fabian

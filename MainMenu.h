@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.19 2003-04-28 08:03:12 ujwal Exp $
+// $Id: MainMenu.h,v 1.20 2003-04-28 17:17:40 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -73,7 +73,7 @@
 - (void) saveAddressBook;
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal;
 - (PseudoTerminal *) frontPseudoTerminal;
-- (void) removeTerminalWindow: (PseudoTerminal *) theTerminalWindow;
+- (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
 - (NSArray *)addressBookNames;
 - (NSDictionary *)addressBookEntry: (int) entryIndex;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.157 2003-04-28 15:38:19 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.158 2003-04-28 17:17:36 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -29,7 +29,7 @@
  */
 
 // Debug option
-#define DEBUG_ALLOC           0
+#define DEBUG_ALLOC           
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
@@ -112,9 +112,6 @@ static int windowCount = 0;
 	[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", windowCount]];
     }
     [[self window] setToolbar:[self setupToolbar]];
-
-    [[NSApp delegate] addInTerminals: self];
-    
 
     // Allocate a list for our sessions
     ptyList = [[NSMutableArray alloc] init];
@@ -809,7 +806,8 @@ static int windowCount = 0;
     }
     
     [self releaseObjects];
-    [MAINMENU removeTerminalWindow: self];
+
+    [MAINMENU terminalWillClose: self];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
@@ -1532,6 +1530,9 @@ static int windowCount = 0;
 
     if(term == nil)
 	return;
+
+    [MAINMENU addInTerminals: term];
+    [term release];
 
     [term setPreference:pref];
     [term initWindow: WIDTH

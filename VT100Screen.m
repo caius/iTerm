@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.14 2003-01-07 21:44:08 yfabian Exp $
+// $Id: VT100Screen.m,v 1.15 2003-01-07 21:50:44 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -922,7 +922,7 @@ static BOOL PLAYBELL = YES;
     case 0:
         i=idx=[self getIndex:CURSOR_X y:CURSOR_Y];
         s=[STORAGE string];
-        for(i=0;i<[STORAGE length]&&[s characterAtIndex:i]!='\n';i++);
+        for(;i<[s length]&&[s characterAtIndex:i]!='\n';i++);
         if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
         
         //[self setStringSpaceToX:CURSOR_X Y:CURSOR_Y length:WIDTH-CURSOR_X];

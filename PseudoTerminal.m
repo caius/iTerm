@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.25 2002-12-12 16:12:32 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.26 2002-12-14 08:54:09 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -29,6 +29,7 @@ static NSString *QRToolbarItem = @"Open";
 static NSString *ABToolbarItem = @"Address";
 static NSString *CloseToolbarItem = @"Close";
 static NSString *ConfigToolbarItem = @"Config";
+static NSString *ShortcutPopUpItem = @"ShortcutPopUp";
 
 static NSDictionary *normalStateAttribute;
 static NSDictionary *chosenStateAttribute;
@@ -152,6 +153,12 @@ static NSDictionary *deadStateAttribute;
     [SCROLLVIEW setBackgroundColor: bgColor]; */
     
     [WINDOW setDelegate: self];
+    
+    // Add ourselves as an observer for notifications to reload the addressbook.
+    [[NSNotificationCenter defaultCenter] addObserver: self
+        selector: @selector(_reloadAddressBookMenu:)
+        name: @"Reload AddressBook"
+        object: nil];
          
 }
 
@@ -462,6 +469,12 @@ static NSDictionary *deadStateAttribute;
     idleStateAttribute = nil;
     [newOutputStateAttribute release];
     newOutputStateAttribute = nil;
+    
+    // Remove ourselves as an observer for notifications to reload the addressbook.
+    [[NSNotificationCenter defaultCenter] removeObserver: self
+        name: @"Reload AddressBook"
+        object: nil];
+
     
 }
 
@@ -950,6 +963,8 @@ static NSDictionary *deadStateAttribute;
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
+    [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
+    [itemIdentifiers addObject: ShortcutPopUpItem];
 
     return itemIdentifiers;
 }
@@ -965,6 +980,7 @@ static NSDictionary *deadStateAttribute;
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
+    [itemIdentifiers addObject: ShortcutPopUpItem];
     [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
     [itemIdentifiers addObject: NSToolbarSpaceItemIdentifier];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
@@ -1018,6 +1034,23 @@ static NSDictionary *deadStateAttribute;
         [toolbarItem setTarget: self];
         [toolbarItem setAction: @selector(showConfigWindow:)];
     } 
+    else if ([itemIdent isEqual: ShortcutPopUpItem])
+    {
+        NSPopUpButton *aPopUpButton;
+        
+        aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 84.0, 32.0) pullsDown: YES];
+        [aPopUpButton setTarget: self];
+        [aPopUpButton setAction: @selector(_addressbookPopupSelectionDidChange:)];
+        [aPopUpButton addItemWithTitle: @"New"];
+        [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
+        [toolbarItem setView: aPopUpButton];
+        // Release the popup button since it is retained by the toolbar item.
+        [aPopUpButton release];
+        [toolbarItem setMinSize:[aPopUpButton bounds].size];
+        [toolbarItem setMaxSize:[aPopUpButton bounds].size];
+        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Shortcut",@"iTerm",@"Toolbar Item:Shortcut")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Shortcut to address book commands",@"iTerm",@"Toolbar Item Tip:Shortcut")];
+    }
     else {
         toolbarItem=nil;
     }
@@ -1044,6 +1077,7 @@ static NSDictionary *deadStateAttribute;
     [toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:6];
     [toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:7];
     [toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:8];
+    [toolbar insertItemWithItemIdentifier: ShortcutPopUpItem atIndex:9];
 
 
 //    NSLog(@"Toolbar created");
@@ -1182,6 +1216,82 @@ static NSDictionary *deadStateAttribute;
     
     [ptyListLock unlock];
     
+    
+}
+
+@end
+
+
+// Private interface
+@implementation PseudoTerminal (Private)
+
+// Runs a command from the addressbook popup
+- (void) _addressbookPopupSelectionDidChange: (id) sender
+{
+    int commandIndex;
+    NSDictionary *anEntry;
+    NSString *cmd;
+    NSArray *arg;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal _addressbookPopupSelectionDidChange]",
+          __FILE__, __LINE__);
+#endif
+    
+    commandIndex = [sender indexOfSelectedItem] - 1;
+    
+    if(commandIndex < 0)
+        return;
+        
+    anEntry = [MAINMENU addressBookEntry: commandIndex];
+    
+    // Init a new session and run the command
+    [self initSession:[anEntry objectForKey:@"Name"]
+        foregroundColor:[anEntry objectForKey:@"Foreground"]
+        backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
+                encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
+                    term:[anEntry objectForKey:@"Term Type"]];
+                    
+    NSDictionary *env=[NSDictionary dictionaryWithObject:([anEntry objectForKey:@"Directory"]?[anEntry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
+    
+    [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
+    [self startProgram:cmd arguments:arg environment:env];
+    [self setCurrentSessionName:[anEntry objectForKey:@"Name"]];
+
+}
+
+// Reloads the addressbook entries into the popup toolbar item
+- (void) _reloadAddressBookMenu: (NSNotification *) aNotification
+{
+    NSArray *toolbarItemArray;
+    NSToolbarItem *aToolbarItem;
+    NSPopUpButton *addressbookPopup;
+    int i;
+    
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal _reloadAddressBookMenu]",
+          __FILE__, __LINE__);
+#endif
+    
+    toolbarItemArray = [[WINDOW toolbar] items];
+    
+    // Find the addressbook popup item and reset it
+    for(i = 0; i < [toolbarItemArray count]; i++)
+    {
+        aToolbarItem = [toolbarItemArray objectAtIndex: i];
+        
+        if([[aToolbarItem itemIdentifier] isEqual: ShortcutPopUpItem])
+        {
+            addressbookPopup = (NSPopUpButton *)[aToolbarItem view];
+            [addressbookPopup selectItemAtIndex: -1];
+            [addressbookPopup removeAllItems];
+            [addressbookPopup addItemWithTitle: @"New"];
+            [addressbookPopup addItemsWithTitles: [MAINMENU addressBookNames]];
+            
+            break;
+        }
+        
+    }
     
 }
 

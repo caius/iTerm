@@ -1,3 +1,15 @@
+2002-12-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added popup button in toolbar for quick access to 
+      addressbook entries.
+      
+    * Added missing OK button in AddressBook panel. 
+      Was causing addressbook changes not to be saved.
+    
+    * Refactored addressbook code by introducing an 
+      "executeABCommand:" method in MainMenu.
+      
+
 2002-12-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Made links to authors and web site in the About

@@ -28,6 +28,7 @@
                 adbGotoQuickOpen = id; 
                 adbOk = id; 
                 adbRemoveEntry = id; 
+                executeABCommand = id; 
                 newSession = id; 
                 newWindow = id; 
                 showABWindow = id; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.9 2002-12-12 16:00:17 ujwal Exp $
+// $Id: MainMenu.m,v 1.10 2002-12-14 08:54:09 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -195,11 +195,6 @@ static BOOL newWindow=YES;
 - (IBAction)showABWindow:(id)sender
 {
     int r;
-    PseudoTerminal *term;
-    NSString *cmd;
-    NSArray *arg;
-    NSDictionary *entry;
-    NSStringEncoding encoding;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[MainMenu showABWindow:%@]",
@@ -215,38 +210,54 @@ static BOOL newWindow=YES;
     if (r == 50) {
         [self showQOWindow: self];
     }
-    else if (r == NSRunStoppedResponse) {
-        entry = [addressBook objectAtIndex:[adTable selectedRow]];
-        [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
-//        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-        encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
+}
 
-        if (newWindow||FRONT==nil) {
-            term = [PseudoTerminal newTerminalWindow: self];
-            [term setPreference:PREF_PANEL];
-            [term initWindow:[[entry objectForKey:@"Col"]intValue]
-                      height:[[entry objectForKey:@"Row"] intValue]
-                        font:[entry objectForKey:@"Font"]];
-        }
-        else term=FRONT;
-        [term initSession:[entry objectForKey:@"Name"]
-          foregroundColor:[entry objectForKey:@"Foreground"]
-          backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]
-                 encoding:encoding
-                     term:[entry objectForKey:@"Term Type"]];
-        
-        NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
-            
-        [term startProgram:cmd arguments:arg environment:env];
-        encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
-        [[term currentSession] setEncoding:encoding];
-        
-        if (newWindow) {
-            [term setWindowSize];
-        };
-        [term setCurrentSessionName:[entry objectForKey:@"Name"]];
-        
+- (IBAction) executeABCommand: (id) sender
+{
+    PseudoTerminal *term;
+    NSString *cmd;
+    NSArray *arg;
+    NSDictionary *entry;
+    NSStringEncoding encoding;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu executeABCommand:%@]",
+          __FILE__, __LINE__, sender);
+#endif
+
+    [NSApp stopModal];
+    newWindow=(sender==adNewWindow);
+
+    entry = [addressBook objectAtIndex:[adTable selectedRow]];
+    [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
+    //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
+    encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
+    
+    if (newWindow||FRONT==nil) {
+        term = [PseudoTerminal newTerminalWindow: self];
+        [term setPreference:PREF_PANEL];
+        [term initWindow:[[entry objectForKey:@"Col"]intValue]
+                    height:[[entry objectForKey:@"Row"] intValue]
+                    font:[entry objectForKey:@"Font"]];
     }
+    else term=FRONT;
+    [term initSession:[entry objectForKey:@"Name"]
+        foregroundColor:[entry objectForKey:@"Foreground"]
+        backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]
+                encoding:encoding
+                    term:[entry objectForKey:@"Term Type"]];
+    
+    NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
+        
+    [term startProgram:cmd arguments:arg environment:env];
+    encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
+    [[term currentSession] setEncoding:encoding];
+    
+    if (newWindow) {
+        [term setWindowSize];
+    };
+    [term setCurrentSessionName:[entry objectForKey:@"Name"]];
+    
 }
 
 - (IBAction)adbAddEntry:(id)sender
@@ -399,8 +410,14 @@ static BOOL newWindow=YES;
 {
     if ([adTable selectedRow]!=-1) {
         [self saveAddressBook];
-        newWindow=(sender==adNewWindow);
         [NSApp stopModal];
+        
+        // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
+        [[NSNotificationCenter defaultCenter]
+        postNotificationName: @"Reload AddressBook"
+        object: nil
+        userInfo: nil];
+
     }
 }
 
@@ -701,6 +718,35 @@ static BOOL newWindow=YES;
 - (NSStringEncoding const*) encodingList
 {
     return encodingList;
+}
+
+// Returns the entries in the addressbook
+- (NSArray *)addressBookNames
+{
+    NSMutableArray *anArray;
+    int i;
+    NSDictionary *anEntry;
+    
+    anArray = [[NSMutableArray alloc] init];
+    
+    for(i = 0; i < [adTable numberOfRows]; i++)
+    {
+        anEntry = [addressBook objectAtIndex: i];
+        [anArray addObject: [anEntry objectForKey:@"Name"]];
+    }
+    
+    return ([anArray autorelease]);
+    
+}
+
+// Returns an entry from the addressbook
+- (NSDictionary *)addressBookEntry: (int) entryIndex
+{
+    if((entryIndex < 0) || (entryIndex >= [adTable numberOfRows]))
+        return (nil);
+    
+    return ([addressBook objectAtIndex: entryIndex]);
+    
 }
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.4 2002-12-12 15:54:36 ujwal Exp $
+// $Id: MainMenu.h,v 1.5 2002-12-14 08:54:09 ujwal Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -80,6 +80,7 @@
 - (IBAction)adbEditEntry:(id)sender;
 - (IBAction)adbGotoQuickOpen:(id)sender;
 - (IBAction)adbOk:(id)sender;
+- (IBAction) executeABCommand: (id) sender;
 
 // Address entry window
 - (IBAction)adbRemoveEntry:(id)sender;
@@ -103,6 +104,8 @@
 - (void) addTerminalWindow: (PseudoTerminal *) theTerminalWindow;
 - (void) removeTerminalWindow: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
+- (NSArray *)addressBookNames;
+- (NSDictionary *)addressBookEntry: (int) entryIndex;
 
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender;

@@ -95,6 +95,7 @@
                 nafontExample = id; 
                 optionKey = id; 
                 prefPanel = id; 
+                remapDeleteKey = id; 
                 row = id; 
                 selectionColor = id; 
                 shell = id; 

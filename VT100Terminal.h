@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.10 2003-02-12 07:52:47 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.11 2003-02-13 07:43:42 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -249,6 +249,7 @@ typedef struct {
 - (NSData *)keyInsert;
 - (NSData *)keyHome;
 - (NSData *)keyDelete;
+- (NSData *)keyBackspace;
 - (NSData *)keyEnd;
 - (NSData *)keyPageUp;
 - (NSData *)keyPageDown;

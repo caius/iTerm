@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.23 2003-02-12 07:52:47 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.24 2003-02-13 07:43:42 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -170,6 +170,7 @@ static int TRANSPARENCY  =10;
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
     defaultDoubleWidth=[[prefs objectForKey:@"DoubleWidth"] boolValue];
+    defaultRemapDeleteKey = [prefs objectForKey:@"RemapDeleteKey"]?[[prefs objectForKey:@"RemapDeleteKey"] boolValue]: YES;
     changingNA=NO;
 
 }
@@ -218,6 +219,7 @@ static int TRANSPARENCY  =10;
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
+    [remapDeleteKey setState:defaultRemapDeleteKey?NSOnState:NSOffState];
    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -309,6 +311,7 @@ static int TRANSPARENCY  =10;
     defaultHideTab=([hideTab state]==NSOnState);
     defaultSilenceBell=([silenceBell state]==NSOnState);
     defaultDoubleWidth=([doubleWidth state]==NSOnState);
+    defaultRemapDeleteKey = ([remapDeleteKey state] == NSOnState);
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
@@ -335,6 +338,7 @@ static int TRANSPARENCY  =10;
     [prefs setBool:defaultSilenceBell forKey:@"SilenceBell"];
     [prefs setBool:defaultDoubleWidth forKey:@"DoubleWidth"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
+    [prefs setBool:defaultRemapDeleteKey forKey:@"RemapDeleteKey"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -507,6 +511,11 @@ static int TRANSPARENCY  =10;
 - (NSTabViewType) tabViewType
 {
     return (defaultTabViewType);
+}
+
+- (BOOL)remapDeleteKey
+{
+    return (defaultRemapDeleteKey);
 }
 
 @end

@@ -1,3 +1,8 @@
+2003-02-12	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added preference to remap DELETE key to BACKSPACE.
+    
+
 2003-02-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Moved dead key code from PTYSession: -keyDown to 

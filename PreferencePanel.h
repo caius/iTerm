@@ -53,6 +53,7 @@
     IBOutlet id doubleWidth;
     IBOutlet id selectionColor;
     IBOutlet id tabViewType;
+    IBOutlet id remapDeleteKey;
     
     NSUserDefaults *prefs;
 
@@ -80,6 +81,7 @@
     BOOL changingNA;
     BOOL defaultDoubleWidth;
     int defaultTabViewType;
+    BOOL defaultRemapDeleteKey;
 
 }
 
@@ -122,6 +124,7 @@
 - (BOOL) doubleWidth;
 - (NSColor *) selectionColor;
 - (NSTabViewType) tabViewType;
+- (BOOL)remapDeleteKey;
 
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.27 2003-02-12 07:52:47 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.28 2003-02-13 07:43:42 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -83,6 +83,7 @@ static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 #define KEY_HOME             "\033[1~"
 #define KEY_END              "\033[4~"
 #define KEY_DEL		     "\033[3~"
+#define KEY_BACKSPACE	     "\010"
 
 #define KEY_PF1		     "\033OP"
 #define KEY_PF2		     "\033OQ"
@@ -1343,6 +1344,11 @@ static VT100TCC decode_string(unsigned char *datap,
 //    unsigned char del = 0x7f;
 //    return [NSData dataWithBytes:&del length:1];
     return [NSData dataWithBytes:KEY_DEL length:conststr_sizeof(KEY_DEL)];
+}
+
+- (NSData *)keyBackspace
+{
+    return [NSData dataWithBytes:KEY_BACKSPACE length:conststr_sizeof(KEY_BACKSPACE)];
 }
 
 - (NSData *)keyEnd

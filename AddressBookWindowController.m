@@ -3,8 +3,7 @@
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
- **	     Initial code by Kiichi Kusama
+ **  Author: Ujwal S. Sathyam, Fabian
  **
  **  Project: iTerm
  **

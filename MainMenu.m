@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.71 2003-05-20 06:58:17 ujwal Exp $
+// $Id: MainMenu.m,v 1.72 2003-05-25 07:32:18 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -286,25 +286,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 //        [FRONT newSession: self];
 }
 
-// Address book window
-- (IBAction)showABWindow:(id)sender
-{
-    AddressBookWindowController *abWindowController;
-    
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu showABWindow:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-
-    [self initAddressBook];
-//    NSLog(@"showABWindow: %d\n%@",[addressBook count], addressBook);
-
-    abWindowController = [AddressBookWindowController singleInstance];
-    [abWindowController setAddressBook: addressBook];
-    [abWindowController setPreferences: PREF_PANEL];
-    [abWindowController run];    
-}
-
 
 /// About window
 
@@ -501,58 +482,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     return ae;
 }
 
-- (void) initAddressBook
-{
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu initAddressBook]",
-          __FILE__, __LINE__);
-#endif
-
-    if (addressBook!=nil)
-    {
-	[addressBook release];
-    }
-
-    // We have a new location for the addressbook
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
-    {
-	// move the addressbook to the new location
-	[fileManager movePath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]
-			      toPath: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath] handler: nil];
-    }
-
-    addressBook = [[NSUnarchiver unarchiveObjectWithFile: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath]] retain];
-    if (addressBook == nil) {
-        NSLog(@"No file loaded");
-        addressBook=[[NSMutableArray array] retain];
-    }
-    
-    // Insert default entry
-    if ( [addressBook count] < 1 || ![[addressBook objectAtIndex: 0] objectForKey:@"DefaultEntry"] ) {
-        [addressBook insertObject:[self newDeafultObject] atIndex: 0];
-    }
-    // There can be only one
-    int i;
-    for ( i = 1; i < [addressBook count]; i++) {
-        if ( isDefaultEntry( [addressBook objectAtIndex: i] ) ) {
-            NSDictionary *entry = [addressBook objectAtIndex: i];
-            NSMutableDictionary *newentry = [NSMutableDictionary dictionaryWithDictionary:entry];
-            // [entry release]?
-            [newentry removeObjectForKey:@"DefaultEntry"];
-            entry = [NSDictionary dictionaryWithDictionary:newentry];
-            [addressBook replaceObjectAtIndex:i withObject:entry];
-        }
-    }
-}
-
-- (void) saveAddressBook
-{
-    if (![NSArchiver archiveRootObject:addressBook toFile:[ADDRESS_BOOK_FILE stringByExpandingTildeInPath]]) {
-        NSLog(@"Save failed");
-    }
-}
 
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal
 {
@@ -620,24 +549,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     return encodingList;
 }
 
-// Returns the entries in the addressbook
-- (NSArray *)addressBookNames
-{
-    NSMutableArray *anArray;
-    int i;
-    NSDictionary *anEntry;
-    
-    anArray = [[NSMutableArray alloc] init];
-    
-    for(i = 0; i < [addressBook count]; i++)
-    {
-        anEntry = [addressBook objectAtIndex: i];
-        [anArray addObject: entryVisibleName( anEntry )];
-    }
-    
-    return ([anArray autorelease]);
-    
-}
 
 // Build the address book menu
 - (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender
@@ -691,7 +602,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSDictionary *entry;
 
     // Grab the addressbook command
-    entry = [addressBook objectAtIndex:theIndex];
+    entry = [[self addressBook] objectAtIndex:theIndex];
     [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
     
@@ -734,36 +645,15 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     
 }
 
-// Returns an entry from the addressbook
-- (NSDictionary *)addressBookEntry: (int) entryIndex
-{
-    if((entryIndex < 0) || (entryIndex >= [addressBook count]))
-        return (nil);
-    
-    return ([addressBook objectAtIndex: entryIndex]);
-    
-}
-
-- (void) addAddressBookEntry: (NSDictionary *) entry
-{
-    [addressBook addObject:entry];
-    [addressBook sortUsingFunction: addressBookComparator context: nil];
-}
-
-- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new
-{
-    [addressBook replaceObjectAtIndex:[addressBook indexOfObject:old] withObject:new];
-}
-
 - (void) interpreteKey: (int) code newWindow:(BOOL) newWin
 {
-    int i, c, n=[addressBook count];
+    int i, c, n=[[self addressBook] count];
 
     if (code>='a'&&code<='z') code+='A'-'a';
 //    NSLog(@"got code:%d (%s)",code,(newWin?"new":"old"));
     
     for(i=0; i<n; i++) {
-        c=[[[addressBook objectAtIndex:i] objectForKey:@"Shortcut"] intValue];
+        c=[[[[self addressBook] objectAtIndex:i] objectForKey:@"Shortcut"] intValue];
         if (code==c) {
             [self executeABCommandAtIndex:i inTerminal: newWin?nil:FRONT];
         }
@@ -775,6 +665,131 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 {
     return ([[FRONT currentSession] TEXTVIEW]);
 }
+
+@end
+
+
+// AddressBook/Bookmark methods
+@implementation MainMenu (AddressBook)
+
+- (NSMutableArray *) addressBook
+{
+    return (addressBook);
+}
+
+// Address book window
+- (IBAction)showABWindow:(id)sender
+{
+    AddressBookWindowController *abWindowController;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu showABWindow:%@]",
+          __FILE__, __LINE__, sender);
+#endif
+
+    [self initAddressBook];
+    //    NSLog(@"showABWindow: %d\n%@",[[self addressBook] count], [self addressBook]);
+
+    abWindowController = [AddressBookWindowController singleInstance];
+    [abWindowController setAddressBook: [self addressBook]];
+    [abWindowController setPreferences: PREF_PANEL];
+    [abWindowController run];
+}
+
+- (void) initAddressBook
+{
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu initAddressBook]",
+          __FILE__, __LINE__);
+#endif
+
+    if ([self addressBook]!=nil)
+    {
+	[[self addressBook] release];
+    }
+
+    // We have a new location for the addressbook
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
+    {
+	// move the addressbook to the new location
+	[fileManager movePath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]
+				     toPath: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath] handler: nil];
+    }
+
+    addressBook = [[NSUnarchiver unarchiveObjectWithFile: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath]] retain];
+    if (addressBook == nil) {
+        NSLog(@"No file loaded");
+        addressBook=[[NSMutableArray array] retain];
+    }
+
+    // Insert default entry
+    if ( [addressBook count] < 1 || ![[addressBook objectAtIndex: 0] objectForKey:@"DefaultEntry"] ) {
+        [addressBook insertObject:[self newDeafultObject] atIndex: 0];
+    }
+    // There can be only one
+    int i;
+    for ( i = 1; i < [addressBook count]; i++) {
+        if ( isDefaultEntry( [addressBook objectAtIndex: i] ) ) {
+            NSDictionary *entry = [addressBook objectAtIndex: i];
+            NSMutableDictionary *newentry = [NSMutableDictionary dictionaryWithDictionary:entry];
+            // [entry release]?
+            [newentry removeObjectForKey:@"DefaultEntry"];
+            entry = [NSDictionary dictionaryWithDictionary:newentry];
+            [addressBook replaceObjectAtIndex:i withObject:entry];
+        }
+    }
+}
+
+- (void) saveAddressBook
+{
+    if (![NSArchiver archiveRootObject:[self addressBook] toFile:[ADDRESS_BOOK_FILE stringByExpandingTildeInPath]]) {
+        NSLog(@"Save failed");
+    }
+}
+
+
+// Returns an entry from the addressbook
+- (NSDictionary *)addressBookEntry: (int) entryIndex
+{
+    if((entryIndex < 0) || (entryIndex >= [[self addressBook] count]))
+        return (nil);
+
+    return ([[self addressBook] objectAtIndex: entryIndex]);
+
+}
+
+- (void) addAddressBookEntry: (NSDictionary *) entry
+{
+    [[self addressBook] addObject:entry];
+    [[self addressBook] sortUsingFunction: addressBookComparator context: nil];
+}
+
+- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new
+{
+    [[self addressBook] replaceObjectAtIndex:[[self addressBook] indexOfObject:old] withObject:new];
+}
+
+// Returns the entries in the addressbook
+- (NSArray *)addressBookNames
+{
+    NSMutableArray *anArray;
+    int i;
+    NSDictionary *anEntry;
+
+    anArray = [[NSMutableArray alloc] init];
+
+    for(i = 0; i < [[self addressBook] count]; i++)
+    {
+        anEntry = [[self addressBook] objectAtIndex: i];
+        [anArray addObject: entryVisibleName( anEntry )];
+    }
+
+    return ([anArray autorelease]);
+
+}
+
 
 @end
 

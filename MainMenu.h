@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.23 2003-05-18 08:08:26 ujwal Exp $
+// $Id: MainMenu.h,v 1.24 2003-05-25 07:32:18 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -65,8 +65,6 @@
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newSession:(id)sender;
 
-// Address book window
-- (IBAction)showABWindow:(id)sender;
 
 // About window
 - (IBAction)showAbout:(id)sender;
@@ -75,17 +73,11 @@
 // Utility methods
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
 - (NSDictionary *)newDeafultObject;
-- (void) initAddressBook;
-- (void) saveAddressBook;
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal;
 - (PseudoTerminal *) frontPseudoTerminal;
 - (void) buildSessionSubmenu;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
-- (NSArray *)addressBookNames;
-- (NSDictionary *)addressBookEntry: (int) entryIndex;
-- (void) addAddressBookEntry: (NSDictionary *) entry;
-- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new;
 - (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender;
 - (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm;
 - (void) interpreteKey: (int) code newWindow:(BOOL) newWin;
@@ -95,6 +87,19 @@
 - (void) initPreferences;
 - (IBAction)showPrefWindow:(id)sender;
 - (PreferencePanel *) preferencePanel;
+
+@end
+
+@interface MainMenu (AddressBook)
+
+- (NSMutableArray *) addressBook;
+- (IBAction)showABWindow:(id)sender;
+- (void) initAddressBook;
+- (void) saveAddressBook;
+- (NSArray *)addressBookNames;
+- (NSDictionary *)addressBookEntry: (int) entryIndex;
+- (void) addAddressBookEntry: (NSDictionary *) entry;
+- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new;
 
 @end
 

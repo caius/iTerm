@@ -692,6 +692,14 @@ static NSStringEncoding const *encodingList = nil;
 	if(returnCode == NSOKButton && [[profileName stringValue] length] > 0)
 	{
 		
+		// make sure this profile does not already exist
+		if([aProfileSelector indexOfItemWithTitle: [profileName stringValue]] >= 0)
+		{
+			NSBeep();
+			[addProfile close];
+			return;
+		}
+		
 		[profileMgr addProfileWithName: [profileName stringValue] 
 													copyProfile: [aProfileSelector titleOfSelectedItem]];
 		

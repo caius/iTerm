@@ -39,8 +39,6 @@
 #import "AddressBookWindowController.h"
 
 #import "VT100Typesetter.h"
-#import "GSHorizontalTypesetter.h"
-#import "GSLayoutManager.h"
 
 #include <unistd.h>
 

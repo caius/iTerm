@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.91 2003-05-09 13:53:19 ujwal Exp $
+// $Id: VT100Screen.m,v 1.92 2003-05-29 15:43:07 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -746,6 +746,8 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
+    int i;
+    
     for(i = 0; i < TOP_LINE; i++)
         [screenLines removeObjectAtIndex: 0];
 #endif

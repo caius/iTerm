@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.43 2003-04-30 01:36:52 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.44 2003-05-01 16:28:43 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -47,7 +47,7 @@ static NSFont* FONT;
 
 static int   COL   = 80;
 static int   ROW   = 25;
-static unsigned int  SCROLLBACK = 1000;
+static unsigned int  SCROLLBACK = 1000000;
 
 static NSString* TERM    =@"xterm";
 static NSString* SHELL   =@"/bin/bash --login";
@@ -721,7 +721,7 @@ static int TRANSPARENCY  =10;
 
 - (unsigned int) scrollbackLines
 {
-    return defaultScrollback;
+    return SCROLLBACK; //defaultScrollback;
 }
 
 - (NSStringEncoding) encoding

@@ -94,16 +94,16 @@
 "Report A Bug"="バグを報告";
 
 /* OS Version */
-"Minimum_OS"="iTerm requires OS X version 10.2 or higher to run. This application will now terminate.";
+"Minimum_OS"="iTermの実行には Mac OS X 10.2以上の環境が必要です。アプリケーションを終了します。";
 
 /* Sorry */
-"Sorry"="Sorry";
+"Sorry"="申し訳ありません";
 
 /* Quit */
-"Quit"="Quit";
+"Quit"="終了";
 
 /* PreferencePanel */
-"Display"="Display";
-"Shell"="Shell";
-"Emulation"="Emulation";
-"Color"="Color";
+"Display"="ディスプレイ";
+"Shell"="シェル";
+"Emulation"="エミュレーション";
+"Color"="カラー";

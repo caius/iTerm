@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.56 2003-01-01 02:57:54 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.57 2003-01-04 03:02:05 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -252,6 +252,8 @@ static NSString *ConfigToolbarItem = @"Config";
     currentPtySession = aSession;
     [TABVIEW selectTabViewItem: aTabViewItem];
     [self setCurrentSessionName: nil];
+    
+    [WINDOW makeKeyAndOrderFront:self];
         
 }
 

@@ -44,9 +44,12 @@
 	IBOutlet NSWindow *profilesWindow;
 	
 	// Bookmark stuff
+	IBOutlet NSOutlineView *bookmarksView;
 	IBOutlet NSPanel *addBookmarkFolderPanel;
 	IBOutlet NSPanel *deleteBookmarkPanel;
 	IBOutlet NSPanel *editBookmarkPanel;
+	IBOutlet NSButton *bookmarkDeleteFolderButton;
+	IBOutlet NSButton *bookmarkDeleteButton;
 	IBOutlet NSTextField *bookmarkFolderName;
 	IBOutlet NSTextField *bookmarkName;
 	IBOutlet NSTextField *boomarkCommand;
@@ -102,5 +105,12 @@
 - (BOOL) blinkingCursor;
 - (BOOL) focusFollowsMouse;
 - (NSString *) wordChars;
+
+@end
+
+@interface PreferencePanel (Private)
+
+- (void)_addBookmarkFolderSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+- (void)_deleteBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 
 @end

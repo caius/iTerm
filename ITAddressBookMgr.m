@@ -26,16 +26,14 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#import <iTerm/Tree.h>
 #import "ITAddressBookMgr.h"
 #import "AddressBookWindowController.h"
 
+#define SAFENODE(n) 		((TreeNode*)((n)?(n):(bookmarks)))
+
 static NSString* OLD_ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
 static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/AddressBook";
-
-@interface ITAddressBookMgr (Private)
-- (void)initAddressBook;
-- (NSDictionary *)newDefaultAddressBookEntry;
-@end
 
 @implementation ITAddressBookMgr
 
@@ -63,6 +61,20 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
     [_addressBookArray release];
 	[bookmarks release];
     [super dealloc];
+}
+
+- (void) setBookmarks: (NSDictionary *) aDict
+{
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aDict);
+	bookmarks = [TreeNode treeFromDictionary: aDict];
+	[bookmarks retain];
+}
+
+- (NSDictionary *) bookmarks
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+	return ([bookmarks dictionary]);
 }
 
 - (NSArray *) addressBook
@@ -142,71 +154,58 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 // Model for NSOutlineView tree structure
 
 - (id) child:(int)index ofItem:(id)item
-{
-	NSArray *sourceArray;
-	int numEntries;
-
-	NSLog(@"%s: %@", __PRETTY_FUNCTION__, item);
-	
-	if(item == nil)
-		sourceArray = bookmarks;
-	else
-		sourceArray = [item objectForKey: KEY_CHILDREN];
-	
-	if(sourceArray == nil)
-		return (nil);
-	
-	numEntries = [sourceArray count];
-	if(sourceArray == nil || numEntries <= 0 || index >= numEntries)
-		return (nil);
-	
-	return ([sourceArray objectAtIndex: index]);
+{	
+	return ([SAFENODE(item) childAtIndex: index]);
 }
 
 - (BOOL) isExpandable:(id)item
 {
-	NSDictionary *sourceDict;
-	
-	NSLog(@"%s: %@", __PRETTY_FUNCTION__, item);
-	
-	if(item == nil)
-		return (YES); // root node
-	else
-		sourceDict = item;
-		
-	// if we have an object for the Children key, we are a group
-	return ([sourceDict objectForKey: KEY_CHILDREN]?YES:NO);
+	return (![SAFENODE(item) isLeaf]);
 }
 
 - (int) numberOfChildrenOfItem:(id)item
 {
-	NSArray *sourceArray;
-	
-	NSLog(@"%s: %@", __PRETTY_FUNCTION__, item);
-	
-	if(item == nil)
-		sourceArray = bookmarks;
-	else
-		sourceArray = [item objectForKey: KEY_CHILDREN];
-	
-	if(sourceArray == nil)
-		return (0);
-	
-	// if we have an object for the Children key, we are a group
-	return ([sourceArray count]);
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	return ([SAFENODE(item) numberOfChildren]);
 }
 
+- (id) objectForKey: (id) key inItem: (id) item
+{
+	NSDictionary *data = [SAFENODE(item) nodeData];
+	
+	return ([data objectForKey: key]);
+}
 
-- (void) addFolder: (NSString *) folderName toNode: (NSMutableDictionary *) aNode
+- (void) addFolder: (NSString *) folderName toNode: (TreeNode *) aNode
+{
+	TreeNode *targetNode, *childNode;
+	NSMutableDictionary *aDict;
+	
+	// NSLog(@"%s: %@", __PRETTY_FUNCTION__, folderName);
+	
+	targetNode = SAFENODE(aNode);
+	
+	aDict = [[NSMutableDictionary alloc] init];
+	[aDict setObject: folderName forKey: KEY_NAME];
+	[aDict setObject: @"" forKey: KEY_DESCRIPTION];
+	
+	childNode = [[TreeNode alloc] initWithData: aDict parent: nil children: [NSArray array]];
+	[childNode setIsLeaf: NO];
+	[targetNode insertChild: childNode atIndex: [targetNode numberOfChildren]];
+	[aDict release];
+	[childNode release];
+	
+}
+
+- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDictToNode: (TreeNode *) aNode;
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
-- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDicttoNode: (NSMutableDictionary *) aNode
+- (void) deleteBookmarkNode: (TreeNode *) aNode
 {
-	NSLog(@"%s", __PRETTY_FUNCTION__);
+	[aNode removeFromParent];
 }
-
 
 @end
 
@@ -245,9 +244,7 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
             [_addressBookArray replaceObjectAtIndex:i withObject:entry];
         }
     }
-	
-	bookmarks = [[NSMutableArray alloc] init];
-	
+		
 }
 
 - (NSDictionary *)newDefaultAddressBookEntry
@@ -297,6 +294,11 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
         NULL] autorelease];
     
     return ae;
+}
+
+- (void)_addBookmarkFolderSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	
 }
 
 @end

@@ -34,14 +34,18 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 extern BOOL isDefaultEntry( NSDictionary *entry );
 extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 
+@class TreeNode;
+
 @interface ITAddressBookMgr : NSObject 
 {
     NSMutableArray *_addressBookArray;
-	NSMutableArray *bookmarks;
+	TreeNode *bookmarks;
 }
 
 + (id)sharedInstance;
 
+- (void) setBookmarks: (NSDictionary *) aDict;
+- (NSDictionary *) bookmarks;
 - (void)showABWindow;
 - (NSArray *)addressBook;
 - (NSMutableDictionary *) defaultAddressBookEntry;
@@ -54,7 +58,16 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 - (id) child:(int)index ofItem:(id)item;
 - (BOOL) isExpandable:(id)item;
 - (int) numberOfChildrenOfItem:(id)item;
-- (void) addFolder: (NSString *) folderName toNode: (NSMutableDictionary *) aNode;
-- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDicttoNode: (NSMutableDictionary *) aNode;
+- (id) objectForKey: (id) key inItem: (id) item;
+- (void) addFolder: (NSString *) folderName toNode: (TreeNode *) aNode;
+- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDictToNode: (TreeNode *) aNode;
+- (void) deleteBookmarkNode: (TreeNode *) aNode;
+
+@end
+
+@interface ITAddressBookMgr (Private)
+
+- (void)initAddressBook;
+- (NSDictionary *)newDefaultAddressBookEntry;
 
 @end

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.90 2004-03-18 00:23:42 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.91 2004-03-18 08:48:33 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -33,7 +33,7 @@
 #import <iTerm/iTermKeyBindingMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
-
+#import <iTerm/Tree.h>
 
 static float versionNumber;
 
@@ -104,6 +104,7 @@ static float versionNumber;
 	[[iTermKeyBindingMgr singleInstance] setProfiles: [prefs objectForKey: @"KeyBindings"]];
 	[[iTermDisplayProfileMgr singleInstance] setProfiles: [prefs objectForKey: @"Displays"]];
 	[[iTermTerminalProfileMgr singleInstance] setProfiles: [prefs objectForKey: @"Terminals"]];
+	[[ITAddressBookMgr sharedInstance] setBookmarks: [prefs objectForKey: @"Bookmarks"]];
 }
 
 - (void)run
@@ -148,66 +149,92 @@ static float versionNumber;
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
 	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
 	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
+	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
 
     [[self window] performClose: self];
+}
+
+// NSOutlineView delegate methods
+- (void) outlineViewSelectionDidChange: (NSNotification *) aNotification
+{
+	if([bookmarksView selectedRow] == -1)
+	{
+		[bookmarkDeleteFolderButton setEnabled: NO];
+		[bookmarkDeleteButton setEnabled: NO];
+	}
+	else
+	{
+		[bookmarkDeleteFolderButton setEnabled: YES];
+		[bookmarkDeleteButton setEnabled: YES];
+	}
 }
 
 // NSOutlineView data source methods
 // required
 - (id)outlineView:(NSOutlineView *)ov child:(int)index ofItem:(id)item
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
     return [[ITAddressBookMgr sharedInstance] child:index ofItem: item];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)ov isItemExpandable:(id)item
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
     return [[ITAddressBookMgr sharedInstance] isExpandable: item];
 }
 
 - (int)outlineView:(NSOutlineView *)ov numberOfChildrenOfItem:(id)item
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
     return [[ITAddressBookMgr sharedInstance] numberOfChildrenOfItem: item];
 }
 
 - (id)outlineView:(NSOutlineView *)ov objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
-    NSLog(@"%s", __PRETTY_FUNCTION__);
-	// item should be a dictionary
-    return [item objectForKey:[tableColumn identifier]];
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
+	// item should be a tree node witha dictionary data object
+    return [[ITAddressBookMgr sharedInstance] objectForKey:[tableColumn identifier] inItem: item];
 }
 
 // Bookmark actions
 - (IBAction) addBookmarkFolder: (id) sender
 {
-	
+	[NSApp beginSheet: addBookmarkFolderPanel
+	   modalForWindow: [self window]
+		modalDelegate: self
+	   didEndSelector: @selector(_addBookmarkFolderSheetDidEnd:returnCode:contextInfo:)
+		  contextInfo: nil];        
 }
 
 - (IBAction) addBookmarkFolderConfirm: (id) sender
 {
-	
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:addBookmarkFolderPanel returnCode:NSOKButton];
 }
 
 - (IBAction) addBookmarkFolderCancel: (id) sender
 {
-	
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:addBookmarkFolderPanel returnCode:NSCancelButton];
 }
 
 - (IBAction) deleteBookmarkFolder: (id) sender
 {
-	
+	[NSApp beginSheet: deleteBookmarkPanel
+	   modalForWindow: [self window]
+		modalDelegate: self
+	   didEndSelector: @selector(_deleteBookmarkSheetDidEnd:returnCode:contextInfo:)
+		  contextInfo: nil];        
 }
 
 - (IBAction) deleteBookmarkConfirm: (id) sender
 {
-	
+	[NSApp endSheet:deleteBookmarkPanel returnCode:NSOKButton];
 }
 
 - (IBAction) deleteBookmarkCancel: (id) sender
 {
-	
+	[NSApp endSheet:deleteBookmarkPanel returnCode:NSCancelButton];
 }
 
 - (IBAction) addBookmark: (id) sender
@@ -245,6 +272,8 @@ static float versionNumber;
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
+	// make sure buttons are properly enabled/disabled
+	[self outlineViewSelectionDidChange: nil];
     // Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
 }
@@ -331,6 +360,47 @@ static float versionNumber;
 	[abWindowController setAddressBook: [[ITAddressBookMgr sharedInstance] addressBook]];
     
     [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
+}
+
+@end
+
+@implementation PreferencePanel (Private)
+
+- (void)_addBookmarkFolderSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	TreeNode *parentNode;
+	int selectedRow;
+	
+	selectedRow = [bookmarksView selectedRow];
+	
+	// if no row is selected, new node is child of root
+	if(selectedRow == -1)
+		parentNode = nil;
+	else
+		parentNode = [bookmarksView itemAtRow: selectedRow];
+	
+	// If a leaf node is selected, make new node its sibling
+	if([bookmarksView isExpandable: parentNode] == NO)
+		parentNode = [parentNode nodeParent];
+	
+	if(returnCode == NSOKButton)
+	{		
+		[[ITAddressBookMgr sharedInstance] addFolder: [bookmarkFolderName stringValue] toNode: parentNode];
+		[bookmarksView reloadData];
+	}
+	[addBookmarkFolderPanel close];
+}
+
+- (void)_deleteBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	
+	if(returnCode == NSOKButton)
+	{
+		
+		[[ITAddressBookMgr sharedInstance] deleteBookmarkNode: [bookmarksView itemAtRow: [bookmarksView selectedRow]]];
+		[bookmarksView reloadData];
+	}
+	[deleteBookmarkPanel close];
 }
 
 @end

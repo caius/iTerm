@@ -73,6 +73,7 @@
 				E8CF7561026DDA6303A80106,
 				E8CF7560026DDA6303A80106,
 				F56B230B03A1B36701A8A066,
+				DD8EC82F06095CDA0085A27D,
 				E8CF7562026DDA6303A80106,
 				E8CF7563026DDA6303A80106,
 			);
@@ -108,6 +109,7 @@
 				872EBC5404E42E320073D10E,
 				872EBC5B04E42E320073D10E,
 				2076B15704E8817300000106,
+				DD8EC958060980C90085A27D,
 				872EBC5A04E42E320073D10E,
 				872EBC6104E42E320073D10E,
 			);
@@ -736,6 +738,7 @@
 				8787B14005FD191400901149,
 				DD46BB5505FD6B9B00027283,
 				F658CAFB060587A0000A13D5,
+				DD8EC959060980C90085A27D,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1097,6 +1100,7 @@
 				8787B0DA05FD160F00901149,
 				DD46BAC605FD689F00027283,
 				F658C86E06054425000A13D5,
+				DD8EC83106095CDA0085A27D,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1815,6 +1819,35 @@
 			path = "English.lproj/iTerm Help";
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		DD8EC82F06095CDA0085A27D = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = Tree.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DD8EC83106095CDA0085A27D = {
+			fileRef = DD8EC82F06095CDA0085A27D;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD8EC958060980C90085A27D = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = Tree.h;
+			path = Headers/iTerm/Tree.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DD8EC959060980C90085A27D = {
+			fileRef = DD8EC958060980C90085A27D;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		DD9C1AE2051F45C000A8A065 = {
 			isa = PBXFileReference;

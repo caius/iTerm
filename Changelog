@@ -1,6 +1,7 @@
 2004-02-16  ujwal
 
 	* Forcing update in texview drawRect until drawing issue is resolved.
+	* Fixed bold display bug.
 
 2004-02-14  ujwal
 

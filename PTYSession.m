@@ -151,7 +151,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 	
     // add the scrollview as a subview to the imageview
-    [imageView addSubview: SCROLLVIEW];
+	[imageView addSubview: SCROLLVIEW];
     [SCROLLVIEW release];
 	
     // assign the main view

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.104 2004-02-16 18:25:36 ujwal Exp $
+// $Id: PTYTextView.m,v 1.105 2004-02-16 18:59:54 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -852,7 +852,7 @@
 	{
 		[defaultFGColor set];
 		i = y1*[dataSource width]+x1;
-		[[NSColor cyanColor] set];
+		[[NSColor grayColor] set];
 		NSRectFill(NSMakeRect(x1*charWidth,
 							   (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
 							   charWidth,lineHeight));

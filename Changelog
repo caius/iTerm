@@ -1,6 +1,6 @@
 2003-01-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
-    * Remove fatal recursice loop by no calling 
+    * Remove fatal recursive loop by not calling 
       [self setWindowSize] from PseudoTerminal: -windowDidResize.
       The window sizing part needs some real attention.
        

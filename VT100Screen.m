@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.165 2003-10-07 16:07:27 ujwal Exp $
+// $Id: VT100Screen.m,v 1.166 2003-11-06 16:05:34 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -145,7 +145,7 @@ static BOOL PLAYBELL = YES;
 #endif
     sz = [VT100Screen fontSize:font];
 #if USE_CUSTOM_LAYOUT
-    w = (int)(frame.size.width  - 1*[VT100Typesetter lineFragmentPadding])/sz.width;
+    w = (int)(frame.size.width  - 2*[VT100Typesetter lineFragmentPadding])/sz.width;
 #else
     w = (int)(frame.size.width / sz.width + 0.5) - 2;
 #endif

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.247 2003-11-06 02:07:29 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.248 2003-11-06 16:05:33 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -568,6 +568,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSPoint topLeft;
     PTYTextView *theTextView;
 
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
+#endif
+    
     if([self windowInited] == NO)
 	return;
     
@@ -614,13 +618,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     [TABVIEW setFrame: tabviewRect];
 
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
-#endif
     vsize = [VT100Screen requireSizeWithFont:[[[_sessionMgr currentSession] SCREEN] tallerFont]
 				      width:[[[_sessionMgr currentSession] SCREEN] width]
 				     height:[[[_sessionMgr currentSession] SCREEN] height]];
-
     
     size = [PTYScrollView frameSizeForContentSize:vsize
 			    hasHorizontalScroller:NO
@@ -922,7 +922,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // PTYWindowDelegateProtocol
 - (void) windowWillToggleToolbarVisibility: (id) sender
 {
-    // prevent any resizing by lying
+    // prevent any resizing processing by lying
     resizeInProgress = YES;
 }
 

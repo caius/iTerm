@@ -1,3 +1,7 @@
+2003-09-10	fabian
+
+    * Changed doIdleCode behavior to reduce CPU using of idle sessions.
+    
 2003-09-10	ujwal
 
     * Fixed massive memory leaks.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.14 2003-08-29 16:11:20 ujwal Exp $
+// $Id: PTYTask.m,v 1.15 2003-09-10 22:21:41 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -145,6 +145,7 @@ static int writep(int fds, char *buf, size_t len)
     id rootProxy;
     NSData *data = nil;
     BOOL exitf = NO;
+    NSAutoreleasePool *arPool;
 #if MEASURE_PROCESSING_TIME
     struct timeval tv;
     BOOL newOutput = NO;
@@ -164,10 +165,11 @@ static int writep(int fds, char *buf, size_t len)
       data receive loop
     */
     while (exitf == NO) {
-	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];
 	fd_set rfds,efds;
 	int sts;
 	char readbuf[4096];
+
+        arPool = [[NSAutoreleasePool alloc] init];
 
 	FD_ZERO(&rfds);
 	FD_ZERO(&efds);
@@ -246,18 +248,18 @@ static int writep(int fds, char *buf, size_t len)
 	else if (sts == 0)
 	{
 	    // time out; do some other tasks in this idle time
-	    [rootProxy doIdleTasks];
 
 	    // measure processing time if we want to.
 	    if(newOutput == YES)
 	    {
 		//NSLog(@"PTYTask: End new output");
+                [rootProxy doIdleTasks];
 		newOutput = NO;
 	    }	    
 	}
 #endif
+        [arPool release];
 
-	[arPool release];
     }
 
     [rootProxy brokenPipe];

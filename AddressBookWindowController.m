@@ -893,7 +893,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[ansiHiWhite color], @"AnsiHiWhiteColor",
 	[adRow stringValue],@"Row",
 	[adCol stringValue],@"Col",
-	[NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
+	[NSNumber numberWithInt:[adTransparency2 intValue]],@"Transparency",
 	[adTermType titleOfSelectedItem],@"Term Type",
 	[adDir stringValue],@"Directory",
 	aeFont,@"Font",

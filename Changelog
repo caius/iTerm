@@ -1,3 +1,8 @@
+2004-10-22	fabian
+
+	* Updated Japanese nib files using translation provided by OHKAWA Yuichi.
+	* Updated zh_CN, zh_TW, Japanese, Korean, French, German nib files for next controls.
+	
 2004-10-20  ujwal
 	
 	* Fixed more reverse video issues on OpenVMS: in [VT100Screen: -eraseDisplay], all 

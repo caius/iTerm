@@ -241,7 +241,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     [TERMINAL putStreamData:data];
-    if ([parent pending]||[SCREEN screenLock]) return;
+    if ([parent pending]||[SCREEN screenIsLocked]) return;
 
     if (REFRESHED==NO) {
         REFRESHED=YES;

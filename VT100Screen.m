@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.93 2003-05-30 02:01:13 ujwal Exp $
+// $Id: VT100Screen.m,v 1.94 2003-05-30 06:44:46 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -191,7 +191,8 @@ static BOOL PLAYBELL = YES;
     screenLines = [[NSMutableArray alloc] init];
 
     updateIndex=minIndex=0;
-    screenLock=0;
+    screenLock= [[NSLock alloc] init];
+    screenIsLocked = NO;
     
     return self;
 }
@@ -1326,8 +1327,6 @@ static BOOL PLAYBELL = YES;
 	    }
 	}
         //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
-	if([self blinkingCursor] == YES)
-	    [dic setObject:[NSNumber numberWithInt:2] forKey:NSBlinkAttributeName];
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
     }
     
@@ -2250,8 +2249,7 @@ static BOOL PLAYBELL = YES;
     NSRange range;
     int len=[[STORAGE string] length];
     int idx=len-1;
-    
-    if (screenLock) return;
+
     [self setScreenLock];
 //    NSLog(@"blink!!");
     
@@ -2267,31 +2265,38 @@ static BOOL PLAYBELL = YES;
                 if (blink==nil) {
                     blink=fg;
                 }
-		if(blinkType == 1)
-		{
-		    dic=[NSDictionary dictionaryWithObjectsAndKeys:
-			bg,NSBackgroundColorAttributeName,
-			(blinkShow?blink:bg),NSForegroundColorAttributeName,
-			blink,NSBlinkColorAttributeName,
-			[NSNumber numberWithInt:1],NSBlinkAttributeName,
-			nil];
-		    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
-		}
-		else if (blinkType == 2)
-		{
-		    dic=[NSDictionary dictionaryWithObjectsAndKeys:
-			(showBlinkingCursor?fg:bg),NSBackgroundColorAttributeName,
-			(showBlinkingCursor?bg:fg),NSForegroundColorAttributeName,
-			blink,NSBlinkColorAttributeName,
-			[NSNumber numberWithInt:blinkType],NSBlinkAttributeName,
-			nil];
-		    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
-		}
+		
+		dic=[NSDictionary dictionaryWithObjectsAndKeys:
+		    bg,NSBackgroundColorAttributeName,
+		    (blinkShow?blink:bg),NSForegroundColorAttributeName,
+		    blink,NSBlinkColorAttributeName,
+		    [NSNumber numberWithInt:1],NSBlinkAttributeName,
+		    nil];
+		[STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		
             }
 //            NSLog(@"true blink end!!");
         }
         else idx+=range.length;
     }
+
+    // Check if the cursor needs to blink
+    if([self blinkingCursor] == YES)
+    {
+	idx = [self getTVIndex: CURSOR_X y: CURSOR_Y];
+	if(idx < len)
+	{
+	    fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+	    bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+
+	    dic=[NSDictionary dictionaryWithObjectsAndKeys:
+		(showBlinkingCursor?fg:bg),NSBackgroundColorAttributeName,
+		(showBlinkingCursor?bg:fg),NSForegroundColorAttributeName,
+		nil];
+	    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+	}
+    }
+    
     [STORAGE endEditing];
     blinkShow=!blinkShow;
     showBlinkingCursor = !showBlinkingCursor;
@@ -2418,7 +2423,7 @@ static BOOL PLAYBELL = YES;
         len=[BUFFER length];
         slen=[STORAGE length];
     }
-    if (len<=0||minIndex>len||screenLock) return;
+    if (len<=0||minIndex>len) return;
     [self setScreenLock];
 
     //NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
@@ -2478,17 +2483,19 @@ static BOOL PLAYBELL = YES;
 
 - (void) setScreenLock
 {
-    screenLock++;
+    [screenLock lock];
+    screenIsLocked = YES;
 }
 
 - (void) removeScreenLock
 {
-    if (screenLock) screenLock--;
+    [screenLock unlock];
+    screenIsLocked = NO;
 }
 
-- (int) screenLock
+- (BOOL) screenIsLocked
 {
-    return screenLock;
+    return screenIsLocked;
 }
 
 #if USE_CUSTOM_DRAWING

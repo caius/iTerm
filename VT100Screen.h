@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.32 2003-05-30 02:01:12 ujwal Exp $
+// $Id: VT100Screen.h,v 1.33 2003-05-30 06:44:46 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -63,7 +63,8 @@
     unsigned int  TOP_LINE;
     unsigned int  scrollbackLines;
     int OLD_CURSOR_INDEX;
-    int screenLock;
+    NSLock *screenLock;
+    BOOL screenIsLocked;
     BOOL blinkingCursor;
     BOOL showBlinkingCursor;
 
@@ -165,7 +166,7 @@
 - (void) setScreenAttributes;
 - (void) setScreenLock;
 - (void) removeScreenLock;
-- (int) screenLock;
+- (BOOL) screenIsLocked;
 
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (NSAttributedString *)defaultAttrString:(NSString *)str;

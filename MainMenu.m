@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.10 2002-12-14 08:54:09 ujwal Exp $
+// $Id: MainMenu.m,v 1.11 2002-12-16 02:59:59 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -410,7 +410,6 @@ static BOOL newWindow=YES;
 {
     if ([adTable selectedRow]!=-1) {
         [self saveAddressBook];
-        [NSApp stopModal];
         
         // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
         [[NSNotificationCenter defaultCenter]
@@ -419,6 +418,8 @@ static BOOL newWindow=YES;
         userInfo: nil];
 
     }
+    [NSApp stopModal];
+
 }
 
 - (IBAction)adbRemoveEntry:(id)sender

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.59 2003-01-06 01:19:08 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.60 2003-01-06 17:06:05 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -957,6 +957,7 @@ static NSString *ConfigToolbarItem = @"Config";
         [[self currentSession] setEncoding:[MAINMENU encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
         if ((configFont != nil&&[SCREEN font]!=configFont)||(configNAFont!= nil&&[SCREEN nafont]!=configNAFont)) {
             [self setAllFont:configFont nafont:configNAFont];
+            [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
         }
 
         // resiz the window if asked for

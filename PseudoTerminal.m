@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.98 2003-02-05 01:16:44 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.99 2003-02-05 02:03:52 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -152,9 +152,6 @@ static NSString *ConfigToolbarItem = @"Config";
               term:(NSString *)term
 {
     PTYSession *aSession;
-    PTYTabViewItem *aTabViewItem;
-    PTYScrollView *aScrollView;
-    NSSize aSize;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal initSession]",
@@ -163,60 +160,21 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Allocate a new session
     aSession = [[PTYSession alloc] init];
-    NSParameterAssert(aSession != nil);
-
-
-    // Allocate a new tabview item
-    aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: aSession];
-    NSParameterAssert(aTabViewItem != nil);
-    [TABVIEW addTabViewItem: aTabViewItem];
-    [aTabViewItem release];
+    NSParameterAssert(aSession != nil);    
     
-    // Allocate a scrollview and add to the tabview
-    aScrollView = [[PTYScrollView alloc] initWithFrame: [TABVIEW contentRect]];
-    NSParameterAssert(aScrollView != nil);
-    [aTabViewItem setView: aScrollView];
-    [aScrollView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-    [aScrollView setLineScroll: ([VT100Screen fontSize: FONT].height)];
-    [aScrollView setVerticalLineScroll: ([VT100Screen fontSize: FONT].height)];
-    [aSession setSCROLLVIEW: aScrollView];
-    [aScrollView release];
-
     // Init the rest of the session
-    [aSession setTabViewItem: aTabViewItem];
     [aSession setParent: self];
     [aSession setPreference: pref];
     [aSession setMainMenu: MAINMENU];
-    aSize = [PTYScrollView contentSizeForFrameSize: [aScrollView frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [aScrollView borderType]];
-    [aSession initScreen: NSMakeRect(0, 0, aSize.width, aSize.height)];
-    // Set this session to be the current session
-    [aScrollView setDocumentView:[aSession TEXTVIEW]];
-    [aTabViewItem setLabel: @""];
+    [aSession initScreen: [TABVIEW contentRect]];
 
-    if([ptyList count] == 0)
-    {
-        // Tell us whenever something happens with the tab view
-        [TABVIEW setDelegate: self];
-    }
+    // set the srolling
+    [[aSession SCROLLVIEW] setLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [[aSession SCROLLVIEW] setVerticalLineScroll: ([VT100Screen fontSize: FONT].height)];
     
-    // Add this session to our list and make it current
-    [ptyList addObject: aSession];
-    [aSession release];
-    currentSessionIndex = [ptyList count] - 1;
-    [currentPtySession resetStatus];
-    currentPtySession = aSession;
-    [TABVIEW selectTabViewItem: aTabViewItem];
-    [self setCurrentSessionName: nil];    
-
-   
-    [[currentPtySession TEXTVIEW] setDelegate: aSession];
-
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![pref silenceBell]];
-    
-    // Set the anti-alias
-    [[currentPtySession TEXTVIEW] setAntiAlias: [pref antiAlias]];
-    
+        
     // Set the colors
     if (fg) [aSession setFGColor:fg];
     if (bg) [aSession setBGColor:bg];
@@ -224,9 +182,13 @@ static NSString *ConfigToolbarItem = @"Config";
         [[aSession TEXTVIEW] setSelectionColor: sc];
     else
         [[aSession TEXTVIEW] setSelectionColor: [pref selectionColor]];
-    [[currentPtySession SCROLLVIEW] setBackgroundColor: bg];
+    [[aSession SCROLLVIEW] setBackgroundColor: bg];
 
-    [self setFont:FONT nafont:NAFONT];
+    // set the font
+    [[aSession TEXTVIEW]  setFont:FONT];
+    [[aSession SCREEN]  setFont:FONT nafont:NAFONT];
+
+    // set the terminal type
     if (term) 
     {
         [aSession setTERM_VALUE: term];
@@ -235,49 +197,38 @@ static NSString *ConfigToolbarItem = @"Config";
     {
         [aSession setTERM_VALUE: [pref terminalType]];
     }
-    
-    [[currentPtySession SCREEN] setTerminal:[currentPtySession TERMINAL]];
-    [[currentPtySession SCREEN] setShellTask:[currentPtySession SHELL]];
-    [[currentPtySession SCREEN] setTextStorage:[[currentPtySession TEXTVIEW] textStorage]];
-    [[currentPtySession SCREEN] setWindow:WINDOW];
-    [[currentPtySession SCREEN] setWidth:WIDTH height:HEIGHT];
+
+    // assign terminal and task objects
+    [[aSession SCREEN] setTerminal:[aSession TERMINAL]];
+    [[aSession SCREEN] setShellTask:[aSession SHELL]];
+    [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
+    [[aSession SCREEN] setWindow:WINDOW];
+    [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
-    [[currentPtySession SCREEN] initScreen];
-    
 
-    [[currentPtySession TERMINAL] setEncoding:encoding];
-    [[currentPtySession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
-    
-    [[currentPtySession SHELL] setWidth:WIDTH  height:HEIGHT];
+    // initialize the screen
+    [[aSession SCREEN] initScreen];
 
-    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
-    [WINDOW setNextResponder:self];
+    // set the encoding
+    [[aSession TERMINAL] setEncoding:encoding];
+    [[aSession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
+
+    // tell the shell about our size
+    [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
 
     pending = NO;
+
+    // Add this session to our list and make it current
+    [self addSession: aSession];
+    [aSession release];
+    [self setCurrentSessionName: nil];    
+    
     if (title) 
     {
         [self setWindowTitle: title];
         [aSession setName: title];
     }
-     
-
-    if ([TABVIEW numberOfTabViewItems] == 1)
-    {
-	if(![pref hideTab])
-	    [TABVIEW setTabViewType: [pref tabViewType]];
-	else
-	    [TABVIEW setTabViewType: NSNoTabsBezelBorder];
-	[self setWindowSize: YES];
-    }
-    else if([TABVIEW numberOfTabViewItems] == 2)
-    {
-	[TABVIEW setTabViewType: [pref tabViewType]];
-	[self setWindowSize: NO];
-    }
-
-    
-    [WINDOW makeKeyAndOrderFront:self];
-        
+             
 }
 
 - (void) switchSession: (id) sender
@@ -1512,8 +1463,10 @@ static NSString *ConfigToolbarItem = @"Config";
     [term addSession: aSession];
 
     // remove from our window
+    [ptyListLock lock];
     [TABVIEW removeTabViewItem: aTabViewItem];
     [ptyList removeObject: aSession];
+    [ptyListLock unlock];
 
     if ([TABVIEW numberOfTabViewItems] == 1)
     {

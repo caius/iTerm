@@ -74,6 +74,9 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if(TEXTVIEW)
         [TEXTVIEW release];
+
+    if(SCROLLVIEW)
+        [SCROLLVIEW release];
         
     if(name)
         [name release];
@@ -94,17 +97,29 @@ static NSString *PWD_ENVVALUE = @"~";
 // Session specific methods
 - (void)initScreen: (NSRect) aRect
 {
+    NSSize aSize;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession initScreen]",
           __FILE__, __LINE__);
 #endif
 
+    // Allocate a scrollview and add to the tabview
+    SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: aRect];
+    NSParameterAssert(SCROLLVIEW != nil);
+    [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    
+
     // Allocate a text view
-    TEXTVIEW = [[PTYTextView alloc] initWithFrame: aRect];
+    aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
+    TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
     [TEXTVIEW setDrawsBackground:NO];
     [TEXTVIEW setEditable:YES];
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [TEXTVIEW setDelegate: self];
+    [TEXTVIEW setAntiAlias: [pref antiAlias]];
+    [SCROLLVIEW setDocumentView:TEXTVIEW];
+
     
     // Allocate screen, shell, and terminal objects
     SHELL = [[PTYTask alloc] init];
@@ -846,7 +861,13 @@ static NSString *PWD_ENVVALUE = @"~";
 }
 - (void) setSCROLLVIEW: (PTYScrollView *) theSCROLLVIEW
 {
-    SCROLLVIEW = theSCROLLVIEW;
+    if(SCROLLVIEW != nil)
+        [SCROLLVIEW release];
+    if(theSCROLLVIEW != nil)
+    {
+        [theSCROLLVIEW retain];
+        SCROLLVIEW = theSCROLLVIEW;
+    }
 }
 
 

@@ -6,7 +6,9 @@
     * Simplified PseudoTerminal code by removing direct 
       references to SCREEN, SCROLLVIEW, TEXTVIEW, TERMINAL, 
       TERM_VALUE. All these operate only on the PTYSession 
-      object.
+      object. Also simplified PseudoTerminal: -initSession 
+      code by moving a bunch of it into addSession which 
+      is called by other stuff.
       
 
 2003-02-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>

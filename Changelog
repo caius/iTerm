@@ -1,3 +1,8 @@
+2004-02-27  ujwal
+
+	* Added support for secondary device attribute.
+	* Changed Device Attribute response to "VT100 with Advanced Video Option"
+
 2004-02-26  fabian
 
 	* Fixed reversed screen mode bug

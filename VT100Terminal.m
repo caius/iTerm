@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.86 2004-02-22 09:56:25 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.87 2004-02-27 16:48:11 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -118,7 +118,10 @@
 
 #define REPORT_POSITION      "\033[%d;%dR"
 #define REPORT_STATUS        "\033[0n"
-#define REPORT_WHATAREYOU    "\033[?1;0c"
+// Device Attribute : VT100 with Advanced Video Option
+#define REPORT_WHATAREYOU    "\033[?1;2c"
+// Secondary Device Attribute: VT100
+#define REPORT_SDA			 "\033[1;0;0c"
 #define REPORT_VT52          "\033/Z"
 
 #define conststr_sizeof(n)   ((sizeof(n)) - 1)
@@ -129,6 +132,7 @@ typedef struct {
     int count;
     int cmd;
     BOOL question;
+	int modifier;
 } CSIParam;
 
 // functions
@@ -230,8 +234,17 @@ static size_t getCSIParam(unsigned char *datap,
 		datap ++;
 		datalen --;
     }
+	// check for secondsry device attribute modifier
+	else if (datalen > 0 && *datap == '>')
+	{
+		param->modifier = '>';
+		param->question = NO;
+		datap++;
+		datalen--;
+	}	
     else
 		param->question = NO;
+	
 	
     while (datalen > 0) {
 		
@@ -548,6 +561,7 @@ static VT100TCC decode_csi(unsigned char *datap,
 			result.u.csi.p[i] = param.p[i];
 		result.u.csi.count = param.count;
 		result.u.csi.question = param.question;
+		result.u.csi.modifier = param.modifier;
 		
 		*rmlen = paramlen;
     }
@@ -1728,6 +1742,12 @@ static VT100TCC decode_string(unsigned char *datap,
 {
     return [NSData dataWithBytes:REPORT_WHATAREYOU
 						  length:conststr_sizeof(REPORT_WHATAREYOU)];
+}
+
+- (NSData *)reportSecondaryDeviceAttribute
+{
+    return [NSData dataWithBytes:REPORT_SDA
+						  length:conststr_sizeof(REPORT_SDA)];
 }
 
 

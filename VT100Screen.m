@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.194 2004-02-26 16:11:01 ujwal Exp $
+// $Id: VT100Screen.m,v 1.195 2004-02-27 16:48:11 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1419,13 +1419,16 @@ static BOOL PLAYBELL = YES;
     NSData *report = nil;
 	
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen deviceAttribute:%d]", 
-		  __FILE__, __LINE__, token.u.csi.p[0]);
+    NSLog(@"%s(%d):-[VT100Screen deviceAttribute:%d, modifier = '%c']", 
+		  __FILE__, __LINE__, token.u.csi.p[0], token.u.csi.modifier);
 #endif
     if (SHELL == nil)
 		return;
 	
-    report = [TERMINAL reportDeviceAttribute];
+	if(token.u.csi.modifier == '>')
+		report = [TERMINAL reportSecondaryDeviceAttribute];
+	else
+		report = [TERMINAL reportDeviceAttribute];
 	
     if (report != nil) {
 		[SHELL writeTask:report];

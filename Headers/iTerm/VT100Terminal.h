@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.3 2004-02-23 22:10:10 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.4 2004-02-27 16:48:11 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -67,7 +67,7 @@
 #define VT100CSI_CUP         2004       // Cursor Position
 #define VT100CSI_CUU         2005       // Cursor Up
 #define VT100CSI_DA          2006       // Device Attributes
-#define VT100CSI_DECALN	     2007	// Screen Alignment Display
+#define VT100CSI_DECALN	     2007		// Screen Alignment Display
 #define VT100CSI_DECDHL      2013       // Double Height Line
 #define VT100CSI_DECDWL      2014       // Double Width Line
 #define VT100CSI_DECID       2015       // Identify Terminal
@@ -133,6 +133,7 @@ typedef struct {
 	    int p[VT100CSIPARAM_MAX];
 	    int count;
 	    BOOL question;
+		int modifier;
 	} csi;
     } u;
 } VT100TCC;
@@ -320,6 +321,7 @@ typedef enum {
 - (NSData *)reportActivePositionWithX:(int)x Y:(int)y;
 - (NSData *)reportStatus;
 - (NSData *)reportDeviceAttribute;
+- (NSData *)reportSecondaryDeviceAttribute;
 
 - (void)_setMode:(VT100TCC)token;
 - (void)_setCharAttr:(VT100TCC)token;

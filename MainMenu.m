@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.44 2003-03-28 20:20:50 ujwal Exp $
+// $Id: MainMenu.m,v 1.45 2003-04-01 22:12:27 yfabian Exp $
 /*
  **  MainMenu.m
  **
@@ -277,7 +277,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (IBAction)showAbout:(id)sender
 {
     NSURL *author1URL, *author2URL, *webURL, *bugURL;
-    NSAttributedString *author1, *author2, *webSite, *bugReport;
+    NSAttributedString *author1, *author2, *webSite, *bugReport, *mode;
     NSMutableAttributedString *tmpAttrString;
     NSDictionary *linkAttributes;
 //    [NSApp orderFrontStandardAboutPanel:nil];
@@ -316,7 +316,12 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         [NSColor blueColor], NSForegroundColorAttributeName,
         NULL];
     bugReport = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Report A Bug", @"iTerm", [NSBundle bundleForClass: [self class]], @"About") attributes: linkAttributes];
-    
+
+#if USE_CUSTOM_DRAWING
+    mode = [[NSAttributedString alloc] initWithString: @"(A)"];
+#else
+    mode = [[NSAttributedString alloc] initWithString: @"(B)"];
+#endif
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
     [[AUTHORS textStorage] appendAttributedString: author1];
@@ -326,6 +331,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: webSite];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
+    [[AUTHORS textStorage] appendAttributedString: mode];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: bugReport];
     [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];

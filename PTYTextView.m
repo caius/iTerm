@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.53 2003-04-01 20:43:51 yfabian Exp $
+// $Id: PTYTextView.m,v 1.54 2003-04-01 22:12:27 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -45,7 +45,6 @@
     NSLog(@"PTYTextView: -init");
 #endif
     NSDictionary *dic;
-    int i;
 
     self = [super init];
 //    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
@@ -57,8 +56,8 @@
     [self setMarkedTextAttributes:dic];
     deadkey = NO;
     startIndex=-1;
-    for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
     [[self window] useOptimizedDrawing:YES];
+    markedText=nil;
 //    [[self window] setAutodisplay:NO];
     
     return (self);
@@ -70,7 +69,6 @@
     NSLog(@"PTYTextView: -init");
 #endif
     NSDictionary *dic;
-    int i;
     
     self = [super initWithFrame: aRect];
 //    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
@@ -83,7 +81,7 @@
     [self setMarkedTextAttributes:dic];
     deadkey = NO;
     startIndex=-1;
-    for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
+    markedText=nil;
 //    [[self window] useOptimizedDrawing:YES];
     
     return (self);
@@ -449,31 +447,49 @@
                 [s drawInRect: aRect];
                 [s release];
             }
-            else if (CURSOR&&i+lineOffset==y&&![self hasMarkedText]) {
-                // show the cursor in the line array
-                int idx=[dataSource getIndexAtX:[dataSource cursorX]-1 Y:[dataSource cursorY]-1 withPadding:YES];
-                if (idx<0) {
-                   // NSLog(@"Line:[%@]",aLine);
-                    [aLine drawInRect: aRect];
-                }
-                else {
+            else if (CURSOR&&i+lineOffset==y) {
+                if([self hasMarkedText]) {
+                    // show the cursor in the line array
+                    int idx=[dataSource getIndexAtX:[dataSource cursorX]-1 Y:[dataSource cursorY]-1 withPadding:YES];
+                    if (idx<0) {
+                        idx=[aLine length];
+                    }
                     NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
-                    NSMutableDictionary *dic;
-                    NSColor *fg, *bg;
-
+                    //NSLog(@"[%@]+[%@]:%d",[s string],[markedText string],idx);
+                    
                     if(idx >= [aLine length])
-                        [s appendAttributedString:[dataSource defaultAttrString:@" "]];
-                    else if ([[s string] characterAtIndex:idx]=='\n')
-                        [s insertAttributedString:[dataSource defaultAttrString:@" "] atIndex:idx];
-                    // reverse the video on the position where the cursor is supposed to be shown.
-                    dic=[NSMutableDictionary dictionaryWithDictionary: [s attributesAtIndex:idx effectiveRange:nil]];
-                    fg=[dic objectForKey:NSBackgroundColorAttributeName];
-                    bg=[dic objectForKey:NSForegroundColorAttributeName];
-                    [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-                    [dic setObject:fg forKey:NSForegroundColorAttributeName];
-                    [s setAttributes:dic range:NSMakeRange(idx,1)];
+                        [s appendAttributedString:markedText];
+                    else
+                        [s insertAttributedString:markedText atIndex:idx];
                     [s drawInRect: aRect];
                     [s release];
+                }
+                else {
+                    // show the cursor in the line array
+                    int idx=[dataSource getIndexAtX:[dataSource cursorX]-1 Y:[dataSource cursorY]-1 withPadding:YES];
+                    if (idx<0) {
+                        // NSLog(@"Line:[%@]",aLine);
+                        [aLine drawInRect: aRect];
+                    }
+                    else {
+                        NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
+                        NSMutableDictionary *dic;
+                        NSColor *fg, *bg;
+
+                        if(idx >= [aLine length])
+                            [s appendAttributedString:[dataSource defaultAttrString:@" "]];
+                        else if ([[s string] characterAtIndex:idx]=='\n')
+                            [s insertAttributedString:[dataSource defaultAttrString:@" "] atIndex:idx];
+                        // reverse the video on the position where the cursor is supposed to be shown.
+                        dic=[NSMutableDictionary dictionaryWithDictionary: [s attributesAtIndex:idx effectiveRange:nil]];
+                        fg=[dic objectForKey:NSBackgroundColorAttributeName];
+                        bg=[dic objectForKey:NSForegroundColorAttributeName];
+                        [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+                        [dic setObject:fg forKey:NSForegroundColorAttributeName];
+                        [s setAttributes:dic range:NSMakeRange(idx,1)];
+                        [s drawInRect: aRect];
+                        [s release];
+                    }
                 }
             }
             else {
@@ -1148,17 +1164,17 @@
 
 - (void)insertText:(id)aString
 {
-    int y=[dataSource cursorY]-1+[dataSource topLines];
-
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView insertText:%@]",
           __FILE__, __LINE__, aString);
 #endif
     IM_INPUT_INSERT = YES;
 
-    [[dataSource stringAtLine: y] deleteCharactersInRange:[self markedRange]];
-    IM_INPUT_MARKEDRANGE = NSMakeRange(0, 0);
-
+    if ([self hasMarkedText]) {
+        IM_INPUT_MARKEDRANGE = NSMakeRange(0, 0);
+        [markedText release];
+    }
+    
     if ([_delegate respondsToSelector:@selector(insertText:)])
         [_delegate insertText:aString];
     else
@@ -1167,37 +1183,20 @@
 
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange
 {
-    NSRange repRange;
-    int y=[dataSource cursorY]-1;
-    int x=[dataSource cursorX]-1;
-    NSAttributedString *as;
-    NSMutableAttributedString *aLine=[dataSource stringAtLine:y+[dataSource topLines]];
-    
+   
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView setMarkedText:%@ selectedRange:(%d,%d)]",
           __FILE__, __LINE__, aString, selRange.location, selRange.length);
 #endif
-
-    if ([self hasMarkedText]) {
-        repRange = [self markedRange];
-    }
-    else {
-        repRange = NSMakeRange([dataSource getIndexAtX:x Y:y withPadding:NO], 0);
-    }
-    NSLog(@"marked range: (%d,%d):",repRange.location,repRange.length);
-
     if ([aString isKindOfClass:[NSAttributedString class]]) {
-        as=[[NSAttributedString alloc] initWithString:[aString string] attributes:[self markedTextAttributes]];
+        markedText=[[NSAttributedString alloc] initWithString:[aString string] attributes:[self markedTextAttributes]];
     }
     else {
-        as=[[NSAttributedString alloc] initWithString:aString attributes:[self markedTextAttributes]];
+        markedText=[[NSAttributedString alloc] initWithString:aString attributes:[self markedTextAttributes]];
     }
-    [aLine replaceCharactersInRange:repRange
-               withAttributedString:as];
-    IM_INPUT_MARKEDRANGE = NSMakeRange(0,[as length]);
+    IM_INPUT_MARKEDRANGE = NSMakeRange(0,[markedText length]);
     IM_INPUT_SELRANGE = selRange;
-
-    [self setDirtyLine:y+[dataSource topLines]];
+    [self setDirtyLine:[dataSource cursorY]-1+[dataSource topLines]];
 }
 
 - (void)unmarkText
@@ -1262,10 +1261,7 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView attributedSubstringFromRange:(%d,%d)]", __FILE__, __LINE__, theRange.location, theRange.length);
 #endif
-    int y=[dataSource cursorY]-1;
-    NSAttributedString *aLine=[dataSource stringAtLine:y+[dataSource topLines]];
-
-    return [aLine attributedSubstringFromRange:theRange];
+    return [markedText attributedSubstringFromRange:NSMakeRange(0,theRange.length)];
 }
 
 - (unsigned int)characterIndexForPoint:(NSPoint)thePoint
@@ -1294,8 +1290,7 @@
     int y=[dataSource cursorY]-1;
     int x=[dataSource cursorX]-1;
     NSAttributedString *aLine=[dataSource stringAtLine:y+[dataSource topLines]];
-    NSSize s=[[aLine attributedSubstringFromRange:theRange] size];
-    //NSSize s=[aLine size];
+    NSSize s=[aLine size];
     
     NSRect rect=NSMakeRect(x*[VT100Screen fontSize: [dataSource font]].width,(y+[dataSource topLines])*lineHeight,s.width,s.height);
     //NSLog(@"(%f,%f)",rect.origin.x,rect.origin.y);

@@ -1,6 +1,8 @@
 2003-04-01	fabian
     * Fixed a bug in text input
     * Applied the URL parsing into ARRAY code
+    * Added an indictor in About box to show if iTerm is
+      build under ARRAY mode or BUFFER mode
     
 2003-04-01	ujwal
 

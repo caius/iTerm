@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.24 2003-03-28 22:45:46 yfabian Exp $
+// $Id: PTYTextView.h,v 1.25 2003-04-01 22:12:27 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -32,8 +32,6 @@
 #import "iTerm.h"
 #import "VT100Screen.h"
 #import "PTYSession.h"
-
-#define MAX_HEIGHT 300
 
 #if USE_CUSTOM_DRAWING
 @interface PTYTextView : NSView <NSTextInput>
@@ -70,6 +68,7 @@
 
     NSDictionary *markedTextAttributes;
     NSDictionary *selectionTextAttributes;
+    NSAttributedString *markedText;
     NSColor *bgColor;
     NSFont *font;
     NSFont *nafont;
@@ -81,7 +80,6 @@
 
     //selection
     int startIndex, startY, endIndex, endY;
-    int displayLines[MAX_HEIGHT];
 }
 
 - (id)init;

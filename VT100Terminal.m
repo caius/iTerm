@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.71 2003-07-16 14:58:50 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.72 2003-07-16 22:30:53 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -2001,11 +2001,11 @@ static VT100TCC decode_string(unsigned char *datap,
 		    // 16 color support
 		    if (n>=VT100CHARATTR_FG_HI_BLACK&&n<=VT100CHARATTR_FG_HI_WHITE) {
                         FG_COLORCODE = n - VT100CHARATTR_FG_HI_BASE - COLORCODE_BLACK;
-			//highlight = YES;
+			highlight = YES;
                     }
                     else if (n>=VT100CHARATTR_BG_HI_BLACK&&n<=VT100CHARATTR_BG_HI_WHITE) {
                         BG_COLORCODE = n - VT100CHARATTR_BG_HI_BASE - COLORCODE_BLACK;
-			//highlight = YES;
+			highlight = YES;
                     }
 		    
                 }

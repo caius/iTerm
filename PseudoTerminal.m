@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.228 2003-09-11 15:28:38 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.229 2003-09-12 06:47:53 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1248,7 +1248,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[currentABEntry setObject: [[_sessionMgr currentSession] selectionColor] forKey: @"SelectionColor"];
 	[currentABEntry setObject: [NSString stringWithInt:WIDTH] forKey: @"Col"];
 	[currentABEntry setObject: [NSString stringWithInt:HEIGHT] forKey: @"Row"];
-	[currentABEntry setObject: [NSNumber numberWithInt:100-[[[[_sessionMgr currentSession] TERMINAL] defaultBGColor] alphaComponent]*100] forKey: @"Transparency"];
+	[currentABEntry setObject: [NSNumber numberWithInt: [[_sessionMgr currentSession] transparency]*100] forKey: @"Transparency"];
 	[currentABEntry setObject: [[self currentSession] TERM_VALUE] forKey: @"Term Type"];
 	[currentABEntry setObject: [[[_sessionMgr currentSession] SCREEN] font] forKey: @"Font"];
 	[currentABEntry setObject: [[[_sessionMgr currentSession] SCREEN] nafont] forKey: @"NAFont"];

@@ -1,3 +1,7 @@
+2004-02-03  ujwal
+
+	* Not closing task if writing 0 bytes in PTYTask.m
+	
 2004-01-30  ujwal
 
 	* Fixed a nil NSString problem with selecting background images in AddressBook.

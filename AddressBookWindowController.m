@@ -29,7 +29,8 @@
 #import <iTerm/iTermController.h>
 #import <iTerm/ITAddressBookMgr.h>
 
-#define DEBUG_ALLOC	0
+#define DEBUG_ALLOC		0
+#define DEBUG_METHOD_TRACE	0
 
 static NSStringEncoding const *encodingList=nil;
 static AddressBookWindowController *singleInstance = nil;
@@ -321,7 +322,10 @@ static NSColor* xtermColorTable[2][8];
     id entry = nil;
 
     if(index < 0 || index >= [[self addressBook] count])
+    {
+	indexOfSelectedEntry = -1;
 	return;
+    }
 
     entry=[[self addressBook] objectAtIndex: index];
 
@@ -477,6 +481,14 @@ static NSColor* xtermColorTable[2][8];
 
     // background image
     [useBackgroundImage setState:([entry objectForKey:@"UseBackgroundImage"]==nil?NO:[[entry objectForKey:@"UseBackgroundImage"] boolValue])?NSOnState:NSOffState];
+    backgroundImagePath = [[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
+    if([backgroundImagePath length] > 0)
+    {
+	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
+	[backgroundImage setImage: anImage];
+	[anImage release];
+    }    
+
 
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
@@ -740,7 +752,66 @@ static NSColor* xtermColorTable[2][8];
 
 - (IBAction) chooseBackgroundImage: (id) sender
 {
-    NSLog(@"AddressBookWindowController: chooseBackgroundImage");
+    NSOpenPanel *panel;
+    int sts;
+    NSString *directory, *filename;
+    NSDictionary *entry;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYSession logStart:%@]",
+          __FILE__, __LINE__);
+#endif
+
+    if([useBackgroundImage state]==NSOffState)
+    {
+	NSBeep();
+	return;
+    }
+    
+    panel = [NSOpenPanel openPanel];
+    [panel setAllowsMultipleSelection: NO];
+
+    if(indexOfSelectedEntry > -1)
+    {
+	entry=[[self addressBook] objectAtIndex: indexOfSelectedEntry];
+
+	if(entry == nil)
+	{
+	    directory = NSHomeDirectory();
+	    filename = @"";
+	}
+	else
+	{
+	    directory = [backgroundImagePath stringByDeletingLastPathComponent];
+	    filename = [backgroundImagePath lastPathComponent];
+	    if(directory == nil)
+		directory = NSHomeDirectory();
+	    if(filename == nil)
+		filename = @"";
+	}
+    }
+    else
+    {
+	directory = NSHomeDirectory();
+	filename = @"";
+    }
+
+    sts = [panel runModalForDirectory: directory file:filename types: [NSImage imageFileTypes]];
+    if (sts == NSOKButton) {
+	if([[panel filenames] count] > 0)
+	    backgroundImagePath = [[panel filenames] objectAtIndex: 0];
+	else
+	    backgroundImagePath = nil;
+
+	if(backgroundImagePath != nil)
+	{
+	    NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
+	    [backgroundImage setImage: anImage];
+	    [anImage release];
+	}
+	
+    }
+    
 }
 
 // Table data source
@@ -816,6 +887,9 @@ static NSColor* xtermColorTable[2][8];
 {
     NSDictionary *ae;
 
+    if(backgroundImagePath == nil)
+	backgroundImagePath = @"";
+
     ae = [[NSDictionary alloc] initWithObjectsAndKeys:
 	[adName stringValue],@"Name",
 	[adCommand stringValue],@"Command",
@@ -856,6 +930,7 @@ static NSColor* xtermColorTable[2][8];
 	[NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
         [NSNumber numberWithInt:[adScrollback intValue]], @"Scrollback",
 	[NSNumber numberWithBool:([useBackgroundImage state]==NSOnState)],@"UseBackgroundImage",
+	[NSString stringWithString: backgroundImagePath],@"BackgroundImagePath",
 	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
 	NULL];
 

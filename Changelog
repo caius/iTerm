@@ -1,6 +1,6 @@
 2003-09-11	ujwal
 
-    * Put in preliminary infrastructure for background image support.
+    * Added support for background images.
     * Fixed showCursor bug.
     * Not setting minIndex = 0; causes screen contents to be lost on man and vi.
 

@@ -960,8 +960,14 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs
 {
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYSession setPreferencesFromAddressBookEntry:");
+#endif
+    
     NSColor *colorTable[2][8];
     int i;
+    NSString *backgroundImagePath;
     
     [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
     [self setBackgroundColor: [[aePrefs objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[aePrefs objectForKey: @"Transparency"] intValue]/100.0)]];
@@ -1013,6 +1019,25 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setAutoClose:[[aePrefs objectForKey:@"AutoClose"] boolValue]];
     [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
     [self setRemapDeleteKey: [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue]];
+
+    backgroundImagePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
+    if([backgroundImagePath length] > 0)
+    {
+	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
+	if(anImage != nil)
+	{
+	    [self setBackgroundColor: [[NSColor whiteColor]  colorWithAlphaComponent: 1.0]];
+	    [SCROLLVIEW setDrawsBackground: NO];
+	    [imageView setImage: anImage];
+	    [anImage release];
+	}
+    }
+    else
+    {
+	[SCROLLVIEW setDrawsBackground: YES];
+	[self setBackgroundColor: [[aePrefs objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[aePrefs objectForKey: @"Transparency"] intValue]/100.0)]];
+    }
+    
 }
 
 // Contextual menu

@@ -1,0 +1,96 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                clearBuffer = id; 
+                logStart = id; 
+                logStop = id; 
+                setEncodingBIG5 = id; 
+                setEncodingEUCCN = id; 
+                setEncodingUTF8 = id; 
+                showConfigWindow = id; 
+                showTriggerWindow = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                aboutOK = id; 
+                adEditBackground = id; 
+                adEditCancel = id; 
+                adEditFont = id; 
+                adEditForeground = id; 
+                adEditOK = id; 
+                adbAddEntry = id; 
+                adbCancel = id; 
+                adbEditEntry = id; 
+                adbGotoQuickOpen = id; 
+                adbOk = id; 
+                adbRemoveEntry = id; 
+                newWindow = id; 
+                showABWindow = id; 
+                showAbout = id; 
+                showPrefWindow = id; 
+                showQOWindow = id; 
+                windowQOAddressBook = id; 
+                windowQOCancel = id; 
+                windowQOOk = id; 
+                windowQOType = id; 
+            }; 
+            CLASS = MainMenu; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                ABOUT = id; 
+                "AB_PANEL" = id; 
+                "AE_PANEL" = id; 
+                "PREF_PANEL" = id; 
+                "QO_COMMAND" = id; 
+                "QO_DIR" = id; 
+                "QO_PANEL" = id; 
+                "QO_TYPE" = id; 
+                adBackground = NSColorWell; 
+                adCol = id; 
+                adCommand = NSTextField; 
+                adDir = id; 
+                adEncoding = NSComboBox; 
+                adForeground = NSColorWell; 
+                adName = NSTextField; 
+                adRow = id; 
+                adTable = NSTableView; 
+                adTermType = id; 
+                adTextExample = NSTextField; 
+                adTransparency = id; 
+                adTransparency2 = id; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
+        {
+            ACTIONS = {
+                changeBackground = id; 
+                changeFontButton = id; 
+                changeForeground = id; 
+                ok = id; 
+                restore = id; 
+            }; 
+            CLASS = PreferencePanel; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                background = id; 
+                col = id; 
+                encoding = id; 
+                fontExample = id; 
+                foreground = id; 
+                prefPanel = id; 
+                row = id; 
+                shell = id; 
+                terminal = id; 
+                transparency = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }
+    ); 
+    IBVersion = 1; 
+}

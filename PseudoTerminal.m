@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.285 2004-04-12 04:24:36 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.286 2004-04-15 20:22:40 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -222,6 +222,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 		[self setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
 		[self setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
+		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
     }
     [aSession initScreen: [TABVIEW contentRect] width:WIDTH height:HEIGHT];
     if(FONT == nil) 

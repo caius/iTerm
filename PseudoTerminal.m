@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.49 2002-12-20 18:21:47 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.50 2002-12-30 21:27:59 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -762,7 +762,7 @@ static NSString *ConfigToolbarItem = @"Config";
     
     WIDTH = w;
     HEIGHT = h;
-    [self setWindowSize];
+    //[self setWindowSize];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
 
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.97 2003-02-05 01:11:35 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.98 2003-02-05 01:16:44 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -356,6 +356,18 @@ static NSString *ConfigToolbarItem = @"Config";
 	    // Tell us whenever something happens with the tab view
 	    [TABVIEW setDelegate: self];
 	}
+
+	if ([TABVIEW numberOfTabViewItems] == 1)
+	{
+	    if(![pref hideTab])
+		[TABVIEW setTabViewType: [pref tabViewType]];
+	    else
+	    {
+		[TABVIEW setTabViewType: NSNoTabsBezelBorder];
+		[self setWindowSize: NO];
+		[[currentPtySession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[currentPtySession TEXTVIEW] string] length] - 1, 1)];
+	    }
+	}	
 
 	[WINDOW makeKeyAndOrderFront: self];
 	

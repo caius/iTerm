@@ -1,3 +1,7 @@
+2004-10-27  ujwal
+
+	* Fixed bug in nested bookmark search.
+
 2004-10-22	fabian
 
 	* Updated Japanese nib files using translation provided by OHKAWA Yuichi.

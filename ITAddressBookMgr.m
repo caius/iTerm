@@ -610,7 +610,11 @@ static TreeNode *defaultBookmark = nil;
 	while ((entry = [entryEnumerator nextObject]))
 	{
 		if([entry isGroup])
+		{
 			dataDict = [self _getBookmarkNodeWithName: aName searchFromNode: entry];
+			if(dataDict != nil)
+				return (dataDict);
+		}
 		else
 		{
 			dataDict = [entry nodeData];

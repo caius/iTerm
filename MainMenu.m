@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.26 2003-01-15 20:20:53 yfabian Exp $
+// $Id: MainMenu.m,v 1.27 2003-01-16 08:14:44 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -187,7 +187,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     
     
     if (newWindow) {
-        [term setWindowSize];
+        [term setWindowSize: YES];
     };
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
     [[term currentSession] setAddressBookEntry:entry];    

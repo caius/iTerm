@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.77 2003-01-15 17:56:16 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.78 2003-01-16 08:14:44 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -229,7 +229,6 @@ static NSString *ConfigToolbarItem = @"Config";
     
     if([ptyList count] == 0)
     {
-//        [self setWindowSize];
         // Tell us whenever something happens with the tab view
         [TABVIEW setDelegate: self];
     }
@@ -260,7 +259,10 @@ static NSString *ConfigToolbarItem = @"Config";
     }
     else [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 
-    if ([TABVIEW numberOfTabViewItems]<=2) [self setWindowSize];
+    if ([TABVIEW numberOfTabViewItems] == 1)
+	[self setWindowSize: YES];
+    else if([TABVIEW numberOfTabViewItems] == 2)
+	[self setWindowSize: NO];
 
     [aTabViewItem release];
     
@@ -344,7 +346,10 @@ static NSString *ConfigToolbarItem = @"Config";
     if ([TABVIEW numberOfTabViewItems]>1||![pref hideTab]) [TABVIEW setTabViewType: NSTopTabsBezelBorder];
     else {
         [TABVIEW setTabViewType: NSNoTabsBezelBorder];
-        [self setWindowSize];
+        [self setWindowSize: NO];
+	// Scroll to end
+	[[currentPtySession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[currentPtySession TEXTVIEW] string] length] - 1, 1)];
+
     }
     
 }
@@ -540,8 +545,8 @@ static NSString *ConfigToolbarItem = @"Config";
 
 }
 
-                
-- (void)setWindowSize
+
+- (void)setWindowSize: (BOOL) resizeContentFrames
 {
     NSSize size, vsize, winSize;
     NSWindow *thisWindow;
@@ -584,7 +589,11 @@ static NSString *ConfigToolbarItem = @"Config";
     for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
     {
         [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: ([VT100Screen fontSize: FONT].height)];
-        [[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] documentView] setFrameSize:vsize];
+	if(resizeContentFrames)
+	{
+	    [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setFrameSize: size];
+	    [[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] documentView] setFrameSize:vsize];
+	}
     }
 
     thisWindow = [SCROLLVIEW window];
@@ -882,7 +891,6 @@ static NSString *ConfigToolbarItem = @"Config";
     WIDTH = w;
     HEIGHT = h;
     
-    //[self setWindowSize];
     //NSLog(@"w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 
 
@@ -980,7 +988,7 @@ static NSString *ConfigToolbarItem = @"Config";
     HEIGHT=h;
     //NSLog(@"resize window: %d,%d",WIDTH,HEIGHT);
 
-    [self setWindowSize];
+    [self setWindowSize: YES];
     
 }
 

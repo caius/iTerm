@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.43 2003-03-12 17:14:19 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.44 2003-03-12 20:30:38 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1191,7 +1191,8 @@ static VT100TCC decode_string(unsigned char *datap,
     INSERT_MODE = NO;
     saveCHARSET=CHARSET = NO;
     XON = YES;
-    saveCHARATTR=CHARATTR = 0;
+    bold=blink=reversed=under=0;
+    saveBold=saveBlink=saveReversed=saveUnder = 0;
     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
     alpha=1.0f;
@@ -1202,6 +1203,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
     defaultCharacterAttributeDictionary[0] = [[NSMutableDictionary alloc] init];
     defaultCharacterAttributeDictionary[1] = [[NSMutableDictionary alloc] init];
+    characterAttributeDictionary[0] = [[NSMutableDictionary alloc] init];
+    characterAttributeDictionary[1] = [[NSMutableDictionary alloc] init];
     streamOffset = 0;
 
     numLock = YES;
@@ -1219,6 +1222,11 @@ static VT100TCC decode_string(unsigned char *datap,
     for(i=0;i<8;i++) {
         [colorTable[i] release];
     }
+    [characterAttributeDictionary[0] release];
+    [characterAttributeDictionary[1] release];
+    [defaultCharacterAttributeDictionary[0] release];
+    [defaultCharacterAttributeDictionary[1] release];
+    
     [super dealloc];
 }
 
@@ -1613,67 +1621,9 @@ static VT100TCC decode_string(unsigned char *datap,
 			  length:conststr_sizeof(REPORT_WHATAREYOU)];
 }
 
-- (unsigned int)characterAttribute
-{
-    return CHARATTR;
-}
-
 - (NSMutableDictionary *)characterAttributeDictionary:(BOOL) asc
 {
-    NSColor *fg, *bg;
-    
-    if(CHARATTR == 0)
-        return(defaultCharacterAttributeDictionary[asc?0:1]);
-
-    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-    int under = 0,blink=0, bold = 0;
-    NSFont *defaultFont;
-    
-    NSParameterAssert(dic != nil);
-    
-    if (CHARATTR & VT100CHARATTR_BOLDMASK)
-	bold = 1;
-    if (CHARATTR & VT100CHARATTR_UNDERMASK )
-	under = 1;
-    if (CHARATTR & VT100CHARATTR_BLINKMASK )
-	blink = 1;
-
-    fg = [self colorFromTable:FG_COLORCODE bold:bold];
-    bg = [self colorFromTable:BG_COLORCODE bold:NO];
-    if (alpha<0.99) bg=[bg colorWithAlphaComponent:alpha];
-    //NSLog(@"%d(%d)/%d:%@\n%@",FG_COLORCODE, bold, BG_COLORCODE,fg,bg);
-
-    if (CHARATTR & VT100CHARATTR_REVERSEMASK ) {
-        [dic setObject:bg
-		forKey:NSForegroundColorAttributeName];
-	[dic setObject:fg
-		forKey:NSBackgroundColorAttributeName];
-    }
-    else {
-	[dic setObject:fg
-		forKey:NSForegroundColorAttributeName];
-	[dic setObject:bg
-		forKey:NSBackgroundColorAttributeName];
-    }
-
-    [dic setObject:[NSNumber numberWithInt:under]
-	    forKey:NSUnderlineStyleAttributeName];
-    [dic setObject:[NSNumber numberWithInt:blink]
-                   forKey:NSBlinkAttributeName];
-    defaultFont=asc?[SCREEN font]:[SCREEN nafont];
-/*    if(bold)    {
-        aFont = [[NSFontManager sharedFontManager] convertFont: defaultFont toHaveTrait: NSBoldFontMask];
-//        NSLog(@"%@->%@(%f, %f)",[SCREEN font], aFont, [VT100Screen fontSize:[SCREEN font]].height, [VT100Screen fontSize:aFont].height);
-        if ([VT100Screen fontSize:aFont].height>[VT100Screen fontSize: [SCREEN tallerFont]].height) aFont=defaultFont;
-    }
-    else
-    {
-	aFont=defaultFont;
-    }*/
-    [dic setObject:defaultFont forKey:NSFontAttributeName];
-    [dic setObject:[NSNumber numberWithInt:(asc?1:2)] forKey:@"NSCharWidthAttributeName"];
-    
-    return dic;
+    return(characterAttributeDictionary[asc?0:1]);
 }
 
 - (NSMutableDictionary *)defaultCharacterAttributeDictionary: (BOOL) asc
@@ -1689,6 +1639,20 @@ static VT100TCC decode_string(unsigned char *datap,
     fg = [self defaultFGColor];
     bg = [self defaultBGColor];
 
+    [characterAttributeDictionary[0] setObject:fg
+                                        forKey:NSForegroundColorAttributeName];
+    [characterAttributeDictionary[0] setObject:bg
+                                        forKey:NSBackgroundColorAttributeName];
+    [characterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
+    [characterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
+                                        forKey:@"NSCharWidthAttributeName"];
+    [characterAttributeDictionary[1] setObject:fg
+                                        forKey:NSForegroundColorAttributeName];
+    [characterAttributeDictionary[1] setObject:bg
+                                        forKey:NSBackgroundColorAttributeName];
+    [characterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
+    [characterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
+                                        forKey:@"NSCharWidthAttributeName"];
     [defaultCharacterAttributeDictionary[0] setObject:fg
 			  forKey:NSForegroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:bg
@@ -1708,6 +1672,7 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void)_setMode:(VT100TCC)token
 {
     BOOL mode;
+    NSColor *fg, *bg;
     
     switch (token.type) {
         case VT100CSI_DECSET:
@@ -1720,7 +1685,35 @@ static VT100TCC decode_string(unsigned char *datap,
                 case 2:  ANSI_MODE = mode; break;
                 case 3:  COLUMN_MODE = mode; break;
                 case 4:  SCROLL_MODE = mode; break;
-                case 5:  if (SCREEN_MODE = mode) CHARATTR |= VT100CHARATTR_REVERSEMASK;  else CHARATTR &= (~VT100CHARATTR_REVERSEMASK); break;
+                case 5:
+                    SCREEN_MODE = mode;
+                    //NSLog(@"Reversed: %s",mode?"YES":"NO");
+                    if (mode) {
+                        bg=[self defaultFGColor];
+                        fg=[self defaultBGColor];
+                    }else {
+                        fg=[self defaultFGColor];
+                        bg=[self defaultBGColor];
+                    }
+                        
+                    [defaultCharacterAttributeDictionary[0] setObject:fg
+                                                               forKey:NSForegroundColorAttributeName];
+                    [defaultCharacterAttributeDictionary[1] setObject:fg
+                                                               forKey:NSForegroundColorAttributeName];
+                    [defaultCharacterAttributeDictionary[0] setObject:bg
+                                                               forKey:NSBackgroundColorAttributeName];
+                    [defaultCharacterAttributeDictionary[1] setObject:bg
+                                                               forKey:NSBackgroundColorAttributeName];
+                    [characterAttributeDictionary[0] setObject:fg
+                                                               forKey:NSForegroundColorAttributeName];
+                    [characterAttributeDictionary[1] setObject:fg
+                                                               forKey:NSForegroundColorAttributeName];
+                    [characterAttributeDictionary[0] setObject:bg
+                                                               forKey:NSBackgroundColorAttributeName];
+                    [characterAttributeDictionary[1] setObject:bg
+                                                               forKey:NSBackgroundColorAttributeName];
+                    [SCREEN setScreenAttributes];
+                    break;
                 case 6:  ORIGIN_MODE = mode; break;
                 case 7:  WRAPAROUND_MODE = mode; break;
                 case 8:  AUTOREPEAT_MODE = mode; break;
@@ -1735,7 +1728,7 @@ static VT100TCC decode_string(unsigned char *datap,
                 case 4:
                     INSERT_MODE = mode; break;
             }
-                break;
+            break;
         case VT100CSI_DECKPAM:
             KEYPAD_MODE = YES;
             break;
@@ -1755,23 +1748,69 @@ static VT100TCC decode_string(unsigned char *datap,
             XON = NO;
             break;
         case VT100CSI_DECRC:
-            CHARATTR=saveCHARATTR;
+            bold=saveBold;
+            under=saveUnder;
+            blink=saveBlink;
+            reversed=saveReversed;
             CHARSET=saveCHARSET;
+            [self setCharacterAttributeDictionary];
             break;
         case VT100CSI_DECSC:
-            saveCHARATTR=CHARATTR;
+            saveBold=bold;
+            saveUnder=under;
+            saveBlink=blink;
+            saveReversed=reversed;
+            [self setCharacterAttributeDictionary];
             saveCHARSET=CHARSET;
             break;
     }
 }
 
+- (void) setCharacterAttributeDictionary
+{
+    NSMutableDictionary *dic;
+    NSColor *fg, *bg;
+    int i;
+
+    fg = [self colorFromTable:FG_COLORCODE bold:bold];
+    bg = [self colorFromTable:BG_COLORCODE bold:NO];
+    if (alpha<0.99) bg=[bg colorWithAlphaComponent:alpha];
+    //NSLog(@"%d(%d)/%d:%@\n%@",FG_COLORCODE, bold, BG_COLORCODE,fg,bg);
+
+    for(i=0;i<2;i++) {
+        dic=characterAttributeDictionary[i];
+        if (reversed) {
+            [dic setObject:bg forKey:NSForegroundColorAttributeName];
+            [dic setObject:fg forKey:NSBackgroundColorAttributeName];
+        }
+        else {
+            [dic setObject:fg forKey:NSForegroundColorAttributeName];
+            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+        }
+
+        [dic setObject:[NSNumber numberWithInt:under]
+                forKey:NSUnderlineStyleAttributeName];
+        [dic setObject:[NSNumber numberWithInt:blink]
+                forKey:NSBlinkAttributeName];
+    }
+    /*    if(bold)    {
+        aFont = [[NSFontManager sharedFontManager] convertFont: defaultFont toHaveTrait: NSBoldFontMask];
+    //        NSLog(@"%@->%@(%f, %f)",[SCREEN font], aFont, [VT100Screen fontSize:[SCREEN font]].height, [VT100Screen fontSize:aFont].height);
+    if ([VT100Screen fontSize:aFont].height>[VT100Screen fontSize: [SCREEN tallerFont]].height) aFont=defaultFont;
+    }
+    else
+{
+        aFont=defaultFont;
+}*/
+}
+
 - (void)_setCharAttr:(VT100TCC)token
 {
     if (token.type == VT100CSI_SGR) {
-
+        
         if (token.u.csi.count == 0) {
             // all attribute off
-            CHARATTR = 0;       
+            bold=under=blink=reversed=0;      
 	    FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
 	    BG_COLORCODE = DEFAULT_BG_COLOR_CODE; 
         }
@@ -1782,61 +1821,54 @@ static VT100TCC decode_string(unsigned char *datap,
                 switch (n) {
                 case VT100CHARATTR_ALLOFF:
                     // all attribute off
-                    CHARATTR = 0;
-		    FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
+                    bold=under=blink=reversed=0;
+                    FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
 		    BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
                     break;
 
-                case VT100CHARATTR_BOLD: 
-                    CHARATTR |= VT100CHARATTR_BOLDMASK;
+                case VT100CHARATTR_BOLD:
+                    bold=1;
                     break;
 		case VT100CHARATTR_NORMAL:
-		    CHARATTR &= ~VT100CHARATTR_BOLDMASK;
+                    bold=0;
 		    break;
                 case VT100CHARATTR_UNDER:
-                    CHARATTR |= VT100CHARATTR_UNDERMASK;
+                    under=1;
                     break;
 		case VT100CHARATTR_NOT_UNDER:
-		    CHARATTR &= ~VT100CHARATTR_UNDERMASK;
+                    under=0;
 		    break;
                 case VT100CHARATTR_BLINK:
-                    CHARATTR |= VT100CHARATTR_BLINKMASK;
+                    blink=1;
                     break;
 		case VT100CHARATTR_STEADY:
-		    CHARATTR &= ~VT100CHARATTR_BLINKMASK;
+                    blink=0;
 		    break;
                 case VT100CHARATTR_REVERSE:
-                    CHARATTR |= VT100CHARATTR_REVERSEMASK;
+                    reversed=1;
                     break;
 		case VT100CHARATTR_POSITIVE:
-		    CHARATTR &= ~VT100CHARATTR_REVERSEMASK;
+                    reversed=0;
 		    break;
                 case VT100CHARATTR_FG_DEFAULT:
-                    CHARATTR |= VT100CHARATTR_COLORMASK;
                     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
                     break;
                 case VT100CHARATTR_BG_DEFAULT:
-                    CHARATTR |= VT100CHARATTR_COLORMASK;
                     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
                     break;
                 default:
                     if (n>=VT100CHARATTR_FG_BLACK&&n<=VT100CHARATTR_FG_WHITE) {
-                        CHARATTR |= VT100CHARATTR_COLORMASK;
                         FG_COLORCODE = n - VT100CHARATTR_FG_BASE - COLORCODE_BLACK;
                     }
                     else if (n>=VT100CHARATTR_BG_BLACK&&n<=VT100CHARATTR_BG_WHITE) {
-                        CHARATTR |= VT100CHARATTR_COLORMASK;
                         BG_COLORCODE = n - VT100CHARATTR_BG_BASE - COLORCODE_BLACK;
                     }
-                    else {
-                        CHARATTR &= ~VT100CHARATTR_COLORMASK;
-                    }
-		}
+                }
             }
         }
 
 	// reset our default character attributes
-	[self initDefaultCharacterAttributeDictionary];
+	[self setCharacterAttributeDictionary];
     }
 }
 
@@ -1845,8 +1877,16 @@ static VT100TCC decode_string(unsigned char *datap,
     [defaultFGColor release];
     defaultFGColor=[color copy];
     // reset our default character attributes
-    [defaultCharacterAttributeDictionary[0] setObject:color forKey:NSForegroundColorAttributeName];
-    [defaultCharacterAttributeDictionary[1] setObject:color forKey:NSForegroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[0] setObject:color
+                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+    [defaultCharacterAttributeDictionary[1] setObject:color
+                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+    [characterAttributeDictionary[0] setObject:color
+                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+    [characterAttributeDictionary[1] setObject:color
+                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+
+    [SCREEN setScreenAttributes];
     
 }
 
@@ -1856,8 +1896,15 @@ static VT100TCC decode_string(unsigned char *datap,
     defaultBGColor=[color copy];
 
     // reset our default character attributes
-    [defaultCharacterAttributeDictionary[0] setObject:color forKey:NSBackgroundColorAttributeName];
-    [defaultCharacterAttributeDictionary[1] setObject:color forKey:NSBackgroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[0] setObject:color
+                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
+    [defaultCharacterAttributeDictionary[1] setObject:color
+                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
+    [characterAttributeDictionary[0] setObject:color
+                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
+    [characterAttributeDictionary[1] setObject:color
+                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
+    [SCREEN setScreenAttributes];
 
 }
 
@@ -1881,9 +1928,9 @@ static VT100TCC decode_string(unsigned char *datap,
     NSColor *color;
 
     if (index==DEFAULT_FG_COLOR_CODE)
-        color=defaultFGColor;
+        color=(SCREEN_MODE?defaultBGColor:defaultFGColor);
     else if (index==DEFAULT_BG_COLOR_CODE)
-        color=defaultBGColor;
+        color=(SCREEN_MODE?defaultFGColor:defaultBGColor);
     else
         color=colorTable[index];
 

@@ -963,13 +963,6 @@ static NSString *PWD_ENVVALUE = @"~";
     {
         // Change the fg color for future stuff
         [TERMINAL setFGColor: color];
-        // Change the attributes for the current stuff in the text storage
-        [[SCREEN buffer] removeAttribute:  NSForegroundColorAttributeName 
-                                range: NSMakeRange(0, [[SCREEN buffer] length])];
-        [[SCREEN buffer] addAttribute:  NSForegroundColorAttributeName 
-                                value: [TERMINAL defaultFGColor]
-                                range: NSMakeRange(0, [[SCREEN buffer] length])];
-        [SCREEN forceUpdateScreen];
     }
 
 }
@@ -986,13 +979,6 @@ static NSString *PWD_ENVVALUE = @"~";
     {
         // Change the bg color for future stuff
         [TERMINAL setBGColor: color];
-        // Change the attributes for the current stuff in the text storage
-        [[SCREEN buffer] removeAttribute:  NSBackgroundColorAttributeName 
-                                range: NSMakeRange(0, [[SCREEN buffer] length])];
-        [[SCREEN buffer] addAttribute:  NSBackgroundColorAttributeName
-                                value: [TERMINAL defaultBGColor]
-                                range: NSMakeRange(0, [[SCREEN buffer] length])];
-        [SCREEN forceUpdateScreen];
     }
 }
 

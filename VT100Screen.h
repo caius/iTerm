@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.21 2003-03-11 00:11:21 yfabian Exp $
+// $Id: VT100Screen.h,v 1.22 2003-03-12 20:30:35 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -159,6 +159,7 @@
 - (void) renewBuffer;
 - (int) numberOfLines;
 - (NSAttributedString *)stringAtLine: (int) n;
+- (void) setScreenAttributes;
 
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (NSAttributedString *)defaultAttrString:(NSString *)str;

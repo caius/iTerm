@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.70 2003-03-12 17:14:16 yfabian Exp $
+// $Id: VT100Screen.m,v 1.71 2003-03-12 20:30:36 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -37,6 +37,7 @@
 #import "NSStringITerm.h"
 #import "PseudoTerminal.h"
 #import "PTYTextView.h"
+#import "PTYScrollView.h"
 #import "charmaps.h"
 
 @implementation VT100Screen
@@ -2376,6 +2377,34 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY
     [(PTYTextView *)display refresh];
 #endif
+
+}
+
+- (void) setScreenAttributes
+{
+    NSColor *fg, *bg;
+   // Change the attributes for the current stuff in the text storage
+    if ([TERMINAL screenMode]) {
+        bg=[TERMINAL defaultFGColor];
+        fg=[TERMINAL defaultBGColor];
+    }else {
+        fg=[TERMINAL defaultFGColor];
+        bg=[TERMINAL defaultBGColor];
+    }
+    
+    [BUFFER removeAttribute: NSForegroundColorAttributeName
+                       range: NSMakeRange(0, [BUFFER length])];
+    [BUFFER addAttribute: NSForegroundColorAttributeName
+                    value: fg
+                    range: NSMakeRange(0, [BUFFER length])];
+    [BUFFER removeAttribute: NSBackgroundColorAttributeName
+                       range: NSMakeRange(0, [BUFFER length])];
+    [BUFFER addAttribute:  NSBackgroundColorAttributeName
+                            value: bg
+                            range: NSMakeRange(0, [BUFFER length])];
+    [self forceUpdateScreen];
+    [[SESSION SCROLLVIEW] setBackgroundColor: bg];
+    [[SESSION SCROLLVIEW] setNeedsDisplay: YES];
 
 }
 

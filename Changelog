@@ -1,5 +1,7 @@
 2003-03-12	fabian
     * Fixed a bug that causes incorrect process of color.
+    * Cleaned up the color code
+    * Fixed a bug related to reversed video mode.
     
 2003-03-11	fabian
     * Changed the color code. Now we no longer have fixed

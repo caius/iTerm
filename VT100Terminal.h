@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.22 2003-03-12 17:14:17 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.23 2003-03-12 20:30:38 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -146,12 +146,6 @@ typedef struct {
 #define VT100CHARATTR_STEADY	  	25
 #define VT100CHARATTR_POSITIVE  	27
 
-#define VT100CHARATTR_BOLDMASK    (1)
-#define VT100CHARATTR_UNDERMASK   (1<<1)
-#define VT100CHARATTR_BLINKMASK   (1<<2)
-#define VT100CHARATTR_REVERSEMASK (1<<3)
-#define VT100CHARATTR_COLORMASK	  (1<<4)
-
 typedef enum {
     COLORCODE_BLACK=0,
     COLORCODE_RED=1,
@@ -212,22 +206,24 @@ typedef enum {
     BOOL XON;			// YES=XON, NO=XOFF
     BOOL numLock;		// YES=ON, NO=OFF, default=YES;
     
-    unsigned int CHARATTR;
     int FG_COLORCODE;
     int BG_COLORCODE;
     float alpha;
     NSColor* colorTable[COLORS];
     NSColor* defaultFGColor;
     NSColor* defaultBGColor;
+    int	bold, under, blink, reversed;
 
-    unsigned int saveCHARATTR;
+    int saveBold, saveUnder, saveBlink, saveReversed;
     int saveCHARSET;
     
     BOOL TRACE;
 
     BOOL strictAnsiMode;
-
+    
+    NSMutableDictionary *characterAttributeDictionary[2];
     NSMutableDictionary *defaultCharacterAttributeDictionary[2];
+
     unsigned int streamOffset;
 }
 
@@ -293,10 +289,10 @@ typedef enum {
 - (NSData *)reportStatus;
 - (NSData *)reportDeviceAttribute;
 
-- (unsigned int)characterAttribute;
 - (NSMutableDictionary *)characterAttributeDictionary: (BOOL) asc;
 - (NSMutableDictionary *)defaultCharacterAttributeDictionary:  (BOOL) asc;
 - (void) initDefaultCharacterAttributeDictionary;
+- (void) setCharacterAttributeDictionary;
 
 - (void)_setMode:(VT100TCC)token;
 - (void)_setCharAttr:(VT100TCC)token;

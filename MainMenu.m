@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.80 2003-06-26 15:14:30 ujwal Exp $
+// $Id: MainMenu.m,v 1.81 2003-06-26 21:07:32 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -739,7 +739,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 
 // Returns an entry from the addressbook
-- (NSDictionary *)addressBookEntry: (int) entryIndex
+- (NSMutableDictionary *)addressBookEntry: (int) entryIndex
 {
     if((entryIndex < 0) || (entryIndex >= [[self addressBook] count]))
         return (nil);

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.27 2003-06-23 05:54:54 ujwal Exp $
+// $Id: MainMenu.h,v 1.28 2003-06-26 21:07:32 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -104,7 +104,7 @@
 - (NSArray *)addressBookNames;
 - (NSDictionary *)newDefaultAddressBookEntry;
 - (NSMutableDictionary *) defaultAddressBookEntry;
-- (NSDictionary *)addressBookEntry: (int) entryIndex;
+- (NSMutableDictionary *)addressBookEntry: (int) entryIndex;
 - (void) addAddressBookEntry: (NSDictionary *) entry;
 - (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new;
 

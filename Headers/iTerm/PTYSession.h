@@ -37,6 +37,7 @@
 @class iTermController;
 @class PTYTabViewItem;
 @class VT100TextStorage;
+@class iTermImageView;
 
 @interface PTYSession : NSResponder
 {        
@@ -68,6 +69,7 @@
     NSString *TERM_VALUE;
     VT100Screen   *SCREEN;
     BOOL EXIT;
+    iTermImageView *imageView;
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
     NSTimer *timer;
@@ -153,6 +155,7 @@
 - (void) setTERM_VALUE: (NSString *) theTERM_VALUE;
 - (VT100Screen *) SCREEN;
 - (void) setSCREEN: (VT100Screen *) theSCREEN;
+- (NSView *) view;
 - (PTYTextView *) TEXTVIEW;
 - (void) setTEXTVIEW: (PTYTextView *) theTEXTVIEW;
 - (PTYScrollView *) SCROLLVIEW;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.227 2003-09-11 15:17:40 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.228 2003-09-11 15:28:38 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -303,7 +303,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: aSession];
 	NSParameterAssert(aTabViewItem != nil);
 	[aTabViewItem setLabel: [aSession name]];
-	[aTabViewItem setView: [aSession SCROLLVIEW]];
+	[aTabViewItem setView: [aSession view]];
 	[[aSession SCROLLVIEW] setVerticalPageScroll: 0.0];
 	[TABVIEW insertTabViewItem: aTabViewItem atIndex: index];
 

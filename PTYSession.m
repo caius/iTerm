@@ -1162,6 +1162,11 @@ static NSString *PWD_ENVVALUE = @"~";
     SCREEN = [theSCREEN retain];
 }
 
+- (NSView *) view
+{
+    return (SCROLLVIEW);
+}
+
 - (PTYTextView *) TEXTVIEW
 {
     return (TEXTVIEW);

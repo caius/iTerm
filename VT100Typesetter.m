@@ -260,6 +260,8 @@ static unsigned int invocationId = 0;
 	    {
 		lineRect.origin.y += [font defaultLineHeightForFont];
 		lineRect.size.height = displayHeight - lineRect.origin.y;
+		// coercing to multiple of line height.
+		lineRect.size.height = floor(lineRect.size.height/[font defaultLineHeightForFont]) * [font defaultLineHeightForFont];
 		[layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
 	    }
 	    break;

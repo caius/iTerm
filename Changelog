@@ -1,3 +1,9 @@
+2003-01-01	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added support for bold character attributes.
+      Only works with fonts that support bold typeface.
+      
+
 2002-12-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed some resizing issues by implementing 

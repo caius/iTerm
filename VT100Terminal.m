@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.6 2002-12-20 15:55:48 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.7 2003-01-01 09:07:50 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -1388,11 +1388,13 @@ static VT100TCC decode_string(unsigned char *datap,
 - (NSMutableDictionary *)characterAttributeDictionary
 {
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-    int under = 0,blink=0;
+    int under = 0,blink=0, bold = 0;
+    NSFont *aFont;
+    
     NSParameterAssert(dic != nil);
 
     if (CHARATTR & VT100CHARATTR_BOLDMASK)
-	;
+	bold = 1;
     if (CHARATTR & VT100CHARATTR_UNDERMASK )
 	under = 1;
     if (CHARATTR & VT100CHARATTR_BLINKMASK )
@@ -1414,6 +1416,15 @@ static VT100TCC decode_string(unsigned char *datap,
 	    forKey:NSUnderlineStyleAttributeName];
     [dic setObject:[NSNumber numberWithInt:blink]
                    forKey:NSBlinkAttributeName];
+    if(bold)
+    {
+        aFont = [[NSFontManager sharedFontManager] convertFont: [SCREEN font] toHaveTrait: NSBoldFontMask];
+    }
+    else
+    {
+        aFont = [[NSFontManager sharedFontManager] convertFont: [SCREEN font] toNotHaveTrait: NSBoldFontMask];;
+    }
+    [dic setObject:aFont forKey:NSFontAttributeName];
 
     return dic;
 }

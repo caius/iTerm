@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.8 2002-12-22 02:26:57 ujwal Exp $
+// $Id: VT100Screen.m,v 1.9 2003-01-01 09:07:49 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -1311,7 +1311,7 @@ static BOOL PLAYBELL = YES;
 //    if ([TERMINAL characterAttribute]&VT100CHARATTR_BOLD)
 //        f=[[NSFontManager  sharedFontManager] convertFont:FONT toHaveTrait:NSBoldFontMask];
     
-    [dic setObject:FONT forKey:NSFontAttributeName];
+    //[dic setObject:FONT forKey:NSFontAttributeName];
 //    NSLog(@"attribute:%@",dic);
 
     return dic;

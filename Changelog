@@ -1,10 +1,13 @@
-2003-02-12	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed encoding bug in PTYsession: -keyDown:
     
     * Workaround for a possible Cocoa bug in copy/paste.
     
-
+    * Changed keyboard shortcuts to navigate sessions 
+      from Cmd-1/2 to Cmd [ and Cmd ].
+      
+      
 2003-02-13	fabian
     * Enhanced text input
     * Incorporated Japanese patch from OHKAWA

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.162 2003-04-28 23:04:29 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.163 2003-04-29 00:24:05 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -175,6 +175,8 @@ static int windowCount = 0;
         selector: @selector(_reloadAddressBookMenu:)
         name: @"Reload AddressBook"
         object: nil];
+
+    [self setWindowInited: YES];
          
 }
 
@@ -193,7 +195,6 @@ static int windowCount = 0;
     [aSession setParent: self];
     [aSession setPreference: pref];
     [aSession setMainMenu: MAINMENU];
-    [aSession setWindow: [self window]];
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set some default colors
@@ -228,7 +229,6 @@ static int windowCount = 0;
 #else
     [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
 #endif
-    [[aSession SCREEN] setWindow:WINDOW];
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
 
@@ -1543,18 +1543,23 @@ static int windowCount = 0;
 
     // create a new terminal window
     term = [[PseudoTerminal alloc] init];
-
     if(term == nil)
 	return;
 
+    if([term windowInited] == NO)
+    {
+	[term initWindow: WIDTH
+	   height: HEIGHT
+	     font: FONT
+	   nafont: NAFONT];
+    }
+
+
     [MAINMENU addInTerminals: term];
     [term release];
-
+    
     [term setPreference:pref];
-    [term initWindow: WIDTH
-              height: HEIGHT
-                font: FONT
-              nafont: NAFONT];
+
 
     // If this is the current session, make previous one active.
     if(aSession == currentPtySession)
@@ -1571,7 +1576,7 @@ static int windowCount = 0;
     [TABVIEW removeTabViewItem: aTabViewItem];
 
     // add the session to the new terminal
-    [term addInSessions: aSession];
+    [term insertSession: aSession atIndex: 0];
 
     // release the tabViewItem
     [aTabViewItem release];
@@ -1766,6 +1771,16 @@ static int windowCount = 0;
 	PTYSession *aSession = [ptyList objectAtIndex: index];
 	[self closeSession: aSession];
     }
+}
+
+- (BOOL)windowInited
+{
+    return (windowInited);
+}
+
+- (void) setWindowInited: (BOOL) flag
+{
+    windowInited = flag;
 }
 
 

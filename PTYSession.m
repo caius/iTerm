@@ -145,7 +145,6 @@ static NSString *PWD_ENVVALUE = @"~";
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
 
     [SCREEN setSession:self];
-//    [SCREEN setWindow:[parent window]];
     [self setName:@"Shell"];
 
     ai_code=0;
@@ -890,16 +889,6 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setMainMenu:(MainMenu *) theMainMenu
 {
     MAINMENU=theMainMenu;
-}
-
-- (void) setWindow: (NSWindow *) theWindow
-{
-    WINDOW = theWindow;
-}
-
-- (NSWindow *) window
-{
-    return (WINDOW);
 }
 
 - (PseudoTerminal *) parent

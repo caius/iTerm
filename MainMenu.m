@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.54 2003-04-28 22:40:33 ujwal Exp $
+// $Id: MainMenu.m,v 1.55 2003-04-29 00:24:06 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -750,10 +750,13 @@ NSString *terminalsKey = @"terminals";
     if([terminalWindows containsObject: object] == YES)
 	return;
     [object setPreference:PREF_PANEL];
-    [object initWindow:[PREF_PANEL col]
-              height:[PREF_PANEL row]
-                font:[PREF_PANEL font]
-              nafont:[PREF_PANEL nafont]];
+    if([object windowInited] == NO)
+    {
+	[object initWindow:[PREF_PANEL col]
+	     height:[PREF_PANEL row]
+	       font:[PREF_PANEL font]
+	     nafont:[PREF_PANEL nafont]];
+    }
     [terminalWindows insertObject: object atIndex: index];
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.47 2003-04-28 23:04:29 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.48 2003-04-29 00:24:07 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -85,6 +85,7 @@
     PreferencePanel *pref;
     BOOL tabViewDragOperationInProgress;
     BOOL resizeInProgress;
+    BOOL windowInited;
 }
 
 - (void) newSession: (id) sender;
@@ -209,6 +210,9 @@
 -(void)insertInSessions:(PTYSession *)object;
 -(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index;
 -(void)removeFromSessionsAtIndex:(unsigned)index;
+
+- (BOOL)windowInited;
+- (void) setWindowInited: (BOOL) flag;
 
 // a class method to provide the keys for KVC:
 +(NSArray*)kvcKeys;

@@ -43,7 +43,7 @@
     MainMenu *MAINMENU;
     
     /// Terminal Window
-    NSWindow *WINDOW;
+    //NSWindow *WINDOW;
 
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
@@ -131,8 +131,6 @@
 
 // get/set methods
 - (void) setMainMenu: (MainMenu *) theMainMenu;
-- (void) setWindow: (NSWindow *) theWindow;
-- (NSWindow *) window;
 - (PseudoTerminal *) parent;
 - (void) setParent: (PseudoTerminal *) theParent;
 - (PTYTabViewItem *) tabViewItem;

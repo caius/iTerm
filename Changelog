@@ -13,6 +13,9 @@
       
     * Fixed some memory related crashes when closing 
       windows created from Applescript.
+      
+    * Fixed bug in moving tab to new window caused by code 
+      re-organization.
 
 
 2003-04-27	fabian

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.8 2003-01-21 01:43:21 yfabian Exp $
+// $Id: VT100Screen.h,v 1.9 2003-01-21 03:14:40 ujwal Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -100,6 +100,7 @@
 - (void)cursorRight:(int)n;
 - (void)cursorUp:(int)n;
 - (void)cursorDown:(int)n;
+- (void) cursorToX: (int) x;
 - (void)cursorToX:(int)x Y:(int)y; 
 - (void)saveCursorPosition;
 - (void)restoreCursorPosition;

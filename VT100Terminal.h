@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.5 2003-01-21 01:43:22 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.6 2003-01-21 03:14:40 ujwal Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -89,6 +89,9 @@
 #define XTERMCC_INSLN	     88	      // Insert lines
 #define XTERMCC_DELCH	     89       // delete blank
 #define XTERMCC_DELLN	     90	      // delete lines
+
+// Some ansi stuff
+#define ANSICSI_CHA		3000	// Cursor Horizontal Absolute
 
 #define VT100CSIPARAM_MAX    16
 

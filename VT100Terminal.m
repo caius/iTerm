@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.17 2003-01-21 01:43:22 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.18 2003-01-21 03:14:40 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -381,6 +381,12 @@ static VT100TCC decode_csi(unsigned char *datap,
                     result.type = XTERMCC_DELLN;
                     SET_PARAM_DEFAULT(param,0,1);
                     break;
+
+		// ANSI
+		case 'G':
+		    result.type = ANSICSI_CHA;
+		    SET_PARAM_DEFAULT(param,0,1);
+		    break;
 
                 default:
                     result.type = VT100_NOTSUPPORT;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.37 2003-02-12 07:52:47 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.38 2003-02-20 18:15:36 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -85,6 +85,7 @@
     BOOL changingNA;
     BOOL newwin;
     PreferencePanel *pref;
+    BOOL tabViewDragOperationInProgress;
 }
 
 + (PseudoTerminal *)newTerminalWindow: sender;
@@ -170,6 +171,8 @@
 - (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)tabView:(NSTabView *)tabView willInsertTabViewItem:(NSTabViewItem *)tabViewItem atIndex:(int) index;
 - (void)tabViewDidChangeNumberOfTabViewItems:(NSTabView *)tabView;
+- (void)tabViewWillPerformDragOperation:(NSTabView *)tabView;
+- (void)tabViewDidPerformDragOperation:(NSTabView *)tabView;
 - (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu;
 - (void) closeTabContextualMenuAction: (id) sender;
 - (void) moveTabToNewWindowContextualMenuAction: (id) sender;

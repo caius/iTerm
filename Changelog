@@ -1,5 +1,13 @@
 2003-02-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
+    * Added and implemented tabViewWillPerformDragOperation 
+      tabViewDidPerformDragOperation delegate methods. This 
+      gets rid of a visual glitch when doing drag-n-drop 
+      within a window with only two tabs.
+      
+
+2003-02-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
     * Added support for a few xterm character attributes.
     
     * Tabs are dragged only after about 8 pixels to prevent 

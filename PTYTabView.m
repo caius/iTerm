@@ -494,6 +494,7 @@
     NSData *pasteboardData;
     int index = -1;
     NSPoint dropPoint, localPoint;
+    id sourceDelegate, targetDelegate;
 
     // get the tabViewItem we are dragging
     pasteboardData = [pboard dataForType: @"NSTabViewItemPboardType"];
@@ -537,8 +538,19 @@
 	else
 	    [aTabView selectTabViewItemAtIndex: (aTabViewItemIndex + 1)];
     }
+
+    // inform the delegates that we are performing a drag operation
+    sourceDelegate = [aTabView delegate];
+    targetDelegate = [self delegate];
+    if([sourceDelegate respondsToSelector: @selector(tabViewWillPerformDragOperation:)])
+	[sourceDelegate tabViewWillPerformDragOperation: aTabView];
+    if((targetDelegate != sourceDelegate) &&
+       [targetDelegate respondsToSelector: @selector(tabViewWillPerformDragOperation:)])
+	[targetDelegate tabViewWillPerformDragOperation: self];    
+    
     // temporarily retain the tabViewItem
-    [aTabViewItem retain];
+    [aTabViewItem retain];    
+    
     // remove the tabViewItem from source
     [aTabView removeTabViewItem: aTabViewItem];
     // add the tabViewItem to ourselves at the appropriate index; or do an add
@@ -552,8 +564,15 @@
     [self selectTabViewItem: aTabViewItem];
     // release the tabViewItem
     [aTabViewItem release];
-    
 
+    // inform the delegates that we are done performing a drag operation
+    if([sourceDelegate respondsToSelector: @selector(tabViewDidPerformDragOperation:)])
+	[sourceDelegate tabViewDidPerformDragOperation: aTabView];
+    if((targetDelegate != sourceDelegate) &&
+       [targetDelegate respondsToSelector: @selector(tabViewDidPerformDragOperation:)])
+	[targetDelegate tabViewDidPerformDragOperation: self];
+    
+    
     return (YES);
     
 }

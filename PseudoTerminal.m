@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.286 2004-04-15 20:22:40 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.287 2004-04-16 07:05:21 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -62,9 +62,10 @@ NSString *rowsKey = @"rows";
 // keys for to-many relationships:
 NSString *sessionsKey = @"sessions";
 
-#define TABVIEW_TOP_BOTTOM_OFFSET	29
-#define TABVIEW_LEFT_RIGHT_OFFSET	29
-#define TOOLBAR_OFFSET			0
+#define TABVIEW_TOP_OFFSET				29
+#define TABVIEW_BOTTOM_OFFSET			27
+#define TABVIEW_LEFT_RIGHT_OFFSET		29
+#define TOOLBAR_OFFSET					0
 
 // just to keep track of available window positions
 #define CACHED_WINDOW_POSITIONS		100
@@ -704,11 +705,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     thisWindow = [[[_sessionMgr currentSession] SCROLLVIEW] window];
     winSize = size;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
-		winSize.height = size.height + TABVIEW_TOP_BOTTOM_OFFSET;
+		winSize.height = size.height + TABVIEW_TOP_OFFSET;
     else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
 		winSize.width = size.width + TABVIEW_LEFT_RIGHT_OFFSET;
     else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
-		winSize.height = size.height + TABVIEW_TOP_BOTTOM_OFFSET;
+		winSize.height = size.height + TABVIEW_BOTTOM_OFFSET;
     else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
 		winSize.width = size.width + TABVIEW_LEFT_RIGHT_OFFSET;
     else

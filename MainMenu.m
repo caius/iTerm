@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.76 2003-05-31 20:00:14 ujwal Exp $
+// $Id: MainMenu.m,v 1.77 2003-06-21 21:37:46 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -275,7 +275,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (IBAction)showAbout:(id)sender
 {
     NSURL *author1URL, *author2URL, *webURL, *bugURL;
-    NSAttributedString *author1, *author2, *webSite, *bugReport, *mode;
+    NSAttributedString *author1, *author2, *webSite, *bugReport;
     NSMutableAttributedString *tmpAttrString;
     NSDictionary *linkAttributes;
 //    [NSApp orderFrontStandardAboutPanel:nil];
@@ -315,21 +315,27 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
         NULL];
     bugReport = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Report A Bug", @"iTerm", [NSBundle bundleForClass: [self class]], @"About") attributes: linkAttributes];
 
+    // version number and mode
+    NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
+    NSMutableString *versionString = [[NSMutableString alloc] initWithString: (NSString *)[myDict objectForKey:@"CFBundleVersion"]];
 #if USE_CUSTOM_DRAWING
-    mode = [[NSAttributedString alloc] initWithString: @"(A)"];
+    [versionString appendString: @" (A)"];
 #else
-    mode = [[NSAttributedString alloc] initWithString: @"(B)"];
+    [versionString appendString: @" (B)"];
 #endif
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
+    [tmpAttrString initWithString: versionString];
+    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
+    [tmpAttrString initWithString: @"\n"];
+    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: author1];
+    tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: author2];
     [tmpAttrString initWithString: @"\n"];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: webSite];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [[AUTHORS textStorage] appendAttributedString: mode];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: bugReport];
     [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];
@@ -341,6 +347,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     [author2 release];
     [webSite release];
     [tmpAttrString release];
+    [versionString release];
 }
 
 - (IBAction)aboutOK:(id)sender

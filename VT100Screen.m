@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.110 2003-07-17 15:43:30 ujwal Exp $
+// $Id: VT100Screen.m,v 1.111 2003-07-18 16:10:58 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1491,8 +1491,13 @@ static BOOL PLAYBELL = YES;
 	{
 	    [self setScreenLock];
 	    [STORAGE beginEditing];
-	    [STORAGE appendAttributedString: BUFFER];
-	    updateIndex += [BUFFER length];
+	    //NSLog(@"'%@'", [BUFFER string]);
+	    if(newLineString == nil)
+		newLineString = [[self attrString:@"\n" ascii:YES] retain];
+	    [STORAGE appendAttributedString:newLineString];
+	    //[BUFFER appendAttributedString:newLineString];
+	    //[STORAGE appendAttributedString: BUFFER];
+	    updateIndex = [STORAGE length];
 	    [STORAGE endEditing];
 	    [self removeScreenLock];
 	    [[SESSION TEXTVIEW] scrollEnd];
@@ -2506,8 +2511,15 @@ static BOOL PLAYBELL = YES;
     //NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
 
     [STORAGE beginEditing];
-    [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,slen-updateIndex-minIndex)
-	    withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
+    if(updateIndex < [STORAGE length])
+    {
+	[STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,slen-updateIndex-minIndex)
+		     withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
+    }
+    else
+    {
+	[STORAGE appendAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
+    }
     [STORAGE endEditing];
     //NSLog(@"updated: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
     //if ([BUFFER length]>[STORAGE length]) NSLog(@"%@",BUFFER);

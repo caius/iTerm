@@ -250,6 +250,8 @@ static unsigned int invocationId = 0;
 	    float x = 0;
 	    float theWidth;
 
+	    if([theString characterAtIndex: lineStartIndex] == '\n')
+		lineStartIndex++;
 	    for (j = lineStartIndex; j <= lineEndIndex; j++)
 	    {
 		singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];

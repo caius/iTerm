@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.34 2003-05-30 07:10:26 ujwal Exp $
+// $Id: VT100Screen.h,v 1.35 2003-06-09 15:21:03 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -68,6 +68,9 @@
     BOOL blinkingCursor;
 
     NSView *display;
+
+    NSAttributedString *newLineString;
+
 }
 
 + (NSSize)requireSizeWithFont:(NSFont *)font

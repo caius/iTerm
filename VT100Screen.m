@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.98 2003-06-06 01:29:35 ujwal Exp $
+// $Id: VT100Screen.m,v 1.99 2003-06-09 15:21:03 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -216,8 +216,10 @@ static BOOL PLAYBELL = YES;
 
     [screenLines autorelease];
 
-    [STORAGE release];
-    
+    [newLineString release];
+    newLineString = nil;
+
+    [STORAGE release];    
 
     [super dealloc];
 }
@@ -488,6 +490,10 @@ static BOOL PLAYBELL = YES;
 #endif
 
     [TERMINAL initDefaultCharacterAttributeDictionary];
+
+    [newLineString release];
+    newLineString = nil;
+
 }
 
 - (NSFont *)font
@@ -1256,6 +1262,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)setNewLine
 {
+
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)-[%d,%d]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y, SCROLL_TOP, SCROLL_BOTTOM);
 #endif
@@ -1265,7 +1272,9 @@ static BOOL PLAYBELL = YES;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
 #if DEBUG_USE_BUFFER
-        [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
+	if(newLineString == nil)
+	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
+        [BUFFER appendAttributedString:newLineString];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -2202,9 +2211,15 @@ static BOOL PLAYBELL = YES;
         str=@"";
     }
 
-    attr = [[NSAttributedString alloc]
+    attr = [[NSMutableAttributedString alloc]
                initWithString:str
                    attributes:[TERMINAL characterAttributeDictionary:asc]];
+
+    if(charset[[TERMINAL charset]])
+    {
+	//[attr addAttribute: NSFontAttributeName value: [NSFont fontWithName:@"FreeMonoBold" size:[[self font] pointSize]] range: NSMakeRange(0, [attr length])];
+	[attr addAttribute: @"VT100GraphicalCharacter" value: @"YES" range: NSMakeRange(0, [attr length])];
+    }
     
     [attr autorelease];
     

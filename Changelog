@@ -1,3 +1,7 @@
+2003-06-09	ujwal
+
+    * Caching new line string in VT100Screen for big speed boost.
+
 2003-06-08	ujwal
 
     * Updated localizations including strings dictionaries.

@@ -38,6 +38,7 @@
 				0464AB22006CD2EC7F000001,
 				0464AB27006CD2EC7F000001,
 				0464AB2E006CD2EC7F000001,
+				8750B974046717F40073D10E,
 				0464AB32006CD2EC7F000001,
 			);
 			isa = PBXGroup;
@@ -175,6 +176,7 @@
 				0464AB4B006CD2EC7F000001,
 				0464AB4E006CD2EC7F000001,
 				DD1E48DF0432063D00A8A065,
+				8750B97D0467185B0073D10E,
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O0";
@@ -348,6 +350,74 @@
 		};
 		870EAAB704325A880073D10E = {
 			fileRef = 870EAAB504325A880073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8750B974046717F40073D10E = {
+			children = (
+				8750B975046717F40073D10E,
+				8750B976046717F40073D10E,
+				8750B977046717F40073D10E,
+				8750B978046717F40073D10E,
+			);
+			isa = PBXGroup;
+			path = Fonts;
+			refType = 4;
+		};
+		8750B975046717F40073D10E = {
+			isa = PBXFileReference;
+			path = FreeMono.ttf;
+			refType = 4;
+		};
+		8750B976046717F40073D10E = {
+			isa = PBXFileReference;
+			path = FreeMonoBold.ttf;
+			refType = 4;
+		};
+		8750B977046717F40073D10E = {
+			isa = PBXFileReference;
+			path = FreeMonoBoldOblique.ttf;
+			refType = 4;
+		};
+		8750B978046717F40073D10E = {
+			isa = PBXFileReference;
+			path = FreeMonoOblique.ttf;
+			refType = 4;
+		};
+		8750B97D0467185B0073D10E = {
+			buildActionMask = 2147483647;
+			dstPath = Fonts;
+			dstSubfolderSpec = 7;
+			files = (
+				8750B98904671BB80073D10E,
+				8750B98A04671BB80073D10E,
+				8750B98B04671BB80073D10E,
+				8750B98C04671BB80073D10E,
+			);
+			isa = PBXCopyFilesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8750B98904671BB80073D10E = {
+			fileRef = 8750B975046717F40073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8750B98A04671BB80073D10E = {
+			fileRef = 8750B976046717F40073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8750B98B04671BB80073D10E = {
+			fileRef = 8750B977046717F40073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8750B98C04671BB80073D10E = {
+			fileRef = 8750B978046717F40073D10E;
 			isa = PBXBuildFile;
 			settings = {
 			};

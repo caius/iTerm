@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.57 2003-05-05 14:44:07 ujwal Exp $
+// $Id: MainMenu.m,v 1.58 2003-05-05 22:53:34 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -153,6 +153,24 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
           __FILE__, __LINE__);
 #endif
     self = [super init];
+
+    // activate our fonts
+    // Get the main bundle object
+    NSBundle *appBundle = [NSBundle mainBundle];
+    // Ask for the path to the resources
+    NSString *fontsPath = [appBundle pathForResource: @"Fonts" ofType: nil inDirectory: nil];
+
+    // Using the Carbon APIs:  get a file reference and spec for the path
+    FSRef fsRef;
+    FSSpec fsSpec;
+    int osstatus = FSPathMakeRef( [fontsPath UTF8String], &fsRef, NULL);
+    if ( osstatus == noErr)
+    {
+	osstatus = FSGetCatalogInfo( &fsRef, kFSCatInfoNone, NULL, NULL, &fsSpec, NULL);
+    }
+    //activate the font file using the file spec
+    osstatus = FMActivateFonts( &fsSpec, NULL, NULL, kFMLocalActivationContext);
+    
 
     [self initAddressBook];
     [self initPreferences];

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.44 2003-05-01 16:28:43 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.45 2003-05-05 22:53:34 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -41,8 +41,8 @@ static NSColor *xtermSelection;
 static NSColor *xtermBold;
 static NSColor* xtermColorTable[2][8];
 
-static NSString *DEFAULT_FONTNAME = @"Osaka-Mono";
-static float     DEFAULT_FONTSIZE = 14;
+static NSString *DEFAULT_FONTNAME = @"FreeMonoBold";
+static float     DEFAULT_FONTSIZE = 13;
 static NSFont* FONT;
 
 static int   COL   = 80;

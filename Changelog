@@ -1,3 +1,8 @@
+2003-05-05	ujwal
+
+    * Bundling FreeMono font with the application.
+
+
 2003-05-02	ujwal
 
     * Distinguising session name and windwo title. Storing window 

@@ -63,8 +63,8 @@ static ITConfigPanelController *singleInstance = nil;
 	
     [singleInstance loadConfigWindow: nil];
 	
-	[[singleInstance window] orderFront: self];
-	[[singleInstance window] makeKeyWindow];
+	[[singleInstance window] setFrameAutosaveName: @"Config Panel"];
+	[[singleInstance window] makeKeyAndOrderFront: self];
 }
 
 + (void) close

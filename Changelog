@@ -1,5 +1,9 @@
 2004-03-26  fabian
 
+	* Merged in the French localization by Matt Anton
+	
+2004-03-25  fabian
+
 	* Removed 'Bookmarks' button from toolbar.
 	* Updates of website files.
 	* Removed all reference to USE_CUSTOM_DRAWING & USE_CUSTOM_LAYOUT

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.72 2004-02-29 08:56:41 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.73 2004-03-02 07:08:41 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -407,7 +407,8 @@ static float versionNumber;
 				[[iTermKeyBindingMgr singleInstance] addEntryForKeyCode: hexCode 
 															  modifiers: modifiers 
 																 action: [kbEntryAction indexOfSelectedItem] 
-																   text: [kbEntryText stringValue]];
+																   text: [kbEntryText stringValue]
+																profile: [kbProfileSelector titleOfSelectedItem]];
 			}
 		}
 		else
@@ -415,7 +416,8 @@ static float versionNumber;
 			[[iTermKeyBindingMgr singleInstance] addEntryForKey: [kbEntryKey indexOfSelectedItem] 
 													  modifiers: modifiers 
 														 action: [kbEntryAction indexOfSelectedItem] 
-														   text: [kbEntryText stringValue]];			
+														   text: [kbEntryText stringValue]
+														profile: [kbProfileSelector titleOfSelectedItem]];			
 		}
 		[kbEntryTableView reloadData];
 	}

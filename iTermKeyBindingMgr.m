@@ -133,6 +133,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 				  modifiers: (unsigned int) modifiers
 					 action: (unsigned int) action
 					   text: (NSString *) text
+					profile: (NSString *) profile
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 }
@@ -141,6 +142,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 			  modifiers: (unsigned int) modifiers
 				 action: (unsigned int) action
 				   text: (NSString *) text
+				profile: (NSString *) profile
 {
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 }

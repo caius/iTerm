@@ -114,11 +114,13 @@
 - (void) addEntryForKeyCode: (unsigned int) hexCode 
 				  modifiers: (unsigned int) modifiers
 					 action: (unsigned int) action
-					   text: (NSString *) text;
+					   text: (NSString *) text
+					profile: (NSString *) profile;
 - (void) addEntryForKey: (unsigned int) key 
 				  modifiers: (unsigned int) modifiers
 					 action: (unsigned int) action
-					   text: (NSString *) text;
+					   text: (NSString *) text
+				profile: (NSString *) profile;
 - (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode;
 - (int) entryAtIndex: (int) index key: (NSString *) unmodkeystr modifiers: (int *) modifiers;
 

@@ -261,7 +261,7 @@
     [theEvent retain];
     mouseEvent = theEvent;
 
-    [super mouseDown: theEvent];
+    //[super mouseDown: theEvent];
     
 }
 
@@ -275,7 +275,7 @@
 
     windowPoint = [theEvent locationInWindow];
 
-    [super mouseUp: theEvent];
+    //[super mouseUp: theEvent];
 
     // If this is the same point as the mouseDown location, do a mouse click
     if ((windowPoint.x == [mouseEvent locationInWindow].x) &&

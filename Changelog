@@ -3,6 +3,7 @@
     * Moved more session-specific code to from PseudoTerminal to PTYSession. 
       Potential for each tab to have its own font. Screen sizing issues need 
       to be worked out.
+    * Fixed bug in PTYTabView that prevented non-selected tabs from being dragged.
 
 2003-09-12	ujwal
 

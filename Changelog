@@ -1,3 +1,9 @@
+2002-11-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed bug in PreferencePanel where transparency was
+      not being stored.
+      
+
 2002-11-28	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed crash when closing window when a session program 

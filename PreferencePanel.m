@@ -146,6 +146,7 @@ static int TRANSPARENCY  =10;
     [prefs setObject:defaultTerminal forKey:@"Terminal"];
     [prefs setObject:defaultEncoding forKey:@"Encoding"];
     [prefs setObject:defaultShell forKey:@"Shell"];
+    [prefs setInteger:defaultTransparency forKey:@"Transparency"];
                
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultForeground]
               forKey:@"Foreground"];

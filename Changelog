@@ -1,3 +1,10 @@
+2003-05-30	ujwal
+
+    * Changed AddressBook window class back to NSPanel so that it 
+      does not appear in the list of windows. Fixed some resizing and 
+      button positioning issues.
+
+
 2003-05-29	ujwal
 
     * Fixed bug where PseduoTerminal's delegate was not being set.

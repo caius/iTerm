@@ -116,6 +116,7 @@ static FindPanelWindowController *sharedInstance = nil;
     
     [[FindCommandHandler sharedInstance] setSearchString:searchString];
     [[FindCommandHandler sharedInstance] findNext];
+	[[self window] close];
 }
 
 - (IBAction)findPrevious: (id) sender
@@ -129,6 +130,7 @@ static FindPanelWindowController *sharedInstance = nil;
     
     [[FindCommandHandler sharedInstance] setSearchString:searchString];
     [[FindCommandHandler sharedInstance] findPrevious];
+	[[self window] close];
 }
 
 // get/set methods

@@ -69,6 +69,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	NSMutableDictionary *mappingDict;
 	NSString *profileName;
 	NSDictionary *sourceDict;
+	NSString *commonProfile;
 	
 	// recursively copy the dictionary to ensure mutability
 	if(aDict != nil)
@@ -82,12 +83,15 @@ static iTermKeyBindingMgr *singleInstance = nil;
 			[mappingDict release];
 		}
 	}
-	else
+	
+	// Create our common profile if it does not exist yet
+	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", 
+													   [NSBundle bundleForClass: [self class]], 
+													   @"Key Binding Profiles");
+	if([profiles objectForKey: commonProfile] == nil)
 	{
 		mappingDict = [[NSMutableDictionary alloc] init];
-		[profiles setObject: mappingDict forKey: NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", 
-																					[NSBundle bundleForClass: [self class]], 
-																					@"Key Binding Profiles")];
+		[profiles setObject: mappingDict forKey: commonProfile];
 		[mappingDict release];
 	}
 }

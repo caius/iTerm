@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.33 2003-02-23 07:46:27 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.34 2003-02-24 19:45:03 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1178,7 +1178,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
     strictAnsiMode = NO;
 
-    defaultCharacterAttributeDictionary = [[NSMutableDictionary alloc] init];
+    defaultCharacterAttributeDictionary[0] = [[NSMutableDictionary alloc] init];
+    defaultCharacterAttributeDictionary[1] = [[NSMutableDictionary alloc] init];
     streamOffset = 0;
 
     return self;
@@ -1640,15 +1641,15 @@ static VT100TCC decode_string(unsigned char *datap,
     return CHARATTR;
 }
 
-- (NSMutableDictionary *)characterAttributeDictionary
+- (NSMutableDictionary *)characterAttributeDictionary:(BOOL) asc
 {
 
     if(CHARATTR == 0)
-	return(defaultCharacterAttributeDictionary);
+        return(defaultCharacterAttributeDictionary[asc?0:1]);
 
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     int under = 0,blink=0, bold = 0;
-    NSFont *aFont;
+    NSFont *aFont, *defaultFont;
     
     NSParameterAssert(dic != nil);
 
@@ -1675,32 +1676,44 @@ static VT100TCC decode_string(unsigned char *datap,
 	    forKey:NSUnderlineStyleAttributeName];
     [dic setObject:[NSNumber numberWithInt:blink]
                    forKey:NSBlinkAttributeName];
+    defaultFont=asc?[SCREEN font]:[SCREEN nafont];
     if(bold)    {
-        aFont = [[NSFontManager sharedFontManager] convertFont: [SCREEN font] toHaveTrait: NSBoldFontMask];
+        aFont = [[NSFontManager sharedFontManager] convertFont: defaultFont toHaveTrait: NSBoldFontMask];
 //        NSLog(@"%@->%@(%f, %f)",[SCREEN font], aFont, [VT100Screen fontSize:[SCREEN font]].height, [VT100Screen fontSize:aFont].height);
-        if ([VT100Screen fontSize:aFont].height!=[VT100Screen fontSize:[SCREEN font]].height) aFont=[SCREEN font];
+        if ([VT100Screen fontSize:aFont].height!=[VT100Screen fontSize:defaultFont].height) aFont=defaultFont;
     }
     else
     {
-	aFont=[SCREEN font];
+	aFont=defaultFont;
     }
     [dic setObject:aFont forKey:NSFontAttributeName];
-
+    [dic setObject:[NSNumber numberWithInt:(asc?1:2)] forKey:@"NSCharWidthAttributeName"];
+    
     return dic;
 }
 
-- (NSMutableDictionary *)defaultCharacterAttributeDictionary
+- (NSMutableDictionary *)defaultCharacterAttributeDictionary: (BOOL) asc
 {
-    return (defaultCharacterAttributeDictionary);
+    return (defaultCharacterAttributeDictionary[asc?0:1]);
 }
 
 - (void) initDefaultCharacterAttributeDictionary
 {
-    [defaultCharacterAttributeDictionary setObject:[self colorWithCode:FG_COLORCODE]
+    [defaultCharacterAttributeDictionary[0] setObject:[self colorWithCode:FG_COLORCODE]
 			  forKey:NSForegroundColorAttributeName];
-    [defaultCharacterAttributeDictionary setObject:[self colorWithCode:BG_COLORCODE]
+    [defaultCharacterAttributeDictionary[0] setObject:[self colorWithCode:BG_COLORCODE]
 			  forKey:NSBackgroundColorAttributeName];
-    [defaultCharacterAttributeDictionary setObject:[SCREEN font] forKey:NSFontAttributeName];
+    [defaultCharacterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
+    [defaultCharacterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
+                                               forKey:@"NSCharWidthAttributeName"];
+    [defaultCharacterAttributeDictionary[1] setObject:[self colorWithCode:FG_COLORCODE]
+                                                                    forKey:NSForegroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[1] setObject:[self colorWithCode:BG_COLORCODE]
+                                                                    forKey:NSBackgroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
+    [defaultCharacterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
+                                               forKey:@"NSCharWidthAttributeName"];
+    
 
 }
 
@@ -1742,19 +1755,11 @@ static VT100TCC decode_string(unsigned char *datap,
             KEYPAD_MODE = NO;
             break;
         case VT100CC_SI:
-//        case VT100CSI_SCS0:
             CHARSET = 0;
             break;
         case VT100CC_SO:
-//        case VT100CSI_SCS1:
             CHARSET = 1;
             break;
-/*        case VT100CSI_SCS2:
-            CHARSET = 2;
-            break;
-        case VT100CSI_SCS3:
-            CHARSET = 3;
-            break;  */
         case VT100CC_DC1:
             XON = YES;
             break;

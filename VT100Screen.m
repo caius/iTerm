@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.48 2003-02-23 00:37:54 ujwal Exp $
+// $Id: VT100Screen.m,v 1.49 2003-02-24 19:45:01 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1523,20 +1523,15 @@ static BOOL PLAYBELL = YES;
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc
 {
     NSMutableAttributedString *attr;
-    NSMutableDictionary *dic = [TERMINAL characterAttributeDictionary];
- 
+
     if (str==nil) {
         NSLog(@"attrString: nil received!");
         str=@"";
     }
-    if (!asc)
-    {
-	[dic setObject:NAFONT forKey:NSFontAttributeName];
-	[dic setObject:[NSNumber numberWithInt:(asc?1:2)] forKey:NSCharWidthAttributeName];
-    }
+
     attr = [[NSAttributedString alloc]
                initWithString:str
-                   attributes:dic];
+                   attributes:[TERMINAL characterAttributeDictionary:asc]];
     
     [attr autorelease];
 
@@ -1554,7 +1549,7 @@ static BOOL PLAYBELL = YES;
     
     attr = [[NSAttributedString alloc]
                initWithString:str
-                   attributes:[TERMINAL defaultCharacterAttributeDictionary]];
+                   attributes:[TERMINAL defaultCharacterAttributeDictionary:YES]];
 
     [attr autorelease];
 

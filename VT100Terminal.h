@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.15 2003-02-23 07:46:27 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.16 2003-02-24 19:45:02 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -229,7 +229,7 @@ typedef struct {
 
     BOOL strictAnsiMode;
 
-    NSMutableDictionary *defaultCharacterAttributeDictionary;
+    NSMutableDictionary *defaultCharacterAttributeDictionary[2];
     unsigned int streamOffset;
 }
 
@@ -301,8 +301,8 @@ typedef struct {
 - (NSData *)reportDeviceAttribute;
 
 - (unsigned int)characterAttribute;
-- (NSMutableDictionary *)characterAttributeDictionary;
-- (NSMutableDictionary *)defaultCharacterAttributeDictionary;
+- (NSMutableDictionary *)characterAttributeDictionary: (BOOL) asc;
+- (NSMutableDictionary *)defaultCharacterAttributeDictionary:  (BOOL) asc;
 - (void) initDefaultCharacterAttributeDictionary;
 
 - (void)_setMode:(VT100TCC)token;

@@ -162,6 +162,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [TEXTVIEW setCursorIndex:[SCREEN getIndex:0 y:0]];
     [tabViewItem setLabelAttributes: chosenStateAttribute];
+    blink=0; output=3; dirty=YES;
         
 }
 
@@ -239,7 +240,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [TERMINAL putStreamData:data];
     if ([parent pending]) return;
 
-    oIdleCount=0;
     if (REFRESHED==NO) {
         REFRESHED=YES;
         if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
@@ -255,6 +255,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	if (token.type != VT100_SKIP)
 	    [SCREEN putToken:token];
     }
+    oIdleCount=0;
     if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
@@ -687,8 +688,9 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-
     iIdleCount++; oIdleCount++; blink++; output++;
+    if (++output>1000) output=1000;
+    
     if (antiIdle) {
         if (iIdleCount>=600) {
             [SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
@@ -699,16 +701,21 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
     }
 
-    if (blink>5) { [SCREEN blink]; blink=0; }
-    if (output % 2 == 0 && oIdleCount < 3) {
-	[SCREEN updateScreen];
-	[TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-	[SCREEN showCursor];
-	// If the user has not scrolled up, move to the end
-	if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-     [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-    ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-            [self moveLastLine];
+    if (blink>8) { [SCREEN blink]; blink=0; }
+    if (oIdleCount<3||dirty) {
+        if (output>3) {
+            [SCREEN updateScreen];
+            [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+            [SCREEN showCursor];
+            // If the user has not scrolled up, move to the end
+            /*       if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height)) */
+           [self moveLastLine];
+            output=0;
+            dirty=NO;
+        }
+        else dirty=YES;
     }
 }
 

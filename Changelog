@@ -2,9 +2,11 @@
 
     * Fixed and simplified screen updating code.
 
-2003-02-23	fabian
+2003-02-24	fabian
     * Changed version number to 0.6.4
     * Updated help files
+    * Fixed a bug in timerTick
+    * Fixed a bug that deals non-ASCII characters wrong.
     
 2003-02-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

@@ -71,6 +71,7 @@
     PTYTextView *TEXTVIEW;
     NSTimer *timer;
     int	iIdleCount,oIdleCount, blink, output;
+    BOOL dirty;
     BOOL REFRESHED;
     BOOL antiIdle;
     BOOL waiting;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.42 2003-04-15 15:12:24 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.43 2003-04-25 01:49:38 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -83,6 +83,7 @@
     BOOL newwin;
     PreferencePanel *pref;
     BOOL tabViewDragOperationInProgress;
+    BOOL resizeInProgress;
 }
 
 + (PseudoTerminal *)newTerminalWindow: sender;

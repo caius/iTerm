@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.148 2003-04-24 22:34:21 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.149 2003-04-25 01:49:38 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -123,6 +123,7 @@ static NSString *ConfigToolbarItem = @"Config";
     newwin = [[NSUserDefaults standardUserDefaults] boolForKey:@"SESSION_IN_NEW_WINDOW"];
 
     tabViewDragOperationInProgress = NO;
+    resizeInProgress = NO;
 
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal init: 0x%x]", __FILE__, __LINE__, self);
@@ -865,13 +866,13 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
 
-#if 0
+#if 1
 
     return (proposedFrameSize);
 
 #else
 
-    NSSize winSize, contentSize, scrollviewSize, textviewSize;
+    NSSize winSize, contentSize, scrollviewSize, textviewSize, termSize;
     int h;
 
     // This calculation ensures that the window size is pruned to display an interger number of lines.
@@ -906,9 +907,15 @@ static NSString *ConfigToolbarItem = @"Config";
 			   	       borderType:NSNoBorder];
     //NSLog(@"textview size: width = %f; height = %f", textviewSize.width, textviewSize.height);
 
+    termSize = [VT100Screen screenSizeInFrame: NSMakeRect(0, 0, proposedFrameSize.width, proposedFrameSize.height) font: [[currentPtySession SCREEN] tallerFont]];
                                        
     // Now calculate an appropriate terminal height for this in integers.
-    h = floor(textviewSize.height/[[currentPtySession SCREEN] characterSize].height);
+    //h = floor(textviewSize.height/[[currentPtySession SCREEN] characterSize].height);
+    h = (int)termSize.height;
+    WIDTH = (int)termSize.width;
+    HEIGHT = (int)termSize.height;
+    //[self setWindowSize: NO];
+    return (proposedFrameSize);
     //NSLog(@"h = %d", h);
     
     // Now do the reverse calculation
@@ -958,10 +965,18 @@ static NSString *ConfigToolbarItem = @"Config";
     NSSize termSize, vsize;
     int i, w, h;
 
+    if(resizeInProgress == YES)
+    {
+	resizeInProgress = NO;
+	return;
+    }
+
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowDidResize: width = %f, height = %f]",
 	  __FILE__, __LINE__, [WINDOW frame].size.width, [WINDOW frame].size.height);
 #endif
+
+    resizeInProgress = YES;
 
     frame = [[[currentPtySession SCROLLVIEW] contentView] frame];
 #if 0
@@ -989,6 +1004,8 @@ static NSString *ConfigToolbarItem = @"Config";
     WIDTH = w;
     HEIGHT = h;
 
+    [self setWindowSize: NO];
+    
     // Display the new size in the window title.
     NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [currentPtySession name], WIDTH, HEIGHT];
     [self setWindowTitle: aTitle];

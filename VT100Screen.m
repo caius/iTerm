@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.96 2003-05-30 07:10:27 ujwal Exp $
+// $Id: VT100Screen.m,v 1.97 2003-05-30 14:53:26 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -203,6 +203,12 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen dealloc]", __FILE__, __LINE__);
 #endif
 
+
+    if([self screenIsLocked])
+	[self removeScreenLock];
+    [screenLock release];
+    screenLock = nil;
+    
     [FONT release];
 
     [display release];

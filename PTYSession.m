@@ -439,17 +439,10 @@ static NSString *PWD_ENVVALUE = @"~";
 //        NSLog(@"opt_control_key detected(%d)",(modflag & NSShiftKeyMask));
         [MAINMENU interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
     }
-    else if(modflag & NSAlternateKeyMask)
+    else if((modflag & NSAlternateKeyMask) && (unicode == NSDeleteCharacter))
     {
-	switch (unicode)
-	{
-	    case NSDeleteCharacter:
-		// toggle our setting for remapping the delete key.
-		[self setRemapDeleteKey: ![self remapDeleteKey]];
-		break;
-	}
+	[self setRemapDeleteKey: ![self remapDeleteKey]];
     }
-        
     else {
 
 	if (modflag & NSFunctionKeyMask) {

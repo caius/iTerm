@@ -1,3 +1,7 @@
+2003-09-11	ujwal
+
+    * Put in preliminary infrastructure for background image support.
+
 2003-09-11	fabian
 
     * Fixed a bug in showCursor that causes assertation failures.

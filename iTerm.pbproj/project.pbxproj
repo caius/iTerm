@@ -51,6 +51,7 @@
 				DD4BAB7C0470C44C00A8A065,
 				20D5CC6404E7AA0500000106,
 				E8A66F030272453F03A80106,
+				DD5284490510553000A8A065,
 				20E74F4904E9089700000106,
 				20B8891A04E924CD00000106,
 				20B88B6104E948FA00000106,
@@ -84,6 +85,7 @@
 				872EBC6A04E42E320073D10E,
 				20D5CC6304E7AA0500000106,
 				872EBC6204E42E320073D10E,
+				DD0E91A4050F77A700A8A065,
 				20E74F4804E9089700000106,
 				20B8891904E924CD00000106,
 				20B88B6004E948FA00000106,
@@ -1149,6 +1151,22 @@
 //DD2
 //DD3
 //DD4
+		DD0E91A4050F77A700A8A065 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = iTermImageView.h;
+			path = Headers/iTerm/iTermImageView.h;
+			refType = 4;
+		};
+		DD0E91A5050F77A700A8A065 = {
+			fileRef = DD0E91A4050F77A700A8A065;
+			isa = PBXBuildFile;
+			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
+			};
+		};
 		DD12B4D70491DAA000A8A065 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -1190,6 +1208,7 @@
 				20B8892C04E9342100000106,
 				20B88B0E04E9387400000106,
 				20B88B6204E948FC00000106,
+				DD0E91A5050F77A700A8A065,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1245,6 +1264,7 @@
 				20B8892D04E9342100000106,
 				20B88B0A04E9386F00000106,
 				20B88B6304E948FC00000106,
+				DD52844A0510553000A8A065,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1576,6 +1596,18 @@
 		};
 		DD4BAB7E0470C44C00A8A065 = {
 			fileRef = DD4BAB7C0470C44C00A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD5284490510553000A8A065 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = iTermImageView.m;
+			refType = 4;
+		};
+		DD52844A0510553000A8A065 = {
+			fileRef = DD5284490510553000A8A065;
 			isa = PBXBuildFile;
 			settings = {
 			};

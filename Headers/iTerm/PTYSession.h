@@ -69,6 +69,7 @@
     NSString *TERM_VALUE;
     VT100Screen   *SCREEN;
     BOOL EXIT;
+    NSView *view;
     iTermImageView *imageView;
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;

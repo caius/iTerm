@@ -37,6 +37,7 @@
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/PTYTabViewitem.h>
 #import <iTerm/AddressBookWindowController.h>
+#import <iTerm/iTermImageView.h>
 
 #import <iTerm/VT100TextStorage.h>
 #import <iTerm/VT100LayoutManager.h>
@@ -107,7 +108,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
     
     [TERM_VALUE release];
-    [SCROLLVIEW release];
+    [view release];
     [name release];
     [windowTitle release];
         
@@ -140,13 +141,23 @@ static NSString *PWD_ENVVALUE = @"~";
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
 
     [SCREEN setSession:self];
-    [self setName:@"Shell"];    
+    [self setName:@"Shell"];
 
-    // Allocate a scrollview and add to the tabview
+    // Allocate a scrollview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: aRect];
     [SCROLLVIEW setHasVerticalScroller:YES];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+
+    // allocate an imageview for the background image
+    //imageView = [[iTermImageView alloc] initWithFrame: aRect];
+    //[imageView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];    
+    //[imageView addSubview: SCROLLVIEW];
+    //[SCROLLVIEW release];
+
+    // assign the main view
+    //view = imageView;
+    view = SCROLLVIEW;
     
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
@@ -1164,7 +1175,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (NSView *) view
 {
-    return (SCROLLVIEW);
+    return (view);
 }
 
 - (PTYTextView *) TEXTVIEW

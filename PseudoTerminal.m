@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.102 2003-02-10 04:03:53 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.103 2003-02-11 07:38:55 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1041,6 +1041,9 @@ static NSString *ConfigToolbarItem = @"Config";
 
 - (IBAction)windowConfigOk:(id)sender
 {
+
+    [[currentPtySession SCREEN] showCursor: NO];
+    
     if ([CONFIG_COL intValue]<1||[CONFIG_ROW intValue]<1) {
         NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
@@ -1110,7 +1113,9 @@ static NSString *ConfigToolbarItem = @"Config";
             [[currentPtySession SCROLLVIEW] setNeedsDisplay: YES];
             
         }
-        [[currentPtySession SCREEN] showCursor];
+
+        [[currentPtySession SCREEN] showCursor: YES];
+	
         [[self currentSession] moveLastLine];
         [self setCurrentSessionName: [CONFIG_NAME stringValue]]; 
     

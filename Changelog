@@ -11,6 +11,8 @@
       the parameters in the array was important like 
       [VT100Screen: -setTopBottom].
       
+    * Fixed a cursor display bug in PseudoTerminal: -windowConfigOk.
+      
 
 2003-02-10	fabian
     * Cleaned up showCursor code

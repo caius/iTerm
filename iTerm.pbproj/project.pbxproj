@@ -11,6 +11,7 @@
 				05A162CF006CD5FC7F000001,
 				FB094A1A033D71D501F955DB,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -67,6 +68,7 @@
 		0464AB15006CD2EC7F000001 = {
 			children = (
 				FB8D9E6503D6136101F955DB,
+				DD6ACB000410746C00A8A065,
 				DD48F1D003EBBC2200A8A065,
 				FB019DE203670C6501F955DB,
 				E8CF7565026DDA6303A80106,
@@ -227,7 +229,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -247,6 +248,7 @@
 				F5E533B903B2959201A8A066,
 				FB8D9E6603D6136101F955DB,
 				DD48F1D203EBBC2200A8A065,
+				DD6ACB010410746C00A8A065,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,6 +417,18 @@
 		};
 		DD48F1D303EBBC2200A8A065 = {
 			fileRef = DD48F1D103EBBC2200A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD6ACB000410746C00A8A065 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = iTerm.h;
+			refType = 4;
+		};
+		DD6ACB010410746C00A8A065 = {
+			fileRef = DD6ACB000410746C00A8A065;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1049,7 +1063,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		FB7EECDB0340D3CD01F955DB = {
 			buildActionMask = 2147483647;

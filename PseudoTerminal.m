@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.123 2003-02-27 22:11:57 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.124 2003-03-01 17:41:27 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -33,8 +33,7 @@
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
-#define USE_CUSTOM_DRAWING	0
-
+#import "iTerm.h"
 #import "PseudoTerminal.h"
 #import "PTYScrollView.h"
 #import "NSStringITerm.h"
@@ -1502,6 +1501,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	}
 	else
 	{
+	    [TABVIEW setTabViewType: [pref tabViewType]];
 	    [self setWindowSize: NO];
 	}
 

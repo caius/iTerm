@@ -378,6 +378,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     
     [AE_PANEL center];
 
+    [tabSelection selectItemAtIndex: 1];
     [tabView selectTabViewItemAtIndex: [tabSelection indexOfSelectedItem]];
     
     defaultEntry = isDefaultEntry( entry );

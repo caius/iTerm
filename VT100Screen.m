@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.32 2003-02-05 07:52:49 ujwal Exp $
+// $Id: VT100Screen.m,v 1.33 2003-02-05 18:01:04 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -593,6 +593,7 @@ static BOOL PLAYBELL = YES;
     for(;x>0&&idx<len&&[s characterAtIndex:idx]!='\n';idx++) {
 //        if (ISDOUBLEWIDTHCHARACTER([s characterAtIndex:idx])) {
         if (ISDOUBLEWIDTHCHARACTER(idx)) {
+//            NSLog(@"X");
             x-=2;
         }
         else x--;
@@ -605,6 +606,8 @@ static BOOL PLAYBELL = YES;
 
     if (x<0) {
         CURSOR_IN_MIDDLE=YES;
+        idx--;
+//        NSLog(@"cursor in middle!");
     }
     else CURSOR_IN_MIDDLE=NO;
     
@@ -865,7 +868,7 @@ static BOOL PLAYBELL = YES;
 - (void)showCursor:(BOOL)show
 {
     NSColor *fg, *bg;
-    NSDictionary *dic;
+    NSMutableDictionary *dic;
 
     
 #if DEBUG_METHOD_TRACE
@@ -881,7 +884,11 @@ static BOOL PLAYBELL = YES;
 	    fg = [TERMINAL defaultFGColor];
 	    bg = [TERMINAL defaultBGColor];
 //            NSLog(@"fg=%@\nbg=%@",fg,bg);
-            dic=[NSDictionary dictionaryWithObjectsAndKeys:bg,NSBackgroundColorAttributeName,fg,NSForegroundColorAttributeName,@"NO",NSReversedAttributeName,nil];
+            dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:OLD_CURSOR_INDEX effectiveRange:nil]];
+            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+            [dic setObject:fg forKey:NSForegroundColorAttributeName];
+            [dic setObject:@"NO" forKey:NSReversedAttributeName];
+            
 //            NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX],[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX]);
             [STORAGE setAttributes:dic range:NSMakeRange(OLD_CURSOR_INDEX,1)];
             OLD_CURSOR_INDEX=-1;
@@ -899,7 +906,10 @@ static BOOL PLAYBELL = YES;
 	// reverse the video on the position where the cursor is supposed to be shown.
 	fg = [TERMINAL defaultFGColor];
 	bg = [[TERMINAL defaultBGColor] colorWithAlphaComponent: 1.0]; // remove any transparency
-        dic=[NSDictionary dictionaryWithObjectsAndKeys:fg,NSBackgroundColorAttributeName,bg,NSForegroundColorAttributeName,@"YES",NSReversedAttributeName,nil];
+        dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
+        [dic setObject:fg forKey:NSBackgroundColorAttributeName];
+        [dic setObject:bg forKey:NSForegroundColorAttributeName];
+        [dic setObject:@"YES" forKey:NSReversedAttributeName];
         //                NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
         OLD_CURSOR_INDEX=idx;

@@ -1,3 +1,8 @@
+2003-02-05	fabian
+    * Fixed a bug in showCursor that causes the loss of
+      attributes. That partially solves the double-width
+      characters problem.
+      
 2003-02-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added menu item in tabview contextual menu to move 

@@ -9,6 +9,8 @@
       Aslo, currently FG color will have no alpha.
     * Fixed a display problem when change FG/BG colors or
       Transparency.
+    * Implemented ANSI code VPA and VPR, to fix one user's
+      problem with Debian programs.
       
 2003-03-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

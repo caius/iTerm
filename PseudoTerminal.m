@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.126 2003-03-10 22:38:13 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.127 2003-03-10 23:38:09 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -903,7 +903,7 @@ static NSString *ConfigToolbarItem = @"Config";
     // Finally calculate the window frame size
     winSize = [NSWindow frameRectForContentRect: NSMakeRect(0, 0, contentSize.width, contentSize.height) styleMask: [WINDOW styleMask]].size;
     //NSLog(@"window size: width = %f; height = %f", winSize.width, winSize.height);
-        
+
     return (winSize);
     
 #endif

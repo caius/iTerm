@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.38 2002-12-18 04:58:22 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.39 2002-12-18 05:16:10 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1288,7 +1288,12 @@ static NSDictionary *deadStateAttribute;
 {
     NSMenuItem *item;
     NSImage *image;
-    
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal _buildAddressBookMenu]",
+          __FILE__, __LINE__);
+#endif
+
     // build the menu
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
@@ -1335,7 +1340,7 @@ static NSDictionary *deadStateAttribute;
     {
         aToolbarItem = [toolbarItemArray objectAtIndex: i];
         
-        if([[aToolbarItem itemIdentifier] isEqual: ABToolbarItem])
+        if([[aToolbarItem itemIdentifier] isEqual: NewToolbarItem])
         {
             aPopUpButton = (NSPopUpButton *)[aToolbarItem view];
             [self _buildAddressBookMenu: aPopUpButton];

@@ -183,6 +183,8 @@
     }
     
     // add the item
+    maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]+1)-17;
+    if (maxLabelSize<20) maxLabelSize=20;
     [super addTabViewItem: aTabViewItem];
     
 }
@@ -199,6 +201,8 @@
 	[delegate tabView: self willRemoveTabViewItem: aTabViewItem];
     
     // remove the item
+    maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]-1)-17;
+    if (maxLabelSize<20) maxLabelSize=20;
     [super removeTabViewItem: aTabViewItem];
     
 }
@@ -215,6 +219,9 @@
 	[delegate tabView: self willInsertTabViewItem: tabViewItem atIndex: index];    
 
     // insert the item
+    maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]+1)-17;
+    if (maxLabelSize<20) maxLabelSize=20;
+    
     [super insertTabViewItem: tabViewItem atIndex: index];
     
 }
@@ -644,5 +651,9 @@
     
 }
 
+- (float) maxLabelSize
+{
+    return maxLabelSize;
+}
 
 @end

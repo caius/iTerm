@@ -68,17 +68,21 @@
     if(labelAttributes != nil)
     {
         NSMutableAttributedString *attributedLabel;
-
+        NSMutableParagraphStyle *pstyle=[[NSMutableParagraphStyle alloc] init];
+        [pstyle setLineBreakMode:NSLineBreakByTruncatingMiddle];
         attributedLabel = [[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
 	    [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes];
-	// If we are a current drag target, add foreground and background colors
+
+        // If we are a current drag target, add foreground and background colors
 	if(dragTarget)
 	{
 	    [attributedLabel addAttribute: NSForegroundColorAttributeName value: [NSColor greenColor]
 								    range: NSMakeRange(0, [attributedLabel length])];
 	    [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor]
 								    range: NSMakeRange(0, [attributedLabel length])];
-	}
+        }
+        [attributedLabel addAttribute:NSParagraphStyleAttributeName value:pstyle range:NSMakeRange(0, [attributedLabel length])];
+        
         if (bell) {
 	    int tabViewType = [[self tabView] tabViewType];
 	    if(tabViewType == NSTopTabsBezelBorder || tabViewType == NSBottomTabsBezelBorder)
@@ -87,7 +91,8 @@
 		    warningImage=[NSImage imageNamed:@"important"];
 		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x,tabRect.origin.y+16)
 		       operation:NSCompositeSourceOver];
-		[attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x+18,tabRect.origin.y)];
+                tabRect.origin.x+=18;
+                tabRect.size.width-=18;
 	    }
 	    else if(tabViewType == NSRightTabsBezelBorder)
 	    {
@@ -95,7 +100,8 @@
 		    warningImage=[NSImage imageNamed:@"important_r"];
 		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x + 12,tabRect.origin.y + 15)
 		       operation:NSCompositeSourceOver];
-		[attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x + 14,tabRect.origin.y)];		
+                tabRect.origin.x+=14;
+                tabRect.size.width-=14;
 	    }
 	    else if(tabViewType == NSLeftTabsBezelBorder)
 	    {
@@ -103,12 +109,12 @@
 		    warningImage=[NSImage imageNamed:@"important_l"];
 		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x - 3,tabRect.origin.y)
 				     operation:NSCompositeSourceOver];
-		[attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x + 15,tabRect.origin.y)];
+                tabRect.origin.x+=15;
+                tabRect.size.width-=15;
 	    }
-	    
+            [attributedLabel drawInRect: tabRect];
         }
-        else [attributedLabel drawAtPoint:tabRect.origin];
-        
+        else [attributedLabel drawInRect: tabRect]; 
         [attributedLabel release];
         
     }
@@ -153,7 +159,8 @@
     {
         aSize = [super sizeOfLabel: shouldTruncateLabel];
     }
-    
+
+    if (aSize.width>[((PTYTabView*)[self tabView]) maxLabelSize]) aSize.width=[((PTYTabView*)[self tabView]) maxLabelSize];
     return (aSize);
 }
 

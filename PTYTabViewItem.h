@@ -26,7 +26,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
-
+#import "PTYTabView.h"
 
 @interface PTYTabViewItem : NSTabViewItem {
 

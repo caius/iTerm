@@ -30,6 +30,7 @@
 
 @interface PTYTabView : NSTabView {
     NSEvent *mouseEvent;
+    float maxLabelSize;
     int dragTargetTabViewItemIndex;
     BOOL dragSessionInProgress;
 }
@@ -64,7 +65,7 @@
 - (BOOL) prepareForDragOperation: (id <NSDraggingInfo>) sender;
 - (BOOL) performDragOperation: (id <NSDraggingInfo>) sender;
 - (void) concludeDragOperation: (id <NSDraggingInfo>) sender;
-
+- (float) maxLabelSize;
 
 
 @end

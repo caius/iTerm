@@ -1,3 +1,7 @@
+2003-04-28	fabian
+    * Dynamically change the tab size based on the number of tabs
+    * Version number updated to 0.7.0
+    
 2003-04-28	ujwal
 
     * Massive code re-organization for revamped 

@@ -11,6 +11,7 @@
 				05A162CF006CD5FC7F000001,
 				FB094A1A033D71D501F955DB,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -215,7 +216,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -391,11 +391,13 @@
 			};
 		};
 		E8A66F030272453F03A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = MainMenu.m;
 			refType = 4;
 		};
 		E8A66F040272453F03A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = MainMenu.h;
 			refType = 4;
@@ -425,16 +427,19 @@
 			};
 		};
 		E8CF755F026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYScrollView.m;
 			refType = 4;
 		};
 		E8CF7560026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTask.m;
 			refType = 4;
 		};
 		E8CF7561026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTextView.m;
 			refType = 4;
@@ -446,36 +451,43 @@
 			refType = 4;
 		};
 		E8CF7563026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = VT100Terminal.m;
 			refType = 4;
 		};
 		E8CF7565026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PseudoTerminal.h;
 			refType = 4;
 		};
 		E8CF7566026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYScrollView.h;
 			refType = 4;
 		};
 		E8CF7567026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTask.h;
 			refType = 4;
 		};
 		E8CF7568026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTextView.h;
 			refType = 4;
 		};
 		E8CF7569026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = VT100Screen.h;
 			refType = 4;
 		};
 		E8CF756A026DDA6303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = VT100Terminal.h;
 			refType = 4;
@@ -535,6 +547,7 @@
 			};
 		};
 		E8CF757F026DDAD703A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = main.m;
 			refType = 4;
@@ -546,11 +559,13 @@
 			};
 		};
 		E8E901A202743CA303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = NSStringITerm.m;
 			refType = 4;
 		};
 		E8E901A302743CA303A80106 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = NSStringITerm.h;
 			refType = 4;
@@ -589,6 +604,7 @@
 //F53
 //F54
 		F500A65D0395269C01A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = Changelog;
 			refType = 4;
@@ -600,11 +616,13 @@
 			};
 		};
 		F52ED8DC037F0A7D01A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYSession.h;
 			refType = 4;
 		};
 		F52ED8DD037F0A7D01A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYSession.m;
 			refType = 4;
@@ -616,11 +634,13 @@
 			};
 		};
 		F56B230A03A1B36701A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYWindow.h;
 			refType = 4;
 		};
 		F56B230B03A1B36701A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYWindow.m;
 			refType = 4;
@@ -644,21 +664,25 @@
 			};
 		};
 		F5E533B203B2959201A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTabView.h;
 			refType = 4;
 		};
 		F5E533B303B2959201A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTabViewItem.m;
 			refType = 4;
 		};
 		F5E533B403B2959201A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTabView.m;
 			refType = 4;
 		};
 		F5E533B503B2959201A8A066 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PTYTabViewItem.h;
 			refType = 4;
@@ -698,11 +722,13 @@
 //FB3
 //FB4
 		FB019DE103670C6501F955DB = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PreferencePanel.m;
 			refType = 4;
 		};
 		FB019DE203670C6501F955DB = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = PreferencePanel.h;
 			refType = 4;
@@ -782,6 +808,7 @@
 			};
 		};
 		FB151F2603648AB401F955DB = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			name = iTerm.strings;
 			path = English.lproj/iTerm.strings;
@@ -912,7 +939,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		FB7EECDB0340D3CD01F955DB = {
 			buildActionMask = 2147483647;
@@ -1164,12 +1190,14 @@
 			};
 		};
 		FBBB8B47039D9E1701F955DB = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			name = zh_CN;
 			path = zh_CN.lproj/iTerm.strings;
 			refType = 4;
 		};
 		FBBB8B48039D9E1F01F955DB = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			name = zh_TW;
 			path = zh_TW.lproj/iTerm.strings;

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.60 2003-08-11 16:36:39 sgehrman Exp $
+// $Id: PreferencePanel.m,v 1.61 2003-08-13 05:03:54 sgehrman Exp $
 /*
  **  PreferencePanel.m
  **
@@ -29,6 +29,7 @@
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/AddressBookWindowController.h>
 #import <iTerm/iTermController.h>
+#import <iTerm/ITAddressBookMgr.h>
 
 static unsigned int  SCROLLBACK = 1000000;
 
@@ -265,7 +266,7 @@ static float versionNumber;
 
     abWindowController = [AddressBookWindowController singleInstance];
     if([[abWindowController window] isVisible] == NO)
-	[abWindowController setAddressBook: [[iTermController sharedInstance] addressBook]];
+	[abWindowController setAddressBook: [[ITAddressBookMgr sharedInstance] addressBook]];
     
     [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
 }

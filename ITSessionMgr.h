@@ -1,7 +1,6 @@
-// -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.8 2003-08-13 05:03:54 sgehrman Exp $
+
 /*
- **  PTYScrollView.m
+ **  ITSessionMgr.h
  **
  **  Copyright (c) 2002, 2003
  **
@@ -10,7 +9,7 @@
  **
  **  Project: iTerm
  **
- **  Description: NSScrollView subclass. Currently does not do anything special.
+ **  Description: manages an array of sessions.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -27,38 +26,32 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Debug option
-#define DEBUG_ALLOC           0
-#define DEBUG_METHOD_TRACE    0
+#import <Foundation/Foundation.h>
 
-#import <iTerm/PTYScrollView.h>
-#import <iTerm/PTYTextView.h>
+@class PTYSession;
 
-@implementation PTYScrollView
-
-- (void) dealloc
+@interface ITSessionMgr : NSObject 
 {
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView dealloc", __FILE__, __LINE__);
-#endif
-    
-    [super dealloc];
+    NSMutableArray *_sessionList;
+    int _currentSessionIndex;
+    PTYSession *_currentSession;
+    NSLock *_threadLock;
 }
 
-- (id)initWithFrame:(NSRect)frame
-{
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView initWithFrame:%d,%d,%d,%d]",
-	  __FILE__, __LINE__, 
-	  frame.origin.x, frame.origin.y, 
-	  frame.size.width, frame.size.height);
-#endif
-    if ((self = [super initWithFrame:frame]) == nil)
-	return nil;
+- (int)currentSessionIndex;
+- (void)setCurrentSessionIndex:(int)index;
 
-    NSParameterAssert([self contentView] != nil);
+- (PTYSession *)currentSession;
+- (void)setCurrentSession:(PTYSession *)session;
 
-    return self;
-}
+- (unsigned)numberOfSessions;
+- (PTYSession*)sessionAtIndex:(unsigned)index;
+- (BOOL)containsSession:(PTYSession *)session;
+
+- (void)removeSession:(PTYSession*)session;
+- (void)insertSession:(PTYSession*)session atIndex:(int)index;
+- (void)replaceSessionAtIndex:(int)index withSession:(PTYSession*)session;
+
+- (NSArray*)sessionList;
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.80 2003-08-12 08:36:49 sgehrman Exp $
+// $Id: PTYTextView.m,v 1.81 2003-08-13 05:03:54 sgehrman Exp $
 /*
  **  PTYTextView.m
  **
@@ -35,7 +35,6 @@
 #import <iTerm/PTYTextView.h>
 #import <iTerm/PTYSession.h>
 #import <iTerm/VT100Screen.h>
-#import <iTerm/PseudoTerminal.h>
 #import <iTerm/FindPanelWindowController.h>
 #import <iTerm/PreferencePanel.h>
 

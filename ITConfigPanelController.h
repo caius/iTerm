@@ -1,7 +1,5 @@
-// -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.8 2003-08-13 05:03:54 sgehrman Exp $
 /*
- **  PTYScrollView.m
+ **  ITConfigPanelController.h
  **
  **  Copyright (c) 2002, 2003
  **
@@ -10,7 +8,7 @@
  **
  **  Project: iTerm
  **
- **  Description: NSScrollView subclass. Currently does not do anything special.
+ **  Description: controls the config sheet.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -27,38 +25,37 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Debug option
-#define DEBUG_ALLOC           0
-#define DEBUG_METHOD_TRACE    0
+#import <Cocoa/Cocoa.h>
 
-#import <iTerm/PTYScrollView.h>
-#import <iTerm/PTYTextView.h>
+@class PseudoTerminal;
 
-@implementation PTYScrollView
-
-- (void) dealloc
+@interface ITConfigPanelController : NSWindowController 
 {
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView dealloc", __FILE__, __LINE__);
-#endif
+    PseudoTerminal* _pseudoTerminal;
     
-    [super dealloc];
+    IBOutlet id CONFIG_COL;
+    IBOutlet id CONFIG_ROW;
+    IBOutlet NSPopUpButton *CONFIG_ENCODING;
+    IBOutlet id CONFIG_BACKGROUND;
+    IBOutlet id CONFIG_FOREGROUND;
+    IBOutlet id CONFIG_EXAMPLE;
+    IBOutlet id CONFIG_NAEXAMPLE;
+    IBOutlet id CONFIG_TRANSPARENCY;
+    IBOutlet id CONFIG_TRANS2;
+    IBOutlet id CONFIG_NAME;
+    IBOutlet id CONFIG_ANTIALIAS;
+    IBOutlet id CONFIG_SELECTION;
+    IBOutlet id CONFIG_BOLD;
+    
+    // anti-idle
+    IBOutlet id AI_CODE;
+    IBOutlet id AI_ON;
+    char ai_code;    
+    
+    NSFont *configFont, *configNAFont;
+    BOOL changingNA;
 }
 
-- (id)initWithFrame:(NSRect)frame
-{
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView initWithFrame:%d,%d,%d,%d]",
-	  __FILE__, __LINE__, 
-	  frame.origin.x, frame.origin.y, 
-	  frame.size.width, frame.size.height);
-#endif
-    if ((self = [super initWithFrame:frame]) == nil)
-	return nil;
-
-    NSParameterAssert([self contentView] != nil);
-
-    return self;
-}
++ (void)show:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
 
 @end

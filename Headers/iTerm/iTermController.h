@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.4 2003-08-11 16:38:05 sgehrman Exp $
+// $Id: iTermController.h,v 1.5 2003-08-13 05:05:43 sgehrman Exp $
 /*
  **  iTermController.h
  **
@@ -30,7 +30,6 @@
 #import <Cocoa/Cocoa.h>
 
 @class PseudoTerminal;
-@class PreferencePanel;
 @class PTYTextView;
 
 @interface iTermController : NSObject
@@ -44,13 +43,9 @@
     IBOutlet NSMenuItem *previousTerminal;
     IBOutlet NSMenuItem *nextTerminal;
     
-    // bookmarks data
-    NSMutableArray *addressBook;
-
     // PseudoTerminal objects
     NSMutableArray *terminalWindows;
     id FRONT;
-    
 }
 
 + (iTermController*)sharedInstance;
@@ -61,12 +56,13 @@
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender;
 - (void)applicationDidUnhide:(NSNotification *)aNotification;
 
+// actions are forwarded form application
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newSession:(id)sender;
-
-// navigation
 - (IBAction) previousTerminal: (id) sender;
 - (IBAction) nextTerminal: (id) sender;
+- (void)newSessionInTabAtIndex: (id) sender;
+- (void)newSessionInWindowAtIndex: (id) sender;
 
 // Utility methods
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
@@ -75,28 +71,10 @@
 - (void) buildSessionSubmenu;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
-- (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender;
+- (void) buildAddressBookMenu:(NSMenu *)abMenu target:(id)target;
 - (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm;
 - (void) interpreteKey: (int) code newWindow:(BOOL) newWin;
 - (PTYTextView *) frontTextView;
-
-// Preference Panel
-- (IBAction)showPrefWindow:(id)sender;
-
-@end
-
-@interface iTermController (AddressBook)
-
-- (NSMutableArray *) addressBook;
-- (IBAction)showABWindow:(id)sender;
-- (void) initAddressBook;
-- (void) saveAddressBook;
-- (NSArray *)addressBookNames;
-- (NSDictionary *)newDefaultAddressBookEntry;
-- (NSMutableDictionary *) defaultAddressBookEntry;
-- (NSMutableDictionary *)addressBookEntry: (int) entryIndex;
-- (void) addAddressBookEntry: (NSDictionary *) entry;
-- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new;
 
 @end
 
@@ -118,15 +96,5 @@
 
 // a class method to provide the keys for KVC:
 - (NSArray*)kvcKeys;
-
-@end
-
-
-// Private interface
-@interface iTermController (Private)
-
-- (void) _executeABMenuCommandInNewTab: (id) sender;
-- (void) _executeABMenuCommandInNewWindow: (id) sender;
-- (void) _selectSessionAtIndex: (id) sender;
 
 @end

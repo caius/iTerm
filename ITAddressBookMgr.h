@@ -1,7 +1,5 @@
-// -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.8 2003-08-13 05:03:54 sgehrman Exp $
 /*
- **  PTYScrollView.m
+ **  ITAddressBookMgr.h
  **
  **  Copyright (c) 2002, 2003
  **
@@ -10,7 +8,7 @@
  **
  **  Project: iTerm
  **
- **  Description: NSScrollView subclass. Currently does not do anything special.
+ **  Description: keeps track of the address book data.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -27,38 +25,25 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-// Debug option
-#define DEBUG_ALLOC           0
-#define DEBUG_METHOD_TRACE    0
+#import <Foundation/Foundation.h>
 
-#import <iTerm/PTYScrollView.h>
-#import <iTerm/PTYTextView.h>
+extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
+extern BOOL isDefaultEntry( NSDictionary *entry );
+extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 
-@implementation PTYScrollView
-
-- (void) dealloc
+@interface ITAddressBookMgr : NSObject 
 {
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView dealloc", __FILE__, __LINE__);
-#endif
-    
-    [super dealloc];
+    NSMutableArray *_addressBookArray;
 }
 
-- (id)initWithFrame:(NSRect)frame
-{
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView initWithFrame:%d,%d,%d,%d]",
-	  __FILE__, __LINE__, 
-	  frame.origin.x, frame.origin.y, 
-	  frame.size.width, frame.size.height);
-#endif
-    if ((self = [super initWithFrame:frame]) == nil)
-	return nil;
++ (id)sharedInstance;
 
-    NSParameterAssert([self contentView] != nil);
-
-    return self;
-}
+- (void)showABWindow;
+- (NSArray *)addressBook;
+- (NSMutableDictionary *) defaultAddressBookEntry;
+- (NSMutableDictionary *)addressBookEntry: (int) entryIndex;
+- (void)saveAddressBook;
+- (void) addAddressBookEntry: (NSDictionary *) entry;
+- (NSArray *)addressBookNames;
 
 @end

@@ -132,13 +132,14 @@ static NSString *PWD_ENVVALUE = @"~";
 
     // Allocate a scrollview and add to the tabview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: aRect];
+    [SCROLLVIEW setHasVerticalScroller:YES];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
 #if USE_CUSTOM_DRAWING
-    TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
+    TEXTVIEW = [[[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)] autorelease];
 #else
 
     if([[PreferencePanel sharedInstance] enforceCharacterAlignment] == YES)
@@ -157,7 +158,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	[aTypesetter setScreen: SCREEN];
 	[aLayoutManager setTypesetter: aTypesetter];
 
-        TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
+        TEXTVIEW = [[[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer] autorelease];
 	[aTextContainer setWidthTracksTextView:YES];
 	[aTextContainer setHeightTracksTextView:NO];
 	[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
@@ -165,9 +166,9 @@ static NSString *PWD_ENVVALUE = @"~";
 	[TEXTVIEW setVerticallyResizable:YES];
     }
     else
-	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
-    
-    [TEXTVIEW setDrawsBackground:YES];
+	TEXTVIEW = [[[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)] autorelease];
+  
+    [TEXTVIEW setDrawsBackground:NO];
     [TEXTVIEW setEditable:YES]; // For NSTextInput protocol
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
@@ -176,7 +177,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [[PreferencePanel sharedInstance] antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
-    [TEXTVIEW release];
     [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
 
     ai_code=0;
@@ -277,10 +277,14 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
     if (data == nil)
         return;
-
+    
     [TERMINAL putStreamData:data];
-    if ([parent pending]||[SCREEN screenIsLocked]) return;
-
+    
+#warning is this pending stuff necessary
+    //    if ([parent pending] || [SCREEN screenIsLocked]) 
+    if ([SCREEN screenIsLocked]) 
+        return;
+    
     if (REFRESHED==NO)
     {
         REFRESHED=YES;
@@ -864,14 +868,16 @@ static NSString *PWD_ENVVALUE = @"~";
 	[SCREEN blink];
 	blink=0;
     }
-    if (oIdleCount<2||dirty) {
-        if (output>3) {
+    if (oIdleCount<2||dirty) 
+    {
+        if (output>3) 
+        {
             [SCREEN updateScreen];
             // If the user has not scrolled up, move to the end
-	    if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-	 [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-	([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-		[TEXTVIEW scrollEnd];
+            if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+               ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
+                [TEXTVIEW scrollEnd];
             output=0;
             dirty=NO;
         }
@@ -1200,9 +1206,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     if(color == nil)
         return;
-        
-    [TEXTVIEW setBackgroundColor: color];
-    
+      
     if(([TERMINAL defaultBGColor] != color) || 
         ([[TERMINAL defaultBGColor] alphaComponent] != [color alphaComponent]))
     {

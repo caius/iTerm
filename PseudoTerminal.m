@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.215 2003-08-12 06:28:53 sgehrman Exp $
+// $Id: PseudoTerminal.m,v 1.216 2003-08-13 05:03:54 sgehrman Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -51,6 +51,9 @@
 #import <iTerm/PTYSession.h>
 #import <iTerm/PTToolbarController.h>
 #import <iTerm/FindPanelWindowController.h>
+#import <iTerm/ITAddressBookMgr.h>
+#import <iTerm/ITConfigPanelController.h>
+#import <iTerm/ITSessionMgr.h>
 
 // keys for attributes:
 NSString *columnsKey = @"columns";
@@ -68,7 +71,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 @implementation PseudoTerminal
 
-- (id) initWithWindowNibName: (NSString *) windowNibName
+- (id)initWithWindowNibName: (NSString *) windowNibName
 {
     int i;
     
@@ -86,9 +89,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
     }
 
-    // Allocate a list for our sessions
-    ptyList = [[NSMutableArray alloc] init];
-    ptyListLock = [[NSLock alloc] init];
+    _sessionMgr = [[ITSessionMgr alloc] init];
 
     tabViewDragOperationInProgress = NO;
     resizeInProgress = NO;
@@ -122,11 +123,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     aFont1 = FONT;
     if(aFont1 == nil)
     {
-	NSDictionary *defaultSession = [[iTermController sharedInstance] defaultAddressBookEntry];
+	NSDictionary *defaultSession = [[ITAddressBookMgr sharedInstance] defaultAddressBookEntry];
 	aFont1 = [defaultSession objectForKey:@"Font"];
 	aFont2 = [defaultSession objectForKey:@"NAFont"];
 	[self setFont: aFont1 nafont: aFont2];
     }
+    
     NSParameterAssert(aFont1 != nil);
     // Calculate the size of the terminal
     contentSize = [NSScrollView contentSizeForFrameSize: [TABVIEW contentRect].size
@@ -143,17 +145,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Do not use both initViewWithFrame and initWindow
 - (void)initWindow
 {
-    NSRect tabviewRect;
-
     _toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
     
     // Create the tabview
-    tabviewRect = [[[self window] contentView] frame];
-    tabviewRect.origin.x -= 10;
-    tabviewRect.size.width += 20;
-    tabviewRect.origin.y -= 13;
-    tabviewRect.size.height += 17;
-    TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
+    TABVIEW = [[PTYTabView alloc] initWithFrame:[[[self window] contentView] bounds]];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [TABVIEW setAllowsTruncatedLabels: NO];
     [TABVIEW setControlSize: NSSmallControlSize];
@@ -165,6 +160,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] setDelegate: self];
     
     [self setWindowInited: YES];
+}
+
+- (ITSessionMgr*)sessionMgr;
+{
+    return _sessionMgr;
 }
 
 - (void)setupSession: (PTYSession *) aSession
@@ -184,7 +184,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set some default parameters
-    defaultParameters = [[iTermController sharedInstance] addressBookEntry: 0];
+    defaultParameters = [[ITAddressBookMgr sharedInstance] addressBookEntry: 0];
     [aSession setAddressBookEntry:defaultParameters];
     [aSession setPreferencesFromAddressBookEntry: defaultParameters];
 
@@ -230,9 +230,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // tell the shell about our size
     [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
-        
-    pending = NO;
-    
+            
     if (title) 
     {
         [self setWindowTitle: title];
@@ -253,31 +251,37 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
     
     [TABVIEW selectTabViewItemWithIdentifier: aSession];
-    if (currentPtySession) 
-        [currentPtySession resetStatus];
+    if ([_sessionMgr currentSession]) 
+        [[_sessionMgr currentSession] resetStatus];
     
-    currentSessionIndex = [ptyList indexOfObject: aSession];
-    currentPtySession = aSession;
+    [_sessionMgr setCurrentSession:aSession];
+
     [self setWindowTitle];
-    [currentPtySession setLabelAttribute];
-    [[TABVIEW window] makeFirstResponder:[currentPtySession TEXTVIEW]];
+    [[_sessionMgr currentSession] setLabelAttribute];
+    [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
     [[TABVIEW window] setNextResponder:self];
+}
+
+- (void)selectSessionAtIndexAction:(id)sender
+{
+    [self selectSessionAtIndex:[sender tag]];
+}
+
+- (void) newSessionInTabAtIndex: (id) sender
+{
+    [[iTermController sharedInstance] executeABCommandAtIndex:[sender tag] inTerminal:self];
 }
 
 - (void) selectSessionAtIndex: (int) sessionIndex
 {
-    PTYSession *aSession;
-
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal selectSessionAtIndex:%d]",
           __FILE__, __LINE__, sessionIndex);
 #endif
-    
-    if (sessionIndex<0||sessionIndex >= [ptyList count]) 
+    if (sessionIndex < 0 || sessionIndex >= [_sessionMgr numberOfSessions]) 
         return;
 
-    aSession = [ptyList objectAtIndex: sessionIndex];
-    [self selectSession: aSession];
+    [self selectSession:[_sessionMgr sessionAtIndex:sessionIndex]];
 }
 
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index
@@ -292,11 +296,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(aSession == nil)
 	return;
 
-    if([ptyList containsObject: aSession] == NO)
+    if (![_sessionMgr containsSession:aSession])
     {
-
-	[aSession setParent: self];
-	if([ptyList count] == 0)
+	[aSession setParent:self];
+        
+	if ([_sessionMgr numberOfSessions] == 0)
 	{
 	    // Tell us whenever something happens with the tab view
 	    [TABVIEW setDelegate: self];
@@ -309,11 +313,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[aTabViewItem setView: [aSession SCROLLVIEW]];
 	[[aSession SCROLLVIEW] setVerticalPageScroll: 0.0];
 	[TABVIEW insertTabViewItem: aTabViewItem atIndex: index];
-	//currentSessionIndex = [ptyList count] - 1;
-	//currentPtySession = aSession;
-	[aTabViewItem release];
+
+        [aTabViewItem release];
 	[aSession setTabViewItem: aTabViewItem];
-	[self selectSessionAtIndex: index];
+	[self selectSessionAtIndex:index];
 
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
@@ -333,9 +336,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) closeSession: (PTYSession*) aSession
 {
     int i;
-    int n=[ptyList count];
+    int n=[_sessionMgr numberOfSessions];
     
-    if((ptyList == nil) || ([ptyList containsObject: aSession] == NO))
+    if((_sessionMgr == nil) || ![_sessionMgr containsSession:aSession])
         return;
     
     if(n == 1 && [self windowInited])
@@ -346,7 +349,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     for(i=0;i<n;i++) 
     {
-        if ([ptyList objectAtIndex:i]==aSession)
+        if ([_sessionMgr sessionAtIndex:i] == aSession)
         {
             // remove from tabview before terminating!! Terminating will
             // set the internal tabview object in the session to nil.
@@ -354,17 +357,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [TABVIEW removeTabViewItem: [aSession tabViewItem]];
             [aSession terminate];
 	    [aSession release];
-	    
-            if (i==currentSessionIndex) 
-            {
-                if (currentSessionIndex >= [ptyList count])
-                    currentSessionIndex = [ptyList count] - 1;
-        
-                currentPtySession = nil;
-                [self selectSessionAtIndex: currentSessionIndex];
-            }
-            else if (i<currentSessionIndex)
-                currentSessionIndex--;
+	                
+            // the above code removes the item and resets the currentSessionIndex
+            [self selectSessionAtIndex:[_sessionMgr currentSessionIndex]];
 
 	    [[iTermController sharedInstance] buildSessionSubmenu];
                         
@@ -380,30 +375,30 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__);
 #endif
 
-    if(ptyList == nil)
+    if(_sessionMgr == nil)
         return;
 
-    if ([currentPtySession exited]==NO) {
+    if (![[_sessionMgr currentSession] exited])
+    {
        if ([[PreferencePanel sharedInstance] promptOnClose] &&
 	   NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"The current session will be closed",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
                          NSLocalizedStringFromTableInBundle(@"All unsaved data will be lost",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
 			NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
 		    NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
                          ,nil) == 0) return;
-                         
     }
         
-    [self closeSession: currentPtySession];
+    [self closeSession:[_sessionMgr currentSession]];
 }
 
 - (IBAction)previousSession:(id)sender
 {
     int theIndex;
     
-    if (currentSessionIndex == 0)
-        theIndex = [ptyList count] - 1;
+    if ([_sessionMgr currentSessionIndex] == 0)
+        theIndex = [_sessionMgr numberOfSessions] - 1;
     else
-        theIndex = currentSessionIndex - 1;
+        theIndex = [_sessionMgr currentSessionIndex] - 1;
     
     [self selectSessionAtIndex: theIndex];    
 }
@@ -412,17 +407,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     int theIndex;
 
-    if (currentSessionIndex == ([ptyList count] - 1))
+    if ([_sessionMgr currentSessionIndex] == ([_sessionMgr numberOfSessions] - 1))
         theIndex = 0;
     else
-        theIndex = currentSessionIndex + 1;
+        theIndex = [_sessionMgr currentSessionIndex] + 1;
     
     [self selectSessionAtIndex: theIndex];
 }
 
 - (NSString *) currentSessionName
 {
-    return ([currentPtySession name]);
+    return ([[_sessionMgr currentSession] name]);
 }
 
 - (void) setCurrentSessionName: (NSString *) theSessionName
@@ -435,19 +430,19 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     if(theSessionName != nil)
     {
-        [currentPtySession setName: theSessionName];
-        [[currentPtySession tabViewItem] setLabel: theSessionName];
+        [[_sessionMgr currentSession] setName: theSessionName];
+        [[[_sessionMgr currentSession] tabViewItem] setLabel: theSessionName];
     }
     else {
-        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[[currentPtySession SHELL] path] pathComponents] lastObject], currentSessionIndex];
+        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[[[_sessionMgr currentSession] SHELL] path] pathComponents] lastObject], [_sessionMgr currentSessionIndex]];
 
-        if ([currentPtySession exited])
+        if ([[_sessionMgr currentSession] exited])
             [title appendString:@"Finish"];
         else
             [title appendString:progpath];
 
-        [currentPtySession setName: title];
-        [[currentPtySession tabViewItem] setLabel: title];
+        [[_sessionMgr currentSession] setName: title];
+        [[[_sessionMgr currentSession] tabViewItem] setLabel: title];
 
     }
     [self setWindowTitle];
@@ -455,12 +450,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (PTYSession *) currentSession
 {
-    return (currentPtySession);
+    return [_sessionMgr currentSession];
 }
 
 - (int) currentSessionIndex
 {
-    return (currentSessionIndex);
+    return ([_sessionMgr currentSessionIndex]);
 }
 
 - (void)dealloc
@@ -471,30 +466,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self releaseObjects];
     [_toolbarController release];
     
+#warning is this getting called?
+    
     [super dealloc];
 }
 
 - (void)releaseObjects
 {
-    int i;
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal releaseObjects]", __FILE__, __LINE__);
 #endif
         
     // Release all our sessions
-    [ptyListLock lock];
-    for(i = 0; i < [ptyList count]; i++)
-        [[ptyList objectAtIndex: i] terminate];
-    if([ptyList count] > 0)
-    {
-	[ptyList removeAllObjects];
-        [ptyList release];
-    }
-    [ptyListLock unlock];
-    [ptyListLock release];
-    ptyListLock = nil;
-   
-    ptyList = nil;
+    [_sessionMgr release];
+    _sessionMgr = nil;
 }
 
 - (void)startProgram:(NSString *)program
@@ -503,7 +488,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@]",
 	  __FILE__, __LINE__, program );
 #endif
-    [currentPtySession startProgram:program
+    [[_sessionMgr currentSession] startProgram:program
 	     arguments:[NSArray array]
            environment:[NSDictionary dictionary]];
 
@@ -520,7 +505,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@ arguments:%@]",
           __FILE__, __LINE__, program, prog_argv );
 #endif
-    [currentPtySession startProgram:program
+    [[_sessionMgr currentSession] startProgram:program
              arguments:prog_argv
            environment:[NSDictionary dictionary]];
 
@@ -539,7 +524,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@ arguments:%@]",
           __FILE__, __LINE__, program, prog_argv );
 #endif
-    [currentPtySession startProgram:program
+    [[_sessionMgr currentSession] startProgram:program
                           arguments:prog_argv
                         environment:prog_env];
 
@@ -548,7 +533,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     //    [window center];
     if([self windowInited])
 	[[self window] makeKeyAndOrderFront: self];
-
 }
 
 - (void) setWidth: (int) width height: (int) height
@@ -557,8 +541,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     HEIGHT = height;
 }
 
-- (void)setWindowSize: (BOOL) resizeContentFrames
+- (int)width;
 {
+    return WIDTH;
+}
+
+- (int)height;
+{
+    return HEIGHT;
+}
+
+- (void)setWindowSize: (BOOL) resizeContentFrames
+{    
     NSSize size, vsize, winSize;
     NSWindow *thisWindow;
     int i;
@@ -614,7 +608,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
 #endif
-    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] tallerFont]
+    vsize = [VT100Screen requireSizeWithFont:[[[_sessionMgr currentSession] SCREEN] tallerFont]
 				      width:WIDTH
 				     height:HEIGHT];
 
@@ -626,8 +620,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
     {
-        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: [[currentPtySession SCREEN] characterSize].height];
-        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setVerticalLineScroll: [[currentPtySession SCREEN] characterSize].height];
+        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: [[[_sessionMgr currentSession] SCREEN] characterSize].height];
+        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setVerticalLineScroll: [[[_sessionMgr currentSession] SCREEN] characterSize].height];
 	if(resizeContentFrames)
 	{
 	    [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setFrameSize: size];
@@ -635,7 +629,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
     }
 
-    thisWindow = [[currentPtySession SCROLLVIEW] window];
+    thisWindow = [[[_sessionMgr currentSession] SCROLLVIEW] window];
     winSize = size;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
 	winSize.height = size.height + TABVIEW_TOP_BOTTOM_OFFSET;
@@ -699,12 +693,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
     int i;
 
-    for(i=0;i<[ptyList count]; i++) {
+    for(i=0;i<[_sessionMgr numberOfSessions]; i++) 
+    {
+        PTYSession* session = [_sessionMgr sessionAtIndex:i];
 #if USE_CUSTOM_DRAWING
 #else
-        [[[ptyList objectAtIndex:i] TEXTVIEW]  setFont:font];
+        [[session TEXTVIEW]  setFont:font];
 #endif
-        [[[ptyList objectAtIndex:i] SCREEN]  setFont:font nafont:nafont];
+        [[session SCREEN]  setFont:font nafont:nafont];
     }
     [FONT autorelease];
     FONT=[font copy];
@@ -712,51 +708,29 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NAFONT=[nafont copy];
 }
 
-- (void)changeFont:(id)sender
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal changeFont:%@]",
-	  __FILE__, __LINE__, sender);
-#endif
-//    NSLog(@"changeFont!!!!");
-    if (changingNA) {
-        configNAFont=[[NSFontManager sharedFontManager] convertFont:configNAFont];
-        if (configNAFont!=nil) {
-            [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
-            [CONFIG_NAEXAMPLE setFont:configNAFont];
-        }
-    } else{
-        configFont=[[NSFontManager sharedFontManager] convertFont:configFont];
-        if (configFont!=nil) {
-            [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
-            [CONFIG_EXAMPLE setFont:configFont];
-        }
-    }
-}
-
 - (void)clearBuffer:(id)sender
 {
-    [currentPtySession clearBuffer];
+    [[_sessionMgr currentSession] clearBuffer];
 }
 
 - (void)clearScrollbackBuffer:(id)sender
 {
-    [currentPtySession clearScrollbackBuffer];
+    [[_sessionMgr currentSession] clearScrollbackBuffer];
 }
 
 - (IBAction)logStart:(id)sender
 {
-    if (![[currentPtySession SHELL] logging]) [currentPtySession logStart];
+    if (![[[_sessionMgr currentSession] SHELL] logging]) [[_sessionMgr currentSession] logStart];
 }
 
 - (IBAction)logStop:(id)sender
 {
-    if ([[currentPtySession SHELL] logging]) [currentPtySession logStop];
+    if ([[[_sessionMgr currentSession] SHELL] logging]) [[_sessionMgr currentSession] logStop];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
-    BOOL logging = [[currentPtySession SHELL] logging];
+    BOOL logging = [[[_sessionMgr currentSession] SHELL] logging];
     BOOL result = YES;
 
 #if DEBUG_METHOD_TRACE
@@ -802,11 +776,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillClose:%@]",
 	  __FILE__, __LINE__, aNotification);
 #endif
-    sessionCount = [ptyList count];
+    sessionCount = [_sessionMgr numberOfSessions];
     for (i = 0; i < sessionCount; i++)
     {
-        if ([[ptyList objectAtIndex: i] exited]==NO)
-            [[[ptyList objectAtIndex: i] SHELL] stopNoWait];
+        if ([[_sessionMgr sessionAtIndex: i] exited]==NO)
+            [[[_sessionMgr sessionAtIndex: i] SHELL] stopNoWait];
     }
     
     [self releaseObjects];
@@ -836,7 +810,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[iTermController sharedInstance] setFrontPseudoTerminal: self];
 
     // update the cursor
-    [[currentPtySession SCREEN] showCursor];
+    [[[_sessionMgr currentSession] SCREEN] showCursor];
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
@@ -849,7 +823,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self windowDidResignMain: aNotification];
 
     // update the cursor
-    [[currentPtySession SCREEN] showCursor];
+    [[[_sessionMgr currentSession] SCREEN] showCursor];
 
 }
 
@@ -891,22 +865,22 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     resizeInProgress = YES;    
 
-    frame = [[[currentPtySession SCROLLVIEW] contentView] frame];
+    frame = [[[[_sessionMgr currentSession] SCROLLVIEW] contentView] frame];
 #if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 	  frame.origin.x, frame.origin.y,
 	  frame.size.width, frame.size.height);
 #endif
 
-    termSize = [VT100Screen screenSizeInFrame: frame font: [[currentPtySession SCREEN] tallerFont]];
+    termSize = [VT100Screen screenSizeInFrame: frame font: [[[_sessionMgr currentSession] SCREEN] tallerFont]];
     
     w = (int)(termSize.width);
     h = (int)(termSize.height);
     
-    for(i=0;i<[ptyList count]; i++) {
-        [[[ptyList objectAtIndex:i] SCREEN] resizeWidth:w height:h];
-        [[[ptyList objectAtIndex:i] SHELL] setWidth:w  height:h];
-        //[[[ptyList objectAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
+    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+        [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
+        [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
+        //[[[_sessionMgr sessionAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
     }
     
     WIDTH = w;
@@ -916,11 +890,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self setWindowSize: NO];
 
     // Display the new size in the window title.
-    NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [currentPtySession name], WIDTH, HEIGHT];
+    NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[_sessionMgr currentSession] name], WIDTH, HEIGHT];
     [self setWindowTitle: aTitle];    
 
     // Reset the scrollbar to the bottom
-    [[currentPtySession TEXTVIEW] scrollEnd];
+    [[[_sessionMgr currentSession] TEXTVIEW] scrollEnd];
 
     //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [[self window] frame].size.width, [[self window] frame].size.height);
     resizeInProgress = NO;
@@ -940,59 +914,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                                                         ,nil)==1);
 }
 
-// Config Window
-
-- (BOOL) pending
+- (IBAction)showConfigWindow:(id)sender;
 {
-    return pending;
-}
-
-- (IBAction)showConfigWindow:(id)sender
-{
-    int r;
-    NSStringEncoding const *p=[[iTermController sharedInstance] encodingList];
-    
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal showConfigWindow:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-    [CONFIG_FOREGROUND setColor:[[currentPtySession TERMINAL] defaultFGColor]];
-    [CONFIG_BACKGROUND setColor:[[currentPtySession TERMINAL] defaultBGColor]];
-    [CONFIG_SELECTION setColor:[[currentPtySession TEXTVIEW] selectionColor]];
-    [CONFIG_BOLD setColor: [[currentPtySession TERMINAL] defaultBoldColor]];
-    configFont=[[currentPtySession SCREEN] font];
-    [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
-    [CONFIG_EXAMPLE setTextColor:[[currentPtySession TERMINAL] defaultFGColor]];
-    [CONFIG_EXAMPLE setBackgroundColor:[[currentPtySession TERMINAL] defaultBGColor]];
-    [CONFIG_EXAMPLE setFont:configFont];
-    configNAFont=[[currentPtySession SCREEN] nafont];
-    [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
-    [CONFIG_NAEXAMPLE setTextColor:[[currentPtySession TERMINAL] defaultFGColor]];
-    [CONFIG_NAEXAMPLE setBackgroundColor:[[currentPtySession TERMINAL] defaultBGColor]];
-    [CONFIG_NAEXAMPLE setFont:configNAFont];
-    [CONFIG_COL setIntValue:WIDTH];
-    [CONFIG_ROW setIntValue:HEIGHT];
-    [CONFIG_NAME setStringValue:[self currentSessionName]];
-    [CONFIG_ENCODING removeAllItems];
-    r=0;
-    while (*p) {
-        //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
-        [CONFIG_ENCODING addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[[currentPtySession TERMINAL] encoding]) r=p-[[iTermController sharedInstance] encodingList];
-        p++;
-    }
-    [CONFIG_ENCODING selectItemAtIndex:r];
-    [CONFIG_TRANSPARENCY setIntValue:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100];
-    [CONFIG_TRANS2 setIntValue:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100];
-    [AI_ON setState:[[self currentSession] antiIdle]?NSOnState:NSOffState];
-    [AI_CODE setIntValue:[[self currentSession] antiCode]];
-    
-    [CONFIG_ANTIALIAS setState: [[currentPtySession TEXTVIEW] antiAlias]];
-    
-//    [CONFIG_PANEL center];
-    pending=YES;
-    [NSApp beginSheet:CONFIG_PANEL modalForWindow:[TABVIEW window]
-        modalDelegate:self didEndSelector:nil contextInfo:nil];
+    [ITConfigPanelController show:self parentWindow:[TABVIEW window]];
 }
 
 - (void) resizeWindow:(int) w height:(int)h
@@ -1005,144 +929,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__, w, h);
 #endif
     
-    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] tallerFont]
+    vsize = [VT100Screen requireSizeWithFont:[[[_sessionMgr currentSession] SCREEN] tallerFont]
                                        width:w
                                       height:h];
     
-    for(i=0;i<[ptyList count]; i++) {
-        [[[ptyList objectAtIndex:i] SCREEN] resizeWidth:w height:h];
-        [[[ptyList objectAtIndex:i] SHELL] setWidth:w height:h];
-        [[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
+    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+        [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
+        [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w height:h];
+        [[[_sessionMgr sessionAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
     WIDTH=w;
     HEIGHT=h;
     //NSLog(@"resize window: %d,%d",WIDTH,HEIGHT);
 
     [self setWindowSize: YES];
-}
-
-- (IBAction)windowConfigOk:(id)sender
-{
-    NSDictionary *defaultSessionPreferences = [[iTermController sharedInstance] defaultAddressBookEntry];
-    
-    if ([CONFIG_COL intValue]<1||[CONFIG_ROW intValue]<1) {
-        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
-                        NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
-                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
-                        nil,nil);
-    }else
-    if ([AI_CODE intValue]>255||[AI_CODE intValue]<0) {
-        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
-                        NSLocalizedStringFromTableInBundle(@"Please enter a valid code (0~255)",@"iTerm", [NSBundle bundleForClass: [self class]], @"Anti-Idle: wrong input"),
-                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
-                        nil,nil);
-    }else {
-        [[self currentSession] setEncoding:[[iTermController sharedInstance] encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
-        if ((configFont != nil&&[[currentPtySession SCREEN] font]!=configFont) ||
-	    (configNAFont!= nil&&[[currentPtySession SCREEN] nafont]!=configNAFont)) {
-            [self setAllFont:configFont nafont:configNAFont];
-            [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
-        }
-
-        // resiz the window if asked for
-        if((WIDTH != [CONFIG_COL intValue]) || (HEIGHT != [CONFIG_ROW intValue]))
-            [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
-        
-        // set the anti-alias if it has changed
-        if([CONFIG_ANTIALIAS state] != [[currentPtySession TEXTVIEW] antiAlias])
-        {
-            int i;
-            PTYSession *aSession;
-            
-            for(i = 0; i < [ptyList count]; i++)
-            {
-                aSession = [ptyList objectAtIndex: i];
-                [[aSession TEXTVIEW] setAntiAlias: [CONFIG_ANTIALIAS state]];
-            }
-            
-            [[currentPtySession TEXTVIEW] setNeedsDisplay: YES];
-
-        }
-        
-        // set the selection color if it has changed
-        if([[currentPtySession TEXTVIEW] selectionColor] != [CONFIG_SELECTION color])
-            [[currentPtySession TEXTVIEW] setSelectionColor: [CONFIG_SELECTION color]];
-
-        // set the bold color if it has changed
-        if([[currentPtySession TERMINAL] defaultBoldColor] != [CONFIG_BOLD color])
-            [[currentPtySession TERMINAL] setBoldColor: [CONFIG_BOLD color]];	
-
-        if(([[defaultSessionPreferences objectForKey: @"Transparency"] intValue] != (100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100)) || 
-            ([[currentPtySession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 
-            ([[currentPtySession TERMINAL] defaultBGColor] != [CONFIG_BACKGROUND color]))
-        {
-            NSColor *bgColor;
-                
-            // set the background color for the scrollview with the appropriate transparency
-            bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
-            [[currentPtySession SCROLLVIEW] setBackgroundColor: bgColor];
-            [currentPtySession setForegroundColor:  [CONFIG_FOREGROUND color]];
-            [currentPtySession setBackgroundColor:  bgColor];
-            [[currentPtySession TEXTVIEW] setNeedsDisplay:YES];
-        }
-
-        [[[self currentSession] TEXTVIEW] scrollEnd];
-        [self setCurrentSessionName: [CONFIG_NAME stringValue]]; 
-    
-        [CONFIG_PANEL setDelegate:CONFIG_PANEL];
-        //    [CONFIG_PANEL close];
-        pending=NO;
-
-        [[self currentSession] setAntiCode:[AI_CODE intValue]];
-        [[self currentSession] setAntiIdle:([AI_ON state]==NSOnState)];
-
-        [CONFIG_PANEL orderOut:nil];
-        [NSApp endSheet:CONFIG_PANEL];
-        [[NSColorPanel sharedColorPanel] close];
-        [[NSFontPanel sharedFontPanel] close];
-    }
-}
-
-- (IBAction)windowConfigCancel:(id)sender
-{
-    [CONFIG_PANEL orderOut:nil];
-    [NSApp endSheet:CONFIG_PANEL];
-    [[NSColorPanel sharedColorPanel] close];
-    [[NSFontPanel sharedFontPanel] close];
-
-    pending=NO;
-}
-
-- (IBAction)windowConfigFont:(id)sender
-{
-    changingNA=NO;
-    [[CONFIG_EXAMPLE window] makeFirstResponder:[CONFIG_EXAMPLE window]];
-    [[CONFIG_EXAMPLE window] setDelegate:self];
-    [[NSFontManager sharedFontManager] setSelectedFont:configFont isMultiple:NO];
-    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
-}
-
-- (IBAction)windowConfigNAFont:(id)sender
-{
-    changingNA=YES;
-    [[CONFIG_NAEXAMPLE window] makeFirstResponder:[CONFIG_NAEXAMPLE window]];
-    [[CONFIG_NAEXAMPLE window] setDelegate:self];
-    [[NSFontManager sharedFontManager] setSelectedFont:configNAFont isMultiple:NO];
-    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
-}
-
-- (IBAction)windowConfigForeground:(id)sender
-{
-//    [self setFGColor:[sender color]];
-//    [[NSColorPanel sharedColorPanel] close];
-    [CONFIG_EXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
-}
-
-- (IBAction)windowConfigBackground:(id)sender
-{
-//    [self setBGColor:[sender color]];
-//    [[NSColorPanel sharedColorPanel] close];
-    [CONFIG_EXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
 }
 
 // Contextual menu
@@ -1203,7 +1003,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // Build the bookmarks menu
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [[iTermController sharedInstance] buildAddressBookMenu: abMenu forTerminal: (newWin?nil:self)];
+    [[iTermController sharedInstance] buildAddressBookMenu: abMenu target: (newWin?nil:self)];
 
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
     [abMenu release];
@@ -1234,11 +1034,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     aSession = [tabViewItem identifier];
     
-    if (currentPtySession) [currentPtySession resetStatus];
-    currentSessionIndex = [TABVIEW indexOfTabViewItem: tabViewItem];
-    currentPtySession = aSession;
+    if ([_sessionMgr currentSession]) 
+        [[_sessionMgr currentSession] resetStatus];
+    
+    [_sessionMgr setCurrentSession:aSession];
+    
     [self setWindowTitle];
-    [[TABVIEW window] makeFirstResponder:[currentPtySession TEXTVIEW]];
+    [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
     [[TABVIEW window] setNextResponder:self];
 }
 
@@ -1248,7 +1050,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: didSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     
-    [currentPtySession setLabelAttribute];
+    [[_sessionMgr currentSession] setLabelAttribute];
 }
 
 - (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1256,16 +1058,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willRemoveTabViewItem]", __FILE__, __LINE__);
 #endif
-    
-    [ptyListLock lock];
-    if([ptyList containsObject: [tabViewItem identifier]] &&
-       [[tabViewItem identifier] isKindOfClass: [PTYSession class]])
-    {
-	PTYSession *aSession = [tabViewItem identifier];
-	[ptyList removeObject: aSession];
-    }
-    
-    [ptyListLock unlock];
+    PTYSession *aSession = [tabViewItem identifier];
+
+    if([_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
+	[_sessionMgr removeSession: aSession];
 }
 
 - (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1286,21 +1082,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(tabView == nil || tabViewItem == nil || index < 0)
 	return;
     
-    [ptyListLock lock];
-    if(![ptyList containsObject: [tabViewItem identifier]] &&
-       [[tabViewItem identifier] isKindOfClass: [PTYSession class]])
-    {
-	PTYSession *aSession = [tabViewItem identifier];
+    PTYSession *aSession = [tabViewItem identifier];
 
+    if(![_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
+    {
 	[aSession setParent: self];
 	
-	if (index >= [ptyList count])
-	    [ptyList addObject: aSession];
-	else
-	    [ptyList insertObject: aSession atIndex: index];
+        [_sessionMgr insertSession: aSession atIndex: index];
     }
-    
-    [ptyListLock unlock];    
 }
 
 - (void)tabViewWillPerformDragOperation:(NSTabView *)tabView
@@ -1331,7 +1120,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(tabViewDragOperationInProgress == YES)
 	return;
     
-    currentSessionIndex = [TABVIEW indexOfTabViewItem: [TABVIEW selectedTabViewItem]];
+    [_sessionMgr setCurrentSessionIndex:[TABVIEW indexOfTabViewItem: [TABVIEW selectedTabViewItem]]];
 
     if ([TABVIEW numberOfTabViewItems] == 1)
     {
@@ -1385,13 +1174,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
-    if([ptyList count] > 1)
+    if([_sessionMgr numberOfSessions] > 1)
     {
 	aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move session to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
 	[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
 	[theMenu addItem: aMenuItem];
 	[aMenuItem release];
-	
     }
 }
 
@@ -1428,10 +1216,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 
     // If this is the current session, make previous one active.
-    if(aSession == currentPtySession)
-    {
-	[self selectSessionAtIndex: (currentSessionIndex - 1)];
-    }
+    if(aSession == [_sessionMgr currentSession])
+	[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
 
     aTabViewItem = [aSession tabViewItem];
 
@@ -1457,26 +1243,26 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     NSMutableDictionary *currentABEntry;
 
-    currentABEntry=[NSMutableDictionary dictionaryWithDictionary:[currentPtySession addressBookEntry]];
+    currentABEntry=[NSMutableDictionary dictionaryWithDictionary:[[_sessionMgr currentSession] addressBookEntry]];
 
     if(currentABEntry != nil)
     {
-	[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]] forKey: @"Encoding"];
-	[currentABEntry setObject: [currentPtySession foregroundColor] forKey: @"Foreground"];
-	[currentABEntry setObject: [currentPtySession backgroundColor] forKey: @"Background"];
-	[currentABEntry setObject: [currentPtySession boldColor] forKey: @"BoldColor"];
-	[currentABEntry setObject: [currentPtySession selectionColor] forKey: @"SelectionColor"];
+	[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[[_sessionMgr currentSession] TERMINAL] encoding]] forKey: @"Encoding"];
+	[currentABEntry setObject: [[_sessionMgr currentSession] foregroundColor] forKey: @"Foreground"];
+	[currentABEntry setObject: [[_sessionMgr currentSession] backgroundColor] forKey: @"Background"];
+	[currentABEntry setObject: [[_sessionMgr currentSession] boldColor] forKey: @"BoldColor"];
+	[currentABEntry setObject: [[_sessionMgr currentSession] selectionColor] forKey: @"SelectionColor"];
 	[currentABEntry setObject: [NSString stringWithInt:WIDTH] forKey: @"Col"];
 	[currentABEntry setObject: [NSString stringWithInt:HEIGHT] forKey: @"Row"];
-	[currentABEntry setObject: [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100] forKey: @"Transparency"];
+	[currentABEntry setObject: [NSNumber numberWithInt:100-[[[[_sessionMgr currentSession] TERMINAL] defaultBGColor] alphaComponent]*100] forKey: @"Transparency"];
 	[currentABEntry setObject: [[self currentSession] TERM_VALUE] forKey: @"Term Type"];
-	[currentABEntry setObject: [[currentPtySession SCREEN] font] forKey: @"Font"];
-	[currentABEntry setObject: [[currentPtySession SCREEN] nafont] forKey: @"NAFont"];
+	[currentABEntry setObject: [[[_sessionMgr currentSession] SCREEN] font] forKey: @"Font"];
+	[currentABEntry setObject: [[[_sessionMgr currentSession] SCREEN] nafont] forKey: @"NAFont"];
 	[currentABEntry setObject: [NSNumber numberWithBool:[[self currentSession] antiIdle]] forKey: @"AntiIdle"];
 	[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]] forKey: @"AICode"];
-	[currentABEntry setObject: [[currentPtySession SCREEN] nafont] forKey: @"NAFont"];
+	[currentABEntry setObject: [[[_sessionMgr currentSession] SCREEN] nafont] forKey: @"NAFont"];
 
-	[[[iTermController sharedInstance] addressBook] replaceObjectAtIndex: [[[iTermController sharedInstance] addressBook] indexOfObject: [currentPtySession addressBookEntry]] withObject: currentABEntry];
+	[[[ITAddressBookMgr sharedInstance] addressBook] replaceObjectAtIndex: [[[ITAddressBookMgr sharedInstance] addressBook] indexOfObject: [[_sessionMgr currentSession] addressBookEntry]] withObject: currentABEntry];
 
 	NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
 		 [currentABEntry objectForKey:@"Name"],
@@ -1489,35 +1275,35 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	NSMutableDictionary *new;
 	
 	new=[[NSMutableDictionary alloc] initWithObjectsAndKeys:
-	    [currentPtySession name],@"Name",
-	    [[currentPtySession SHELL] path],@"Command",
-	    [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]],@"Encoding",
-	    [currentPtySession foregroundColor],@"Foreground",
-	    [currentPtySession backgroundColor],@"Background",
-	    [currentPtySession boldColor],@"BoldColor",
-	    [currentPtySession selectionColor],@"SelectionColor",
+	    [[_sessionMgr currentSession] name],@"Name",
+	    [[[_sessionMgr currentSession] SHELL] path],@"Command",
+	    [NSNumber numberWithUnsignedInt:[[[_sessionMgr currentSession] TERMINAL] encoding]],@"Encoding",
+	    [[_sessionMgr currentSession] foregroundColor],@"Foreground",
+	    [[_sessionMgr currentSession] backgroundColor],@"Background",
+	    [[_sessionMgr currentSession] boldColor],@"BoldColor",
+	    [[_sessionMgr currentSession] selectionColor],@"SelectionColor",
 	    [NSString stringWithInt:WIDTH],@"Col",
 	    [NSString stringWithInt:HEIGHT],@"Row",
-	    [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",
+	    [NSNumber numberWithInt:100-[[[[_sessionMgr currentSession] TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",
 	    [[self currentSession] TERM_VALUE],@"Term Type",
 	    @"",@"Directory",
-	    [[currentPtySession SCREEN] font],@"Font",
-	    [[currentPtySession SCREEN] nafont],@"NAFont",
+	    [[[_sessionMgr currentSession] SCREEN] font],@"Font",
+	    [[[_sessionMgr currentSession] SCREEN] nafont],@"NAFont",
 	    [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
 	    [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
 	    [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
 	    [NSNumber numberWithBool:[[self currentSession] doubleWidth]],@"DoubleWidth",
 	    NULL];
-        [[iTermController sharedInstance] addAddressBookEntry: new];
+        [[ITAddressBookMgr sharedInstance] addAddressBookEntry: new];
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
                         [new objectForKey:@"Name"],
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
 	[new release];
-	[currentPtySession setAddressBookEntry: new];
+	[[_sessionMgr currentSession] setAddressBookEntry: new];
     }
     
-    [[iTermController sharedInstance] saveAddressBook];
+    [[ITAddressBookMgr sharedInstance] saveAddressBook];
 }
 
 @end
@@ -1537,7 +1323,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(columns > 0)
     {
 	WIDTH = columns;
-	if([ptyList count] > 0)
+	if([_sessionMgr numberOfSessions] > 0)
 	    [self setWindowSize: NO];
     }
 }
@@ -1554,7 +1340,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(rows > 0)
     {
 	HEIGHT = rows;
-	if([ptyList count] > 0)
+	if([_sessionMgr numberOfSessions] > 0)
 	    [self setWindowSize: NO];
     }
 }
@@ -1562,7 +1348,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // accessors for to-many relationships:
 -(NSArray*)sessions
 {
-    return (ptyList);
+    return [_sessionMgr sessionList];
 }
 
 -(void)setSessions: (NSArray*)sessions
@@ -1575,7 +1361,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(id)valueInSessionsAtIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -valueInSessionsAtIndex: %d", index);
-    return ([ptyList objectAtIndex: index]);
+    return ([_sessionMgr sessionAtIndex: index]);
 }
 
 -(id)valueWithName: (NSString *)uniqueName inPropertyWithKey: (NSString*)propertyKey
@@ -1587,9 +1373,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 	PTYSession *aSession;
 	
-	for (i= 0; i < [ptyList count]; i++)
+	for (i= 0; i < [_sessionMgr numberOfSessions]; i++)
 	{
-	    aSession = [ptyList objectAtIndex: i];
+	    aSession = [_sessionMgr sessionAtIndex: i];
 	    if([[aSession name] isEqualToString: uniqueName] == YES)
 		return (aSession);
 	}
@@ -1608,9 +1394,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 	PTYSession *aSession;
 
-	for (i= 0; i < [ptyList count]; i++)
+	for (i= 0; i < [_sessionMgr numberOfSessions]; i++)
 	{
-	    aSession = [ptyList objectAtIndex: i];
+	    aSession = [_sessionMgr sessionAtIndex: i];
 	    if([[aSession tty] isEqualToString: uniqueID] == YES)
 		return (aSession);
 	}
@@ -1622,7 +1408,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -replaceInSessions: 0x%x atIndex: %d", object, index);
-    [ptyList replaceObjectAtIndex: index withObject: object];
+    [_sessionMgr replaceSessionAtIndex: index withSession: object];
 }
 
 -(void)addInSessions:(PTYSession *)object
@@ -1634,7 +1420,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(void)insertInSessions:(PTYSession *)object
 {
     // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x", object);
-    [self insertInSessions: object atIndex: [ptyList count]];
+    [self insertInSessions: object atIndex:[_sessionMgr numberOfSessions]];
 }
 
 -(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index
@@ -1647,9 +1433,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(void)removeFromSessionsAtIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -removeFromSessionsAtIndex: %d", index);
-    if(index < [ptyList count])
+    if(index < [_sessionMgr numberOfSessions])
     {
-	PTYSession *aSession = [ptyList objectAtIndex: index];
+	PTYSession *aSession = [_sessionMgr sessionAtIndex: index];
 	[self closeSession: aSession];
     }
 }
@@ -1664,7 +1450,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     windowInited = flag;
 }
 
-
 // a class method to provide the keys for KVC:
 +(NSArray*)kvcKeys
 {
@@ -1678,7 +1463,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 @end
 
-
 @implementation PseudoTerminal (ScriptingSupport)
 
 // Object specifier
@@ -1686,24 +1470,23 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     unsigned index = 0;
     id classDescription = nil;
-
+    
     NSScriptObjectSpecifier *containerRef;
-
+    
     NSArray *terminals = [[iTermController sharedInstance] terminals];
     index = [terminals indexOfObjectIdenticalTo:self];
     if (index != NSNotFound) {
-	containerRef     = [NSApp objectSpecifier];
-	classDescription = [NSClassDescription classDescriptionForClass:[NSApp class]];
-	//create and return the specifier
-	return [[[NSIndexSpecifier allocWithZone:[self zone]]
+        containerRef     = [NSApp objectSpecifier];
+        classDescription = [NSClassDescription classDescriptionForClass:[NSApp class]];
+        //create and return the specifier
+        return [[[NSIndexSpecifier allocWithZone:[self zone]]
                initWithContainerClassDescription: classDescription
                               containerSpecifier: containerRef
                                              key: @ "terminals"
                                            index: index] autorelease];
-    } else {
+    } 
+    else
         return nil;
-    }
-
 }
 
 // Handlers for supported commands:
@@ -1718,26 +1501,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     int i;
     
     // search for the session in the addressbook
-    abArray = [[iTermController sharedInstance] addressBookNames];
+    abArray = [[ITAddressBookMgr sharedInstance] addressBookNames];
     for (i = 0; i < [abArray count]; i++)
     {
 	if([[abArray objectAtIndex: i] caseInsensitiveCompare: session] == NSOrderedSame)
-	{
 	    break;
-	}
     }
     if(i == [abArray count])
 	i = 0; // index of default session
-    abEntry = [[iTermController sharedInstance] addressBookEntry: i];
+    abEntry = [[ITAddressBookMgr sharedInstance] addressBookEntry: i];
 
     // If we have not set up a window, do it now
     if([self windowInited] == NO)
     {
-
-	[self setWidth: [[abEntry objectForKey: @"Col"] intValue]
-				height: [[abEntry objectForKey: @"Row"] intValue]];
-	[self setFont: [abEntry objectForKey: @"Font"]
-			       nafont: [abEntry objectForKey: @"NAFont"]];
+	[self setWidth: [[abEntry objectForKey: @"Col"] intValue] height: [[abEntry objectForKey: @"Row"] intValue]];
+	[self setFont: [abEntry objectForKey: @"Font"] nafont: [abEntry objectForKey: @"NAFont"]];
 	[self initWindow];
     }
 
@@ -1745,35 +1523,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[iTermController sharedInstance] executeABCommandAtIndex: i inTerminal: self];
     
     return;
-}
-
-@end
-
-@implementation PseudoTerminal (Find_Actions)
-
-- (IBAction) showFindPanel: (id) sender;
-{
-    [[FindPanelWindowController sharedInstance] showWindow:self];
-}
-
-- (IBAction) findNext: (id) sender
-{
-    [[FindCommandHandler sharedInstance] findNext];
-}
-
-- (IBAction) findPrevious: (id) sender
-{
-    [[FindCommandHandler sharedInstance] findPrevious];
-}
-
-- (IBAction) findWithSelection: (id) sender
-{
-    [[FindCommandHandler sharedInstance] findWithSelection];
-}
-
-- (IBAction) jumpToSelection: (id) sender
-{
-    [[FindCommandHandler sharedInstance] jumpToSelection];
 }
 
 @end

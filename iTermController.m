@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.11 2003-08-12 03:17:19 sgehrman Exp $
+// $Id: iTermController.m,v 1.12 2003-08-13 05:03:54 sgehrman Exp $
 /*
  **  iTermController.m
  **
@@ -27,7 +27,6 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-
 // Debug option
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
@@ -38,20 +37,14 @@
 #import <iTerm/PTYSession.h>
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/AddressBookWindowController.h>
+#import <iTerm/ITAddressBookMgr.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
-static NSString* OLD_ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
-static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/AddressBook";
 static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
 static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
 static NSStringEncoding const *encodingList=nil;
 
 static BOOL usingAutoLaunchScript = NO;
-
-// comaparator function for addressbook entries
-extern BOOL isDefaultEntry( NSDictionary *entry );
-extern NSString *entryVisibleName( NSDictionary *entry, id sender );
-extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
 
 @implementation iTermController
 
@@ -103,7 +96,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
     // else do the usual default stuff.
     if ([[PreferencePanel sharedInstance] openAddressBook])
-        [self showABWindow:nil];
+        [[ITAddressBookMgr sharedInstance] showABWindow];
     else
         [self newWindow:nil];
     
@@ -134,12 +127,12 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     
     // Create the addressbook submenus for new tabs and windows.
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks Menu"];
-    [self buildAddressBookMenu: abMenu forTerminal: FRONT]; // target the top terminal window.
+    [self buildAddressBookMenu: abMenu target: FRONT]; // target the top terminal window.
     [newTabMenuItem setSubmenu: abMenu];
     [abMenu release];
     
     abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks Menu"];
-    [self buildAddressBookMenu: abMenu forTerminal: nil]; // target the top terminal window.
+    [self buildAddressBookMenu: abMenu target: nil]; // target the top terminal window.
     [newWindowMenuItem setSubmenu: abMenu];
     [abMenu release];
             
@@ -166,28 +159,24 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     FSSpec fsSpec;
     int osstatus = FSPathMakeRef( [fontsPath UTF8String], &fsRef, NULL);
     if ( osstatus == noErr)
-    {
-	osstatus = FSGetCatalogInfo( &fsRef, kFSCatInfoNone, NULL, NULL, &fsSpec, NULL);
-    }
+        osstatus = FSGetCatalogInfo( &fsRef, kFSCatInfoNone, NULL, NULL, &fsSpec, NULL);
+    
     //activate the font file using the file spec
     osstatus = FMActivateFonts( &fsSpec, NULL, NULL, kFMLocalActivationContext);
     
     // create the iTerm directory if it does not exist
     NSFileManager *fileManager = [NSFileManager defaultManager];
+    
     // create the "~/Library/Application Support" directory if it does not exist
     if([fileManager fileExistsAtPath: [APPLICATION_SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
-    {
-	[fileManager createDirectoryAtPath: [APPLICATION_SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
-    }    
-    if([fileManager fileExistsAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
-    {
-	[fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
-    }    
+        [fileManager createDirectoryAtPath: [APPLICATION_SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
     
-    [self initAddressBook];
+    if([fileManager fileExistsAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
+        [fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
+    
     encodingList=[NSString availableStringEncodings];
     terminalWindows = [[NSMutableArray alloc] init];
-
+    
     return (self);
 }
 
@@ -208,6 +197,16 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (IBAction)newWindow:(id)sender
 {
     [self executeABCommandAtIndex:0 inTerminal: nil];
+}
+
+- (void) newSessionInTabAtIndex: (id) sender
+{
+    [self executeABCommandAtIndex:[sender tag] inTerminal:FRONT];
+}
+
+- (void)newSessionInWindowAtIndex: (id) sender
+{
+    [self executeABCommandAtIndex:[sender tag] inTerminal: nil];
 }
 
 - (IBAction)newSession:(id)sender
@@ -256,12 +255,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
     // make that terminal's window active
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
-}
-
-// Preference Panel
-- (IBAction)showPrefWindow:(id)sender
-{
-    [[PreferencePanel sharedInstance] run];
 }
 
 // Utility
@@ -320,9 +313,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     [previousTerminal setAction: (FRONT?@selector(previousTerminal:):nil)];
     [nextTerminal setAction: (FRONT?@selector(nextTerminal:):nil)];
 
-
     [self buildSessionSubmenu];
-
 }
 
 - (PseudoTerminal *) frontPseudoTerminal
@@ -352,7 +343,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 	if(i < 10)
 	{
-	    aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(_selectSessionAtIndex:) keyEquivalent: [NSString stringWithFormat: @"%d", i]];
+	    aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(selectSessionAtIndexAction:) keyEquivalent: [NSString stringWithFormat: @"%d", i]];
 	    [aMenuItem setTag: i-1];
 
 	    [aMenu addItem: aMenuItem];
@@ -380,42 +371,26 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 }
 
 // Build the bookmarks menu
-- (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender
+- (void)buildAddressBookMenu:(NSMenu *) abMenu target:(id)target
 {
     NSEnumerator *abEnumerator;
     NSString *abEntry;
     int i = 0;
-//    SEL shellSelector;
-    SEL abCommandSelector;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController buildAddressBookMenu]",
-          __FILE__, __LINE__);
-#endif
-
-    if (sender == nil)
-    {
-//	shellSelector = @selector(newWindow:);
-	abCommandSelector = @selector(_executeABMenuCommandInNewWindow:);
-    }
+    SEL action;
+    
+    if (target == nil)
+        action = @selector(newSessionInWindowAtIndex:);
     else
-    {
-//	shellSelector = @selector(newSession:);
-	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
-    }
-
-//    [abMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Default session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New")
-//					   action: shellSelector keyEquivalent:@""];
-//    [abMenu addItem: [NSMenuItem separatorItem]];
-    abEnumerator = [[self addressBookNames] objectEnumerator];
+        action = @selector(newSessionInTabAtIndex:);
+    
+    abEnumerator = [[[ITAddressBookMgr sharedInstance] addressBookNames] objectEnumerator];
     while ((abEntry = [abEnumerator nextObject]) != nil)
     {
-	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: abCommandSelector keyEquivalent:@""];
-	[abMenuItem setTag: i++];
-	[abMenuItem setTarget: self];
-        [abMenuItem setRepresentedObject: sender]; // so that we know where this menu item is going to be executed
-	[abMenu addItem: abMenuItem];
-	[abMenuItem release];
+	NSMenuItem *abMenuItem = [[[NSMenuItem alloc] initWithTitle: abEntry action:action keyEquivalent:@""] autorelease];
+	[abMenuItem setTag:i++];
+	[abMenuItem setTarget:target];
+
+        [abMenu addItem: abMenuItem];
     }
 }
 
@@ -429,7 +404,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     NSDictionary *entry;
 
     // Grab the addressbook command
-    entry = [[self addressBook] objectAtIndex:theIndex];
+    entry = [[[ITAddressBookMgr sharedInstance] addressBook] objectAtIndex:theIndex];
     [iTermController breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
     
@@ -449,10 +424,9 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
         term = theTerm;
     
     // Initialize a new session
-    aSession = [[PTYSession alloc] init];
+    aSession = [[[PTYSession alloc] init] autorelease];
     // Add this session to our term and make it current
     [term addInSessions: aSession];
-    [aSession release];
 
     // set our preferences
     [aSession setAddressBookEntry:entry];
@@ -472,13 +446,13 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 - (void) interpreteKey: (int) code newWindow:(BOOL) newWin
 {
-    int i, c, n=[[self addressBook] count];
+    int i, c, n=[[[ITAddressBookMgr sharedInstance] addressBook] count];
 
     if (code>='a'&&code<='z') code+='A'-'a';
 //    NSLog(@"got code:%d (%s)",code,(newWin?"new":"old"));
     
     for(i=0; i<n; i++) {
-        c=[[[[self addressBook] objectAtIndex:i] objectForKey:@"Shortcut"] intValue];
+        c=[[[[[ITAddressBookMgr sharedInstance] addressBook] objectAtIndex:i] objectForKey:@"Shortcut"] intValue];
         if (code==c) {
             [self executeABCommandAtIndex:i inTerminal: newWin?nil:FRONT];
         }
@@ -488,180 +462,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (PTYTextView *) frontTextView
 {
     return ([[FRONT currentSession] TEXTVIEW]);
-}
-
-@end
-
-// AddressBook/Bookmark methods
-@implementation iTermController (AddressBook)
-
-- (NSMutableArray *) addressBook
-{
-    return (addressBook);
-}
-
-// Address book window
-- (IBAction)showABWindow:(id)sender
-{
-    AddressBookWindowController *abWindowController;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController showABWindow:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-
-    abWindowController = [AddressBookWindowController singleInstance];
-    [abWindowController setAddressBook: [self addressBook]];
-    [abWindowController run];
-}
-
-- (void) initAddressBook
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController initAddressBook]",
-          __FILE__, __LINE__);
-#endif
-
-    // We have a new location for the addressbook
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if([fileManager fileExistsAtPath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
-    {
-	// move the addressbook to the new location
-	[fileManager movePath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]
-				     toPath: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath] handler: nil];
-    }
-
-    addressBook = [[NSUnarchiver unarchiveObjectWithFile: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath]] retain];
-    if (addressBook == nil) {
-        NSLog(@"No file loaded");
-        addressBook=[[NSMutableArray array] retain];
-    }
-
-    // Insert default entry
-    if ( [addressBook count] < 1 || ![[addressBook objectAtIndex: 0] objectForKey:@"DefaultEntry"] ) {
-        [addressBook insertObject:[self newDefaultAddressBookEntry] atIndex: 0];
-    }
-    // There can be only one
-    int i;
-    for ( i = 1; i < [addressBook count]; i++) {
-        if ( isDefaultEntry( [addressBook objectAtIndex: i] ) ) {
-            NSDictionary *entry = [addressBook objectAtIndex: i];
-            NSMutableDictionary *newentry = [NSMutableDictionary dictionaryWithDictionary:entry];
-            // [entry release]?
-            [newentry removeObjectForKey:@"DefaultEntry"];
-            entry = [NSDictionary dictionaryWithDictionary:newentry];
-            [addressBook replaceObjectAtIndex:i withObject:entry];
-        }
-    }
-}
-
-- (void) saveAddressBook
-{
-    if (![NSArchiver archiveRootObject:[self addressBook] toFile:[ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
-        NSLog(@"Save failed");
-}
-
-// Returns an entry from the addressbook
-- (NSMutableDictionary *)addressBookEntry: (int) entryIndex
-{
-    if((entryIndex < 0) || (entryIndex >= [[self addressBook] count]))
-        return (nil);
-
-    return ([[self addressBook] objectAtIndex: entryIndex]);
-}
-
-- (NSMutableDictionary *) defaultAddressBookEntry
-{
-    int i;
-
-    for(i = 0; i < [[self addressBook] count]; i++)
-    {
-	NSMutableDictionary *entry = [[self addressBook] objectAtIndex: i];
-
-	if([entry objectForKey: @"DefaultEntry"] != nil)
-	    return (entry);
-    }
-
-    return (nil);
-}
-
-- (NSDictionary *)newDefaultAddressBookEntry
-{
-    char *userShell, *thisUser;
-    NSString *shell;
-
-    // This would be better read from a file stored in the package (with some bits added at run time)
-
-    // Get the user's default shell
-    if((thisUser = getenv("USER")) != NULL) {
-        shell = [NSString stringWithFormat: @"login -fp %s", thisUser];
-    } else if((userShell = getenv("SHELL")) != NULL) {
-        shell = [NSString stringWithCString: userShell];
-    } else {
-        shell = @"/bin/bash --login";
-    }
-
-    NSDictionary *ae;
-    ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-        NSLocalizedStringFromTableInBundle(@"Default Session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Default Session"),@"Name",
-        shell,@"Command",
-        [NSNumber numberWithUnsignedInt:1],@"Encoding",
-        [NSColor colorWithCalibratedRed:0.8f
-				  green:0.8f
-				   blue:0.8f
-				  alpha:1.0f],@"Foreground",
-        [NSColor blackColor],@"Background",
-        [NSColor colorWithCalibratedRed:0.45f
-				  green:0.5f
-				   blue:0.55f
-				  alpha:1.0f],@"SelectionColor",
-        [NSColor redColor],@"BoldColor",
-        [NSNumber numberWithUnsignedInt:25],@"Row",
-        [NSNumber numberWithUnsignedInt:80],@"Col",
-        [NSNumber numberWithInt:10],@"Transparency",
-        @"xterm",@"Term Type",
-        [@"~"  stringByExpandingTildeInPath],@"Directory",
-        [NSFont fontWithName:@"FreeMonoBold" size:13],@"Font",
-        [NSFont fontWithName:@"Osaka-Mono"
-					     size:14],@"NAFont",
-        [NSNumber numberWithBool:false],@"AntiIdle",
-        [NSNumber numberWithUnsignedInt:0],@"AICode",
-        [NSNumber numberWithBool:true],@"AutoClose",
-        [NSNumber numberWithBool:false],@"DoubleWidth",
-        [NSNumber numberWithUnsignedInt:0],@"Shortcut",
-        [NSNumber numberWithBool:true],@"DefaultEntry",
-        NULL];
-        [ae autorelease];
-    return ae;
-}
-
-- (void) addAddressBookEntry: (NSDictionary *) entry
-{
-    [[self addressBook] addObject:entry];
-    [[self addressBook] sortUsingFunction: addressBookComparator context: nil];
-}
-
-- (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new
-{
-    [[self addressBook] replaceObjectAtIndex:[[self addressBook] indexOfObject:old] withObject:new];
-}
-
-// Returns the entries in the addressbook
-- (NSArray *)addressBookNames
-{
-    NSMutableArray *anArray;
-    int i;
-    NSDictionary *anEntry;
-
-    anArray = [[NSMutableArray alloc] init];
-
-    for(i = 0; i < [[self addressBook] count]; i++)
-    {
-        anEntry = [[self addressBook] objectAtIndex: i];
-        [anArray addObject: entryVisibleName( anEntry, self )];
-    }
-
-    return ([anArray autorelease]);
 }
 
 @end
@@ -742,25 +542,3 @@ NSString *terminalsKey = @"terminals";
 
 @end
 
-// Private interface
-@implementation iTermController (Private)
-
-- (void) _executeABMenuCommandInNewTab: (id) sender
-{
-    [self executeABCommandAtIndex: [sender tag] inTerminal: [sender representedObject]];
-}
-
-- (void) _executeABMenuCommandInNewWindow: (id) sender
-{
-    [self executeABCommandAtIndex: [sender tag] inTerminal: nil];
-}
-
-- (void) _selectSessionAtIndex: (id) sender
-{
-    if(FRONT != nil)
-	[FRONT selectSessionAtIndex: [sender tag]];
-    else
-	NSBeep();
-}
-
-@end

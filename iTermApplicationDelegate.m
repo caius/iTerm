@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.1 2003-08-11 12:58:57 sgehrman Exp $
+// $Id: iTermApplicationDelegate.m,v 1.2 2003-08-13 05:03:54 sgehrman Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -29,6 +29,9 @@
 
 #import <iTerm/iTermApplicationDelegate.h>
 #import <iTerm/iTermController.h>
+#import <iTerm/ITAddressBookMgr.h>
+#import <iTerm/PreferencePanel.h>
+#import <iTerm/FindPanelWindowController.h>
 
 @implementation iTermApplicationDelegate
 
@@ -109,12 +112,12 @@
 
 - (IBAction)showABWindow:(id)sender
 {
-    [[iTermController sharedInstance] showABWindow:sender];
+    [[ITAddressBookMgr sharedInstance] showABWindow];
 }
 
 - (IBAction)showPrefWindow:(id)sender
 {
-    [[iTermController sharedInstance] showPrefWindow:sender];
+    [[PreferencePanel sharedInstance] run];
 }
 
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
@@ -268,3 +271,49 @@
 }
 
 @end
+
+@implementation iTermApplicationDelegate (Find_Actions)
+
+- (IBAction) showFindPanel: (id) sender;
+{
+    [[FindPanelWindowController sharedInstance] showWindow:self];
+}
+
+- (IBAction) findNext: (id) sender
+{
+    [[FindCommandHandler sharedInstance] findNext];
+}
+
+- (IBAction) findPrevious: (id) sender
+{
+    [[FindCommandHandler sharedInstance] findPrevious];
+}
+
+- (IBAction) findWithSelection: (id) sender
+{
+    [[FindCommandHandler sharedInstance] findWithSelection];
+}
+
+- (IBAction) jumpToSelection: (id) sender
+{
+    [[FindCommandHandler sharedInstance] jumpToSelection];
+}
+
+@end
+
+@implementation iTermApplicationDelegate (MoreActions)
+
+- (void) newSessionInTabAtIndex: (id) sender
+{
+    [[iTermController sharedInstance] newSessionInTabAtIndex:sender];
+}
+
+- (void)newSessionInWindowAtIndex: (id) sender
+{
+    [[iTermController sharedInstance] newSessionInWindowAtIndex:sender];
+}
+
+@end
+
+
+

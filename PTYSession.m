@@ -464,15 +464,13 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 	}
 	else {
-	    int i, max = [keystr length];
-	    NSMutableString *mstr = [NSMutableString stringWithString:keystr];
+	    int max = [keystr length];
 	    NSData *data;
 
-	    for(i=0; i<max; i++)
-		if ([mstr characterAtIndex:i] == 0xa5)
-		    [mstr replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
-
-	    data = [mstr dataUsingEncoding:[TERMINAL encoding]];
+            if (max!=1||[keystr characterAtIndex:0] > 0x7f)
+                data = [keystr dataUsingEncoding:[TERMINAL encoding]];
+            else
+                data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
 
 	    // Check if we are in keypad mode
 	    if((modflag & NSNumericPadKeyMask) && (![TERMINAL numLock] || [TERMINAL keypadMode]))
@@ -503,6 +501,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_str = (char *)[data bytes];
 		send_strlen = [data length];
 	    }
+
 	    if (modflag & NSNumericPadKeyMask &&
 		send_strlen == 1 &&
 		send_str[0] == 0x03)

@@ -1,3 +1,7 @@
+2003-05-14	fabian
+    * Fixed a japanese keyboard input problem. Cleaned up the
+      keyDown code in PTYSession.
+      
 2003-05-13	ujwal
 
     * Fixed a pretty big memory leak where the text views were 

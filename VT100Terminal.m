@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.65 2003-05-13 18:23:09 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.66 2003-05-14 17:18:11 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1745,6 +1745,10 @@ static VT100TCC decode_string(unsigned char *datap,
                                         forKey:NSForegroundColorAttributeName];
     [characterAttributeDictionary[0] removeObjectForKey:NSBackgroundColorAttributeName];
     [characterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
+    [characterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(0)]
+                                        forKey:NSLigatureAttributeName];
+    [characterAttributeDictionary[0] setObject:[NSNumber numberWithFloat:(0)]
+                                        forKey:NSKernAttributeName];
     [characterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
                                         forKey:@"NSCharWidthAttributeName"];
     [characterAttributeDictionary[0] setObject:pstyle
@@ -1753,6 +1757,10 @@ static VT100TCC decode_string(unsigned char *datap,
                                         forKey:NSForegroundColorAttributeName];
     [characterAttributeDictionary[1] removeObjectForKey:NSBackgroundColorAttributeName];
     [characterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
+    [characterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(0)]
+                                        forKey:NSLigatureAttributeName];
+    [characterAttributeDictionary[1] setObject:[NSNumber numberWithFloat:(0)]
+                                        forKey:NSKernAttributeName];
     [characterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
                                         forKey:@"NSCharWidthAttributeName"];
     [characterAttributeDictionary[1] setObject:pstyle

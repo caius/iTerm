@@ -1,3 +1,9 @@
+2004-03-23  fabian
+
+	* Fixed a bug in encoding settings.
+	* Added cursor text and selection text in config panel.
+	* Fixed bugs in char cache. It now follows changes of color setting correctly.
+	
 2004-03-21  ujwal
 
 	* Added support to hide all tabs.

@@ -22,6 +22,7 @@
                 "CONFIG_BOLD" = id; 
                 "CONFIG_COL" = id; 
                 "CONFIG_CURSOR" = NSColorWell; 
+                "CONFIG_CURSORTEXT" = NSColorWell; 
                 "CONFIG_ENCODING" = NSPopUpButton; 
                 "CONFIG_EXAMPLE" = id; 
                 "CONFIG_FOREGROUND" = id; 
@@ -29,6 +30,7 @@
                 "CONFIG_NAME" = id; 
                 "CONFIG_ROW" = id; 
                 "CONFIG_SELECTION" = id; 
+                "CONFIG_SELECTIONTEXT" = NSColorWell; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
                 backgroundImage = NSImageView; 

@@ -577,7 +577,7 @@ static NSStringEncoding const *encodingList = nil;
 
 - (IBAction) terminalSetEncoding: (id) sender
 {
-	[[iTermTerminalProfileMgr singleInstance] setEncoding: encodingList[[sender indexOfSelectedItem] - 1] 
+	[[iTermTerminalProfileMgr singleInstance] setEncoding: encodingList[[sender indexOfSelectedItem]] 
 											   forProfile: [terminalProfileSelector titleOfSelectedItem]];
 }
 

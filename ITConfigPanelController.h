@@ -36,17 +36,20 @@
     IBOutlet id CONFIG_COL;
     IBOutlet id CONFIG_ROW;
     IBOutlet NSPopUpButton *CONFIG_ENCODING;
-    IBOutlet id CONFIG_BACKGROUND;
-    IBOutlet id CONFIG_FOREGROUND;
+    IBOutlet NSColorWell *CONFIG_BACKGROUND;
+    IBOutlet NSColorWell *CONFIG_FOREGROUND;
     IBOutlet id CONFIG_EXAMPLE;
     IBOutlet id CONFIG_NAEXAMPLE;
     IBOutlet id CONFIG_TRANSPARENCY;
     IBOutlet id CONFIG_TRANS2;
     IBOutlet id CONFIG_NAME;
     IBOutlet id CONFIG_ANTIALIAS;
-    IBOutlet id CONFIG_SELECTION;
-    IBOutlet id CONFIG_BOLD;
+    IBOutlet NSColorWell *CONFIG_SELECTION;
+    IBOutlet NSColorWell *CONFIG_BOLD;
 	IBOutlet NSColorWell *CONFIG_CURSOR;
+	IBOutlet NSColorWell *CONFIG_CURSORTEXT;
+	IBOutlet NSColorWell *CONFIG_SELECTIONTEXT;
+	
     
     // anti-idle
     IBOutlet id AI_CODE;

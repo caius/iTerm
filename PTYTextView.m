@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.183 2004-03-21 07:00:58 ujwal Exp $
+// $Id: PTYTextView.m,v 1.184 2004-03-22 23:25:41 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -244,6 +244,7 @@
 	[selectedTextColor release];
 	[aColor retain];
 	selectedTextColor = aColor;
+	[self _clearCacheForColor: SELECTED_TEXT];
 	[self setNeedsDisplay: YES];
 }
 
@@ -252,6 +253,7 @@
 	[cursorTextColor release];
 	[aColor retain];
 	cursorTextColor = aColor;
+	[self _clearCacheForColor: CURSOR_TEXT];
 	[self setNeedsDisplay: YES];
 }
 
@@ -292,6 +294,9 @@
     [colorTable[idx] release];
     [c retain];
     colorTable[idx]=c;
+	[self _clearCacheForColor: idx];
+	[self _clearCacheForColor: (BOLD_MASK | idx)];
+	
 	[self setNeedsDisplay: YES];
 }
 
@@ -354,6 +359,7 @@
     selectionColor=aColor;
 	[self setNeedsDisplay: YES];
 }
+
 
 - (NSFont *)font
 {
@@ -1988,19 +1994,24 @@
 	unsigned int c = fg;
 	int seed;
 	
-	if(!(fg & SELECTED_TEXT || fg & CURSOR_TEXT))
-	{
+	if (fg & SELECTED_TEXT) {
+		c = SELECTED_TEXT;
+	}
+	else if (fg & CURSOR_TEXT) {
+		c = CURSOR_TEXT;
+	}
+	else {
 		if ([[dataSource terminal] screenMode] && (fg&DEFAULT_FG_COLOR_CODE)) // reversed screen mode?
-			c = fg | DEFAULT_BG_COLOR_CODE;
-		c= c & (BOLD_MASK|0x1f); // turn of all masks except for bold and default fg color
+			c = DEFAULT_FG_COLOR_CODE | DEFAULT_BG_COLOR_CODE;
+		c &= (BOLD_MASK|0x1f); // turn of all masks except for bold and default fg color
 	}
 	if (!code) return nil;
-	width=dw?2:1;
-	seed=code;
-	seed<<=6;
+	width = dw?2:1;
+	seed = code;
+	seed <<= 8;
 	srand( seed + c );
-	i=rand()%(CACHESIZE-CELLSIZE);
-	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
+	i = rand() % (CACHESIZE-CELLSIZE);
+	for(j = 0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
 		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
@@ -2009,7 +2020,7 @@
 		charImages[i].count=1;
 		[self _renderChar: image 
 				withChar: code
-			   withColor: [self colorForCode:fg] 
+			   withColor: [self colorForCode: c] 
 				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
 					bold: c&BOLD_MASK];
 		
@@ -2017,25 +2028,25 @@
 	}
 	else if (j>=CELLSIZE) {
 		NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
-		int t;
-		t=1;
+		int t=1;
 		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
-			if (charImages[i-j].count<charImages[i-t].count) t=j;
+			if (charImages[i-j].count < charImages[i-t].count) t = j;
 		}
-		[charImages[i-t].image release];
-		image=charImages[i-t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
-		charImages[i-t].code=code;
-		charImages[i-t].color=c;
-		for(j=1; j<=CELLSIZE; j++) {	//reset the cache
-			charImages[i-j].count-=charImages[i-t].count;
+		t = i - t;
+		[charImages[t].image release];
+		image=charImages[t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
+		charImages[t].code=code;
+		charImages[t].color=c;
+		for(j=1; j<=CELLSIZE; j++) {	//reset the cache count
+			charImages[i-j].count -= charImages[t].count;
 		}
-		charImages[i-t].count=1;
+		charImages[t].count=1;
 		
 		[self _renderChar: image 
 				withChar: code
-			   withColor: [self colorForCode:fg] 
+			   withColor: [self colorForCode: c] 
 				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
-					bold: c&BOLD_MASK];
+					bold: c & BOLD_MASK];
 		return image;
 	}
 	else {
@@ -2293,6 +2304,18 @@
     
     [[NSWorkspace sharedWorkspace] openURL:url];
 	
+}
+
+- (void) _clearCacheForColor:(int)colorIndex
+{
+	int i;
+
+	for ( i = 0 ; i < CACHESIZE; i++) {
+		if (charImages[i].color == colorIndex) {
+			[charImages[i].image release];
+			charImages[i].image = nil;
+		}
+	}
 }
 
 @end

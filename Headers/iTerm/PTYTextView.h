@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.35 2004-03-21 07:00:59 ujwal Exp $
+// $Id: PTYTextView.h,v 1.36 2004-03-22 23:25:41 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -37,7 +37,7 @@
 
 typedef struct 
 {
-	unichar code;
+	int code;
 	unsigned int color;
 	NSImage *image;
 	int count;
@@ -273,6 +273,7 @@ typedef struct
 - (void) _drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
 - (BOOL) _isBlankLine: (int) y;
 - (void) _openURL: (NSString *) aURLString;
+- (void) _clearCacheForColor:(int)colorIndex;
 
 @end
 

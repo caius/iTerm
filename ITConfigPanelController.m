@@ -125,7 +125,11 @@
         // set the selection color if it has changed
         if([[[currentSession TEXTVIEW] selectionColor] isEqual: [CONFIG_SELECTION color]] == NO)
             [[currentSession TEXTVIEW] setSelectionColor: [CONFIG_SELECTION color]];
-        
+ 
+		// set the selection color if it has changed
+        if([[[currentSession TEXTVIEW] selectedTextColor] isEqual: [CONFIG_SELECTIONTEXT color]] == NO)
+            [[currentSession TEXTVIEW] setSelectedTextColor: [CONFIG_SELECTIONTEXT color]];
+		
         // set the bold color if it has changed
         if([[currentSession boldColor] isEqual: [CONFIG_BOLD color]] == NO)
             [currentSession setBoldColor: [CONFIG_BOLD color]];
@@ -134,6 +138,10 @@
 		if([[currentSession cursorColor] isEqual: [CONFIG_CURSOR color]] == NO)
             [currentSession setCursorColor: [CONFIG_CURSOR color]];
 
+        // set the selection color if it has changed
+        if([[[currentSession TEXTVIEW] cursorTextColor] isEqual: [CONFIG_CURSORTEXT color]] == NO)
+            [[currentSession TEXTVIEW] setCursorTextColor: [CONFIG_CURSORTEXT color]];
+		
 
 	// change foreground color if it has changed
 	if(([[currentSession foregroundColor] isEqual:[CONFIG_FOREGROUND color]] == NO))
@@ -330,8 +338,10 @@
     [CONFIG_BACKGROUND setColor:[[currentSession TEXTVIEW] defaultBGColor]];
     [CONFIG_BACKGROUND setEnabled: ([currentSession image] == nil)?YES:NO];
     [CONFIG_SELECTION setColor:[[currentSession TEXTVIEW] selectionColor]];
+    [CONFIG_SELECTIONTEXT setColor:[[currentSession TEXTVIEW] selectedTextColor]];
     [CONFIG_BOLD setColor: [[currentSession TEXTVIEW] defaultBoldColor]];
 	[CONFIG_CURSOR setColor: [[currentSession TEXTVIEW] defaultCursorColor]];
+	[CONFIG_CURSORTEXT setColor: [[currentSession TEXTVIEW] cursorTextColor]];
 
     configFont=[_pseudoTerminal font];
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];

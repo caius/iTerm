@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.181 2004-03-20 05:49:20 ujwal Exp $
+// $Id: PTYTextView.m,v 1.182 2004-03-21 02:25:17 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -784,13 +784,13 @@
 		//draw all char
 		for(j=0;j<WIDTH;j++) {
 			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
-			double_width = (buf[j+1] == 0xffff);
-			// switch colors if text is selected
-			if(bg[j] & SELECTION_MASK)
-				fgcode = SELECTED_TEXT | ((fg[j] & BOLD_MASK) & 0xff); // check for bold
-			else
-				fgcode = fg[j] & 0xff;
 			if (need_draw) { 
+				double_width = (buf[j+1] == 0xffff);
+				// switch colors if text is selected
+				if((bg[j] & SELECTION_MASK) && ((fg[j] & 0x1f) == DEFAULT_FG_COLOR_CODE))
+					fgcode = SELECTED_TEXT | ((fg[j] & BOLD_MASK) & 0xff); // check for bold
+				else
+					fgcode = fg[j] & 0xff;				
 				if (fg[j]&BLINK_MASK) {
 					if (blinkShow) {				
 						[self _drawCharacter:buf[j] fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];

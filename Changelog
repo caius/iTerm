@@ -6,6 +6,7 @@
     * New SetASCIIString() to process ascii strings and
       old SetString() to handle other(multibytes) strings
     * Cleaned up code in VT100Screen.m
+    * bug fixes in SetDoubleString
       
 2003-01-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

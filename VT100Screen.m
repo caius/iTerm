@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.24 2003-01-21 03:14:41 ujwal Exp $
+// $Id: VT100Screen.m,v 1.25 2003-01-21 03:35:30 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -638,6 +638,7 @@ static BOOL PLAYBELL = YES;
 
     [self showCursor:NO];
     for(idx2=0;idx2<len;) {
+         store=[STORAGE string];
         if (CURSOR_X>=WIDTH) {
             if ([TERMINAL wraparoundMode]) {
                 [self setNewLine];
@@ -653,7 +654,7 @@ static BOOL PLAYBELL = YES;
             else x=CURSOR_X+len-idx2;
             j=x-CURSOR_X;
             if (j<=0) {
-                NSLog(@"setASCIIString: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
+                //NSLog(@"setASCIIString: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
                 break;
             }
             [self insertBlank:j];
@@ -670,7 +671,7 @@ static BOOL PLAYBELL = YES;
             else x=CURSOR_X+len-idx2;
             j=x-CURSOR_X;
             if (j<=0) {
-                NSLog(@"setASCIIString1: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
+                //NSLog(@"setASCIIString1: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
                 break;
             }
             //NSLog(@"%d+%d->%d",idx2,j,len);
@@ -678,7 +679,7 @@ static BOOL PLAYBELL = YES;
                 if (doubleWidth&&[[STORAGE attribute:NSCharWidthAttributeName atIndex:(idx+i) effectiveRange:nil] intValue]==2)  x2++;
             CURSOR_X=x;
             if (x2>x) {
-                // NSLog(@"setASCIIString: End in the middle of a hanzi");
+                //NSLog(@"setASCIIString: End in the middle of a hanzi");
                 [STORAGE replaceCharactersInRange:NSMakeRange(idx+i-1,1)
                              withAttributedString:[self attrString:@"??" ascii:YES]];
             }
@@ -687,14 +688,14 @@ static BOOL PLAYBELL = YES;
                 [STORAGE appendAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
             }
             else if (i==0) {
-                //                NSLog(@"setASCIIString: About to insert [%@](%d+%d),  (%d)",
-                //                      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
-                                        [STORAGE insertAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES] atIndex:idx];
+                //NSLog(@"setASCIIString: About to insert [%@](%d+%d),  (%d)",
+                //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
+                [STORAGE insertAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES] atIndex:idx];
             }
             else {
-           /*                   NSLog(@"setASCIIString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
-                                     [store substringWithRange:NSMakeRange(idx,i)],idx,i,
-                                     [s substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);*/
+                //NSLog(@"setASCIIString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
+                //      [store substringWithRange:NSMakeRange(idx,i)],idx,i,
+                //      [s substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
                 [STORAGE replaceCharactersInRange:NSMakeRange(idx,i)
                              withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
             }
@@ -703,26 +704,26 @@ static BOOL PLAYBELL = YES;
     }
 }
 
-- (void)setDoubleWidthString:(NSString *)s
+- (void)setDoubleWidthString:(NSString *)string
 {
     int i,j,idx,idx2,len,x,x2;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setDoubleWidthString:%@]",
-          __FILE__, __LINE__, s);
+          __FILE__, __LINE__, string);
 #endif
 
 
-    if (s==nil) return;
-    len = [s length];
+    if (string==nil) return;
+    len = [string length];
     if (len<1) return;
 
     NSString *store=[STORAGE string];
-    NSMutableString *string=[NSMutableString stringWithString:s];
 
     [self showCursor:NO];
 
     for(idx2=0;idx2<len;) {
+        store=[STORAGE string];
         if (CURSOR_X>=WIDTH) {
             if ([TERMINAL wraparoundMode]) {
                 [self setNewLine];
@@ -738,7 +739,7 @@ static BOOL PLAYBELL = YES;
             else x=CURSOR_X+(len-idx2)*2;
             j=(x-CURSOR_X+1)/2;
             if (j<=0) {
-                NSLog(@"setDoubleWidthString: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
+                //NSLog(@"setDoubleWidthString: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
                 break;
             }
             [self insertBlank:x-CURSOR_X];
@@ -751,43 +752,43 @@ static BOOL PLAYBELL = YES;
         else {
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
             if (CURSOR_IN_MIDDLE) {
-                // NSLog(@"setDoubleWidthString: Start from middle of a hanzi");
-                [string insertString:@"?" atIndex:idx2];
-                CURSOR_X--;
-                j++;
-                len++;
+                //NSLog(@"setDoubleWidthString: Start from middle of a hanzi");
+                [STORAGE replaceCharactersInRange:NSMakeRange(idx,2)
+                             withAttributedString:[self attrString:@"??"  ascii:YES]];
+                idx++;
             }
             if(WIDTH-CURSOR_X<=(len-idx2)*2) x=WIDTH;
             else x=CURSOR_X+(len-idx2)*2;
             j=(x-CURSOR_X+1)/2;
 
             if (j<=0) {
-                NSLog(@"setDoubleWidthString:1: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
+                //NSLog(@"setDoubleWidthString:1: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
                 break;
             }
             for(i=0,x2=CURSOR_X;x2<x&&idx+i<[store length]&&[store characterAtIndex:idx+i]!='\n';x2++,i++)
-//                if (ISDOUBLEWIDTHCHARACTER([store characterAtIndex:idx+i])) x2++;
                 if (ISDOUBLEWIDTHCHARACTER(idx+i)) x2++;
             CURSOR_X=x;
             if (x2>x) {
                 //NSLog(@"setDoubleWidthString: End in the middle of a hanzi");
-                [string insertString:@"?" atIndex:idx2+j];
-                j++;
-                len++;
+                [STORAGE replaceCharactersInRange:NSMakeRange(idx+i,2)
+                             withAttributedString:[self attrString:@"??"  ascii:YES]];
             }
 //            NSLog(@"%d,%d(%d)->(%d,%d)",idx,i,[store length],idx2,j);
             if (idx>=[store length]) {
+                //NSLog(@"setDoubleWidthString: About to append [%@](%d+%d),(%d)",
+                //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
+
                 [STORAGE appendAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
             }
             else if (i==0) {
-//                NSLog(@"setDoubleWidthString: About to insert [%@](%d+%d),  (%d)",
-//                      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
+                //NSLog(@"setDoubleWidthString: About to insert [%@](%d+%d),  (%d)",
+                //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
                 [STORAGE insertAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO] atIndex:idx];
             }
             else {
-/*                NSLog(@"setDoubleWidthString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
-                      [store substringWithRange:NSMakeRange(idx,i)],idx,i,
-                      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]); */
+               // NSLog(@"setDoubleWidthString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
+               //       [store substringWithRange:NSMakeRange(idx,i)],idx,i,
+               //       [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]); 
                 [STORAGE replaceCharactersInRange:NSMakeRange(idx,i)
                              withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
             }

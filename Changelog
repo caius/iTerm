@@ -2,6 +2,7 @@
 
 	* Made application of transparency more consistent.
 	* Common keymapping profile is searched last for a keybinding match.
+	* Fixed "select all" in text view.
 
 2004-03-03  fabian
 

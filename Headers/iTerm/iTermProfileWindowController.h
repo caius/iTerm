@@ -94,6 +94,7 @@
 	IBOutlet NSSlider *displayFontSpacingHeight;
 	IBOutlet NSButton *displayAntiAlias;
 	
+	BOOL changingNAFont;
 }
 
 - (IBAction) showProfilesWindow: (id) sender;

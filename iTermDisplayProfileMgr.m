@@ -400,7 +400,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 		return ([NSFont userFixedPitchFontOfSize: 0.0]);
 	
 	utf8String = [[aProfile objectForKey: @"Font"] UTF8String];
-	sscanf(utf8String, "%s-%f", utf8FontName, &fontSize);
+	sscanf(utf8String, "%s %g", utf8FontName, &fontSize);
 	
 	aFont = [NSFont fontWithName: [NSString stringWithFormat: @"%s", utf8FontName] size: fontSize];
 	
@@ -411,6 +411,8 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 {
 	NSMutableDictionary *aProfile;
 	
+	// NSLog(@"%s", __PRETTY_FUNCTION__);
+	
 	if([profileName length] <= 0 || font == nil)
 		return;
 	
@@ -419,7 +421,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	if(aProfile == nil)
 		return;
 	
-	[aProfile setObject: [NSString stringWithFormat: @"%@-%f", [font fontName], [font pointSize]] forKey: @"Font"];
+	[aProfile setObject: [NSString stringWithFormat: @"%@ %g", [font fontName], [font pointSize]] forKey: @"Font"];
 }
 
 - (NSFont *) windowNAFontForProfile: (NSString *) profileName
@@ -442,7 +444,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 		return ([NSFont userFixedPitchFontOfSize: 0.0]);
 	
 	utf8String = [[aProfile objectForKey: @"NAFont"] UTF8String];
-	sscanf(utf8String, "%s-%f", utf8FontName, &fontSize);
+	sscanf(utf8String, "%s %g", utf8FontName, &fontSize);
 	
 	aFont = [NSFont fontWithName: [NSString stringWithFormat: @"%s", utf8FontName] size: fontSize];
 	
@@ -453,6 +455,8 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 {
 	NSMutableDictionary *aProfile;
 	
+	// NSLog(@"%s", __PRETTY_FUNCTION__);
+	
 	if([profileName length] <= 0 || font == nil)
 		return;
 	
@@ -461,7 +465,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	if(aProfile == nil)
 		return;
 	
-	[aProfile setObject: [NSString stringWithFormat: @"%@-%f", [font fontName], [font pointSize]] forKey: @"NAFont"];
+	[aProfile setObject: [NSString stringWithFormat: @"%@ %g", [font fontName], [font pointSize]] forKey: @"NAFont"];
 }
 
 - (int) windowColumnsForProfile: (NSString *) profileName

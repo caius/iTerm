@@ -62,6 +62,12 @@
     [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
 }
 
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+	[[NSColorPanel sharedColorPanel] close];
+	[[NSFontPanel sharedFontPanel] close];	
+}
+
 // Profile editing
 - (IBAction) profileAdd: (id) sender
 {
@@ -413,11 +419,39 @@
 	
 }
 
+// sent by NSFontManager
+- (void)changeFont:(id)fontManager
+{
+	NSString *theProfile;
+	NSFont *aFont;
+	
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+	theProfile = [displayProfileSelector titleOfSelectedItem];
+	
+	if(changingNAFont)
+	{
+		aFont = [fontManager convertFont: [displayNAFontTextField font]];
+		[[iTermDisplayProfileMgr singleInstance] setWindowNAFont: aFont forProfile: theProfile];
+	}
+	else
+	{
+		aFont = [fontManager convertFont: [displayFontTextField font]];
+		[[iTermDisplayProfileMgr singleInstance] setWindowFont: aFont forProfile: theProfile];
+	}
+	
+	[self _updateFontsDisplay];
+	
+}
+
+
 - (IBAction) displaySelectFont: (id) sender
 {
 	NSFont *aFont;
 	NSString *theProfile;
 	NSFontPanel *aFontPanel;
+	
+	changingNAFont = NO;
 	
 	theProfile = [displayProfileSelector titleOfSelectedItem];
 	aFont = [[iTermDisplayProfileMgr singleInstance] windowFontForProfile: theProfile];
@@ -435,6 +469,8 @@
 	NSFont *aFont;
 	NSString *theProfile;
 	NSFontPanel *aFontPanel;
+	
+	changingNAFont = YES;
 	
 	theProfile = [displayProfileSelector titleOfSelectedItem];
 	aFont = [[iTermDisplayProfileMgr singleInstance] windowNAFontForProfile: theProfile];
@@ -631,7 +667,7 @@
 	font = [[iTermDisplayProfileMgr singleInstance] windowFontForProfile: theProfile];
 	if(font != nil)
 	{
-		fontName = [NSString stringWithFormat: @"%@ %dpt", [font fontName], (int)[font pointSize]];
+		fontName = [NSString stringWithFormat: @"%@ %g", [font fontName], [font pointSize]];
 		[displayFontTextField setStringValue: fontName];
 		[displayFontTextField setFont: font];
 		[displayFontTextField setTextColor: [displayFGColor color]];
@@ -639,13 +675,13 @@
 	}
 	else
 	{
-		fontName = @"";
+		fontName = @"Unknown Font";
 		[displayFontTextField setStringValue: fontName];
 	}
 	font = [[iTermDisplayProfileMgr singleInstance] windowNAFontForProfile: theProfile];
 	if(font != nil)
 	{
-		fontName = [NSString stringWithFormat: @"%@ %dpt", [font fontName], (int)[font pointSize]];
+		fontName = [NSString stringWithFormat: @"%@ %g", [font fontName], [font pointSize]];
 		[displayNAFontTextField setStringValue: fontName];
 		[displayNAFontTextField setFont: font];
 		[displayNAFontTextField setTextColor: [displayFGColor color]];
@@ -653,7 +689,7 @@
 	}
 	else
 	{
-		fontName = @"";
+		fontName = @"Unknown NA Font";
 		[displayNAFontTextField setStringValue: fontName];
 	}
 	

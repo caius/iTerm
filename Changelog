@@ -1,3 +1,8 @@
+2004-03-26  fabian
+
+	* Removed 'Bookmarks' button from toolbar.
+	* Updates of website files.
+	
 2004-03-25  ujwal
 	
 	* Re-implemented bold drawing to use NSStrokeAttributeName on 

@@ -16,42 +16,32 @@
 
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
-<FONT SIZE="5"><STRONG>Navigation:</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>Profiles</STRONG></FONT><BR>
 <UL>
-<STRONG>Tabs</STRONG>, the <STRONG>toolbar</STRONG>, <STRONG>contextual menus</STRONG> and the <STRONG>bookmarks</STRONG>, all help to aid navigation in iTerm.  If you don't use these features, give them a look, because they can be extremely helpful. The tabs support drag and drop enabling you to re-order them within and between windows.
+The session settings are organized through profiles. There are 3 kinds of profiles associated with
+each bookmark:
+<STRONG>Keyboard</STRONG>, the <STRONG>Terminal</STRONG>, and <STRONG>Display</STRONG>.
+By using profiles, you can conveniently create bookmarks that share same properties.
 </UL>
 
-<FONT SIZE="5"><STRONG>Shortcut keys:</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>Keyboard</STRONG></FONT><BR>
 <UL>
-<LI>Command or Shift-left/right/Up/Down Arrow: Switch to the previous/next tab</LI>
-<LI>Command Fn: Switch to n-th session</LI><BR>
-<LI>Shift PageUp/PageDown or Shift-Command-Up/Down Arrow: Scroll Up/Down one page</LI>
-<LI>Command-Up/Down Arrow: Scroll Up/Down one line</LI><BR>
-<LI>Right-Click: Context menu</LI>
-<LI>Command Right-Click: Contextual menu with open in new window options</LI><BR>
-<LI>CTRL-Cmd-LetterKey: Open a new sesson in tab</LI>
-<LI>Shift-CTRL-Cmd-LetterKey: Open a new session in new window</LI>
-Note: The letter key is specified in Bookmarks. You can assign the same key to
-different entries. Using this key will load all these entries at once.
+There is a "Global" profile in which you define keys for global things such as switching
+tabs, scrolling screens.<BR>
+The other profiles are used for bookmarks. You can specify either an escape sequence, a
+hexcode, or to ignore, for each key. Several standard profiles come with the distribution,
+including vt100, xterm, ansi and linux. You can modifiy these or create your own.<BR>
 </UL>
 
-<FONT SIZE="5"><STRONG>Contextual Menu:</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>Terminal</STRONG></FONT><BR>
 <UL>
-<LI>Has access to your Bookmarks!!</LI>
-<LI>Has access to the Configure panel</LI>
-<LI>Has access to clear the buffer</LI>
-<LI>Selected text can sent to either your web browser, your email program, saved to file or copied.
-<UL>Text sent to your mail program should be an email address<BR>
-Text sent to your browser should be a URL</UL></LI>
-</UL>
+Terminal profiles let you specify the emulation behavior of iTerm.</UL>
 
-<FONT SIZE="5"><STRONG>Bookmarks:</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>Display</STRONG></FONT><BR>
 <UL>
-<LI>The Bookmarks organizes preset terminal settings.</LI>
-<LI>Instead of modifying the configure panel or preference panel, you can save seperate settings for a session</LI>
-<LI>For the command you can specify an command, doesn't have to be a shell.</LI>
-<LI>The Bookmarks can be accessed from a contextual menu, the Tool Bar or from the menu: Window -> Bookmarks (Command + Shift + A)</LI>
-</UL>
+Display profiles let you specify the display behavior of iTerm. You can create your own color set,
+specify window size and choose your favorite font. Notice since every tab within a window should
+have same size and font, the window settings will only be honored for the new created windows.</UL>
 
 <FONT SIZE="5"><STRONG>Autolaunching script:</STRONG></FONT><BR>
 <UL>

@@ -1974,6 +1974,47 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		F63C15F806139B3800C79EBB = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html.other;
+			name = download.shtml;
+			path = website/download.shtml;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F63C16590613A7B200C79EBB = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.jpeg;
+			name = "funnyfont-m.jpg";
+			path = "website/funnyfont-m.jpg";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F63C165A0613A7B200C79EBB = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.jpeg;
+			name = funnyfont.jpg;
+			path = website/funnyfont.jpg;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F63C165B0613A7B200C79EBB = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.jpeg;
+			name = "keymap-m.jpg";
+			path = "website/keymap-m.jpg";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F63C165C0613A7B200C79EBB = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.jpeg;
+			name = keymap.jpg;
+			path = website/keymap.jpg;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		F645F2B00557B868005F354A = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -2312,7 +2353,7 @@
 			children = (
 				FBDF6B8F042A6BD801F955DB,
 				FBDF6B90042A6BD801F955DB,
-				F65CCFA005F7DE6C00F04CFF,
+				F63C15F806139B3800C79EBB,
 				FBDF6B91042A6BD801F955DB,
 				FBDF6B92042A6BD801F955DB,
 				FBDF6B93042A6BD801F955DB,
@@ -2324,10 +2365,15 @@
 				F645F2B00557B868005F354A,
 				FBDF6B97042A6BD801F955DB,
 				FBDF6B98042A6BD801F955DB,
+				F63C16590613A7B200C79EBB,
+				F63C165A0613A7B200C79EBB,
+				F63C165B0613A7B200C79EBB,
+				F63C165C0613A7B200C79EBB,
 				FBDF6B99042A6BD801F955DB,
 				FBDF6B9A042A6BD801F955DB,
 				F65CCFFA05F7EB0700F04CFF,
 				F65CCFFB05F7EB0700F04CFF,
+				F65CCFA005F7DE6C00F04CFF,
 				FBDF6B9B042A6BD801F955DB,
 				FBDF6B9C042A6BD801F955DB,
 				FBDF6B9D042A6BD801F955DB,

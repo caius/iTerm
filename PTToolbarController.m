@@ -30,7 +30,6 @@
 #import "PseudoTerminal.h"
 
 NSString *NewToolbarItem = @"New";
-NSString *ABToolbarItem = @"Address";
 NSString *CloseToolbarItem = @"Close";
 NSString *ConfigToolbarItem = @"Config";
 
@@ -70,7 +69,6 @@ NSString *ConfigToolbarItem = @"Config";
     NSMutableArray* itemIdentifiers= [[[NSMutableArray alloc]init] autorelease];
     
     [itemIdentifiers addObject: NewToolbarItem];
-    [itemIdentifiers addObject: ABToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
@@ -85,7 +83,6 @@ NSString *ConfigToolbarItem = @"Config";
     NSMutableArray* itemIdentifiers = [[[NSMutableArray alloc]init] autorelease];
     
     [itemIdentifiers addObject: NewToolbarItem];
-    [itemIdentifiers addObject: ABToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
@@ -103,20 +100,7 @@ NSString *ConfigToolbarItem = @"Config";
     NSString *imagePath;
     NSImage *anImage;
     
-    if ([itemIdent isEqual: ABToolbarItem]) 
-    {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item:Bookmarks")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item:Bookmarks")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the bookmarks",@"iTerm", thisBundle, @"Toolbar Item Tip:Bookmarks")];
-        imagePath = [thisBundle pathForResource:@"addressbook"
-                                         ofType:@"png"];
-        anImage = [[NSImage alloc] initByReferencingFile: imagePath];
-        [toolbarItem setImage: anImage];
-        [anImage release];
-        [toolbarItem setTarget: nil];
-        [toolbarItem setAction: @selector(showABWindow:)];
-    }
-    else if ([itemIdent isEqual: CloseToolbarItem]) 
+    if ([itemIdent isEqual: CloseToolbarItem]) 
     {
         [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", thisBundle, @"Toolbar Item: Close Session")];
         [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", thisBundle, @"Toolbar Item: Close Session")];
@@ -186,12 +170,11 @@ NSString *ConfigToolbarItem = @"Config";
     [_toolbar setAutosavesConfiguration:YES];
     [_toolbar setDisplayMode:NSToolbarDisplayModeDefault];
     [_toolbar insertItemWithItemIdentifier: NewToolbarItem atIndex:0];
-    [_toolbar insertItemWithItemIdentifier: ABToolbarItem atIndex:1];
-    [_toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:2];
-    [_toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:3];
-    [_toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:4];
-    [_toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:5];
-    [_toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:6];
+    [_toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:1];
+    [_toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:2];
+    [_toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:3];
+    [_toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:4];
+    [_toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:5];
     
     [[_pseudoTerminal window] setToolbar:_toolbar];
 

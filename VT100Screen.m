@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.171 2004-01-21 21:51:17 ujwal Exp $
+// $Id: VT100Screen.m,v 1.172 2004-01-28 00:05:26 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -942,7 +942,7 @@ static BOOL PLAYBELL = YES;
     int idx=len-1;
     
     if (x>=WIDTH||y>=HEIGHT||x<0||y<0) {
-        NSLog(@"getIndexAtX: out of bound: x = %d; y = %d, WIDTH = %d; HEIGHT = %d", x, y, WIDTH, HEIGHT);
+        //NSLog(@"getIndexAtX: out of bound: x = %d; y = %d, WIDTH = %d; HEIGHT = %d", x, y, WIDTH, HEIGHT);
         return -1;
     }
     for(;y<HEIGHT&&idx>=0;idx--) {

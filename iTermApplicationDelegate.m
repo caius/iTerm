@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.8 2003-10-05 18:48:17 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.9 2003-11-12 03:09:10 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -377,7 +377,7 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 - (void) setCurrentTerminal: (PseudoTerminal *) aTerminal
 {
     //NSLog(@"iTermApplicationDelegate: setCurrentTerminal '0x%x'", aTerminal);
-    return [[iTermController sharedInstance] setCurrentTerminal: aTerminal];
+    [[iTermController sharedInstance] setCurrentTerminal: aTerminal];
 }
 
 

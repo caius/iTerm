@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.27 2003-11-05 22:24:39 ujwal Exp $
+// $Id: iTermController.m,v 1.28 2003-11-12 03:09:10 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -309,19 +309,6 @@ static BOOL usingAutoLaunchScript = NO;
     [p release];
 }
 
-- (void) setCurrentTerminal: (PseudoTerminal *) thePseudoTerminal
-{
-    FRONT = thePseudoTerminal;
-
-    // make sure this window is the key window
-    if([[thePseudoTerminal window] isKeyWindow] == NO)
-	[[thePseudoTerminal window] makeKeyAndOrderFront: self];
-
-    // Post a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
-
-}
-
 - (PseudoTerminal *) currentTerminal
 {
     return (FRONT);
@@ -486,6 +473,19 @@ NSString *terminalsKey = @"terminals";
 {
     // NSLog(@"iTerm: valueInTerminalsAtIndex %d", index);
     return ([terminalWindows objectAtIndex: index]);
+}
+
+- (void) setCurrentTerminal: (PseudoTerminal *) thePseudoTerminal
+{
+    FRONT = thePseudoTerminal;
+
+    // make sure this window is the key window
+    if([[thePseudoTerminal window] isKeyWindow] == NO)
+	[[thePseudoTerminal window] makeKeyAndOrderFront: self];
+
+    // Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
+
 }
 
 -(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index

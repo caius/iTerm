@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.48 2003-04-06 02:48:52 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.49 2003-04-10 00:07:17 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -493,6 +493,10 @@ static VT100TCC decode_csi(unsigned char *datap,
                     result.type = ANSICSI_ECH;
                     SET_PARAM_DEFAULT(param,0,1);
                     break;
+		case 'i':
+		    result.type = ANSICSI_PRINT;
+		    SET_PARAM_DEFAULT(param,0,0);
+		    break;
                 default:
 		    NSLog(@"2: Unknown token (%c); %s", param.cmd, datap);
                     result.type = VT100_NOTSUPPORT;
@@ -1201,6 +1205,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
     strictAnsiMode = NO;
     allowColumnMode = NO;
+    printToAnsi = NO;
+    pipeFile = NULL;
 
     defaultCharacterAttributeDictionary[0] = [[NSMutableDictionary alloc] init];
     defaultCharacterAttributeDictionary[1] = [[NSMutableDictionary alloc] init];
@@ -1261,7 +1267,36 @@ static VT100TCC decode_string(unsigned char *datap,
     allowColumnMode = flag;
 }
 
+- (BOOL)printToAnsi
+{
+    return (printToAnsi);
+}
 
+- (void)setPrintToAnsi: (BOOL)flag
+{
+
+    if(flag == NO)
+    {
+	//NSLog(@"Turning off printer...");
+	if(pipeFile != NULL)
+	{
+	    pclose(pipeFile);
+	}
+	pipeFile = NULL;	
+    }
+    else
+    {
+	//NSLog(@"Turning on printer...");
+	if(pipeFile != NULL)
+	{
+	    pclose(pipeFile);
+	}
+	pipeFile = popen("/usr/bin/lpr", "w");	
+    }
+    
+    printToAnsi = flag;
+
+}
 
 - (NSStringEncoding)encoding
 {
@@ -1302,6 +1337,7 @@ static VT100TCC decode_string(unsigned char *datap,
 
     if (datalen == 0) {
 	result.type = VT100CC_NULL;
+	result.length = 0;
 	// We are done with this stream. Get rid of it and allocate a new one
 	// to avoid allowing this to grow too big.
 	streamOffset = 0;
@@ -1333,6 +1369,9 @@ static VT100TCC decode_string(unsigned char *datap,
 		rmlen = 1;
 	    }
 	}
+	
+	result.length = rmlen;
+	result.position = datap;
 
 	if (rmlen > 0) {
 	    NSParameterAssert(datalen - rmlen >= 0);
@@ -1350,6 +1389,12 @@ static VT100TCC decode_string(unsigned char *datap,
     [self _setCharAttr:result];
 
     return result;
+}
+
+- (void) printToken: (VT100TCC) token
+{
+    //NSLog(@"Printing token at 0x%x; length = %d", token.position, token.length);
+    fwrite(token.position, token.length, 1, pipeFile);
 }
 
 - (NSData *)keyArrowUp

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.24 2003-04-06 02:48:53 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.25 2003-04-10 00:07:17 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -113,6 +113,7 @@
 #define ANSICSI_VPA	     3001	// Vert Position Absolute
 #define ANSICSI_VPR	     3002	// Vert Position Relative
 #define ANSICSI_ECH	     3003	// Erase Character
+#define ANSICSI_PRINT	     3004	// Print to Ansi
 
 // Toggle between ansi/vt52
 #define STRICT_ANSI_MODE		4000
@@ -122,6 +123,8 @@
 
 typedef struct {
     int type;
+    unsigned char *position;
+    int length;
     union {
 	NSString *string;
 	unsigned char code;
@@ -205,6 +208,7 @@ typedef enum {
     int  CHARSET;		// G0...G3
     BOOL XON;			// YES=XON, NO=XOFF
     BOOL numLock;		// YES=ON, NO=OFF, default=YES;
+    BOOL printToAnsi;		// YES=ON, NO=OFF, default=NO;
     
     int FG_COLORCODE;
     int BG_COLORCODE;
@@ -226,6 +230,9 @@ typedef enum {
     NSMutableDictionary *defaultCharacterAttributeDictionary[2];
 
     unsigned int streamOffset;
+
+    // for interprocess communication
+    FILE *pipeFile;
 }
 
 + (void)initialize;
@@ -242,12 +249,16 @@ typedef enum {
 - (BOOL)allowColumnMode;
 - (void)setAllowColumnMode: (BOOL)flag;
 
+- (BOOL)printToAnsi;
+- (void)setPrintToAnsi: (BOOL)flag;
+
 - (NSStringEncoding)encoding;
 - (void)setEncoding:(NSStringEncoding)encoding;
 
 - (void)cleanStream;
 - (void)putStreamData:(NSData *)data;
 - (VT100TCC)getNextToken;
+- (void) printToken: (VT100TCC) token;
 
 - (void) toggleNumLock;
 - (BOOL) numLock;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.83 2003-04-07 15:02:01 ujwal Exp $
+// $Id: VT100Screen.m,v 1.84 2003-04-10 00:07:17 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -527,6 +527,13 @@ static BOOL PLAYBELL = YES;
 #if USE_CUSTOM_DRAWING
     NSMutableAttributedString *aLine;
 #endif
+
+    // If we are in print mode, send to printer.
+    if([TERMINAL printToAnsi] == YES && token.type != ANSICSI_PRINT)
+    {
+	[TERMINAL printToken: token];
+	return;
+    }
     
     switch (token.type) {
     // our special code
@@ -671,6 +678,13 @@ static BOOL PLAYBELL = YES;
         
     case STRICT_ANSI_MODE:
 	[TERMINAL setStrictAnsiMode: ![TERMINAL strictAnsiMode]];
+	break;
+
+    case ANSICSI_PRINT:
+	if(token.u.csi.p[0] == 4)
+	    [TERMINAL setPrintToAnsi: NO];
+	else if (token.u.csi.p[0] == 5)
+	    [TERMINAL setPrintToAnsi: YES];
 	break;
 	
     // XTERM extensions

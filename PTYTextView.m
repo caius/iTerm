@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.111 2004-02-18 01:27:31 ujwal Exp $
+// $Id: PTYTextView.m,v 1.112 2004-02-18 01:47:18 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -383,7 +383,7 @@
     NSSize aSize;
     int height;
 	char *dirty;
-	int width, i, j;
+	int width, i, j, cursorLine;
 	NSRect lineRect;
 	BOOL lineNeedsDrawing;
     
@@ -409,12 +409,14 @@
 	width = [dataSource width];
 	height = [dataSource height];
 	dirty = [dataSource dirty];
+	cursorLine = [dataSource cursorY] - 1;
 	for(i = 0; i < height; i++)
 	{
 		lineNeedsDrawing = NO;
 		for (j = 0; j < width; j++)
 		{
-			if(dirty[i*width + j])
+			// trigger display of line if it is dirty or has the cursor
+			if(dirty[i*width + j] || (i == cursorLine))
 				lineNeedsDrawing = YES;
 		}
 		if(lineNeedsDrawing)
@@ -435,7 +437,6 @@
 - (NSRect)adjustScroll:(NSRect)proposedVisibleRect
 {
 	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
-	[self setNeedsDisplay: YES];
 	return proposedVisibleRect;
 }
 
@@ -445,7 +446,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll];
-	[self setNeedsDisplay: YES];
+	//[self setNeedsDisplay: YES];
     //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
     [self scrollRectToVisible: scrollRect];
 }
@@ -465,7 +466,6 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
-	[self setNeedsDisplay: YES];
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -475,7 +475,6 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalPageScroll];
-	[self setNeedsDisplay: YES];
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -485,7 +484,6 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y = 0;
-	[self setNeedsDisplay: YES];
     [self scrollRectToVisible: scrollRect];
 }
 

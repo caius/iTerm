@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.42 2003-03-11 22:54:49 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.43 2003-03-12 17:14:19 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -443,9 +443,11 @@ static VT100TCC decode_csi(unsigned char *datap,
 
                 case 'm':
                     result.type = VT100CSI_SGR;
-                    for (i = 0; i < param.count; ++i)
+                    for (i = 0; i < param.count; ++i) {
                         SET_PARAM_DEFAULT(param, i, 0);
-                        break;
+//                        NSLog(@"m[%d]=%d",i,param.p[i]);
+                    }
+                    break;
 
                 case 'h':
                     result.type = VT100CSI_SM;
@@ -1639,7 +1641,7 @@ static VT100TCC decode_string(unsigned char *datap,
     fg = [self colorFromTable:FG_COLORCODE bold:bold];
     bg = [self colorFromTable:BG_COLORCODE bold:NO];
     if (alpha<0.99) bg=[bg colorWithAlphaComponent:alpha];
-    //NSLog(@"%d(%d):%@",bold, FG_COLORCODE,fg);
+    //NSLog(@"%d(%d)/%d:%@\n%@",FG_COLORCODE, bold, BG_COLORCODE,fg,bg);
 
     if (CHARATTR & VT100CHARATTR_REVERSEMASK ) {
         [dic setObject:bg
@@ -1809,62 +1811,27 @@ static VT100TCC decode_string(unsigned char *datap,
 		case VT100CHARATTR_POSITIVE:
 		    CHARATTR &= ~VT100CHARATTR_REVERSEMASK;
 		    break;
-		case VT100CHARATTR_FG_BLACK:
-                    FG_COLORCODE = COLORCODE_BLACK;
-                    break;
-		case VT100CHARATTR_FG_DEFAULT:
+                case VT100CHARATTR_FG_DEFAULT:
+                    CHARATTR |= VT100CHARATTR_COLORMASK;
                     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
-		    break;
-		case VT100CHARATTR_FG_RED:
-		    FG_COLORCODE = COLORCODE_RED;
-		    break;
-		case VT100CHARATTR_FG_GREEN:
-		    FG_COLORCODE = COLORCODE_GREEN;
-		    break;
-		case VT100CHARATTR_FG_YELLOW:
-		    FG_COLORCODE = COLORCODE_YELLOW;
-		    break;
-		case VT100CHARATTR_FG_BLUE:
-		    FG_COLORCODE = COLORCODE_BLUE;
-		    break;
-		case VT100CHARATTR_FG_PURPLE:
-		    FG_COLORCODE = COLORCODE_PURPLE;
-		    break;
-		case VT100CHARATTR_FG_WATER:
-		    FG_COLORCODE = COLORCODE_WATER;
-		    break;
-		case VT100CHARATTR_FG_WHITE:
-		    FG_COLORCODE = COLORCODE_WHITE;
-		    break;
-
-		case VT100CHARATTR_BG_BLACK:
-		    BG_COLORCODE = COLORCODE_BLACK;
-		    break;
-		case VT100CHARATTR_BG_RED:
-		    BG_COLORCODE = COLORCODE_RED;
-		    break;
-		case VT100CHARATTR_BG_GREEN:
-		    BG_COLORCODE = COLORCODE_GREEN;
-		    break;
-		case VT100CHARATTR_BG_YELLOW:
-		    BG_COLORCODE = COLORCODE_YELLOW;
-		    break;
-		case VT100CHARATTR_BG_BLUE:
-		    BG_COLORCODE = COLORCODE_BLUE;
-		    break;
-		case VT100CHARATTR_BG_PURPLE:
-		    BG_COLORCODE = COLORCODE_PURPLE;
-		    break;
-		case VT100CHARATTR_BG_WATER:
-		    BG_COLORCODE = COLORCODE_WATER;
-		    break;
-		case VT100CHARATTR_BG_DEFAULT:
+                    break;
+                case VT100CHARATTR_BG_DEFAULT:
+                    CHARATTR |= VT100CHARATTR_COLORMASK;
                     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
                     break;
-                case VT100CHARATTR_BG_WHITE:
-		    BG_COLORCODE = COLORCODE_WHITE;
-		    break;
-                }
+                default:
+                    if (n>=VT100CHARATTR_FG_BLACK&&n<=VT100CHARATTR_FG_WHITE) {
+                        CHARATTR |= VT100CHARATTR_COLORMASK;
+                        FG_COLORCODE = n - VT100CHARATTR_FG_BASE - COLORCODE_BLACK;
+                    }
+                    else if (n>=VT100CHARATTR_BG_BLACK&&n<=VT100CHARATTR_BG_WHITE) {
+                        CHARATTR |= VT100CHARATTR_COLORMASK;
+                        BG_COLORCODE = n - VT100CHARATTR_BG_BASE - COLORCODE_BLACK;
+                    }
+                    else {
+                        CHARATTR &= ~VT100CHARATTR_COLORMASK;
+                    }
+		}
             }
         }
 

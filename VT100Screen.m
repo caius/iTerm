@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.69 2003-03-11 01:27:52 yfabian Exp $
+// $Id: VT100Screen.m,v 1.70 2003-03-12 17:14:16 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -2101,7 +2101,7 @@ static BOOL PLAYBELL = YES;
                    attributes:[TERMINAL characterAttributeDictionary:asc]];
     
     [attr autorelease];
-
+    
     return attr;
 }
 

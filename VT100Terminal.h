@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.21 2003-03-11 22:54:49 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.22 2003-03-12 17:14:17 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -150,6 +150,7 @@ typedef struct {
 #define VT100CHARATTR_UNDERMASK   (1<<1)
 #define VT100CHARATTR_BLINKMASK   (1<<2)
 #define VT100CHARATTR_REVERSEMASK (1<<3)
+#define VT100CHARATTR_COLORMASK	  (1<<4)
 
 typedef enum {
     COLORCODE_BLACK=0,

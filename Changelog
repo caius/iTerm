@@ -1,3 +1,6 @@
+2003-03-12	fabian
+    * Fixed a bug that causes incorrect process of color.
+    
 2003-03-11	fabian
     * Changed the color code. Now we no longer have fixed
       bold text color. Instead, it's calculated from the

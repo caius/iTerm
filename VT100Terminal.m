@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.62 2003-05-09 10:08:19 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.63 2003-05-09 13:53:19 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1787,6 +1787,9 @@ static VT100TCC decode_string(unsigned char *datap,
                         fg=[self defaultFGColor];
                         bg=[self defaultBGColor];
                     }
+
+		    bg = [bg colorWithAlphaComponent: [defaultBGColor alphaComponent]];
+		    fg = [fg colorWithAlphaComponent: [defaultFGColor alphaComponent]];
                         
                     [defaultCharacterAttributeDictionary[0] setObject:fg
                                                                forKey:NSForegroundColorAttributeName];
@@ -1870,17 +1873,23 @@ static VT100TCC decode_string(unsigned char *datap,
     bg = [self colorFromTable:BG_COLORCODE bold:NO];
 
     alpha = [defaultBGColor alphaComponent];
-    if (alpha<0.99) bg=[bg colorWithAlphaComponent:alpha];
 
     for(i=0;i<2;i++) {
         dic=characterAttributeDictionary[i];
         if (reversed) {
+	    if (alpha<0.99)
+		fg=[fg colorWithAlphaComponent:alpha];
             [dic setObject:bg forKey:NSForegroundColorAttributeName];
             [dic setObject:fg forKey:NSBackgroundColorAttributeName];
         }
         else {
             [dic setObject:fg forKey:NSForegroundColorAttributeName];
-            if (BG_COLORCODE!=DEFAULT_BG_COLOR_CODE) [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+            if (BG_COLORCODE!=DEFAULT_BG_COLOR_CODE)
+	    {
+		if (alpha<0.99)
+		    bg=[bg colorWithAlphaComponent:alpha];
+		[dic setObject:bg forKey:NSBackgroundColorAttributeName];
+	    }
             else [dic removeObjectForKey:NSBackgroundColorAttributeName];
         }
 
@@ -1895,7 +1904,7 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void)_setCharAttr:(VT100TCC)token
 {
     if (token.type == VT100CSI_SGR) {
-        
+
         if (token.u.csi.count == 0) {
             // all attribute off
             bold=under=blink=reversed=0;      

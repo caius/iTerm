@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.90 2003-05-02 17:37:08 ujwal Exp $
+// $Id: VT100Screen.m,v 1.91 2003-05-09 13:53:19 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2425,6 +2425,9 @@ static BOOL PLAYBELL = YES;
         fg=[TERMINAL defaultFGColor];
         bg=[TERMINAL defaultBGColor];
     }
+
+    bg = [bg colorWithAlphaComponent: [[SESSION backgroundColor] alphaComponent]];
+    fg = [fg colorWithAlphaComponent: [[SESSION foregroundColor] alphaComponent]];
     
     [BUFFER removeAttribute: NSForegroundColorAttributeName
                        range: NSMakeRange(0, [BUFFER length])];

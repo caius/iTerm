@@ -99,7 +99,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCROLLVIEW release];
     [name release];
     [windowTitle release];
-    [textStorage release];
         
     [normalStateAttribute release];
     normalStateAttribute = nil;
@@ -123,6 +122,15 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession initScreen]",
           __FILE__, __LINE__);
 #endif
+
+    // Allocate screen, shell, and terminal objects
+    SHELL = [[PTYTask alloc] init];
+    TERMINAL = [[VT100Terminal alloc] init];
+    SCREEN = [[VT100Screen alloc] init];
+    NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
+
+    [SCREEN setSession:self];
+    [self setName:@"Shell"];    
 
     // Allocate a scrollview and add to the tabview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: aRect];
@@ -150,6 +158,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	[aLayoutManager addTextContainer:aTextContainer];
 	[aTextContainer release];
 	aTypesetter = [[VT100Typesetter alloc] init];
+	[aTypesetter setScreen: SCREEN];
 	[aLayoutManager setTypesetter: aTypesetter];
 	[aTypesetter release];
 	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
@@ -176,14 +185,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
 
     
-    // Allocate screen, shell, and terminal objects
-    SHELL = [[PTYTask alloc] init];
-    TERMINAL = [[VT100Terminal alloc] init];
-    SCREEN = [[VT100Screen alloc] init];
-    NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
-
-    [SCREEN setSession:self];
-    [self setName:@"Shell"];
 
     ai_code=0;
     antiIdle = NO;
@@ -253,9 +254,10 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [SHELL release];
     [TERMINAL release];
-    [SCREEN release];
     [TEXTVIEW setDataSource: nil];
     [TEXTVIEW removeFromSuperview];
+    [textStorage release];
+    [SCREEN release];
 
 
     if (timer) {

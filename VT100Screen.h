@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.37 2003-07-16 15:59:50 ujwal Exp $
+// $Id: VT100Screen.h,v 1.38 2003-07-19 06:35:05 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -42,6 +42,7 @@
     int CURSOR_Y;
     int SAVE_CURSOR_X;
     int SAVE_CURSOR_Y;
+    int cursorIndex;
     int SCROLL_TOP;
     int SCROLL_BOTTOM;
     BOOL tabStop[TABWINDOW];

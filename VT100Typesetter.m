@@ -28,6 +28,7 @@
 #import "VT100Typesetter.h"
 #import "VT100Screen.h"
 
+#define DEBUG_ALLOC	      0
 #define DEBUG_METHOD_TRACE    0
 #if DEBUG_METHOD_TRACE
 static unsigned int invocationId = 0;
@@ -43,6 +44,25 @@ static unsigned int invocationId = 0;
 + (float) lineFragmentPadding
 {
     return (5);
+}
+
+- (id) init
+{
+#if DEBUG_ALLOC
+    NSLog(@"%s(%d):-[VT100Typesetter init]", __FILE__, __LINE__);
+#endif
+    if((self = [super init]) == nil)
+	return (nil);
+
+    return (self);
+}
+
+- (void) dealloc
+{
+#if DEBUG_ALLOC
+    NSLog(@"%s(%d):-[VT100Typesetter dealloc]", __FILE__, __LINE__);
+#endif
+    [super dealloc];
 }
 
 
@@ -249,7 +269,7 @@ static unsigned int invocationId = 0;
 	}
 	
 	
-	// if we are at the end of the text, get out
+	// if we are at the end of the text, pad any unused space and get out.
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
 	if(atEnd == YES || isValidIndex == NO)
 	{
@@ -262,7 +282,31 @@ static unsigned int invocationId = 0;
 	    if(length < previousLength)
 		break;
 
-	    if (lineRect.origin.y + lineRect.size.height < displayHeight)
+	    // check how many lines of the screen we are filling. Pad any unused space.
+	    int originCharIndex, originGlyphIndex, usedScreenLines;
+	    NSRect originLineFragmentRect;
+	    originCharIndex = [screen getTVIndex: 0 y: 0];
+	    if(originCharIndex < [theString length])
+	    {
+		originGlyphIndex = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(originCharIndex, 1) actualCharacterRange: nil].location;
+		if(originGlyphIndex == 0)
+		{
+		    originLineFragmentRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
+		}
+		else
+		{
+		    originLineFragmentRect = [layoutMgr lineFragmentRectForGlyphAtIndex: originGlyphIndex effectiveRange: nil];
+		}
+		usedScreenLines = floor((lineRect.origin.y + lineRect.size.height - originLineFragmentRect.origin.y)/[font defaultLineHeightForFont]);
+		if(usedScreenLines < [screen height])
+		{
+		    lineRect.origin.y += [font defaultLineHeightForFont];
+		    lineRect.size.height = ([screen height] - usedScreenLines) * [font defaultLineHeightForFont];
+		    [layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
+		}
+	    }
+	    
+	    else if (lineRect.origin.y + lineRect.size.height < displayHeight)
 	    {
 		lineRect.origin.y += [font defaultLineHeightForFont];
 		lineRect.size.height = displayHeight - lineRect.origin.y;
@@ -284,5 +328,15 @@ static unsigned int invocationId = 0;
 
 }
 
+
+- (VT100Screen *) screen
+{
+    return (screen);
+}
+
+- (void) setScreen: (VT100Screen *) aScreen
+{
+    screen = aScreen;
+}
 
 @end

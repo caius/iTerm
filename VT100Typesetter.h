@@ -30,6 +30,7 @@
 
 #define BASELINE_OFFSET	3
 
+@class VT100Screen;
 
 @interface VT100Typesetter : NSTypesetter {
 
@@ -40,6 +41,7 @@
     NSTextContainer *textContainer;
     float lineFragmentPadding;
     unsigned int previousLength;
+    VT100Screen *screen;
 
 }
 
@@ -47,6 +49,9 @@
 
 - (float)baselineOffsetInLayoutManager:(NSLayoutManager *)layoutMgr glyphIndex:(unsigned)glyphIndex;
 - (void)layoutGlyphsInLayoutManager:(NSLayoutManager *)layoutMgr startingAtGlyphIndex:(unsigned)startGlyphIndex maxNumberOfLineFragments:(unsigned)maxNumLines nextGlyphIndex:(unsigned *)nextGlyph;
+
+- (VT100Screen *) screen;
+- (void) setScreen: (VT100Screen *) aScreen;
 
 @end
 

@@ -1,3 +1,8 @@
+2003-07-18	ujwal
+
+    * Re-implemented eraseInDisplay code to save screen contents to scrollback buffer. 
+      Fixed a bug in VT100Typesetter in the process.
+
 2003-07-17	ujwal
 
     * Disabled code in eraseDisplay where contents were saved in the scrollback buffer 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.4 2003-10-02 23:14:56 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.5 2003-11-11 19:07:24 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -86,6 +86,7 @@
 // accessors for to-many relationships:
 -(NSArray*)terminals;
 -(void)setTerminals: (NSArray*)terminals;
+- (void) setCurrentTerminal: (PseudoTerminal *) aTerminal;
 
 -(id)valueInTerminalsAtIndex:(unsigned)index;
 -(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index;

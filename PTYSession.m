@@ -601,7 +601,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_strlen == 1 &&
 		send_str[0] == '|')
 	    {
-		send_str = "\034"; // ^\
+		send_str = "\034"; // control-backslash
 		send_strlen = 1;
 	    }
 	}

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.33 2004-03-19 23:53:33 ujwal Exp $
+// $Id: iTermController.m,v 1.34 2004-03-24 15:38:43 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -72,6 +72,9 @@ static BOOL usingAutoLaunchScript = NO;
     if(([terminalWindows count] > 0) && [[PreferencePanel sharedInstance] promptOnClose] && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
 	return (NO);
     
+	// save preferences
+	[[PreferencePanel sharedInstance] savePreferences];
+	
     return (YES);
 }
 

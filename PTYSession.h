@@ -114,7 +114,6 @@
 - (void)clearBuffer;
 - (void)logStart;
 - (void)logStop;
-- (BOOL)validateMenuItem:(NSMenuItem *)item;
 - (void)setFGColor:(NSColor*) color;
 - (void)setBGColor:(NSColor*) color;
 

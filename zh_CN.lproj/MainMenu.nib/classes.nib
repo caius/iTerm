@@ -8,11 +8,7 @@
                 logStop = id; 
                 nextSession = id; 
                 previousSession = id; 
-                setEncodingBIG5 = id; 
-                setEncodingEUCCN = id; 
-                setEncodingUTF8 = id; 
                 showConfigWindow = id; 
-                showTriggerWindow = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
@@ -108,9 +104,6 @@
                 newSession = id; 
                 nextSession = id; 
                 previousSession = id; 
-                setEncodingBIG5 = id; 
-                setEncodingEUCCN = id; 
-                setEncodingUTF8 = id; 
                 setMainMenu = id; 
                 switchSession = id; 
                 windowConfigBackground = id; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.9 2002-12-06 03:03:29 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.10 2002-12-06 03:26:06 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -605,12 +605,12 @@ static NSDictionary *newOutputStateAttribute;
     [currentPtySession clearBuffer];
 }
 
-- (void)logStart:(id)sender
+- (IBAction)logStart:(id)sender
 {
     [currentPtySession logStart];
 }
 
-- (void)logStop:(id)sender
+- (IBAction)logStop:(id)sender
 {
     [currentPtySession logStop];
 }

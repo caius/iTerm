@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.57 2003-05-13 15:32:58 ujwal Exp $
+// $Id: PTYTextView.m,v 1.58 2003-05-13 15:50:02 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2128,6 +2128,10 @@ static NSString *searchString = nil;
 #endif
 
     findWindowController = [FindPanelWindowController singleInstance];
+    if([searchString length] > 0)
+    {
+	[findWindowController setSearchString: searchString];
+    }
     [findWindowController showWindow: self];
 }
 
@@ -2153,6 +2157,7 @@ static NSString *searchString = nil;
 
 - (void) setSearchString: (NSString *) aString
 {
+    NSLog(@"setting search string to %@", aString);
     if(searchString != nil)
     {
 	[searchString release];

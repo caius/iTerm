@@ -1,9 +1,10 @@
 {
     IBClasses = (
         {
+            ACTIONS = {findNext = id; findPrevious = id; }; 
             CLASS = FindPanelWindowController; 
             LANGUAGE = ObjC; 
-            OUTLETS = {caseCheckBox = NSButton; searchStringField = NSTextField; }; 
+            OUTLETS = {caseCheckBox = NSButton; delegate = id; searchStringField = NSTextField; }; 
             SUPERCLASS = NSWindowController; 
         }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }

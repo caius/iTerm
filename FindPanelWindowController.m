@@ -96,6 +96,7 @@ static FindPanelWindowController *singleInstance = nil;
 - (IBAction) findNext: (id) sender
 {
     searchString = [[searchStringField stringValue] copy];
+    NSLog(@"searchString = %@", searchString);
     if([searchString length] <= 0)
 	return;
 
@@ -103,6 +104,7 @@ static FindPanelWindowController *singleInstance = nil;
     {
 	PTYTextView *frontTextView = [[self delegate] frontTextView];
 
+	NSLog(@"setting searchString on textview 0x%x to %@", frontTextView, searchString);
 	[frontTextView setSearchString: searchString];
 	[frontTextView findNext: self];
     }

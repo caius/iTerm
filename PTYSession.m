@@ -391,7 +391,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	if(keyBindingAction >= 0)
 	{
 		NSString *aString;
-		int hexCode;
+		unsigned char hexCode;
 		
 		switch (keyBindingAction)
 		{
@@ -437,9 +437,9 @@ static NSString *PWD_ENVVALUE = @"~";
 				}
 				break;
 			case KEY_ACTION_HEX_CODE:
-				if([keyBindingText length] > 0 && sscanf([keyBindingText UTF8String], "%x", &hexCode) == 1)
+				if([keyBindingText length] > 0 && sscanf([keyBindingText UTF8String], "%hhx", &hexCode) == 1)
 				{
-					[self writeTask:[NSData dataWithBytes:&hexCode length: sizeof(int)]];
+					[self writeTask:[NSData dataWithBytes:&hexCode length: sizeof(hexCode)]];
 				}
 				break;
 			default:

@@ -38,7 +38,6 @@
 				0464AB22006CD2EC7F000001,
 				0464AB27006CD2EC7F000001,
 				0464AB2E006CD2EC7F000001,
-				8750B974046717F40073D10E,
 				0464AB32006CD2EC7F000001,
 			);
 			isa = PBXGroup;
@@ -47,7 +46,6 @@
 		};
 		0464AB0E006CD2EC7F000001 = {
 			children = (
-				87D5C490043229390073D10E,
 				DD4BAB7C0470C44C00A8A065,
 				20D5CC6404E7AA0500000106,
 				E8A66F030272453F03A80106,
@@ -55,6 +53,7 @@
 				875826CD06012D9E00D271D0,
 				8737F0C305F567E300E31F74,
 				8776D95505FD32E6002B3015,
+				87C4D1740625E561008FF4E6,
 				20E74F4904E9089700000106,
 				20B8891A04E924CD00000106,
 				20B88B6104E948FA00000106,
@@ -70,6 +69,7 @@
 				E8CF7561026DDA6303A80106,
 				E8CF7560026DDA6303A80106,
 				F56B230B03A1B36701A8A066,
+				87C4D1720625E550008FF4E6,
 				E8CF7562026DDA6303A80106,
 				E8CF7563026DDA6303A80106,
 			);
@@ -89,6 +89,7 @@
 				875826CF06012DB100D271D0,
 				8737F0C105F567C700E31F74,
 				8776D95705FD32FB002B3015,
+				87C4D1700625E53B008FF4E6,
 				20E74F4804E9089700000106,
 				20B8891904E924CD00000106,
 				20B88B6004E948FA00000106,
@@ -104,6 +105,7 @@
 				872EBC5804E42E320073D10E,
 				872EBC5404E42E320073D10E,
 				872EBC5B04E42E320073D10E,
+				87C4D16E0625E52B008FF4E6,
 				872EBC5A04E42E320073D10E,
 				872EBC6104E42E320073D10E,
 			);
@@ -123,7 +125,6 @@
 			children = (
 				E813FB7D0297522703A80106,
 				E813FB86029754BB03A80106,
-				87D5C471043227820073D10E,
 				870EAAB504325A880073D10E,
 				870BCD83047070AC0073D10E,
 				8723EDEC04EAADBB0073D10E,
@@ -210,6 +211,7 @@
 				PRODUCT_NAME = iTerm;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
+				USE_GCC3 = YES;
 				WARNING_CFLAGS = "-Wall -Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = app;
 			};
@@ -954,37 +956,6 @@
 			settings = {
 			};
 		};
-		8750B974046717F40073D10E = {
-			children = (
-				8750B975046717F40073D10E,
-				8750B976046717F40073D10E,
-				8750B977046717F40073D10E,
-				8750B978046717F40073D10E,
-			);
-			isa = PBXGroup;
-			path = Fonts;
-			refType = 4;
-		};
-		8750B975046717F40073D10E = {
-			isa = PBXFileReference;
-			path = FreeMono.ttf;
-			refType = 4;
-		};
-		8750B976046717F40073D10E = {
-			isa = PBXFileReference;
-			path = FreeMonoBold.ttf;
-			refType = 4;
-		};
-		8750B977046717F40073D10E = {
-			isa = PBXFileReference;
-			path = FreeMonoBoldOblique.ttf;
-			refType = 4;
-		};
-		8750B978046717F40073D10E = {
-			isa = PBXFileReference;
-			path = FreeMonoOblique.ttf;
-			refType = 4;
-		};
 		875826CD06012D9E00D271D0 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -1016,22 +987,10 @@
 			path = zh_CN.lproj/PreferencePanel.nib;
 			refType = 4;
 		};
-		876DBBC204327A170073D10E = {
-			isa = PBXFileReference;
-			name = zh_CN;
-			path = zh_CN.lproj/AddressBook.nib;
-			refType = 4;
-		};
 		876DBBC304327CC90073D10E = {
 			isa = PBXFileReference;
 			name = zh_TW;
 			path = zh_TW.lproj/PreferencePanel.nib;
-			refType = 4;
-		};
-		876DBBC404327E9D0073D10E = {
-			isa = PBXFileReference;
-			name = zh_TW;
-			path = zh_TW.lproj/AddressBook.nib;
 			refType = 4;
 		};
 		876DBBC5043281250073D10E = {
@@ -1040,22 +999,10 @@
 			path = Japanese.lproj/PreferencePanel.nib;
 			refType = 4;
 		};
-		876DBBC6043282C80073D10E = {
-			isa = PBXFileReference;
-			name = Japanese;
-			path = Japanese.lproj/AddressBook.nib;
-			refType = 4;
-		};
 		876DBBC7043284990073D10E = {
 			isa = PBXFileReference;
 			name = Korean;
 			path = Korean.lproj/PreferencePanel.nib;
-			refType = 4;
-		};
-		876DBBC80432860A0073D10E = {
-			isa = PBXFileReference;
-			name = Korean;
-			path = Korean.lproj/AddressBook.nib;
 			refType = 4;
 		};
 		8776D95505FD32E6002B3015 = {
@@ -1095,12 +1042,6 @@
 			path = French.lproj/MainMenu.nib;
 			refType = 4;
 		};
-		87898DDE0444F92A0073D10E = {
-			isa = PBXFileReference;
-			name = French;
-			path = French.lproj/AddressBook.nib;
-			refType = 4;
-		};
 		87898DDF0444F93C0073D10E = {
 			isa = PBXFileReference;
 			name = French;
@@ -1119,41 +1060,52 @@
 			settings = {
 			};
 		};
-		87D5C471043227820073D10E = {
-			children = (
-				87D5C472043227820073D10E,
-				876DBBC204327A170073D10E,
-				876DBBC404327E9D0073D10E,
-				876DBBC6043282C80073D10E,
-				876DBBC80432860A0073D10E,
-				87898DDE0444F92A0073D10E,
-				F61DBB370557A773005F354A,
-			);
-			isa = PBXVariantGroup;
-			name = AddressBook.nib;
-			path = "";
-			refType = 4;
-		};
-		87D5C472043227820073D10E = {
+		87C4D16E0625E52B008FF4E6 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
-			name = English;
-			path = English.lproj/AddressBook.nib;
+			name = Tree.h;
+			path = Headers/iTerm/Tree.h;
 			refType = 4;
 		};
-		87D5C473043227820073D10E = {
-			fileRef = 87D5C471043227820073D10E;
+		87C4D16F0625E52B008FF4E6 = {
+			fileRef = 87C4D16E0625E52B008FF4E6;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		87D5C490043229390073D10E = {
-			fileEncoding = 4;
+		87C4D1700625E53B008FF4E6 = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
-			path = AddressBookWindowController.m;
+			name = iTermTerminalProfileMgr.h;
+			path = Headers/iTerm/iTermTerminalProfileMgr.h;
 			refType = 4;
 		};
-		87D5C492043229390073D10E = {
-			fileRef = 87D5C490043229390073D10E;
+		87C4D1710625E53B008FF4E6 = {
+			fileRef = 87C4D1700625E53B008FF4E6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		87C4D1720625E550008FF4E6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = Tree.m;
+			refType = 4;
+		};
+		87C4D1730625E550008FF4E6 = {
+			fileRef = 87C4D1720625E550008FF4E6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		87C4D1740625E561008FF4E6 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = iTermTerminalProfileMgr.m;
+			refType = 4;
+		};
+		87C4D1750625E561008FF4E6 = {
+			fileRef = 87C4D1740625E561008FF4E6;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1213,6 +1165,8 @@
 				8737F0C205F567C700E31F74,
 				8776D95805FD32FB002B3015,
 				875826D006012DB100D271D0,
+				87C4D16F0625E52B008FF4E6,
+				87C4D1710625E53B008FF4E6,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1234,7 +1188,6 @@
 				DD1E48CD0431507700A8A065,
 				DD1E48CE0431507D00A8A065,
 				DD1E48DD0431527900A8A065,
-				87D5C473043227820073D10E,
 				870EAAB704325A880073D10E,
 				870BCD85047070AC0073D10E,
 				8723EDEE04EAADBB0073D10E,
@@ -1259,7 +1212,6 @@
 				DD1E48AD0431501B00A8A065,
 				DD1E48AE0431501C00A8A065,
 				DD1E48AF0431501C00A8A065,
-				87D5C492043229390073D10E,
 				DD4BAB7E0470C44C00A8A065,
 				2076B15F04E882F800000106,
 				20E74F5404E90B7700000106,
@@ -1270,6 +1222,8 @@
 				8737F0C405F567E300E31F74,
 				8776D95605FD32E6002B3015,
 				875826CE06012D9E00D271D0,
+				87C4D1730625E550008FF4E6,
+				87C4D1750625E561008FF4E6,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1297,7 +1251,6 @@
 				DD1E489D04314F1D00A8A065,
 				DD1E489E04314F1D00A8A065,
 				DD1E489F04314F1D00A8A065,
-				DDBE32D10467596A00A8A065,
 			);
 			buildSettings = {
 				DEBUGGING_SYMBOLS = NO;
@@ -1314,6 +1267,7 @@
 				PRINCIPAL_CLASS = "";
 				PRODUCT_NAME = iTerm;
 				SECTORDER_FLAGS = "";
+				USE_GCC3 = YES;
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = framework;
 			};
@@ -1644,43 +1598,6 @@
 			settings = {
 			};
 		};
-		DDBE32D10467596A00A8A065 = {
-			buildActionMask = 2147483647;
-			dstPath = Fonts;
-			dstSubfolderSpec = 7;
-			files = (
-				DDBE32D20467597D00A8A065,
-				DDBE32D30467597D00A8A065,
-				DDBE32D40467597D00A8A065,
-				DDBE32D50467597D00A8A065,
-			);
-			isa = PBXCopyFilesBuildPhase;
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DDBE32D20467597D00A8A065 = {
-			fileRef = 8750B975046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DDBE32D30467597D00A8A065 = {
-			fileRef = 8750B976046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DDBE32D40467597D00A8A065 = {
-			fileRef = 8750B977046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DDBE32D50467597D00A8A065 = {
-			fileRef = 8750B978046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		DDE6FB5804EA89D600A8A067 = {
 			isa = PBXFrameworkReference;
 			path = iTerm.framework;
@@ -1882,12 +1799,6 @@
 			isa = PBXFileReference;
 			name = German;
 			path = German.lproj/PseudoTerminal.nib;
-			refType = 4;
-		};
-		F61DBB370557A773005F354A = {
-			isa = PBXFileReference;
-			name = German;
-			path = German.lproj/AddressBook.nib;
 			refType = 4;
 		};
 		F61DBB380557A788005F354A = {

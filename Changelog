@@ -2,6 +2,9 @@
 
     * Fixed a pretty big memory leak where the text views were 
       being released and freed.
+      
+    * Implemented "Find" functionality to search through the text 
+      view.
 
 
 2003-05-12	ujwal

@@ -53,6 +53,8 @@ static FindPanelWindowController *singleInstance = nil;
     NSLog(@"FindPanelWindowController: -initWithWindowNibName");
 #endif
 
+    respondingWindow = [NSApp keyWindow];
+
     self = [super initWithWindowNibName: windowNibName];
 
     // We finally set our autosave window frame name and restore the one from the user's defaults.
@@ -60,6 +62,13 @@ static FindPanelWindowController *singleInstance = nil;
     [[self window] setFrameUsingName: @"FindPanel"];
 
     [[self window] setDelegate: self];
+
+    ignoreCase = NO;
+
+    // register as an observer for windows becoming and resigning key
+    [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(respondingWindowFocusDidChange:) name: NSWindowDidBecomeKeyNotification object: nil];
+    [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(respondingWindowFocusDidChange:) name: NSWindowDidResignKeyNotification object: nil];
+    [[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(respondingWindowFocusDidChange:) name: NSWindowWillCloseNotification object: nil];
 
     return (self);
 }
@@ -72,6 +81,11 @@ static FindPanelWindowController *singleInstance = nil;
 
     [searchString release];
     singleInstance = nil;
+
+    // remove orselves from the notification center
+    [[NSNotificationCenter defaultCenter] removeObserver: self name: NSWindowDidBecomeKeyNotification object: nil];
+    [[NSNotificationCenter defaultCenter] removeObserver: self name: NSWindowDidResignKeyNotification object: nil];
+    [[NSNotificationCenter defaultCenter] removeObserver: self name: NSWindowWillCloseNotification object: nil];
 
 }
 
@@ -89,6 +103,31 @@ static FindPanelWindowController *singleInstance = nil;
     {
 	[searchStringField setStringValue: searchString];
     }
+    [caseCheckBox setIntValue: ignoreCase];
+}
+
+- (void) respondingWindowFocusDidChange: (NSNotification *) aNotification
+{
+    if([[aNotification name] isEqualToString: NSWindowDidBecomeKeyNotification] == YES)
+    {
+	NSWindow *aWindow = [aNotification object];
+	id firstResponder = [aWindow firstResponder];
+
+	if([firstResponder isKindOfClass: [PTYTextView class]] == YES)
+	{
+	    respondingWindow = aWindow;
+	}
+    }
+
+    if([[aNotification name] isEqualToString: NSWindowWillCloseNotification] == YES)
+    {
+	NSWindow *aWindow = [aNotification object];
+	
+	if(respondingWindow == aWindow)
+	    respondingWindow = nil;
+    }
+    
+        
 }
 
 
@@ -96,35 +135,35 @@ static FindPanelWindowController *singleInstance = nil;
 - (IBAction) findNext: (id) sender
 {
     searchString = [[searchStringField stringValue] copy];
-    NSLog(@"searchString = %@", searchString);
-    if([searchString length] <= 0)
-	return;
-
-    if([[self delegate] respondsToSelector: @selector(frontTextView)] == YES)
+    if([searchString length] <= 0 || respondingWindow == nil)
     {
-	PTYTextView *frontTextView = [[self delegate] frontTextView];
-
-	NSLog(@"setting searchString on textview 0x%x to %@", frontTextView, searchString);
-	[frontTextView setSearchString: searchString];
-	[frontTextView findNext: self];
+	NSBeep();
+	return;
     }
+
+    PTYTextView *frontTextView = (PTYTextView *)[respondingWindow firstResponder];
     
+    [frontTextView setSearchString: searchString];
+    [frontTextView setIgnoreCase: [caseCheckBox intValue]];
+    [frontTextView findNext: self];
+        
 }
 
 - (IBAction) findPrevious: (id) sender
 {
     searchString = [[searchStringField stringValue] copy];
-    if([searchString length] <= 0)
-	return;
-
-    if([[self delegate] respondsToSelector: @selector(frontTextView)] == YES)
+    if([searchString length] <= 0 || respondingWindow == nil)
     {
-	PTYTextView *frontTextView = [[self delegate] frontTextView];
-
-	[frontTextView setSearchString: searchString];
-	[frontTextView findPrevious: self];
+	NSBeep();
+	return;
     }
     
+    PTYTextView *frontTextView = (PTYTextView *)[respondingWindow firstResponder];
+
+    [frontTextView setSearchString: searchString];
+    [frontTextView setIgnoreCase: [caseCheckBox intValue]];
+    [frontTextView findPrevious: self];
+        
 }
 
 // get/set methods
@@ -136,6 +175,17 @@ static FindPanelWindowController *singleInstance = nil;
 - (void) setDelegate: (id) theDelegate
 {
     delegate = theDelegate;
+}
+
+- (BOOL) ignoreCase
+{
+    return (ignoreCase);
+}
+
+- (void) setIgnoreCase: (BOOL) flag
+{
+    ignoreCase = flag;
+    [caseCheckBox setIntValue: ignoreCase];
 }
 
 - (NSString *) searchString

@@ -27,6 +27,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@class PTYTextView;
 
 @interface FindPanelWindowController : NSWindowController {
 
@@ -34,8 +35,11 @@
     IBOutlet NSButton *caseCheckBox;
 
     NSString *searchString;
+    BOOL ignoreCase;
 
     id delegate;
+
+    NSWindow *respondingWindow;
 
 }
 
@@ -47,6 +51,7 @@
 // NSWindow delegate methods
 - (void)windowWillClose:(NSNotification *)aNotification;
 - (void)windowDidLoad;
+- (void) respondingWindowFocusDidChange: (NSNotification *) aNotification;
 
 // action methods
 - (IBAction) findNext: (id) sender;
@@ -57,5 +62,7 @@
 - (void) setDelegate: (id) theDelegate;
 - (NSString *) searchString;
 - (void) setSearchString: (NSString *) aString;
+- (BOOL) ignoreCase;
+- (void) setIgnoreCase: (BOOL) flag;
 
 @end

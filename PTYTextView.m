@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.59 2003-05-13 18:23:09 ujwal Exp $
+// $Id: PTYTextView.m,v 1.60 2003-05-13 20:25:17 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1337,6 +1337,7 @@
 
     self = [super init];
     deadkey = NO;
+    lastSearchLocation = 0;
 
     return (self);
 }
@@ -1350,6 +1351,7 @@
     self = [super initWithFrame: aRect];
 
     deadkey = NO;
+    lastSearchLocation = 0;
 
     return (self);
     
@@ -2115,6 +2117,7 @@
 //
 
 static NSString *searchString = nil;
+static BOOL ignoreCase = NO;
 
 @implementation PTYTextView (Find)
 
@@ -2132,32 +2135,112 @@ static NSString *searchString = nil;
     {
 	[findWindowController setSearchString: searchString];
     }
+    else // grab from clipboard
+    {
+	NSPasteboard *board = [NSPasteboard generalPasteboard];
+	NSString *pbString = [board stringForType:NSStringPboardType];
+	[findWindowController setSearchString: pbString];	
+    }
+    [findWindowController setIgnoreCase: ignoreCase];
     [findWindowController showWindow: self];
 }
 
 - (IBAction) findNext: (id) sender
 {
+
+    [self findSubString: searchString forwardDirection: YES ignoringCase: ignoreCase];
     
 }
 
 - (IBAction) findPrevious: (id) sender
 {
+
+    [self findSubString: searchString forwardDirection: NO ignoringCase: ignoreCase];
     
 }
 
 - (IBAction) findWithSelection: (id) sender
 {
-    
+    // get the selected text
+    NSRange aRange = [self selectedRange];
+    if(aRange.length <= 0)
+    {
+	NSBeep();
+	return;
+    }
+    NSString *contentString = [[self textStorage] string];
+    [self setSearchString: [contentString substringWithRange: aRange]];
+    lastSearchLocation = 0;
+    [self findNext: self];
 }
 
 - (IBAction) jumpToSelection: (id) sender
 {
+    NSRange aRange = [self selectedRange];
+
+    if(aRange.length > 0)
+    {
+	[self scrollRangeToVisible: aRange];
+    }
+    else
+    {
+	NSBeep();
+    }
+    
+}
+
+- (void) findSubString: (NSString *) subString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck
+{
+
+    if([subString length] <= 0)
+    {
+	NSBeep();
+	return;
+    }
+    
+    
+    NSString *contentString = [[self textStorage] string];
+
+    if(lastSearchLocation >= [contentString length] || lastSearchLocation < 0)
+	lastSearchLocation = 0;
+
+    NSRange searchRange, foundRange;
+    unsigned int searchOptions = 0;
+
+    if(direction == YES)
+    {
+	searchRange = NSMakeRange(lastSearchLocation, [contentString length] - lastSearchLocation);
+    }
+    else
+    {
+	searchRange = NSMakeRange(0, lastSearchLocation + 1);
+	searchOptions |= NSBackwardsSearch;
+    }
+
+    if(caseCheck == YES)
+	searchOptions |= NSCaseInsensitiveSearch;
+
+    foundRange = [contentString rangeOfString: subString options: searchOptions range: searchRange];
+    if(foundRange.length > 0)
+    {
+	[self setSelectedRange: foundRange];
+	[self jumpToSelection: self];
+	if(direction == YES)
+	    lastSearchLocation = foundRange.location + 1;
+	else
+	    lastSearchLocation = foundRange.location - 1;
+	[[self window] makeKeyAndOrderFront: self];
+    }
+    else
+    {
+	NSBeep();
+	return;
+    }
     
 }
 
 - (void) setSearchString: (NSString *) aString
 {
-    NSLog(@"setting search string to %@", aString);
     if(searchString != nil)
     {
 	[searchString release];
@@ -2169,6 +2252,12 @@ static NSString *searchString = nil;
 	searchString = aString;
     }
 }
+
+- (void) setIgnoreCase: (BOOL) flag
+{
+    ignoreCase = flag;
+}
+
 
 @end
 

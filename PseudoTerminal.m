@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.207 2003-08-09 07:41:18 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.208 2003-08-10 16:30:53 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -134,18 +134,33 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // initViewWithFrame is mainly meant for embedding a terminal view in a non-iTerm window.
 - (PTYTabView*) initViewWithFrame: (NSRect) frame
 {
-    NSRect tabviewRect;
-
+    NSFont *aFont1, *aFont2;
+    NSSize termSize;
+    NSRect contentRect;
+    
     // Create the tabview
-    TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
+    TABVIEW = [[PTYTabView alloc] initWithFrame: frame];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [TABVIEW setAllowsTruncatedLabels: NO];
     [TABVIEW setControlSize: NSSmallControlSize];
     [TABVIEW setAutoresizesSubviews: YES];
 
+    aFont1 = FONT;
+    if(aFont1 == nil)
+    {
+	NSDictionary *defaultSession = [iTerm defaultAddressBookEntry];
+	aFont1 = [defaultSession objectForKey:@"Font"];
+	aFont2 = [defaultSession objectForKey:@"NAFont"];
+	[self setFont: aFont1 nafont: aFont2];
+    }
+    NSParameterAssert(aFont1 != nil);
+    // Calculate the size of the terminal
+    contentRect = [TABVIEW contentRect];
+    termSize = [VT100Screen screenSizeInFrame: contentRect font: aFont1];
+    [self setWidth: (int) termSize.width height: (int) termSize.height];
 
-    WIDTH = HEIGHT = 0;
-    
+    NSLog(@"WIDTH = %d; HEIGHT = %d", WIDTH, HEIGHT);
+
     return ([TABVIEW autorelease]);
 }
 
@@ -183,34 +198,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		       title: (NSString *)title
 {
     NSDictionary *defaultParameters;
-    NSFont *aFont1, *aFont2;
-    NSSize termSize;
-    NSRect contentRect;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
           __FILE__, __LINE__);
 #endif
 
-    NSParameterAssert(aSession != nil);
-
-    if(WIDTH == 0)
-    {
-	aFont1 = FONT;
-	if(aFont1 == nil)
-	{
-	    NSDictionary *defaultSession = [iTerm defaultAddressBookEntry];
-	    aFont1 = [defaultSession objectForKey:@"Font"];
-	    aFont2 = [defaultSession objectForKey:@"NAFont"];
-	    [self setFont: aFont1 nafont: aFont2];
-	}
-	NSParameterAssert(aFont1 != nil);
-	// Calculate the size of the terminal
-	contentRect = [TABVIEW contentRect];
-	termSize = [VT100Screen screenSizeInFrame: contentRect font: aFont1];
-	[self setWidth: (int) termSize.width height: (int) termSize.height];
-    }
-    
+    NSParameterAssert(aSession != nil);    
     
     // Init the rest of the session
     [aSession setParent: self];

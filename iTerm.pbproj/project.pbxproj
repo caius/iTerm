@@ -103,6 +103,7 @@
 				E813FB86029754BB03A80106,
 				87D5C471043227820073D10E,
 				870EAAB504325A880073D10E,
+				870BCD83047070AC0073D10E,
 				E8EDCE69015E0A5703000001,
 				FBBB8B60039FC04E01F955DB,
 				FB094A14033D58AE01F955DB,
@@ -328,6 +329,62 @@
 //872
 //873
 //874
+		870BCD83047070AC0073D10E = {
+			children = (
+				870BCD84047070AC0073D10E,
+				870BCD86047071180073D10E,
+				870BCD87047071260073D10E,
+				870BCD88047071320073D10E,
+				870BCD890470713F0073D10E,
+				870BCD8A0470714A0073D10E,
+			);
+			isa = PBXVariantGroup;
+			name = FindPanel.nib;
+			path = "";
+			refType = 4;
+		};
+		870BCD84047070AC0073D10E = {
+			isa = PBXFileReference;
+			name = English;
+			path = English.lproj/FindPanel.nib;
+			refType = 4;
+		};
+		870BCD85047070AC0073D10E = {
+			fileRef = 870BCD83047070AC0073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		870BCD86047071180073D10E = {
+			isa = PBXFileReference;
+			name = French;
+			path = French.lproj/FindPanel.nib;
+			refType = 4;
+		};
+		870BCD87047071260073D10E = {
+			isa = PBXFileReference;
+			name = Japanese;
+			path = Japanese.lproj/FindPanel.nib;
+			refType = 4;
+		};
+		870BCD88047071320073D10E = {
+			isa = PBXFileReference;
+			name = Korean;
+			path = Korean.lproj/FindPanel.nib;
+			refType = 4;
+		};
+		870BCD890470713F0073D10E = {
+			isa = PBXFileReference;
+			name = zh_CN;
+			path = zh_CN.lproj/FindPanel.nib;
+			refType = 4;
+		};
+		870BCD8A0470714A0073D10E = {
+			isa = PBXFileReference;
+			name = zh_TW;
+			path = zh_TW.lproj/FindPanel.nib;
+			refType = 4;
+		};
 		870EAAB504325A880073D10E = {
 			children = (
 				870EAAB604325A880073D10E,
@@ -559,6 +616,7 @@
 				DD1E48DD0431527900A8A065,
 				87D5C473043227820073D10E,
 				870EAAB704325A880073D10E,
+				870BCD85047070AC0073D10E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -2,6 +2,8 @@
 
 	* Added back support for background images. Image is currently flipped 
 	  horizontally.
+	* Some more optimizations in drawing code to draw only line rects that 
+	  need drawing.
 
 2004-02-16  ujwal
 

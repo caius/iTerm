@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.110 2004-02-18 00:56:53 ujwal Exp $
+// $Id: PTYTextView.m,v 1.111 2004-02-18 01:27:31 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -182,7 +182,7 @@
     [defaultFGColor release];
     [color retain];
     defaultFGColor=color;
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
 	// reset our default character attributes    
 }
 
@@ -193,7 +193,7 @@
     defaultBGColor=color;
 	//    bg = [bg colorWithAlphaComponent: [[SESSION backgroundColor] alphaComponent]];
 	//    fg = [fg colorWithAlphaComponent: [[SESSION foregroundColor] alphaComponent]];
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
 }
 
 - (void) setBoldColor: (NSColor*)color
@@ -201,7 +201,7 @@
     [defaultBoldColor release];
     [color retain];
     defaultBoldColor=color;
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
 }
 
 - (NSColor *) defaultFGColor
@@ -226,7 +226,7 @@
     [colorTable[idx] release];
     [c retain];
     colorTable[idx]=c;
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
 }
 
 - (NSColor *) colorForCode:(int) index 
@@ -280,7 +280,7 @@
     [selectionColor release];
     [aColor retain];
     selectionColor=aColor;
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
 }
 
 - (NSFont *)font
@@ -301,7 +301,7 @@
     [nafont release];
     [naFont retain];
     nafont=naFont;
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
     [self setMarkedTextAttributes:
         [NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor yellowColor], NSBackgroundColorAttributeName,
@@ -382,6 +382,10 @@
 
     NSSize aSize;
     int height;
+	char *dirty;
+	int width, i, j;
+	NSRect lineRect;
+	BOOL lineNeedsDrawing;
     
     if(dataSource != nil)
     {
@@ -400,7 +404,27 @@
         }
 		else resized=NO;
     }
-    [self setNeedsDisplay: YES];
+	
+	// find out which lines need refreshing
+	width = [dataSource width];
+	height = [dataSource height];
+	dirty = [dataSource dirty];
+	for(i = 0; i < height; i++)
+	{
+		lineNeedsDrawing = NO;
+		for (j = 0; j < width; j++)
+		{
+			if(dirty[i*width + j])
+				lineNeedsDrawing = YES;
+		}
+		if(lineNeedsDrawing)
+		{
+			lineRect = NSMakeRect(0, 0, [self frame].size.width, lineHeight);
+			lineRect.origin.y = ([dataSource numberOfLines] - height + i) * lineHeight;
+			[self setNeedsDisplayInRect: lineRect];
+		}
+	}
+	
 }
 
 - (BOOL) resized
@@ -411,7 +435,7 @@
 - (NSRect)adjustScroll:(NSRect)proposedVisibleRect
 {
 	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
 	return proposedVisibleRect;
 }
 
@@ -421,7 +445,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll];
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
     //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
     [self scrollRectToVisible: scrollRect];
 }
@@ -432,7 +456,6 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalLineScroll];
-	forceUpdate=YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -442,7 +465,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -452,7 +475,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalPageScroll];
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -462,7 +485,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y = 0;
-	forceUpdate=YES;
+	[self setNeedsDisplay: YES];
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -475,14 +498,11 @@
     if (numberOfLines > 0)
     {
         NSRect aFrame;
-		//		if ([[[self enclosingScrollView] verticalScroller] floatValue]<1) {
 		aFrame.origin.x = 0;
 		aFrame.origin.y = (numberOfLines - 1) * lineHeight;
 		aFrame.size.width = [self frame].size.width;
 		aFrame.size.height = lineHeight;
-		//forceUpdate=YES;
 		[self scrollRectToVisible: aFrame];
-		//		}
     }
     resized=NO;
 }

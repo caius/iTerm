@@ -259,7 +259,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if USE_CUSTOM_DRAWING
     [TEXTVIEW showCursor];
-//    [TEXTVIEW refresh];
+    [TEXTVIEW refresh];
 //    [TEXTVIEW moveLastLine];
 #endif
 }
@@ -786,7 +786,12 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
     }
 
-#if 0
+#if USE_CUSTOM_DRAWING
+    if (output>50) {
+        [TEXTVIEW moveLastLine];
+        output=0;
+    }
+    
 #else
     if (blink>50) { [SCREEN blink]; blink=0; }
     if (oIdleCount<2||dirty) {

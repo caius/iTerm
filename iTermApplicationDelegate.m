@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.3 2003-09-08 05:42:33 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.4 2003-09-08 19:39:36 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -294,13 +294,13 @@
 
     // new window
     newMenu = [[NSMenu alloc] init];
-    [[iTermController sharedInstance] buildAddressBookMenu: newMenu target: nil];
+    [[iTermController sharedInstance] buildAddressBookMenu: newMenu target: nil withShortcuts: YES];
     [newWindow setSubmenu: newMenu];
     [newMenu release];
 
     // new tab
     newMenu = [[NSMenu alloc] init];
-    [[iTermController sharedInstance] buildAddressBookMenu: newMenu target: frontTerminal];
+    [[iTermController sharedInstance] buildAddressBookMenu: newMenu target: frontTerminal withShortcuts: YES];
     [newTab setSubmenu: newMenu];
     [newMenu release];    
     

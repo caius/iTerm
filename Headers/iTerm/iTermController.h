@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.6 2003-09-08 05:42:35 ujwal Exp $
+// $Id: iTermController.h,v 1.7 2003-09-08 19:39:38 ujwal Exp $
 /*
  **  iTermController.h
  **
@@ -62,7 +62,7 @@
 - (PseudoTerminal *) frontPseudoTerminal;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
-- (void) buildAddressBookMenu:(NSMenu *)abMenu target:(id)target;
+- (void) buildAddressBookMenu:(NSMenu *)abMenu target:(id)target withShortcuts: (BOOL) withShortcuts;
 - (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm;
 - (PTYTextView *) frontTextView;
 

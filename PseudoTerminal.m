@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.223 2003-09-08 05:42:33 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.224 2003-09-08 19:39:36 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1003,7 +1003,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // Build the bookmarks menu
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [[iTermController sharedInstance] buildAddressBookMenu: abMenu target: (newWin?nil:self)];
+    [[iTermController sharedInstance] buildAddressBookMenu: abMenu target: (newWin?nil:self) withShortcuts: NO];
 
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
     [abMenu release];

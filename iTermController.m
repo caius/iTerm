@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.14 2003-09-08 05:42:34 ujwal Exp $
+// $Id: iTermController.m,v 1.15 2003-09-08 19:39:36 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -128,12 +128,12 @@ static BOOL usingAutoLaunchScript = NO;
     
     // Create the addressbook submenus for new tabs and windows.
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks Menu"];
-    [self buildAddressBookMenu: abMenu target: FRONT]; // target the top terminal window.
+    [self buildAddressBookMenu: abMenu target: FRONT withShortcuts: NO]; // target the top terminal window.
     [newTabMenuItem setSubmenu: abMenu];
     [abMenu release];
     
     abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks Menu"];
-    [self buildAddressBookMenu: abMenu target: nil]; // target the top terminal window.
+    [self buildAddressBookMenu: abMenu target: nil withShortcuts: NO]; // target the top terminal window.
     [newWindowMenuItem setSubmenu: abMenu];
     [abMenu release];
             
@@ -336,7 +336,7 @@ static BOOL usingAutoLaunchScript = NO;
 }
 
 // Build the bookmarks menu
-- (void)buildAddressBookMenu:(NSMenu *) abMenu target:(id)target
+- (void) buildAddressBookMenu:(NSMenu *)abMenu target:(id)target withShortcuts: (BOOL) withShortcuts
 {
     NSEnumerator *abEnumerator;
     NSDictionary *abEntry;
@@ -363,6 +363,8 @@ static BOOL usingAutoLaunchScript = NO;
 	    shortcut = target?@"t":@"n";
 	    mask = NSCommandKeyMask;
 	}
+	if(withShortcuts == NO)
+	    shortcut = @"";
 	NSMenuItem *abMenuItem = [[[NSMenuItem alloc] initWithTitle: entryVisibleName(abEntry, self) action:action keyEquivalent:shortcut] autorelease];
 	[abMenuItem setKeyEquivalentModifierMask: mask];
 	[abMenuItem setTag:i++];

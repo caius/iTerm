@@ -215,8 +215,8 @@ NSString *ConfigToolbarItem = @"Config";
     [aPopUpButton setAction: nil];
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
-    
-    [[iTermController sharedInstance] buildAddressBookMenu: [aPopUpButton menu] target: (newwin?nil:_pseudoTerminal)];
+
+    [[iTermController sharedInstance] buildAddressBookMenu: [aPopUpButton menu] target: (newwin?nil:_pseudoTerminal) withShortcuts: NO];
     
     [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
     [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(toggleNewWindowState:) keyEquivalent: @""];
@@ -246,7 +246,7 @@ NSString *ConfigToolbarItem = @"Config";
     // build a menu representation for text only.
     item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New") action: nil keyEquivalent: @""];
     aMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [[iTermController sharedInstance] buildAddressBookMenu: aMenu target: (newwin?nil:_pseudoTerminal)];
+    [[iTermController sharedInstance] buildAddressBookMenu: aMenu target: (newwin?nil:_pseudoTerminal) withShortcuts: NO];
     [aMenu addItem: [NSMenuItem separatorItem]];
     [aMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(toggleNewWindowState:) keyEquivalent: @""];
     newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];

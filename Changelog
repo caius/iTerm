@@ -7,6 +7,9 @@
       without the shell exiting with the "autoclose" 
       preference off.
       
+    * Disabled the limit on the window size. Not sure why
+      that was there.
+      
 
 2002-12-19	fabian
     * Changed version number to 0.6.0

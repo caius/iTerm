@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.45 2002-12-20 08:16:52 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.46 2002-12-20 08:45:16 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -862,12 +862,15 @@ static NSString *ConfigToolbarItem = @"Config";
 
 - (IBAction)windowConfigOk:(id)sender
 {
+#if 0 // Not sure why this limit was imposed.
     if ([CONFIG_COL intValue]>150||[CONFIG_COL intValue]<10||[CONFIG_ROW intValue]>150||[CONFIG_ROW intValue]<3) {
         NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
                         nil,nil);
-    }else if ([AI_CODE intValue]>255||[AI_CODE intValue]<0) {
+    }else
+#endif
+    if ([AI_CODE intValue]>255||[AI_CODE intValue]<0) {
         NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"Please enter a valid code (0~255)",@"iTerm",@"Anti-Idle: wrong input"),
                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),

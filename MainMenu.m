@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.4 2002-12-06 03:03:29 yfabian Exp $
+// $Id: MainMenu.m,v 1.5 2002-12-07 20:13:50 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -84,12 +84,10 @@ static BOOL newWindow=YES;
                 font:[PREF_PANEL font]];
     [term initSession:nil
      foregroundColor:[PREF_PANEL foreground]
-     backgroundColor:[PREF_PANEL background]
+     backgroundColor:[[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
             encoding:[PREF_PANEL encoding]
                 term:[PREF_PANEL terminalType]];
-    [term setWindowSize];
     [term startProgram:cmd arguments:arg];
-    [[term window] setAlphaValue:1.0-[PREF_PANEL transparency]/100.0];
     [term setCurrentSessionName:nil];
 }
 
@@ -140,13 +138,12 @@ static BOOL newWindow=YES;
 //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
         [term initSession:nil
          foregroundColor:[PREF_PANEL foreground]
-         backgroundColor:[PREF_PANEL background]
+         backgroundColor:[[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
                 encoding:[PREF_PANEL encoding]
                     term:[PREF_PANEL terminalType]];
         [[term currentSession] startProgram:cmd arguments:arg environment:env];
         if (newWindow) {
             [term setWindowSize];
-            [[term window] setAlphaValue:1.0-[PREF_PANEL transparency]/100.0];
         };
         [term setCurrentSessionName:nil];
         
@@ -238,7 +235,7 @@ static BOOL newWindow=YES;
         else term=FRONT;
         [term initSession:[entry objectForKey:@"Name"]
          foregroundColor:[entry objectForKey:@"Foreground"]
-         backgroundColor:[entry objectForKey:@"Background"]
+         backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
                 encoding:encoding
                     term:[entry objectForKey:@"Term Type"]];
 
@@ -263,7 +260,6 @@ static BOOL newWindow=YES;
         [[term currentSession] setBGColor:[entry objectForKey:@"Background"]];
         if (newWindow) {
             [term setWindowSize];
-            [[term window] setAlphaValue:1.0-[PREF_PANEL transparency]/100.0];
         };
         [term setCurrentSessionName:[entry objectForKey:@"Name"]];
         

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.82 2004-01-23 00:43:02 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.83 2004-01-26 07:40:19 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -341,15 +341,18 @@ static size_t getCSIParam(unsigned char *datap,
                 case VT100CC_SUB: break;
                 case VT100CC_DEL: [SCREEN deleteCharacters:1];break;
                 default:
-                    NSLog(@"Unrecoginzed escape sequence: %c", *datap);
+                    NSLog(@"Unrecognized escape sequence: %c (0x%x)", *datap, *datap);
                     param->cmd=0xff;
                     unrecognized=YES;
                     break;
             }
-            datalen--;
+		if(unrecognized == NO)
+		{
+			datalen--;
             datap++;
+		}
 	}
-//        if (unrecognized) break;
+        if (unrecognized) break;
     }
     return datap - orgp;
 }
@@ -368,7 +371,14 @@ static VT100TCC decode_csi(unsigned char *datap,
     int i;
 
     paramlen = getCSIParam(datap, datalen, &param, SCREEN);
-    if (paramlen > 0 && param.cmd > 0) {
+	// Check for unkown
+	if(param.cmd == 0xff)
+	{
+		result.type = VT100_UNKNOWNCHAR;
+		*rmlen = paramlen;
+	}
+	// process
+    else if (paramlen > 0 && param.cmd > 0) {
         if (!param.question) {
             switch (param.cmd) {
                 case 'D':		// Cursor Backward

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.237 2003-09-15 15:41:21 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.238 2003-09-16 06:34:25 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -173,7 +173,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
 {
-    NSMutableDictionary *addressBookPreferences, *tempPrefs;
+    NSMutableDictionary *addressBookPreferences;
+    NSDictionary *tempPrefs;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",

@@ -276,8 +276,6 @@
 			files = (
 				E813FB7F0297522703A80106,
 				DD8CF2EE03CDD34C00A8A065,
-				DD1E48DC0431521800A8A065,
-				8786A96F052CEC220073D10E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1077,12 +1075,6 @@
 			path = images/script.png;
 			refType = 4;
 		};
-		8786A96F052CEC220073D10E = {
-			fileRef = 8786A96E052CEC220073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		87898DDD0444F9070073D10E = {
 			isa = PBXFileReference;
 			name = French;
@@ -1543,12 +1535,6 @@
 		};
 		DD1E48DB0431517F00A8A065 = {
 			fileRef = 0464AB2F006CD2EC7F000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48DC0431521800A8A065 = {
-			fileRef = E8EDCE69015E0A5703000001;
 			isa = PBXBuildFile;
 			settings = {
 			};

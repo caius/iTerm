@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.41 2003-04-29 17:11:04 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.42 2003-04-30 00:26:43 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -226,7 +226,7 @@ static int TRANSPARENCY  =10;
 
     defaultCol=([prefs integerForKey:@"Col"]?[prefs integerForKey:@"Col"]:COL);
     defaultRow=([prefs integerForKey:@"Row"]?[prefs integerForKey:@"Row"]:ROW);
-    defaultScrollback=([prefs integerForKey:@"Scrollback"]?[prefs integerForKey:@"Scrollback"]:SCROLLBACK);
+    defaultScrollback=([prefs objectForKey:@"Scrollback"]?[prefs integerForKey:@"Scrollback"]:SCROLLBACK);
     defaultTransparency=([prefs stringForKey:@"Transparency"]!=nil?[prefs integerForKey:@"Transparency"]:TRANSPARENCY);
     defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
 
@@ -525,6 +525,7 @@ static int TRANSPARENCY  =10;
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
+    [prefs setInteger:defaultScrollback forKey:@"Scrollback"];
     [prefs setObject:defaultTerminal forKey:@"Terminal"];
     [prefs setObject:[NSNumber numberWithUnsignedInt:defaultEncoding] forKey:@"Encoding"];
     [prefs setObject:defaultShell forKey:@"Shell"];

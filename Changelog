@@ -1,3 +1,7 @@
+2003-04-29	ujwal
+
+    * Fixed bug in storing and reading for scrollback lines preference.
+
 2003-04-29	fabian
     * Fixed a bug in VT100Screen's removeOverLine
     * Implemented custom setting of scrollback buffer size

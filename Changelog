@@ -2,6 +2,9 @@
 
     * Fixed write problem when prompted for passwords.
     
+    * Now explicitly setting PATH to something sensible 
+      since the default includes the user's home directory.
+    
 2003-04-02	ujwal
 
     * Fixed a problem that was causing iTerm to hang when 

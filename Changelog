@@ -1,3 +1,7 @@
+2004-01-01	ujwal
+
+	* Cursor blinks only in active window.
+
 2003-12-18	fabian
     
     * Fixed a bug related to inputting international characters

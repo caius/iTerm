@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.10 2004-02-18 00:57:02 ujwal Exp $
+// $Id: PTYTextView.h,v 1.11 2004-02-18 02:01:16 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -73,7 +73,6 @@ typedef struct
 	
     BOOL resized;
     BOOL CURSOR;
-    BOOL forceUpdate;
 	
     // geometry
 	float lineHeight;

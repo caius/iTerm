@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.112 2004-02-18 01:47:18 ujwal Exp $
+// $Id: PTYTextView.m,v 1.113 2004-02-18 02:01:15 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -630,10 +630,7 @@
 	
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
-	
-	// temporarily force update of whole screen while we work out some drawing issues.
-	forceUpdate = YES;
-    
+	    
 	WIDTH=[dataSource width];
 	
 	// How many lines do we need to draw?
@@ -716,80 +713,48 @@
 			/* find out if the current char is being selected; adjust background color accordingly */
 			sel=(x1!=-1&&((line>y1&&line<y2)||(line==y1&&y1==y2&&j>=x1&&j<x2)||(line==y1&&y1!=y2&&j>=x1)||(line==y2&&y1!=y2&&j<x2)))?-1:bg[j];
 			
-			// check if we have to update
-			if (line >= startScreenLineIndex && !forceUpdate && !dirty[j])
-			{
-				if (bgstart >= 0) {
-					if (bgcode>=0) 
-						aColor = [self colorForCode:bgcode];
-					else 
-						aColor = selectionColor;
-					
-					[aColor set];
-					
-					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);					
-					NSRectFill(bgRect);
-					
-					// if we have a background image and we are using the background image, redraw image
-					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
-					{
-						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-					}
-					
-				}						
-				if (ulstart >= 0) 
-				{
-					[[self colorForCode:fgcode] set];
-					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
-				}
-				
-				bgstart = ulstart = -1;
+			if (bgstart<0) 
+			{ 
+				// we are at the beginning of the line
+				bgstart = j; 
+				bgcode=sel; 
 			}
-			else
+			else if (sel != bgcode) 
 			{
-				if (bgstart<0) 
-				{ 
-					// we are at the beginning of the line
-					bgstart = j; 
-					bgcode=sel; 
-				}
-				else if (sel != bgcode) 
+				if (bgcode>=0) 
+					aColor = [self colorForCode:bgcode]; //normal background
+				else 
+					aColor = selectionColor;   //selected background
+				
+				[aColor set];
+				
+				bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
+				NSRectFill(bgRect);
+				
+				// if we have a background image and we are using the background image, redraw image
+				if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
 				{
-					if (bgcode>=0) 
-						aColor = [self colorForCode:bgcode]; //normal background
-					else 
-						aColor = selectionColor;   //selected background
-					
-					[aColor set];
-					
-					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
-					NSRectFill(bgRect);
-					
-					// if we have a background image and we are using the background image, redraw image
-					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
-					{
-						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-					}
-					
-					bgcode=sel;
-					bgstart=j;
+					[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 				}
 				
-				// Check if we need to underline
-				if (ulstart < 0 && (fg[j] & UNDER_MASK) && buf[j]) 
-				{ 
-					ulstart=j; 
-					fgcode=fg[j]; 
-				}
-				else if (ulstart >= 0 && (fg[j] != fgcode || !buf[j])) 
-				{
-					[[self colorForCode:fgcode] set];
-					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
-					fgcode=fg[j];
-					ulstart=(fg[j]&UNDER_MASK||buf[j])?j:-1;
-				}
-				
+				bgcode=sel;
+				bgstart=j;
 			}
+			
+			// Check if we need to underline
+			if (ulstart < 0 && (fg[j] & UNDER_MASK) && buf[j]) 
+			{ 
+				ulstart=j; 
+				fgcode=fg[j]; 
+			}
+			else if (ulstart >= 0 && (fg[j] != fgcode || !buf[j])) 
+			{
+				[[self colorForCode:fgcode] set];
+				NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
+				fgcode=fg[j];
+				ulstart=(fg[j]&UNDER_MASK||buf[j])?j:-1;
+			}
+			
 		}
 		
 		if (bgcode>=0) 
@@ -869,7 +834,6 @@
 		memset([dataSource dirty]+y1*[dataSource width]+x1, 1,len*2); //len*2 is an over-estimation, but safe
 	}	
 	
-	forceUpdate = NO;
 	//    NSLog(@"enddraw");
 }
 

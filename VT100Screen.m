@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.158 2003-09-24 18:17:36 ujwal Exp $
+// $Id: VT100Screen.m,v 1.159 2003-09-25 06:24:50 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2617,7 +2617,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     int len, slen;
     int idx;
-    NSRange selectedRange;
+    //NSRange selectedRange;
     NSString *selectedString;
     
     idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
@@ -2636,8 +2636,8 @@ static BOOL PLAYBELL = YES;
 
     // cache any text selection
     selectedRange = [[SESSION TEXTVIEW] selectedRange];
-    if(selectedRange.length > 0)
-	selectedString = [[[SESSION TEXTVIEW] string] substringWithRange: selectedRange];    
+    //if(selectedRange.length > 0)
+	//selectedString = [[[SESSION TEXTVIEW] string] substringWithRange: selectedRange];    
 
     //NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
 
@@ -2664,8 +2664,8 @@ static BOOL PLAYBELL = YES;
 
 
     // re-select any previous text selection unless text has changed
-    if(selectedRange.length > 0 && [[[[SESSION TEXTVIEW] string] substringWithRange: selectedRange] isEqualToString: selectedString])
-	[[SESSION TEXTVIEW] setSelectedRange: selectedRange];
+    //if(selectedRange.length > 0 && [[[[SESSION TEXTVIEW] string] substringWithRange: selectedRange] isEqualToString: selectedString])
+	//[[SESSION TEXTVIEW] setSelectedRange: selectedRange];
     
     // release lock
     [self removeScreenLock];

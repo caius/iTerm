@@ -1,3 +1,8 @@
+2003-09-24	ujwal
+
+    * Disabled re-selection of text since that was interfering with copy/paste 
+      in other apps.
+
 2003-09-23	fabian
 
     * Updated zh_CN and zh_TW localiztions.

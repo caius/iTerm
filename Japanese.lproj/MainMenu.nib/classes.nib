@@ -99,6 +99,7 @@
                 selectionColor = id; 
                 shell = id; 
                 silenceBell = id; 
+                tabViewType = id; 
                 terminal = id; 
                 transparency = id; 
                 "transparency_control" = id; 

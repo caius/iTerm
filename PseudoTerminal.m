@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.88 2003-01-29 23:06:47 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.89 2003-01-30 01:04:05 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -265,7 +265,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [self setCurrentSessionName: nil];
 
     if ([TABVIEW numberOfTabViewItems]>1||![pref hideTab]) {
-        [TABVIEW setTabViewType: NSTopTabsBezelBorder];
+        [TABVIEW setTabViewType: [pref tabViewType]];
     }
     else [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 
@@ -353,7 +353,7 @@ static NSString *ConfigToolbarItem = @"Config";
         }
     }
 
-    if ([TABVIEW numberOfTabViewItems]>1||![pref hideTab]) [TABVIEW setTabViewType: NSTopTabsBezelBorder];
+    if ([TABVIEW numberOfTabViewItems]>1||![pref hideTab]) [TABVIEW setTabViewType: [pref tabViewType]];
     else {
         [TABVIEW setTabViewType: NSNoTabsBezelBorder];
         [self setWindowSize: NO];
@@ -572,13 +572,37 @@ static NSString *ConfigToolbarItem = @"Config";
 	tabviewRect.origin.y -= 13;
 	tabviewRect.size.height += 10;
     }
+    else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
+    {
+	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect.origin.x += 2;
+	tabviewRect.size.width += 8;
+	tabviewRect.origin.y -= 13;
+	tabviewRect.size.height += 20;
+    }
+    else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
+    {
+	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect.origin.x -= 10;
+	tabviewRect.size.width += 20;
+	tabviewRect.origin.y += 2;
+	tabviewRect.size.height += 5;
+    }
+    else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
+    {
+	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect.origin.x -= 10;
+	tabviewRect.size.width += 8;
+	tabviewRect.origin.y -= 13;
+	tabviewRect.size.height += 20;
+    }
     else
     {
 	tabviewRect = [[WINDOW contentView] frame];
 	tabviewRect.origin.x -= 10;
 	tabviewRect.size.width += 20;
 	tabviewRect.origin.y -= 13;
-	tabviewRect.size.height += 17;
+	tabviewRect.size.height += 20;
     }
     [TABVIEW setFrame: tabviewRect];
 
@@ -610,8 +634,14 @@ static NSString *ConfigToolbarItem = @"Config";
     winSize = size;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
 	winSize.height = size.height + 29;
+    else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
+	winSize.width = size.width + 25;
+    else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
+	winSize.height = size.height + 29;
+    else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
+	winSize.width = size.width + 25;
     else
-	winSize.height = size.height + 4;
+        winSize.height = size.height + 0;
     [thisWindow setContentSize:winSize];
 }
 
@@ -815,8 +845,14 @@ static NSString *ConfigToolbarItem = @"Config";
     scrollviewSize = contentSize;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
 	scrollviewSize.height = contentSize.height - 29;
+    else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
+	scrollviewSize.width = contentSize.width - 25;
+    else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
+	scrollviewSize.height = contentSize.height - 29;
+    else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
+	scrollviewSize.width = contentSize.width - 25;
     else
-	scrollviewSize.height = contentSize.height - 4;    
+        scrollviewSize.height = contentSize.height - 0;    
     //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
 
     
@@ -849,8 +885,14 @@ static NSString *ConfigToolbarItem = @"Config";
     contentSize = scrollviewSize;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
 	contentSize.height = scrollviewSize.height + 29;
+    else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
+	contentSize.width = scrollviewSize.width + 25;
+    else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
+	contentSize.height = scrollviewSize.height + 29;
+    else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
+	contentSize.width = scrollviewSize.width + 25;
     else
-	contentSize.height = scrollviewSize.height + 4;    
+	contentSize.height = scrollviewSize.height + 0;    
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
     
     // Finally calculate the window frame size

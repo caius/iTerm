@@ -28,6 +28,7 @@
     IBOutlet id silenceBell;
     IBOutlet id doubleWidth;
     IBOutlet id selectionColor;
+    IBOutlet id tabViewType;
     
     NSUserDefaults *prefs;
 
@@ -54,6 +55,7 @@
     BOOL defaultSilenceBell;
     BOOL changingNA;
     BOOL defaultDoubleWidth;
+    int defaultTabViewType;
 
 }
 
@@ -95,6 +97,7 @@
 - (BOOL) silenceBell;
 - (BOOL) doubleWidth;
 - (NSColor *) selectionColor;
+- (NSTabViewType) tabViewType;
 
 
 @end

@@ -138,6 +138,7 @@ static int TRANSPARENCY  =10;
         
     defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
+    defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
@@ -185,6 +186,7 @@ static int TRANSPARENCY  =10;
     [nafontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultNAFont fontName], [defaultNAFont pointSize]]];
     [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
+    [tabViewType selectCellWithTag: defaultTabViewType];
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
@@ -275,6 +277,7 @@ static int TRANSPARENCY  =10;
 
     defaultAutoclose=([autoclose state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
+    defaultTabViewType=[[tabViewType selectedCell] tag];
     defaultCopySelection=([copySelection state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
     defaultSilenceBell=([silenceBell state]==NSOnState);
@@ -304,6 +307,7 @@ static int TRANSPARENCY  =10;
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
     [prefs setBool:defaultSilenceBell forKey:@"SilenceBell"];
     [prefs setBool:defaultDoubleWidth forKey:@"DoubleWidth"];
+    [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -471,6 +475,11 @@ static int TRANSPARENCY  =10;
 - (NSColor *) selectionColor
 {
     return (defaultSelectionColor);
+}
+
+- (NSTabViewType) tabViewType
+{
+    return (defaultTabViewType);
 }
 
 @end

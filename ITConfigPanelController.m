@@ -254,7 +254,6 @@
     {
 	[backgroundImagePath release];
 	backgroundImagePath = nil;
-	backgroundImagePath = [[NSString alloc] initWithString:@""];
 	[backgroundImage setImage: nil];
     }
     else

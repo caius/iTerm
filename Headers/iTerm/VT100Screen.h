@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.8 2004-02-18 22:57:43 yfabian Exp $
+// $Id: VT100Screen.h,v 1.9 2004-03-03 23:14:11 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -34,6 +34,7 @@
 
 @class PTYTask;
 @class PTYSession;
+@class PTYTextView;
 
 #define TABWINDOW	300
 
@@ -59,7 +60,7 @@
 
     
     BOOL blinkingCursor;
-    NSView *display;
+    PTYTextView *display;
 	
 	unichar *screenLines;
 	char	*screenBGColor;
@@ -97,8 +98,8 @@
 - (PTYSession *) session;
 - (void)setSession:(PTYSession *)session;
 
-- (NSView *) display;
-- (void) setDisplay: (NSView *) aDisplay;
+- (PTYTextView *) display;
+- (void) setDisplay: (PTYTextView *) aDisplay;
 
 - (BOOL) blinkingCursor;
 - (void) setBlinkingCursor: (BOOL) flag;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.153 2004-03-03 15:48:39 ujwal Exp $
+// $Id: PTYTextView.m,v 1.154 2004-03-03 23:13:57 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -547,19 +547,6 @@
 	[self scrollRectToVisible: aFrame];
 }
 
-- (void) adjustSelection: (int) lines
-{
-	if (!lines) {   //clear selection
-		startX = -1;
-	}
-	else if (startX != -1) {  //screen scrolled, move selection accordingly
-		startY += lines;
-		endY += lines;
-		if (endY<0) startX = -1;
-		else if (startY<0) startX = startY = 0;
-	}
-}
-
 -(void) hideCursor
 {
     CURSOR=NO;
@@ -588,8 +575,8 @@
 	BOOL need_draw;
 	int bgstart, ulstart;
     float curX, curY;
-	char bgcode, sel, fgcode;
-	int y1,y2,x1,x2;
+	char bgcode, fgcode;
+	int y1, x1;
 	BOOL double_width;
 	
     if(lineHeight <= 0 || lineWidth <= 0)
@@ -606,37 +593,7 @@
 	// Which line is our screen start?
 	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
     //NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
-	
-	// Check if somethng is selected on screen
-	if (startX!=-1) { 
-		// let x1/y1 always be the beginning of the selection
-		if (startY > endY || (startY == endY && startX > endX)) 
-		{
-			y1 = endY; 
-			x1 = endX; 
-			y2 = startY; 
-			x2 = startX;
-		}
-		else 
-		{
-			y1 = startY; 
-			x1 = startX; 
-			y2 = endY;
-			x2 = endX;
-		}
 		
-		// if selection has changed from last, we redraw everything
-		if ((pre_x1 != x1 || pre_y1 != y1 || pre_y2 != y2 || pre_x2 != x2) && 
-			((y1 >= lineOffset && y1 <= lineOffset + numLines) || 
-			 (y2 >= lineOffset && y2 <= lineOffset + numLines))) 
-		{
-			forceUpdate=YES; //force redraw everything
-			pre_x1 = x1; pre_y1 = y1; pre_x2 = x2; pre_y2 = y2;
-		}
-	}
-	else 
-		x1=-1;
-	
 	// [self adjustScroll] should've made sure we are at an integer multiple of a line
 	curY=rect.origin.y +lineHeight;
 	
@@ -680,7 +637,7 @@
 			// if we don't have to update next char, finish pending jobs
 			if (!need_draw){
 				if (bgstart>=0) {
-					aColor = (bgcode>=0)? [self colorForCode:bgcode] : selectionColor; 
+					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
 					[aColor set];
 					
 					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
@@ -700,18 +657,12 @@
 			}
 			else {
 				// find out if the current char is being selected
-				sel=(x1 != -1 && x2 != -1 &&
-					 ((line > y1 && line < y2) ||
-					  (line == y1 && y1 == y2 && j >= x1 && j <= x2) ||
-					  (line == y1 && y1 != y2 && j >= x1) ||
-					  (line == y2 && y1 != y2 && j <= x2)))?-1:bg[j];
-								
 				if (bgstart<0) {
 					bgstart = j; 
-					bgcode = sel; 
+					bgcode = bg[j]; 
 				}
-				else if (sel!=bgcode || (ulstart>=0 && (fg[j]!=fgcode || !buf[j]))) { //background or underline property change?
-					aColor = (bgcode>=0)? [self colorForCode:bgcode] : selectionColor; 
+				else if (bg[j]!=bgcode || (ulstart>=0 && (fg[j]!=fgcode || !buf[j]))) { //background or underline property change?
+					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
 					[aColor set];
 					
 					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
@@ -722,7 +673,7 @@
 					{
 						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
-					bgcode=sel;
+					bgcode=bg[j];
 					bgstart=j;
 				}
 				
@@ -741,7 +692,7 @@
 		
 		// finish pending jobs
 		if (bgstart>=0) {
-			aColor = (bgcode>=0)? [self colorForCode:bgcode] : selectionColor; 
+			aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
 			[aColor set];
 			
 			bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
@@ -946,9 +897,8 @@
     x = locationInTextView.x/charWidth;
     y = locationInTextView.y/lineHeight;
     if (x>=[dataSource width]) x=[dataSource width];
-    startX=x;
-    startY=y;
-	endX = endY = -1;
+    endX = startX = x;
+    endY = startY = y;
 	    
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
@@ -998,7 +948,7 @@
 			if(tmpX < 0 && tmpY > 0)
 			{
 				tmpY--;
-				tmpX = [dataSource width];
+				tmpX = [dataSource width] - 1;
 			}
 		}
 		tmpX++;
@@ -1019,7 +969,7 @@
 		// find the end of the word
 		tmpX = x;
 		tmpY = y;
-		while(tmpX <= [dataSource width])
+		while(tmpX < [dataSource width])
 		{
 			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
 			if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet whitespaceCharacterSet]].length > 0)
@@ -1040,7 +990,7 @@
 		if(tmpY < 0)
 			tmpY = 0;		
 		if(tmpX >= [dataSource width])
-			tmpX = [dataSource width];
+			tmpX = [dataSource width] - 1;
 		if(tmpY >= [dataSource numberOfLines])
 			tmpY = [dataSource numberOfLines] - 1;
 		endX = tmpX;
@@ -1051,15 +1001,15 @@
 	{
 		// triple-click; select line
 		startX = 0;
-		endX = [dataSource width];
+		endX = [dataSource width] - 1;
 		startY = endY = y;
 	}
-	
+
+	[self _selectFromX:startX Y:startY toX:endX Y:endY];
     if (startX!=-1&&_delegate) {
         if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
     }
-
 	[self setNeedsDisplay: YES];
 }
 
@@ -1094,6 +1044,7 @@
     if (y>=[dataSource numberOfLines]) y=numberOfLines - 1;
     endX=x;
     endY=y;
+	[self _selectFromX:startX Y:startY toX:endX Y:endY];
 	[self setNeedsDisplay: YES];
     //    NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }
@@ -1125,14 +1076,14 @@
 			x1 = startx;
 		if (y == endy) 
 			x2=endx;
-		for(; x1 <= x2; x1++,j++) 
+		for(; x1 <= x2; x1++) 
 		{
 			if (buf[x1]!=0xffff) {
-				temp[j]=buf[x1]?buf[x1]:' ';
+				temp[j++]=buf[x1]?buf[x1]:' ';
 			}
 		}		
+		while (j>=0&&temp[j-1]==' ') j--; // trim the trailing blanks
 	    if (x1>=width && y != endy) {
-			while (j>x1&&temp[j-1]==' ') j--; // trim the trailing blanks
 			temp[j++]='\n';
 		}
 	}
@@ -1146,10 +1097,7 @@
 - (IBAction) selectAll: (id) sender
 {
 	// set the selection region for the whole text
-	startX = 0;
-	startY = 0;
-	endX = [dataSource width] - 1;
-	endY = [dataSource numberOfLines] - 1;
+	[self _selectFromX:0 Y:0 toX:[dataSource width] Y:[dataSource numberOfLines]-1];
 	[self setNeedsDisplay: YES];
 }
 
@@ -1159,11 +1107,66 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
 #endif
-    
-    if (startX<0) 
-        return nil;
 	
-	return [self contentFromX:startX Y:startY ToX:endX Y:endY];
+	if (startX == -1) return nil;
+	
+	int line, bfHeight;
+	int width, height, x, y;
+	char *bg;
+	unichar *buf;
+	unichar *temp;
+	NSString *str;
+	int last = 0;
+	BOOL keep_going = YES;
+	
+	width = [dataSource width];
+	height = [dataSource numberOfLines];
+	bfHeight = height - [dataSource height];
+	temp = (unichar *) malloc (height * (width+1) * sizeof(unichar));
+	
+	for (y=0; y<height && keep_going; y++) {
+		if (y < bfHeight) {
+			line = [dataSource lastBufferLineIndex] - bfHeight + y;
+			if (line<0) line += [dataSource scrollbackLines];
+			bg = [dataSource bufferBGColor] + line*width;
+			buf = [dataSource bufferLines] + line*width;
+		} 
+		else {
+			line = y - bfHeight;
+			bg = [dataSource screenBGColor] + line * width;
+			buf = [dataSource screenLines] + line*width;
+		}
+		for(x=0; x <width; x++) 
+		{
+			if (bg[x] & SELECTION_MASK) {
+				if (buf[x] != 0xffff) {
+					temp[last++] = buf[x] ? buf[x]:' ';
+				}
+			}
+			else if (last) {
+				keep_going = NO;
+				break;
+			}
+		}
+		if (last) {
+			while (last>=0 && temp[last-1]==' ') last--; // trim the trailing blanks
+			if (x>=width) {
+				temp[last++]='\n';
+			}
+		}
+		
+	}
+	
+	if (!last) {
+		startX = -1;
+		str = nil;
+	}
+	else
+		str = [NSString stringWithCharacters:temp length:last];
+	
+	free(temp);
+	
+	return str;
 }
 
 - (NSString *) content
@@ -1529,7 +1532,8 @@
 #endif
     
     // We get our content of the textview or selection, if any
-	aString = (startX<0) ? [self content] : [self selectedText];
+	aString = [self selectedText];
+	if (!aString) aString = [self content];
     aData = [aString
             dataUsingEncoding: NSASCIIStringEncoding
          allowLossyConversion: YES];
@@ -1566,7 +1570,8 @@
     NSMutableAttributedString *theContents;
 	
 	// We get our content of the textview or selection, if any
-	aString = (startX < 0) ? [self content] : [self selectedText];
+	aString = [self selectedText];
+	if (!aString) aString = [self content];
 
     tempView = [[NSTextView alloc] initWithFrame: [self frame]];
     theContents = [[NSMutableAttributedString alloc] initWithString: aString];
@@ -1833,6 +1838,8 @@
 			lastFindY=startY=y;
 			endX=x1;
 			endY=y;
+			[self _selectFromX:startX Y:startY toX:endX Y:endY];
+			[self setNeedsDisplay:YES];
 			[self _scrollToLine:y];
 			return;
 		}
@@ -1962,6 +1969,54 @@
 }
 
 
+- (void) _selectFromX:(int)startx Y:(int)starty toX:(int)endx Y:(int)endy
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView _selectFromX:%d Y:%d toX:%d Y:%d]", __FILE__, __LINE__, startx, starty, endx, endy);
+#endif
+
+	int line, bfHeight;
+	int width, height, x, y, idx, startIdx, endIdx;
+	char *bg, newbg;
+	char *dirty;
+	
+	width = [dataSource width];
+	height = [dataSource numberOfLines];
+	bfHeight = height - [dataSource height];
+	if (startX == -1) startIdx = width*height+1;
+	else {
+		startIdx = startx + starty * width;
+		endIdx = endx + endy * width;
+		if (startIdx > endIdx) {
+			idx = startIdx;
+			startIdx = endIdx;
+			endIdx = idx;
+		}
+	}
+	
+	for (idx=y=0; y<height; y++) {
+		if (y < bfHeight) {
+			line = [dataSource lastBufferLineIndex] - bfHeight + y;
+			if (line<0) line += [dataSource scrollbackLines];
+			bg = [dataSource bufferBGColor] + line*width;
+			dirty = NULL;
+		} 
+		else {
+			line = y - bfHeight;
+			bg = [dataSource screenBGColor] + line * width;
+			dirty = [dataSource dirty] + line * width;
+		}
+		for(x=0; x <width; x++, idx++) 
+		{
+			if (idx>=startIdx && idx<=endIdx) newbg = bg[x] | SELECTION_MASK;
+			else newbg = bg[x] & ~SELECTION_MASK;
+			if (newbg != bg[x]) {
+				bg[x] = newbg;
+				if (dirty) dirty[x] = 1;
+			}
+		}		
+	}
+}
 
 - (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender
 {

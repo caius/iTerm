@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.23 2004-02-26 22:06:37 yfabian Exp $
+// $Id: PTYTextView.h,v 1.24 2004-03-03 23:14:11 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -95,8 +95,6 @@ typedef struct
 	
     //selection
     int startX, startY, endX, endY;
-	int pre_x1, pre_x2, pre_y1, pre_y2;
-
 	
 	//find support
 	int lastFindX, lastFindY;
@@ -206,7 +204,6 @@ typedef struct
 - (void) scrollHome;
 - (void) scrollEnd;
 - (void) scrollToSelection;
-- (void) adjustSelection: (int) lines;
 
     // Save method
 - (void) saveDocumentAs: (id) sender;
@@ -242,6 +239,7 @@ typedef struct
 - (void) _savePanelDidEnd: (NSSavePanel *) theSavePanel returnCode: (int) theReturnCode contextInfo: (void *) theContextInfo;
 
 - (void) _scrollToLine:(int)line;
+- (void) _selectFromX:(int)startx Y:(int)starty toX:(int)endx Y:(int)endy;
 
 - (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold;
 - (NSImage *) _getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw;

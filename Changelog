@@ -1,4 +1,14 @@
 2003-02-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Workaround for a problem in Address Book where the 
+      scrollbar was not being activated when it should have 
+      been on load. It was being activated only on window 
+      resize. Looks like a Cocoa bug, but I put in a 
+      workaround of telling the NSTableView that the 
+      number of rows had changed after loading the addressbook.
+      
+
+2003-02-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
     
     * Now displaying tab number in label to make it easier 
       to switch between tabs using function keys.

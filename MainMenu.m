@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.31 2003-01-30 16:10:30 ujwal Exp $
+// $Id: MainMenu.m,v 1.32 2003-02-07 19:38:32 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -672,6 +672,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         addressBook=[[NSMutableArray array] retain];
     }
 //    NSLog(@ "initAddressBook: %d\n%@",[addressBook count], addressBook);
+    // Tell the addressbook table in the gui that number of rows have changed.
+    // Other the scrollview is not activated for large addressbooks.
+    // Cocoa bug?
+    [adTable noteNumberOfRowsChanged];
 
 }    
 

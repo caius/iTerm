@@ -2,6 +2,7 @@
     * Fixed a bug in showCursor that causes the loss of
       attributes. That partially solves the double-width
       characters problem.
+    * Localized new interface additions for zh_CN and zh_TW.
       
 2003-02-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

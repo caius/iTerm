@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.71 2003-06-15 19:10:22 ujwal Exp $
+// $Id: PTYTextView.m,v 1.72 2003-06-16 07:07:59 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1869,6 +1869,7 @@
 	[delegate pasteString:aString];
 }
 
+
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
 #if DEBUG_METHOD_TRACE
@@ -2190,6 +2191,19 @@
     }
     
     bExtendedDragNDrop = NO;
+}
+
+// Print
+- (void) print: (id) sender
+{
+    NSPrintInfo *aPrintInfo;
+
+    aPrintInfo = [NSPrintInfo sharedPrintInfo];
+    [aPrintInfo setHorizontalPagination: NSFitPagination];
+    [aPrintInfo setVerticalPagination: NSAutoPagination];
+
+    [[NSPrintOperation printOperationWithView: self  printInfo: aPrintInfo] runOperation];
+
 }
 
 // Print selection

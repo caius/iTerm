@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.31 2003-06-15 19:09:34 ujwal Exp $
+// $Id: PTYTextView.h,v 1.32 2003-06-16 07:07:59 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -282,7 +282,8 @@
 // Save method
 - (void) saveDocumentAs: (id) sender;
 
-// Print selection
+// Print
+- (void) print: (id) sender;
 - (void) printSelection: (id) sender;
 
 @end

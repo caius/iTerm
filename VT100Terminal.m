@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.51 2003-04-10 20:37:41 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.52 2003-04-11 18:23:38 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -42,6 +42,8 @@
     1st   0x81-0xfe
     2nd   0x40-0x7e || 0x80-0xfe
 */
+
+#define UNKNOWN		('#')
 
 static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 
@@ -857,11 +859,18 @@ static VT100TCC decode_utf8(unsigned char *datap,
     while (len > 0) {
         if (*p>=0x80) {
             reqbyte = utf8_reqbyte(*datap);
-            if ((reqbyte > 0) && (len >= reqbyte)) {
+            if (reqbyte > 0) {
+                if (len >= reqbyte) {
                 p += reqbyte;
                 len -= reqbyte;
+                }
+                else break;
             }
-            else break;
+            else {
+                *p=UNKNOWN;
+                p++;
+                len--;
+            }
         }
         else break;
     }
@@ -874,7 +883,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
         result.type = VT100_STRING;
     }
 
-    return result;
+   return result;
  
   
 }
@@ -896,7 +905,7 @@ static VT100TCC decode_euccn(unsigned char *datap,
                 len -= 2;
             }
             else {
-                *p='*';
+                *p=UNKNOWN;
                 p++;
                 len--;
             }
@@ -930,7 +939,7 @@ static VT100TCC decode_big5(unsigned char *datap,
                 len -= 2;
             }
             else {
-                *p='*';
+                *p=UNKNOWN;
                 p++;
                 len--;
             }
@@ -1121,7 +1130,10 @@ static VT100TCC decode_string(unsigned char *datap,
             autorelease];
 
         if (result.u.string==nil) {
+            int i;
             NSLog(@"Null:%@",data);
+            for(i=0;i<*rmlen;i++) datap[i]=UNKNOWN;
+            result.u.string = [[NSString alloc] initWithCString:datap length:*rmlen];
         }
     }
     return result;

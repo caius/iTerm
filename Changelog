@@ -1,3 +1,8 @@
+2003-04-11	fabian
+    * Fixed a bug that causes iTerm to hang when illege UTF-8
+      characters encountered. We now display a '#' whenever
+      encoding translations failed
+      
 2003-04-11	ujwal
 
     * Setting cursor color to a mix of foreground and 

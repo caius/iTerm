@@ -71,10 +71,7 @@
 + (void)close;
 
 - (void)loadConfigWindow: (NSNotification *) aNotification;
-- (IBAction) chooseBackgroundImage: (id) sender;
-- (IBAction)windowConfigFont:(id)sender;
-- (IBAction)windowConfigNAFont:(id)sender;
-- (IBAction) useBackgroundImage: (id) sender;
+
 
 // actions
 - (IBAction) setWindowSize: (id) sender;
@@ -88,10 +85,13 @@
 - (IBAction) setSelectedTextColor: (id) sender;
 - (IBAction) setCursorColor: (id) sender;
 - (IBAction) setCursorTextColor: (id) sender;
-- (IBAction) setBackgroundImage: (id) sender;
 - (IBAction) setSessionName: (id) sender;
 - (IBAction) setSessionEncoding: (id) sender;
 - (IBAction) setAntiIdle: (id) sender;
 - (IBAction) setAntiIdleCode: (id) sender;
+- (IBAction) chooseBackgroundImage: (id) sender;
+- (IBAction) windowConfigFont:(id)sender;
+- (IBAction) windowConfigNAFont:(id)sender;
+- (IBAction) useBackgroundImage: (id) sender;
 
 @end

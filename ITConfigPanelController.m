@@ -199,11 +199,6 @@ static ITConfigPanelController *singleInstance = nil;
 	[[[_pseudoTerminal currentSession] TEXTVIEW] setCursorTextColor: [CONFIG_CURSORTEXT color]];
 }
 
-- (IBAction) setBackgroundImage: (id) sender
-{
-	
-}
-
 - (IBAction) setSessionName: (id) sender
 {
 	[_pseudoTerminal setCurrentSessionName: [CONFIG_NAME stringValue]]; 

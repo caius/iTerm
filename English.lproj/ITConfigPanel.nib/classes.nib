@@ -7,7 +7,6 @@
                 setAntiIdle = id; 
                 setAntiIdleCode = id; 
                 setBackgroundColor = id; 
-                setBackgroundImage = id; 
                 setBoldColor = id; 
                 setCharacterSpacing = id; 
                 setCursorColor = id; 

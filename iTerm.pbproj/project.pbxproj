@@ -2013,8 +2013,6 @@
 		};
 		FBDF6B63042A6B3101F955DB = {
 			children = (
-				FBDF6B8F042A6BD801F955DB,
-				FBDF6B90042A6BD801F955DB,
 				FBDF6B91042A6BD801F955DB,
 				FBDF6B92042A6BD801F955DB,
 				FBDF6B93042A6BD801F955DB,
@@ -2034,20 +2032,6 @@
 			);
 			isa = PBXGroup;
 			name = website;
-			refType = 4;
-		};
-		FBDF6B8F042A6BD801F955DB = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = history.html;
-			path = website/history.html;
-			refType = 4;
-		};
-		FBDF6B90042A6BD801F955DB = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = index.html;
-			path = website/index.html;
 			refType = 4;
 		};
 		FBDF6B91042A6BD801F955DB = {

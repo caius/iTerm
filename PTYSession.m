@@ -166,7 +166,7 @@ static NSString *PWD_ENVVALUE = @"~";
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
 #if USE_CUSTOM_DRAWING
-    TEXTVIEW = [[[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)] autorelease];
+    TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 #else
 
     if([[PreferencePanel sharedInstance] enforceCharacterAlignment] == YES)

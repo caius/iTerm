@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.16 2002-12-07 23:51:39 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.17 2002-12-08 01:12:35 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -115,8 +115,7 @@ static NSDictionary *newOutputStateAttribute;
     WIDTH=width;
     HEIGHT=height;
     NSColor *bgColor;
-    NSRect scrollViewFrame, aRect;
-    NSScrollView *aScrollView;
+    NSRect scrollViewFrame;
 
     if (!font)
         font = [[[pref font] copy] retain];
@@ -136,24 +135,11 @@ static NSDictionary *newOutputStateAttribute;
     [SCROLLVIEW setLineScroll: ([VT100Screen fontSize: FONT].height)];
     [SCROLLVIEW release];
     
-    // Now create an area that will over which the session buttons will be drawn
-    // We use a scroll view since that seems to be the only convenient view 
-    // which we can fill up with a color.
-    aRect = [[WINDOW contentView] frame];
-    aRect.size.height = [[WINDOW contentView] frame].size.height - [SCROLLVIEW frame].size.height;
-    aScrollView = [[NSScrollView alloc] initWithFrame: aRect];
-    [aScrollView setBackgroundColor: [NSColor windowBackgroundColor]];
-    [[WINDOW contentView] addSubview: aScrollView];
-    [aScrollView setAutoresizingMask: NSViewWidthSizable];
-    [aScrollView release];
     
     // Init the session pulldown menu button
     [sessionPopup setBordered: NO];
     [sessionPopup setTarget: self];
     [sessionPopup setAction: @selector(sessionPopupSelectionDidChange:)];
-    // Make sure the session popup button is on top.
-    [sessionPopup removeFromSuperview];
-    [[WINDOW contentView] addSubview: sessionPopup];
     [sessionPopup setTransparent: YES];
     [sessionPopup setEnabled: NO];
     

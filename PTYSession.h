@@ -125,9 +125,8 @@
 
 // Session status
 
-- (BOOL)refreshed;
-- (BOOL)idle;
-- (void) resetStatus;
+- (void)resetStatus;
 - (BOOL)exited;
+- (void)setLabelAttribute;
 
 @end

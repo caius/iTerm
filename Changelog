@@ -1,3 +1,6 @@
+2002-12-20	fabian
+    * Fixed the session status display problem
+    
 2002-12-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed all compiler warnings.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.48 2002-12-20 16:45:34 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.49 2002-12-20 18:21:47 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -279,6 +279,7 @@ static NSString *ConfigToolbarItem = @"Config";
     currentSessionIndex = sessionIndex;
     currentPtySession = aSession;
     [self setWindowTitle];
+    [currentPtySession setLabelAttribute];
     [WINDOW makeFirstResponder:TEXTVIEW];
     [WINDOW setNextResponder:self];
 
@@ -761,6 +762,7 @@ static NSString *ConfigToolbarItem = @"Config";
     
     WIDTH = w;
     HEIGHT = h;
+    [self setWindowSize];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
 
 
@@ -1094,7 +1096,7 @@ static NSString *ConfigToolbarItem = @"Config";
     SHELL = [aSession SHELL];
     TERMINAL = [aSession TERMINAL];
     SCREEN = [aSession SCREEN];
-    [aSession resetStatus];
+    if (currentPtySession) [currentPtySession resetStatus];
     currentSessionIndex = [TABVIEW indexOfTabViewItem: tabViewItem];
     currentPtySession = aSession;
     [self setWindowTitle];
@@ -1102,6 +1104,10 @@ static NSString *ConfigToolbarItem = @"Config";
     [WINDOW setNextResponder:self];
 }
 
+- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    [currentPtySession setLabelAttribute];
+}
 
 - (NSWindow *) window;
 {

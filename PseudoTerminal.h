@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.18 2002-12-20 00:06:44 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.19 2002-12-20 18:21:47 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -144,6 +144,7 @@
 
 // NSTabView
 - (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem;
 
 
 // Config Window

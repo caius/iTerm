@@ -50,7 +50,7 @@ static NSDictionary *deadStateAttribute;
     
     if (normalStateAttribute == nil) {
         normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor darkGrayColor],NSForegroundColorAttributeName,nil] retain];
+            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
         chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
         idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
@@ -211,10 +211,7 @@ static NSDictionary *deadStateAttribute;
         REFRESHED=YES;
         if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
         {
-            if ([self idle])
-                [tabViewItem setLabelAttributes: idleStateAttribute];
-            else
-                [tabViewItem setLabelAttributes: newOutputStateAttribute];
+            [tabViewItem setLabelAttributes: newOutputStateAttribute];
             [tabViewItem redrawLabel];
         }
     }
@@ -594,32 +591,37 @@ static NSDictionary *deadStateAttribute;
             iIdleCount=0;
         }
     }
-    if (oIdleCount>5&&!waiting) {
-        if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-        {
-            waiting=YES;
-            if ([self idle])
-                [tabViewItem setLabelAttributes: idleStateAttribute];
-            else
-                [tabViewItem setLabelAttributes: newOutputStateAttribute];
-            [tabViewItem redrawLabel];
-        }
+    if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
+        [self setLabelAttribute];
     }
-    else if (waiting&&oIdleCount<=5) {
-        if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-        {
-            waiting=NO;
-            if ([self idle])
-                [tabViewItem setLabelAttributes: idleStateAttribute];
-            else
-                [tabViewItem setLabelAttributes: newOutputStateAttribute];
-            [tabViewItem redrawLabel];
-        }
-    }
+    
     [SCREEN blink];
 
 }
 
+- (void) setLabelAttribute
+{
+    if ([self exited]) {
+        [tabViewItem setLabelAttributes: deadStateAttribute];
+    }
+    else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
+        if (oIdleCount>5&&!waiting) {
+            waiting=YES;
+            if (REFRESHED)
+                [tabViewItem setLabelAttributes: idleStateAttribute];
+            else
+                [tabViewItem setLabelAttributes: normalStateAttribute];
+        }
+        else if (waiting&&oIdleCount<=5) {
+            waiting=NO;
+            [tabViewItem setLabelAttributes: newOutputStateAttribute];
+        }
+    }
+    else {
+        [tabViewItem setLabelAttributes: chosenStateAttribute];
+    }
+    [tabViewItem redrawLabel];
+}
 
 // Preferences
 - (void)setPreference:(id)preference;
@@ -912,16 +914,11 @@ static NSDictionary *deadStateAttribute;
 - (void) resetStatus;
 {
     waiting=REFRESHED=NO;
-    if([self exited] == NO)
+/*    if([self exited] == NO)
     {
         [tabViewItem setLabelAttributes: chosenStateAttribute];
         [tabViewItem redrawLabel];
-    }
-}
-
-- (BOOL)idle
-{
-    return waiting;
+    } */
 }
 
 - (BOOL)exited

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.11 2002-12-06 16:53:58 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.12 2002-12-07 20:42:11 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -18,6 +18,7 @@
 #import "PTYScrollView.h"
 #import "NSStringITerm.h"
 #import "PTYSession.h"
+#import "VT100Screen.h"
 
 @implementation PseudoTerminal
 
@@ -73,11 +74,10 @@ static NSDictionary *newOutputStateAttribute;
 
     [self initSession:nil
      foregroundColor:[pref foreground]
-     backgroundColor:[pref background]
+     backgroundColor:[[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]
             encoding:[pref encoding]
                 term:[pref terminalType]];
     [self startProgram:cmd arguments:arg];
-    [[self window] setAlphaValue:1.0-[pref transparency]/100.0];
     [self setCurrentSessionName:nil];
 
 }
@@ -114,6 +114,9 @@ static NSDictionary *newOutputStateAttribute;
 {
     WIDTH=width;
     HEIGHT=height;
+    NSColor *bgColor;
+    NSRect scrollViewFrame, aRect;
+    NSScrollView *aScrollView;
 
     if (!font)
         font = [[[pref font] copy] retain];
@@ -122,12 +125,44 @@ static NSDictionary *newOutputStateAttribute;
     if (FONT) [FONT autorelease];
     FONT=[[font copy] retain];
     
-    // Session popup init
+    // Create the scrollview
+    scrollViewFrame = [[WINDOW contentView] frame];
+    scrollViewFrame.origin.y += 30;
+    scrollViewFrame.size.height -= 30;
+    SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: scrollViewFrame];
+    NSParameterAssert(SCROLLVIEW != nil);
+    [[WINDOW contentView] addSubview: SCROLLVIEW];
+    [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [SCROLLVIEW setLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [SCROLLVIEW release];
+    
+    // Now create an area that will over which the session buttons will be drawn
+    // We use a scroll view since that seems to be the only convenient view 
+    // which we can fill up with a color.
+    aRect = [[WINDOW contentView] frame];
+    aRect.size.height = [[WINDOW contentView] frame].size.height - [SCROLLVIEW frame].size.height;
+    aScrollView = [[NSScrollView alloc] initWithFrame: aRect];
+    [aScrollView setBackgroundColor: [NSColor windowBackgroundColor]];
+    [[WINDOW contentView] addSubview: aScrollView];
+    [aScrollView setAutoresizingMask: NSViewWidthSizable];
+    [aScrollView release];
+    
+    // Init the session pulldown menu button
     [sessionPopup setBordered: NO];
     [sessionPopup setTarget: self];
     [sessionPopup setAction: @selector(sessionPopupSelectionDidChange:)];
+    // Make sure the session popup button is on top.
+    [sessionPopup removeFromSuperview];
+    [[WINDOW contentView] addSubview: sessionPopup];
     [sessionPopup setTransparent: YES];
     [sessionPopup setEnabled: NO];
+    
+    // set the background color for the scrollview with the appropriate transparency
+    bgColor = [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)];
+    [SCROLLVIEW setBackgroundColor: bgColor];
+
+    [WINDOW setDelegate: self];
+     
 }
 
 - (void)initSession:(NSString *)title
@@ -142,7 +177,6 @@ static NSDictionary *newOutputStateAttribute;
     NSLog(@"%s(%d):-[PseudoTerminal initSession]",
           __FILE__, __LINE__);
 #endif
-
 
     // Allocate a new session and initialize it
     aSession = [[PTYSession alloc] init];
@@ -165,7 +199,7 @@ static NSDictionary *newOutputStateAttribute;
     [cMenu addItemWithTitle:@"Configure" action:@selector(showConfigWindow:) keyEquivalent:@""];
     [TEXTVIEW setMenu:cMenu]; */
     
-    TEXTVIEW = [SCROLLVIEW documentView];
+    TEXTVIEW = [aSession TEXTVIEW];
     [TEXTVIEW setDelegate: aSession];
     
     // Set the colors
@@ -209,8 +243,7 @@ static NSDictionary *newOutputStateAttribute;
         [self setWindowTitle: title];
         [aSession setName: title];
     }
-    [window makeKeyAndOrderFront:self];
-    
+     
     // Add this session to our list and make it current
     [ptyList addObject: aSession];
     [aSession release];
@@ -218,7 +251,7 @@ static NSDictionary *newOutputStateAttribute;
     [currentPtySession resetStatus];
     currentPtySession = aSession;
     [self _drawSessionButtons];
-
+    
 }
 
 - (void) switchSession: (id) sender
@@ -671,7 +704,19 @@ static NSDictionary *newOutputStateAttribute;
     NSLog(@"%s(%d):-[PseudoTerminal windowDidBecomeKey:%@]",
 	  __FILE__, __LINE__, aNotification);
 #endif
+
     [MAINMENU setFrontPseudoTerminal: self];
+}
+
+- (void) windowDidResignKey: (NSNotification *)aNotification
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal windowDidResignKey:%@]",
+	  __FILE__, __LINE__, aNotification);
+#endif
+
+    [self windowDidResignMain: aNotification];
+
 }
 
 - (void)windowDidResignMain:(NSNotification *)aNotification
@@ -817,8 +862,6 @@ static NSDictionary *newOutputStateAttribute;
                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
                         nil,nil);
     }else {
-        if ([TERMINAL defaultFGColor]!=[CONFIG_FOREGROUND color]) [[self currentSession] setFGColor:[CONFIG_FOREGROUND color]];
-        if ([TERMINAL defaultBGColor]!=[CONFIG_BACKGROUND color]) [[self currentSession] setBGColor:[CONFIG_BACKGROUND color]];
         switch ([CONFIG_ENCODING indexOfSelectedItem]) {
             case 0:
                 [[self currentSession] setEncoding:NSUTF8StringEncoding];
@@ -844,7 +887,28 @@ static NSDictionary *newOutputStateAttribute;
         }
 
         [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
-        [WINDOW setAlphaValue:1-[CONFIG_TRANSPARENCY intValue]/100.0];
+        if(([pref transparency] != [CONFIG_TRANSPARENCY intValue]) || 
+            ([TERMINAL defaultFGColor] != [CONFIG_FOREGROUND color]) || 
+            ([TERMINAL defaultBGColor] != [CONFIG_BACKGROUND color]))
+        {
+            NSColor *bgColor;
+            int i;
+            PTYSession *aSession;
+                
+            // set the background color for the scrollview with the appropriate transparency
+            bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
+            [SCROLLVIEW setBackgroundColor: bgColor];
+            
+            // Do the same for all the sessions.
+            for(i = 0; i < [ptyList count]; i++)
+            {
+                aSession = [ptyList objectAtIndex: i];
+                [aSession setFGColor:  [CONFIG_FOREGROUND color]];
+                [aSession setBGColor:  bgColor]; 
+            }
+            [TEXTVIEW setNeedsDisplay: YES];
+            
+        }
         [SCREEN showCursor];
         [[self currentSession] moveLastLine];
         [self setCurrentSessionName: [CONFIG_NAME stringValue]]; 
@@ -1088,7 +1152,7 @@ static NSDictionary *newOutputStateAttribute;
             aFrame.size.width = buttonWidth;
             if(buttonWidth > ([TEXTVIEW frame].size.width - (i * buttonWidth)))
                 aFrame.size.width = [TEXTVIEW frame].size.width - (i * buttonWidth);
-            aFrame.size.height = [[WINDOW contentView] frame].size.height - [SCROLLVIEW frame].size.height - 3;
+            aFrame.size.height = [[WINDOW contentView] frame].size.height - [SCROLLVIEW frame].size.height;
             aButton = [[NSButton alloc] initWithFrame: aFrame];
             [aButton setTarget: self];
             [aButton setAction: @selector(switchSession:)];

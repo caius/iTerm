@@ -29,6 +29,7 @@
         }, 
         {CLASS = PTYScrollView; LANGUAGE = ObjC; SUPERCLASS = NSScrollView; }, 
         {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
+        {CLASS = PTYWindow; LANGUAGE = ObjC; SUPERCLASS = NSWindow; }, 
         {
             ACTIONS = {
                 clearBuffer = id; 
@@ -50,6 +51,7 @@
                 paste = id; 
                 previousSession = id; 
                 sessionPopup = id; 
+                sessionPopupSelectionDidChange = id; 
                 setMainMenu = id; 
                 switchSession = id; 
                 timerTick = id; 

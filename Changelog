@@ -1,3 +1,17 @@
+2002-12-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Re-implemented transparency code to affect only text 
+     instead of the whole window. Had to subclass NSWindow 
+     since I ran into a nasty window redrawing Cocoa bug.
+     
+    * Instantiating scroll view in code rather than in NIB 
+      to make layout look better.
+      
+    * PseudoTerminal is now a NSWindowController rather 
+      than a NSResponder. Later I will refactor the code 
+      to make is a true window controller.
+      
+
 2002-12-06	fabian
     * Fix (temporally) a bug that causes program to hang when a session is closed
     * Fix the NLog info in PTYSession.m

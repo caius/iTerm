@@ -642,14 +642,27 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void)setFGColor:(NSColor*) color
 {
-    [TEXTVIEW setTextColor: color];
+    //[TEXTVIEW setTextColor: color];
     [TERMINAL setFGColor: color];
+    [[SCREEN textStorage] removeAttribute:  NSForegroundColorAttributeName 
+                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
+    [[SCREEN textStorage] addAttribute:  NSForegroundColorAttributeName 
+                            value: color
+                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
+
 }
 
 - (void)setBGColor:(NSColor*) color
 {
     //    [TEXTVIEW setBackgroundColor: color];
+    // Change the bg color for future stuff
     [TERMINAL setBGColor: color];
+    // Change the attributes for the current stuff in the text storage
+    [[SCREEN textStorage] removeAttribute:  NSBackgroundColorAttributeName 
+                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
+    [[SCREEN textStorage] addAttribute:  NSBackgroundColorAttributeName 
+                            value: color
+                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
 }
 
 - (BOOL) antiIdle

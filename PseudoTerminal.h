@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.6 2002-12-07 19:59:18 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.7 2002-12-07 20:42:11 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -77,7 +77,6 @@
 - (void) newSession: (id) sender;
 
 - (id)init;
-- (id) initWithWindowNibName: (NSString *) windowNibName owner: (id) owner;
 - (void)dealloc;
 - (void)releaseObjects;
 

@@ -155,12 +155,6 @@ static NSDictionary *deadStateAttribute;
 
 }
 
-- (void) handleQuit: (NSNotification *) aNotification
-{
-    if([aNotification object] == [self parent])
-        [self terminate];
-}
-
 
 - (void) terminate
 {

@@ -60,7 +60,6 @@
 - (void)startProgram:(NSString *)program
 	   arguments:(NSArray *)prog_argv
 	 environment:(NSDictionary *)prog_env;
-- (void) handleQuit: (NSNotification *) aNotification;
 - (void) terminate;
 - (void) timerTick:(NSTimer*)sender;
             

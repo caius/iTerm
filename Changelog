@@ -1,6 +1,7 @@
 2004-01-20	ujwal
 
     * Added support for "Focus follows mouse".
+	* Fixed ctrl-/ key to generate \037 and ctrl-? to generate \177.
 
 2004-01-19	ujwal
 

@@ -423,8 +423,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	
     iIdleCount=0;
 	
-	//    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
-	//          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
+	// NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)", event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
 	
     // Clear the bell
     [self setBell: NO];
@@ -590,6 +589,7 @@ static NSString *PWD_ENVVALUE = @"~";
 				send_strlen = [data length];
 			}
 			
+			// NSLog(@"modflag = 0x%x; send_strlen = %d; send_str[0] = '%c (0x%x)'", modflag, send_strlen, send_str[0]);
 			if ((modflag & NSNumericPadKeyMask &&
 				 send_strlen == 1 &&
 				 send_str[0] == 0x03) || keycode==52)
@@ -604,6 +604,23 @@ static NSString *PWD_ENVVALUE = @"~";
 				send_str = "\034"; // control-backslash
 				send_strlen = 1;
 			}
+			
+			if ((modflag & NSControlKeyMask) && 
+				(modflag & NSShiftKeyMask) &&
+				send_strlen == 1 &&
+				send_str[0] == '/')
+			{
+				send_str = "\177"; // control-?
+				send_strlen = 1;
+			}						
+			else if (modflag & NSControlKeyMask &&
+				send_strlen == 1 &&
+				send_str[0] == '/')
+			{
+				send_str = "\037"; // control-/
+				send_strlen = 1;
+			}
+			
 		}
 		
 		// Make sure we scroll down to the end

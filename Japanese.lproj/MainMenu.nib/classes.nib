@@ -13,6 +13,7 @@
                 logStop = id; 
                 nextSession = id; 
                 previousSession = id; 
+                printSelection = id; 
                 saveSession = id; 
                 showConfigWindow = id; 
                 showFindPanel = id; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.27 2003-05-13 20:25:17 ujwal Exp $
+// $Id: PTYTextView.h,v 1.28 2003-05-13 21:33:36 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -215,6 +215,9 @@
 
     // last search location
     unsigned int lastSearchLocation;
+
+    // print selection
+    BOOL printingSelection;
 }
 
 - (id)init;
@@ -268,6 +271,9 @@
 
 // Save method
 - (void) saveDocumentAs: (id) sender;
+
+// Print selection
+- (void) printSelection: (id) sender;
 
 @end
 

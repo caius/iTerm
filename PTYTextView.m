@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.60 2003-05-13 20:25:17 ujwal Exp $
+// $Id: PTYTextView.m,v 1.61 2003-05-13 21:33:36 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1338,6 +1338,7 @@
     self = [super init];
     deadkey = NO;
     lastSearchLocation = 0;
+    printingSelection = NO;
 
     return (self);
 }
@@ -1352,6 +1353,7 @@
 
     deadkey = NO;
     lastSearchLocation = 0;
+    printingSelection = NO;
 
     return (self);
     
@@ -1516,7 +1518,27 @@
 
     // set the antialias flag
     [[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
-    [super drawRect: rect];
+
+    // Check if we are printing a selection
+    if([NSGraphicsContext currentContextDrawingToScreen] == NO && printingSelection == YES)
+    {
+	NSRange selectedRange = [self selectedRange];
+	NSRectArray rectArray;
+	unsigned int rectCount, i;
+
+	// get the array of rects that define the selected region
+	rectArray = [[self layoutManager] rectArrayForCharacterRange: selectedRange withinSelectedCharacterRange: selectedRange inTextContainer: [self textContainer] rectCount: &rectCount];
+
+	// draw all the rects
+	for (i = 0; i < rectCount; i++)
+	{
+	    NSRect theRect = *(rectArray + i);
+	    [super drawRect: theRect];
+	}
+	
+    }
+    else
+	[super drawRect: rect];
 
 }
 
@@ -2053,6 +2075,22 @@
     }
     
     bExtendedDragNDrop = NO;
+}
+
+// Print selection
+- (void) printSelection: (id) sender
+{
+    if([self selectedRange].length <= 0)
+    {
+	NSBeep();
+	return;
+    }
+    printingSelection = YES;
+
+    [self print: self];
+
+    printingSelection = NO;
+    
 }
 
 // Save method

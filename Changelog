@@ -1,3 +1,8 @@
+2003-09-26	ujwal
+
+    * Changed bookmark shortcut modifiers from Cmd-opt to 
+      Cmd-ctrl.
+
 2003-09-25	ujwal
 
     * Fixed bug in showCursor accessing attribute at invalid index.

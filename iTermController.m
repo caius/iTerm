@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.20 2003-09-15 15:28:25 ujwal Exp $
+// $Id: iTermController.m,v 1.21 2003-09-26 15:55:30 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -355,7 +355,7 @@ static BOOL usingAutoLaunchScript = NO;
     {
 	shortcut=([[abEntry objectForKey:@"Shortcut"] intValue]? [NSString stringWithFormat:@"%c",[[abEntry objectForKey:@"Shortcut"] intValue]]:@"");
 	shortcut = [shortcut lowercaseString];
-	mask = NSCommandKeyMask | NSAlternateKeyMask;
+	mask = NSCommandKeyMask | NSControlKeyMask;
 	if(target == nil)
 	    mask |= NSShiftKeyMask;	
 	if(isDefaultEntry(abEntry))

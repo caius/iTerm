@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.109 2004-03-25 07:37:32 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.110 2004-03-28 22:03:43 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -77,7 +77,7 @@ static BOOL editingBookmark = NO;
 	
 	// sync the version number
 	[prefs setObject: [myDict objectForKey:@"CFBundleVersion"] forKey: @"iTerm Version"];
-	
+		
 	return (self);
 }
 
@@ -91,11 +91,17 @@ static BOOL editingBookmark = NO;
 	
 	[super initWithWindowNibName: windowNibName];
                      
+	[[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(_reloadAddressBook:)
+                                                 name: @"iTermReloadAddressBook"
+                                               object: nil];	
+	
     return self;
 }
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[defaultWordChars release];
     [super dealloc];
 }
@@ -527,9 +533,6 @@ static BOOL editingBookmark = NO;
 	if(returnCode == NSOKButton && [[bookmarkFolderName stringValue] length] > 0)
 	{		
 		[[ITAddressBookMgr sharedInstance] addFolder: [bookmarkFolderName stringValue] toNode: parentNode];
-		[bookmarksView reloadData];
-		// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 	}
 	[addBookmarkFolderPanel close];
 }
@@ -538,12 +541,8 @@ static BOOL editingBookmark = NO;
 {
 	
 	if(returnCode == NSOKButton)
-	{
-		
+	{		
 		[[ITAddressBookMgr sharedInstance] deleteBookmarkNode: [bookmarksView itemAtRow: [bookmarksView selectedRow]]];
-		[bookmarksView reloadData];
-		// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 	}
 	[deleteBookmarkPanel close];
 }
@@ -621,14 +620,17 @@ static BOOL editingBookmark = NO;
 	profileArray = [[[iTermTerminalProfileMgr singleInstance] profiles] allKeys];
 	[bookmarkTerminalProfile removeAllItems];
 	[bookmarkTerminalProfile addItemsWithTitles: profileArray];
+	[bookmarkTerminalProfile selectItemWithTitle: [[iTermTerminalProfileMgr singleInstance] defaultProfileName]];
 	
 	profileArray = [[[iTermKeyBindingMgr singleInstance] profiles] allKeys];
 	[bookmarkKeyboardProfile removeAllItems];
 	[bookmarkKeyboardProfile addItemsWithTitles: profileArray];
+	[bookmarkKeyboardProfile selectItemWithTitle: [[iTermKeyBindingMgr singleInstance] globalProfileName]];
 	
 	profileArray = [[[iTermDisplayProfileMgr singleInstance] profiles] allKeys];
 	[bookmarkDisplayProfile removeAllItems];
 	[bookmarkDisplayProfile addItemsWithTitles: profileArray];
+	[bookmarkDisplayProfile selectItemWithTitle: [[iTermDisplayProfileMgr singleInstance] defaultProfileName]];
 	
 }
 
@@ -674,9 +676,11 @@ static BOOL editingBookmark = NO;
         [parentNode insertChildren: _draggedNodes atIndex: childIndex];
     } 
 	
-    [bookmarksView reloadData];
-	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
+}
+
+- (void) _reloadAddressBook: (NSNotification *) aNotification
+{
+	[bookmarksView reloadData];
 }
 
 @end

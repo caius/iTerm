@@ -33,6 +33,7 @@
 #import <iTerm/iTermKeyBindingMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 
 #define SAFENODE(n) 		((TreeNode*)((n)?(n):(bookmarks)))
@@ -56,7 +57,11 @@ static TreeNode *defaultBookmark = nil;
 {
     self = [super init];
     
-	rendezvousBrowser = [[NSNetServiceBrowser alloc] init];
+	sshRendezvousBrowser = [[NSNetServiceBrowser alloc] init];
+	ftpRendezvousBrowser = [[NSNetServiceBrowser alloc] init];
+	telnetRendezvousBrowser = [[NSNetServiceBrowser alloc] init];
+	
+	rendezvousServices = [[NSMutableArray alloc] init];
 	
     return self;
 }
@@ -64,7 +69,17 @@ static TreeNode *defaultBookmark = nil;
 - (void)dealloc;
 {
 	[bookmarks release];
-	[rendezvousBrowser release];
+	[rendezvousGroup release];	
+	[rendezvousServices removeAllObjects];
+	[rendezvousServices release];
+	
+	[sshRendezvousBrowser stop];
+	[ftpRendezvousBrowser stop];
+	[telnetRendezvousBrowser stop];	
+	[sshRendezvousBrowser release];
+	[ftpRendezvousBrowser release];
+	[telnetRendezvousBrowser release];
+	
     [super dealloc];
 }
 
@@ -116,23 +131,30 @@ static TreeNode *defaultBookmark = nil;
 		
 	}
 	
-	[rendezvousBrowser setDelegate: self];
-	[rendezvousBrowser searchForServicesOfType: @"_ssh._tcp." inDomain: @""];
+	
+	[sshRendezvousBrowser setDelegate: self];
+	[ftpRendezvousBrowser setDelegate: self];
+	[telnetRendezvousBrowser setDelegate: self];
+	[sshRendezvousBrowser searchForServicesOfType: @"_ssh._tcp." inDomain: @""];
+	[ftpRendezvousBrowser searchForServicesOfType: @"_ftp._tcp." inDomain: @""];
+	[telnetRendezvousBrowser searchForServicesOfType: @"_telnet._tcp." inDomain: @""];
 		
 }
 
 - (NSDictionary *) bookmarks
 {
 	NSDictionary *aDict;
+	int anIndex;
 	
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	
 	// remove rendezvous group since we do not want to save that
+	anIndex = [[bookmarks children] indexOfObject: rendezvousGroup];
 	[rendezvousGroup retain];
 	[bookmarks  removeChild: rendezvousGroup];	
 	aDict = [bookmarks dictionary];
-	if(rendezvousGroup != nil)
-		[bookmarks insertChild: rendezvousGroup atIndex: [bookmarks numberOfChildren]];	
+	if(anIndex != NSNotFound)
+		[bookmarks insertChild: rendezvousGroup atIndex: anIndex];	
 	[rendezvousGroup release];
 	
 	return (aDict);
@@ -185,6 +207,9 @@ static TreeNode *defaultBookmark = nil;
 	[aDict setObject: object forKey: key];
 	[SAFENODE(item) setNodeData: aDict];
 	[aDict release];
+	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 }
 
 - (void) addFolder: (NSString *) folderName toNode: (TreeNode *) aNode
@@ -206,6 +231,8 @@ static TreeNode *defaultBookmark = nil;
 	[aDict release];
 	[childNode release];
 	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 }
 
 - (void) addBookmarkWithData: (NSDictionary *) data toNode: (TreeNode *) aNode;
@@ -229,6 +256,8 @@ static TreeNode *defaultBookmark = nil;
 	[childNode release];
 	
 
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 }
 
 - (void) setBookmarkWithData: (NSDictionary *) data forNode: (TreeNode *) aNode
@@ -239,11 +268,16 @@ static TreeNode *defaultBookmark = nil;
 	[aDict addEntriesFromDictionary: data];
 	[SAFENODE(aNode) setNodeData: aDict];
 	[aDict release];
+	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 }
 
 - (void) deleteBookmarkNode: (TreeNode *) aNode
 {
 	[aNode removeFromParent];
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 }
 
 - (TreeNode *) rootNode
@@ -284,30 +318,53 @@ static TreeNode *defaultBookmark = nil;
 	[self _getRendezvousServiceTypeNode: [aNetService type]];
 	
 	// resolve the service
-	[aNetService retain];
+	// add to temporary array to retain it so that resolving works.
+	[rendezvousServices addObject: aNetService];
 	[aNetService setDelegate: self];
 	[aNetService resolve];
 	
-
-	// add the rendezvous group after all the services have been added
-	if(moreComing == NO)
-	{
-		[bookmarks insertChild: rendezvousGroup atIndex: [bookmarks numberOfChildren]];
-		[rendezvousGroup release];		
-	}
 }
 
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didRemoveService:(NSNetService *)aNetService moreComing:(BOOL)moreComing 
 {
+	TreeNode *serviceNode, *childNode, *parentNode;
+	NSDictionary *nodeData;
+	NSEnumerator *anEnumerator;
+	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
+	
+	if(aNetService == nil)
+		return;
+		
+	// grab the service group node in the tree
+	serviceNode = [self _getRendezvousServiceTypeNode: [aNetService type]];
+	
+	// remove host entry from this group
+	anEnumerator = [[serviceNode children] objectEnumerator];
+	while ((childNode = [anEnumerator nextObject]))
+	{
+		nodeData = [childNode nodeData];
+		if([[nodeData objectForKey: KEY_NAME] isEqualToString: [aNetService name]])
+		{
+			parentNode = [childNode nodeParent];
+			[childNode removeFromParent];
+			if([parentNode numberOfChildren] == 0)
+				[parentNode removeFromParent];
+			
+			// Post a notification for all listeners that bookmarks have changed
+			[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
+			
+			break;			
+		}
+	}
+	
 }
 
 // NSNetService delegate
 - (void)netServiceDidResolveAddress:(NSNetService *)sender
 {
 	NSMutableDictionary *aDict;
-	int firstOctet, secondOctet, thirdOctet, fourthOctet;
 	NSData  *address = nil;
 	struct sockaddr_in  *socketAddress;
 	NSString	*ipAddressString = nil;
@@ -315,15 +372,19 @@ static TreeNode *defaultBookmark = nil;
 	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, sender);
 	
+	if([rendezvousServices containsObject: sender] == NO)
+		return;
+	
+	// now that we have at least one resolved service, add the rendezvous group to the bookmarks.
+	if([[bookmarks children] containsObject: rendezvousGroup] == NO)
+	{
+		[bookmarks insertChild: rendezvousGroup atIndex: [bookmarks numberOfChildren]];
+	}	
+	
 	// grab the address
 	address = [[sender addresses] objectAtIndex: 0];
 	socketAddress = (struct sockaddr_in *)[address bytes];
-	firstOctet = (socketAddress->sin_addr.s_addr & 0xFF000000) >> 24;
-	secondOctet = (socketAddress->sin_addr.s_addr & 0x00FF0000) >> 16;
-	thirdOctet = (socketAddress->sin_addr.s_addr & 0x0000FF00) >> 8;
-	fourthOctet = (socketAddress->sin_addr.s_addr & 0x000000FF) >> 0;
-	ipAddressString = [NSString stringWithFormat:@"%d.%d.%d.%d", firstOctet, secondOctet, thirdOctet, fourthOctet];
-	
+	ipAddressString = [NSString stringWithFormat:@"%s", inet_ntoa(socketAddress->sin_addr)];
 	
 	aDict = [[NSMutableDictionary alloc] init];
 
@@ -337,6 +398,7 @@ static TreeNode *defaultBookmark = nil;
 	[aDict setObject: [[iTermTerminalProfileMgr singleInstance] defaultProfileName] forKey: KEY_TERMINAL_PROFILE];
 	[aDict setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
 	[aDict setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
+	[aDict setObject: ipAddressString forKey: KEY_RENDEZVOUS_SERVICE_ADDRESS];
 	
 	[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: serviceNode];
 
@@ -357,10 +419,15 @@ static TreeNode *defaultBookmark = nil;
 		[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: serviceNode];
 	}
 	
-	
 	[aDict release];
 	
-	[sender release];
+	// remove from array now that resolving is done
+	if([rendezvousServices containsObject: sender])
+		[rendezvousServices removeObject: sender];
+	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
+	
 }
 
 - (void)netService:(NSNetService *)aNetService didNotResolve:(NSDictionary *)errorDict
@@ -375,7 +442,7 @@ static TreeNode *defaultBookmark = nil;
 
 - (void)netServiceDidStop:(NSNetService *)aNetService
 {
-	NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
 }
 
 @end

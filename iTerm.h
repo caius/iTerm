@@ -29,7 +29,7 @@
 
 #if USE_CUSTOM_DRAWING
 #define DEBUG_USE_ARRAY		1
-#define DEBUG_USE_BUUFER	0
+#define DEBUG_USE_BUFFER	0
 #else
 #define DEBUG_USE_ARRAY		0
 #define DEBUG_USE_BUFFER	1

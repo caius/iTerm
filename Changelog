@@ -1,3 +1,9 @@
+2003-10-03	ujwal
+
+    * Put in exception handlers in VT100Screen wherever screen lock is 
+      aquired. This makes sure that the screen lock is released when 
+      an exception is raised.
+
 2003-10-02	ujwal
 
     * Added some more scripting support to get and set the current 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.163 2003-09-30 03:43:21 yfabian Exp $
+// $Id: VT100Screen.m,v 1.164 2003-10-03 17:21:23 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -782,41 +782,47 @@ static BOOL PLAYBELL = YES;
     int cursor_x = CURSOR_X;
 
     [self setScreenLock];
-    idx = [self getIndexAtX: 0 Y: CURSOR_Y withPadding: YES];
-    if(CURSOR_Y == HEIGHT - 1)
-	idx2 = [BUFFER length] - 1;
-    else
-	idx2 = [self getIndexAtX: 0 Y: CURSOR_Y+1 withPadding: YES];
-    if(idx2 > idx)
-    {
-	aLine = [BUFFER attributedSubstringFromRange: NSMakeRange(idx, idx2-idx)];
-	[aLine retain];
-    }
-    else
-    {
-	aLine = nil;
-	NSLog(@"VT100Screen: clearBuffer: could not get last line!; idx = %d; idx2 = %d; CURSOR_Y = %d", idx, idx2, CURSOR_Y);
-    }
-#if DEBUG_USE_BUFFER
-    [STORAGE deleteCharactersInRange:NSMakeRange(0, [STORAGE length])];
-    [BUFFER deleteCharactersInRange:NSMakeRange(0, [BUFFER length])];
-    updateIndex=0;
-    minIndex=0;
-#endif
 
-#if DEBUG_USE_ARRAY
-    [screenLines removeAllObjects];
-#endif
-
-    [self clearScreen];
-    [self initScreen];
-    CURSOR_X = CURSOR_Y = 0;
-    if([aLine length] > 0)
-    {
-	[BUFFER replaceCharactersInRange: NSMakeRange(0, 1) withAttributedString: aLine];
-	[aLine release];
-	CURSOR_X = cursor_x;
-    }
+    NS_DURING
+	idx = [self getIndexAtX: 0 Y: CURSOR_Y withPadding: YES];
+	if(CURSOR_Y == HEIGHT - 1)
+	    idx2 = [BUFFER length] - 1;
+	else
+	    idx2 = [self getIndexAtX: 0 Y: CURSOR_Y+1 withPadding: YES];
+	if(idx2 > idx)
+	{
+	    aLine = [BUFFER attributedSubstringFromRange: NSMakeRange(idx, idx2-idx)];
+	    [aLine retain];
+	}
+	else
+	{
+	    aLine = nil;
+	    NSLog(@"VT100Screen: clearBuffer: could not get last line!; idx = %d; idx2 = %d; CURSOR_Y = %d", idx, idx2, CURSOR_Y);
+	}
+    #if DEBUG_USE_BUFFER
+	[STORAGE deleteCharactersInRange:NSMakeRange(0, [STORAGE length])];
+	[BUFFER deleteCharactersInRange:NSMakeRange(0, [BUFFER length])];
+	updateIndex=0;
+	minIndex=0;
+    #endif
+    
+    #if DEBUG_USE_ARRAY
+	[screenLines removeAllObjects];
+    #endif
+    
+	[self clearScreen];
+	[self initScreen];
+	CURSOR_X = CURSOR_Y = 0;
+	if([aLine length] > 0)
+	{
+	    [BUFFER replaceCharactersInRange: NSMakeRange(0, 1) withAttributedString: aLine];
+	    [aLine release];
+	    CURSOR_X = cursor_x;
+	}
+    NS_HANDLER
+	NSLog(@"VT100Screen: clearBuffer: Exception: %@", localException);
+    NS_ENDHANDLER
+    
     [self removeScreenLock];
     [self forceUpdateScreen];
 }
@@ -1412,44 +1418,44 @@ static BOOL PLAYBELL = YES;
 	    return;
 	}
         //NSLog(@"showCursor: %d(%d)(%d)(%d)",idx,[[STORAGE string] length],[self getTVIndex:CURSOR_X y:CURSOR_Y],[BUFFER length]);
-        if (idx>=[[STORAGE string] length])
-            [STORAGE appendAttributedString:[self defaultAttrString:@" "]];
-        else if ([[STORAGE string] characterAtIndex:idx]=='\n') 
-            [STORAGE insertAttributedString:[self defaultAttrString:@" "] atIndex:idx];
-
-        // reverse the video on the position where the cursor is supposed to be shown.
-        dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
-	if([[[SESSION parent] window] isKeyWindow] == YES)
-	{
-	    [dic setObject:[TERMINAL defaultFGColor] forKey:NSBackgroundColorAttributeName];
-	    [dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
-	}
-	else
-	{
-	    NSColor *aColor = [[TERMINAL defaultBGColor] blendedColorWithFraction: 0.5 ofColor: [TERMINAL defaultFGColor]];
-	    if(aColor != nil)
-	    {
-		[dic setObject: aColor forKey:NSBackgroundColorAttributeName];
-		//[dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
-	    }
-	    else
+	NS_DURING
+	    if (idx>=[[STORAGE string] length])
+		[STORAGE appendAttributedString:[self defaultAttrString:@" "]];
+	    else if ([[STORAGE string] characterAtIndex:idx]=='\n') 
+		[STORAGE insertAttributedString:[self defaultAttrString:@" "] atIndex:idx];
+    
+	    // reverse the video on the position where the cursor is supposed to be shown.
+	    dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
+	    if([[[SESSION parent] window] isKeyWindow] == YES)
 	    {
 		[dic setObject:[TERMINAL defaultFGColor] forKey:NSBackgroundColorAttributeName];
 		[dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
 	    }
-	}
-	//NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
-        [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
+	    else
+	    {
+		NSColor *aColor = [[TERMINAL defaultBGColor] blendedColorWithFraction: 0.5 ofColor: [TERMINAL defaultFGColor]];
+		if(aColor != nil)
+		{
+		    [dic setObject: aColor forKey:NSBackgroundColorAttributeName];
+		    //[dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
+		}
+		else
+		{
+		    [dic setObject:[TERMINAL defaultFGColor] forKey:NSBackgroundColorAttributeName];
+		    [dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
+		}
+	    }
+	    //NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
+	    [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
+	NS_HANDLER
+	    NSLog(@"%s: showCursor: Exception: %@", __FILE__, localException);
+	NS_ENDHANDLER
     }
     
 #endif
 
     // release the screen lock
-    [self removeScreenLock];
-
-#if DEBUG_USE_ARRAY
-#endif
-	
+    [self removeScreenLock];	
 }
 
 - (void)deleteCharacters:(int) n
@@ -1574,24 +1580,6 @@ static BOOL PLAYBELL = YES;
     if(x1 == 0 && y1 == 0 && x2 == (WIDTH -1 ) && y2 == (HEIGHT - 1))
     {
 	
-/*	[self setScreenLock];
-	[STORAGE beginEditing];
-	//NSLog(@"'%@'", [BUFFER string]);
-	[STORAGE appendAttributedString:newLineString];
-	TOP_LINE++;
-	updateIndex = [STORAGE length];
-	// turn off the cursor
-	if(cursorIndex < [STORAGE length])
-	{
-	    NSMutableDictionary *dic;
-	    dic =  [NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:cursorIndex effectiveRange:nil]];
-	    [dic setObject:[TERMINAL defaultBGColor] forKey:NSBackgroundColorAttributeName];
-	    [dic setObject:[TERMINAL defaultFGColor] forKey:NSForegroundColorAttributeName];
-	    [STORAGE setAttributes:dic range:NSMakeRange(cursorIndex,1)];
-	}
-	[STORAGE endEditing];
-	[self removeScreenLock];
-	[[SESSION TEXTVIEW] scrollEnd]; */
 	// update TOP_LINE
         for(i=0;i<HEIGHT;i++) [BUFFER appendAttributedString:newLineString];
         TOP_LINE += HEIGHT; 
@@ -2286,24 +2274,29 @@ static BOOL PLAYBELL = YES;
             [self removeScreenLock];
             return;
         }
-        [STORAGE beginEditing];
-        [STORAGE deleteCharactersInRange:NSMakeRange(0, idx)];
-	[STORAGE endEditing];
-        if (idx<=updateIndex) updateIndex-=idx;
-        else {
-            [BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];
-            updateIndex=0;
-        }        
-#endif
-	
 
-#if DEBUG_USE_ARRAY
-	for(i = 0; i < over; i++)
-	    [screenLines removeObjectAtIndex: 0];
-#endif
-        TOP_LINE -= over;
-
-        NSParameterAssert(TOP_LINE >= 0);
+	NS_DURING
+	    [STORAGE beginEditing];
+	    [STORAGE deleteCharactersInRange:NSMakeRange(0, idx)];
+	    [STORAGE endEditing];
+	    if (idx<=updateIndex) updateIndex-=idx;
+	    else {
+		[BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];
+		updateIndex=0;
+	    }        
+    #endif
+	    
+    
+    #if DEBUG_USE_ARRAY
+	    for(i = 0; i < over; i++)
+		[screenLines removeObjectAtIndex: 0];
+    #endif
+	    TOP_LINE -= over;
+    
+	    NSParameterAssert(TOP_LINE >= 0);
+	NS_HANDLER
+	    NSLog(@"%s: removeOverLine: Exception: %@", __FILE__, localException);
+	NS_ENDHANDLER
     }
 
     [self removeScreenLock];
@@ -2452,73 +2445,78 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"blink!!");
     
     [STORAGE beginEditing];
-    for(idx=updateIndex;idx<len;) {
-	blinkType = [[STORAGE attribute:NSBlinkAttributeName atIndex:idx effectiveRange:&range] intValue];
-        if (blinkType > 0) {
-//            NSLog(@"true blink!!");
-            for(;idx<range.length+range.location;idx++) {
-                fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
-                bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
-                fgBlink=[STORAGE attribute:NSBlinkForegroundColorAttributeName atIndex:idx effectiveRange:nil];
-                if (fgBlink==nil) {
-                    fgBlink=fg;
-                }
 
-		dic=[NSDictionary dictionaryWithObjectsAndKeys:
-		    bg,NSBackgroundColorAttributeName,
-		    (blinkShow?fgBlink:bg),NSForegroundColorAttributeName,
-		    fgBlink,NSBlinkForegroundColorAttributeName,
-		    [NSNumber numberWithInt:1],NSBlinkAttributeName,
-		    nil];
-		[STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
-		
-            }
-//            NSLog(@"true blink end!!");
-        }
-        else idx+=range.length;
-    }
-
-    // Check if the cursor needs to blink
-    if([self blinkingCursor] == YES && [SESSION isActiveSession] == YES)
-    {
-	idx = [self getTVIndex: CURSOR_X y: CURSOR_Y];
-	if(idx < len)
+    NS_DURING
+	for(idx=updateIndex;idx<len;) {
+	    blinkType = [[STORAGE attribute:NSBlinkAttributeName atIndex:idx effectiveRange:&range] intValue];
+	    if (blinkType > 0) {
+    //            NSLog(@"true blink!!");
+		for(;idx<range.length+range.location;idx++) {
+		    fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+		    bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+		    fgBlink=[STORAGE attribute:NSBlinkForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+		    if (fgBlink==nil) {
+			fgBlink=fg;
+		    }
+    
+		    dic=[NSDictionary dictionaryWithObjectsAndKeys:
+			bg,NSBackgroundColorAttributeName,
+			(blinkShow?fgBlink:bg),NSForegroundColorAttributeName,
+			fgBlink,NSBlinkForegroundColorAttributeName,
+			[NSNumber numberWithInt:1],NSBlinkAttributeName,
+			nil];
+		    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		    
+		}
+    //            NSLog(@"true blink end!!");
+	    }
+	    else idx+=range.length;
+	}
+    
+	// Check if the cursor needs to blink
+	if([self blinkingCursor] == YES && [SESSION isActiveSession] == YES)
 	{
-	    fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
-	    bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
-	    fgBlink=[STORAGE attribute:NSBlinkForegroundColorAttributeName atIndex:idx effectiveRange:nil];
-	    bgBlink=[STORAGE attribute:NSBlinkBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
-	    if (fgBlink==nil) {
-		fgBlink=fg;
-	    }
-	    if (bgBlink==nil) {
-		bgBlink=bg;
-	    }	    
-
-	    if([[self session] image] != nil)
+	    idx = [self getTVIndex: CURSOR_X y: CURSOR_Y];
+	    if(idx < len)
 	    {
-		dic=[NSDictionary dictionaryWithObjectsAndKeys:
-		    (blinkShow?bgBlink:fgBlink),NSForegroundColorAttributeName,
-		    (blinkShow?fgBlink:bgBlink),NSBackgroundColorAttributeName,
-		    fgBlink,NSBlinkForegroundColorAttributeName,
-		    bgBlink,NSBlinkBackgroundColorAttributeName,
-		    nil];
-		[STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
-		if(blinkShow)
-		    [STORAGE removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(idx,1)];
-	    }
-	    else
-	    {
-		dic=[NSDictionary dictionaryWithObjectsAndKeys:
-		    (blinkShow?fg:bg),NSBackgroundColorAttributeName,
-		    (blinkShow?bg:fg),NSForegroundColorAttributeName,
-		    fgBlink,NSBlinkForegroundColorAttributeName,
-		    bgBlink,NSBlinkBackgroundColorAttributeName,
-		    nil];
-		[STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+		bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+		fgBlink=[STORAGE attribute:NSBlinkForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+		bgBlink=[STORAGE attribute:NSBlinkBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+		if (fgBlink==nil) {
+		    fgBlink=fg;
+		}
+		if (bgBlink==nil) {
+		    bgBlink=bg;
+		}	    
+    
+		if([[self session] image] != nil)
+		{
+		    dic=[NSDictionary dictionaryWithObjectsAndKeys:
+			(blinkShow?bgBlink:fgBlink),NSForegroundColorAttributeName,
+			(blinkShow?fgBlink:bgBlink),NSBackgroundColorAttributeName,
+			fgBlink,NSBlinkForegroundColorAttributeName,
+			bgBlink,NSBlinkBackgroundColorAttributeName,
+			nil];
+		    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		    if(blinkShow)
+			[STORAGE removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(idx,1)];
+		}
+		else
+		{
+		    dic=[NSDictionary dictionaryWithObjectsAndKeys:
+			(blinkShow?fg:bg),NSBackgroundColorAttributeName,
+			(blinkShow?bg:fg),NSForegroundColorAttributeName,
+			fgBlink,NSBlinkForegroundColorAttributeName,
+			bgBlink,NSBlinkBackgroundColorAttributeName,
+			nil];
+		    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		}
 	    }
 	}
-    }
+    NS_HANDLER
+	NSLog(@"%s: blink: Exception: %@", __FILE__, localException);
+    NS_ENDHANDLER
     
     [STORAGE endEditing];
     blinkShow=!blinkShow;
@@ -2634,8 +2632,6 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     int len, slen;
     int idx;
-    //NSRange selectedRange;
-    //NSString *selectedString;
     
     idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
     if ([[SESSION TEXTVIEW] hasMarkedText]) {
@@ -2651,35 +2647,33 @@ static BOOL PLAYBELL = YES;
     // acquire lock
     [self setScreenLock];
 
-    // cache any text selection
-    //selectedRange = [[SESSION TEXTVIEW] selectedRange];
-    //if(selectedRange.length > 0)
-	//selectedString = [[[SESSION TEXTVIEW] string] substringWithRange: selectedRange];    
 
     //NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
 
     [STORAGE beginEditing];
-    if((updateIndex+minIndex) < [STORAGE length])
-    {
-	[STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,slen-updateIndex-minIndex)
-		     withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
-    }
-    else
-    {
-	[STORAGE appendAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
-    }
-    [STORAGE endEditing];
-    //NSLog(@"updated: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
-    //if ([BUFFER length]>[STORAGE length]) NSLog(@"%@",BUFFER);
-    [self renewBuffer];
-    //NSLog(@"renewed: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
-    cursorIndex = [self getTVIndex:CURSOR_X y:CURSOR_Y];
-    [[SESSION TEXTVIEW] setCursorIndex: cursorIndex];
-
-    // re-select any previous text selection unless text has changed
-    //if(selectedRange.length > 0 && [[[[SESSION TEXTVIEW] string] substringWithRange: selectedRange] isEqualToString: selectedString])
-	//[[SESSION TEXTVIEW] setSelectedRange: selectedRange];
     
+    NS_DURING
+	if((updateIndex+minIndex) < [STORAGE length])
+	{
+	    [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,slen-updateIndex-minIndex)
+			withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
+	}
+	else
+	{
+	    [STORAGE appendAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
+	}
+	//NSLog(@"updated: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
+	//if ([BUFFER length]>[STORAGE length]) NSLog(@"%@",BUFFER);
+	[self renewBuffer];
+	//NSLog(@"renewed: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
+	cursorIndex = [self getTVIndex:CURSOR_X y:CURSOR_Y];
+	[[SESSION TEXTVIEW] setCursorIndex: cursorIndex];
+    NS_HANDLER
+	NSLog(@"%s: updateScreen: Exception: %@", __FILE__, localException);
+    NS_ENDHANDLER
+    
+    
+    [STORAGE endEditing];
     // release lock
     [self removeScreenLock];
 

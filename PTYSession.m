@@ -740,6 +740,7 @@ static NSString *PWD_ENVVALUE = @"~";
     else {
         [tabViewItem setLabelAttributes: chosenStateAttribute];
     }
+    [tabViewItem setBell:NO];
 }
 
 - (void) setBell

@@ -9,6 +9,7 @@
     * Fixed a bug that deals non-ASCII characters wrong.
     * Removed the trigger in keyDown in PTYSession.
     * Added an icon in Tab when a bell is received.
+    * Now iTerm removes the warning icon when switching tabs.
     
 2003-02-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

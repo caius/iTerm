@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.114 2003-02-22 21:45:49 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.115 2003-02-24 23:08:02 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1380,7 +1380,6 @@ static NSString *ConfigToolbarItem = @"Config";
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: didSelectTabViewItem]", __FILE__, __LINE__);
 #endif
-
     
     [currentPtySession setLabelAttribute];
     

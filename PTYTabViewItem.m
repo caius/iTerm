@@ -65,9 +65,9 @@ static NSImage *warningImage;
 // Override this to be able to customize the label attributes
 - (void)drawLabel:(BOOL)shouldTruncateLabel inRect:(NSRect)tabRect
 {
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"PTYTabViewItem: -drawLabel(bell=%@)",bell?@"YES":@"NO");
-//#endif
+#endif
 
     if(labelAttributes != nil)
     {
@@ -167,8 +167,8 @@ static NSImage *warningImage;
     
     // redraw the label
     NSString *theLabel = [[self label] copy];
-    [self setLabel: theLabel];
     bell=NO;
+    [self setLabel: theLabel];
     [theLabel release];
     
 }

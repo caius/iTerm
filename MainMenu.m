@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.23 2003-01-14 19:11:58 yfabian Exp $
+// $Id: MainMenu.m,v 1.24 2003-01-15 16:08:05 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -151,9 +151,13 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
           __FILE__, __LINE__, sender);
 #endif
 
+
+    if(([adTable selectedRow] < 0) || ([adTable numberOfRows] == 0))
+	return;
+
     [NSApp stopModal];
     newWindow=(sender==adNewWindow);
-
+    
     entry = [addressBook objectAtIndex:[adTable selectedRow]];
     [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );

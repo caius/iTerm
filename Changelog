@@ -2,6 +2,8 @@
 
     * Re-implemented eraseInDisplay code to save screen contents to scrollback buffer. 
       Fixed a bug in VT100Typesetter in the process.
+      
+    * During scrollUp, lines at the top are moved into the scrollback buffer.
 
 2003-07-17	ujwal
 

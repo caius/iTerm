@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.112 2003-07-19 06:35:05 ujwal Exp $
+// $Id: VT100Screen.m,v 1.113 2003-07-19 06:56:07 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1812,6 +1812,7 @@ static BOOL PLAYBELL = YES;
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
 
 #if DEBUG_USE_BUFFER
+    
     //NSLog(@"SCROLL-UP[%d-%d]; Y = %d",SCROLL_TOP,SCROLL_BOTTOM, CURSOR_Y);
     idx=[self getIndexAtX:0 Y:SCROLL_TOP withPadding:YES];
     if (SCROLL_TOP==HEIGHT-1) idx2=[BUFFER length];
@@ -1820,7 +1821,12 @@ static BOOL PLAYBELL = YES;
     if(aRange.length <= 0)
         aRange.length = 1;
 
-    [BUFFER deleteCharactersInRange:aRange];
+    // if we are at the top of the screen, save the line in the scrollback buffer, otherwise delete it.
+    if(SCROLL_TOP != 0)
+    {
+	[BUFFER deleteCharactersInRange:aRange];
+    }
+    
 #endif
 
 #if DEBUG_USE_ARRAY

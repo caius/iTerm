@@ -1726,7 +1726,7 @@
 			};
 		};
 		DDF28988047764E300A8A065 = {
-			fileEncoding = 30;
+			fileEncoding = 10;
 			isa = PBXFileReference;
 			name = Korean;
 			path = Korean.lproj/iTerm.strings;

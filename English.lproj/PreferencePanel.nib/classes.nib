@@ -38,7 +38,7 @@
                 profilesWindow = NSWindow; 
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 
-                tabPosition = NSMatrix; 
+                tabPosition = NSPopUpButton; 
                 wordChars = NSTextField; 
             }; 
             SUPERCLASS = NSWindowController; 

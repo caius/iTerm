@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.101 2004-03-21 03:03:10 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.102 2004-03-21 21:49:20 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -125,7 +125,7 @@ static BOOL editingBookmark = NO;
 			    
 	[[self window] setDelegate: self]; // also forces window to load
 	
-	[tabPosition selectCellWithTag: defaultTabViewType];
+	[tabPosition selectItemAtIndex: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
@@ -145,7 +145,7 @@ static BOOL editingBookmark = NO;
 - (IBAction)ok:(id)sender
 {    
 
-    defaultTabViewType=[[tabPosition selectedCell] tag];
+    defaultTabViewType=[tabPosition indexOfSelectedItem];
     defaultCopySelection=([selectionCopiesText state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);

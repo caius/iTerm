@@ -35,7 +35,7 @@
 
 @interface PreferencePanel : NSWindowController
 {
-	IBOutlet NSMatrix *tabPosition;
+	IBOutlet NSPopUpButton *tabPosition;
     IBOutlet NSButton *selectionCopiesText;
     IBOutlet id hideTab;
     IBOutlet id promptOnClose;

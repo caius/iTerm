@@ -130,7 +130,7 @@ static NSString *PWD_ENVVALUE = @"~";
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 #if USE_CUSTOM_DRAWING
 #else
-    [TEXTVIEW setDrawsBackground:NO];
+    [TEXTVIEW setDrawsBackground:YES];
     [TEXTVIEW setEditable:YES]; // For NSTextInput protocol
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];

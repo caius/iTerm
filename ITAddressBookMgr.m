@@ -63,6 +63,13 @@ static TreeNode *defaultBookmark = nil;
 	
 	rendezvousServices = [[NSMutableArray alloc] init];
 	
+	[sshRendezvousBrowser setDelegate: self];
+	[ftpRendezvousBrowser setDelegate: self];
+	[telnetRendezvousBrowser setDelegate: self];
+	[sshRendezvousBrowser searchForServicesOfType: @"_ssh._tcp." inDomain: @""];
+	[ftpRendezvousBrowser searchForServicesOfType: @"_ftp._tcp." inDomain: @""];
+	[telnetRendezvousBrowser searchForServicesOfType: @"_telnet._tcp." inDomain: @""];		
+	
     return self;
 }
 
@@ -86,6 +93,7 @@ static TreeNode *defaultBookmark = nil;
 - (void) setBookmarks: (NSDictionary *) aDict
 {
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aDict);
+	[bookmarks release];
 	bookmarks = [TreeNode treeFromDictionary: aDict];
 	[bookmarks setIsLeaf: NO];
 	[bookmarks retain];
@@ -131,14 +139,12 @@ static TreeNode *defaultBookmark = nil;
 		
 	}
 	
+	// add any rendezvous services if we have any
+	if([rendezvousGroup numberOfChildren] > 0)
+	{
+		[bookmarks insertChild: rendezvousGroup atIndex: [bookmarks numberOfChildren]];
+	}	
 	
-	[sshRendezvousBrowser setDelegate: self];
-	[ftpRendezvousBrowser setDelegate: self];
-	[telnetRendezvousBrowser setDelegate: self];
-	[sshRendezvousBrowser searchForServicesOfType: @"_ssh._tcp." inDomain: @""];
-	[ftpRendezvousBrowser searchForServicesOfType: @"_ftp._tcp." inDomain: @""];
-	[telnetRendezvousBrowser searchForServicesOfType: @"_telnet._tcp." inDomain: @""];
-		
 }
 
 - (NSDictionary *) bookmarks

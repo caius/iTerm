@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.10 2003-01-16 04:37:12 ujwal Exp $
+// $Id: PTYTextView.h,v 1.11 2003-01-17 23:22:20 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -59,6 +59,8 @@
 // get/set methods
 - (BOOL) antiAlias;
 - (void) setAntiAlias: (BOOL) antiAliasFlag;
+- (NSColor *) selectionColor;
+- (void) setSelectionColor: (NSColor *) aColor;
 
 //
 // Drag and Drop methods for our text view

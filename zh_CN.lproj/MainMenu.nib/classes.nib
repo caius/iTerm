@@ -54,10 +54,11 @@
                 adDir = id; 
                 adEncoding = NSComboBox; 
                 adForeground = NSColorWell; 
-                adNATextExample = id; 
+                adNATextExample = NSTextField; 
                 adName = NSTextField; 
                 adNewWindow = id; 
                 adRow = id; 
+                adSelection = NSColorWell; 
                 adTable = NSTableView; 
                 adTermType = id; 
                 adTextExample = NSTextField; 
@@ -92,6 +93,7 @@
                 optionKey = id; 
                 prefPanel = id; 
                 row = id; 
+                selectionColor = id; 
                 shell = id; 
                 silenceBell = id; 
                 terminal = id; 

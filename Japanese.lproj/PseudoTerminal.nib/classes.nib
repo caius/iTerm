@@ -54,6 +54,7 @@
             OUTLETS = {
                 "AI_CODE" = id; 
                 "AI_ON" = id; 
+                "AI_PANEL" = id; 
                 "CONFIG_ANTIALIAS" = id; 
                 "CONFIG_BACKGROUND" = id; 
                 "CONFIG_COL" = id; 
@@ -64,10 +65,13 @@
                 "CONFIG_NAME" = id; 
                 "CONFIG_PANEL" = id; 
                 "CONFIG_ROW" = id; 
+                "CONFIG_SELECTION" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
+                "OA_ON" = id; 
                 SCROLLVIEW = id; 
                 TABVIEW = id; 
+                "WA_ON" = id; 
                 WINDOW = id; 
                 newwinItem = id; 
             }; 

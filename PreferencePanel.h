@@ -26,11 +26,13 @@
     IBOutlet id copySelection;
     IBOutlet id hideTab;
     IBOutlet id silenceBell;
+    IBOutlet id selectionColor;
     
     NSUserDefaults *prefs;
 
     NSColor* defaultBackground;
     NSColor* defaultForeground;
+    NSColor* defaultSelectionColor;
 
     int defaultCol;
     int defaultRow;
@@ -86,6 +88,7 @@
 - (BOOL) copySelection;
 - (BOOL) hideTab;
 - (BOOL) silenceBell;
+- (NSColor *) selectionColor;
 
 
 @end

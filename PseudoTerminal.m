@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.79 2003-01-17 20:59:36 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.80 2003-01-17 23:22:24 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -70,6 +70,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [self initSession:nil
      foregroundColor:[TERMINAL defaultFGColor]
      backgroundColor:[[TERMINAL defaultBGColor] colorWithAlphaComponent: [[TERMINAL defaultBGColor] alphaComponent]]
+     selectionColor: [pref selectionColor]
             encoding:[pref encoding]
                 term:[pref terminalType]];
     [self startProgram:cmd arguments:arg];
@@ -143,6 +144,7 @@ static NSString *ConfigToolbarItem = @"Config";
 - (void)initSession:(NSString *)title
    foregroundColor:(NSColor *) fg
    backgroundColor:(NSColor *) bg
+   selectionColor:(NSColor *) sc
           encoding:(NSStringEncoding)encoding
               term:(NSString *)term
 {
@@ -203,6 +205,10 @@ static NSString *ConfigToolbarItem = @"Config";
     // Set the colors
     if (fg) [aSession setFGColor:fg];
     if (bg) [aSession setBGColor:bg];
+    if (sc) 
+        [[aSession TEXTVIEW] setSelectionColor: sc];
+    else
+        [[aSession TEXTVIEW] setSelectionColor: [pref selectionColor]];
     [SCROLLVIEW setBackgroundColor: bg];
 
     [self setFont:FONT nafont:NAFONT];
@@ -929,6 +935,7 @@ static NSString *ConfigToolbarItem = @"Config";
 #endif
     [CONFIG_FOREGROUND setColor:[TERMINAL defaultFGColor]];
     [CONFIG_BACKGROUND setColor:[TERMINAL defaultBGColor]];
+    [CONFIG_SELECTION setColor:[TEXTVIEW selectionColor]];
     configFont=[SCREEN font];
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
     [CONFIG_EXAMPLE setTextColor:[TERMINAL defaultFGColor]];
@@ -1033,6 +1040,10 @@ static NSString *ConfigToolbarItem = @"Config";
             [TEXTVIEW setNeedsDisplay: YES];
 
         }
+        
+        // set the selection color if it has changed
+        if([TEXTVIEW selectionColor] != [CONFIG_SELECTION color])
+            [TEXTVIEW setSelectionColor: [CONFIG_SELECTION color]];
             
         if(([pref transparency] != (100-[[TERMINAL defaultBGColor] alphaComponent]*100)) || 
             ([TERMINAL defaultFGColor] != [CONFIG_FOREGROUND color]) || 
@@ -1379,6 +1390,7 @@ static NSString *ConfigToolbarItem = @"Config";
             [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
             [TERMINAL defaultFGColor],@"Foreground",
             [TERMINAL defaultBGColor],@"Background",
+            [TEXTVIEW selectionColor],@"SelectionColor",
             [NSString stringWithInt:WIDTH],@"Row",
             [NSString stringWithInt:HEIGHT],@"Col",
             [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
@@ -1565,6 +1577,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [term initSession:[anEntry objectForKey:@"Name"]
       foregroundColor:[anEntry objectForKey:@"Foreground"]
       backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
+      selectionColor:[anEntry objectForKey:@"SelectionColor"]
 	     encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
 		 term:[anEntry objectForKey:@"Term Type"]];
 

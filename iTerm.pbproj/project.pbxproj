@@ -11,7 +11,6 @@
 				05A162CF006CD5FC7F000001,
 				FB094A1A033D71D501F955DB,
 			);
-			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -220,6 +219,7 @@
 </dict>
 </plist>
 ";
+			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -1003,6 +1003,7 @@
 </dict>
 </plist>
 ";
+			shouldUseHeadermap = 0;
 		};
 		FB7EECDB0340D3CD01F955DB = {
 			buildActionMask = 2147483647;

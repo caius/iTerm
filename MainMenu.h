@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.10 2003-01-15 17:56:16 yfabian Exp $
+// $Id: MainMenu.h,v 1.11 2003-01-17 23:22:19 ujwal Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -38,6 +38,7 @@
     IBOutlet id adAICode;
     IBOutlet id adClose;
     IBOutlet NSTextField *adNATextExample;
+    IBOutlet NSColorWell *adSelection;
     
     NSFont *aeFont, *aeNAFont;
     BOOL changingNA;

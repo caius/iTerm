@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.27 2003-01-16 08:14:44 ujwal Exp $
+// $Id: MainMenu.m,v 1.28 2003-01-17 23:22:19 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -93,6 +93,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [term initSession:nil
      foregroundColor:[PREF_PANEL foreground]
      backgroundColor:[[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
+     selectionColor: [PREF_PANEL selectionColor]
             encoding:[PREF_PANEL encoding]
                 term:[PREF_PANEL terminalType]];
     [term startProgram:cmd arguments:arg];
@@ -174,6 +175,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [term initSession:[entry objectForKey:@"Name"]
         foregroundColor:[entry objectForKey:@"Foreground"]
         backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]
+        selectionColor:[entry objectForKey:@"SelectionColor"]
                 encoding:encoding
                     term:[entry objectForKey:@"Term Type"]];
     
@@ -215,6 +217,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adCol setIntValue:[PREF_PANEL col]];
     [adForeground setColor:[PREF_PANEL foreground]];
     [adBackground setColor:[PREF_PANEL background]];
+    [adSelection setColor:[PREF_PANEL selectionColor]];
     [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
 
     aeFont=[[[PREF_PANEL font] copy] retain];
@@ -246,6 +249,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
             [adForeground color],@"Foreground",
             [adBackground color],@"Background",
+            [adSelection color],@"SelectionColor",
             [adRow stringValue],@"Row",
             [adCol stringValue],@"Col",
             [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
@@ -299,6 +303,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [adTermType selectItemAtIndex:0];
     [adForeground setColor:[entry objectForKey:@"Foreground"]];
     [adBackground setColor:[entry objectForKey:@"Background"]];
+    if([entry objectForKey:@"SelectionColor"])
+        [adSelection setColor:[entry objectForKey:@"SelectionColor"]];
+    else
+        [adSelection setColor: [PREF_PANEL selectionColor]];
     [adRow setStringValue:[entry objectForKey:@"Row"]];
     [adCol setStringValue:[entry objectForKey:@"Col"]];
     if ([entry objectForKey:@"Transparency"]) {
@@ -343,6 +351,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
             [adForeground color],@"Foreground",
             [adBackground color],@"Background",
+            [adSelection color],@"SelectionColor",
             [adRow stringValue],@"Row",
             [adCol stringValue],@"Col",
             [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",

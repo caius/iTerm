@@ -5,6 +5,7 @@
 
 static NSColor *BACKGROUND;
 static NSColor *FOREGROUND;
+static NSColor *SELECTION;
 
 static NSString *DEFAULT_FONTNAME = @"Osaka-Mono";
 static float     DEFAULT_FONTSIZE = 14;
@@ -27,6 +28,7 @@ static int TRANSPARENCY  =10;
 //    FOREGROUND  = [[NSColor textColor] retain];
     BACKGROUND = [NSColor blackColor];
     FOREGROUND = [NSColor whiteColor];
+    SELECTION = [NSColor selectedTextBackgroundColor];
     FONT = [[NSFont fontWithName:DEFAULT_FONTNAME
 			    size:DEFAULT_FONTSIZE] retain];
 }
@@ -78,6 +80,9 @@ static int TRANSPARENCY  =10;
     defaultBackground=[[([prefs objectForKey:@"Background"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Background"]]:BACKGROUND)
                       copy] retain];
+    defaultSelectionColor=[[([prefs objectForKey:@"SelectionColor"]?
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"SelectionColor"]]:SELECTION)
+                      copy] retain];
     defaultFont=[[([prefs objectForKey:@"Font"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Font"]]:FONT)
                       copy] retain];
@@ -118,6 +123,7 @@ static int TRANSPARENCY  =10;
     
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
+    [selectionColor setColor: defaultSelectionColor];
     
     [row setIntValue:defaultRow];
     [col setIntValue:defaultCol];
@@ -201,9 +207,11 @@ static int TRANSPARENCY  =10;
     
     [defaultBackground autorelease];
     [defaultForeground autorelease];
+    [defaultSelectionColor autorelease];
     
     defaultBackground=[[[background color] copy] retain];
     defaultForeground=[[[foreground color] copy] retain];
+    defaultSelectionColor = [[[selectionColor color] copy] retain];
 
     defaultCol=[col intValue];
     defaultRow=[row intValue];
@@ -232,6 +240,8 @@ static int TRANSPARENCY  =10;
               forKey:@"Foreground"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultBackground]
               forKey:@"Background"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultSelectionColor]
+              forKey:@"SelectionColor"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultFont]
               forKey:@"Font"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultNAFont]
@@ -395,6 +405,11 @@ static int TRANSPARENCY  =10;
 - (BOOL) silenceBell
 {
     return (defaultSilenceBell);
+}
+
+- (NSColor *) selectionColor
+{
+    return (defaultSelectionColor);
 }
 
 @end

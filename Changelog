@@ -1,3 +1,7 @@
+2003-04-07	ujwal
+
+    * Fixed a namespace collision bug in PTYTask.
+
 2003-04-05	ujwal
 
     * Fixed write problem when prompted for passwords.

@@ -16,12 +16,10 @@
 <FONT SIZE="5"><STRONG>iTerm Info:</STRONG></FONT><BR>
 <UL>
 <LI><A HREF="index.html">Home</A></LI>
-<LI><A HREF="navigation.html">Bookmarks</A></LI>
 <LI><A HREF="preferences.html">Configure Panel</A></LI>
 <LI><A HREF="navigation.html">Contextual Menu</A></LI>
 <LI><A HREF="install.html">Installation</A></LI>
 <LI><A HREF="misc.html">Misc</A></LI>
-<LI><A HREF="navigation.html">Navigation</A></LI>
 <LI><A HREF="preferences.html">Preferences</A></LI>
 <LI><A HREF="scripting.html">Scripting</A></LI>
 <LI><A HREF="install.html">System Requirements</A></LI>
@@ -45,18 +43,64 @@
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Preference vs Configure panels:</STRONG></FONT><BR>
-<UL>The Configure panels and the Preference panels are essentially the same thing, with the exception that the Configure panel applies changes to the current window only.  The Preference panel changes the default session settings.</UL>
+<UL>The Configure panels and the Preference panels are essentially the same thing, with the exception 
+    that the Configure panel applies changes to the current window only.  
+	The Preference panel changes the default session settings.</UL>
 <FONT SIZE="5"><STRONG>Preferences:</STRONG></FONT>
 <UL>
-<LI><STRONG>Anti-Aliasing</STRONG>: Recommended for viewing text easier.</LI>
-<LI><STRONG>Transparency:</STRONG> Is a wonderful thing, but if you have "100%" transparency, when you click in the session window, the mouse click will be sent to the application behind iTerm.</LI>
-<LI><STRONG>Window Size:</STRONG> If  you change the size of the session window in the Configure panel it will resize the window to that size regardless of number of session open.  However, if you open a new session in a new tab, the window will remain the same size, and not honor the settings of the new session.</LI>
-<LI><STRONG>Shells:</STRONG> The default shells is /bin/tcsh.  Other common shells are:
-<UL>/bin/sh<BR>/bin/csh<BR>/bin/bash<BR>/bin/zsh.</UL></LI>
+<LI><STRONG>Tab position</STRONG>: Top, left, bottom, right, or none.</LI>
+<LI><STRONG>Prompt on close:</STRONG> With this enabled, iTerm will issue a warning prompt before closing a window or tab.</LI>
+<LI><STRONG>Selection copies text:</STRONG> This will automatically put any selection onto the clipboard, basically emulating Cmd-C. 
+            Note hwoever, that this preference is not needed for middle-button to act as paste. Pressing the middle mouse button 
+			will paste whatever is selected in the current session. It does not emulate Cmd-V and read from the clipboard.</LI>
+<LI><STRONG>Focus follows mouse:</STRONG> This does just that. Focusing is applied only when iTerm is the active application. 
+            Windows are not raised, but instead just receive keyboard focus.
+</UL>
+<BR>
+
+<FONT SIZE="5"><STRONG>Bookmarks</STRONG></FONT><BR>
+<UL>
+The new organization of bookmarks depends on <STRONG>profiles</STRONG>. Bascially, you need
+to create profiles first (there are several pre-defined profiles if you install iTerm from
+scratch), and then create your bookmarks. There are 3 kinds of profiles associated with
+each bookmark:
+<STRONG>Keyboard</STRONG>, <STRONG>Terminal</STRONG>, and <STRONG>Display</STRONG>.
+By using profiles, you can conveniently create bookmarks that share same properties.
+</UL>
+
+<BR>
+
+<FONT SIZE="5"><STRONG>Profiles</STRONG></FONT><BR>
+
+<FONT SIZE="5"><STRONG>Keyboard</STRONG></FONT><BR>
+<UL>
+There is a "Global" profile in which you define keys for global things such as switching
+tabs, scrolling screens.<BR>
+The other profiles are used for bookmarks. You can specify either an escape sequence, a
+hexcode, or to ignore, for each key along with modifiers. Several standard profiles come with the distribution,
+including vt100, xterm, ansi and linux. You can modifiy these or create your own. 
+The global profile is read if there is no match for the key input in the bookmark specific 
+profile. <BR>
+</UL>
+
+<BR>
+
+<FONT SIZE="5"><STRONG>Terminal</STRONG></FONT><BR>
+<UL>
+Terminal profiles let you specify the emulation behavior of iTerm.</UL>
+
+<BR>
+
+<FONT SIZE="5"><STRONG>Display</STRONG></FONT><BR>
+<UL>
+Display profiles let you specify the display behavior of iTerm. You can create your own color set,
+specify window size and choose your favorite font. Notice since every tab within a window should
+have same size and font, the window settings will only be honored for the newly created windows.
 </UL>
 
 </TD>
 </TR>
+
 </TABLE>
 
 <BR>

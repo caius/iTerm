@@ -1,3 +1,7 @@
+2004-04-13  ujwal
+
+	* Updated help pages.
+
 2004-04-11  ujwal
 	
 	* PTYTask is back to blocking read since we are not doing any 

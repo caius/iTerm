@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.157 2004-03-04 20:10:28 ujwal Exp $
+// $Id: PTYTextView.m,v 1.158 2004-03-05 16:15:40 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -819,16 +819,19 @@
     [NSCursor setHiddenUntilMouseMoves: YES];    
     
     // Check for dead keys
-    if (deadkey) {
-        [self interpretKeyEvents:[NSArray arrayWithObject:event]];
-        deadkey=[self hasMarkedText];
-        return;
-    }
-    else if ([[event characters] length]<1) {
-        deadkey=YES;
-        [self interpretKeyEvents:[NSArray arrayWithObject:event]];
-        return;
-    }
+	if([[self delegate] optionKey] == OPT_NORMAL)
+	{
+		if (deadkey) {
+			[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+			deadkey=[self hasMarkedText];
+			return;
+		}
+		else if ([[event characters] length]<1) {
+			deadkey=YES;
+			[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+			return;
+		}
+	}
     
     if (IMEnable) {
         BOOL prev = [self hasMarkedText];

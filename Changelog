@@ -1,7 +1,9 @@
-2003-01-13	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed bug where adding a second tab would cause 
       the scroll position of the first tab to be reset.
+      
+    * Added option to silence terminal bell.
       
 
 2002-01-13	fabian

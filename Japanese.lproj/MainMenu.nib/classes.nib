@@ -93,6 +93,7 @@
                 prefPanel = id; 
                 row = id; 
                 shell = id; 
+                silenceBell = id; 
                 terminal = id; 
                 transparency = id; 
                 "transparency_control" = id; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.75 2003-01-15 02:27:23 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.76 2003-01-15 07:54:27 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -193,6 +193,9 @@ static NSString *ConfigToolbarItem = @"Config";
    
     TEXTVIEW = [aSession TEXTVIEW];
     [TEXTVIEW setDelegate: aSession];
+
+    // Set the bell option
+    [VT100Screen setPlayBellFlag: ![pref silenceBell]];
     
     // Set the anti-alias
     [TEXTVIEW setAntiAlias: [pref antiAlias]];

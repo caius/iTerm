@@ -25,6 +25,7 @@
     IBOutlet id antiAlias;
     IBOutlet id copySelection;
     IBOutlet id hideTab;
+    IBOutlet id silenceBell;
     
     NSUserDefaults *prefs;
 
@@ -47,6 +48,7 @@
     BOOL defaultAntiAlias;
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
+    BOOL defaultSilenceBell;
     BOOL changingNA;
 
 }
@@ -83,6 +85,7 @@
 - (int) option;
 - (BOOL) copySelection;
 - (BOOL) hideTab;
+- (BOOL) silenceBell;
 
 
 @end

@@ -88,6 +88,7 @@ static int TRANSPARENCY  =10;
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
+    defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
     changingNA=NO;
                  
     return self;
@@ -137,6 +138,7 @@ static int TRANSPARENCY  =10;
     [optionKey selectCellAtRow:0 column:defaultOption];
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
+    [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -217,6 +219,7 @@ static int TRANSPARENCY  =10;
     defaultOption=[optionKey selectedColumn];
     defaultCopySelection=([copySelection state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
+    defaultSilenceBell=([silenceBell state]==NSOnState);
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
@@ -238,6 +241,7 @@ static int TRANSPARENCY  =10;
     [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
+    [prefs setBool:defaultSilenceBell forKey:@"SilenceBell"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -386,6 +390,11 @@ static int TRANSPARENCY  =10;
 - (BOOL) hideTab
 {
     return (defaultHideTab);
+}
+
+- (BOOL) silenceBell
+{
+    return (defaultSilenceBell);
 }
 
 @end

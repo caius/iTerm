@@ -111,6 +111,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [view release];
     [name release];
     [windowTitle release];
+    [addressBookEntry release];
         
     [normalStateAttribute release];
     normalStateAttribute = nil;
@@ -1462,7 +1463,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setAddressBookEntry:(NSDictionary*) entry
 {
-    [addressBookEntry autorelease];
+    [addressBookEntry release];
     addressBookEntry = [entry retain];
 }
 

@@ -1,6 +1,7 @@
 2003-02-10	fabian
     * Cleaned up showCursor code
     * Incorparated Japanese nib files from OHKAWA
+    * Fixed a bug in scrollUp
     
 2003-02-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

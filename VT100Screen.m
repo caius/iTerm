@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.35 2003-02-10 16:00:54 yfabian Exp $
+// $Id: VT100Screen.m,v 1.36 2003-02-10 16:43:40 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -586,7 +586,7 @@ static BOOL PLAYBELL = YES;
     int len=[s length];
     int idx=len-1;
 
-    if (x>WIDTH||y>HEIGHT||x<0||y<0) {
+    if (x>=WIDTH||y>=HEIGHT||x<0||y<0) {
         NSLog(@"getIndex: out of bound");
         return -1;
     }
@@ -1004,7 +1004,7 @@ static BOOL PLAYBELL = YES;
 
     for (y = y1; y <= y2; ++y ) {
         if (y == y1 && y == y2) {
-            NSLog(@"%d->%d,%d",x1,x2,y);
+//            NSLog(@"%d->%d,%d",x1,x2,y);
             if (x2 - x1 > 0)
                 [self setASCIIStringToX:x1  Y:y  string:[NSString stringWithCharacters:spaces length:x2 - x1+1]];
         }
@@ -1266,7 +1266,8 @@ static BOOL PLAYBELL = YES;
 
 //    NSLog(@"SCROLL-UP[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
     idx=[self getIndex:0 y:SCROLL_TOP];
-    idx2=[self getIndex:0 y:SCROLL_TOP+1];
+    if (SCROLL_TOP==HEIGHT-1) idx2=[STORAGE length];
+    else idx2=[self getIndex:0 y:SCROLL_TOP+1];
     aRange = NSMakeRange(idx,idx2-idx);
     if(aRange.length <= 0)
         aRange.length = 1;

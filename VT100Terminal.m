@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.23 2003-02-08 07:08:54 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.24 2003-02-10 16:43:40 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -194,7 +194,8 @@ static size_t getCSIParam(unsigned char *datap,
 
     while (datalen > 0) {
 	if (isdigit(*datap)) {
-	    int n = *datap++ - '0';
+	    int n = *datap - '0';
+            datap++;
 	    datalen--;
 
 	    while (datalen > 0 && isdigit(*datap)) {
@@ -222,9 +223,49 @@ static size_t getCSIParam(unsigned char *datap,
 	else if (isalpha(*datap)||*datap=='@') {
 	    datalen--;
             param->cmd = unrecognized?0xff:*datap;
-            *datap++;
+            datap++;
 	    break;
 	}
+        else if (*datap=='\'') {
+            datap++;
+            datalen--;
+            switch (*datap) {
+                case 'z':
+                case '|':
+                case 'w':
+                    NSLog(@"Unsupported locator sequence");
+                    param->cmd=0xff;
+                    datap++;
+                    datalen--;
+                    break;
+                default:
+                    NSLog(@"Unrecognized locator sequence");
+                    datap++;
+                    datalen--;
+                    param->cmd=0xff;
+                    break;
+            }
+            break;
+        }
+        else if (*datap=='&') {
+            datap++;
+            datalen--;
+            switch (*datap) {
+                case 'w':
+                    NSLog(@"Unsupported locator sequence");
+                    param->cmd=0xff;
+                    datap++;
+                    datalen--;
+                    break;
+                default:
+                    NSLog(@"Unrecognized locator sequence");
+                    datap++;
+                    datalen--;
+                    param->cmd=0xff;
+                    break;
+            }
+            break;
+        }
 	else {
             switch (*datap) {
                 case VT100CC_ENQ: break;
@@ -245,7 +286,7 @@ static size_t getCSIParam(unsigned char *datap,
                 default: unrecognized=YES; break;
             }
             datalen--;
-            *datap++;
+            datap++;
 	}
     }
     return datap - orgp;
@@ -392,7 +433,7 @@ static VT100TCC decode_csi(unsigned char *datap,
 		    break;
 
                 default:
-		    NSLog(@"2: Unknown token %c; %s", param.cmd, datap);
+		    NSLog(@"2: Unknown token (%c); %s", param.cmd, datap);
                     result.type = VT100_NOTSUPPORT;
                     break;
             }
@@ -645,7 +686,7 @@ static VT100TCC decode_other(unsigned char *datap,
 	break;
 
     default:
-	NSLog(@"5: Unknown token %c", c1);
+	NSLog(@"5: Unknown token %c(%x)", c1, c1);
 	result.type = VT100_NOTSUPPORT;
 	*rmlen = 2;
 	break;

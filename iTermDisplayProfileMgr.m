@@ -139,7 +139,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	while ((aKey = [keyEnumerator nextObject]))
 	{
 		aProfile = [profiles objectForKey: aKey];
-		if([[aProfile objectForKey: @"Default Profile"] isEqualToString: @"Yes"])
+		if([self isDefaultProfile: aKey])
 		{
 			aProfileName = aKey;
 			break;

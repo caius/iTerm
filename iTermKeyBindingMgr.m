@@ -649,7 +649,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	while ((aKey = [keyEnumerator nextObject]))
 	{
 		aProfile = [profiles objectForKey: aKey];
-		if([[aProfile objectForKey: @"Global Profile"] isEqualToString: @"Yes"])
+		if([self isGlobalProfile: aKey])
 		{
 			aProfileName = aKey;
 			break;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.2 2004-02-13 21:36:17 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.3 2004-02-23 22:10:10 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -209,11 +209,11 @@ typedef enum {
 #define VT100CHARATTR_BG_HI_WHITE     (VT100CHARATTR_BG_HI_BASE + COLORCODE_WHITE)
 
 
-#define DEFAULT_FG_COLOR_CODE	16
-#define DEFAULT_BG_COLOR_CODE	17
-#define BOLD_MASK 32
-#define UNDER_MASK 64
-#define BLINK_MASK 128
+#define DEFAULT_FG_COLOR_CODE	0x10
+#define DEFAULT_BG_COLOR_CODE	0x11
+#define BOLD_MASK 0x20
+#define BLINK_MASK 0x40
+#define UNDER_MASK 0x80
 
 @interface VT100Terminal : NSObject
 {

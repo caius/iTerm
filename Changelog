@@ -1,3 +1,8 @@
+2004-02-23  fabian
+
+	* Fixed bug in [PTYTextView getCharImage].
+	* Changed blinking behavior. No we no longer reverse fg/bg
+	
 2004-02-22  ujwal
 
 	* Making sure dirty flags are reset for a line after processing it.

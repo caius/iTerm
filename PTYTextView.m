@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.135 2004-02-23 09:24:39 ujwal Exp $
+// $Id: PTYTextView.m,v 1.136 2004-02-23 22:10:08 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -532,42 +532,43 @@
 	c= fg&(BOLD_MASK|0x1f);
 	if (!code) return nil;
 	width=ISDOUBLEWIDTHCHARACTER(code)?2:1;
-	srand( code<<5 + c );
+	srand( code<<6 + c );
 	i=rand()%(CACHESIZE-CELLSIZE);
 	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
 		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
 		charImages[i].code=code;
-		charImages[i].color=fg;
+		charImages[i].color=c;
 		charImages[i].count=1;
 		[self renderChar: image 
 				withChar: code
 			   withColor: [self colorForCode:fg] 
-				withFont: ISDOUBLEWIDTHCHARACTER(c)?nafont:font
+				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
 					bold: fg&BOLD_MASK];
 		
 		return image;
 	}
 	else if (j>=CELLSIZE) {
 		//		NSLog(@"new char, but cache full");
-		c=1;
+		int t;
+		t=1;
 		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
-			if (charImages[i-j].count<charImages[i-c].count) c=j;
+			if (charImages[i-j].count<charImages[i-t].count) t=j;
 		}
-		[charImages[c].image release];
-		image=charImages[c].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
-		charImages[c].code=code;
-		charImages[c].color=fg;
+		[charImages[i-t].image release];
+		image=charImages[i-t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
+		charImages[i-t].code=code;
+		charImages[i-t].color=c;
 		for(j=1; j<=CELLSIZE; j++) {	//reset the cache
-			charImages[i-j].count-=charImages[i-c].count;
+			charImages[i-j].count-=charImages[i-t].count;
 		}
-		charImages[c].count=1;
+		charImages[i-t].count=1;
 
 		[self renderChar: image 
 				withChar: code
 			   withColor: [self colorForCode:fg] 
-				withFont: ISDOUBLEWIDTHCHARACTER(c)?nafont:font
+				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
 					bold: fg&BOLD_MASK];
 		return image;
 	}
@@ -600,7 +601,7 @@
 		  [self frame].origin.x, [self frame].origin.y, [self frame].size.width, [self frame].size.height);
 #endif
 		
-    int numLines, i, j, t, lineOffset, WIDTH;
+    int numLines, i, j, lineOffset, WIDTH;
 	int startScreenLineIndex,line, lineIndex;
     unichar *buf;
 	NSRect bgRect;
@@ -773,12 +774,18 @@
 		for(j=0;j<WIDTH;j++) {
 			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
 			if (need_draw) { 	
-				[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
-			}
-			if (buf[j] && (fg[j]&BLINK_MASK)) { //if blink is set, switch the fg/bg color
-				t=fg[j]&0x1f;
-				fg[j]=(fg[j]&0xe0)+bg[j];
-				bg[j]=t;
+				if (fg[j]&BLINK_MASK) { //if blink is set, switch the fg/bg color
+					if (bg[j]&BLINK_MASK) {				
+						[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
+						bg[j] &= ~BLINK_MASK;
+					}
+					else bg[j] |= BLINK_MASK;
+				}
+				else {
+					[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
+					if(line>=startScreenLineIndex) 
+						dirty[j]=0;
+				}
 			}
 			else if(line>=startScreenLineIndex) 
 				dirty[j]=0;

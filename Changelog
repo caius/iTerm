@@ -1,3 +1,13 @@
+2003-08-08	ujwal
+
+    * Fixed a bug that caused sessions launched from applescript in a 
+      new window not honor the row, column, and font settings.
+      
+    * Created [PseudoTerminal initViewWithFrame] that creates a terminal view that should 
+      be embeddable in a non-iTerm window. Refactored window initialization 
+      code in the process so that an iTerm window does not have to be created 
+      before a terminal view can be created.
+
 2003-08-06	ujwal
     
     * Removed all references to [NSApp delegate].

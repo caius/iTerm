@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.199 2003-08-08 15:50:53 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.200 2003-08-08 18:26:03 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -123,26 +123,44 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
 }
 
-- (id) initViewWithFrame: (NSRect) frame
+// Do not use both initViewWithFrame and initWindow
+// initViewWithFrame is mainly meant for embedding a terminal view in a non-iTerm window.
+- (PTYTabView*) initViewWithFrame: (NSRect) frame
 {
-    NSRect tabviewRect;
+    NSRect tabviewRect, contentRect;
+    NSSize termSize;
+    NSFont *aFont1, *aFont2;
 
-    [self initWithWindowNibName: NIB_PATH];
+    aFont1 = FONT;
+    if(aFont1 == nil)
+    {
+	NSDictionary *defaultSession = [iTerm defaultAddressBookEntry];
+	aFont1 = [defaultSession objectForKey:@"Font"];
+	aFont2 = [defaultSession objectForKey:@"NAFont"];
+	[self setFont: aFont1 nafont: aFont2]; 
+    }
+    NSParameterAssert(aFont1 != nil);
 
+    // Create the tabview
     TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [TABVIEW setAllowsTruncatedLabels: NO];
     [TABVIEW setControlSize: NSSmallControlSize];
 
-    return (self);
+    // Calculate the size of the terminal
+    contentRect = [TABVIEW contentRect];
+    termSize = [VT100Screen screenSizeInFrame: contentRect font: aFont1];
+    [self setWidth: (int) termSize.width height: (int) termSize.height];
+
+    return ([TABVIEW autorelease]);
 }
 
+// Do not use both initViewWithFrame and initWindow
 - (void)initWindow
 {
 
     NSRect tabviewRect;
     
-    NSParameterAssert(FONT != nil);
     
     // Create the tabview
     tabviewRect = [[[self window] contentView] frame];
@@ -325,7 +343,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	}
 
-	[[self window] makeKeyAndOrderFront: self];
+	if([self windowInited])
+	    [[self window] makeKeyAndOrderFront: self];
 	[iTerm setFrontPseudoTerminal: self];
     }
 }
@@ -524,7 +543,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
 
 //    [window center];
-    [[self window] makeKeyAndOrderFront:self];
+    if([self windowInited])
+	[[self window] makeKeyAndOrderFront: self];
 
 }
 
@@ -541,7 +561,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
 
 //    [window center];
-    [[self window] makeKeyAndOrderFront:self];
+    if([self windowInited])
+	[[self window] makeKeyAndOrderFront: self];
 
 }
 
@@ -560,7 +581,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
 
     //    [window center];
-    [[self window] makeKeyAndOrderFront:self];
+    if([self windowInited])
+	[[self window] makeKeyAndOrderFront: self];
 
 }
 
@@ -578,6 +600,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSRect tabviewRect, oldFrame;
     NSPoint topLeft;
 
+    if([self windowInited] == NO)
+	return;
+    
     // Resize the tabview first if necessary
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
     {
@@ -1916,8 +1941,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // Get the command's arguments:
     NSDictionary *args = [command evaluatedArguments];
     NSString *session = [args objectForKey:@"session"];
+    NSDictionary *abEntry;
 
-    BOOL aBool = NO;
     NSArray *abArray;
     int i;
     
@@ -1927,22 +1952,26 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 	if([[abArray objectAtIndex: i] caseInsensitiveCompare: session] == NSOrderedSame)
 	{
-	    aBool = YES;
 	    break;
 	}
     }
+    if(i == [abArray count])
+	i = 0; // index of default session
+    abEntry = [iTerm addressBookEntry: i];
 
-    if(aBool == YES)
+    // If we have not set up a window, do it now
+    if([self windowInited] == NO)
     {
-	[iTerm executeABCommandAtIndex: i inTerminal: self];
-    }
-    else if([session caseInsensitiveCompare: @"Default Session"] == NSOrderedSame)
-    {
-	[iTerm executeABCommandAtIndex: 0 inTerminal: self];
-    }
-    else
-	NSBeep();
 
+	[self setWidth: [[abEntry objectForKey: @"Col"] intValue]
+				height: [[abEntry objectForKey: @"Row"] intValue]];
+	[self setFont: [abEntry objectForKey: @"Font"]
+			       nafont: [abEntry objectForKey: @"NAFont"]];
+	[self initWindow];
+    }
+
+    // launch the session!
+    [iTerm executeABCommandAtIndex: i inTerminal: self];
     
     return;
 }

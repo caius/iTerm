@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.3 2003-08-08 15:50:53 ujwal Exp $
+// $Id: iTermController.m,v 1.4 2003-08-08 18:26:03 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -248,7 +248,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     NSLog(@"%s(%d):-[iTermController newWindow]",
           __FILE__, __LINE__);
 #endif
-
+    
     [self executeABCommandAtIndex:0 inTerminal: nil];
 
 //    term = [[PseudoTerminal alloc] init];
@@ -604,6 +604,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     if(theTerm == nil)
     {
         term = [[PseudoTerminal alloc] init];
+	[term initWindow];
 	[self addInTerminals: term];
 	[term release];
 
@@ -910,16 +911,6 @@ NSString *terminalsKey = @"terminals";
 	return;
     [object setITermController: self];
     [object setPreference:PREF_PANEL];
-    if([object windowInited] == NO)
-    {
-	NSDictionary *defaultSessionPreferences = [self defaultAddressBookEntry];
-
-	[object setWidth: [[defaultSessionPreferences objectForKey: @"Col"] intValue]
-			 height: [[defaultSessionPreferences objectForKey: @"Row"] intValue]];
-	[object setFont: [defaultSessionPreferences objectForKey: @"Font"]
-			nafont: [defaultSessionPreferences objectForKey: @"NAFont"]];
-	[object initWindow];
-    }
     [terminalWindows insertObject: object atIndex: index];
 }
 

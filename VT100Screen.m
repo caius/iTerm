@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.64 2003-03-03 01:18:31 ujwal Exp $
+// $Id: VT100Screen.m,v 1.65 2003-03-04 17:52:42 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -742,8 +742,8 @@ static BOOL PLAYBELL = YES;
     if (x>0) {
 //        NSLog(@"%d blanks inserted",x);
         [BUFFER insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:x]] atIndex:idx];
-        idx+=x;
         if (idx<minIndex) minIndex=idx;
+        idx+=x;
     }
 
     if (x<0) {
@@ -1249,7 +1249,6 @@ static BOOL PLAYBELL = YES;
         CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
     {
 	int idx;
-	
         idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];
         //NSLog(@"showCursor: %d(%d)",idx,[[STORAGE string] length]);
         if (idx>=[[STORAGE string] length]) {

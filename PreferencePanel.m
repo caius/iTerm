@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.98 2004-03-19 08:11:54 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.99 2004-03-21 02:50:14 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -45,19 +45,44 @@ static BOOL editingBookmark = NO;
 + (PreferencePanel*)sharedInstance;
 {
     static PreferencePanel* shared = nil;
-    
+
     if (!shared)
 	{
-		shared = [[self alloc] initWithWindowNibName: @"PreferencePanel"];
-        [shared window]; // force the window to load now
+		shared = [[self alloc] init];
 	}
     
     return shared;
 }
 
+- (id) init
+{
+	unsigned int storedMajorVersion = 0, storedMinorVersion = 0, storedMicroVersion = 0;
+
+	self = [super init];
+	
+	[self readPreferences];
+	
+	// get the version
+	NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
+	versionNumber = [(NSNumber *)[myDict objectForKey:@"CFBundleVersion"] floatValue];
+	if([prefs objectForKey: @"iTerm Version"])
+	{
+		sscanf([[prefs objectForKey: @"iTerm Version"] cString], "%d.%d.%d", &storedMajorVersion, &storedMinorVersion, &storedMicroVersion);
+		// briefly, version 0.7.0 was stored as 0.70
+		if(storedMajorVersion == 0 && storedMinorVersion == 70)
+			storedMinorVersion = 7;
+	}
+	//NSLog(@"Stored version = %d.%d.%d", storedMajorVersion, storedMinorVersion, storedMicroVersion);
+	
+	
+	// sync the version number
+	[prefs setObject: [myDict objectForKey:@"CFBundleVersion"] forKey: @"iTerm Version"];
+	
+	return (self);
+}
+
 - (id)initWithWindowNibName: (NSString *) windowNibName
 {
-    unsigned int storedMajorVersion = 0, storedMinorVersion = 0, storedMicroVersion = 0;
 #if DEBUG_OBJALLOC
     NSLog(@"%s(%d):-[PreferencePanel init]", __FILE__, __LINE__);
 #endif
@@ -65,25 +90,7 @@ static BOOL editingBookmark = NO;
         return nil;
 	
 	[super initWithWindowNibName: windowNibName];
-    
-    [self readPreferences];
-    
-    // get the version
-    NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
-    versionNumber = [(NSNumber *)[myDict objectForKey:@"CFBundleVersion"] floatValue];
-    if([prefs objectForKey: @"iTerm Version"])
-    {
-	sscanf([[prefs objectForKey: @"iTerm Version"] cString], "%d.%d.%d", &storedMajorVersion, &storedMinorVersion, &storedMicroVersion);
-	// briefly, version 0.7.0 was stored as 0.70
-	if(storedMajorVersion == 0 && storedMinorVersion == 70)
-	    storedMinorVersion = 7;
-    }
-    //NSLog(@"Stored version = %d.%d.%d", storedMajorVersion, storedMinorVersion, storedMicroVersion);
-        
-
-    // sync the version number
-    [prefs setObject: [myDict objectForKey:@"CFBundleVersion"] forKey: @"iTerm Version"];
-                 
+                     
     return self;
 }
 
@@ -111,6 +118,10 @@ static BOOL editingBookmark = NO;
 
 - (void)run
 {
+	
+	// load nib if we haven't already
+	if([self window] == nil)
+		[self initWithWindowNibName: @"PreferencePanel"];
 	    
     [tabPosition selectCellWithTag: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.118 2004-05-27 03:00:16 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.119 2004-07-06 02:40:06 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -122,6 +122,7 @@ static BOOL editingBookmark = NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 	defaultEnableRendezvous = [prefs objectForKey:@"EnableRendezvous"]?[[prefs objectForKey:@"EnableRendezvous"] boolValue]: YES;
+	defaultCmdSelection = [prefs objectForKey:@"CommandSelection"]?[[prefs objectForKey:@"CommandSelection"] boolValue]: YES;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
 	
@@ -160,6 +161,7 @@ static BOOL editingBookmark = NO;
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
 	[prefs setBool:defaultEnableRendezvous forKey:@"EnableRendezvous"];
+	[prefs setBool:defaultCmdSelection forKey:@"CommandSelection"];
 	[prefs setObject: defaultWordChars forKey: @"WordCharacters"];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
 	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
@@ -183,6 +185,7 @@ static BOOL editingBookmark = NO;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
 	[enableRendezvous setState: defaultEnableRendezvous?NSOnState:NSOffState];
+	[cmdSelection setState: defaultCmdSelection?NSOnState:NSOffState];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
 	
 	[self showWindow: self];
@@ -205,6 +208,7 @@ static BOOL editingBookmark = NO;
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 	defaultEnableRendezvous = ([enableRendezvous state] == NSOnState);
+	defaultCmdSelection = ([cmdSelection state] == NSOnState);
 	[defaultWordChars release];
 	defaultWordChars = [[wordChars stringValue] retain];
 
@@ -221,6 +225,7 @@ static BOOL editingBookmark = NO;
 	{
 		[bookmarkDeleteButton setEnabled: NO];
 		[bookmarkEditButton setEnabled: NO];
+		[defaultSessionButton setEnabled: NO];
 	}
 	else
 	{
@@ -231,10 +236,26 @@ static BOOL editingBookmark = NO;
 		else
 			[bookmarkDeleteButton setEnabled: NO];
 		
-		if([[ITAddressBookMgr sharedInstance] isExpandable: selectedItem])
-			[bookmarkEditButton setEnabled: NO];
-		else
+		// check for default bookmark
+		if([[ITAddressBookMgr sharedInstance] defaultBookmark] == selectedItem)
+		{
+			[defaultSessionButton setState: NSOnState];
+			[defaultSessionButton setEnabled: NO];
 			[bookmarkEditButton setEnabled: YES];
+		}
+		// check for folder
+		else if([[ITAddressBookMgr sharedInstance] isExpandable: selectedItem])
+		{
+			[bookmarkEditButton setEnabled: NO];
+			[defaultSessionButton setEnabled: NO];
+		}		
+		else
+		{
+			[defaultSessionButton setState: NSOffState];
+			[defaultSessionButton setEnabled: YES];
+			[bookmarkEditButton setEnabled: YES];
+		}
+				
 	}
 }
 
@@ -450,6 +471,17 @@ static BOOL editingBookmark = NO;
 		  contextInfo: nil];        
 }
 
+- (IBAction) setDefaultSession: (id) sender
+{
+	id selectedItem;
+	
+	selectedItem = [bookmarksView itemAtRow: [bookmarksView selectedRow]];
+	
+	[[ITAddressBookMgr sharedInstance] setDefaultBookmark: selectedItem];
+	[self outlineViewSelectionDidChange: nil];
+	
+}
+
 
 // NSWindow delegate
 - (void)windowWillLoad
@@ -532,6 +564,11 @@ static BOOL editingBookmark = NO;
 - (BOOL) enableRendezvous
 {
 	return (defaultEnableRendezvous);
+}
+
+- (BOOL) cmdSelection
+{
+	return (defaultCmdSelection);
 }
 
 - (NSString *) wordChars

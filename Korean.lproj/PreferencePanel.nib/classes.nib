@@ -16,6 +16,7 @@
                 deleteBookmarkFolder = id; 
                 editBookmark = id; 
                 ok = id; 
+                setDefaultSession = id; 
             }; 
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
@@ -32,6 +33,8 @@
                 bookmarkTerminalProfile = NSPopUpButton; 
                 bookmarkWorkingDirectory = NSTextField; 
                 bookmarksView = NSOutlineView; 
+                cmdSelection = NSButton; 
+                defaultSessionButton = NSButton; 
                 deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
                 enableRendezvous = NSButton; 

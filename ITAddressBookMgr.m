@@ -298,6 +298,31 @@ static TreeNode *defaultBookmark = nil;
 	return (bookmarks);
 }
 
+- (TreeNode *) defaultBookmark
+{
+	return (defaultBookmark);
+}
+
+- (void) setDefaultBookmark: (TreeNode *) aNode
+{
+	NSMutableDictionary *aMutableDict;
+	
+	if(aNode == nil)
+		return;
+	
+	// get the current default bookmark
+	aMutableDict = [NSMutableDictionary dictionaryWithDictionary: [defaultBookmark nodeData]];
+	[aMutableDict removeObjectForKey: KEY_DEFAULT_BOOKMARK];
+	[defaultBookmark setNodeData: aMutableDict];
+	
+	// set the new default bookmark
+	aMutableDict = [NSMutableDictionary dictionaryWithDictionary: [aNode nodeData]];
+	[aMutableDict setObject: @"Yes" forKey: KEY_DEFAULT_BOOKMARK];
+	[aNode setNodeData: aMutableDict];
+	defaultBookmark = aNode;
+	
+}
+
 - (NSDictionary *) defaultBookmarkData
 {
 	return ([defaultBookmark nodeData]);

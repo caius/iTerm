@@ -1,6 +1,7 @@
-2004-07-02  ujwal
+2004-07-05  ujwal
 
 	* Added support to drag selection from iTerm window.
+	* Added support to specify a bookmark as default.
 
 2004-06-15  fabian
 

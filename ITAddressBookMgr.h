@@ -73,6 +73,8 @@
 - (BOOL) mayDeleteBookmarkNode: (TreeNode *) aNode;
 - (TreeNode *) rootNode;
 
+- (TreeNode *) defaultBookmark;
+- (void) setDefaultBookmark: (TreeNode *) aNode;
 - (NSDictionary *) defaultBookmarkData;
 - (NSDictionary *) dataForBookmarkWithName: (NSString *) bookmarkName;
 

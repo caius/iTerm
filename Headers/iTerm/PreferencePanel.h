@@ -44,6 +44,7 @@
 	IBOutlet NSTextField *wordChars;
 	IBOutlet NSWindow *profilesWindow;
 	IBOutlet NSButton *enableRendezvous;
+	IBOutlet NSButton *cmdSelection;
 	
 	// Bookmark stuff
 	IBOutlet NSOutlineView *bookmarksView;
@@ -61,6 +62,7 @@
 	IBOutlet NSPopUpButton *bookmarkDisplayProfile;
 	IBOutlet NSPopUpButton *bookmarkShortcut;
 	NSArray	 		*draggedNodes;
+	IBOutlet NSButton *defaultSessionButton;
 
     
     NSUserDefaults *prefs;
@@ -73,6 +75,7 @@
     BOOL defaultPromptOnClose;
     BOOL defaultFocusFollowsMouse;
 	BOOL defaultEnableRendezvous;
+	BOOL defaultCmdSelection;
 	NSString *defaultWordChars;
 }
 
@@ -100,6 +103,7 @@
 - (IBAction) addBookmarkCancel: (id) sender;
 - (IBAction) deleteBookmark: (id) sender;
 - (IBAction) editBookmark: (id) sender;
+- (IBAction) setDefaultSession: (id) sender;
 
 - (BOOL) copySelection;
 - (void) setCopySelection: (BOOL) flag;
@@ -111,6 +115,7 @@
 - (BOOL) promptOnClose;
 - (BOOL) focusFollowsMouse;
 - (BOOL) enableRendezvous;
+- (BOOL) cmdSelection;
 - (NSString *) wordChars;
 
 @end

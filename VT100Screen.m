@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.52 2003-02-25 20:31:56 yfabian Exp $
+// $Id: VT100Screen.m,v 1.53 2003-02-26 00:54:18 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -447,6 +447,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
+        NSLog(@"Line added");
 	aLine = [[NSMutableAttributedString alloc] init];
 	[screenLines addObject: aLine];
 	[aLine release];
@@ -701,12 +702,12 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen getIndex]:(%d,%d)",  __FILE__, __LINE__ , x, y );
 #endif
 
+
+#if DEBUG_USE_BUFFER
     NSString *s=[BUFFER string];
     int len=[s length];
     int idx=len-1;
-
-#if DEBUG_USE_BUFFER
-
+    
     if (x>=WIDTH||y>=HEIGHT||x<0||y<0) {
         NSLog(@"getIndex: out of bound: x = %d; y = %d, WIDTH = %d; HEIGHT = %d", x, y, WIDTH, HEIGHT);
         return -1;
@@ -741,9 +742,43 @@ static BOOL PLAYBELL = YES;
         NSLog(@"getIndex Error! x:%d, y:%d",x,y);
     }
 //    NSLog(@"index:%d[%d] (CURSOR_IN_MIDDLE:%d)",idx,[s length],CURSOR_IN_MIDDLE);
-
-#endif
     if (idx<minIndex) minIndex=idx;
+    
+#else
+
+    NSMutableAttributedString *aLine= [screenLines objectAtIndex: screenTop + y];
+    NSString *s=[aLine string];
+    int len=[s length];
+    int idx=0;
+    
+    for(;x>0&&idx<len;idx++) {
+        //        if (ISDOUBLEWIDTHCHARACTER([s characterAtIndex:idx])) {
+        if (ISDOUBLEWIDTHCHARACTERINLINE(idx,aLine)) {
+            //            NSLog(@"X");
+            x-=2;
+        }
+        else x--;
+    }
+    if (x>0) {
+        //        NSLog(@"%d blanks inserted",x);
+        [aLine appendAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:x]]];
+        idx+=x;
+    }
+
+    if (x<0) {
+        CURSOR_IN_MIDDLE=YES;
+        idx--;
+        //        NSLog(@"cursor in middle!");
+    }
+    else CURSOR_IN_MIDDLE=NO;
+
+    if (idx<0) {
+        NSLog(@"getIndex Error! x:%d, y:%d",x,y);
+    }
+#endif
+
+//    NSLog(@"index:%d[%d] (CURSOR_IN_MIDDLE:%d)",idx,[s length],CURSOR_IN_MIDDLE);
+
     return idx;
 }
 
@@ -754,16 +789,13 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen getTVIndex]:(%d,%d)",  __FILE__, __LINE__ , x, y );
 #endif
 
-    return [self getIndex:x y:y]+updateIndex;
+    return [self getIndex:x y:y] + updateIndex;
 }
 
 - (void)setASCIIString:(NSString *)string
 {
-#if DEBUG_USE_BUFFER
     int i,idx,x2;
     BOOL doubleWidth=[SESSION doubleWidth];
-#endif
-
     int j, idx2, len, x;
     BOOL didWrap = NO;
 
@@ -807,8 +839,9 @@ static BOOL PLAYBELL = YES;
                 break;
             }
             [self insertBlank:j];
-#if DEBUG_USE_BUFFER
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+
+#if DEBUG_USE_BUFFER
             [BUFFER replaceCharactersInRange:NSMakeRange(idx,j)
                          withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)] ascii:YES]];
 #endif
@@ -816,7 +849,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY
 	    // do the same on our line array
 	    aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
-	    [aLine replaceCharactersInRange:NSMakeRange(CURSOR_X,j)
+	    [aLine replaceCharactersInRange:NSMakeRange(idx,j)
 			      withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)] ascii:YES]];
 #endif
 	    
@@ -824,9 +857,7 @@ static BOOL PLAYBELL = YES;
             idx2+=j;
         }
         else {
-#if DEBUG_USE_BUFFER
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
-#endif
             if(WIDTH-CURSOR_X<=len-idx2) x=WIDTH;
             else x=CURSOR_X+len-idx2;
             j=x-CURSOR_X;
@@ -880,15 +911,39 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY
 	    // Do the same for our line array
 	    aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
-	    if(CURSOR_X >= [aLine length])
+	    if(idx >= [aLine length])
 	    {
                 [aLine appendAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
 	    }
 	    else
 	    {
-		// FIXME: handle doublewidth and make sure this is right...
-		[aLine replaceCharactersInRange:NSMakeRange(CURSOR_X,1)
-				  withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
+                NSString *linestr=[aLine string];
+
+                if (CURSOR_IN_MIDDLE) {
+                    //NSLog(@"setASCIIString: Start from middle of a hanzi");
+                    [aLine replaceCharactersInRange:NSMakeRange(idx,1)
+                                withAttributedString:[self attrString:@"??"  ascii:YES]];
+
+                    linestr=[aLine string];
+                    idx++;
+                }
+                //            NSLog(@"index {%d,%d]->%d",CURSOR_X,CURSOR_Y,idx);
+                //NSLog(@"%d+%d->%d",idx2,j,len);
+                for(i=0,x2=CURSOR_X;x2<x&&idx+i<[linestr length]&&[linestr characterAtIndex:idx+i]!='\n';x2++,i++)
+                    if (doubleWidth&&[[aLine attribute:NSCharWidthAttributeName atIndex:(idx+i) effectiveRange:nil] intValue]==2)  x2++;
+                if (x2>x) {
+                    //NSLog(@"setASCIIString: End in the middle of a hanzi");
+                    [aLine replaceCharactersInRange:NSMakeRange(idx+i-1,1)
+                                withAttributedString:[self attrString:@"??" ascii:YES]];
+
+                }
+
+                //NSLog(@"setASCIIString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
+                //      [store substringWithRange:NSMakeRange(idx,i)],idx,i,
+                //      [s substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
+                [aLine replaceCharactersInRange:NSMakeRange(idx,i)
+                            withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
+                
 	    }
 #endif
 	    
@@ -1117,12 +1172,11 @@ static BOOL PLAYBELL = YES;
 
 - (void)showCursor
 {
-    NSColor *fg, *bg;
     NSMutableDictionary *dic;
 
     
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen showCursor]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[VT100Screen showCursor (%d,%d)]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y);
 #endif
 
     // Show cursor at new position by reversing foreground/background colors
@@ -1132,7 +1186,7 @@ static BOOL PLAYBELL = YES;
 	int idx;
 	
 #if DEBUG_USE_BUFFER
-        idx = [self getIndex:CURSOR_X y:CURSOR_Y] + updateIndex;
+        idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];
         //NSLog(@"showCursor: %d(%d)",idx,[[STORAGE string] length]);
         if (idx>=[[STORAGE string] length]) {
             [STORAGE appendAttributedString:[self defaultAttrString:@" "]];
@@ -1151,9 +1205,10 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY
 	// show the cursor in the line array
 	NSMutableAttributedString *aLine;
+        NSColor *fg, *bg;
 
 	aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
-	idx = CURSOR_X;
+        idx=[self getIndex:CURSOR_X y:CURSOR_Y];
 	if(idx >= [aLine length])
 	    [aLine appendAttributedString:[self defaultAttrString:@" "]];
 	// reverse the video on the position where the cursor is supposed to be shown.
@@ -2308,21 +2363,17 @@ static BOOL PLAYBELL = YES;
 - (void) updateScreen
 {
     
-//    NSLog(@"changing %d,%d,%d",updateIndex,[STORAGE length]-updateIndex,[BUFFER length]);
 #if DEBUG_USE_BUFFER
     int len=[BUFFER length];
-//    NSString *aString;
 
     if (len<=0||minIndex>=len) return;
-//    NSLog(@"changing %d+%d,%d,%d",updateIndex,minIndex,[STORAGE length]-updateIndex-minIndex,len-minIndex);
-
+//    NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length]-updateIndex-minIndex,len-minIndex);
     [STORAGE beginEditing];
     [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,[STORAGE length]-updateIndex-minIndex)
                  withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
     [STORAGE endEditing];
     [self renewBuffer];
     
-//    aString = [STORAGE string];
     
 #endif
 

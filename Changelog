@@ -1,6 +1,7 @@
 2003-02-25	fabian
     * Further optimization of BUFFER method by updating
       less portion of screen
+    * Fixed a showCursor bug
       
 2003-02-24	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

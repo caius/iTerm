@@ -56,10 +56,12 @@ static NSString *PWD_ENVVALUE = @"~";
 
     if((self = [super init]) == nil)
         return (nil);
-    
-    iIdleCount=oIdleCount=0;
+
+    iIdleCount=0;
+    oIdleCount=1000;
     blink = 0;
-    output = 0;
+    output= 3;
+    dirty = NO;
     waiting=antiIdle=EXIT=NO;
     
     if (normalStateAttribute == nil) {
@@ -162,7 +164,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [TEXTVIEW setCursorIndex:[SCREEN getIndex:0 y:0]];
     [tabViewItem setLabelAttributes: chosenStateAttribute];
-    blink=0; output=3; dirty=YES;
+
         
 }
 
@@ -678,7 +680,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-    iIdleCount++; oIdleCount++; blink++; output++;
+    iIdleCount++; oIdleCount++; blink++;
     if (++output>1000) output=1000;
     
     if (antiIdle) {
@@ -691,9 +693,11 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
     }
 
-    if (blink>8) { [SCREEN blink]; blink=0; }
+    //if (blink>8) { [SCREEN blink]; blink=0; }
     if (oIdleCount<3||dirty) {
         if (output>3) {
+            // sometimes showCursor will change buffer too
+            [SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1];
             [SCREEN updateScreen];
             [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
             [SCREEN showCursor];

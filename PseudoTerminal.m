@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.116 2003-02-25 16:06:11 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.117 2003-02-26 00:54:18 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -237,7 +237,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [[aSession TEXTVIEW] setDataSource: [aSession SCREEN]];
     [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
     [[aSession TEXTVIEW] setLineHeight: [VT100Screen fontSize: FONT].height];
-    [[aSession TEXTVIEW] setLineWidth: WIDTH * [VT100Screen fontSize: FONT].height];
+    [[aSession TEXTVIEW] setLineWidth: WIDTH * [VT100Screen fontSize: FONT].width];
 #else
     [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
 #endif

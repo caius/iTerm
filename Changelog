@@ -4,6 +4,9 @@
       color table.
       
     * Applying transparency when setting screen mode.
+    
+    * Fixed strange bug in vertical page scrolling when multiple 
+      sessions are opened.
 
 2003-05-07	ujwal
 

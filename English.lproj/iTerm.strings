@@ -4,8 +4,8 @@
 /* Context menu */
 "-> Mail" = "-> Mail";
 
-/* Toolbar Item:Address Book */
-"Address Book" = "Address Book";
+/* Toolbar Item:Bookmarks */
+"Bookmarks" = "Bookmarks";
 
 /* Close window */
 "All sessions will be closed" = "All sessions will be closed";
@@ -60,7 +60,7 @@
 /* OK */
 "OK" = "OK";
 
-/* Toolbar Item Tip:Address Book */
+/* Toolbar Item Tip:Bookmarks */
 "Open the address book" = "Open the address book";
 
 /* Context menu */
@@ -108,7 +108,7 @@
 "Report A Bug"="Report A Bug";
 
 /* Config */
-"Configuration saved as a new entry in Address Book"="Configuration saved as a new entry in Address Book";
+"Configuration saved as a new entry in Bookmarks"="Configuration saved as a new entry in Bookmarks";
 "Configuration saved"="Configuration saved";
 
 /* OS Version */

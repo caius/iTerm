@@ -216,8 +216,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     encodingList=[NSString availableStringEncodings];
 
     // We finally set our autosave window frame name and restore the one from the user's defaults.
-    [[self window] setFrameAutosaveName: @"AddressBook"];
-    [[self window] setFrameUsingName: @"AddressBook"];
+    [[self window] setFrameAutosaveName: @"Bookmarks"];
+    [[self window] setFrameUsingName: @"Bookmarks"];
 
     [[self window] setDelegate: self];
 

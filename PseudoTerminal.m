@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.186 2003-05-30 14:54:27 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.187 2003-05-31 20:00:15 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1216,9 +1216,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif    
 
     if ([itemIdent isEqual: ABToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Address Book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Address Book")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Address Book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Address Book")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the address book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip:Address Book")];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Bookmarks")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Bookmarks")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the address book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip:Bookmarks")];
         [toolbarItem setImage: [NSImage imageNamed: @"addressbook"]];
         [toolbarItem setTarget: MAINMENU];
         [toolbarItem setAction: @selector(showABWindow:)];
@@ -1318,7 +1318,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     modflag = [theEvent modifierFlags];
 
-    // Address Book
+    // Bookmarks
     // Figure out whether the command shall be executed in a new window or tab
     if (modflag & NSCommandKeyMask)
     {
@@ -1335,7 +1335,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [theMenu insertItem:[NSMenuItem separatorItem] atIndex: 1];
 
     // Build the address book menu
-    NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
+    NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
     [MAINMENU buildAddressBookMenu: abMenu forTerminal: (newWin?nil:self)];
 
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
@@ -1674,7 +1674,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             NULL];
         //    NSLog(@"new entry:%@",ae);
         [MAINMENU addAddressBookEntry: new];
-        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Address Book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
                         [new objectForKey:@"Name"],
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
@@ -1962,7 +1962,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // build a menu representation for text only.
     item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New") action: nil keyEquivalent: @""];
-    aMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
+    aMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
     [MAINMENU buildAddressBookMenu: aMenu forTerminal: (newwin?nil:self)];
     [aMenu addItem: [NSMenuItem separatorItem]];
     [aMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];

@@ -4,8 +4,8 @@
 /* Context menu */
 "-> Mail" = "-> Envoyer à";
 
-/* Toolbar Item:Address Book */
-"Address Book" = "Configurations";
+/* Toolbar Item:Bookmarks */
+"Bookmarks" = "Configurations";
 
 /* Close window */
 "All sessions will be closed" = "Toutes les sessions seront fermées";
@@ -63,7 +63,7 @@
 /* OK */
 "OK" = "OK";
 
-/* Toolbar Item Tip:Address Book */
+/* Toolbar Item Tip:Bookmarks */
 "Open the address book" = "Voir les configurations personnalisées";
 
 /* Context menu */
@@ -109,7 +109,7 @@
 "Report A Bug"="Envoyer un rapport de bogue";
 
 /* Config */
-"Configuration saved as a new entry in Address Book"="La configuration a été enrgistrée comme nouvelle entrée dans les Configurations";
+"Configuration saved as a new entry in Bookmarks"="La configuration a été enrgistrée comme nouvelle entrée dans les Configurations";
 "Configuration saved"="Configuration enregistrée";
 
 /* OS Version */

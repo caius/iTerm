@@ -4,8 +4,8 @@
 /* Context menu */
 "-> Mail" = "メールを送信";
 
-/* Toolbar Item:Address Book */
-"Address Book" = "アドレスブック";
+/* Toolbar Item:Bookmarks */
+"Bookmarks" = "アドレスブック";
 
 /* Close window */
 "All sessions will be closed" = "ウインドウ内の全てのセッションが閉じられます";
@@ -56,7 +56,7 @@
 /* OK */
 "OK" = "OK";
 
-/* Toolbar Item Tip:Address Book */
+/* Toolbar Item Tip:Bookmarks */
 "Open the address book" = "アドレスブックを開く";
 
 /* Context menu */

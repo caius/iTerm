@@ -1,6 +1,8 @@
 2003-05-31	ujwal
     
     * Added an "Add" button to the AddressBook.
+    
+    * Changed name of Address Book to Bookmarks.
 
 2003-05-30	ujwal
 
@@ -441,7 +443,7 @@
     * Localized GPL license statement for zh_CN and zn_TW
     * Fixed a bug in PseudoTerminal.nib, zh_TW
     * Cleaned up unused outlets in PseudoTerminal
-    * Changed Address Book behavior:
+    * Changed Bookmarks behavior:
         double click opens a new session
         new window is specified using a switch
     * Correct the yellow
@@ -697,7 +699,7 @@
 
 2003-02-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
-    * Workaround for a problem in Address Book where the 
+    * Workaround for a problem in Bookmarks where the 
       scrollbar was not being activated when it should have 
       been on load. It was being activated only on window 
       resize. Looks like a Cocoa bug, but I put in a 
@@ -790,7 +792,7 @@
 2003-01-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Removed terminal size constraints from Preferences, 
-      Configuration panel, and Address Book entries. 
+      Configuration panel, and Bookmarks entries. 
       Minimum size is 1x1.
       
     * We don't autoscroll to the bottom on shell output if 
@@ -816,7 +818,7 @@
 
 2003-01-25	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
-    * Address Book window now has Autosave name.
+    * Bookmarks window now has Autosave name.
     
 
 2003-01-24	fabian
@@ -997,7 +999,7 @@
     
 2003-01-05	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
-    * Added Address Book into contextual menu. Entries 
+    * Added Bookmarks into contextual menu. Entries 
       can be executed in a new tab or in a new window. 
       To execute in a new window, hold down the command 
       key while accessing the contextual menu.
@@ -1006,7 +1008,7 @@
       text view does not have know about the address book 
       and session configuration.
       
-    * Fixed AutoResizingMask of buttons in Address Book.
+    * Fixed AutoResizingMask of buttons in Bookmarks.
 
 
 2003-01-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>

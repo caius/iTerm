@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.24 2003-02-11 23:12:30 ujwal Exp $
+// $Id: PTYTextView.m,v 1.25 2003-02-11 23:17:13 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -191,13 +191,14 @@
 - (void)insertText:(id)aString
 {
     id delegate = [self delegate];
-    NSTextStorage *storage = [self textStorage];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView insertText:%@]",
 	  __FILE__, __LINE__, aString);
 #endif
 #if 0
+    NSTextStorage *storage = [self textStorage];
+
     IM_INPUT_INSERT = YES;
 
     [storage beginEditing];

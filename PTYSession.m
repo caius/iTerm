@@ -403,7 +403,7 @@ static NSString *PWD_ENVVALUE = @"~";
     size_t send_strlen = 0;
     int send_chr = -1;
     int send_pchr = -1;
-
+	
     unsigned int modflag;
     unsigned short keycode;
     NSString *keystr;
@@ -412,60 +412,60 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if DEBUG_METHOD_TRACE || DEBUG_KEYDOWNDUMP
     NSLog(@"%s(%d):-[PseudoTerminal keyDown:%@]",
-	  __FILE__, __LINE__, event);
+		  __FILE__, __LINE__, event);
 #endif
-
+	
     modflag = [event modifierFlags];
     keycode = [event keyCode];
     keystr  = [event characters];
     unmodkeystr = [event charactersIgnoringModifiers];
     unicode = [keystr length]>0?[keystr characterAtIndex:0]:0;
-
+	
     iIdleCount=0;
-
-//    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
-//          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
-
+	
+	//    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
+	//          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
+	
     // Clear the bell
     [self setBell: NO];
-
+	
     if ( (modflag & NSFunctionKeyMask) && [[PreferencePanel sharedInstance] macnavkeys] && ((unicode == NSPageUpFunctionKey) || (unicode == NSPageDownFunctionKey) || (unicode == NSHomeFunctionKey) || (unicode == NSEndFunctionKey)) ) {
         modflag ^= NSShiftKeyMask; // Toggle meaning of shift key for
     }
-
+	
     // Check if we are navigating through sessions or scrolling
     if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
     {
-	// command/shift + function key's
-	switch (unicode)
-	{
-	    case NSLeftArrowFunctionKey: // cursor left
-					    // Check if we want to just move to the previous session
-		[parent previousSession: nil];
-		return;
-	    case NSRightArrowFunctionKey: // cursor left
-					    // Check if we want to just move to the next session
-		[parent nextSession: nil];
-		return;
-	    case NSDeleteFunctionKey:
+		// command/shift + function key's
+		switch (unicode)
+		{
+			case NSLeftArrowFunctionKey: // cursor left
+										 // Check if we want to just move to the previous session
+				[parent previousSession: nil];
+				return;
+			case NSRightArrowFunctionKey: // cursor left
+										  // Check if we want to just move to the next session
+				[parent nextSession: nil];
+				return;
+			case NSDeleteFunctionKey:
                 // NSLog(@"### DEBUG ###\n%@", SCREEN);
-		break;
-	    case NSPageUpFunctionKey:
+				break;
+			case NSPageUpFunctionKey:
                 [TEXTVIEW scrollPageUp: self];
-		break;
-	    case NSPageDownFunctionKey:
+				break;
+			case NSPageDownFunctionKey:
                 [TEXTVIEW scrollPageDown: self];
-		break;
-	    case NSHomeFunctionKey:
+				break;
+			case NSHomeFunctionKey:
                 [TEXTVIEW scrollHome];
-		break;
-	    case NSEndFunctionKey:
+				break;
+			case NSEndFunctionKey:
                 [TEXTVIEW scrollEnd];
-		break;
-	    case NSClearLineFunctionKey:
-		if(modflag & NSCommandKeyMask)
-		    [TERMINAL toggleNumLock];
-		break;
+				break;
+			case NSClearLineFunctionKey:
+				if(modflag & NSCommandKeyMask)
+					[TERMINAL toggleNumLock];
+				break;
             case NSUpArrowFunctionKey:
                 if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
                     [TEXTVIEW scrollPageUp: self];
@@ -479,162 +479,162 @@ static NSString *PWD_ENVVALUE = @"~";
                     [TEXTVIEW scrollLineDown: self];
                 break;
                 
-	    default:
-		if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
-		    [parent selectSessionAtIndex:unicode-NSF1FunctionKey];                    
-		break;
-	}
+			default:
+				if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
+					[parent selectSessionAtIndex:unicode-NSF1FunctionKey];                    
+				break;
+		}
     }
     else if((modflag & NSAlternateKeyMask) && (unicode == NSDeleteCharacter))
-	[self setRemapDeleteKey: ![self remapDeleteKey]];
+		[self setRemapDeleteKey: ![self remapDeleteKey]];
     else 
     {
-	if (modflag & NSFunctionKeyMask)
+		if (modflag & NSFunctionKeyMask)
         {
-	    NSData *data = nil;
-
-	    switch(unicode) 
+			NSData *data = nil;
+			
+			switch(unicode) 
             {
                 case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp:modflag]; break;
-		case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown:modflag]; break;
-		case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft:modflag]; break;
-		case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight:modflag]; break;
-
-		case NSInsertFunctionKey:
-		    // case NSHelpFunctionKey:
-		    data = [TERMINAL keyInsert]; break;
-		case NSDeleteFunctionKey:
-		    data = [TERMINAL keyDelete]; break;
-		case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
-		case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
-		case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
-		case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
-
-		case NSPrintScreenFunctionKey:
-		    break;
-		case NSScrollLockFunctionKey:
-		case NSPauseFunctionKey:
-		    break;
-		case NSClearLineFunctionKey:
-		    if(![TERMINAL numLock] || [TERMINAL keypadMode])
-			data = [TERMINAL keyPFn: 1];
-		    break;
-	    }
-
+				case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown:modflag]; break;
+				case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft:modflag]; break;
+				case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight:modflag]; break;
+					
+				case NSInsertFunctionKey:
+					// case NSHelpFunctionKey:
+					data = [TERMINAL keyInsert]; break;
+				case NSDeleteFunctionKey:
+					data = [TERMINAL keyDelete]; break;
+				case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
+				case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
+				case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
+				case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
+					
+				case NSPrintScreenFunctionKey:
+					break;
+				case NSScrollLockFunctionKey:
+				case NSPauseFunctionKey:
+					break;
+				case NSClearLineFunctionKey:
+					if(![TERMINAL numLock] || [TERMINAL keypadMode])
+						data = [TERMINAL keyPFn: 1];
+					break;
+			}
+			
             if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
                 data = [TERMINAL keyFunction:unicode-NSF1FunctionKey+1];
-
-	    if (data != nil) {
-		send_str = (char *)[data bytes];
-		send_strlen = [data length];
-	    }
-	}
-	else if ([[PreferencePanel sharedInstance] option] != OPT_NORMAL &&
-		    modflag & NSAlternateKeyMask)
-	{
-	    NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
-	    [keystr dataUsingEncoding:NSUTF8StringEncoding]:
-	    [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
-	    // META combination
-	    if (keydat != nil) {
-		send_str = (char *)[keydat bytes];
-		send_strlen = [keydat length];
-	    }
-            if ([[PreferencePanel sharedInstance] option] == OPT_ESC) {
-		send_pchr = '\e';
-//                send_chr=unmodkeystr;
-            }
-	    else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) 
-            {
-		int i;
-		for (i = 0; i < send_strlen; ++i)
-		    send_str[i] |= 0x80;
-	    }
-	}
-	else 
-        {
-	    int max = [keystr length];
-	    NSData *data;
-
-            if (max!=1||[keystr characterAtIndex:0] > 0x7f)
-                data = [keystr dataUsingEncoding:[TERMINAL encoding]];
-            else
-                data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
-
-	    // Check if we are in keypad mode
-	    if((modflag & NSNumericPadKeyMask) && (![TERMINAL numLock] || [TERMINAL keypadMode]))
-	    {
-		switch (unicode)
-		{
-		    case '=':
-			data = [TERMINAL keyPFn: 2];;
-			break;
-		    case '/':
-			data = [TERMINAL keyPFn: 3];
-			break;
-		    case '*':
-			data = [TERMINAL keyPFn: 4];
-			break;
-		    default:
-			data = [TERMINAL keypadData: unicode keystr: keystr];
-			break;
+			
+			if (data != nil) {
+				send_str = (char *)[data bytes];
+				send_strlen = [data length];
+			}
 		}
-	    }
-
-	    // Check if we want to remap the delete key to backspace
-	    if((unicode == NSDeleteCharacter) && [self remapDeleteKey])
-		data = [TERMINAL keyBackspace];
-
-	    if (data != nil ) {
-		send_str = (char *)[data bytes];
-		send_strlen = [data length];
-	    }
-
-	    if ((modflag & NSNumericPadKeyMask &&
-		send_strlen == 1 &&
-		send_str[0] == 0x03) || keycode==52)
-	    {
-		send_str = "\012";  // NumericPad or Laptop Enter -> 0x0a
-		send_strlen = 1;
-	    }
-	    if (modflag & NSControlKeyMask &&
-		send_strlen == 1 &&
-		send_str[0] == '|')
-	    {
-		send_str = "\034"; // control-backslash
-		send_strlen = 1;
-	    }
-	}
-
-	// Make sure we scroll down to the end
-	[TEXTVIEW scrollEnd];
-
-	if (EXIT == NO ) 
+		else if ([[PreferencePanel sharedInstance] option] != OPT_NORMAL &&
+				 modflag & NSAlternateKeyMask)
+		{
+			NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
+			[keystr dataUsingEncoding:NSUTF8StringEncoding]:
+			[unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
+			// META combination
+			if (keydat != nil) {
+				send_str = (char *)[keydat bytes];
+				send_strlen = [keydat length];
+			}
+            if ([[PreferencePanel sharedInstance] option] == OPT_ESC) {
+				send_pchr = '\e';
+				//                send_chr=unmodkeystr;
+            }
+			else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) 
+            {
+				int i;
+				for (i = 0; i < send_strlen; ++i)
+					send_str[i] |= 0x80;
+			}
+		}
+		else 
+		{
+			int max = [keystr length];
+			NSData *data;
+			
+			if (max!=1||[keystr characterAtIndex:0] > 0x7f)
+				data = [keystr dataUsingEncoding:[TERMINAL encoding]];
+			else
+				data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
+			
+			// Check if we are in keypad mode
+			if((modflag & NSNumericPadKeyMask) && (![TERMINAL numLock] || [TERMINAL keypadMode]))
+			{
+				switch (unicode)
+				{
+					case '=':
+						data = [TERMINAL keyPFn: 2];;
+						break;
+					case '/':
+						data = [TERMINAL keyPFn: 3];
+						break;
+					case '*':
+						data = [TERMINAL keyPFn: 4];
+						break;
+					default:
+						data = [TERMINAL keypadData: unicode keystr: keystr];
+						break;
+				}
+			}
+			
+			// Check if we want to remap the delete key to backspace
+			if((unicode == NSDeleteCharacter) && [self remapDeleteKey])
+				data = [TERMINAL keyBackspace];
+			
+			if (data != nil ) {
+				send_str = (char *)[data bytes];
+				send_strlen = [data length];
+			}
+			
+			if ((modflag & NSNumericPadKeyMask &&
+				 send_strlen == 1 &&
+				 send_str[0] == 0x03) || keycode==52)
+			{
+				send_str = "\012";  // NumericPad or Laptop Enter -> 0x0a
+				send_strlen = 1;
+			}
+			if (modflag & NSControlKeyMask &&
+				send_strlen == 1 &&
+				send_str[0] == '|')
+			{
+				send_str = "\034"; // control-backslash
+				send_strlen = 1;
+			}
+		}
+		
+		// Make sure we scroll down to the end
+		[TEXTVIEW scrollEnd];
+		
+		if (EXIT == NO ) 
         {
-	    if (send_pchr >= 0) {
-		char c = send_pchr;
-
-		[SHELL writeTask:[NSData dataWithBytes:&c length:1]];
-	    }
-	    if (send_chr >= 0) {
-		char c = send_chr;
-
-		[SHELL writeTask:[NSData dataWithBytes:&c length:1]];
-	    }
-	    if (send_str != NULL) {
-		[SHELL writeTask:[NSData dataWithBytes:send_str length:send_strlen]];
-	    }
-
+			if (send_pchr >= 0) {
+				char c = send_pchr;
+				
+				[SHELL writeTask:[NSData dataWithBytes:&c length:1]];
+			}
+			if (send_chr >= 0) {
+				char c = send_chr;
+				
+				[SHELL writeTask:[NSData dataWithBytes:&c length:1]];
+			}
+			if (send_str != NULL) {
+				[SHELL writeTask:[NSData dataWithBytes:send_str length:send_strlen]];
+			}
+			
 #if USE_CUSTOM_DRAWING
             [TEXTVIEW scrollEnd];
 #else
-	    // scroll to the end
+			// scroll to the end
             //[TEXTVIEW scrollEnd];
             PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
             [ptys setUserScroll: NO];
-	    //[SCREEN updateScreen];
+			//[SCREEN updateScreen];
 #endif
-	}
+		}
     }
 }
 

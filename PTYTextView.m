@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.203 2004-04-15 15:51:20 ujwal Exp $
+// $Id: PTYTextView.m,v 1.204 2004-04-16 07:13:50 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -990,10 +990,7 @@ static SInt32 systemVersion;
         put = YES;
     
     if (put == YES) {
-        if ([delegate respondsToSelector:@selector(keyDown:)])
-            [delegate keyDown:event];
-        else
-            [super keyDown:event];
+		[delegate keyDown:event];
     }
 }
 

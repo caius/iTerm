@@ -490,8 +490,8 @@ static NSString *PWD_ENVVALUE = @"~";
 				send_strlen = [data length];
 			}
 		}
-		else if ([self optionKey] != OPT_NORMAL &&
-				 modflag & NSAlternateKeyMask)
+		else if ((modflag & NSAlternateKeyMask) && 
+				 ([self optionKey] != OPT_NORMAL))
 		{
 			NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
 			[keystr dataUsingEncoding:NSUTF8StringEncoding]:

@@ -337,8 +337,6 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [TERMINAL putStreamData:data];
     
-#warning is this pending stuff necessary
-    //    if ([parent pending] || [SCREEN screenIsLocked]) 
     if ([SCREEN screenIsLocked]) 
         return;
     
@@ -1632,7 +1630,7 @@ static NSString *PWD_ENVVALUE = @"~";
     {
 	int i = 0;
 	// wait here until we have had some output
-	while([SHELL hasOutput] == NO && i < 5000000)
+	while([SHELL firstOutput] == NO && i < 5000000)
 	{
 	    usleep(50000);
 	    i += 50000;

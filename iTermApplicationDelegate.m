@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.7 2003-10-03 00:07:14 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.8 2003-10-05 18:48:17 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -35,6 +35,8 @@
 #import <iTerm/PTYSession.h>
 #import <iTerm/FindPanelWindowController.h>
 
+static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
+
 @implementation iTermApplicationDelegate
 
 // NSApplication delegate methods
@@ -45,27 +47,51 @@
     Gestalt(gestaltSystemVersion, &gSystemVersion);
     if(gSystemVersion < 0x1020)
     {
-	NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Sorry",@"iTerm", [NSBundle bundleForClass: [self class]], @"Sorry"),
-		 NSLocalizedStringFromTableInBundle(@"Minimum_OS", @"iTerm", [NSBundle bundleForClass: [self class]], @"OS Version"),
-		NSLocalizedStringFromTableInBundle(@"Quit",@"iTerm", [NSBundle bundleForClass: [self class]], @"Quit"),
+	NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Sorry",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Sorry"),
+		 NSLocalizedStringFromTableInBundle(@"Minimum_OS", @"iTerm", [NSBundle bundleForClass: [iTermController class]], @"OS Version"),
+		NSLocalizedStringFromTableInBundle(@"Quit",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Quit"),
 		 nil, nil);
 	[NSApp terminate: self];
     }
 
     // set the TERM_PROGRAM environment variable
     putenv("TERM_PROGRAM=iTerm.app");
+
+
+    // add our script menu to the menu bar
+    // get image
+    NSImage *scriptIcon = [NSImage imageNamed: @"script"];
+    [scriptIcon setScalesWhenResized: YES];
+    [scriptIcon setSize: NSMakeSize(16, 16)];
+
+    // create menu item with no title and set image
+    NSMenuItem *scriptMenuItem = [[NSMenuItem alloc] initWithTitle: @"" action: nil keyEquivalent: @""];
+    [scriptMenuItem setImage: scriptIcon];
+
+    // create submenu
+    NSMenu *scriptMenu = [[NSMenu alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
+    [scriptMenuItem setSubmenu: scriptMenu];
+    // populate the submenu with ascripts found in the script directory
+    NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath: [SCRIPT_DIRECTORY stringByExpandingTildeInPath]];
+    NSString *file;
+    while (file = [directoryEnumerator nextObject])
+    {
+	NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: file action: @selector(launchScript:) keyEquivalent: @""];
+	[scriptItem setTarget: [iTermController sharedInstance]];
+	[scriptMenu addItem: scriptItem];
+	[scriptItem release];
+    }
+    [scriptMenu release];
+
+    // add new menu item
+    [[NSApp mainMenu] insertItem: scriptMenuItem atIndex: 4];
+    [scriptMenuItem release];
+    [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
+     
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    NSImage *scriptIcon = [NSImage imageNamed: @"script"];
-    NSMenu *scriptMenu = [[NSMenu alloc] initWithTitle: @"Script"];
-    NSMenuItem *scriptMenuItem = [[NSMenuItem alloc] initWithTitle: @"Script Item" action: nil keyEquivalent: @""];
-    [scriptMenuItem setSubmenu: scriptMenu];
-    [scriptMenu release];
-    [scriptMenuItem setImage: scriptIcon];
-    [[NSApp mainMenu] addItem: scriptMenuItem];
-    [scriptMenuItem release];
 }
 
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification

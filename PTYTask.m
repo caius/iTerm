@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.16 2003-09-14 21:39:07 yfabian Exp $
+// $Id: PTYTask.m,v 1.17 2003-10-05 18:48:17 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -419,6 +419,18 @@ static int writep(int fds, char *buf, size_t len)
 - (void) setHasOutput: (BOOL) flag
 {
     hasOutput = flag;
+    if([self firstOutput] == NO)
+	[self setFirstOutput: flag];
+}
+
+- (BOOL) firstOutput
+{
+    return (firstOutput);
+}
+
+- (void) setFirstOutput: (BOOL) flag
+{
+    firstOutput = flag;
 }
 
 

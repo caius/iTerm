@@ -1,3 +1,11 @@
+2003-10-05	ujwal
+
+    * Put in a Scripts menu in the main menu to run user defined scripts.
+      The scripts need to be stored in in the ~/Library/Application Support/iTerm/Scripts 
+      directory.
+    * Fixed compiler warnings about weak link by removing unused link against 
+      CoreFoundation framework.
+
 2003-10-03	fabian
 
     * Put in a link to nightly CVS tarball and CVS build in webpages

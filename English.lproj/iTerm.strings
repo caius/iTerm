@@ -125,3 +125,6 @@
 "Shell"="Shell";
 "Emulation"="Emulation";
 "Color"="Color";
+
+/* Script */
+"Script" = "Script";

@@ -163,7 +163,6 @@
 			children = (
 				0464AB2F006CD2EC7F000001,
 				0464AB30006CD2EC7F000001,
-				E8CE8A890297AE0403A80106,
 			);
 			isa = PBXGroup;
 			name = "External Frameworks and Libraries";
@@ -295,7 +294,6 @@
 		0464AB4B006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
 			files = (
-				DD1E48D90431517D00A8A065,
 				DD1E48DA0431517E00A8A065,
 				DD1E48DB0431517F00A8A065,
 				DDE6FB5904EA89D600A8A067,
@@ -1290,7 +1288,6 @@
 			files = (
 				DD1E48D60431515D00A8A065,
 				DD1E48D70431515D00A8A065,
-				DD1E48D80431515E00A8A065,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1530,18 +1527,6 @@
 		};
 		DD1E48D70431515D00A8A065 = {
 			fileRef = 0464AB30006CD2EC7F000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48D80431515E00A8A065 = {
-			fileRef = E8CE8A890297AE0403A80106;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48D90431517D00A8A065 = {
-			fileRef = E8CE8A890297AE0403A80106;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -1808,12 +1793,6 @@
 			isa = PBXFileReference;
 			path = iTermController.m;
 			refType = 4;
-		};
-		E8CE8A890297AE0403A80106 = {
-			isa = PBXFrameworkReference;
-			name = CoreFoundation.framework;
-			path = /System/Library/Frameworks/CoreFoundation.framework;
-			refType = 0;
 		};
 		E8CF755F026DDA6303A80106 = {
 			fileEncoding = 30;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.16 2003-03-21 00:16:21 yfabian Exp $
+// $Id: MainMenu.h,v 1.17 2003-03-27 01:36:22 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -30,43 +30,13 @@
 #import <Cocoa/Cocoa.h>
 
 @class PseudoTerminal;
+@class PreferencePanel;
 
 @interface MainMenu : NSObject
 {
-   
-    // address book window
-    IBOutlet id AB_PANEL;
-    IBOutlet id openInNewWindow;
-    IBOutlet NSTableView *adTable;
-
-    // address entry window
-    IBOutlet id AE_PANEL;
-    IBOutlet NSColorWell *adBackground;
-    IBOutlet NSTextField *adCommand;
-    IBOutlet NSComboBox *adEncoding;
-    IBOutlet NSColorWell *adForeground;
-    IBOutlet NSTextField *adName;
-    IBOutlet NSTextField *adTextExample;
-    IBOutlet id adRow;
-    IBOutlet id adCol;
-    IBOutlet id adTransparency;
-    IBOutlet id adTransparency2;
-    IBOutlet id adTermType;
-    IBOutlet id adDir;
-    IBOutlet id adNewWindow;
-    IBOutlet id adAI;
-    IBOutlet id adAICode;
-    IBOutlet id adClose;
-    IBOutlet id adDoubleWidth;
-    IBOutlet id adShortcut;
-    IBOutlet NSTextField *adNATextExample;
-    IBOutlet NSColorWell *adSelection;
-    
-    NSFont *aeFont, *aeNAFont;
-    BOOL changingNA;
     
     // preference window
-    IBOutlet id PREF_PANEL;
+    PreferencePanel *PREF_PANEL;
 
     // about window
     IBOutlet id ABOUT;
@@ -91,22 +61,7 @@
 
 // Address book window
 - (IBAction)showABWindow:(id)sender;
-- (IBAction)adbAddEntry:(id)sender;
-- (IBAction)adbCancel:(id)sender;
-- (IBAction)adbEditEntry:(id)sender;
-- (IBAction)adbOk:(id)sender;
-- (IBAction) executeABCommand: (id) sender;
 
-// Address entry window
-- (IBAction)adbRemoveEntry:(id)sender;
-- (IBAction)adEditBackground:(id)sender;
-- (IBAction)adEditCancel:(id)sender;
-- (IBAction)adEditFont:(id)sender;
-- (IBAction)adEditNAFont:(id)sender;
-- (IBAction)adEditForeground:(id)sender;
-- (IBAction)adEditOK:(id)sender;
-- (void)changeFont:(id)fontManager;
-- (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 // About window
 - (IBAction)showAbout:(id)sender;
 - (IBAction)aboutOK:(id)sender;
@@ -129,7 +84,9 @@
 - (void) interpreteKey: (int) code newWindow:(BOOL) newWin;
 
 // Preference Panel
+- (void) initPreferences;
 - (IBAction)showPrefWindow:(id)sender;
+- (PreferencePanel *) preferencePanel;
 
 @end
 

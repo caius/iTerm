@@ -46,6 +46,7 @@
 		};
 		0464AB0E006CD2EC7F000001 = {
 			children = (
+				87D5C490043229390073D10E,
 				FBD0AD0A0337A5B701F955DB,
 				DD48F1D103EBBC2200A8A065,
 				E8CF755F026DDA6303A80106,
@@ -67,6 +68,7 @@
 		};
 		0464AB15006CD2EC7F000001 = {
 			children = (
+				87D5C48F043229390073D10E,
 				FB8D9E6503D6136101F955DB,
 				DD6ACB000410746C00A8A065,
 				DD48F1D003EBBC2200A8A065,
@@ -100,6 +102,8 @@
 			children = (
 				E813FB7D0297522703A80106,
 				E813FB86029754BB03A80106,
+				87D5C471043227820073D10E,
+				870EAAB504325A880073D10E,
 				E8EDCE69015E0A5703000001,
 				FBBB8B60039FC04E01F955DB,
 				FB094A14033D58AE01F955DB,
@@ -256,7 +260,6 @@
 				DD1E48F4043208ED00A8A065,
 				DD1E48F5043208ED00A8A065,
 				DD1E48F6043208EE00A8A065,
-				DD1E48F90432102B00A8A065,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,6 +323,138 @@
 //052
 //053
 //054
+//870
+//871
+//872
+//873
+//874
+		870EAAB504325A880073D10E = {
+			children = (
+				870EAAB604325A880073D10E,
+				876DBBC1043277AF0073D10E,
+				876DBBC304327CC90073D10E,
+				876DBBC5043281250073D10E,
+				876DBBC7043284990073D10E,
+			);
+			isa = PBXVariantGroup;
+			name = PreferencePanel.nib;
+			path = "";
+			refType = 4;
+		};
+		870EAAB604325A880073D10E = {
+			isa = PBXFileReference;
+			name = English;
+			path = English.lproj/PreferencePanel.nib;
+			refType = 4;
+		};
+		870EAAB704325A880073D10E = {
+			fileRef = 870EAAB504325A880073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		876DBBC1043277AF0073D10E = {
+			isa = PBXFileReference;
+			name = zh_CN;
+			path = zh_CN.lproj/PreferencePanel.nib;
+			refType = 4;
+		};
+		876DBBC204327A170073D10E = {
+			isa = PBXFileReference;
+			name = zh_CN;
+			path = zh_CN.lproj/AddressBook.nib;
+			refType = 4;
+		};
+		876DBBC304327CC90073D10E = {
+			isa = PBXFileReference;
+			name = zh_TW;
+			path = zh_TW.lproj/PreferencePanel.nib;
+			refType = 4;
+		};
+		876DBBC404327E9D0073D10E = {
+			isa = PBXFileReference;
+			name = zh_TW;
+			path = zh_TW.lproj/AddressBook.nib;
+			refType = 4;
+		};
+		876DBBC5043281250073D10E = {
+			isa = PBXFileReference;
+			name = Japanese;
+			path = Japanese.lproj/PreferencePanel.nib;
+			refType = 4;
+		};
+		876DBBC6043282C80073D10E = {
+			isa = PBXFileReference;
+			name = Japanese;
+			path = Japanese.lproj/AddressBook.nib;
+			refType = 4;
+		};
+		876DBBC7043284990073D10E = {
+			isa = PBXFileReference;
+			name = Korean;
+			path = Korean.lproj/PreferencePanel.nib;
+			refType = 4;
+		};
+		876DBBC80432860A0073D10E = {
+			isa = PBXFileReference;
+			name = Korean;
+			path = Korean.lproj/AddressBook.nib;
+			refType = 4;
+		};
+		87D5C471043227820073D10E = {
+			children = (
+				87D5C472043227820073D10E,
+				876DBBC204327A170073D10E,
+				876DBBC404327E9D0073D10E,
+				876DBBC6043282C80073D10E,
+				876DBBC80432860A0073D10E,
+			);
+			isa = PBXVariantGroup;
+			name = AddressBook.nib;
+			path = "";
+			refType = 4;
+		};
+		87D5C472043227820073D10E = {
+			isa = PBXFileReference;
+			name = English;
+			path = English.lproj/AddressBook.nib;
+			refType = 4;
+		};
+		87D5C473043227820073D10E = {
+			fileRef = 87D5C471043227820073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		87D5C48F043229390073D10E = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = AddressBookWindowController.h;
+			refType = 4;
+		};
+		87D5C490043229390073D10E = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = AddressBookWindowController.m;
+			refType = 4;
+		};
+		87D5C491043229390073D10E = {
+			fileRef = 87D5C48F043229390073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		87D5C492043229390073D10E = {
+			fileRef = 87D5C490043229390073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//870
+//871
+//872
+//873
+//874
 //DD0
 //DD1
 //DD2
@@ -344,6 +479,7 @@
 				DD1E48BD0431503700A8A065,
 				DD1E48BE0431503800A8A065,
 				DD1E48BF0431503900A8A065,
+				87D5C491043229390073D10E,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,6 +501,8 @@
 				DD1E48CD0431507700A8A065,
 				DD1E48CE0431507D00A8A065,
 				DD1E48DD0431527900A8A065,
+				87D5C473043227820073D10E,
+				870EAAB704325A880073D10E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -386,6 +524,7 @@
 				DD1E48AD0431501B00A8A065,
 				DD1E48AE0431501C00A8A065,
 				DD1E48AF0431501C00A8A065,
+				87D5C492043229390073D10E,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -420,7 +559,6 @@
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
 				INSTALL_PATH = "@executable_path/../Frameworks";
-				OPTIMIZATION_CFLAGS = "";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-seg1addr 0x14000000";
 				OTHER_LIBTOOL_FLAGS = "";
@@ -861,12 +999,6 @@
 		};
 		DD1E48F6043208EE00A8A065 = {
 			fileRef = FB896717038D935801F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F90432102B00A8A065 = {
-			fileRef = FB151F2903648AC401F955DB;
 			isa = PBXBuildFile;
 			settings = {
 			};

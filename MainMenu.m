@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.40 2003-03-26 17:59:49 ujwal Exp $
+// $Id: MainMenu.m,v 1.41 2003-03-27 01:36:22 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -36,6 +36,7 @@
 #import "PreferencePanel.h"
 #import "PseudoTerminal.h"
 #import "NSStringITerm.h"
+#import "AddressBookWindowController.h"
 
 
 #define DEFAULT_FONTNAME  @"Osaka-Mono"
@@ -45,7 +46,7 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Addre
 static NSStringEncoding const *encodingList=nil;
 
 // comaparator function for addressbook entries
-NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
+static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
 {
     return ([(NSString *)[entry1 objectForKey: @"Name"] caseInsensitiveCompare: (NSString *)[entry2 objectForKey: @"Name"]]);
 }
@@ -60,6 +61,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
           __FILE__, __LINE__);
 #endif
     [self initAddressBook];
+    [self initPreferences];
     encodingList=[NSString availableStringEncodings];
 //    systemEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     terminalWindows = [[NSMutableArray alloc] init];
@@ -81,6 +83,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     
     [terminalWindows removeAllObjects];
     terminalWindows = nil;
+
+    [PREF_PANEL release];
 
     return (YES);
 }
@@ -175,7 +179,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 // Address book window
 - (IBAction)showABWindow:(id)sender
 {
-    int r;
+    AddressBookWindowController *abWindowController;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[MainMenu showABWindow:%@]",
@@ -185,332 +189,9 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 //    [self initAddressBook];
 //    NSLog(@"showABWindow: %d\n%@",[addressBook count], addressBook);
 
-    [AB_PANEL center];
-    if([adTable numberOfRows] > 0){
-	[adTable selectRow: 0 byExtendingSelection: NO];
-	[AB_PANEL makeFirstResponder: adTable];
-    }
-    [adTable setDoubleAction: @selector(executeABCommand:)];
-    r= [NSApp runModalForWindow:AB_PANEL];
-    [AB_PANEL close];
-}
-
-- (IBAction) executeABCommand: (id) sender
-{
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu executeABCommand:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-
-
-    if(([adTable selectedRow] < 0) || ([adTable numberOfRows] == 0))
-	return;
-
-    [NSApp stopModal];
-
-    if([openInNewWindow state]==NSOnState)
-        [self executeABCommandAtIndex: [adTable selectedRow] inTerminal: nil];
-    else
-        [self executeABCommandAtIndex: [adTable selectedRow] inTerminal: FRONT];
-}
-
-- (IBAction)adbAddEntry:(id)sender
-{
-    int r;
-    NSStringEncoding const *p=encodingList;
-    
-    [AE_PANEL center];
-    [adName setStringValue:@""];
-    [adCommand setStringValue:[PREF_PANEL shell]];
-    [adEncoding removeAllItems];
-    r=0;
-    while (*p) {
-//        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
-        [adEncoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[PREF_PANEL encoding]) r=p-encodingList;
-        p++;
-    }
-    [adEncoding selectItemAtIndex:r];
-    [adTermType selectItemAtIndex:0];
-    [adShortcut selectItemAtIndex:0];
-    [adRow setIntValue:[PREF_PANEL row]];
-    [adCol setIntValue:[PREF_PANEL col]];
-    [adForeground setColor:[PREF_PANEL foreground]];
-    [adBackground setColor:[PREF_PANEL background]];
-    [adSelection setColor:[PREF_PANEL selectionColor]];
-    [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
-
-    aeFont=[[PREF_PANEL font] copy];
-    [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
-    [adTextExample setFont:aeFont];
-    [adTextExample setTextColor:[PREF_PANEL foreground]];
-    [adTextExample setBackgroundColor:[PREF_PANEL background]];
-
-    aeNAFont=[[PREF_PANEL nafont] copy];
-    [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
-    [adNATextExample setTextColor:[PREF_PANEL foreground]];
-    [adNATextExample setBackgroundColor:[PREF_PANEL background]];
-    [adNATextExample setFont:aeNAFont];
-    [adAI setState:[PREF_PANEL ai]?NSOnState:NSOffState];
-    [adAICode setIntValue:[PREF_PANEL aiCode]];
-    [adClose setState:[PREF_PANEL autoclose]?NSOnState:NSOffState];
-    [adDoubleWidth setState:[PREF_PANEL doubleWidth]?NSOnState:NSOffState];
-    
-    [adTransparency setIntValue:[PREF_PANEL transparency]];
-    [adTransparency2 setIntValue:[PREF_PANEL transparency]];
-
-    r= [NSApp runModalForWindow:AE_PANEL];
-    [AE_PANEL close];
-    if (r == NSRunStoppedResponse) {
-        NSDictionary *ae;
-
-        ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-            [adName stringValue],@"Name",
-            [adCommand stringValue],@"Command",
-            [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
-            [adForeground color],@"Foreground",
-            [adBackground color],@"Background",
-            [adSelection color],@"SelectionColor",
-            [adRow stringValue],@"Row",
-            [adCol stringValue],@"Col",
-            [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
-            [adTermType stringValue],@"Term Type",
-            [adDir stringValue],@"Directory",
-            aeFont,@"Font",
-            aeNAFont,@"NAFont",
-            [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
-            [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
-            [NSNumber numberWithBool:[adClose state]],@"AutoClose",
-            [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
-            [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
-            NULL];
-        [addressBook addObject:ae];
-	[addressBook sortUsingFunction: addressBookComparator context: nil];
-//        NSLog(@"%s(%d):-[Address entry added:%@]",
-//              __FILE__, __LINE__, ae );
-        [adTable reloadData];
-        [ae release];
-
-    }
-    
-}
-
-- (IBAction)adbCancel:(id)sender
-{
-    [NSApp abortModal];
-}
-
-- (IBAction)adbEditEntry:(id)sender
-{
-    int r;
-    NSStringEncoding const *p=encodingList;
-    id entry;
-
-    if ([adTable selectedRow]<0) return
-    [AE_PANEL center];
-    entry=[addressBook objectAtIndex:[adTable selectedRow]];
-    [adName setStringValue:[entry objectForKey:@"Name"]];
-    [adCommand setStringValue:[entry objectForKey:@"Command"]];
-    [adEncoding removeAllItems];
-    r=0;
-    while (*p) {
-        //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
-        [adEncoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[[entry objectForKey:@"Encoding"] unsignedIntValue]) r=p-encodingList;
-        p++;
-    }
-    [adEncoding selectItemAtIndex:r];
-    if ([entry objectForKey:@"Term Type"])
-        [adTermType setStringValue:[entry objectForKey:@"Term Type"]];
-    else
-        [adTermType selectItemAtIndex:0];
-    if ([entry objectForKey:@"Shortcut"]&&[[entry objectForKey:@"Shortcut"] intValue]) {
-        [adShortcut setStringValue:[NSString stringWithFormat:@"%c",[[entry  objectForKey:@"Shortcut"] intValue]]];
-    }
-    else
-        [adShortcut selectItemAtIndex:0];
-        
-    [adForeground setColor:[entry objectForKey:@"Foreground"]];
-    [adBackground setColor:[entry objectForKey:@"Background"]];
-    if([entry objectForKey:@"SelectionColor"])
-        [adSelection setColor:[entry objectForKey:@"SelectionColor"]];
-    else
-        [adSelection setColor: [PREF_PANEL selectionColor]];
-    [adRow setStringValue:[entry objectForKey:@"Row"]];
-    [adCol setStringValue:[entry objectForKey:@"Col"]];
-    if ([entry objectForKey:@"Transparency"]) {
-        [adTransparency setIntValue:[[entry objectForKey:@"Transparency"] intValue]];
-        [adTransparency2 setIntValue:[[entry objectForKey:@"Transparency"] intValue]];
-    }
-    else {
-        [adTransparency setIntValue:[PREF_PANEL transparency]];
-        [adTransparency2 setIntValue:[PREF_PANEL transparency]];
-    }
-    if ([entry objectForKey:@"Directory"]) {
-        [adDir setStringValue:[entry objectForKey:@"Directory"]];
-    }
-    else {
-        [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
-    }
-    
-    aeFont=[entry objectForKey:@"Font"];
-    [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
-    [adTextExample setTextColor:[entry objectForKey:@"Foreground"]];
-    [adTextExample setBackgroundColor:[entry objectForKey:@"Background"]];
-    [adTextExample setFont:aeFont];
-
-    aeNAFont=[entry objectForKey:@"NAFont"];
-    if (aeNAFont==nil) aeNAFont=[aeFont copy];
-    [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
-    [adNATextExample setTextColor:[entry objectForKey:@"Foreground"]];
-    [adNATextExample setBackgroundColor:[entry objectForKey:@"Background"]];
-    [adNATextExample setFont:aeNAFont];
-    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[PREF_PANEL ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
-    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[PREF_PANEL aiCode]:[[entry objectForKey:@"AICode"] intValue]];
-    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?[PREF_PANEL autoclose]:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
-    [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?[PREF_PANEL doubleWidth]:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
-
-    r= [NSApp runModalForWindow:AE_PANEL];
-    [AE_PANEL close];
-    if (r == NSRunStoppedResponse) {
-        NSDictionary *ae;
-
-        ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-            [adName stringValue],@"Name",
-            [adCommand stringValue],@"Command",
-            [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
-            [adForeground color],@"Foreground",
-            [adBackground color],@"Background",
-            [adSelection color],@"SelectionColor",
-            [adRow stringValue],@"Row",
-            [adCol stringValue],@"Col",
-            [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
-            [adTermType stringValue],@"Term Type",
-            [adDir stringValue],@"Directory",
-            aeFont,@"Font",
-            aeNAFont,@"NAFont",
-            [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
-            [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
-            [NSNumber numberWithBool:[adClose state]],@"AutoClose",
-            [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
-            [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
-            NULL];
-        [addressBook replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
-	[addressBook sortUsingFunction: addressBookComparator context: nil];
-//        NSLog(@"%s(%d):-[Address entry replaced:%@]",
-//              __FILE__, __LINE__, ae );
-        [adTable reloadData];
-        [ae release];
-    }
-}
-
-- (IBAction)adbOk:(id)sender
-{
-    
-    // Save the address book.
-    [self saveAddressBook];
-
-    // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
-    [[NSNotificationCenter defaultCenter]
-    postNotificationName: @"Reload AddressBook"
-    object: nil
-    userInfo: nil];
-
-    [NSApp stopModal];
-
-}
-
-- (IBAction)adbRemoveEntry:(id)sender
-{
-    NSBeginAlertSheet(
-                      NSLocalizedStringFromTableInBundle(@"Do you really want to remove this item?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
-                      NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"),
-                      NSLocalizedStringFromTableInBundle(@"Remove",@"iTerm", [NSBundle bundleForClass: [self class]], @"Remove"),
-                      nil,
-                      AB_PANEL,               // window sheet is attached to
-                      self,                   // we'll be our own delegate
-                      @selector(sheetDidEnd:returnCode:contextInfo:),     // did-end selector
-                      NULL,                   // no need for did-dismiss selector
-                      sender,                 // context info
-                      NSLocalizedStringFromTableInBundle(@"There is no undo for this operation.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
-                      nil);                   // no parameters in message
-}
-
-- (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
-{
-    if ( returnCode == NSAlertAlternateReturn) {
-        [addressBook removeObjectAtIndex:[adTable selectedRow]];
-	[addressBook sortUsingFunction: addressBookComparator context: nil];
-        [adTable reloadData];
-    }
-}
-
-// address entry window
-- (IBAction)adEditBackground:(id)sender
-{
-    [adTextExample setBackgroundColor:[adBackground color]];
-//    [[NSColorPanel sharedColorPanel] close];
-}
-
-- (IBAction)adEditCancel:(id)sender
-{
-    [NSApp abortModal];
-    [[NSColorPanel sharedColorPanel] close];
-    [[NSFontPanel sharedFontPanel] close];
-}
-
-- (IBAction)adEditFont:(id)sender
-{
-    changingNA=NO;
-    [[adTextExample window] makeFirstResponder:[adTextExample window]];
-    [[NSFontManager sharedFontManager] setSelectedFont:aeFont isMultiple:NO];
-    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
-}
-
-- (IBAction)adEditNAFont:(id)sender
-{
-    changingNA=YES;
-    [[adNATextExample window] makeFirstResponder:[adNATextExample window]];
-    [[NSFontManager sharedFontManager] setSelectedFont:aeNAFont isMultiple:NO];
-    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
-}
-
-- (IBAction)adEditForeground:(id)sender
-{
-    [adTextExample setTextColor:[sender color]];
-//    [[NSColorPanel sharedColorPanel] close];
-}
-
-- (IBAction)adEditOK:(id)sender
-{
-    if ([adCol intValue]<1||[adRow intValue]<1) {
-        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
-                        NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
-                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
-                        nil,nil);
-    }
-    else {
-        [NSApp stopModal];
-        [[NSColorPanel sharedColorPanel] close];
-        [[NSFontPanel sharedFontPanel] close];
-    }
-}
-
-- (void)changeFont:(id)fontManager
-{
-    if (changingNA) {
-        [aeNAFont autorelease];
-        aeNAFont=[fontManager convertFont:[adNATextExample font]];
-        [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
-        [adNATextExample setFont:aeNAFont];
-    }
-    else {
-        [aeFont autorelease];
-        aeFont=[fontManager convertFont:[adTextExample font]];
-        [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
-        [adTextExample setFont:aeFont];
-    }
+    abWindowController = [[AddressBookWindowController alloc] initWithWindowNibName: @"AddressBook"];
+    [abWindowController setAddressBook: addressBook];
+    [abWindowController run];    
 }
 
 // Table data source
@@ -646,6 +327,16 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 //    [pref dealloc];
 }
 
+- (PreferencePanel *) preferencePanel
+{
+    return (PREF_PANEL);
+}
+
+- (void) initPreferences
+{
+    PREF_PANEL = [[PreferencePanel alloc] init];
+}
+
 // Utility
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path
 {
@@ -710,13 +401,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         NSLog(@"No file loaded");
         addressBook=[[NSMutableArray array] retain];
     }
-//    NSLog(@ "initAddressBook: %d\n%@",[addressBook count], addressBook);
-    // Tell the addressbook table in the gui that number of rows have changed.
-    // Other the scrollview is not activated for large addressbooks.
-    // Cocoa bug?
-    [adTable noteNumberOfRowsChanged];
 
-}    
+}
 
 - (void) saveAddressBook
 {
@@ -766,7 +452,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     
     anArray = [[NSMutableArray alloc] init];
     
-    for(i = 0; i < [adTable numberOfRows]; i++)
+    for(i = 0; i < [addressBook count]; i++)
     {
         anEntry = [addressBook objectAtIndex: i];
         [anArray addObject: [anEntry objectForKey:@"Name"]];
@@ -876,7 +562,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 // Returns an entry from the addressbook
 - (NSDictionary *)addressBookEntry: (int) entryIndex
 {
-    if((entryIndex < 0) || (entryIndex >= [adTable numberOfRows]))
+    if((entryIndex < 0) || (entryIndex >= [addressBook count]))
         return (nil);
     
     return ([addressBook objectAtIndex: entryIndex]);
@@ -887,7 +573,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 {
     [addressBook addObject:entry];
     [addressBook sortUsingFunction: addressBookComparator context: nil];
-    [adTable reloadData];
 }
 
 - (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new

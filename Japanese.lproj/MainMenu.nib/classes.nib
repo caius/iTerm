@@ -18,18 +18,6 @@
         {
             ACTIONS = {
                 aboutOK = id; 
-                adEditBackground = id; 
-                adEditCancel = id; 
-                adEditFont = id; 
-                adEditForeground = id; 
-                adEditNAFont = id; 
-                adEditOK = id; 
-                adbAddEntry = id; 
-                adbCancel = id; 
-                adbEditEntry = id; 
-                adbOk = id; 
-                adbRemoveEntry = id; 
-                executeABCommand = id; 
                 newSession = id; 
                 newWindow = id; 
                 showABWindow = id; 
@@ -38,36 +26,7 @@
             }; 
             CLASS = MainMenu; 
             LANGUAGE = ObjC; 
-            OUTLETS = {
-                ABOUT = id; 
-                "AB_PANEL" = id; 
-                "AE_PANEL" = id; 
-                AUTHORS = NSTextView; 
-                FRONT = id; 
-                "PREF_PANEL" = id; 
-                adAI = id; 
-                adAICode = id; 
-                adBackground = NSColorWell; 
-                adClose = id; 
-                adCol = id; 
-                adCommand = NSTextField; 
-                adDir = id; 
-                adDoubleWidth = id; 
-                adEncoding = NSComboBox; 
-                adForeground = NSColorWell; 
-                adNATextExample = NSTextField; 
-                adName = NSTextField; 
-                adNewWindow = id; 
-                adRow = id; 
-                adSelection = NSColorWell; 
-                adShortcut = id; 
-                adTable = NSTableView; 
-                adTermType = id; 
-                adTextExample = NSTextField; 
-                adTransparency = id; 
-                adTransparency2 = id; 
-                openInNewWindow = id; 
-            }; 
+            OUTLETS = {ABOUT = id; AUTHORS = NSTextView; FRONT = id; }; 
             SUPERCLASS = NSObject; 
         }, 
         {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 

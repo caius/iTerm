@@ -7,6 +7,10 @@
       links against the iTerm framework. This enables 
       other applications to link against iTerm framework 
       to embed iTerm functionality. 
+      
+    * Regrouped Preference and AddressBook elements into 
+      separate NIB files. Created AddressBookWindowController 
+      class.
 
 2003-03-25	fabian
     * PTYTextView is now a subclass of NSView under ARRAY 

@@ -1,0 +1,46 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                cancel = id; 
+                changeBackground = id; 
+                changeFontButton = id; 
+                changeForeground = id; 
+                changeNAFontButton = id; 
+                ok = id; 
+                restore = id; 
+            }; 
+            CLASS = PreferencePanel; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                antiAlias = id; 
+                autoclose = id; 
+                background = id; 
+                col = id; 
+                copySelection = id; 
+                doubleWidth = id; 
+                encoding = id; 
+                fontExample = id; 
+                foreground = id; 
+                hideTab = id; 
+                nafontExample = id; 
+                openAddressBook = id; 
+                optionKey = id; 
+                prefPanel = id; 
+                promptOnClose = id; 
+                remapDeleteKey = id; 
+                row = id; 
+                selectionColor = id; 
+                shell = id; 
+                silenceBell = id; 
+                tabViewType = id; 
+                terminal = id; 
+                transparency = id; 
+                "transparency_control" = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }
+    ); 
+    IBVersion = 1; 
+}

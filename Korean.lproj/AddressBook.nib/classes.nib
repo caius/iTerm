@@ -1,0 +1,51 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                adEditBackground = id; 
+                adEditCancel = id; 
+                adEditFont = id; 
+                adEditForeground = id; 
+                adEditNAFont = id; 
+                adEditOK = id; 
+                adbAddEntry = id; 
+                adbCancel = id; 
+                adbEditEntry = id; 
+                adbOk = id; 
+                adbRemoveEntry = id; 
+                executeABCommand = id; 
+                showABWindow = id; 
+            }; 
+            CLASS = AddressBookWindowController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "AE_PANEL" = id; 
+                adAI = id; 
+                adAICode = id; 
+                adBackground = NSColorWell; 
+                adClose = id; 
+                adCol = id; 
+                adCommand = NSTextField; 
+                adDir = id; 
+                adDoubleWidth = id; 
+                adEncoding = NSComboBox; 
+                adForeground = NSColorWell; 
+                adNATextExample = NSTextField; 
+                adName = NSTextField; 
+                adNewWindow = id; 
+                adRow = id; 
+                adSelection = NSColorWell; 
+                adShortcut = id; 
+                adTable = NSTableView; 
+                adTermType = id; 
+                adTextExample = NSTextField; 
+                adTransparency = id; 
+                adTransparency2 = id; 
+                openInNewWindow = id; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}

@@ -240,7 +240,7 @@ static unsigned int invocationId = 0;
 	    {
 			theWidth = ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 			
-			graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex effectiveRange:nil];
+			graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:j effectiveRange:nil];
 			if(graphicalCharacterAttribute != nil)
 			{
 				singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];

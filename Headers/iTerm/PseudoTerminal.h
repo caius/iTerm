@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.24 2004-05-08 18:26:00 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.25 2004-05-19 20:38:06 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -43,7 +43,7 @@
     
     /////////////////////////////////////////////////////////////////////////
     int WIDTH,HEIGHT;
-	float charWidth; // float for smoother increases
+	int charWidth;
 	int charHeight;
 	float charHorizontalSpacingMultiplier, charVerticalSpacingMultiplier;
     NSFont *FONT, *NAFONT;

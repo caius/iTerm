@@ -1037,7 +1037,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     // set the font
-    //[[self SCREEN] setFont: [aePrefs objectForKey:@"Font"] nafont: [aePrefs objectForKey:@"NAFont"]];
+    [[self SCREEN] setFont: [aePrefs objectForKey:@"Font"] nafont: [aePrefs objectForKey:@"NAFont"]];
     // set the scrolling
     [[self SCROLLVIEW] setVerticalLineScroll: [[self SCREEN] characterSize].height];
     [[self SCROLLVIEW] setVerticalPageScroll: [[self TEXTVIEW] frame].size.height];

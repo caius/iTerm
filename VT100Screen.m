@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.203 2004-04-14 01:05:12 ujwal Exp $
+// $Id: VT100Screen.m,v 1.204 2004-04-16 20:14:06 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -113,6 +113,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
         tabStop[i] = YES;
 
     for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
+	
+	screenLock = [[NSLock alloc] init];
      
     return self;
 }
@@ -134,6 +136,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	}
 	
 	if (tempBuffer) free(tempBuffer);
+	
+	[screenLock release];
 	
     [display release];
 	[SHELL release];
@@ -159,6 +163,17 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
     return result;
 }
+
+- (void) acquireLock
+{
+	[screenLock lock];
+}
+
+- (void) releaseLock
+{
+	[screenLock unlock];
+}
+
 
 - (void)setWidth:(int)width height:(int)height
 {
@@ -190,7 +205,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 #endif
 	
 	if (width==WIDTH&&height==HEIGHT) return;
-	
+		
 	if (width!=WIDTH&&bufferLines) {
 		//copy the buffer over
 		bl=(unichar*)malloc(scrollbackLines*width*sizeof(unichar));
@@ -278,6 +293,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		free(tempBuffer);
 		tempBuffer=NULL;
 	}
+	
 }
 
 - (int)width

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.204 2004-04-16 07:13:50 ujwal Exp $
+// $Id: PTYTextView.m,v 1.205 2004-04-16 20:14:06 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -682,6 +682,7 @@ static SInt32 systemVersion;
 			NSRectFill(rect);
 		}
 	}
+		
 	WIDTH=[dataSource width];
 
 	// Starting from which line?
@@ -936,6 +937,7 @@ static SInt32 systemVersion;
 	
 
 	forceUpdate=NO;
+	
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -1953,7 +1955,7 @@ static SInt32 systemVersion;
 		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
 			aFont, NSFontAttributeName,
 			color, NSForegroundColorAttributeName,
-			[NSNumber numberWithFloat: (float)bold*(-0.1)], @"NSStrokeWidth",
+			[NSNumber numberWithFloat: antiAlias?(float)bold*(-0.1):0], @"NSStrokeWidth",
 			nil];
 	}
 	else
@@ -1968,12 +1970,12 @@ static SInt32 systemVersion;
 	crap = [[[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
 										   attributes:attrib] autorelease];
 	[image lockFocus];
-	[[NSGraphicsContext currentContext] setShouldAntialias:(antiAlias || bold)];
+	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	[crap drawAtPoint:NSMakePoint(0,0)];
-	// on older systems, for bold, redraw the character
-	if (bold && systemVersion < 0x00001030)
+	// on older systems, for bold, redraw the character offset by 1 pixel
+	if (bold && (systemVersion < 0x00001030 || !antiAlias))
 	{
-		[crap drawAtPoint:NSMakePoint(0,0)];
+		[crap drawAtPoint:NSMakePoint(1,0)];
 	}
 	[image unlockFocus];
 } // renderChar

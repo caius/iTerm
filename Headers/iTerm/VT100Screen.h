@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.11 2004-03-19 22:10:30 ujwal Exp $
+// $Id: VT100Screen.h,v 1.12 2004-04-16 20:14:07 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -76,6 +76,8 @@
 	int		bufferWrapped, lastBufferLineIndex;
 	
 	char *tempBuffer;
+	
+	NSLock *screenLock;
 }
 
 
@@ -105,6 +107,9 @@
 - (void) setBlinkingCursor: (BOOL) flag;
 - (void)setPlayBellFlag:(BOOL)flag;
 
+// lock
+- (void) acquireLock;
+- (void) releaseLock;
 
 // edit screen buffer
 - (void)putToken:(VT100TCC)token;

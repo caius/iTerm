@@ -1,3 +1,11 @@
+2004-04-16  ujwal
+
+	* Honoring anti-aliasing for bold also. We don't use strokewidth for 
+	  bold when antialias is off since it looks ugly. Instead, we use 
+	  the old method of redrawing the character offset by 1 pixel.
+	  
+	* Added a screen lock API to VT100Screen.
+
 2004-04-15  ujwal
 
 	* Fixed size of window in setWindowSize when tabs are at bottom.

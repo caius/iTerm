@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.33 2003-05-30 06:44:46 ujwal Exp $
+// $Id: VT100Screen.h,v 1.34 2003-05-30 07:10:26 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -66,7 +66,6 @@
     NSLock *screenLock;
     BOOL screenIsLocked;
     BOOL blinkingCursor;
-    BOOL showBlinkingCursor;
 
     NSView *display;
 }

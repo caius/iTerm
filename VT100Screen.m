@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.95 2003-05-30 06:54:29 ujwal Exp $
+// $Id: VT100Screen.m,v 1.96 2003-05-30 07:10:27 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -461,7 +461,6 @@ static BOOL PLAYBELL = YES;
 #endif
     
     blinkShow=YES;
-    showBlinkingCursor = YES;
 }
     
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
@@ -2290,8 +2289,8 @@ static BOOL PLAYBELL = YES;
 	    bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
 
 	    dic=[NSDictionary dictionaryWithObjectsAndKeys:
-		(showBlinkingCursor?fg:bg),NSBackgroundColorAttributeName,
-		(showBlinkingCursor?bg:fg),NSForegroundColorAttributeName,
+		(blinkShow?fg:bg),NSBackgroundColorAttributeName,
+		(blinkShow?bg:fg),NSForegroundColorAttributeName,
 		nil];
 	    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
 	}
@@ -2299,7 +2298,6 @@ static BOOL PLAYBELL = YES;
     
     [STORAGE endEditing];
     blinkShow=!blinkShow;
-    showBlinkingCursor = !showBlinkingCursor;
     [self removeScreenLock];
 #endif
 }

@@ -1,6 +1,7 @@
 2004-02-25  ujwal
 
 	* Fixed display bug in scrollUp.
+	* Change cursor when window becomes/resigns key.
 
 2004-02-25  fabian
 

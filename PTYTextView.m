@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.145 2004-02-25 00:39:16 ujwal Exp $
+// $Id: PTYTextView.m,v 1.146 2004-02-25 23:57:16 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -777,9 +777,19 @@
 		if(showCursor)
 		{
 			[[self defaultCursorColor] set];
-			NSRectFill(NSMakeRect(x1*charWidth,
-								  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
-								  charWidth,lineHeight));
+			if([[self window] isKeyWindow])
+			{
+				NSRectFill(NSMakeRect(x1*charWidth,
+									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
+									  charWidth,lineHeight));
+			}
+			else
+			{
+				NSFrameRect(NSMakeRect(x1*charWidth,
+									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
+									  charWidth,lineHeight));
+				
+			}
 			// draw any character on cursor if we need to
 			unichar aChar = [dataSource screenLines][i];
 			if (aChar)

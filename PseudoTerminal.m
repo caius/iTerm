@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.262 2004-02-24 21:54:01 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.263 2004-02-25 23:57:17 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -972,7 +972,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
     // update the cursor
-    //[[[_sessionMgr currentSession] SCREEN] showCursor];
+    [[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
@@ -985,7 +985,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self windowDidResignMain: aNotification];
 	
     // update the cursor
-    //[[[_sessionMgr currentSession] SCREEN] showCursor];
+    [[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
 	
 }
 

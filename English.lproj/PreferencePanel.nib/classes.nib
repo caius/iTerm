@@ -2,10 +2,34 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {cancel = id; editDefaultSession = id; ok = id; }; 
+            ACTIONS = {
+                addBookmark = id; 
+                addBookmarkCancel = id; 
+                addBookmarkConfirm = id; 
+                addBookmarkFolder = id; 
+                addBookmarkFolderCancel = id; 
+                addBookmarkFolderConfirm = id; 
+                cancel = id; 
+                deleteBookmark = id; 
+                deleteBookmarkCancel = id; 
+                deleteBookmarkConfirm = id; 
+                deleteBookmarkFolder = id; 
+                editBookmark = id; 
+                ok = id; 
+            }; 
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                addBookmarkFolderPanel = NSPanel; 
+                bookmarkDisplayProfile = NSPopUpButton; 
+                bookmarkFolderName = NSTextField; 
+                bookmarkKeyboardProfile = NSPopUpButton; 
+                bookmarkName = NSTextField; 
+                bookmarkTerminalProfile = NSPopUpButton; 
+                boomarkCommand = NSTextField; 
+                boomarkWorkingDirectory = NSTextField; 
+                deleteBookmarkPanel = NSPanel; 
+                editBookmarkPanel = NSPanel; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
                 openAddressBook = id; 

@@ -42,10 +42,21 @@
     IBOutlet NSButton *focusFollowsMouse;
 	IBOutlet NSTextField *wordChars;
 	IBOutlet NSWindow *profilesWindow;
+	
+	// Bookmark stuff
+	IBOutlet NSPanel *addBookmarkFolderPanel;
+	IBOutlet NSPanel *deleteBookmarkPanel;
+	IBOutlet NSPanel *editBookmarkPanel;
+	IBOutlet NSTextField *bookmarkFolderName;
+	IBOutlet NSTextField *bookmarkName;
+	IBOutlet NSTextField *boomarkCommand;
+	IBOutlet NSTextField *boomarkWorkingDirectory;
+	IBOutlet NSPopUpButton *bookmarkTerminalProfile;
+	IBOutlet NSPopUpButton *bookmarkKeyboardProfile;
+	IBOutlet NSPopUpButton *bookmarkDisplayProfile;
 	    
     NSUserDefaults *prefs;
 
-    unsigned int defaultScrollback;
 
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
@@ -55,7 +66,6 @@
     BOOL defaultFocusFollowsMouse;
 }
 
-- (IBAction) editDefaultSession: (id) sender;
 
 + (PreferencePanel*)sharedInstance;
 - (id)initWithWindowNibName: (NSString *) windowNibName;
@@ -66,6 +76,19 @@
 - (IBAction)cancel:(id)sender;
 
 - (void)run;
+
+// Bookmark actions
+- (IBAction) addBookmarkFolder: (id) sender;
+- (IBAction) addBookmarkFolderConfirm: (id) sender;
+- (IBAction) addBookmarkFolderCancel: (id) sender;
+- (IBAction) deleteBookmarkFolder: (id) sender;
+- (IBAction) deleteBookmarkConfirm: (id) sender;
+- (IBAction) deleteBookmarkCancel: (id) sender;
+- (IBAction) addBookmark: (id) sender;
+- (IBAction) addBookmarkConfirm: (id) sender;
+- (IBAction) addBookmarkCancel: (id) sender;
+- (IBAction) deleteBookmark: (id) sender;
+- (IBAction) editBookmark: (id) sender;
 
 - (BOOL) antiAlias;
 - (BOOL) copySelection;

@@ -61,6 +61,7 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 - (void)dealloc;
 {
     [_addressBookArray release];
+	[bookmarks release];
     [super dealloc];
 }
 
@@ -137,6 +138,76 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
     return ([anArray autorelease]);
 }
 
+
+// Model for NSOutlineView tree structure
+
+- (id) child:(int)index ofItem:(id)item
+{
+	NSArray *sourceArray;
+	int numEntries;
+
+	NSLog(@"%s: %@", __PRETTY_FUNCTION__, item);
+	
+	if(item == nil)
+		sourceArray = bookmarks;
+	else
+		sourceArray = [item objectForKey: KEY_CHILDREN];
+	
+	if(sourceArray == nil)
+		return (nil);
+	
+	numEntries = [sourceArray count];
+	if(sourceArray == nil || numEntries <= 0 || index >= numEntries)
+		return (nil);
+	
+	return ([sourceArray objectAtIndex: index]);
+}
+
+- (BOOL) isExpandable:(id)item
+{
+	NSDictionary *sourceDict;
+	
+	NSLog(@"%s: %@", __PRETTY_FUNCTION__, item);
+	
+	if(item == nil)
+		return (YES); // root node
+	else
+		sourceDict = item;
+		
+	// if we have an object for the Children key, we are a group
+	return ([sourceDict objectForKey: KEY_CHILDREN]?YES:NO);
+}
+
+- (int) numberOfChildrenOfItem:(id)item
+{
+	NSArray *sourceArray;
+	
+	NSLog(@"%s: %@", __PRETTY_FUNCTION__, item);
+	
+	if(item == nil)
+		sourceArray = bookmarks;
+	else
+		sourceArray = [item objectForKey: KEY_CHILDREN];
+	
+	if(sourceArray == nil)
+		return (0);
+	
+	// if we have an object for the Children key, we are a group
+	return ([sourceArray count]);
+}
+
+
+- (void) addFolder: (NSString *) folderName toNode: (NSMutableDictionary *) aNode
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
+- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDicttoNode: (NSMutableDictionary *) aNode
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
+
 @end
 
 @implementation ITAddressBookMgr (Private);
@@ -174,6 +245,9 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
             [_addressBookArray replaceObjectAtIndex:i withObject:entry];
         }
     }
+	
+	bookmarks = [[NSMutableArray alloc] init];
+	
 }
 
 - (NSDictionary *)newDefaultAddressBookEntry

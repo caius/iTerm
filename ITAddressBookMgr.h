@@ -4,7 +4,6 @@
  **  Copyright (c) 2002, 2003
  **
  **  Author: Fabian, Ujwal S. Setlur
- **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm
  **
@@ -27,6 +26,10 @@
 
 #import <Foundation/Foundation.h>
 
+#define KEY_CHILDREN		@"Children"
+#define KEY_NAME			@"Name"
+#define KEY_DESCRIPTION		@"Description"
+
 extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
 extern BOOL isDefaultEntry( NSDictionary *entry );
 extern NSString *entryVisibleName( NSDictionary *entry, id sender );
@@ -34,6 +37,7 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 @interface ITAddressBookMgr : NSObject 
 {
     NSMutableArray *_addressBookArray;
+	NSMutableArray *bookmarks;
 }
 
 + (id)sharedInstance;
@@ -45,5 +49,12 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 - (void)saveAddressBook;
 - (void) addAddressBookEntry: (NSDictionary *) entry;
 - (NSArray *)addressBookNames;
+
+// Model for NSOutlineView tree structure
+- (id) child:(int)index ofItem:(id)item;
+- (BOOL) isExpandable:(id)item;
+- (int) numberOfChildrenOfItem:(id)item;
+- (void) addFolder: (NSString *) folderName toNode: (NSMutableDictionary *) aNode;
+- (void) addBookmark: (NSString *) bookmarkName withDictionary: (NSDictionary *) aDicttoNode: (NSMutableDictionary *) aNode;
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.4 2002-12-16 17:19:11 yfabian Exp $
+// $Id: PTYTextView.m,v 1.5 2002-12-17 09:02:31 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -13,6 +13,7 @@
 #define GREED_KEYDOWN         1
 
 #import "PTYTextView.h"
+#import "PTYSession.h"
 
 
 @implementation PTYTextView
@@ -327,4 +328,197 @@
     [s1 release];
 }
 
+
+//
+// Drag and Drop methods for our text view
+//
+
+//
+// Called when our drop area is entered
+//
+- (unsigned int) draggingEntered:(id <NSDraggingInfo>)sender
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView draggingEntered:%@]", __FILE__, __LINE__, sender );
+#endif
+    
+    // Always say YES; handle failure later.
+    bExtendedDragNDrop = YES;
+    
+    
+    return bExtendedDragNDrop;
+}
+
+
+//
+// Called when the dragged object is moved within our drop area
+//
+- (unsigned int) draggingUpdated:(id <NSDraggingInfo>)sender
+{
+    unsigned int iResult;
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView draggingUpdated:%@]", __FILE__, __LINE__, sender );
+#endif
+    
+    // Let's see if our parent NSTextView knows what to do
+    iResult = [super draggingUpdated: sender];
+    
+    // If parent class does not know how to deal with this drag type, check if we do.
+    if (iResult == NSDragOperationNone) // Parent NSTextView does not support this drag type.
+    {
+        return [self _checkForSupportedDragTypes: sender];
+    }
+    
+    return iResult;
+}
+
+
+//
+// Called when the dragged object leaves our drop area
+//
+- (void) draggingExited:(id <NSDraggingInfo>)sender
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView draggingExited:%@]", __FILE__, __LINE__, sender );
+#endif
+    
+    // We don't do anything special, so let the parent NSTextView handle this.
+    [super draggingExited: sender];
+    
+    // Reset our handler flag
+    bExtendedDragNDrop = NO;
+}
+
+
+//
+// Called when the dragged item is about to be released in our drop area.
+//
+- (BOOL) prepareForDragOperation:(id <NSDraggingInfo>)sender
+{
+    BOOL bResult;
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView prepareForDragOperation:%@]", __FILE__, __LINE__, sender );
+#endif
+    
+    // Check if parent NSTextView knows how to handle this.
+    bResult = [super prepareForDragOperation: sender];
+    
+    // If parent class does not know how to deal with this drag type, check if we do.
+    if ( bResult != YES && 
+        [self _checkForSupportedDragTypes: sender] != NSDragOperationNone )
+    {
+        bResult = YES;
+    }
+    
+    return bResult;
+}
+
+
+//
+// Called when the dragged item is released in our drop area.
+//
+- (BOOL) performDragOperation:(id <NSDraggingInfo>)sender
+{
+    unsigned int dragOperation;
+    BOOL bResult = NO;
+    PTYSession *delegate = [self delegate];
+    
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView performDragOperation:%@]", __FILE__, __LINE__, sender );
+#endif
+    
+    
+    // If parent class does not know how to deal with this drag type, check if we do.
+    if (bExtendedDragNDrop)
+    {
+        NSPasteboard *pb = [sender draggingPasteboard];
+        NSArray *propertyList;
+        NSString *aString;
+        int i;
+        
+        dragOperation = [self _checkForSupportedDragTypes: sender];
+        
+        switch (dragOperation)
+        {
+            case NSDragOperationCopy:
+                // Check for simple strings first
+                aString = [pb stringForType:NSStringPboardType];
+                if (aString != nil)
+                {
+                    if ([delegate respondsToSelector:@selector(pasteString:)])
+                        [delegate pasteString: aString];
+                    else
+                        [super paste:sender];
+                }
+                // Check for file names
+                propertyList = [pb propertyListForType: NSFilenamesPboardType];
+                for(i = 0; i < [propertyList count]; i++)
+                {
+                    // Just paste the file names into the shell.
+                    if ([delegate respondsToSelector:@selector(pasteString:)])
+                    {
+                        [delegate pasteString: (NSString*)[propertyList objectAtIndex: i]];
+                        [delegate pasteString: @" "];
+                    }
+
+                }
+                bResult = YES;
+                break;				
+        }
+        
+    }
+    
+    return bResult;
+}
+
+
+//
+//
+//
+- (void) concludeDragOperation:(id <NSDraggingInfo>)sender
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView concludeDragOperation:%@]", __FILE__, __LINE__, sender );
+#endif
+    
+    // If we did no handle the drag'n'drop, ask our parent to clean up
+    // I really wish the concludeDragOperation would have a useful exit value.
+    if (!bExtendedDragNDrop)
+    {
+        [super concludeDragOperation: sender];
+    }
+    
+    bExtendedDragNDrop = NO;
+}
+
+
 @end
+
+//
+// private methods
+//
+@implementation PTYTextView (Private)
+
+- (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender
+{
+  NSString *sourceType;
+  BOOL iResult;
+  
+  iResult = NSDragOperationNone;
+  
+  // We support the FileName drag type for attching files
+  sourceType = [[sender draggingPasteboard] availableTypeFromArray: [NSArray arrayWithObjects: 
+									       NSFilenamesPboardType, 
+									     NSStringPboardType, 
+									     nil]];
+  
+  if (sourceType)
+    {
+      iResult = NSDragOperationCopy;
+    }
+  
+  return iResult;
+}
+
+@end
+

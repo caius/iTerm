@@ -79,6 +79,7 @@
 - (void)pageUp:(id)sender;
 - (void)pageDown:(id)sender;
 - (void)paste:(id)sender;
+- (void) pasteString: (NSString *) aString;
 - (void)deleteBackward:(id)sender;
 - (void)deleteForward:(id)sender;
 

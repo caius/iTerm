@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.1.1.1 2002-11-26 04:56:49 ujwal Exp $
+// $Id: PTYTextView.h,v 1.2 2002-12-17 09:02:32 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -17,6 +17,20 @@
     BOOL IM_INPUT_INSERT;
     NSRange IM_INPUT_SELRANGE;
     NSRange IM_INPUT_MARKEDRANGE;
+    
+    // This is a flag to let us know whether we are handling this
+    // particular drag and drop operation. We are using it because
+    // the prepareDragOperation and performDragOperation of the
+    // parent NSTextView class return "YES" even if the parent
+    // cannot handle the drag type. To make matters worse, the
+    // concludeDragOperation does not have any return value.
+    // This all results in the inability to test whether the
+    // parent could handle the drag type properly. Is this a Cocoa
+    // implementation bug?
+    // Fortunately, the draggingEntered and draggingUpdated methods
+    // seem to return a real status, based on which we can set this flag.
+    BOOL bExtendedDragNDrop;
+
 }
 
 - (id)init;
@@ -36,4 +50,26 @@
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent;
 - (void) browse:(id)sender;
 - (void) mail:(id)sender;
+
+//
+// Drag and Drop methods for our text view
+//
+- (unsigned int) draggingEntered: (id<NSDraggingInfo>) sender;
+- (unsigned int) draggingUpdated: (id<NSDraggingInfo>) sender;
+- (void) draggingExited: (id<NSDraggingInfo>) sender;
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>) sender;
+- (BOOL) performDragOperation: (id<NSDraggingInfo>) sender;
+- (void) concludeDragOperation: (id<NSDraggingInfo>) sender;
+
+
 @end
+
+//
+// private methods
+//
+@interface PTYTextView (Private)
+
+- (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender;
+
+@end
+

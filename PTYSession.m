@@ -441,13 +441,20 @@ static NSString *PWD_ENVVALUE = @"~";
     board = [NSPasteboard generalPasteboard];
     NSParameterAssert(board != nil );
     str = [board stringForType:NSStringPboardType];
-    if (str != nil) {
-	NSData *strdata = [[str stringReplaceSubstringFrom:@"\n" to:@"\r"]
-				 dataUsingEncoding:[TERMINAL encoding]
-			      allowLossyConversion:YES];
-	if (strdata != nil)
-	    [SHELL writeTask:strdata];
+    [self pasteString: str];
+}
+
+- (void) pasteString: (NSString *) aString
+{
+
+    if (aString != nil) {
+        NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
+                                    dataUsingEncoding:[TERMINAL encoding]
+                                allowLossyConversion:YES];
+        if (strdata != nil)
+            [SHELL writeTask:strdata];
     }
+    
 }
 
 - (void)deleteBackward:(id)sender

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.153 2003-04-27 07:56:25 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.154 2003-04-27 16:59:13 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -99,8 +99,8 @@ static NSString *ConfigToolbarItem = @"Config";
     [MainMenu breakDown:[pref shell] cmdPath:&cmd cmdArgs:&arg];
 
     [self initSession:nil
-     foregroundColor:[[currentPtySession TERMINAL] defaultFGColor]
-     backgroundColor:[[[currentPtySession TERMINAL] defaultBGColor] colorWithAlphaComponent: [[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]]
+     foregroundColor:[pref foreground]
+     backgroundColor:[[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]
      selectionColor: [pref selectionColor]
             encoding:[pref encoding]
                 term:[pref terminalType]];

@@ -30,7 +30,7 @@
 #define OPT_META   1
 #define OPT_ESC    2
 
-@class MainMenu;
+@class iTermController;
 
 @interface PreferencePanel : NSResponder
 {
@@ -64,11 +64,11 @@
     BOOL defaultBlinkingCursor;
     BOOL defaultEnforceCharacterAlignment;
 
-    MainMenu *iTerm;
+    iTermController *iTerm;
 
 }
 
-- (void) setMainMenu: (MainMenu *) theParent;
+- (void) setMainMenu: (iTermController *) theParent;
 - (IBAction) editDefaultSession: (id) sender;
 
 - (id)init;

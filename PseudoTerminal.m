@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.196 2003-08-06 15:37:07 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.197 2003-08-06 15:55:57 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1623,7 +1623,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] performClose:sender];
 }
 
-- (MainMenu *) mainMenu;
+- (iTermController *) mainMenu;
 {
     return (MAINMENU);
 }

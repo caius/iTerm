@@ -1,6 +1,8 @@
 2003-08-06	ujwal
     
     * Removed all references to [NSApp delegate].
+    
+    * Renamed MainMenu class to iTermController.
 
 2003-08-03	ujwal
 
@@ -337,7 +339,7 @@
 2003-04-29	fabian
     * Fixed a bug in VT100Screen's removeOverLine
     * Implemented custom setting of scrollback buffer size
-    * a little bit code cleanup in MainMenu and PseudoTerminal.
+    * a little bit code cleanup in iTermController and PseudoTerminal.
     
     
 2003-04-29	ujwal
@@ -1332,7 +1334,7 @@
       the addressbook icon, but I couldn't get it to work.
       More research needs to be done on that...
       
-    * Fixed bugs in MainMenu that did not save addressbook 
+    * Fixed bugs in iTermController that did not save addressbook 
       when entries were deleted.
       
 
@@ -1355,7 +1357,7 @@
       Was causing addressbook changes not to be saved.
     
     * Refactored addressbook code by introducing an 
-      "executeABCommand:" method in MainMenu.
+      "executeABCommand:" method in iTermController.
       
 
 2002-12-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>

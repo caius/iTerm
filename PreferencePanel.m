@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.55 2003-07-21 15:13:51 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.56 2003-08-06 15:55:57 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -28,9 +28,9 @@
 #import "PreferencePanel.h"
 #import "NSStringITerm.h"
 #import "AddressBookWindowController.h"
-#import "MainMenu.h"
+#import "iTermController.h"
 
-#define NIB_PATH  @"MainMenu"
+#define NIB_PATH  @"iTermController"
 
 
 
@@ -271,7 +271,7 @@ static float versionNumber;
     return (defaultEnforceCharacterAlignment);
 }
 
-- (void) setMainMenu: (MainMenu *) theParent
+- (void) setMainMenu: (iTermController *) theParent
 {
     iTerm = theParent;
 }
@@ -281,7 +281,7 @@ static float versionNumber;
     AddressBookWindowController *abWindowController;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu showABWindow:%@]",
+    NSLog(@"%s(%d):-[iTermController showABWindow:%@]",
           __FILE__, __LINE__, sender);
 #endif
 

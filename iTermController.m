@@ -1,7 +1,7 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.84 2003-08-06 15:23:34 ujwal Exp $
+// $Id: iTermController.m,v 1.1 2003-08-06 15:55:57 ujwal Exp $
 /*
- **  MainMenu.m
+ **  iTermController.m
  **
  **  Copyright (c) 2002, 2003
  **
@@ -32,7 +32,7 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#import "MainMenu.h"
+#import "iTermController.h"
 #import "PreferencePanel.h"
 #import "PseudoTerminal.h"
 #import "PTYSession.h"
@@ -53,13 +53,13 @@ extern BOOL isDefaultEntry( NSDictionary *entry );
 extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
 
-@implementation MainMenu
+@implementation iTermController
 
 // NSApplication delegate methods
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu applicationWillFinishLaunching]",
+    NSLog(@"%s(%d):-[iTermController applicationWillFinishLaunching]",
           __FILE__, __LINE__);
 #endif
 
@@ -83,7 +83,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu applicationDidFinishLaunching]",
+    NSLog(@"%s(%d):-[iTermController applicationDidFinishLaunching]",
           __FILE__, __LINE__);
 #endif
     
@@ -92,7 +92,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu applicationShouldTerminate]",
+    NSLog(@"%s(%d):-[iTermController applicationShouldTerminate]",
           __FILE__, __LINE__);
 #endif
 
@@ -183,7 +183,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (id) init
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu init]",
+    NSLog(@"%s(%d):-[iTermController init]",
           __FILE__, __LINE__);
 #endif
     self = [super init];
@@ -228,7 +228,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (void) dealloc
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu dealloc]",
+    NSLog(@"%s(%d):-[iTermController dealloc]",
           __FILE__, __LINE__);
 #endif
 
@@ -245,7 +245,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 //    PseudoTerminal *term;
     
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu newWindow]",
+    NSLog(@"%s(%d):-[iTermController newWindow]",
           __FILE__, __LINE__);
 #endif
 
@@ -263,7 +263,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 {
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu newSession]",
+    NSLog(@"%s(%d):-[iTermController newSession]",
           __FILE__, __LINE__);
 #endif
 
@@ -554,7 +554,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu buildAddressBookMenu]",
+    NSLog(@"%s(%d):-[iTermController buildAddressBookMenu]",
           __FILE__, __LINE__);
 #endif
 
@@ -596,7 +596,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
     // Grab the addressbook command
     entry = [[self addressBook] objectAtIndex:theIndex];
-    [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
+    [iTermController breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
     
     
@@ -663,7 +663,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 
 // AddressBook/Bookmark methods
-@implementation MainMenu (AddressBook)
+@implementation iTermController (AddressBook)
 
 - (NSMutableArray *) addressBook
 {
@@ -676,7 +676,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     AddressBookWindowController *abWindowController;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu showABWindow:%@]",
+    NSLog(@"%s(%d):-[iTermController showABWindow:%@]",
           __FILE__, __LINE__, sender);
 #endif
 
@@ -694,7 +694,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 {
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu initAddressBook]",
+    NSLog(@"%s(%d):-[iTermController initAddressBook]",
           __FILE__, __LINE__);
 #endif
 
@@ -857,7 +857,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 NSString *terminalsKey = @"terminals";
 
 // Scripting support
-@implementation MainMenu (KeyValueCoding)
+@implementation iTermController (KeyValueCoding)
 
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key
 {
@@ -945,7 +945,7 @@ NSString *terminalsKey = @"terminals";
 
 
 // Private interface
-@implementation MainMenu (Private)
+@implementation iTermController (Private)
 
 - (void) _executeABMenuCommandInNewTab: (id) sender
 {

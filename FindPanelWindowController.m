@@ -24,7 +24,7 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "MainMenu.h"
+#import "iTermController.h"
 #import "PTYTextView.h"
 #import "FindPanelWindowController.h"
 

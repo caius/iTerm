@@ -26,7 +26,7 @@
 
 #import "AddressBookWindowController.h"
 #import "PreferencePanel.h"
-#import "MainMenu.h"
+#import "iTermController.h"
 
 #define DEBUG_ALLOC	0
 
@@ -298,14 +298,14 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     preferences = thePreferences;
 }
 
-- (MainMenu *) iTermController
+- (iTermController *) iTerm
 {
-    return (iTermController);
+    return (iTerm);
 }
 
-- (void) setITermController: (MainMenu *) theController
+- (void) setITermController: (iTermController *) theController
 {
-    iTermController = theController;
+    iTerm = theController;
 }
 
 
@@ -347,7 +347,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     }
 
     // Save the bookmarks.
-    [[self iTermController] saveAddressBook];
+    [[self iTerm] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
     [[NSNotificationCenter defaultCenter]
@@ -549,7 +549,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
  //              __FILE__, __LINE__, ae );
 
 	// Save the bookmarks.
-	[[self iTermController] saveAddressBook];
+	[[self iTerm] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
@@ -607,7 +607,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
 	// Save the bookmarks.
-	[[self iTermController] saveAddressBook];
+	[[self iTerm] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
@@ -695,9 +695,9 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     while((selectedRow = [selectedRowEnumerator nextObject]) != nil)
     {
 	if(sender == openInWindow)
-	    [[self iTermController] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
+	    [[self iTerm] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
 	else
-	    [[self iTermController] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[self iTermController] frontPseudoTerminal]];
+	    [[self iTerm] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[self iTerm] frontPseudoTerminal]];
     }
 
     // close the bookmarks window

@@ -34,14 +34,14 @@
 @class VT100Terminal;
 @class PreferencePanel;
 @class PseudoTerminal;
-@class MainMenu;
+@class iTermController;
 @class PTYTabViewItem;
 @class VT100TextStorage;
 
 @interface PTYSession : NSResponder {
     
-    /// MainMenu reference
-    MainMenu *MAINMENU;
+    /// iTermController reference
+    iTermController *MAINMENU;
     
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
@@ -139,7 +139,7 @@
 
 
 // get/set methods
-- (void) setMainMenu: (MainMenu *) theMainMenu;
+- (void) setMainMenu: (iTermController *) theMainMenu;
 - (PseudoTerminal *) parent;
 - (void) setParent: (PseudoTerminal *) theParent;
 - (PTYTabViewItem *) tabViewItem;

@@ -33,7 +33,7 @@
 #import "VT100Terminal.h"
 #import "PreferencePanel.h"
 #import "PseudoTerminal.h"
-#import "MainMenu.h"
+#import "iTermController.h"
 #import "NSStringITerm.h"
 #import "PTYTabViewitem.h"
 #import "AddressBookWindowController.h"
@@ -1011,7 +1011,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 
 // get/set methods
-- (void) setMainMenu:(MainMenu *) theMainMenu
+- (void) setMainMenu:(iTermController *) theMainMenu
 {
     MAINMENU=theMainMenu;
 }
@@ -1514,7 +1514,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSString *cmd;
     NSArray *arg;
 
-    [MainMenu breakDown:command cmdPath:&cmd cmdArgs:&arg];
+    [iTermController breakDown:command cmdPath:&cmd cmdArgs:&arg];
 
     [self startProgram:cmd arguments:arg environment:[NSDictionary dictionary]];
     

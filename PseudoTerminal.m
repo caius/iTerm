@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.101 2003-02-09 22:45:12 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.102 2003-02-10 04:03:53 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -263,12 +263,17 @@ static NSString *ConfigToolbarItem = @"Config";
 {
     PTYTabViewItem *aTabViewItem;
 
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal addSession:]",
+          __FILE__, __LINE__, sessionIndex);
+#endif    
+
     if(aSession == nil)
 	return;
 
     if([ptyList containsObject: aSession] == NO)
     {
-	
+
 	[aSession setParent: self];
 	if([ptyList count] == 0)
 	{
@@ -288,33 +293,10 @@ static NSString *ConfigToolbarItem = @"Config";
 	[aSession setTabViewItem: aTabViewItem];
 	[self selectSession: currentSessionIndex];
 
-
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
-	    if(![pref hideTab])
-		[TABVIEW setTabViewType: [pref tabViewType]];
-	    else
-		[TABVIEW setTabViewType: NSNoTabsBezelBorder];
-	    [self setWindowSize: YES];
+	    [[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
 	}
-	else if([TABVIEW numberOfTabViewItems] == 2)
-	{
-	    [TABVIEW setTabViewType: [pref tabViewType]];
-	    [self setWindowSize: NO];
-	}
-
-
-	if ([TABVIEW numberOfTabViewItems] == 1)
-	{
-	    if(![pref hideTab])
-		[TABVIEW setTabViewType: [pref tabViewType]];
-	    else
-	    {
-		[TABVIEW setTabViewType: NSNoTabsBezelBorder];
-		[self setWindowSize: NO];
-		[[currentPtySession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[currentPtySession TEXTVIEW] string] length] - 1, 1)];
-	    }
-	}	
 
 	[WINDOW makeKeyAndOrderFront: self];
 	
@@ -807,7 +789,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, aNotification);
 #endif
 
-    [MAINMENU setFrontPseudoTerminal: self];
+    [MAINMENU setFrontPseudoTerminal: self];    
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
@@ -1390,8 +1372,11 @@ static NSString *ConfigToolbarItem = @"Config";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: didSelectTabViewItem]", __FILE__, __LINE__);
-#endif    
+#endif
+
+    
     [currentPtySession setLabelAttribute];
+    
 }
 
 - (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1403,7 +1388,10 @@ static NSString *ConfigToolbarItem = @"Config";
     [ptyListLock lock];
     if([ptyList containsObject: [tabViewItem identifier]] &&
        [[tabViewItem identifier] isKindOfClass: [PTYSession class]])
-	[ptyList removeObject: [tabViewItem identifier]];
+    {
+	PTYSession *aSession = [tabViewItem identifier];
+	[ptyList removeObject: aSession];
+    }
     [ptyListLock unlock];
 
 }
@@ -1462,6 +1450,23 @@ static NSString *ConfigToolbarItem = @"Config";
 #endif
     
     currentSessionIndex = [TABVIEW indexOfTabViewItem: [TABVIEW selectedTabViewItem]];
+
+    if ([TABVIEW numberOfTabViewItems] == 1)
+    {
+	if(![pref hideTab])
+	    [TABVIEW setTabViewType: [pref tabViewType]];
+	else
+	{
+	    [TABVIEW setTabViewType: NSNoTabsBezelBorder];
+	}
+	[self setWindowSize: YES];
+    }
+    else if([TABVIEW numberOfTabViewItems] == 2)
+    {
+	[TABVIEW setTabViewType: [pref tabViewType]];
+	[self setWindowSize: NO];
+    }
+    
 }
 
 - (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
@@ -1531,13 +1536,22 @@ static NSString *ConfigToolbarItem = @"Config";
 	[self selectSession: (currentSessionIndex - 1)];
     }
 
-    // add the session to the new terminal
     aTabViewItem = [aSession tabViewItem];
-    [term addSession: aSession];
+
+    // temporarily retain the tabViewItem
+    [aTabViewItem retain];
 
     // remove from our window
     [TABVIEW removeTabViewItem: aTabViewItem];
 
+    // add the session to the new terminal
+    [term addSession: aSession];
+
+    // release the tabViewItem
+    [aTabViewItem release];
+
+    
+#if 0
     if ([TABVIEW numberOfTabViewItems] == 1)
     {
 	if(![pref hideTab])
@@ -1549,6 +1563,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	    [[currentPtySession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[currentPtySession TEXTVIEW] string] length] - 1, 1)];
 	}
     }
+#endif
     
 
 }

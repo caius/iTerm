@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.62 2003-05-16 17:49:14 ujwal Exp $
+// $Id: PTYTextView.m,v 1.63 2003-05-16 17:52:56 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2283,10 +2283,12 @@ static BOOL ignoreCase = NO;
 {
     if(searchString != nil)
     {
+	if([aString isEqualToString: searchString] == NO)
+	{
+	    lastSearchLocation = 0;
+	}	
 	[searchString release];
 	searchString = nil;
-	if([aString isEqualToString: searchString] == NO)
-	    lastSearchLocation = 0;
     }
     if(aString != nil)
     {

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.114 2004-02-18 08:31:03 yfabian Exp $
+// $Id: PTYTextView.m,v 1.115 2004-02-18 09:03:45 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -402,7 +402,7 @@
             resized=YES;
 			if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) [self scrollEnd];
         }
-		else resized=NO;
+		//else resized=NO;
     }
 	
 	// find out which lines need refreshing
@@ -1615,9 +1615,9 @@
 {
 	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 	//NSLogRect([self frame]);
-    if([notification object] == [self window] && [[self delegate] respondsToSelector: @selector(textViewResized:)])
-        [[self delegate] textViewResized: self];
-	[self refresh];
+    //if([notification object] == [self window] && [[self delegate] respondsToSelector: @selector(textViewResized:)])
+    //    [[self delegate] textViewResized: self];
+	//[self refresh];
 }
 
 @end

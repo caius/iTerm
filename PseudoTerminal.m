@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.257 2004-02-18 07:07:27 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.258 2004-02-18 09:03:45 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -92,8 +92,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     _sessionMgr = [[ITSessionMgr alloc] init];
 	
     tabViewDragOperationInProgress = NO;
-    resizeInProgress = NO;
-    
+     
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal init: 0x%x]", __FILE__, __LINE__, self);
 #endif
@@ -574,6 +573,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	charWidth=sz.width;
 	charHeight=[font defaultLineHeightForFont];
 	
+	[[self window] setResizeIncrements: NSMakeSize(charWidth, charHeight)];
+	
 }	
 - (int)charWidth
 {
@@ -615,7 +616,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 		tabviewRect = [[[self window] contentView] frame];
 		tabviewRect.origin.x += 2;
-		tabviewRect.size.width += 8;
+		tabviewRect.size.width += 7;
 		tabviewRect.origin.y -= 13;
 		tabviewRect.size.height += 20;
     }
@@ -728,6 +729,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[session TEXTVIEW]  setFont:FONT nafont:NAFONT];
 		[[session TEXTVIEW] setCharWidth: charWidth];
 		[[session TEXTVIEW] setLineHeight: charHeight];
+		//[[self window] setContentResizeIncrements: NSMakeSize(charWidth, charHeight)];
     }
 }
 
@@ -935,61 +937,44 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowDidResize: width = %f, height = %f]",
 		  __FILE__, __LINE__, [[self window] frame].size.width, [[self window] frame].size.height);
 #endif
+		
 	
-    // To prevent death by recursion
-    if(resizeInProgress == YES)
-    {
-		return;
-    }
-	
-	
-    frame = [[[[_sessionMgr currentSession] SCROLLVIEW] contentView] frame];
+    frame = [[[_sessionMgr currentSession] TEXTVIEW] frame];
 #if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 		  frame.origin.x, frame.origin.y,
 		  frame.size.width, frame.size.height);
 #endif
-	
-	resizeInProgress = YES;    
-	    
-    w = (int)(frame.size.width/charWidth + 0.1);
-    h = (int)(frame.size.height/charHeight + 0.1);
+		    
+    w = (int)(frame.size.width/charWidth);
+    h = (int)(frame.size.height/charHeight);
     //NSLog(@"here:%d,%d",w,h);
 	
     for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
         [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
-        //[[[_sessionMgr sessionAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
+        [[[_sessionMgr sessionAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
+		[[[_sessionMgr sessionAtIndex:i] TEXTVIEW] refresh];
     }
     
     WIDTH = w;
     HEIGHT = h;
-	
-    // this will cause a recursion, so we protect ourselves at the entry of the method.
-    [self setWindowSize: NO];
-	
-    // Display the new size in the window title.
+	// Display the new size in the window title.
     NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[_sessionMgr currentSession] name], WIDTH, HEIGHT];
     [self setWindowTitle: aTitle];    
 	
-    // Reset the scrollbar to the bottom
+	// Reset the scrollbar to the bottom
     [[[_sessionMgr currentSession] TEXTVIEW] scrollEnd];
 	
-    //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [[self window] frame].size.width, [[self window] frame].size.height);
-    resizeInProgress = NO;
 }
 
 // PTYWindowDelegateProtocol
 - (void) windowWillToggleToolbarVisibility: (id) sender
 {
-    // prevent any resizing processing by lying
-    resizeInProgress = YES;
 }
 
 - (void) windowDidToggleToolbarVisibility: (id) sender
 {
-    // allow resizing
-    resizeInProgress = NO;
 }
 
 

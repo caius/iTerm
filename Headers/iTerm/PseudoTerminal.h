@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.13 2004-02-13 21:36:17 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.14 2004-02-18 09:03:46 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -47,7 +47,6 @@
     NSFont *FONT, *NAFONT;
     float alpha;
     BOOL tabViewDragOperationInProgress;
-    BOOL resizeInProgress;
     BOOL windowInited;
 	BOOL sendInputToAllSessions;
 }

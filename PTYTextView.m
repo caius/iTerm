@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.185 2004-03-25 01:17:18 ujwal Exp $
+// $Id: PTYTextView.m,v 1.186 2004-03-25 21:24:58 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -39,8 +39,17 @@
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/PTYScrollView.h>
 
+static SInt32 systemVersion;
+
+
 @implementation PTYTextView
 
++ (void) initialize
+{
+	// get system version number
+	// get the system version since there is a useful call in 10.3 and up for getting a blod stroke
+	Gestalt(gestaltSystemVersion,&systemVersion);
+}
 
 - (id)initWithFrame: (NSRect) aRect
 {
@@ -1962,13 +1971,22 @@
 {
 	NSAttributedString  *crap;
 	NSDictionary *attrib;
-	
-	//aFont=bold?[[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask]:aFont;
-	attrib=[NSDictionary dictionaryWithObjectsAndKeys:
-        aFont, NSFontAttributeName,
-        color, NSForegroundColorAttributeName,
-		//[NSNumber numberWithFloat: (float)bold*0.2], NSStrokeWidthAttributeName,
-        nil];
+		
+	if (systemVersion >= 0x00001030)
+	{
+		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
+			aFont, NSFontAttributeName,
+			color, NSForegroundColorAttributeName,
+			[NSNumber numberWithFloat: (float)bold*(-0.1)], NSStrokeWidthAttributeName,
+			nil];
+	}
+	else
+	{
+		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
+			aFont, NSFontAttributeName,
+			color, NSForegroundColorAttributeName,
+			nil];		
+	}
 	
 	
 	crap = [[[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
@@ -1976,8 +1994,8 @@
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias:antiAlias];
 	[crap drawAtPoint:NSMakePoint(0,0)];
-	// for bold, redraw the character
-	if (bold)
+	// on older systems, for bold, redraw the character
+	if (bold && systemVersion < 0x00001030)
 	{
 		[crap drawAtPoint:NSMakePoint(0,0)];
 	}

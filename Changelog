@@ -1,3 +1,8 @@
+2004-03-25  ujwal
+	
+	* Re-implemented bold drawing to use NSStrokeAttributeName on 
+	  Panther systems and above.
+
 2004-03-24  ujwal
 
 	* Embedding default profiles for keyboard, display, and terminal 

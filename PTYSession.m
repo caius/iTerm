@@ -642,27 +642,41 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void)setFGColor:(NSColor*) color
 {
-    //[TEXTVIEW setTextColor: color];
-    [TERMINAL setFGColor: color];
-    [[SCREEN textStorage] removeAttribute:  NSForegroundColorAttributeName 
-                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
-    [[SCREEN textStorage] addAttribute:  NSForegroundColorAttributeName 
-                            value: color
-                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
+    if(color == nil)
+        return;
+
+    if(([TERMINAL defaultFGColor] != color) || 
+        ([[TERMINAL defaultFGColor] alphaComponent] != [color alphaComponent]))
+    {
+        // Change the fg color for future stuff
+        [TERMINAL setFGColor: color];
+        // Change the attributes for the current stuff in the text storage
+        [[SCREEN textStorage] removeAttribute:  NSForegroundColorAttributeName 
+                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
+        [[SCREEN textStorage] addAttribute:  NSForegroundColorAttributeName 
+                                value: color
+                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
+    }
 
 }
 
 - (void)setBGColor:(NSColor*) color
 {
-    //[TEXTVIEW setBackgroundColor: color];
-    // Change the bg color for future stuff
-    [TERMINAL setBGColor: color];
-    // Change the attributes for the current stuff in the text storage
-    [[SCREEN textStorage] removeAttribute:  NSBackgroundColorAttributeName 
-                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
-    [[SCREEN textStorage] addAttribute:  NSBackgroundColorAttributeName 
-                            value: color
-                            range: NSMakeRange(0, [[SCREEN textStorage] length])];
+    if(color == nil)
+        return;
+        
+    if(([TERMINAL defaultBGColor] != color) || 
+        ([[TERMINAL defaultBGColor] alphaComponent] != [color alphaComponent]))
+    {
+        // Change the bg color for future stuff
+        [TERMINAL setBGColor: color];
+        // Change the attributes for the current stuff in the text storage
+        [[SCREEN textStorage] removeAttribute:  NSBackgroundColorAttributeName 
+                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
+        [[SCREEN textStorage] addAttribute:  NSBackgroundColorAttributeName 
+                                value: color
+                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
+    }
 }
 
 // Changes transparency

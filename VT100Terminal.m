@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.67 2003-05-27 06:09:55 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.68 2003-06-11 23:16:45 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1777,8 +1777,8 @@ static VT100TCC decode_string(unsigned char *datap,
                                                                     forKey:NSForegroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] removeObjectForKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
-    [defaultCharacterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
-                                               forKey:@"NSCharWidthAttributeName"];
+    //[defaultCharacterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
+    //                                           forKey:@"NSCharWidthAttributeName"];
     [defaultCharacterAttributeDictionary[0] setObject:pstyle
                                                forKey:NSParagraphStyleAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:fg

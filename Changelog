@@ -2,6 +2,11 @@
 
     * Using embedded FreeMono font for graphical characters 
       since that font provides all the glyphs.
+      
+    * VT100Terminal does not set NSCharacterWidthAttributeName for ascii text.
+      This is so that the custom typesetter can easily check 
+      for double width characters by just looking for the existence of the 
+      attribute.
 
 2003-06-10	ujwal
 

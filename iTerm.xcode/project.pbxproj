@@ -1335,7 +1335,6 @@
 				8742064C0564169600CFC3F1,
 				8742064D0564169600CFC3F1,
 				DD57633705653C5F00F1905E,
-				F65CCFA105F7DE6C00F04CFF,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2070,12 +2069,6 @@
 			path = website/screenshot.shtml;
 			refType = 4;
 			sourceTree = "<group>";
-		};
-		F65CCFA105F7DE6C00F04CFF = {
-			fileRef = F65CCFA005F7DE6C00F04CFF;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		F65CCFFA05F7EB0700F04CFF = {
 			isa = PBXFileReference;

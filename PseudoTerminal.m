@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.40 2002-12-18 07:18:20 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.41 2002-12-19 23:52:21 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1046,7 +1046,7 @@ static NSDictionary *deadStateAttribute;
         [toolbarItem setView: aPopUpButton];
         // Release the popup button since it is retained by the toolbar item.
         [aPopUpButton release];
-        
+
         [toolbarItem setMinSize:[aPopUpButton bounds].size];
         [toolbarItem setMaxSize:[aPopUpButton bounds].size];
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];

@@ -52,7 +52,7 @@
                 adDir = id; 
                 adEncoding = NSComboBox; 
                 adForeground = NSColorWell; 
-                adNATextEample = id; 
+                adNATextExample = id; 
                 adName = NSTextField; 
                 adNewWindow = id; 
                 adRow = id; 

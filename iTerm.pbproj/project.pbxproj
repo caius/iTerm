@@ -197,11 +197,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.7</string>
+	<string>0.6.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.5.7</string>
+	<string>0.6.0</string>
 	<key>NSExtensions</key>
 	<dict/>
 	<key>NSMainNibFile</key>
@@ -226,6 +226,7 @@
 				FB019DE403670C6501F955DB,
 				F52ED8DE037F0A7D01A8A066,
 				F56B230C03A1B36701A8A066,
+				FB33DD7D03B2871901F955DB,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -752,6 +753,12 @@
 		};
 		FB151F2B03648AC401F955DB = {
 			fileRef = FB151F2903648AC401F955DB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FB33DD7D03B2871901F955DB = {
+			fileRef = E8CF7569026DDA6303A80106;
 			isa = PBXBuildFile;
 			settings = {
 			};

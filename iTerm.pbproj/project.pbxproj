@@ -1191,14 +1191,14 @@
 			};
 		};
 		FBBB8B47039D9E1701F955DB = {
-			fileEncoding = 30;
+			fileEncoding = 10;
 			isa = PBXFileReference;
 			name = zh_CN;
 			path = zh_CN.lproj/iTerm.strings;
 			refType = 4;
 		};
 		FBBB8B48039D9E1F01F955DB = {
-			fileEncoding = 30;
+			fileEncoding = 10;
 			isa = PBXFileReference;
 			name = zh_TW;
 			path = zh_TW.lproj/iTerm.strings;

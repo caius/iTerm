@@ -6,8 +6,10 @@
 
 2004-02-19  fabian
 
-	* Testing new hashing algorithm
+	* Now using srand() as hash function in hoping of less collision.
 	* Fixed another cursor problem when dealing with double width characters.
+	* Fixed a memory allocation bug that cause crashes.
+	* Fixed some memory leaks in PTYTextView.
 	
 2004-02-19  ujwal
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.128 2004-02-20 08:42:23 ujwal Exp $
+// $Id: PTYTextView.m,v 1.129 2004-02-20 09:52:01 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -105,7 +105,8 @@
     [font release];
 	[nafont release];
     [markedTextAttributes release];
-		
+	[markedText release];
+	
     [self resetCharCache];
     [super dealloc];
 }
@@ -505,14 +506,14 @@
 	NSDictionary *attrib;
 	
 	aFont=bold?[[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask]:aFont;
-	attrib=[[NSDictionary dictionaryWithObjectsAndKeys:
+	attrib=[NSDictionary dictionaryWithObjectsAndKeys:
         aFont, NSFontAttributeName,
         color, NSForegroundColorAttributeName,
-        nil] retain];
+        nil];
 	
 	
-	crap = [[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
-										  attributes:attrib];
+	crap = [[[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
+										  attributes:attrib] autorelease];
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias:antiAlias];
 	[crap drawAtPoint:NSMakePoint(0,0)];
@@ -536,7 +537,7 @@
 	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
-		image=charImages[i].image=[[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)] retain];
+		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
 		charImages[i].code=code;
 		charImages[i].color=fg;
 		charImages[i].count=1;
@@ -554,7 +555,8 @@
 		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
 			if (charImages[i-j].count<charImages[i-c].count) c=j;
 		}
-		image=charImages[c].image=[[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)] autorelease];
+		[charImages[c].image release];
+		image=charImages[c].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
 		charImages[c].code=code;
 		charImages[c].color=fg;
 		for(j=1; j<=CELLSIZE; j++) {	//reset the cache
@@ -1470,7 +1472,7 @@
 {
     static NSCursor *cursor=nil;
 	//    NSLog(@"Setting mouse here");
-    if (!cursor) cursor=[[[NSCursor alloc] initWithImage:[[NSCursor arrowCursor] image] hotSpot:NSMakePoint(0,0)] retain];
+    if (!cursor) cursor=[[NSCursor alloc] initWithImage:[[NSCursor arrowCursor] image] hotSpot:NSMakePoint(0,0)];
     [self addCursorRect:[self bounds] cursor:cursor];
     [cursor setOnMouseEntered:YES];
 }
@@ -1570,6 +1572,7 @@
     if ([self hasMarkedText]) {
         IM_INPUT_MARKEDRANGE = NSMakeRange(0, 0);
         [markedText release];
+		markedText=nil;
     }
     
     if ([_delegate respondsToSelector:@selector(insertText:)])
@@ -1585,6 +1588,7 @@
     NSLog(@"%s(%d):-[PTYTextView setMarkedText:%@ selectedRange:(%d,%d)]",
           __FILE__, __LINE__, aString, selRange.location, selRange.length);
 #endif
+	[markedText release];
     if ([aString isKindOfClass:[NSAttributedString class]]) {
         markedText=[[NSAttributedString alloc] initWithString:[aString string] attributes:[self markedTextAttributes]];
     }

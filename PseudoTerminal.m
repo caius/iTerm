@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.209 2003-08-10 17:35:21 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.210 2003-08-11 07:24:07 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -135,8 +135,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (PTYTabView*) initViewWithFrame: (NSRect) frame
 {
     NSFont *aFont1, *aFont2;
-    NSSize termSize;
-    NSRect contentRect;
+    NSSize termSize, contentSize;
     
     // Create the tabview
     TABVIEW = [[PTYTabView alloc] initWithFrame: frame];
@@ -155,8 +154,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     NSParameterAssert(aFont1 != nil);
     // Calculate the size of the terminal
-    contentRect = [TABVIEW contentRect];
-    termSize = [VT100Screen screenSizeInFrame: contentRect font: aFont1];
+    contentSize = [NSScrollView contentSizeForFrameSize: [TABVIEW contentRect].size
+							    hasHorizontalScroller: NO
+							    hasVerticalScroller: YES
+							    borderType: NSBezelBorder];
+	
+    termSize = [VT100Screen screenSizeInFrame: NSMakeRect(0, 0, contentSize.width, contentSize.height) font: aFont1];
     [self setWidth: (int) termSize.width height: (int) termSize.height];
 
     return ([TABVIEW autorelease]);

@@ -35,7 +35,7 @@
 
 - (float)baselineOffsetInLayoutManager:(NSLayoutManager *)layoutMgr glyphIndex:(unsigned)glyphIndex
 {
-    return (3.0);    
+    return (BASELINE_OFFSET);    
 }
 
 - (void)layoutGlyphsInLayoutManager:(NSLayoutManager *)layoutMgr startingAtGlyphIndex:(unsigned)startGlyphIndex maxNumberOfLineFragments:(unsigned)maxNumLines nextGlyphIndex:(unsigned *)nextGlyph
@@ -56,7 +56,10 @@
 
     // grab the text container; we should have only one
     if(textContainer == nil)
+    {
 	textContainer = [[layoutMgr firstTextView] textContainer];
+	lineFragmentPadding = [textContainer lineFragmentPadding];
+    }
 
     // grab the textView; there should be only one
     if(textView == nil)
@@ -155,11 +158,12 @@
 	
 	// Now fill the line
 	NSRect usedRect = lineRect;
-	//if(lineEndCharExists == NO)
-	//    usedRect.size.width = glyphRange.length * charWidth;
+	usedRect.size.width = (glyphRange.length) * charWidth + 2*lineFragmentPadding;
+	if(usedRect.size.width > lineRect.size.width)
+	    usedRect.size.width = lineRect.size.width;
 	[layoutMgr setTextContainer: textContainer forGlyphRange: glyphRange];
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
-	[layoutMgr setLocation: NSMakePoint(5.0, [font defaultLineHeightForFont] - 3.0) forStartOfGlyphRange: glyphRange];
+	[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
 	if(lineEndCharExists == YES)
 	{
 	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
@@ -173,7 +177,18 @@
 	// if we are at the end of the text, get out
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
 	if(atEnd == YES || isValidIndex == NO)
+	{
+	    // pad with empty lines if we need to
+	    float displayHeight = [textView frame].size.height;
+
+	    if (lineRect.origin.y + lineRect.size.height < displayHeight)
+	    {
+		lineRect.origin.y += [font defaultLineHeightForFont];
+		lineRect.size.height += displayHeight - lineRect.origin.y;
+		//[layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
+	    }
 	    break;
+	}
 	
     }
 

@@ -28,6 +28,8 @@
 #import <AppKit/AppKit.h>
 #import <AppKit/NSTypesetter.h>
 
+#define BASELINE_OFFSET	3
+
 
 @interface VT100Typesetter : NSTypesetter {
 
@@ -36,6 +38,7 @@
     float charWidth;
     NSTextView *textView;
     NSTextContainer *textContainer;
+    float lineFragmentPadding;
 
 }
 

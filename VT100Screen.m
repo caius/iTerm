@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.97 2003-05-30 14:53:26 ujwal Exp $
+// $Id: VT100Screen.m,v 1.98 2003-06-06 01:29:35 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -449,7 +449,7 @@ static BOOL PLAYBELL = YES;
 
     for(i=0;i<HEIGHT-1;i++) {
 #if DEBUG_USE_BUFFER
-        [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
+        //[STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
         [BUFFER appendAttributedString:[self defaultAttrString:@"\n"]];
 #endif
 

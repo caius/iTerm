@@ -2,6 +2,9 @@
 
     * When a new Default Session entry is created, the font is 
       set to FreeMonoBold.
+      
+    * Added Applescript support to get tty name. Sessions can 
+      also be referenced by id which is the same as the tty name.
 
 2003-05-07	fabian
     * Incorporated patch from Peter Lewis

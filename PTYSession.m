@@ -938,6 +938,15 @@ static NSString *PWD_ENVVALUE = @"~";
 
 }
 
+- (NSString *) uniqueID
+{
+    return ([self tty]);
+}
+
+- (void) setUniqueID: (NSString *)uniqueID
+{
+    NSLog(@"Not allowed to set unique ID");
+}
 
 - (NSString *) name
 {
@@ -1098,6 +1107,11 @@ static NSString *PWD_ENVVALUE = @"~";
           __FILE__, __LINE__, encoding);
 #endif
     [TERMINAL setEncoding:encoding];
+}
+
+- (NSString *) tty
+{
+    return ([SHELL tty]);
 }
 
 - (int) number

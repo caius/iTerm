@@ -122,6 +122,18 @@ tell application "iTerm"
 <br>
 		select mysession
 <br>
+		-- get the tty name of a session
+<br>
+		set myttyname to the tty of the first session
+<br>
+		-- refer to a session by its tty/id
+<br>
+		tell session id myttyname
+<br>
+		    set foreground color to "yellow"
+<br>
+		end tell
+<br>
 <br>		
 	end tell
 <br>

@@ -38,6 +38,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>id</string>
 					</dict>
 					<key>locationRequiredToCreate</key>
 					<string>NO</string>
@@ -61,13 +63,15 @@
 				<true/>
 				<key>implementKeyedArchiving</key>
 				<true/>
-				<key>language</key>
-				<string>Objective-C</string>
 			</dict>
 			<key>defaultSubcontainerAttribute</key>
 			<string></string>
 			<key>presentationOrder</key>
 			<integer>0</integer>
+			<key>propertyKeysForAccessingToManysByID</key>
+			<array/>
+			<key>propertyKeysForAccessingToManysByName</key>
+			<array/>
 			<key>superclass</key>
 			<string>NSCoreSuite.NSApplication</string>
 			<key>xmlEncodingVersion</key>
@@ -100,6 +104,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSColor</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>2</integer>
@@ -133,6 +139,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSColor</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>4</integer>
@@ -166,6 +174,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSColor</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>1</integer>
@@ -199,6 +209,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSString</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>0</integer>
@@ -232,6 +244,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSColor</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>3</integer>
@@ -265,6 +279,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSNumber</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>5</integer>
@@ -272,6 +288,43 @@
 					<string>NO</string>
 					<key>type</key>
 					<string>NSNumber&lt;Float&gt;</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>uniqueID</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>id of session; set to tty name</string>
+						<key>humanReadableName</key>
+						<string>id</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>ID  </string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+						<key>implementAsPrimitive</key>
+						<false/>
+						<key>pbType</key>
+						<string>NSString</string>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>6</integer>
+					<key>readOnly</key>
+					<string>YES</string>
+					<key>type</key>
+					<string>NSString</string>
 					<key>xmlEncodingVersion</key>
 					<string>2.0</string>
 				</dict>
@@ -352,6 +405,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSNumber</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>0</integer>
@@ -359,6 +414,41 @@
 					<string>NO</string>
 					<key>type</key>
 					<string>NSNumber&lt;Int&gt;</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>tty</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>tty device of session</string>
+						<key>humanReadableName</key>
+						<string>tty</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Stty</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+						<key>pbType</key>
+						<string>NSString</string>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>1</integer>
+					<key>readOnly</key>
+					<string>YES</string>
+					<key>type</key>
+					<string>NSString</string>
 					<key>xmlEncodingVersion</key>
 					<string>2.0</string>
 				</dict>
@@ -373,13 +463,15 @@
 				<true/>
 				<key>implementKeyedArchiving</key>
 				<true/>
-				<key>language</key>
-				<string>Objective-C</string>
 			</dict>
 			<key>defaultSubcontainerAttribute</key>
 			<string></string>
 			<key>presentationOrder</key>
 			<integer>2</integer>
+			<key>propertyKeysForAccessingToManysByID</key>
+			<array/>
+			<key>propertyKeysForAccessingToManysByName</key>
+			<array/>
 			<key>superclass</key>
 			<string>NSCoreSuite.AbstractObject</string>
 			<key>xmlEncodingVersion</key>
@@ -412,6 +504,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSNumber</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>0</integer>
@@ -445,6 +539,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>NSNumber</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>1</integer>
@@ -504,6 +600,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>id</string>
 					</dict>
 					<key>locationRequiredToCreate</key>
 					<string>NO</string>
@@ -524,7 +622,7 @@
 					<key>English.lproj</key>
 					<dict>
 						<key>description</key>
-						<string>Description forthcoming</string>
+						<string>current session in the terminal</string>
 						<key>humanReadableName</key>
 						<string>current session</string>
 						<key>number</key>
@@ -542,6 +640,8 @@
 						<true/>
 						<key>implementAccessors</key>
 						<true/>
+						<key>pbType</key>
+						<string>PTYSession</string>
 					</dict>
 					<key>presentationOrder</key>
 					<integer>0</integer>
@@ -563,13 +663,19 @@
 				<true/>
 				<key>implementKeyedArchiving</key>
 				<true/>
-				<key>language</key>
-				<string>Objective-C</string>
 			</dict>
 			<key>defaultSubcontainerAttribute</key>
 			<string></string>
 			<key>presentationOrder</key>
 			<integer>1</integer>
+			<key>propertyKeysForAccessingToManysByID</key>
+			<array>
+				<string>sessionsKey</string>
+			</array>
+			<key>propertyKeysForAccessingToManysByName</key>
+			<array>
+				<string>sessionsKey</string>
+			</array>
 			<key>superclass</key>
 			<string>NSCoreSuite.AbstractObject</string>
 			<key>xmlEncodingVersion</key>
@@ -597,6 +703,11 @@
 					</dict>
 					<key>appleEventCode</key>
 					<string>Cmnd</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>pbType</key>
+						<string>NSString</string>
+					</dict>
 					<key>optional</key>
 					<string>NO</string>
 					<key>presentationOrder</key>
@@ -650,6 +761,11 @@
 					</dict>
 					<key>appleEventCode</key>
 					<string>Pssn</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>pbType</key>
+						<string>NSString</string>
+					</dict>
 					<key>optional</key>
 					<string>NO</string>
 					<key>presentationOrder</key>
@@ -729,6 +845,11 @@
 					</dict>
 					<key>appleEventCode</key>
 					<string>iFil</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>pbType</key>
+						<string>NSString</string>
+					</dict>
 					<key>optional</key>
 					<string>YES</string>
 					<key>presentationOrder</key>
@@ -753,6 +874,11 @@
 					</dict>
 					<key>appleEventCode</key>
 					<string>iTxt</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>pbType</key>
+						<string>NSString</string>
+					</dict>
 					<key>optional</key>
 					<string>YES</string>
 					<key>presentationOrder</key>
@@ -798,20 +924,7 @@
 	<key>appleEventCode</key>
 	<string>ITRM</string>
 	<key>codeGenDict</key>
-	<dict>
-		<key>copyright</key>
-		<string>Copyright (c) 2001, 2002 All wrongs retained.</string>
-		<key>date</key>
-		<string>2002 Sept 13 Friday 1 pm</string>
-		<key>language</key>
-		<string>Objective-C</string>
-		<key>organization</key>
-		<string>Our Great Software, Inc.</string>
-		<key>perlLibrary</key>
-		<string>/Users/ujwal/Library/Application Support/SuiteModeler/Perl</string>
-		<key>user</key>
-		<string>Ujwal Sathyam</string>
-	</dict>
+	<dict/>
 	<key>name</key>
 	<string>iTerm</string>
 	<key>presentationOrder</key>

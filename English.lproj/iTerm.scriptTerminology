@@ -59,6 +59,13 @@
 					<key>Name</key>
 					<string>transparency</string>
 				</dict>
+				<key>uniqueID</key>
+				<dict>
+					<key>Description</key>
+					<string>id of session; set to tty name</string>
+					<key>Name</key>
+					<string>id</string>
+				</dict>
 			</dict>
 			<key>Description</key>
 			<string>A terminal session</string>
@@ -74,6 +81,13 @@
 					<string>index of session</string>
 					<key>Name</key>
 					<string>number</string>
+				</dict>
+				<key>tty</key>
+				<dict>
+					<key>Description</key>
+					<string>tty device of session</string>
+					<key>Name</key>
+					<string>tty</string>
 				</dict>
 			</dict>
 		</dict>
@@ -106,6 +120,8 @@
 			<dict>
 				<key>currentSession</key>
 				<dict>
+					<key>Description</key>
+					<string>current session in the terminal</string>
 					<key>Name</key>
 					<string>current session</string>
 				</dict>
@@ -154,13 +170,6 @@
 			<string>Selects a specified session</string>
 			<key>Name</key>
 			<string>select</string>
-		</dict>
-		<key>terminate</key>
-		<dict>
-			<key>Description</key>
-			<string>Closes a session</string>
-			<key>Name</key>
-			<string>terminate</string>
 		</dict>
 		<key>write</key>
 		<dict>

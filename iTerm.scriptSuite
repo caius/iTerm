@@ -10,8 +10,6 @@
 		<dict>
 			<key>AppleEventCode</key>
 			<string>capp</string>
-			<key>DefaultSubcontainerAttribute</key>
-			<string></string>
 			<key>Superclass</key>
 			<string>NSCoreSuite.NSApplication</string>
 			<key>ToManyRelationships</key>
@@ -75,9 +73,16 @@
 					<key>Type</key>
 					<string>NSNumber&lt;Float&gt;</string>
 				</dict>
+				<key>uniqueID</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>ID  </string>
+					<key>ReadOnly</key>
+					<string>YES</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
 			</dict>
-			<key>DefaultSubcontainerAttribute</key>
-			<string></string>
 			<key>Superclass</key>
 			<string>NSCoreSuite.AbstractObject</string>
 			<key>SupportedCommands</key>
@@ -86,8 +91,6 @@
 				<string>handleExecScriptCommand:</string>
 				<key>select</key>
 				<string>handleSelectScriptCommand:</string>
-				<key>terminate</key>
-				<string>handleTerminateScriptCommand:</string>
 				<key>write</key>
 				<string>handleWriteScriptCommand:</string>
 			</dict>
@@ -99,6 +102,15 @@
 					<string>Snum</string>
 					<key>Type</key>
 					<string>NSNumber&lt;Int&gt;</string>
+				</dict>
+				<key>tty</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Stty</string>
+					<key>ReadOnly</key>
+					<string>YES</string>
+					<key>Type</key>
+					<string>NSString</string>
 				</dict>
 			</dict>
 		</dict>
@@ -123,8 +135,6 @@
 					<string>NSNumber&lt;Int&gt;</string>
 				</dict>
 			</dict>
-			<key>DefaultSubcontainerAttribute</key>
-			<string></string>
 			<key>Superclass</key>
 			<string>NSCoreSuite.AbstractObject</string>
 			<key>SupportedCommands</key>
@@ -202,15 +212,6 @@
 			<string>ITRM</string>
 			<key>AppleEventCode</key>
 			<string>Slct</string>
-			<key>CommandClass</key>
-			<string>NSScriptCommand</string>
-		</dict>
-		<key>terminate</key>
-		<dict>
-			<key>AppleEventClassCode</key>
-			<string>ITRM</string>
-			<key>AppleEventCode</key>
-			<string>Term</string>
 			<key>CommandClass</key>
 			<string>NSScriptCommand</string>
 		</dict>

@@ -47,6 +47,9 @@
 
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
+
+    // tty device
+    NSString *tty;
     
     // tab label attributes
     NSDictionary *normalStateAttribute;
@@ -138,6 +141,8 @@
 - (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem;
 - (NSString *) name;
 - (void) setName: (NSString *) theName;
+- (NSString *) uniqueID;
+- (void) setUniqueID: (NSString *)uniqueID;
 - (NSString *) windowTitle;
 - (void) setWindowTitle: (NSString *) theTitle;
 - (PTYTask *) SHELL;
@@ -164,6 +169,7 @@
 - (NSDictionary *) addressBookEntry;
 - (void) setAddressBookEntry:(NSDictionary*) entry;
 - (int) number;
+- (NSString *) tty;
 
 - (void)clearBuffer;
 - (void)clearScrollbackBuffer;

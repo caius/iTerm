@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.168 2003-05-07 15:44:56 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.169 2003-05-07 21:01:07 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1749,6 +1749,28 @@ static int windowCount = 0;
 
     return result;
 }
+
+// The 'uniqueID' argument might be an NSString or an NSNumber.
+-(id)valueWithID: (NSString *)uniqueID inPropertyWithKey: (NSString*)propertyKey
+{
+    id result = nil;
+    int i;
+
+    if([propertyKey isEqualToString: sessionsKey] == YES)
+    {
+	PTYSession *aSession;
+
+	for (i= 0; i < [ptyList count]; i++)
+	{
+	    aSession = [ptyList objectAtIndex: i];
+	    if([[aSession tty] isEqualToString: uniqueID] == YES)
+		return (aSession);
+	}
+    }
+    
+    return result;
+}
+
 
 
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.49 2003-04-29 22:54:37 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.50 2003-05-07 21:01:07 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -206,6 +206,7 @@
 // (See NSScriptKeyValueCoding.h)
 -(id)valueInSessionsAtIndex:(unsigned)index;
 -(id)valueWithName: (NSString *)uniqueName inPropertyWithKey: (NSString*)propertyKey;
+-(id)valueWithID: (NSString *)uniqueID inPropertyWithKey: (NSString*)propertyKey;
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index;
 -(void)addInSessions:(PTYSession *)object;
 -(void)insertInSessions:(PTYSession *)object;

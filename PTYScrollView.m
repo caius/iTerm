@@ -1,12 +1,31 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.3 2003-02-05 01:11:36 ujwal Exp $
-//
-//  PTYScrollView.m
-//  JTerminal
-//
-//  Created by kuma on Thu Nov 22 2001.
-//  Copyright (c) 2001 Kiichi Kusama. All rights reserved.
-//
+// $Id: PTYScrollView.m,v 1.4 2003-02-12 07:52:46 ujwal Exp $
+/*
+ **  PTYScrollView.m
+ **
+ **  Copyright (c) 2002, 2003
+ **
+ **  Author: Fabian, Ujwal S. Sathyam
+ **	     Initial code by Kiichi Kusama
+ **
+ **  Project: iTerm
+ **
+ **  Description: NSScrollView subclass. Currently does not do anything special.
+ **
+ **  This program is free software; you can redistribute it and/or modify
+ **  it under the terms of the GNU General Public License as published by
+ **  the Free Software Foundation; either version 2 of the License, or
+ **  (at your option) any later version.
+ **
+ **  This program is distributed in the hope that it will be useful,
+ **  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ **  GNU General Public License for more details.
+ **
+ **  You should have received a copy of the GNU General Public License
+ **  along with this program; if not, write to the Free Software
+ **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
 
 // Debug option
 #define DEBUG_ALLOC           0
@@ -41,16 +60,8 @@
     if ((self = [super initWithFrame:frame]) == nil)
 	return nil;
 
-    //textview = [[PTYTextView alloc] initWithFrame:[self documentVisibleRect]];
-    //[self setDocumentView:textview];
-    //[self setNextResponder:textview];
-    //[self setHasVerticalRuler:YES];
-    //[self setRulersVisible:YES];
     [self setHasVerticalScroller:YES];
 
-    //[textview setDrawsBackground:NO];
-    //[textview setEditable:YES];
-    //[textview setSelectable:YES];
 
     //NSParameterAssert(textview != nil);
     NSParameterAssert([self contentView] != nil);

@@ -185,20 +185,6 @@ static unsigned int invocationId = 0;
 	    }
 	}
 
-#if 0
-	// did we encounter a graphical character?
-	BOOL hasGraphicalCharacters = NO;
-	NSRange graphicalCharacterRange;
-	id graphicalCharacterAttribute;
-	graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex longestEffectiveRange:&graphicalCharacterRange inRange:characterRange];
-	if(graphicalCharacterAttribute != nil || graphicalCharacterRange.length != characterRange.length)
-	{
-	    hasGraphicalCharacters = YES;
-	}
-#endif
-
-
-
 	// calculate the line fragment rectangle
 	if(lineStartIndex == 0)
 	{
@@ -232,9 +218,11 @@ static unsigned int invocationId = 0;
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
 	[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
 
-#if 0
 	// If we encountered graphical characters, we need to lay out each glyph; EXPENSIVE
-	if(hasGraphicalCharacters == YES)
+	NSRange graphicalCharacterRange;
+	id graphicalCharacterAttribute;
+	graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex longestEffectiveRange:&graphicalCharacterRange inRange:characterRange];
+	if(graphicalCharacterAttribute != nil || graphicalCharacterRange.length != characterRange.length)
 	{
 	    NSRange singleGlyphRange;
 	    float x = 0;
@@ -249,10 +237,8 @@ static unsigned int invocationId = 0;
 		[layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: singleGlyphRange];
 		x+=theWidth;
 	    }
-	    
 	}
-#endif
-
+	
 	// hide new line glyphs
 	if(lineEndCharExists == YES)
 	{

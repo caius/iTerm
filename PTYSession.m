@@ -1309,6 +1309,14 @@ static NSString *PWD_ENVVALUE = @"~";
 // Handlers for supported commands:
 -(void)handleExecScriptCommand: (NSScriptCommand *)aCommand
 {
+
+    // if we are already doing something, get out.
+    if([SHELL pid] > 0)
+    {
+	NSBeep();
+	return;
+    }
+    
     // Get the command's arguments:
     NSDictionary *args = [aCommand evaluatedArguments];
     NSString *command = [args objectForKey:@"command"];

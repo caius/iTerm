@@ -1,3 +1,7 @@
+2003-08-013	sgehrman & ujwal
+
+    * Moved config panel sheet and code into separate nib file and controller.
+
 2003-08-011	sgehrman
 
     * fixed a bug when setting tabs to the right or left.

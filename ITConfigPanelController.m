@@ -78,7 +78,6 @@
 
 - (IBAction)windowConfigOk:(id)sender
 {
-    NSDictionary *defaultSessionPreferences = [[ITAddressBookMgr sharedInstance] defaultAddressBookEntry];
     
     if ([CONFIG_COL intValue] < 1 || [CONFIG_ROW intValue] < 1)
     {
@@ -135,7 +134,7 @@
         if([[currentSession TERMINAL] defaultBoldColor] != [CONFIG_BOLD color])
             [[currentSession TERMINAL] setBoldColor: [CONFIG_BOLD color]];	
         
-        if(([[defaultSessionPreferences objectForKey: @"Transparency"] intValue] != (100-[[[currentSession TERMINAL] defaultBGColor] alphaComponent]*100)) || 
+        if((100-[[[currentSession TERMINAL] defaultBGColor] alphaComponent]*100 != [CONFIG_TRANSPARENCY intValue]) || 
            ([[currentSession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 
            ([[currentSession TERMINAL] defaultBGColor] != [CONFIG_BACKGROUND color]))
         {
@@ -193,11 +192,13 @@
 - (IBAction)windowConfigForeground:(id)sender
 {
     [CONFIG_EXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
+    [CONFIG_NAEXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
 }
 
 - (IBAction)windowConfigBackground:(id)sender
 {
     [CONFIG_EXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
+    [CONFIG_NAEXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
 }
 
 - (void)changeFont:(id)sender

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.216 2003-08-13 05:03:54 sgehrman Exp $
+// $Id: PseudoTerminal.m,v 1.217 2003-08-13 20:34:39 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -465,9 +465,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
     [self releaseObjects];
     [_toolbarController release];
-    
-#warning is this getting called?
-    
+        
     [super dealloc];
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.6 2003-04-02 16:07:09 ujwal Exp $
+// $Id: PTYTask.m,v 1.7 2003-04-05 20:02:45 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -116,12 +116,7 @@ static int writep(int fds, char *buf, size_t len)
 	if (sts == 0) {
 	    NSLog(@"Write timeout!");
 	    break;
-	}
-	else if (FD_ISSET(fds, &efds)) {
-	    NSLog(@"Write error!");
-	    break;
-	}
-	
+	}	
 
 	if(wrtlen > 1024)
 	    chunk = 1024;

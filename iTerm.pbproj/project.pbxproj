@@ -67,11 +67,8 @@
 				E8CF7561026DDA6303A80106,
 				E8CF7560026DDA6303A80106,
 				F56B230B03A1B36701A8A066,
-				DD12B4D70491DAA000A8A065,
 				E8CF7562026DDA6303A80106,
 				E8CF7563026DDA6303A80106,
-				8793A10204992C7D0073D10E,
-				DDA86B9E048EFCF500A8A065,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -100,13 +97,9 @@
 				872EBC5F04E42E320073D10E,
 				872EBC5804E42E320073D10E,
 				872EBC5404E42E320073D10E,
-				872EBC5604E42E320073D10E,
 				872EBC5B04E42E320073D10E,
-				872EBC6304E42E320073D10E,
 				872EBC5A04E42E320073D10E,
 				872EBC6104E42E320073D10E,
-				872EBC5C04E42E320073D10E,
-				872EBC6904E42E320073D10E,
 			);
 			isa = PBXGroup;
 			name = Headers;
@@ -670,13 +663,6 @@
 			path = Headers/iTerm/PTYTextView.h;
 			refType = 4;
 		};
-		872EBC5604E42E320073D10E = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = PTYTypesetter.h;
-			path = Headers/iTerm/PTYTypesetter.h;
-			refType = 4;
-		};
 		872EBC5704E42E320073D10E = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -712,13 +698,6 @@
 			path = Headers/iTerm/PTYWindow.h;
 			refType = 4;
 		};
-		872EBC5C04E42E320073D10E = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = VT100TextStorage.h;
-			path = Headers/iTerm/VT100TextStorage.h;
-			refType = 4;
-		};
 		872EBC5F04E42E320073D10E = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -747,13 +726,6 @@
 			path = Headers/iTerm/iTermController.h;
 			refType = 4;
 		};
-		872EBC6304E42E320073D10E = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = VT100LayoutManager.h;
-			path = Headers/iTerm/VT100LayoutManager.h;
-			refType = 4;
-		};
 		872EBC6504E42E320073D10E = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -773,13 +745,6 @@
 			isa = PBXFileReference;
 			name = FindPanelWindowController.h;
 			path = Headers/iTerm/FindPanelWindowController.h;
-			refType = 4;
-		};
-		872EBC6904E42E320073D10E = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = VT100Typesetter.h;
-			path = Headers/iTerm/VT100Typesetter.h;
 			refType = 4;
 		};
 		872EBC6A04E42E320073D10E = {
@@ -814,15 +779,6 @@
 		};
 		872EBC6E04E42E320073D10E = {
 			fileRef = 872EBC5404E42E320073D10E;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		872EBC7004E42E320073D10E = {
-			fileRef = 872EBC5604E42E320073D10E;
 			isa = PBXBuildFile;
 			settings = {
 				ATTRIBUTES = (
@@ -875,15 +831,6 @@
 				);
 			};
 		};
-		872EBC7604E42E320073D10E = {
-			fileRef = 872EBC5C04E42E320073D10E;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
 		872EBC7904E42E320073D10E = {
 			fileRef = 872EBC5F04E42E320073D10E;
 			isa = PBXBuildFile;
@@ -920,15 +867,6 @@
 				);
 			};
 		};
-		872EBC7D04E42E320073D10E = {
-			fileRef = 872EBC6304E42E320073D10E;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
 		872EBC7F04E42E320073D10E = {
 			fileRef = 872EBC6504E42E320073D10E;
 			isa = PBXBuildFile;
@@ -949,15 +887,6 @@
 		};
 		872EBC8204E42E320073D10E = {
 			fileRef = 872EBC6804E42E320073D10E;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		872EBC8304E42E320073D10E = {
-			fileRef = 872EBC6904E42E320073D10E;
 			isa = PBXBuildFile;
 			settings = {
 				ATTRIBUTES = (
@@ -1101,18 +1030,6 @@
 			path = French.lproj/PseudoTerminal.nib;
 			refType = 4;
 		};
-		8793A10204992C7D0073D10E = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			path = VT100TextStorage.m;
-			refType = 4;
-		};
-		8793A10404992C7D0073D10E = {
-			fileRef = 8793A10204992C7D0073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		8793D53C05581DE10073D10E = {
 			fileRef = E8EDCE69015E0A5703000001;
 			isa = PBXBuildFile;
@@ -1184,39 +1101,23 @@
 				);
 			};
 		};
-		DD12B4D70491DAA000A8A065 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			path = VT100LayoutManager.m;
-			refType = 4;
-		};
-		DD12B4D90491DAA000A8A065 = {
-			fileRef = DD12B4D70491DAA000A8A065;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
 		DD1E489B04314F1D00A8A065 = {
 			buildActionMask = 2147483647;
 			files = (
 				872EBC6D04E42E320073D10E,
 				872EBC6E04E42E320073D10E,
-				872EBC7004E42E320073D10E,
 				872EBC7104E42E320073D10E,
 				872EBC7204E42E320073D10E,
 				872EBC7304E42E320073D10E,
 				872EBC7404E42E320073D10E,
 				872EBC7504E42E320073D10E,
-				872EBC7604E42E320073D10E,
 				872EBC7904E42E320073D10E,
 				872EBC7A04E42E320073D10E,
 				872EBC7B04E42E320073D10E,
 				872EBC7C04E42E320073D10E,
-				872EBC7D04E42E320073D10E,
 				872EBC7F04E42E320073D10E,
 				872EBC8004E42E320073D10E,
 				872EBC8204E42E320073D10E,
-				872EBC8304E42E320073D10E,
 				872EBC8404E42E320073D10E,
 				872EBC8504E42E320073D10E,
 				872EBC8604E42E320073D10E,
@@ -1274,9 +1175,6 @@
 				DD1E48AF0431501C00A8A065,
 				87D5C492043229390073D10E,
 				DD4BAB7E0470C44C00A8A065,
-				DDA86B9F048EFCF500A8A065,
-				DD12B4D90491DAA000A8A065,
-				8793A10404992C7D0073D10E,
 				2076B15F04E882F800000106,
 				20E74F5404E90B7700000106,
 				20B8892D04E9342100000106,
@@ -1654,18 +1552,6 @@
 		};
 		DD9C1AE3051F45C000A8A065 = {
 			fileRef = DD9C1AE2051F45C000A8A065;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DDA86B9E048EFCF500A8A065 = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			path = VT100Typesetter.m;
-			refType = 4;
-		};
-		DDA86B9F048EFCF500A8A065 = {
-			fileRef = DDA86B9E048EFCF500A8A065;
 			isa = PBXBuildFile;
 			settings = {
 			};

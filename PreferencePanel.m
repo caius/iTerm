@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.121 2004-10-10 07:04:12 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.122 2004-11-20 06:25:31 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -766,6 +766,9 @@ static BOOL editingBookmark = NO;
     } 
 	
 	[bookmarksView reloadData];
+	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.35 2003-06-09 15:21:03 ujwal Exp $
+// $Id: VT100Screen.h,v 1.36 2003-07-16 14:58:50 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -55,6 +55,7 @@
     PTYSession *SESSION;
     int charset[4], saveCharset[4];
     NSMutableAttributedString *BUFFER;
+    NSAttributedString *savedBuffer;
     int updateIndex, minIndex;
     BOOL blinkShow;
 
@@ -119,6 +120,8 @@
 - (void)putToken:(VT100TCC)token;
 - (void)clearBuffer;
 - (void)clearScrollbackBuffer;
+- (void) saveBuffer;
+- (void) restoreBuffer;
 
 // internal
 - (void)setDoubleWidthString:(NSString *)s;

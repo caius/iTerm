@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.105 2003-06-27 19:17:06 ujwal Exp $
+// $Id: VT100Screen.m,v 1.106 2003-07-16 14:58:50 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -221,6 +221,7 @@ static BOOL PLAYBELL = YES;
 
     [display release];
     [BUFFER release];
+    [savedBuffer release];
 
     [screenLines autorelease];
 
@@ -784,6 +785,20 @@ static BOOL PLAYBELL = YES;
 #endif
     TOP_LINE = 0;
     
+}
+
+- (void) saveBuffer
+{
+    [savedBuffer release];
+    savedBuffer = [[NSAttributedString alloc] initWithAttributedString: BUFFER];
+}
+
+- (void) restoreBuffer
+{
+    if([savedBuffer length] > 0)
+	[BUFFER setAttributedString: savedBuffer];
+    [savedBuffer release];
+    savedBuffer = nil;
 }
 
 - (int) getIndexAtX:(int)x Y:(int)y withPadding:(BOOL)padding

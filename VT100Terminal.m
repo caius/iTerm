@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.70 2003-07-16 06:57:48 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.71 2003-07-16 14:58:50 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1844,6 +1844,7 @@ static VT100TCC decode_string(unsigned char *datap,
                 case 8:  AUTOREPEAT_MODE = mode; break;
                 case 9:  INTERLACE_MODE  = mode; break;
 		case 40: allowColumnMode = mode; break;
+		case 47: if(mode) [SCREEN saveBuffer]; else [SCREEN restoreBuffer]; // alternate screen buffer mode
             }
             break;
         case VT100CSI_SM:

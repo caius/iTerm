@@ -1,6 +1,8 @@
 2003-07-16	ujwal
 
     * Added support for ANSI 16 color sequences.
+    
+    * Added support for alternate screen buffer mode.
 
 2003-07-09	ujwal
 

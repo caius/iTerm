@@ -47,7 +47,6 @@
             }; 
             CLASS = PseudoTerminal; 
             LANGUAGE = ObjC; 
-            OUTLETS = {}; 
             SUPERCLASS = NSWindowController; 
         }
     ); 

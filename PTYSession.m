@@ -992,13 +992,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setColorTable:i highLight:NO color:colorTable[0][i]];
         [self setColorTable:i highLight:YES color:colorTable[1][i]];
     }
-	
-    // set the font
-    //[parent setFont: [aePrefs objectForKey:@"Font"] nafont: [aePrefs objectForKey:@"NAFont"]];
-    // set the scrolling
-    [[self SCROLLVIEW] setVerticalLineScroll: [parent height]];
-    [[self SCROLLVIEW] setVerticalPageScroll: [[self TEXTVIEW] frame].size.height];
-	
+		
     // background image
     imageFilePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
     if([imageFilePath length] > 0)

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.152 2004-02-29 02:43:38 ujwal Exp $
+// $Id: PTYTextView.m,v 1.153 2004-03-03 15:48:39 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -491,7 +491,7 @@
 -(void) scrollPageUp: (id) sender
 {
     NSRect scrollRect;
-    
+	
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
 	//forceUpdate = YES;

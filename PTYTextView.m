@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.213 2004-04-27 23:59:19 yfabian Exp $
+// $Id: PTYTextView.m,v 1.214 2004-04-28 05:07:22 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1032,48 +1032,82 @@ static SInt32 systemVersion;
 	if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
 	
-    if (x>=[dataSource width]) x = width  - 1;
+    if (x>=width) x = width  - 1;
 	
-	// if we are holding the shift key down, we are extending selection
-	if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
-	{
-		if (x+y*width<startX+startY*width) {
-            startX = endX;
-            startY = endY;
-        }
-        endX = x;
-        endY = y;
-	}
-	else
-	{
-		endX = startX = x;
-		endY = startY = y;
-	}	
+    if ([event clickCount]<2) {
+        selectMode = SELECT_CHAR;
 
+        // if we are holding the shift key down, we are extending selection
+        if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
+        {
+            if (x+y*width<startX+startY*width) {
+                startX = endX;
+                startY = endY;
+            }
+            endX = x;
+            endY = y;
+        }
+        else
+        {
+            endX = startX = x;
+            endY = startY = y;
+        }	
+    }
 	// Handle double and triple click
-	if([event clickCount] == 2)
+	else if([event clickCount] == 2)
 	{
         int tmpX1, tmpY1, tmpX2, tmpY2;
         
         // double-click; select word
         selectMode = SELECT_WORD;
 		[self _getWordForX: x y: y startX: &tmpX1 startY: &tmpY1 endX: &tmpX2 endY: &tmpY2];
-		startX = tmpX1;
-		startY = tmpY1;
-		endX = tmpX2;
-		endY = tmpY2;		
+        if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
+        {
+            if (startX+startY*width<tmpX1+tmpY1*width) {
+                endX = tmpX2;
+                endY = tmpY2;	
+            }
+            else {
+                startX = endX;
+                startY = endY;
+                endX = tmpX1;
+                endY = tmpY1;
+            }
+        }
+        else 
+        {
+            startX = tmpX1;
+            startY = tmpY1;
+            endX = tmpX2;
+            endY = tmpY2;	
+        }
 	}
 	else if ([event clickCount] >= 3)
 	{
         // triple-click; select line
-		startX = 0;
         selectMode = SELECT_LINE;
-		endX = [dataSource width] - 1;
-		startY = endY = y;
+        if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
+        {
+            if (startY<y) {
+                endX = width - 1;
+                endY = y;
+            }
+            else {
+                if (startX+startY*width<endX+endY*width) {
+                    startX = endX;
+                    startY = endY;
+                }
+                endX = 0;
+                endY = y;
+            }
+        }
+        else
+        {
+            startX = 0;
+            endX = width - 1;
+            startY = endY = y;
+        }            
 	}
-    else {
-        selectMode = SELECT_CHAR;
-    }
 	    
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];

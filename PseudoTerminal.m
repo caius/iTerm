@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.173 2003-05-17 06:40:50 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.174 2003-05-18 02:14:20 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -49,8 +49,6 @@ NSString *rowsKey = @"rows";
 NSString *sessionsKey = @"sessions";
 
 
-@implementation PseudoTerminal
-
 #define NIB_PATH  @"PseudoTerminal"
 
 #define TABVIEW_TOP_BOTTOM_OFFSET	29
@@ -62,8 +60,13 @@ static NSString *ABToolbarItem = @"Address";
 static NSString *CloseToolbarItem = @"Close";
 static NSString *ConfigToolbarItem = @"Config";
 
-static unsigned int windowCount = 0;
-static unsigned int availableWindowPosition = 0;
+// just to keep track of available window positions
+#define CACHED_WINDOW_POSITIONS		100
+static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];  
+
+
+@implementation PseudoTerminal
+
 
 - (void) newSession: (id) sender
 {
@@ -83,23 +86,28 @@ static unsigned int availableWindowPosition = 0;
     
 }
 
-- (id)init
+- (id) initWithWindowNibName: (NSString *) windowNibName
 {
-    if ((self = [super init]) == nil)
+    int i;
+    
+    if ((self = [super initWithWindowNibName: windowNibName]) == nil)
 	return nil;
 
-    [self setMainMenu:[NSApp delegate]];
-    if ([NSBundle loadNibNamed:NIB_PATH owner:self] == NO)
-	return nil;
-    windowNumber = availableWindowPosition;
-    windowCount++;
-    availableWindowPosition = windowCount;
-    // save up to 10 window positions
-    if(windowNumber < 10)
-    {
-	[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", windowNumber]];
-    }
+    WINDOW = [self window];
+
+    // setup our toolbar
     [[self window] setToolbar:[self setupToolbar]];
+
+    // Look for an available window position
+    for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
+    {
+	if(windowPositions[i] == 0)
+	{
+	    [[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", i]];
+	    windowPositions[i] = (unsigned int) self;
+	    break;
+	}
+    }
 
     // Allocate a list for our sessions
     ptyList = [[NSMutableArray alloc] init];
@@ -114,8 +122,15 @@ static unsigned int availableWindowPosition = 0;
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal init: 0x%x]", __FILE__, __LINE__, self);
 #endif
-    
+
     return self;
+}
+
+- (id)init
+{
+
+    return ([self initWithWindowNibName: NIB_PATH]);
+    
 }
 
 - (void)initWindow:(int)width
@@ -827,9 +842,17 @@ static unsigned int availableWindowPosition = 0;
     
     [self releaseObjects];
 
-    windowCount--;
-    availableWindowPosition = windowNumber;
-    WINDOW = nil;    
+    WINDOW = nil;
+    // Release our window postion
+    for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
+    {
+	if(windowPositions[i] == (unsigned int) self)
+	{
+	    windowPositions[i] = 0;
+	    break;
+	}
+    }
+    
 
     [MAINMENU terminalWillClose: self];
 }
@@ -1591,12 +1614,6 @@ static unsigned int availableWindowPosition = 0;
     // release the tabViewItem
     [aTabViewItem release];
 
-}
-
-
-- (NSWindow *) window;
-{
-    return WINDOW;
 }
 
 - (IBAction)closeWindow:(id)sender

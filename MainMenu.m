@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.65 2003-05-15 17:54:32 ujwal Exp $
+// $Id: MainMenu.m,v 1.66 2003-05-18 02:14:19 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -871,6 +871,7 @@ NSString *terminalsKey = @"terminals";
 {
     if([terminalWindows containsObject: object] == YES)
 	return;
+    [object setMainMenu: self];
     [object setPreference:PREF_PANEL];
     if([object windowInited] == NO)
     {

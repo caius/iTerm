@@ -1,3 +1,8 @@
+2003-05-17	ujwal
+
+    * Made PseudoTerminal a true NSWindowController class.
+
+
 2003-05-16	ujwal
 
     * Fixed a crash when closing a window with both "close session 

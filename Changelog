@@ -1,3 +1,7 @@
+2004-02-27 fabian
+	
+	* Fixed a bug in [VT100Screen putToken], ANSIECH, which causes a crash.
+	
 2004-02-27  ujwal
 
 	* Added support for secondary device attribute.
@@ -8,6 +12,7 @@
 
 	* Fixed reversed screen mode bug
 	* Now blinking characters on screen are synchronized
+	* Removed ARRAY/BUFFER mode indicator in About dialog.
 	
 2004-02-26  ujwal
 

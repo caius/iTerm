@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.195 2004-02-27 16:48:11 ujwal Exp $
+// $Id: VT100Screen.m,v 1.196 2004-02-28 10:46:04 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -646,8 +646,9 @@ static BOOL PLAYBELL = YES;
         break;
     case ANSICSI_ECH:
 		i=WIDTH*CURSOR_Y+CURSOR_X;
-		j=token.u.csi.p[0]<=WIDTH?token.u.csi.p[0]:WIDTH;
-		memcpy(screenLines+i,0,j*sizeof(unichar));
+		j=token.u.csi.p[0];
+		if (j + CURSOR_X > WIDTH) j = WIDTH - CURSOR_X;
+		memset(screenLines+i,0,j*sizeof(unichar));
 		memset(screenFGColor+i,[TERMINAL foregroundColorCode],j);
 		memset(screenBGColor+i,[TERMINAL backgroundColorCode],j);
 		memset(dirty+i,1,j);

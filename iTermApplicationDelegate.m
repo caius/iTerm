@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.14 2004-02-24 21:22:52 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.15 2004-02-28 10:46:04 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -255,11 +255,6 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
     // version number and mode
     NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
     NSMutableString *versionString = [[NSMutableString alloc] initWithString: (NSString *)[myDict objectForKey:@"CFBundleVersion"]];
-#if USE_CUSTOM_DRAWING
-    [versionString appendString: @" (A)"];
-#else
-    [versionString appendString: @" (B)"];
-#endif
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
     [tmpAttrString initWithString: versionString];

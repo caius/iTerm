@@ -478,7 +478,7 @@ static NSColor* xtermColorTable[2][8];
         [adScrollback setIntValue:[[entry objectForKey:@"Scrollback"] intValue]];
     }
     else {
-        [adScrollback setIntValue: 100000];
+        [adScrollback setIntValue: 1000];
     }
 	
     aeFont=[entry objectForKey:@"Font"];

@@ -221,18 +221,26 @@ static ITConfigPanelController *singleInstance = nil;
 
 - (IBAction)windowConfigFont:(id)sender
 {
+	NSFontPanel *aFontPanel;
+	
     changingNA=NO;
     [[CONFIG_EXAMPLE window] makeFirstResponder:[CONFIG_EXAMPLE window]];
     [[CONFIG_EXAMPLE window] setDelegate:self];
+	aFontPanel = [[NSFontManager sharedFontManager] fontPanel: YES];
+	[aFontPanel setAccessoryView: nil];
     [[NSFontManager sharedFontManager] setSelectedFont:configFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 
 - (IBAction)windowConfigNAFont:(id)sender
 {
+	NSFontPanel *aFontPanel;
+
     changingNA=YES;
     [[CONFIG_NAEXAMPLE window] makeFirstResponder:[CONFIG_NAEXAMPLE window]];
     [[CONFIG_NAEXAMPLE window] setDelegate:self];
+	aFontPanel = [[NSFontManager sharedFontManager] fontPanel: YES];
+	[aFontPanel setAccessoryView: nil];
     [[NSFontManager sharedFontManager] setSelectedFont:configNAFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }

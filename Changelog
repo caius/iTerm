@@ -1,3 +1,7 @@
+2004-02-22  ujwal
+
+	* Making sure dirty flags are reset for a line after processing it.
+
 2004-02-21  fabian
 
 	* Fixed highlight color display

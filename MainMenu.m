@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.61 2003-05-07 19:24:39 ujwal Exp $
+// $Id: MainMenu.m,v 1.62 2003-05-11 06:06:41 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -690,7 +690,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     
     // If we created a new window, set the size
     if (theTerm == nil) {
-        [term setWindowSize: YES];
+        [term setWindowSize: NO];
     };
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
     [aSession setAddressBookEntry:entry];

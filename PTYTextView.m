@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.91 2003-09-23 15:14:55 ujwal Exp $
+// $Id: PTYTextView.m,v 1.92 2003-09-23 15:18:47 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2129,6 +2129,7 @@
     aPrintInfo = [NSPrintInfo sharedPrintInfo];
     [aPrintInfo setHorizontalPagination: NSFitPagination];
     [aPrintInfo setVerticalPagination: NSAutoPagination];
+    [aPrintInfo setVerticallyCentered: NO];
 
     // create a temporary view with the contents, change to black on white, and print it
     PTYTextView *tempView;

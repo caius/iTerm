@@ -5,12 +5,17 @@
                 clearBuffer = id; 
                 clearScrollbackBuffer = id; 
                 closeCurrentSession = id; 
+                findNext = id; 
+                findPrevious = id; 
+                findWithSelection = id; 
+                jumpToSelection = id; 
                 logStart = id; 
                 logStop = id; 
                 nextSession = id; 
                 previousSession = id; 
                 saveSession = id; 
                 showConfigWindow = id; 
+                showFindPanel = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 

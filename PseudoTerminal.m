@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.122 2003-02-27 19:53:09 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.123 2003-02-27 22:11:57 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -33,7 +33,7 @@
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
-#define USE_CUSTOM_DRAWING	1
+#define USE_CUSTOM_DRAWING	0
 
 #import "PseudoTerminal.h"
 #import "PTYScrollView.h"
@@ -200,9 +200,13 @@ static NSString *ConfigToolbarItem = @"Config";
     [aSession setMainMenu: MAINMENU];
     [aSession initScreen: [TABVIEW contentRect]];
 
+    // set the font
+    [[aSession TEXTVIEW]  setFont:FONT];
+    [[aSession SCREEN]  setFont:FONT nafont:NAFONT];
+    
     // set the srolling
-    [[aSession SCROLLVIEW] setLineScroll: ([VT100Screen fontSize: FONT].height)];
-    [[aSession SCROLLVIEW] setVerticalLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [[aSession SCROLLVIEW] setLineScroll: ([VT100Screen fontSize: [[aSession SCREEN] tallerFont]].height)];
+    [[aSession SCROLLVIEW] setVerticalLineScroll: ([VT100Screen fontSize: [[aSession SCREEN] tallerFont]].height)];
     
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![pref silenceBell]];
@@ -216,9 +220,6 @@ static NSString *ConfigToolbarItem = @"Config";
         [[aSession TEXTVIEW] setSelectionColor: [pref selectionColor]];
     [[aSession SCROLLVIEW] setBackgroundColor: bg];
 
-    // set the font
-    [[aSession TEXTVIEW]  setFont:FONT];
-    [[aSession SCREEN]  setFont:FONT nafont:NAFONT];
 
     // set the terminal type
     if (term) 
@@ -236,7 +237,7 @@ static NSString *ConfigToolbarItem = @"Config";
 #if USE_CUSTOM_DRAWING
     [[aSession TEXTVIEW] setDataSource: [aSession SCREEN]];
     [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
-    [[aSession TEXTVIEW] setLineHeight: [VT100Screen fontSize: FONT].height];
+    [[aSession TEXTVIEW] setLineHeight: [VT100Screen fontSize:[[aSession SCREEN] tallerFont]].height];
     [[aSession TEXTVIEW] setLineWidth: WIDTH * [VT100Screen fontSize: FONT].width];
 #else
     [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
@@ -627,7 +628,7 @@ static NSString *ConfigToolbarItem = @"Config";
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
 #endif
-    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] font]
+    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] tallerFont]
 				      width:WIDTH
 				     height:HEIGHT];
 
@@ -639,8 +640,8 @@ static NSString *ConfigToolbarItem = @"Config";
 
     for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
     {
-        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: ([VT100Screen fontSize: FONT].height)];
-[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setVerticalLineScroll: ([VT100Screen fontSize: FONT].height)];
+        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: ([VT100Screen fontSize: [[currentPtySession SCREEN] tallerFont]].height)];
+[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setVerticalLineScroll: ([VT100Screen fontSize: [[currentPtySession SCREEN] tallerFont]].height)];
 	if(resizeContentFrames)
 	{
 	    [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setFrameSize: size];
@@ -871,13 +872,13 @@ static NSString *ConfigToolbarItem = @"Config";
 
                                        
     // Now calculate an appropriate terminal height for this in integers.
-    h = floor(textviewSize.height/[VT100Screen requireSizeWithFont: [[currentPtySession SCREEN] font]].height);
+    h = floor(textviewSize.height/[VT100Screen requireSizeWithFont: [[currentPtySession SCREEN] tallerFont]].height);
     //NSLog(@"h = %d", h);
     
     // Now do the reverse calculation
     
     // Calculate the textview size
-    textviewSize.height = h*[VT100Screen requireSizeWithFont: [[currentPtySession SCREEN] font]].height;
+    textviewSize.height = h*[VT100Screen requireSizeWithFont: [[currentPtySession SCREEN] tallerFont]].height;
     //NSLog(@"textview size: width = %f; height = %f", textviewSize.width, textviewSize.height);
 
     // Calculate scrollview size
@@ -929,12 +930,12 @@ static NSString *ConfigToolbarItem = @"Config";
 	  frame.size.width, frame.size.height);
 #endif
 
-    termSize = [VT100Screen screenSizeInFrame: frame font: [[currentPtySession SCREEN] font]];
+    termSize = [VT100Screen screenSizeInFrame: frame font: [[currentPtySession SCREEN] tallerFont]];
     
     w = (int)(termSize.width);
     h = (int)(termSize.height);
     
-    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] font]
+    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] tallerFont]
                                        width:w
                                       height:h];
 
@@ -1032,7 +1033,7 @@ static NSString *ConfigToolbarItem = @"Config";
           __FILE__, __LINE__, w, h);
 #endif
     
-    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] font]
+    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] tallerFont]
                                        width:w
                                       height:h];
     

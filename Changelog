@@ -1,7 +1,10 @@
 2003-02-27	fabian
-   * Fixed cursor code in ARRAY mode
-   * Fixed more double-width character stuff, display should be 
-     fully working now
+    * Fixed cursor code in ARRAY mode
+    * Fixed more double-width character stuff in ARRAY mode, 
+      display should be fully working now
+    * We now use the taller one between font and nafont to
+      decide the lineHeight.
+    * Fixed bugs in scrollUp and scrollDown
     
 2003-02-26	fabian
     * Fixed general double-width character processing in ARRAY mode

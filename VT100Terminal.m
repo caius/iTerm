@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.34 2003-02-24 19:45:03 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.35 2003-02-27 22:12:02 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1680,7 +1680,7 @@ static VT100TCC decode_string(unsigned char *datap,
     if(bold)    {
         aFont = [[NSFontManager sharedFontManager] convertFont: defaultFont toHaveTrait: NSBoldFontMask];
 //        NSLog(@"%@->%@(%f, %f)",[SCREEN font], aFont, [VT100Screen fontSize:[SCREEN font]].height, [VT100Screen fontSize:aFont].height);
-        if ([VT100Screen fontSize:aFont].height!=[VT100Screen fontSize:defaultFont].height) aFont=defaultFont;
+        if ([VT100Screen fontSize:aFont].height>[VT100Screen fontSize: [SCREEN tallerFont]].height) aFont=defaultFont;
     }
     else
     {

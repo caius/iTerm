@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.18 2003-02-27 19:53:10 yfabian Exp $
+// $Id: VT100Screen.h,v 1.19 2003-02-27 22:11:59 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -101,6 +101,7 @@
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (NSFont *)font;
 - (NSFont *)nafont;
+- (NSFont *)tallerFont;
 - (void)setLineLimit:(unsigned int)maxline;
 
 - (NSView *) display;

@@ -1,3 +1,9 @@
+2002-12-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed some resizing issues by implementing 
+      windowWillResize: toSize: window delegate method.
+      
+
 2002-12-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Setting TERM_PROGRAM environment variable to iTerm.app.

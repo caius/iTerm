@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.20 2002-12-31 00:40:16 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.21 2002-12-31 23:26:21 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -131,6 +131,7 @@
 - (void)windowWillClose:(NSNotification *)aNotification;
 - (void)windowDidBecomeKey:(NSNotification *)aNotification;
 - (void)windowDidResignMain:(NSNotification *)aNotification;
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize;
 - (void)windowDidResize:(NSNotification *)aNotification;
 - (NSWindow *) window;
 

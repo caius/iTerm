@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.51 2002-12-31 00:40:16 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.52 2002-12-31 23:26:21 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -728,6 +728,65 @@ static NSString *ConfigToolbarItem = @"Config";
 #endif
 }
 
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
+{
+    NSSize winSize, contentSize, scrollviewSize, textviewSize;
+    int h;
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
+	  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
+#endif
+
+    // This calculation ensures that the window size is pruned to display an interger number of lines.
+
+    // Calculate the content size
+    contentSize = [NSWindow contentRectForFrameRect: NSMakeRect(0, 0, proposedFrameSize.width, proposedFrameSize.height) styleMask: [WINDOW styleMask]].size;
+    //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
+    
+    // Calculate scrollview size
+    scrollviewSize = contentSize;
+    scrollviewSize.height = contentSize.height - 28; // account for tabview
+    //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
+
+    
+    // Calculate textview size
+    textviewSize = [PTYScrollView contentSizeForFrameSize:scrollviewSize
+			    hasHorizontalScroller:NO
+			      hasVerticalScroller:YES
+			   	       borderType:NSNoBorder];
+    //NSLog(@"textview size: width = %f; height = %f", textviewSize.width, textviewSize.height);
+
+                                       
+    // Now calculate an appriate terminal height for this in integers.
+    h = (int)(textviewSize.height/[VT100Screen requireSizeWithFont: [SCREEN font]].height);
+    //NSLog(@"h = %d", h);
+    
+    // Now do the reverse calculation
+    
+    // Calculate the textview size
+    textviewSize.height = h*[VT100Screen requireSizeWithFont: [SCREEN font]].height;
+    //NSLog(@"textview size: width = %f; height = %f", textviewSize.width, textviewSize.height);
+
+    // Calculate scrollview size
+    scrollviewSize = [PTYScrollView frameSizeForContentSize:textviewSize
+			    hasHorizontalScroller:NO
+			      hasVerticalScroller:YES
+			   	       borderType:NSNoBorder];
+    //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
+
+    // Calculate the window content size
+    contentSize = scrollviewSize;
+    contentSize.height = scrollviewSize.height + 32; // account for tabview
+    //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
+    
+    // Finally calculate the window frame size
+    winSize = [NSWindow contentRectForFrameRect: NSMakeRect(0, 0, contentSize.width, contentSize.height) styleMask: [WINDOW styleMask]].size;
+    //NSLog(@"window size: width = %f; height = %f", winSize.width, winSize.height);
+        
+    return (winSize);
+
+}
+
 - (void)windowDidResize:(NSNotification *)aNotification
 {
     NSRect frame;
@@ -765,8 +824,9 @@ static NSString *ConfigToolbarItem = @"Config";
     
     WIDTH = w;
     HEIGHT = h;
+    
     //[self setWindowSize];
-//    NSLog(@"%d,%d",WIDTH,HEIGHT);
+    //NSLog(@"w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 
 
 }

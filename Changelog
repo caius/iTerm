@@ -1,3 +1,8 @@
+2003-09-09	ujwal
+
+    * Fixed screen bauffer saving code in eraseInDisplay by partially 
+      reverting to the old code.
+
 2003-09-09	fabian
 
     * Changed the email address in website html files to stop spams.

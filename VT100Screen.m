@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.136 2003-09-07 10:48:05 yfabian Exp $
+// $Id: VT100Screen.m,v 1.137 2003-09-09 15:41:09 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1519,10 +1519,35 @@ static BOOL PLAYBELL = YES;
     // if we are clearing the entire screen, move the current screen into the scrollback buffer
     if(x1 == 0 && y1 == 0 && x2 == (WIDTH -1 ) && y2 == (HEIGHT - 1) && clearingBuffer == NO)
     {
-        for (i=0;i<HEIGHT;i++)
-            [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
-        return;
+	NSString *newLineString;
+	
+	[self setScreenLock];
+	[STORAGE beginEditing];
+	//NSLog(@"'%@'", [BUFFER string]);
+	newLineString = [[self attrString:@"\n" ascii:YES] retain];
+	[STORAGE appendAttributedString:newLineString];
+	TOP_LINE++;
+	updateIndex = [STORAGE length];
+	// turn off the cursor
+	if(cursorIndex < [STORAGE length])
+	{
+	    NSMutableDictionary *dic;
+	    dic =  [NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:cursorIndex effectiveRange:nil]];
+	    [dic setObject:[TERMINAL defaultBGColor] forKey:NSBackgroundColorAttributeName];
+	    [dic setObject:[TERMINAL defaultFGColor] forKey:NSForegroundColorAttributeName];
+	    [STORAGE setAttributes:dic range:NSMakeRange(cursorIndex,1)];
+	}
+	[STORAGE endEditing];
+	[self removeScreenLock];
+	[[SESSION TEXTVIEW] scrollEnd];
+
+	// update TOP_LINE
+	TOP_LINE += HEIGHT;
+	
+	return;
     }
+    else
+	clearingBuffer = NO;
 #endif
 
     if (y1 == y2) {

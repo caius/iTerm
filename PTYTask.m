@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.20 2004-03-14 06:05:36 ujwal Exp $
+// $Id: PTYTask.m,v 1.21 2004-03-24 05:15:44 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -534,7 +534,7 @@ static int writep(int fds, char *buf, size_t len)
 - (int)wait
 {
     if (PID >= 0) 
-	waitpid(PID, &STATUS, WNOHANG);
+		waitpid(PID, &STATUS, 0);
 
     return STATUS;
 }
@@ -544,22 +544,22 @@ static int writep(int fds, char *buf, size_t len)
     BOOL result;
 
     if (WIFEXITED(STATUS))
-	result = YES;
+		result = YES;
     else
-	result = NO;
+		result = NO;
 
     return result;
 }
 
 - (void)stop
 {
-    [self sendSignal:SIGQUIT];
+    [self sendSignal:SIGHUP];
     [self wait];
 }
 
 - (void)stopNoWait
 {
-    [self sendSignal:SIGQUIT];
+    [self sendSignal:SIGHUP];
 }
 
 - (int)status

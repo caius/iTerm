@@ -229,6 +229,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) terminate
 {
+	
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession -terminate: retainCount = %d]", __FILE__, __LINE__, [self retainCount]);
 #endif
@@ -237,8 +238,8 @@ static NSString *PWD_ENVVALUE = @"~";
 	// deregister from the notification center
 	[[NSNotificationCenter defaultCenter] removeObserver:self];    
     
-	[SHELL stopNoWait];
-
+	[SHELL stop];
+		
     if(tabViewItem)
     {
         [tabViewItem release];

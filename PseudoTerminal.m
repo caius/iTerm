@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.53 2003-01-01 00:43:09 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.54 2003-01-01 02:39:44 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -550,7 +550,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     thisWindow = [SCROLLVIEW window];
     winSize = size;
-    winSize.height = size.height + 32;
+    winSize.height = size.height + 32; // account for tabview
     [thisWindow setContentSize:winSize];
 }
 
@@ -758,7 +758,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
                                        
     // Now calculate an appriate terminal height for this in integers.
-    h = (int)(textviewSize.height/[VT100Screen requireSizeWithFont: [SCREEN font]].height);
+    h = ceil(textviewSize.height/[VT100Screen requireSizeWithFont: [SCREEN font]].height);
     //NSLog(@"h = %d", h);
     
     // Now do the reverse calculation
@@ -780,7 +780,7 @@ static NSString *ConfigToolbarItem = @"Config";
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
     
     // Finally calculate the window frame size
-    winSize = [NSWindow contentRectForFrameRect: NSMakeRect(0, 0, contentSize.width, contentSize.height) styleMask: [WINDOW styleMask]].size;
+    winSize = [NSWindow frameRectForContentRect: NSMakeRect(0, 0, contentSize.width, contentSize.height) styleMask: [WINDOW styleMask]].size;
     //NSLog(@"window size: width = %f; height = %f", winSize.width, winSize.height);
         
     return (winSize);
@@ -794,13 +794,13 @@ static NSString *ConfigToolbarItem = @"Config";
     int i, w, h;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal windowDidResize:%@]",
-	  __FILE__, __LINE__, aNotification);
+    NSLog(@"%s(%d):-[PseudoTerminal windowDidResize: width = %f, height = %f]",
+	  __FILE__, __LINE__, [WINDOW frame].size.width, [WINDOW frame].size.height);
 #endif
 
     frame = [[SCROLLVIEW contentView] frame];
 #if 0
-    NSLog(@"window size %.1f, %.1f, %.1f, %.1f",
+    NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 	  frame.origin.x, frame.origin.y,
 	  frame.size.width, frame.size.height);
 #endif
@@ -819,7 +819,7 @@ static NSString *ConfigToolbarItem = @"Config";
         [[[ptyList objectAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[ptyList objectAtIndex:i] SCREEN] endEditing];
         [[[ptyList objectAtIndex:i] SHELL] setWidth:w  height:h];
-        //[[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
+        [[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
     
     WIDTH = w;

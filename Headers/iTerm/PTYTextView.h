@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.5 2003-09-05 00:10:45 yfabian Exp $
+// $Id: PTYTextView.h,v 1.6 2003-09-07 18:48:55 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -211,9 +211,6 @@
     // data source
     id dataSource;
     int numberOfLines;
-
-    // print selection
-    BOOL printingSelection;
 
     // for the typesetter
     NSFont *font;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.150 2004-02-26 22:06:37 yfabian Exp $
+// $Id: PTYTextView.m,v 1.151 2004-02-28 02:11:41 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1007,7 +1007,10 @@
 		if(tmpY < 0)
 			tmpY = 0;
 		if(tmpX >= [dataSource width])
-			tmpX = [dataSource width];
+		{
+			tmpX = 0;
+			tmpY++;
+		}
 		if(tmpY >= [dataSource numberOfLines])
 			tmpY = [dataSource numberOfLines] - 1;		
 		startX = tmpX;
@@ -1030,7 +1033,10 @@
 		}
 		tmpX--;
 		if(tmpX < 0)
-			tmpX = 0;
+		{
+			tmpX = [dataSource width] - 1;
+			tmpY--;
+		}
 		if(tmpY < 0)
 			tmpY = 0;		
 		if(tmpX >= [dataSource width])
@@ -1039,7 +1045,7 @@
 			tmpY = [dataSource numberOfLines] - 1;
 		endX = tmpX;
 		endY = tmpY;
-		
+				
 	}
 	else if ([event clickCount] >= 3)
 	{

@@ -2,6 +2,7 @@
 
 	* Added support for secondary device attribute.
 	* Changed Device Attribute response to "VT100 with Advanced Video Option"
+	* Fixed double click selection bug.
 
 2004-02-26  fabian
 

@@ -7,6 +7,9 @@
       This is so that the custom typesetter can easily check 
       for double width characters by just looking for the existence of the 
       attribute.
+      
+    * Created VT100LayoutManager, a NSLayoutManager subclass to speed up 
+      some operations such as window resizing.
 
 2003-06-10	ujwal
 

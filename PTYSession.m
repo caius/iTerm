@@ -38,6 +38,7 @@
 #import "PTYTabViewitem.h"
 #import "AddressBookWindowController.h"
 
+#import "VT100LayoutManager.h"
 #import "VT100Typesetter.h"
 
 #include <unistd.h>
@@ -138,8 +139,12 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 
 #if USE_CUSTOM_LAYOUT
+    VT100LayoutManager *aLayoutManager;
     VT100Typesetter *aTypesetter;
 
+    aLayoutManager = [[VT100LayoutManager alloc] init];
+    [[TEXTVIEW textContainer] replaceLayoutManager: aLayoutManager];
+    [aLayoutManager release];
     aTypesetter = [[VT100Typesetter alloc] init];
     [[TEXTVIEW layoutManager] setTypesetter: aTypesetter];
     [aTypesetter release];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.118 2004-02-19 02:50:18 yfabian Exp $
+// $Id: PTYTextView.m,v 1.119 2004-02-19 05:26:39 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -46,7 +46,9 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTextView: -init 0x%x", self);
 #endif
-    
+
+    int loop;
+	
     self = [super init];
     dataSource=_delegate=markedTextAttributes=NULL;
     [self setMarkedTextAttributes:
@@ -60,9 +62,11 @@
     lastFindX=startX=-1;
     [[self window] useOptimizedDrawing:YES];
     markedText=nil;
-	
-    //    [[self window] setAutodisplay:NO];
-	
+	for (loop=0;loop<CACHESIZE;loop++)
+    {
+		charImages[loop].image=nil;
+    }
+
     charWidth = 12;
 	
     return (self);
@@ -753,9 +757,29 @@
 		curY+=lineHeight;
 	}
 	
-	// draw any text for NSTextInput
 	x1=[dataSource cursorX]-1;
 	y1=[dataSource cursorY]-1;
+	//draw cursor
+	if (CURSOR) {
+		i = y1*[dataSource width]+x1;
+		[[NSColor grayColor] set];
+		NSRectFill(NSMakeRect(x1*charWidth,
+							  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
+							  charWidth,lineHeight));
+		// draw any character on cursor if we need to
+		unichar aChar = [dataSource screenLines][i];
+		if(aChar && aChar!=0xffff)
+		{
+			[self drawCharacter: aChar 
+						fgColor:[dataSource screenFGColor][i] 
+							AtX:x1*charWidth 
+							  Y:(y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight];
+		}
+		[dataSource dirty][i] = 1; //cursor loc is dirty
+		
+	}
+	
+	// draw any text for NSTextInput
 	if([self hasMarkedText]) {
 		int len;
 		
@@ -767,25 +791,6 @@
 		memset([dataSource dirty]+y1*[dataSource width]+x1, 1,len*2); //len*2 is an over-estimation, but safe
 	}
 	
-	//draw cursor
-	if (CURSOR) {
-		i = y1*[dataSource width]+x1;
-		[[NSColor grayColor] set];
-		NSRectFill(NSMakeRect(x1*charWidth,
-							  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
-							  charWidth,lineHeight));
-		// draw any character on cursor if we need to
-		unichar aChar = [dataSource screenLines][i];
-		if(aChar)
-		{
-			[self drawCharacter: aChar 
-						fgColor:[dataSource screenFGColor][i] 
-							AtX:x1*charWidth 
-							  Y:(y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight];
-		}
-		[dataSource dirty][i] = 1; //cursor loc is dirty
-
-	}
 
 	forceUpdate=NO;
 }

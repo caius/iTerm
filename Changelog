@@ -8,6 +8,8 @@
 	* fixed a bug in save/restoreBuffer in VT100Screen.
 	* Optimized blinking
 	* Unfinished work on Find functions
+	* Proper init of PTYTextView fixed some weird crashes
+	* Fixed some cursor problems related to wide characters.
 	
 2004-02-17  fabian
 

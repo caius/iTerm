@@ -227,7 +227,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.7.6</string>
+	<string>0.7.7</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>iTerm Help</string>
 	<key>CFBundleHelpBookName</key>
@@ -243,11 +243,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.7.6</string>
+	<string>0.7.7</string>
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
 	<key>CFBundleVersion</key>
-	<string>0.7.6</string>
+	<string>0.7.7</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
 	<key>NSExtensions</key>
@@ -1321,11 +1321,11 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.7.6</string>
+	<string>0.7.7</string>
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
 	<key>CFBundleVersion</key>
-	<string>0.7.6</string>
+	<string>0.7.7</string>
 </dict>
 </plist>
 ";

@@ -1,14 +1,20 @@
-2003-08-013	ujwal
+2003-08-28	fabian
+
+    * Changed version number to 0.7.7
+    * Updated documentation
+    * Fixed a typo in Preference panel of zh_TW localiztion
+    
+2003-08-13	ujwal
 
     * Fixed an obscure bug that prevented textview from being first responder when 
       "hide tab" option was disabled. Now not allowing tabview to accept first responder.
 
 
-2003-08-013	sgehrman & ujwal
+2003-08-13	sgehrman & ujwal
 
     * Moved config panel sheet and code into separate nib file and controller.
 
-2003-08-011	sgehrman
+2003-08-11	sgehrman
 
     * fixed a bug when setting tabs to the right or left.
     * made iTermApplicationDelegate to further separate that code from the iTermController

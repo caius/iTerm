@@ -58,6 +58,8 @@ static NSString *PWD_ENVVALUE = @"~";
         return (nil);
     
     iIdleCount=oIdleCount=0;
+    blink = 0;
+    output = 0;
     waiting=antiIdle=EXIT=NO;
     
     if (normalStateAttribute == nil) {
@@ -497,7 +499,9 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 
 	    // trigger an update of the display.
-	    [timer fire];
+	    [SCREEN updateScreen];
+	    [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+	    [SCREEN showCursor];
 	    
 	}
     }
@@ -683,7 +687,6 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-    static int blink=0, output=3;
 
     iIdleCount++; oIdleCount++; blink++; output++;
     if (antiIdle) {
@@ -697,20 +700,16 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     if (blink>5) { [SCREEN blink]; blink=0; }
-    if (oIdleCount<3||output>4) {
-        if (output>2) {
-            [SCREEN updateScreen];
-            [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-            [SCREEN showCursor];
-            // If the user has not scrolled up, move to the end
-            /*       if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height)) */
+    if (output % 2 == 0) {
+	[SCREEN updateScreen];
+	[TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+	[SCREEN showCursor];
+	// If the user has not scrolled up, move to the end
+	if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+     [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+    ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
             [self moveLastLine];
-            output=0;
-        }else output=4;
     }
-    else output%=4;
 }
 
 - (void) setLabelAttribute

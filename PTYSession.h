@@ -70,7 +70,7 @@
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
     NSTimer *timer;
-    int	iIdleCount,oIdleCount;
+    int	iIdleCount,oIdleCount, blink, output;
     BOOL REFRESHED;
     BOOL antiIdle;
     BOOL waiting;

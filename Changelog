@@ -1,3 +1,7 @@
+2003-08-30	ujwal
+    
+    * Fixed bug in VT100Screen: deleteLines.
+
 2003-08-29	ujwal
     
     * Fixed a problem in calculating number of rows when tabs are on the side.

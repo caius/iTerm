@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.297 2004-10-10 07:04:12 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.298 2004-10-10 16:34:35 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1323,6 +1323,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[tabMenu release];
 		nextIndex++;
     }
+	
+	// Bookmarks
+	[theMenu insertItemWithTitle: 
+		NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks") 
+						  action:@selector(toggleBookmarksView:) keyEquivalent:@"" atIndex: nextIndex++];
     
     // Separator
     [theMenu insertItem:[NSMenuItem separatorItem] atIndex: nextIndex];

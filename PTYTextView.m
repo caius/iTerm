@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.167 2004-03-11 06:17:57 ujwal Exp $
+// $Id: PTYTextView.m,v 1.168 2004-03-11 15:46:48 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1253,8 +1253,8 @@
 	}
 	else
 	{
-		// strip trailing carriage return if there is one
-		if(temp[last-1] == '\n')
+		// strip trailing carriage return if there is one unless we selected the whole line
+		if(temp[last-1] == '\n' && endX != ([dataSource width] - 1))
 		{
 			temp[last-1] = 0;
 			last--;

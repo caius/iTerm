@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.151 2004-02-28 02:11:41 ujwal Exp $
+// $Id: PTYTextView.m,v 1.152 2004-02-29 02:43:38 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -992,7 +992,7 @@
 		while(tmpX >= 0)
 		{
 			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
-			if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet whitespaceCharacterSet]].length > 0)
+			if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0)
 				break;
 			tmpX--;
 			if(tmpX < 0 && tmpY > 0)

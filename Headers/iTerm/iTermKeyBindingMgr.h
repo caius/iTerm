@@ -1,7 +1,7 @@
 /*
  **  iTermKeyBindingMgr.h
  **
- **  Copyright (c) 2002, 2003
+ **  Copyright (c) 2002, 2003, 2004
  **
  **  Author: Ujwal S. Sathyam
  **
@@ -40,21 +40,21 @@
 
 
 @interface iTermKeyBindingMgr : NSObject {
-	NSDictionary *profiles;
-	NSDictionary *currentProfile;
+	NSMutableDictionary *profiles;
+	NSMutableDictionary *currentProfile;
 }
 
 // Class methods
-+ (id) sharedInstance;
++ (id) singleInstance;
 
 // Instance methods
 - (id) init;
 - (void) dealloc;
 
-- (NSDictionary *) profiles;
-- (void) setProfiles: (NSDictionary *) aDict;
+- (NSMutableDictionary *) profiles;
+- (void) setProfiles: (NSMutableDictionary *) aDict;
 - (NSDictionary *) currentProfile;
-- (void) setCurrentProfile: (NSDictionary *) aDict;
+- (void) setCurrentProfile: (NSMutableDictionary *) aDict;
 
 - (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode;
 - (int) entryAtIndex: (int) index key: (NSString *) unmodkeystr modifiers: (int *) modifiers;

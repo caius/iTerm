@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.70 2004-02-25 20:38:08 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.71 2004-02-29 02:43:38 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -30,6 +30,7 @@
 #import <iTerm/AddressBookWindowController.h>
 #import <iTerm/iTermController.h>
 #import <iTerm/ITAddressBookMgr.h>
+#import <iTerm/iTermKeyBindingMgr.h>
 
 
 static float versionNumber;
@@ -102,6 +103,8 @@ static float versionNumber;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultBlinkingCursor = [prefs objectForKey:@"BlinkingCursor"]?[[prefs objectForKey:@"BlinkingCursor"] boolValue]: NO;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
+	
+	[[iTermKeyBindingMgr singleInstance] setProfiles: [prefs objectForKey: @"KeyBindings"]];
 }
 
 - (void)run
@@ -157,6 +160,7 @@ static float versionNumber;
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
+	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
     
     [[self window] close];
 }
@@ -183,6 +187,8 @@ static float versionNumber;
     [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
 }
 
+
+// NSWindow delegate
 - (void)windowWillLoad;
 {
     // We finally set our autosave window frame name and restore the one from the user's defaults.
@@ -196,6 +202,85 @@ static float versionNumber;
 }
 
 
+// Keybinding stuff
+- (IBAction) kbProfileChanged: (id) sender
+{
+	NSLog(@"%s; %@", __PRETTY_FUNCTION__, sender);
+}
+
+- (IBAction) kbProfileAdd: (id) sender
+{
+	[NSApp beginSheet: addKBProfile
+       modalForWindow: [self window]
+        modalDelegate: self
+       didEndSelector: @selector(_addKBProfileSheetDidEnd:returnCode:contextInfo:)
+          contextInfo: nil];        
+}
+
+- (IBAction) kbProfileDelete: (id) sender
+{
+	[NSApp beginSheet: deleteKBProfile
+       modalForWindow: [self window]
+        modalDelegate: self
+       didEndSelector: @selector(_deleteKBProfileSheetDidEnd:returnCode:contextInfo:)
+          contextInfo: nil];        
+}
+
+- (IBAction) kbProfileAddConfirm: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:addKBProfile returnCode:NSOKButton];
+}
+
+- (IBAction) kbProfileAddCancel: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:addKBProfile returnCode:NSCancelButton];
+}
+
+- (IBAction) kbProfileDeleteConfirm: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:deleteKBProfile returnCode:NSOKButton];
+}
+
+- (IBAction) kbProfileDeleteCancel: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	[NSApp endSheet:deleteKBProfile returnCode:NSCancelButton];
+}
+
+- (IBAction) kbEntryAdd: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+	[NSApp beginSheet: addKBEntry
+       modalForWindow: [self window]
+        modalDelegate: self
+       didEndSelector: @selector(_addKBEntrySheetDidEnd:returnCode:contextInfo:)
+          contextInfo: nil];        
+	
+}
+
+- (IBAction) kbEntryAddConfirm: (id) sender
+{
+	[NSApp endSheet:addKBEntry returnCode:NSOKButton];
+}
+
+- (IBAction) kbEntryAddCancel: (id) sender
+{
+	[NSApp endSheet:addKBEntry returnCode:NSCancelButton];
+}
+
+
+- (IBAction) kbEntryDelete: (id) sender
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+}
+
+
+// accessors for preferences
 - (BOOL) antiAlias
 {
     return defaultAntiAlias;
@@ -276,5 +361,25 @@ static float versionNumber;
     
     [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
 }
+
+@end
+
+@implementation PreferencePanel (Private)
+
+- (void)_addKBEntrySheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	[addKBEntry close];
+}
+
+- (void)_addKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	[addKBProfile close];
+}
+
+- (void)_deleteKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+	[deleteKBProfile close];
+}
+
 
 @end

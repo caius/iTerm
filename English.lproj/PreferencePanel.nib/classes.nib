@@ -2,14 +2,39 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {cancel = id; editDefaultSession = id; ok = id; restore = id; }; 
+            ACTIONS = {
+                cancel = id; 
+                editDefaultSession = id; 
+                kbEntryAdd = id; 
+                kbEntryAddCancel = id; 
+                kbEntryAddConfirm = id; 
+                kbEntryDelete = id; 
+                kbProfileAdd = id; 
+                kbProfileAddCancel = id; 
+                kbProfileAddConfirm = id; 
+                kbProfileChanged = id; 
+                kbProfileDelete = id; 
+                kbProfileDeleteCancel = id; 
+                kbProfileDeleteConfirm = id; 
+                ok = id; 
+                restore = id; 
+            }; 
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                addKBEntry = NSPanel; 
+                addKBProfile = NSPanel; 
                 antiAlias = id; 
                 blinkingCursor = id; 
+                deleteKBProfile = NSPanel; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
+                kbEntryAction = NSPopUpButton; 
+                kbEntryKey = NSPopUpButton; 
+                kbEntryKeyCode = NSTextField; 
+                kbEntryKeyModifiers = NSMatrix; 
+                kbEntryText = NSTextField; 
+                kbProfileName = NSTextField; 
                 macnavkeys = id; 
                 openAddressBook = id; 
                 optionKey = id; 

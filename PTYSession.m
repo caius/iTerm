@@ -213,7 +213,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCREEN release];
     [TEXTVIEW setDataSource: nil];
     [TEXTVIEW removeFromSuperview];
-    [parent release];
 
 
     if (timer) {
@@ -957,16 +956,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setParent: (PseudoTerminal *) theParent
 {
-    if(parent)
-    {
-        [parent release];
-        parent = nil;
-    }
-    if(theParent)
-    {
-        [theParent retain];
-        parent = theParent;
-    }
+    parent = theParent; // don't retain parent. parent retains self.
 }
 
 - (PTYTabViewItem *) tabViewItem

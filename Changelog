@@ -3,7 +3,8 @@
     * Fixed bug where PseduoTerminal's delegate was not being set.
     
     * Fixed bug in PTYTextView in ARRY mode where the delagate was not 
-      being retained.
+      being retained. Now PTYSession does not retain PseudoTerminal 
+      parent.
     
     * Fixed more memory leaks caused by PseudoTerminal and PTYSession 
       retaining each other.

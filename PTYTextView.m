@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.224 2004-09-25 10:43:49 ujwal Exp $
+// $Id: PTYTextView.m,v 1.225 2004-10-28 00:39:10 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1169,6 +1169,8 @@ static SInt32 systemVersion;
 		return;
 	mouseDown = NO;
 		
+	// make sure we have key focus
+	[[self window] makeFirstResponder: self];
     
     if (startY>endY||(startY==endY&&startX>endX)) {
         int t;

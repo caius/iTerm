@@ -1,3 +1,7 @@
+2004-01-30  ujwal
+
+	* Fixed a nil NSString problem with selecting background images in AddressBook.
+
 2004-01-28  ujwal
 
     * Fixed problem resetting scrollbar at bottom on new output while scrolling.

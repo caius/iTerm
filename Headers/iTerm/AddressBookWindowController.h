@@ -93,7 +93,6 @@
     NSFont *aeFont, *aeNAFont;
     BOOL changingNA;
     BOOL defaultEntry;
-    int indexOfSelectedEntry;
     NSString *backgroundImagePath;
 
     // bookmarks data

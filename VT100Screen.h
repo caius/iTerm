@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.31 2003-05-18 03:33:05 ujwal Exp $
+// $Id: VT100Screen.h,v 1.32 2003-05-30 02:01:12 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -64,6 +64,8 @@
     unsigned int  scrollbackLines;
     int OLD_CURSOR_INDEX;
     int screenLock;
+    BOOL blinkingCursor;
+    BOOL showBlinkingCursor;
 
     NSView *display;
 }
@@ -105,6 +107,10 @@
 
 - (NSView *) display;
 - (void) setDisplay: (NSView *) aDisplay;
+
+- (BOOL) blinkingCursor;
+- (void) setBlinkingCursor: (BOOL) flag;
+
 
 // edit screen buffer
 - (void)putToken:(VT100TCC)token;

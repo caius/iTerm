@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.92 2003-05-29 15:43:07 ujwal Exp $
+// $Id: VT100Screen.m,v 1.93 2003-05-30 02:01:13 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -415,6 +415,16 @@ static BOOL PLAYBELL = YES;
     }
 }
 
+- (BOOL) blinkingCursor
+{
+    return (blinkingCursor);
+}
+
+- (void) setBlinkingCursor: (BOOL) flag
+{
+    blinkingCursor = flag;
+}
+
 
 -(void) initScreen
 {
@@ -450,6 +460,7 @@ static BOOL PLAYBELL = YES;
 #endif
     
     blinkShow=YES;
+    showBlinkingCursor = YES;
 }
     
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
@@ -1315,6 +1326,8 @@ static BOOL PLAYBELL = YES;
 	    }
 	}
         //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
+	if([self blinkingCursor] == YES)
+	    [dic setObject:[NSNumber numberWithInt:2] forKey:NSBlinkAttributeName];
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
     }
     
@@ -2231,6 +2244,7 @@ static BOOL PLAYBELL = YES;
 
 #if USE_CUSTOM_DRAWING
 #else
+    int blinkType;
     NSColor *fg, *bg,*blink;
     NSDictionary *dic;
     NSRange range;
@@ -2243,7 +2257,8 @@ static BOOL PLAYBELL = YES;
     
     [STORAGE beginEditing];
     for(idx=updateIndex;idx<len;) {
-        if ([[STORAGE attribute:NSBlinkAttributeName atIndex:idx effectiveRange:&range] intValue]) {
+	blinkType = [[STORAGE attribute:NSBlinkAttributeName atIndex:idx effectiveRange:&range] intValue];
+        if (blinkType > 0) {
 //            NSLog(@"true blink!!");
             for(;idx<range.length+range.location;idx++) {
                 fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
@@ -2252,13 +2267,26 @@ static BOOL PLAYBELL = YES;
                 if (blink==nil) {
                     blink=fg;
                 }
-                dic=[NSDictionary dictionaryWithObjectsAndKeys:
-                    bg,NSBackgroundColorAttributeName,
-                    (blinkShow?blink:bg),NSForegroundColorAttributeName,
-                    blink,NSBlinkColorAttributeName,
-                    [NSNumber numberWithInt:1],NSBlinkAttributeName,
-                    nil];
-                [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		if(blinkType == 1)
+		{
+		    dic=[NSDictionary dictionaryWithObjectsAndKeys:
+			bg,NSBackgroundColorAttributeName,
+			(blinkShow?blink:bg),NSForegroundColorAttributeName,
+			blink,NSBlinkColorAttributeName,
+			[NSNumber numberWithInt:1],NSBlinkAttributeName,
+			nil];
+		    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		}
+		else if (blinkType == 2)
+		{
+		    dic=[NSDictionary dictionaryWithObjectsAndKeys:
+			(showBlinkingCursor?fg:bg),NSBackgroundColorAttributeName,
+			(showBlinkingCursor?bg:fg),NSForegroundColorAttributeName,
+			blink,NSBlinkColorAttributeName,
+			[NSNumber numberWithInt:blinkType],NSBlinkAttributeName,
+			nil];
+		    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		}
             }
 //            NSLog(@"true blink end!!");
         }
@@ -2266,6 +2294,7 @@ static BOOL PLAYBELL = YES;
     }
     [STORAGE endEditing];
     blinkShow=!blinkShow;
+    showBlinkingCursor = !showBlinkingCursor;
     [self removeScreenLock];
 #endif
 }

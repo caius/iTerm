@@ -43,6 +43,7 @@
     IBOutlet id scrollbackLines;
     IBOutlet id silenceBell;
     IBOutlet id tabViewType;
+    IBOutlet id blinkingCursor;
     
     NSUserDefaults *prefs;
 
@@ -57,6 +58,7 @@
     int defaultTabViewType;
     BOOL defaultOpenAddressBook;
     BOOL defaultPromptOnClose;
+    BOOL defaultBlinkingCursor;
 
 }
 
@@ -82,5 +84,6 @@
 - (NSTabViewType) tabViewType;
 - (BOOL) promptOnClose;
 - (BOOL)openAddressBook;
+- (BOOL) blinkingCursor;
 
 @end

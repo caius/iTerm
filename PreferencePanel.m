@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.49 2003-05-29 06:30:55 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.50 2003-05-30 02:01:12 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -94,6 +94,8 @@ static float versionNumber;
     defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
     defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
+    defaultBlinkingCursor = [prefs objectForKey:@"BlinkingCursor"]?[[prefs objectForKey:@"BlinkingCursor"] boolValue]: NO;
+
 
 }
 
@@ -147,6 +149,7 @@ static float versionNumber;
     defaultSilenceBell=([silenceBell state]==NSOnState);
     defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
+    defaultBlinkingCursor = ([blinkingCursor state] == NSOnState);
 
     [prefs setInteger:defaultScrollback forKey:@"Scrollback"];
 
@@ -160,6 +163,7 @@ static float versionNumber;
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultOpenAddressBook forKey:@"OpenAddressBook"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
+    [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
     
     [NSApp stopModal];
 
@@ -178,6 +182,7 @@ static float versionNumber;
     defaultSilenceBell=NO;
     defaultTabViewType = NSTopTabsBezelBorder;
     defaultOpenAddressBook = NO;
+    defaultBlinkingCursor = NO;
 
     [scrollbackLines setIntValue:defaultScrollback];
     
@@ -190,6 +195,8 @@ static float versionNumber;
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [tabViewType selectCellWithTag: defaultTabViewType];
+    [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
+
 
     
 }
@@ -244,6 +251,11 @@ static float versionNumber;
 - (BOOL)promptOnClose
 {
     return (defaultPromptOnClose);
+}
+
+- (BOOL) blinkingCursor
+{
+    return (defaultBlinkingCursor);
 }
 
 

@@ -2,6 +2,9 @@
 
     * Setting TERM_PROGRAM environment variable to iTerm.app.
     
+    * Added flag to disable anti-aliasing. Chinese NIBS need 
+      to be updated.
+    
 
 2002-12-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

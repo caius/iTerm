@@ -21,6 +21,7 @@
     IBOutlet id transparency;
     IBOutlet id autoclose;
     IBOutlet id optionKey;
+    IBOutlet id antiAlias;
     
     NSUserDefaults *prefs;
 
@@ -40,6 +41,7 @@
 
     BOOL defaultAutoclose;
     int defaultOption;
+    BOOL defaultAntiAlias;
 
     BOOL changingNA;
 
@@ -70,6 +72,7 @@
 - (int) transparency;
 - (NSFont*) font;
 - (NSFont*) nafont;
+- (BOOL) antiAlias;
 - (BOOL) ai;
 - (int) aiCode;
 - (BOOL) autoclose;

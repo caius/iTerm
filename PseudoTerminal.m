@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.50 2002-12-30 21:27:59 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.51 2002-12-31 00:40:16 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -194,6 +194,9 @@ static NSString *ConfigToolbarItem = @"Config";
    
     TEXTVIEW = [aSession TEXTVIEW];
     [TEXTVIEW setDelegate: aSession];
+    
+    // Set the anti-alias
+    [TEXTVIEW setAntiAlias: [pref antiAlias]];
     
     // Set the colors
     if (fg) [aSession setFGColor:fg];
@@ -826,6 +829,8 @@ static NSString *ConfigToolbarItem = @"Config";
     [AI_ON setState:[[self currentSession] antiIdle]?NSOnState:NSOffState];
     [AI_CODE setIntValue:[[self currentSession] antiCode]];
     
+    [CONFIG_ANTIALIAS setState: [TEXTVIEW antiAlias]];
+    
 //    [CONFIG_PANEL center];
     pending=YES;
     [NSApp beginSheet:CONFIG_PANEL modalForWindow:WINDOW
@@ -886,6 +891,23 @@ static NSString *ConfigToolbarItem = @"Config";
         // resiz the window if asked for
         if((WIDTH != [CONFIG_COL intValue]) || (HEIGHT != [CONFIG_ROW intValue]))
             [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
+        
+        // set the anti-alias if it has changed
+        if([CONFIG_ANTIALIAS state] != [TEXTVIEW antiAlias])
+        {
+            int i;
+            PTYSession *aSession;
+            
+            for(i = 0; i < [ptyList count]; i++)
+            {
+                aSession = [ptyList objectAtIndex: i];
+                [[aSession TEXTVIEW] setAntiAlias: [CONFIG_ANTIALIAS state]];
+            }
+            
+            [TEXTVIEW setNeedsDisplay: YES];
+
+        }
+            
         if(([pref transparency] != (100-[[TERMINAL defaultBGColor] alphaComponent]*100)) || 
             ([TERMINAL defaultFGColor] != [CONFIG_FOREGROUND color]) || 
             ([TERMINAL defaultBGColor] != [CONFIG_BACKGROUND color]))

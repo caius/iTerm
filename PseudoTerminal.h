@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.19 2002-12-20 18:21:47 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.20 2002-12-31 00:40:16 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -40,6 +40,7 @@
     IBOutlet id CONFIG_TRANSPARENCY;
     IBOutlet id CONFIG_TRANS2;
     IBOutlet id CONFIG_NAME;
+    IBOutlet id CONFIG_ANTIALIAS;
     
     // anti-idle
     IBOutlet id AI_PANEL;

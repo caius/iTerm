@@ -50,6 +50,7 @@ static int TRANSPARENCY  =10;
     defaultCol=([prefs integerForKey:@"Col"]?[prefs integerForKey:@"Col"]:COL);
     defaultRow=([prefs integerForKey:@"Row"]?[prefs integerForKey:@"Row"]:ROW);
     defaultTransparency=([prefs stringForKey:@"Transparency"]!=nil?[prefs integerForKey:@"Transparency"]:TRANSPARENCY);
+    defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
 
     defaultTerminal=[[([prefs objectForKey:@"Terminal"]?[prefs objectForKey:@"Terminal"]:TERM)
                     copy] retain];
@@ -116,6 +117,7 @@ static int TRANSPARENCY  =10;
     [row setIntValue:defaultRow];
     [col setIntValue:defaultCol];
     [transparency setIntValue:defaultTransparency];
+    [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
     [fontExample setTextColor:defaultForeground];
     [fontExample setBackgroundColor:defaultBackground];
@@ -202,6 +204,7 @@ static int TRANSPARENCY  =10;
     defaultTerminal=[terminal stringValue];
     
     defaultTransparency=[transparency intValue];
+    defaultAntiAlias = ([antiAlias state]==NSOnState);
 
     defaultAutoclose=([autoclose state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
@@ -223,6 +226,7 @@ static int TRANSPARENCY  =10;
               forKey:@"NAFont"];
     [prefs setBool:defaultAutoclose forKey:@"AutoClose"];
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
+    [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -330,6 +334,11 @@ static int TRANSPARENCY  =10;
 - (NSFont*) nafont
 {
     return defaultNAFont;
+}
+
+- (BOOL) antiAlias
+{
+    return defaultAntiAlias;
 }
 
 - (BOOL) ai

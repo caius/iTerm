@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.3 2002-12-21 23:28:19 ujwal Exp $
+// $Id: PTYTextView.h,v 1.4 2002-12-31 00:40:16 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -30,6 +30,9 @@
     // Fortunately, the draggingEntered and draggingUpdated methods
     // seem to return a real status, based on which we can set this flag.
     BOOL bExtendedDragNDrop;
+    
+    // anti-alias flag
+    BOOL antiAlias;
 
 }
 
@@ -50,6 +53,10 @@
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent;
 - (void) browse:(id)sender;
 - (void) mail:(id)sender;
+
+// get/set methods
+- (BOOL) antiAlias;
+- (void) setAntiAlias: (BOOL) antiAliasFlag;
 
 //
 // Drag and Drop methods for our text view

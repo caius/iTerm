@@ -54,6 +54,7 @@
                 "AI_CODE" = id; 
                 "AI_ON" = id; 
                 "AI_PANEL" = id; 
+                "CONFIG_ANTIALIAS" = id; 
                 "CONFIG_BACKGROUND" = id; 
                 "CONFIG_COL" = id; 
                 "CONFIG_ENCODING" = id; 

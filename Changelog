@@ -18,11 +18,15 @@
       
       tell application "iTerm"
 	activate
-	launch "default session" in tab
-	launch "Fink list" in terminal
+	launch session "default session" in tab
+	launch session "Fink list" in terminal
       end tell
       
       These scripts can then be save as executable scripts.
+      
+    * Incorporated a modified patch by Aaron Gerber to escape 
+      special characters out of a file name when doing a 
+      drag-and-drop.
       
 
 2003-01-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>

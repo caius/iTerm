@@ -112,9 +112,7 @@
                 setEncodingEUCCN = id; 
                 setEncodingUTF8 = id; 
                 setMainMenu = id; 
-                showTriggerWindow = id; 
                 switchSession = id; 
-                windowAIOk = id; 
                 windowConfigBackground = id; 
                 windowConfigCancel = id; 
                 windowConfigFont = id; 
@@ -126,7 +124,6 @@
             OUTLETS = {
                 "AI_CODE" = id; 
                 "AI_ON" = id; 
-                "AI_PANEL" = id; 
                 "CONFIG_BACKGROUND" = id; 
                 "CONFIG_COL" = id; 
                 "CONFIG_ENCODING" = id; 
@@ -137,11 +134,8 @@
                 "CONFIG_ROW" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
-                "OA_ON" = id; 
                 SCROLLVIEW = id; 
-                "WA_ON" = id; 
                 WINDOW = id; 
-                cMenu = id; 
             }; 
             SUPERCLASS = NSResponder; 
         }

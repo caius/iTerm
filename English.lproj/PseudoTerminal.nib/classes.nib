@@ -45,13 +45,8 @@
                 pageDown = id; 
                 pageUp = id; 
                 paste = id; 
-                setEncodingBIG5 = id; 
-                setEncodingEUCCN = id; 
-                setEncodingUTF8 = id; 
                 setMainMenu = id; 
-                showTriggerWindow = id; 
                 timerTick = id; 
-                windowAIOk = id; 
                 windowConfigBackground = id; 
                 windowConfigCancel = id; 
                 windowConfigFont = id; 
@@ -73,9 +68,7 @@
                 "CONFIG_ROW" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
-                "OA_ON" = id; 
                 SCROLLVIEW = id; 
-                "WA_ON" = id; 
                 WINDOW = id; 
             }; 
             SUPERCLASS = NSResponder; 

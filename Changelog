@@ -4,6 +4,10 @@
       PTYTextView: -keyDown since that implements the 
       NSTextInput protocol.
       
+    * Fixed a minor problem in VT100Screen: scrollUp 
+      where an unwanted "\n" was inserted when 
+      CURSOR_Y > SCROLL_BOTTOM.
+      
 
 2003-02-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

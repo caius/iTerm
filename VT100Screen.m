@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.36 2003-02-10 16:43:40 yfabian Exp $
+// $Id: VT100Screen.m,v 1.37 2003-02-11 23:57:59 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -1264,7 +1264,7 @@ static BOOL PLAYBELL = YES;
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
 
-//    NSLog(@"SCROLL-UP[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
+    //NSLog(@"SCROLL-UP[%d-%d]; Y = %d",SCROLL_TOP,SCROLL_BOTTOM, CURSOR_Y);
     idx=[self getIndex:0 y:SCROLL_TOP];
     if (SCROLL_TOP==HEIGHT-1) idx2=[STORAGE length];
     else idx2=[self getIndex:0 y:SCROLL_TOP+1];
@@ -1276,7 +1276,7 @@ static BOOL PLAYBELL = YES;
     if (SCROLL_BOTTOM>=HEIGHT-1) {
         [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
     }
-    else {
+    else if(CURSOR_Y <= SCROLL_BOTTOM) {
         idx=[self getIndex:0 y:SCROLL_BOTTOM+1];
         [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
     }

@@ -219,6 +219,7 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
         [NSNumber numberWithBool:false],@"DoubleWidth",
         [NSNumber numberWithUnsignedInt:0],@"Shortcut",
         [NSNumber numberWithBool:true],@"DefaultEntry",
+	@"iTerm-Aqua.jpg",@"BackgroundImagePath",
         NULL] autorelease];
     
     return ae;

@@ -482,10 +482,22 @@ static NSColor* xtermColorTable[2][8];
     [adRemapDeleteKey setState:([entry objectForKey:@"RemapDeleteKey"]==nil?NO:[[entry objectForKey:@"RemapDeleteKey"] boolValue])?NSOnState:NSOffState];
 
     // background image
-    backgroundImagePath = [[NSString alloc] initWithString: [(NSString *)[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath]];
+    NSString *imageFilePath;
+    imageFilePath = [(NSString *)[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
     [backgroundImage setEditable: NO];
-    if([backgroundImagePath length] > 0)
+    if([imageFilePath length] > 0)
     {
+	if([imageFilePath isAbsolutePath] == NO)
+	{
+	    NSBundle *myBundle = [NSBundle bundleForClass: [self class]];
+	    backgroundImagePath = [myBundle pathForResource: imageFilePath ofType: @""];
+	    [backgroundImagePath retain];
+	}
+	else
+	{
+	    backgroundImagePath = [[NSString alloc] initWithString: imageFilePath];
+	}
+	
 	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
 	if(anImage != nil)
 	{

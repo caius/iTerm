@@ -1,3 +1,7 @@
+2003-09-22	ujwal
+
+    * Added iTerm-Aqua.jpg as the default background image.
+    
 2003-09-21	ujwal
 
     * When PTYSession: terminate is called, we wait for shell task to exit 

@@ -1281,8 +1281,17 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setBackgroundImagePath: (NSString *) imageFilePath
 {
     [backgroundImagePath release];
-    [imageFilePath retain];
-    backgroundImagePath = imageFilePath;
+    if([imageFilePath isAbsolutePath] == NO)
+    {
+	NSBundle *myBundle = [NSBundle bundleForClass: [self class]];
+	backgroundImagePath = [myBundle pathForResource: imageFilePath ofType: @""];
+	[backgroundImagePath retain];
+    }
+    else
+    {
+	[imageFilePath retain];
+	backgroundImagePath = imageFilePath;
+    }
     if([backgroundImagePath length] > 0)
     {
 	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];

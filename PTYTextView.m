@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.25 2003-02-11 23:17:13 ujwal Exp $
+// $Id: PTYTextView.m,v 1.26 2003-02-11 23:24:37 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -27,6 +27,9 @@
     self = [super init];
     [[NSCursor IBeamCursor] setOnMouseEntered: NO];
 
+    deadKeyEvent = nil;
+    deadkey = NO;
+
     return (self);
 }
 
@@ -38,6 +41,9 @@
 
     self = [super initWithFrame: aRect];
     [[NSCursor IBeamCursor] setOnMouseEntered: NO];
+
+    deadKeyEvent = nil;
+    deadkey = NO;
 
     return (self);
     
@@ -120,8 +126,6 @@
     BOOL IMEnable = [imana wantsToInterpretAllKeystrokes];
     id delegate = [self delegate];
     BOOL put;
-    static NSEvent *old=nil;
-    static BOOL deadkey=NO;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView keyDown:%@]",
@@ -130,14 +134,14 @@
 
     // Check for dead keys
     if (deadkey) {
-        [self interpretKeyEvents:[NSArray arrayWithObjects:old,event,nil]];
-        [old release];
+        [self interpretKeyEvents:[NSArray arrayWithObjects:deadKeyEvent,event,nil]];
+        [deadKeyEvent release];
         deadkey=NO;
 	return;
     }
     else if ([[event characters] length]<1) {
         deadkey=YES;
-        old=[[event copy] retain];
+        deadKeyEvent=[[event copy] retain];
 	[self interpretKeyEvents:[NSArray arrayWithObject:event]];
 	return;
     }    
@@ -196,16 +200,17 @@
     NSLog(@"%s(%d):-[PTYTextView insertText:%@]",
 	  __FILE__, __LINE__, aString);
 #endif
-#if 0
-    NSTextStorage *storage = [self textStorage];
+    if(!deadkey)
+    {
+	NSTextStorage *storage = [self textStorage];
 
-    IM_INPUT_INSERT = YES;
+	IM_INPUT_INSERT = YES;
 
-    [storage beginEditing];
-    [storage deleteCharactersInRange:[self markedRange]];
-    [storage endEditing];
-    IM_INPUT_MARKEDRANGE = NSMakeRange(0, 0);
-#endif
+	[storage beginEditing];
+	[storage deleteCharactersInRange:[self markedRange]];
+	[storage endEditing];
+	IM_INPUT_MARKEDRANGE = NSMakeRange(0, 0);
+    }
 
     if ([delegate respondsToSelector:@selector(insertText:)])
 	[delegate insertText:aString];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.11 2003-01-17 23:22:20 ujwal Exp $
+// $Id: PTYTextView.h,v 1.12 2003-02-11 23:24:36 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -32,6 +32,10 @@
     
     // anti-alias flag
     BOOL antiAlias;
+
+    // dead key support
+    NSEvent *deadKeyEvent;
+    BOOL deadkey;
 
 }
 

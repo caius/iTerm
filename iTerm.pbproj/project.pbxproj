@@ -19,6 +19,7 @@
 				German,
 				Chinese,
 				zh_CN,
+				zh_TW,
 			);
 			mainGroup = 0464AB0D006CD2EC7F000001;
 			productRefGroup = 0464AB32006CD2EC7F000001;
@@ -333,7 +334,8 @@
 		E813FB7D0297522703A80106 = {
 			children = (
 				E813FB7E0297522703A80106,
-				FBC60CAB036A056301F955DB,
+				FBBB8B49039D9E6501F955DB,
+				FBBB8B4A039D9E6D01F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -355,7 +357,8 @@
 		E813FB86029754BB03A80106 = {
 			children = (
 				E813FB87029754BB03A80106,
-				FB094A13033BDF7B01F955DB,
+				FBBB8B4B039D9E7E01F955DB,
+				FBBB8B4C039D9E8501F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = PseudoTerminal.nib;
@@ -655,12 +658,6 @@
 			settings = {
 			};
 		};
-		FB094A13033BDF7B01F955DB = {
-			isa = PBXFileReference;
-			name = Chinese;
-			path = Chinese.lproj/PseudoTerminal.nib;
-			refType = 4;
-		};
 		FB094A14033D58AE01F955DB = {
 			isa = PBXFileReference;
 			name = addressbook.png;
@@ -720,7 +717,8 @@
 		FB151F2903648AC401F955DB = {
 			children = (
 				FB151F2603648AB401F955DB,
-				FB151F2C03648ACC01F955DB,
+				FBBB8B47039D9E1701F955DB,
+				FBBB8B48039D9E1F01F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = iTerm.strings;
@@ -737,12 +735,6 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
-		};
-		FB151F2C03648ACC01F955DB = {
-			isa = PBXFileReference;
-			name = Chinese;
-			path = Chinese.lproj/Chinese;
-			refType = 4;
 		};
 		FB47BCC403686CAC01F955DB = {
 			isa = PBXFileReference;
@@ -1089,13 +1081,41 @@
 			settings = {
 			};
 		};
-		FBC60CAB036A056301F955DB = {
-			indentWidth = 4;
+		FBBB8B47039D9E1701F955DB = {
 			isa = PBXFileReference;
-			name = Chinese;
-			path = Chinese.lproj/MainMenu.nib;
+			name = zh_CN;
+			path = zh_CN.lproj/iTerm.strings;
 			refType = 4;
-			usesTabs = 0;
+		};
+		FBBB8B48039D9E1F01F955DB = {
+			isa = PBXFileReference;
+			name = zh_TW;
+			path = zh_TW.lproj/iTerm.strings;
+			refType = 4;
+		};
+		FBBB8B49039D9E6501F955DB = {
+			isa = PBXFileReference;
+			name = zh_CN;
+			path = zh_CN.lproj/MainMenu.nib;
+			refType = 4;
+		};
+		FBBB8B4A039D9E6D01F955DB = {
+			isa = PBXFileReference;
+			name = zh_TW;
+			path = zh_TW.lproj/MainMenu.nib;
+			refType = 4;
+		};
+		FBBB8B4B039D9E7E01F955DB = {
+			isa = PBXFileReference;
+			name = zh_CN;
+			path = zh_CN.lproj/PseudoTerminal.nib;
+			refType = 4;
+		};
+		FBBB8B4C039D9E8501F955DB = {
+			isa = PBXFileReference;
+			name = zh_TW;
+			path = zh_TW.lproj/PseudoTerminal.nib;
+			refType = 4;
 		};
 		FBD0AD0A0337A5B701F955DB = {
 			fileEncoding = 4;

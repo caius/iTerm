@@ -1,3 +1,8 @@
+2003-03-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added some missing semi-colons in Chinese strings files.
+
+
 2003-03-08	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed an issue where '=', '/', and '*' could not be 

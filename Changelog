@@ -1,6 +1,6 @@
 2003-02-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
-    * Added drag-and-drop support to session PTYTabView class. 
+    * Added drag-and-drop support to the PTYTabView class. 
       Tabs can now be moved within and between windows.
       
 

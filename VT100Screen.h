@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.10 2003-01-21 19:28:05 yfabian Exp $
+// $Id: VT100Screen.h,v 1.11 2003-02-08 07:08:24 ujwal Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -39,7 +39,7 @@
     
     unsigned int  TOP_LINE;
     unsigned int  LINE_LIMIT;
-    unsigned int  OLD_CURSOR_INDEX;
+    int  OLD_CURSOR_INDEX;
 }
 
 + (NSSize)requireSizeWithFont:(NSFont *)font

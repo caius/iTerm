@@ -1,4 +1,4 @@
-2003-02-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Workaround for a problem in Address Book where the 
       scrollbar was not being activated when it should have 
@@ -7,6 +7,11 @@
       workaround of telling the NSTableView that the 
       number of rows had changed after loading the addressbook.
       
+    * This time really fixed the cursor updating problem. 
+      Root cause was VT100: -deleteCharacters that sometimes 
+      caused OLD_CURSOR_INDEX to end up with the incorrect 
+      value.
+	
 
 2003-02-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
     

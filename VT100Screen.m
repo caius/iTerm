@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.33 2003-02-05 18:01:04 yfabian Exp $
+// $Id: VT100Screen.m,v 1.34 2003-02-08 07:08:24 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -532,6 +532,10 @@ static BOOL PLAYBELL = YES;
     case ANSICSI_CHA:
         [self cursorToX: token.u.csi.p[0]];
 	break;
+
+    case STRICT_ANSI_MODE:
+	[TERMINAL setStrictAnsiMode: ![TERMINAL strictAnsiMode]];
+	break;
 	
     // XTERM extensions
     case XTERMCC_WIN_TITLE:
@@ -557,6 +561,7 @@ static BOOL PLAYBELL = YES;
 	      __FILE__, __LINE__, token.type);
 	break;
     }
+    
 }
 
 - (void)clearBuffer
@@ -879,14 +884,12 @@ static BOOL PLAYBELL = YES;
     // Erase cursor at old position by resetting foreground/background colors
     if (OLD_CURSOR_INDEX>=0&&OLD_CURSOR_INDEX<[[STORAGE string] length]) {
         if ([STORAGE attribute:NSReversedAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil]==@"YES") {
-            //fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
-            //bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
-	    fg = [TERMINAL defaultFGColor];
-	    bg = [TERMINAL defaultBGColor];
+            fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
+            bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
 //            NSLog(@"fg=%@\nbg=%@",fg,bg);
             dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:OLD_CURSOR_INDEX effectiveRange:nil]];
-            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-            [dic setObject:fg forKey:NSForegroundColorAttributeName];
+            [dic setObject:fg forKey:NSBackgroundColorAttributeName];
+            [dic setObject:bg forKey:NSForegroundColorAttributeName];
             [dic setObject:@"NO" forKey:NSReversedAttributeName];
             
 //            NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX],[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX]);
@@ -901,11 +904,9 @@ static BOOL PLAYBELL = YES;
     {
         int idx = [self getIndex:CURSOR_X y:CURSOR_Y];
         if (idx>=[[STORAGE string] length]||[[STORAGE string] characterAtIndex:idx]=='\n') [self insertBlank:1];
-        //fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
-        //bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
 	// reverse the video on the position where the cursor is supposed to be shown.
-	fg = [TERMINAL defaultFGColor];
-	bg = [[TERMINAL defaultBGColor] colorWithAlphaComponent: 1.0]; // remove any transparency
+        fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+        bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
         dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
         [dic setObject:fg forKey:NSBackgroundColorAttributeName];
         [dic setObject:bg forKey:NSForegroundColorAttributeName];
@@ -913,6 +914,7 @@ static BOOL PLAYBELL = YES;
         //                NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
         OLD_CURSOR_INDEX=idx;
+
     }
     else OLD_CURSOR_INDEX=-1;
     
@@ -921,23 +923,42 @@ static BOOL PLAYBELL = YES;
 - (void)deleteCharacters:(int) n
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen deleteCharacter]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[VT100Screen deleteCharacter]: %d", __FILE__, __LINE__, n);
 #endif
+    NSMutableDictionary *dic = nil;
+
+    // Store the position of the cursor marking.
+    if(OLD_CURSOR_INDEX >= 0 && OLD_CURSOR_INDEX < [[STORAGE string] length])
+	dic = [NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:OLD_CURSOR_INDEX effectiveRange:nil]];
+    
     for(;n>0;n--)
+    {
         if (CURSOR_X >= 0 && CURSOR_X < WIDTH &&
             CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
         {
-//            NSString *s=[STORAGE string];
+	    //            NSString *s=[STORAGE string];
             int idx = [self getIndex:CURSOR_X y:CURSOR_Y];
             int width;
 
-//            width = (ISDOUBLEWIDTHCHARACTER([[STORAGE string] characterAtIndex:idx]))?2:1;
+	    //            width = (ISDOUBLEWIDTHCHARACTER([[STORAGE string] characterAtIndex:idx]))?2:1;
             width = [[STORAGE attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
             [STORAGE deleteCharactersInRange:NSMakeRange(idx, 1)];
+
+	    // Shift OLD_CURSOR_INDEX if necessary
+	    if(idx < OLD_CURSOR_INDEX)
+		OLD_CURSOR_INDEX--;
+	    
             if (width==2)  [STORAGE insertAttributedString:[self attrString:@"?" ascii:YES] atIndex:idx];
-//            for(;[s characterAtIndex:idx]!='\n'&&idx<[s length];idx++);
-//            [STORAGE insertAttributedString:[self attrString:@" " ascii:YES] atIndex:idx];
+	    //            for(;[s characterAtIndex:idx]!='\n'&&idx<[s length];idx++);
+     //            [STORAGE insertAttributedString:[self attrString:@" " ascii:YES] atIndex:idx];
         }
+    }
+	    
+    // Restore cursor marking if possible
+    if(OLD_CURSOR_INDEX >= 0 && OLD_CURSOR_INDEX < [[STORAGE string] length] && dic != nil)
+    {
+	[STORAGE setAttributes:dic range:NSMakeRange(OLD_CURSOR_INDEX,1)];
+    }
 }
 
 - (void)backSpace

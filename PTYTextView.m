@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.124 2004-02-20 00:01:14 ujwal Exp $
+// $Id: PTYTextView.m,v 1.125 2004-02-20 01:40:42 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -903,7 +903,8 @@
           __FILE__, __LINE__, event );
 #endif
     NSPoint locationInWindow, locationInTextView;
-    int x, y;
+    int x, y, tmpX, tmpY;
+	NSString *aString;
     
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
@@ -926,6 +927,51 @@
 	if([event clickCount] == 2)
 	{
 		// double-click; select word
+		// find the beginning of the word
+		tmpX = x;
+		tmpY = y;
+		while(tmpX >= 0)
+		{
+			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
+			if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet whitespaceCharacterSet]].length > 0)
+				break;
+			tmpX--;
+			if(tmpX < 0 && tmpY > 0)
+			{
+				tmpY--;
+				tmpX = [dataSource width];
+			}
+		}
+		tmpX++;
+		if(tmpX < 0)
+			tmpX = 0;
+		if(tmpY < 0)
+			tmpY = 0;
+		startX = tmpX;
+		startY = tmpY;
+		
+		// find the end of the word
+		tmpX = x;
+		tmpY = y;
+		while(tmpX <= [dataSource width])
+		{
+			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
+			if([aString length] == 0 || [aString rangeOfCharacterFromSet: [NSCharacterSet whitespaceCharacterSet]].length > 0)
+				break;
+			tmpX++;
+			if(tmpX >= [dataSource width] && tmpY < [dataSource numberOfLines])
+			{
+				tmpY++;
+				tmpX = 0;
+			}
+		}
+		if(tmpX >= [dataSource width])
+			tmpX = [dataSource width];
+		if(tmpY >= [dataSource numberOfLines])
+			tmpY = [dataSource numberOfLines] - 1;
+		endX = tmpX;
+		endY = tmpY;
+		
 	}
 	else if ([event clickCount] >= 3)
 	{
@@ -935,7 +981,6 @@
 		startY = endY = y;
 	}
 	
-    
     if (startX!=-1&&_delegate) {
         if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
@@ -988,7 +1033,7 @@
 	
 	width = [dataSource width];
 	scline = [dataSource numberOfLines]-[dataSource height];
-	temp = (unichar *) malloc(((endy-starty)*(width+1)+(endx-startx))*sizeof(unichar));
+	temp = (unichar *) malloc(((endy-starty+1)*(width+1)+(endx-startx+1))*sizeof(unichar));
 	j=0;
 	for (y=starty;y<=endy;y++) {
 		if (y<scline) {
@@ -1002,12 +1047,12 @@
 		x1=0; x2=width;
 		if (y==starty) x1=startx;
 		if (y==endy) x2=endx;
-		for(;x1<x2;x1++,j++) {
+		for(;x1<=x2;x1++,j++) {
 			if (buf[x1]!=0xffff) {
 				temp[j]=buf[x1]?buf[x1]:' ';
 			}
-		}			
-	    if (x1>=width) {
+		}		
+	    if (x1>=width && y != endy) {
 			while (j>x1&&temp[j-1]==' ') j--; // trim the trailing blanks
 			temp[j++]='\n';
 		}
@@ -1029,7 +1074,7 @@
     if (startX<0) 
         return nil;
 	
-	return [self contentFromX:startX Y:startY ToX:endX Y:endY];
+	return [self contentFromX:startX Y:startY ToX:endX-1 Y:endY];
 }
 
 - (NSString *) content
@@ -1039,7 +1084,7 @@
     NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
 #endif
     	
-	return [self contentFromX:0 Y:0 ToX:[dataSource width] Y:[dataSource numberOfLines]-1];
+	return [self contentFromX:0 Y:0 ToX:[dataSource width]-1 Y:[dataSource numberOfLines]-1];
 }
 
 - (void) copy: (id) sender

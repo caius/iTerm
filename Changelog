@@ -1,3 +1,8 @@
+2003-04-20	ujwal
+    
+    * When preferences are read, if the selected font is not 
+      found, fall back on the default fixed pit font for the user.
+
 2003-04-18	ujwal
 
     * Using named color contants instead of building our own 

@@ -1335,6 +1335,7 @@
 				8742064C0564169600CFC3F1,
 				8742064D0564169600CFC3F1,
 				DD57633705653C5F00F1905E,
+				F64B59FB05ED4AA800FE8ACB,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2034,6 +2035,57 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		F64B59D405ED49B600FE8ACB = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html;
+			name = sidebar.html;
+			path = website/sidebar.html;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F64B59F305ED4A0D00FE8ACB = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html;
+			name = history.html;
+			path = website/history.html;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F64B59FA05ED4AA800FE8ACB = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html;
+			name = header.html;
+			path = website/header.html;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F64B59FB05ED4AA800FE8ACB = {
+			fileRef = F64B59FA05ED4AA800FE8ACB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F64B5A1705ED4AF000FE8ACB = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html;
+			name = footer.html;
+			path = website/footer.html;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F64B5A4905ED5FCF00FE8ACB = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html;
+			name = index.html;
+			path = website/index.html;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		F6FAFD99050E90C300EA4EE7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -2266,7 +2318,9 @@
 		};
 		FBDF6B63042A6B3101F955DB = {
 			children = (
+				F64B59F305ED4A0D00FE8ACB,
 				FBDF6B8F042A6BD801F955DB,
+				F64B5A4905ED5FCF00FE8ACB,
 				FBDF6B90042A6BD801F955DB,
 				FBDF6B91042A6BD801F955DB,
 				FBDF6B92042A6BD801F955DB,
@@ -2284,6 +2338,9 @@
 				FBDF6B9B042A6BD801F955DB,
 				FBDF6B9C042A6BD801F955DB,
 				FBDF6B9D042A6BD801F955DB,
+				F64B59D405ED49B600FE8ACB,
+				F64B59FA05ED4AA800FE8ACB,
+				F64B5A1705ED4AF000FE8ACB,
 			);
 			isa = PBXGroup;
 			name = website;
@@ -2293,27 +2350,27 @@
 		FBDF6B8F042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = history.html;
-			path = website/history.html;
+			lastKnownFileType = text.html.other;
+			name = history.shtml;
+			path = website/history.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		FBDF6B90042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = index.html;
-			path = website/index.html;
+			lastKnownFileType = text.html.other;
+			name = index.shtml;
+			path = website/index.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		FBDF6B91042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = install.html;
-			path = website/install.html;
+			lastKnownFileType = text.html.other;
+			name = install.shtml;
+			path = website/install.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2336,18 +2393,18 @@
 		FBDF6B94042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = misc.html;
-			path = website/misc.html;
+			lastKnownFileType = text.html.other;
+			name = misc.shtml;
+			path = website/misc.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		FBDF6B95042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = navigation.html;
-			path = website/navigation.html;
+			lastKnownFileType = text.html.other;
+			name = navigation.shtml;
+			path = website/navigation.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2362,18 +2419,18 @@
 		FBDF6B97042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = preferences.html;
-			path = website/preferences.html;
+			lastKnownFileType = text.html.other;
+			name = preferences.shtml;
+			path = website/preferences.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};
 		FBDF6B98042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = resource.html;
-			path = website/resource.html;
+			lastKnownFileType = text.html.other;
+			name = resource.shtml;
+			path = website/resource.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2396,9 +2453,9 @@
 		FBDF6B9B042A6BD801F955DB = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = scripting.html;
-			path = website/scripting.html;
+			lastKnownFileType = text.html.other;
+			name = scripting.shtml;
+			path = website/scripting.shtml;
 			refType = 4;
 			sourceTree = "<group>";
 		};

@@ -9,43 +9,11 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#696969" ALINK="#696969" VLINK="#696969">
 <LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
 <CENTER>
-<A HREF="index.html"><IMG SRC="iTerm.png" TITLE="" ALT="iTerm" BORDER="0"></A>
-<H1>iTerm Project Homepage</H1>
-
+<!--#include virtual="/header.html" -->
 <TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
 <TR>
 <TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF">
-<FONT SIZE="5"><STRONG>iTerm Info:</STRONG></FONT><BR>
-<UL>
-<LI><A HREF="index.html">Home</A></LI>
-<LI><A HREF="navigation.html">Bookmarks</A></LI>
-<LI><A HREF="preferences.html">Configure Panel</A></LI>
-<LI><A HREF="navigation.html">Contextual Menu</A></LI>
-<LI><A HREF="install.html">Installation</A></LI>
-<LI><A HREF="misc.html">Misc</A></LI>
-<LI><A HREF="navigation.html">Navigation</A></LI>
-<LI><A HREF="preferences.html">Preferences</A></LI>
-<LI><A HREF="scripting.html">Scripting</A></LI>
-<LI><A HREF="install.html">System Requirements</A></LI>
-<LI><A HREF="history.html">Version History</A></LI>
-<LI><A HREF="resource.html">Additional Resources</A><IMG src="new.gif"></LI>
-</UL>
-
-<FONT SIZE="5"><STRONG>Download:</STRONG></FONT><BR>
-<UL><A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">iTerm 0.7.8</A><IMG src="new.gif"> The latest iTerm release<BR>
-<A HREF="http://cvs.sourceforge.net/cvstarballs/iterm-cvsroot.tar.bz2">Nightly Tarball</A><BR>
-<A HREF="iTerm.app.sit">Recent CVS build</A><BR>
-</UL>
-<FONT SIZE="5"><STRONG>Links:</STRONG></FONT><BR>
-<UL>
-<A HREF="http://sourceforge.net/projects/iterm/">iTerm (sourceforge project page)</A><BR>
-<A HREF="http://sourceforge.net/tracker/?atid=518976&group_id=67789&func=browse">Request a feature</A><BR>
-<A HREF="http://sourceforge.net/tracker/?atid=518973&group_id=67789&func=browse">Submit a Bug</A><BR>
-<BR>
-<A HREF="http://sourceforge.net">
-<IMG SRC="http://sourceforge.net/sflogo.php?group_id=67789&amp;type=2" WIDTH="125" HEIGHT="37" BORDER="0" ALT="SourceForge Logo">
-</A>
-</UL>
+<!--#include virtual="/sidebar.html" -->
 </TD>
 
 
@@ -86,15 +54,26 @@ once we have a machine running the new OS.
 <UL><A HREF="screenshot.jpg"><IMG src="screenshot-mini.jpg" ALT="screen shot" WIDTH="141" HEIGHT="118"></A></UL>
 
 </TD>
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<script type="text/javascript"><!--
+google_ad_client = "pub-5743532873543938";
+google_ad_width = 120;
+google_ad_height = 600;
+google_ad_format = "120x600_as";
+google_color_border = "B0E0E6";
+google_color_bg = "ffffff";
+google_color_link = "000000";
+google_color_url = "336699";
+google_color_text = "333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</TD>
 </TR>
 </TABLE>
 
-<BR>
-<FONT SIZE="-1">
-Modified: Nov 4th, 2003<BR>Created: Dec 18th, 2002<BR>
-<A HREF="MAILTO:fabian_at_macvillage_dot_net">Fabian</A> and <A HREF="MAILTO:ujwal_at_setlurgroup_dot_com">Ujwal S. Sathyam</A><BR>
-Support free software by writing one.<BR>
-</FONT>
+<!--#include virtual="/footer.html" -->
 
 </CENTER>
 </BODY>

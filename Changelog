@@ -1,3 +1,7 @@
+2004-02-25  fabian
+
+	* Changed all the html docs into shtml
+	
 2004-02-24  fabian
 
 	* Fixed a double-width character handling bug in PTYTextView

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.90 2003-09-10 20:36:44 ujwal Exp $
+// $Id: PTYTextView.m,v 1.91 2003-09-23 15:14:55 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2122,12 +2122,30 @@
 - (void) print: (id) sender
 {
     NSPrintInfo *aPrintInfo;
+
+    if([[self textStorage] length] <= 0)
+	return;
     
     aPrintInfo = [NSPrintInfo sharedPrintInfo];
     [aPrintInfo setHorizontalPagination: NSFitPagination];
     [aPrintInfo setVerticalPagination: NSAutoPagination];
-    
-    [[NSPrintOperation printOperationWithView: self  printInfo: aPrintInfo] runOperation];
+
+    // create a temporary view with the contents, change to black on white, and print it
+    PTYTextView *tempView;
+    NSMutableAttributedString *theContents;
+
+    tempView = [[PTYTextView alloc] initWithFrame: [self frame]];
+    theContents = [[self textStorage] mutableCopy];
+    [theContents addAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+	[NSColor textBackgroundColor], NSBackgroundColorAttributeName,
+	[NSColor textColor], NSForegroundColorAttributeName, NULL]
+						     range: NSMakeRange(0, [theContents length])];
+    [[tempView textStorage] setAttributedString: theContents];
+    [theContents release];
+
+    // now print the temporary view
+    [[NSPrintOperation printOperationWithView: tempView  printInfo: aPrintInfo] runOperation];
+    [tempView release];    
 }
 
 // Print selection

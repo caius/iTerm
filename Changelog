@@ -1,3 +1,7 @@
+2003-09-23	ujwal
+
+    * While printing, we print a back-on-white copy of the textview.
+
 2003-09-22	ujwal
 
     * Added iTerm-Aqua.jpg as the default background image.

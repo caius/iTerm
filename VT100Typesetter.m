@@ -167,6 +167,49 @@ static unsigned int invocationId = 0;
 	characterRange = NSMakeRange(lineStartIndex, lineEndIndex-lineStartIndex+1);
 	glyphRange = [layoutMgr glyphRangeForCharacterRange: characterRange actualCharacterRange: nil];
 
+	// calculate the line fragment rectangle
+	if(lineStartIndex == 0)
+	{
+	    // Check for new line at the beginning of the text
+	    if(newLineCharExists == NO)
+		lineRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
+	    else
+	    {
+		// put the new line char on the first line and the rest of the line on the next line
+		lineRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
+		[layoutMgr setTextContainer: textContainer forGlyphRange: NSMakeRange(0,1)];
+		[layoutMgr setLineFragmentRect: lineRect forGlyphRange: NSMakeRange(0,1) usedRect: lineRect];
+		[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: NSMakeRange(0,1)];
+
+		glyphRange.location++;
+		glyphRange.length--;
+
+	    }
+	}
+	else
+	{
+	    NSRect lastGlyphRect;
+	    // check if we just processed the previous line, otherwise ask the layout manager.
+	    if(previousRect.size.width > 0)
+	    {
+		lastGlyphRect = previousRect;
+	    }
+	    else
+	    {
+		lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
+	    }
+	    // calculate next line based on previous line rectangle
+	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont],
+			   [textContainer containerSize].width, [font defaultLineHeightForFont]);
+	}
+#if DEBUG_METHOD_TRACE
+	NSLog(@"(%d) Laying out line %f; numLines = %d", callId, lineRect.origin.y/[font defaultLineHeightForFont] + 1, numLines);
+	NSLog(@"(%d) Line = '%@'", callId, [theString substringWithRange: characterRange]);
+#endif
+	// cache the rect for the next run, if any.
+	previousRect = lineRect;
+	
+
 	// calculate line width accounting for double width characters
 	NSRange doubleWidthCharacterRange;
 	id doubleWidthCharacterAttribute;
@@ -203,35 +246,6 @@ static unsigned int invocationId = 0;
 	    hasGraphicalCharacters = YES;
 	}
 
-
-
-	// calculate the line fragment rectangle
-	if(lineStartIndex == 0)
-	{
-	    lineRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
-	}
-	else
-	{
-	    NSRect lastGlyphRect;
-	    // check if we just processed the previous line, otherwise ask the layout manager.
-	    if(previousRect.size.width > 0)
-	    {
-		lastGlyphRect = previousRect;
-	    }
-	    else
-	    {
-		lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
-	    }
-	    // calculate next line based on previous line rectangle
-	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont],
-			   [textContainer containerSize].width, [font defaultLineHeightForFont]);
-	}
-#if DEBUG_METHOD_TRACE
-	NSLog(@"(%d) Laying out line %f; numLines = %d", callId, lineRect.origin.y/[font defaultLineHeightForFont] + 1, numLines);
-	NSLog(@"(%d) Line = '%@'", callId, [theString substringWithRange: characterRange]);
-#endif
-	// cache the rect for the next run, if any.
-	previousRect = lineRect;
 	
 	
 	// Now fill the line

@@ -807,19 +807,29 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) pasteString: (NSString *) aString
 {
+	
     if ([aString length] > 0)
     {
         NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
                                     dataUsingEncoding:[TERMINAL encoding]
 								 allowLossyConversion:YES];
-        if (strdata != nil){
+		// check if we want to send this input to all the sessions
+		if([parent sendInputToAllSessions] == NO)
+		{
 			// Do this in a new thread since we do not want to block the read code.
 			[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:strdata];
-			//[self writeTask:strdata];
 		}
+		else
+		{
+			// send to all sessions
+			// Do this in a new thread since we do not want to block the read code.
+			[NSThread detachNewThreadSelector:@selector(sendInputToAllSessions:) toTarget:parent withObject:strdata];
+		}
+		
     }
     else
 		NSBeep();
+	
 }
 
 - (void)deleteBackward:(id)sender

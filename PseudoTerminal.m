@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.266 2004-03-03 15:48:39 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.267 2004-03-04 16:15:12 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -872,7 +872,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal sendDataToAllSessions:]",
 		  __FILE__, __LINE__);
 #endif
-    
+	// could be called from a thread
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
     NSArray *sessionList = [_sessionMgr sessionList];
     NSEnumerator *sessionEnumerator = [sessionList objectEnumerator];
     PTYSession *aSession;
@@ -881,6 +883,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 		[[aSession SHELL] writeTask:data];
     }    
+	
+	[pool release];
 }
 
 - (BOOL) sendInputToAllSessions

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.126 2003-08-29 18:16:52 ujwal Exp $
+// $Id: VT100Screen.m,v 1.127 2003-08-29 18:46:49 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2139,11 +2139,16 @@ static BOOL PLAYBELL = YES;
     NSMutableAttributedString *aLine;
 #endif
 
-//    NSLog(@"deleteLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
+    //NSLog(@"deleteLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
     for(;n>0;n--) {
 #if DEBUG_USE_BUFFER
         idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:YES];
+	if(idx < 0)
+	    idx = [BUFFER length] - 1;
         idx2=[self getIndexAtX:0 Y:CURSOR_Y+1 withPadding:YES];
+	if(idx2 < 0)
+	    idx2 = [BUFFER length];
+	//NSLog(@"idx = %d; idx2 = %d", idx, idx2);
         aRange = NSMakeRange(idx, idx2-idx);
         if(aRange.length <= 0)
             aRange.length = 1;
@@ -2180,6 +2185,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
     }
+    //NSLog(@"Exiting deleteLines...");
 }
 
 - (void)playBell
@@ -2532,8 +2538,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     int len, slen;
     int idx;
-
-
+    
     idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
     if ([[SESSION TEXTVIEW] hasMarkedText]) {
         len=idx;

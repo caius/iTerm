@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.2 2002-11-27 16:17:51 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.3 2002-12-04 19:19:12 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -53,6 +53,7 @@
     // Session list
     NSMutableArray *ptyList;
     NSMutableArray *buttonList;
+    IBOutlet NSPopUpButton *sessionPopup;
     int currentSessionIndex;
     PTYSession *currentPtySession;
     NSLock *ptyListLock;
@@ -88,6 +89,8 @@
           encoding:(NSStringEncoding)encoding
               term:(NSString *)term;
 
+- (void) sessionPopupSelectionDidChange: (id) sender;
+- (void) selectPopupSession: (id) anObject;
 - (void) switchSession: (id) sender;
 - (void) selectSession: (int) sessionIndex;
 - (void) closeSession: (PTYSession *)theSession;

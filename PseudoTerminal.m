@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.6 2002-11-28 19:28:41 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.7 2002-12-04 19:19:12 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -120,7 +120,14 @@ static NSDictionary *newOutputStateAttribute;
     NSParameterAssert(font != nil);
 
     if (FONT) [FONT autorelease];
-    FONT=[[font copy] retain];    
+    FONT=[[font copy] retain];
+    
+    // Session popup init
+    [sessionPopup setBordered: NO];
+    [sessionPopup setTarget: self];
+    [sessionPopup setAction: @selector(sessionPopupSelectionDidChange:)];
+    [sessionPopup setTransparent: YES];
+    [sessionPopup setEnabled: NO];
 }
 
 - (void)initSession:(NSString *)title
@@ -219,6 +226,34 @@ static NSDictionary *newOutputStateAttribute;
     [self selectSession: [sender tag]];
 }
 
+- (void) sessionPopupSelectionDidChange: (id) sender
+{
+    NSNumber *sessionIndex;
+    
+    // For some reason, calling selectSession directly causes the the text view not
+    // to be redrawn. It looks like a stack problem. I tried creating a separate 
+    // autorelease pool before calling selectSession:, but it still did not work.
+    // Doing this in a separate thread seems to work. Weird!!
+    
+    //[self selectSession: ([sender indexOfSelectedItem] - 1)];
+    sessionIndex = [NSNumber numberWithInt: [sender indexOfSelectedItem] - 1];
+    [NSThread detachNewThreadSelector: @selector(selectPopupSession:) toTarget: self 
+                withObject: sessionIndex];
+    
+}
+
+- (void) selectPopupSession: (id) anObject
+{
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    int sessionIndex;
+    
+    sessionIndex = [(NSNumber *)anObject intValue];
+    [self selectSession: sessionIndex];
+    
+    [pool release];
+        
+}
+
 - (void) selectSession: (int) sessionIndex
 {
     PTYSession *aSession;
@@ -232,19 +267,21 @@ static NSDictionary *newOutputStateAttribute;
         sessionIndex = 0;
     if(sessionIndex >= [ptyList count])
         sessionIndex = [ptyList count] - 1;
-
-    currentSessionIndex = sessionIndex;
+    
     aSession = [ptyList objectAtIndex: sessionIndex];
-    currentPtySession = aSession;
     [SCROLLVIEW setDocumentView: [aSession TEXTVIEW]];
+    TEXTVIEW = [aSession TEXTVIEW];
     SHELL = [aSession SHELL];
     TERMINAL = [aSession TERMINAL];
     SCREEN = [aSession SCREEN];
+    currentSessionIndex = sessionIndex;
+    currentPtySession = aSession;
     [currentPtySession resetStatus];
     [currentPtySession moveLastLine];
     [self _drawSessionButtons];
     [self setWindowTitle];
 //    [WINDOW makeFirstResponder: self];
+
 }
 
 - (void) closeSession: (PTYSession *)theSession
@@ -301,11 +338,14 @@ static NSDictionary *newOutputStateAttribute;
     int theIndex;
     
     if (currentSessionIndex == ([ptyList count] - 1))
+    {
         theIndex = 0;
+    }
     else
     {
         theIndex = currentSessionIndex + 1;
     }
+    
     [self selectSession: theIndex];
 
 }
@@ -328,7 +368,7 @@ static NSDictionary *newOutputStateAttribute;
     }
     else {
         NSMutableString *title = [NSMutableString string];
-        NSString *progpath = [SHELL path];
+        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [SHELL path], currentSessionIndex];
 
         if (EXIT)
             [title appendString:@"Finish"];
@@ -453,7 +493,7 @@ static NSDictionary *newOutputStateAttribute;
 
     window = [SCROLLVIEW window];
     winSize = size;
-    winSize.height = size.height + 35;
+    winSize.height = size.height + 30;
     [window setContentSize:winSize];
     [SCROLLVIEW setFrameSize:size];
     [[SCROLLVIEW documentView] setFrameSize:vsize];
@@ -643,6 +683,7 @@ static NSDictionary *newOutputStateAttribute;
         [[[ptyList objectAtIndex:i] SHELL] setWidth:w  height:h];
         [[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
+    [self _drawSessionButtons];
 
 }
 
@@ -964,8 +1005,8 @@ static NSDictionary *newOutputStateAttribute;
 {
     int sessionCount;
     int i;
-    NSButton *aButton;
     NSDictionary *attr;
+    int buttonWidth = 80;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal _drawSessionButtons]",
@@ -979,58 +1020,88 @@ static NSDictionary *newOutputStateAttribute;
     // Discard all previous buttons
     for(i = 0; i < [buttonList count]; i++)
     {
-        aButton = [buttonList objectAtIndex: i];
-        [aButton removeFromSuperviewWithoutNeedingDisplay];
+        [[buttonList objectAtIndex: i] removeFromSuperview];
     }
     [buttonList removeAllObjects];
     
-    [[WINDOW contentView] setNeedsDisplay: YES];
-    
+    //[[WINDOW contentView] setNeedsDisplay: YES];
+
+    // Reset the session popup
+    [sessionPopup setEnabled: NO];
+    [sessionPopup setTransparent: YES];
+    [sessionPopup removeAllItems];
+    [sessionPopup addItemWithTitle: @""];
+                
     for (i = 0; i < sessionCount; i++)
     {
         NSRect aFrame;
-        
-        aFrame.origin.x = i * 80;
-        aFrame.origin.y = 0;
-        aFrame.size.width = 80;
-        aFrame.size.height = [[WINDOW contentView] frame].size.height - [SCROLLVIEW frame].size.height - 3;
-        aButton = [[NSButton alloc] initWithFrame: aFrame];
-        [aButton setTarget: self];
-        [aButton setAction: @selector(switchSession:)];
-        [aButton setTag: i];
-        [aButton setButtonType: NSOnOffButton];
-        //[aButton setShowsStateBy: NSChangeBackgroundCellMask];
-        attr=normalStateAttribute;
-        if(i == currentSessionIndex)
+        id aButton;
+
+        // Construct a menu 
+        [sessionPopup addItemWithTitle: [[ptyList objectAtIndex: i] name]];
+        if(currentSessionIndex == i)
         {
-//            [aButton highlight: YES];
-            [aButton setBordered: YES];
-            [self setWindowTitle];
-            attr=chosenStateAttribute;
-        }
-        else {
-//            [aButton highlight: NO];
-            [aButton setBordered: NO];
-            if ([[ptyList objectAtIndex: i] refreshed])
-                attr=([[ptyList objectAtIndex: i] idle])?idleStateAttribute:newOutputStateAttribute;
+            [sessionPopup selectItemAtIndex: 1];
         }
 
-        if ([[[ptyList objectAtIndex: i] name] length]<=10) {
-            [aButton setAttributedTitle:[[NSAttributedString alloc] initWithString:[[ptyList objectAtIndex: i] name]
-                                                              attributes:attr]];
-        }
-        else {
-            [aButton setAttributedTitle:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@...%@",
-                              [[[ptyList objectAtIndex: i] name] substringToIndex:5],
-                              [[[ptyList objectAtIndex: i] name] substringFromIndex:
-                                  [[[ptyList objectAtIndex: i] name] length]-3]]
-                                                                        attributes:attr]];
-        }
         
-        [[WINDOW contentView] addSubview: aButton];
-        [aButton setNeedsDisplay: YES];
-        [buttonList addObject: aButton];
-        [aButton release];
+        // If the window is not wide enough to accommodate all our buttons,
+        // draw an arrow button with a menu and get out.
+        if(([SCROLLVIEW frame].size.width - i*buttonWidth) >= buttonWidth)
+        {
+
+            aFrame.origin.x = i * buttonWidth;
+            aFrame.origin.y = 0;
+            aFrame.size.width = buttonWidth;
+            if(buttonWidth > ([TEXTVIEW frame].size.width - (i * buttonWidth)))
+                aFrame.size.width = [TEXTVIEW frame].size.width - (i * buttonWidth);
+            aFrame.size.height = [[WINDOW contentView] frame].size.height - [SCROLLVIEW frame].size.height - 3;
+            aButton = [[NSButton alloc] initWithFrame: aFrame];
+            [aButton setTarget: self];
+            [aButton setAction: @selector(switchSession:)];
+            [aButton setTag: i];
+            [aButton setButtonType: NSOnOffButton];
+            //[aButton setShowsStateBy: NSChangeBackgroundCellMask];
+            attr=normalStateAttribute;
+            if(i == currentSessionIndex)
+            {
+    //            [aButton highlight: YES];
+                [aButton setBordered: YES];
+                [self setWindowTitle];
+                attr=chosenStateAttribute;
+            }
+            else {
+    //            [aButton highlight: NO];
+                [aButton setBordered: NO];
+                if ([[ptyList objectAtIndex: i] refreshed])
+                    attr=([[ptyList objectAtIndex: i] idle])?idleStateAttribute:newOutputStateAttribute;
+            }
+    
+            if ([[[ptyList objectAtIndex: i] name] length]<=15) {
+                [aButton setAttributedTitle:[[NSAttributedString alloc] initWithString:[[ptyList objectAtIndex: i] name]
+                                                                attributes:attr]];
+            }
+            else {
+                [aButton setAttributedTitle:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@...%@",
+                                [[[ptyList objectAtIndex: i] name] substringToIndex:5],
+                                [[[ptyList objectAtIndex: i] name] substringFromIndex:
+                                    [[[ptyList objectAtIndex: i] name] length]-3]]
+                                                                            attributes:attr]];
+            }
+            
+            // display the button and add to the list
+            [[WINDOW contentView] addSubview: aButton];
+            [buttonList addObject: aButton];
+            [aButton release];
+
+        }
+        else
+        {
+            // Enable and display the session popup
+            [sessionPopup setEnabled: YES];
+            [sessionPopup setTransparent: NO];
+        }
+                        
     }
     
     [ptyListLock unlock];

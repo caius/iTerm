@@ -1,3 +1,13 @@
+2002-12-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added a pulldown menu at the bottom right corner 
+      when window cannot draw all the session buttons.
+      
+    * Made session buttons narrower in height.
+    
+    * Refactored some code.
+    
+
 2002-11-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed bug in PreferencePanel where transparency was

@@ -32,6 +32,7 @@
         {
             ACTIONS = {
                 clearBuffer = id; 
+                closeCurrentSession = id; 
                 deleteBackward = id; 
                 deleteForward = id; 
                 insertNewline = id; 
@@ -42,10 +43,15 @@
                 moveLeft = id; 
                 moveRight = id; 
                 moveUp = id; 
+                newSession = id; 
+                nextSession = id; 
                 pageDown = id; 
                 pageUp = id; 
                 paste = id; 
+                previousSession = id; 
+                sessionPopup = id; 
                 setMainMenu = id; 
+                switchSession = id; 
                 timerTick = id; 
                 windowConfigBackground = id; 
                 windowConfigCancel = id; 
@@ -58,6 +64,7 @@
             OUTLETS = {
                 "AI_CODE" = id; 
                 "AI_ON" = id; 
+                "AI_PANEL" = id; 
                 "CONFIG_BACKGROUND" = id; 
                 "CONFIG_COL" = id; 
                 "CONFIG_ENCODING" = id; 
@@ -68,8 +75,12 @@
                 "CONFIG_ROW" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
+                "OA_ON" = id; 
                 SCROLLVIEW = id; 
+                "WA_ON" = id; 
                 WINDOW = id; 
+                cMenu = id; 
+                sessionPopup = NSPopUpButton; 
             }; 
             SUPERCLASS = NSResponder; 
         }

@@ -1,6 +1,8 @@
 2003-01-24	fabian
-    * Fixed a but in VT100Terminal that causes loss of
+    * Fixed a bug in VT100Terminal that causes loss of
       character sometimes
+    * Fixed bug in PseudoTerminal that makes choosing
+      non-ASCII font not working
       
 2003-01-23	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.83 2003-01-21 22:01:44 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.84 2003-01-24 21:31:39 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -676,7 +676,7 @@ static NSString *ConfigToolbarItem = @"Config";
         configNAFont=[[NSFontManager sharedFontManager] convertFont:configNAFont];
         if (configNAFont!=nil) {
             [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
-            [CONFIG_NAEXAMPLE setFont:configFont];
+            [CONFIG_NAEXAMPLE setFont:configNAFont];
         }
     } else{
         configFont=[[NSFontManager sharedFontManager] convertFont:configFont];
@@ -942,10 +942,12 @@ static NSString *ConfigToolbarItem = @"Config";
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
     [CONFIG_EXAMPLE setTextColor:[TERMINAL defaultFGColor]];
     [CONFIG_EXAMPLE setBackgroundColor:[TERMINAL defaultBGColor]];
+    [CONFIG_EXAMPLE setFont:configFont];
     configNAFont=[SCREEN nafont];
     [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
     [CONFIG_NAEXAMPLE setTextColor:[TERMINAL defaultFGColor]];
     [CONFIG_NAEXAMPLE setBackgroundColor:[TERMINAL defaultBGColor]];
+    [CONFIG_NAEXAMPLE setFont:configNAFont];
     [CONFIG_COL setIntValue:WIDTH];
     [CONFIG_ROW setIntValue:HEIGHT];
     [CONFIG_NAME setStringValue:[self currentSessionName]];

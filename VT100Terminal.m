@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.69 2003-06-11 23:35:12 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.70 2003-07-16 06:57:48 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1182,6 +1182,7 @@ static VT100TCC decode_string(unsigned char *datap,
     XON = YES;
     bold=blink=reversed=under=0;
     saveBold=saveBlink=saveReversed=saveUnder = 0;
+    highlight = saveHighlight = NO;
     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
     
@@ -1877,6 +1878,7 @@ static VT100TCC decode_string(unsigned char *datap,
             under=saveUnder;
             blink=saveBlink;
             reversed=saveReversed;
+	    highlight = saveHighlight;
             CHARSET=saveCHARSET;
             [self setCharacterAttributeDictionary];
             break;
@@ -1885,6 +1887,7 @@ static VT100TCC decode_string(unsigned char *datap,
             saveUnder=under;
             saveBlink=blink;
             saveReversed=reversed;
+	    saveHighlight=highlight;
             [self setCharacterAttributeDictionary];
             saveCHARSET=CHARSET;
             break;
@@ -1898,8 +1901,8 @@ static VT100TCC decode_string(unsigned char *datap,
     int i;
     float alpha;
 
-    fg = [self colorFromTable:FG_COLORCODE bold:bold];
-    bg = [self colorFromTable:BG_COLORCODE bold:NO];
+    fg = [self colorFromTable:FG_COLORCODE bold:(highlight)?YES:bold];
+    bg = [self colorFromTable:BG_COLORCODE bold:(highlight)?YES:NO];
 
     alpha = [defaultBGColor alphaComponent];
 
@@ -1936,7 +1939,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
         if (token.u.csi.count == 0) {
             // all attribute off
-            bold=under=blink=reversed=0;      
+            bold=under=blink=reversed=0;
+	    highlight = NO;
 	    FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
 	    BG_COLORCODE = DEFAULT_BG_COLOR_CODE; 
         }
@@ -1948,6 +1952,7 @@ static VT100TCC decode_string(unsigned char *datap,
                 case VT100CHARATTR_ALLOFF:
                     // all attribute off
                     bold=under=blink=reversed=0;
+		    highlight = NO;
                     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
 		    BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
                     break;
@@ -1983,12 +1988,25 @@ static VT100TCC decode_string(unsigned char *datap,
                     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
                     break;
                 default:
+		    // 8 color support
                     if (n>=VT100CHARATTR_FG_BLACK&&n<=VT100CHARATTR_FG_WHITE) {
                         FG_COLORCODE = n - VT100CHARATTR_FG_BASE - COLORCODE_BLACK;
+			highlight = NO;
                     }
                     else if (n>=VT100CHARATTR_BG_BLACK&&n<=VT100CHARATTR_BG_WHITE) {
                         BG_COLORCODE = n - VT100CHARATTR_BG_BASE - COLORCODE_BLACK;
+			highlight = NO;
                     }
+		    // 16 color support
+		    if (n>=VT100CHARATTR_FG_HI_BLACK&&n<=VT100CHARATTR_FG_HI_WHITE) {
+                        FG_COLORCODE = n - VT100CHARATTR_FG_HI_BASE - COLORCODE_BLACK;
+			//highlight = YES;
+                    }
+                    else if (n>=VT100CHARATTR_BG_HI_BLACK&&n<=VT100CHARATTR_BG_HI_WHITE) {
+                        BG_COLORCODE = n - VT100CHARATTR_BG_HI_BASE - COLORCODE_BLACK;
+			//highlight = YES;
+                    }
+		    
                 }
             }
         }

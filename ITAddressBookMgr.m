@@ -338,8 +338,26 @@ static TreeNode *defaultBookmark = nil;
 	[aDict setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
 	[aDict setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
 	
-	
 	[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: serviceNode];
+
+	// No rendezvous service for sftp. Rides over ssh, so try to detect that
+	if([[[serviceNode nodeData] objectForKey: KEY_RENDEZVOUS_SERVICE] isEqualToString: @"ssh"])
+	{
+		serviceNode = [self _getRendezvousServiceTypeNode: @"_sftp._tcp."];
+		
+		[aDict setObject: [NSString stringWithFormat: @"%@", [sender name]] forKey: KEY_NAME];
+		[aDict setObject: [NSString stringWithFormat: @"%@", [sender name]] forKey: KEY_DESCRIPTION];
+		[aDict setObject: [NSString stringWithFormat: @"%@ %@", 
+			[[serviceNode nodeData] objectForKey: KEY_RENDEZVOUS_SERVICE], ipAddressString] forKey: KEY_COMMAND];
+		[aDict setObject: @"" forKey: KEY_WORKING_DIRECTORY];
+		[aDict setObject: [[iTermTerminalProfileMgr singleInstance] defaultProfileName] forKey: KEY_TERMINAL_PROFILE];
+		[aDict setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
+		[aDict setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
+		
+		[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: serviceNode];
+	}
+	
+	
 	[aDict release];
 	
 	[sender release];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.15 2003-09-10 22:21:41 yfabian Exp $
+// $Id: PTYTask.m,v 1.16 2003-09-14 21:39:07 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -239,15 +239,20 @@ static int writep(int fds, char *buf, size_t len)
 		newOutput = YES;
 	    }
 #endif
-	    [boss setHasOutput: YES];
 
-	    if (data != nil)
+            if (data != nil) {
+                [boss setHasOutput: YES];
 		[rootProxy readTask:data];
+            }
+            else
+                [boss setHasOutput: NO];
+
 	}
 #if MEASURE_PROCESSING_TIME
 	else if (sts == 0)
 	{
 	    // time out; do some other tasks in this idle time
+            [boss setHasOutput: NO];
 
 	    // measure processing time if we want to.
 	    if(newOutput == YES)

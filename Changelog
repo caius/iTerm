@@ -1,3 +1,7 @@
+2003-09-14	fabian
+
+    * Fixed a bug in removeOverLine that causes crashes.
+    
 2003-09-14	ujwal
 
     * Fixed a bunch of bugs that prevented scripting from working.

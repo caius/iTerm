@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.203 2003-08-08 22:24:03 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.204 2003-08-08 22:34:08 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -373,7 +373,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if((ptyList == nil) || ([ptyList containsObject: aSession] == NO))
         return;
     
-    if(n == 1)
+    if(n == 1 && [self windowInited])
     {
         [[self window] close];
         return;

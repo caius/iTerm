@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.18 2003-01-21 03:14:40 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.19 2003-01-21 18:55:56 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -27,7 +27,7 @@ static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 
 @implementation VT100Terminal
 
-#define iscontrol(c)  (((c) <= 0x1f) || ((c) == 0x7f))
+#define iscontrol(c)  ((c) <= 0x1f) 
 
 #define iseuccn(c)   ((c) >= 0x81 && (c) <= 0xfe)
 #define isbig5(c)    ((c) >= 0xa1 && (c) <= 0xfe)
@@ -694,14 +694,15 @@ static VT100TCC decode_ascii(unsigned char *datap,
     unsigned char *last = datap;
     size_t len = datalen;
     VT100TCC result;
-        while (len > 0 && *last >= 0x20 && *last <= 0x7f) {
-            ++last;
-            --len;
-        }
-            *rmlen = datalen - len;
-        result.type = VT100_ASCIISTRING;
-        result.u.string = [NSString stringWithCString:datap length:*rmlen];
-            return result;
+    
+    while (len > 0 && *last >= 0x20 && *last <= 0x7f) {
+        ++last;
+        --len;
+    }
+    *rmlen = datalen - len;
+    result.type = VT100_ASCIISTRING;
+    result.u.string = [NSString stringWithCString:datap length:*rmlen];
+    return result;
 }
 
 static int utf8_reqbyte(unsigned char f)
@@ -771,13 +772,13 @@ static VT100TCC decode_euccn(unsigned char *datap,
 
 
     while (len > 0) {
-            if (iseuccn(*p)&&len>1) {
+        if (iseuccn(*p)&&len>1) {
             if ((*(p+1)>=0x40&&*(p+1)<=0x7e)||*(p+1)>=0x80&&*(p+1)<=0xfe) {
                 p += 2;
                 len -= 2;
             }
             else {
-                *p='?';
+                *p='*';
                 p++;
                 len--;
             }
@@ -811,7 +812,7 @@ static VT100TCC decode_big5(unsigned char *datap,
                 len -= 2;
             }
             else {
-                *p='?';
+                *p='*';
                 p++;
                 len--;
             }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.25 2003-01-21 03:35:30 yfabian Exp $
+// $Id: VT100Screen.m,v 1.26 2003-01-21 18:55:56 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -666,6 +666,13 @@ static BOOL PLAYBELL = YES;
         }
         else {
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+            if (CURSOR_IN_MIDDLE) {
+                //NSLog(@"setASCIIString: Start from middle of a hanzi");
+                [STORAGE replaceCharactersInRange:NSMakeRange(idx,1)
+                             withAttributedString:[self attrString:@"??"  ascii:YES]];
+                store=[STORAGE string];
+                idx++;
+            }
             //            NSLog(@"index {%d,%d]->%d",CURSOR_X,CURSOR_Y,idx);
             if(WIDTH-CURSOR_X<=len-idx2) x=WIDTH;
             else x=CURSOR_X+len-idx2;
@@ -682,6 +689,7 @@ static BOOL PLAYBELL = YES;
                 //NSLog(@"setASCIIString: End in the middle of a hanzi");
                 [STORAGE replaceCharactersInRange:NSMakeRange(idx+i-1,1)
                              withAttributedString:[self attrString:@"??" ascii:YES]];
+                store=[STORAGE string];
             }
             //            NSLog(@"%d,%d(%d)->(%d,%d)",idx,i,[store length],idx2,j);
             if (idx>=[store length]) {
@@ -718,7 +726,7 @@ static BOOL PLAYBELL = YES;
     len = [string length];
     if (len<1) return;
 
-    NSString *store=[STORAGE string];
+    NSString *store;
 
     [self showCursor:NO];
 
@@ -753,8 +761,9 @@ static BOOL PLAYBELL = YES;
             idx=[self getIndex:CURSOR_X y:CURSOR_Y];
             if (CURSOR_IN_MIDDLE) {
                 //NSLog(@"setDoubleWidthString: Start from middle of a hanzi");
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx,2)
+                [STORAGE replaceCharactersInRange:NSMakeRange(idx,1)
                              withAttributedString:[self attrString:@"??"  ascii:YES]];
+                store=[STORAGE string];
                 idx++;
             }
             if(WIDTH-CURSOR_X<=(len-idx2)*2) x=WIDTH;
@@ -770,8 +779,9 @@ static BOOL PLAYBELL = YES;
             CURSOR_X=x;
             if (x2>x) {
                 //NSLog(@"setDoubleWidthString: End in the middle of a hanzi");
-                [STORAGE replaceCharactersInRange:NSMakeRange(idx+i,2)
+                [STORAGE replaceCharactersInRange:NSMakeRange(idx+i-1,1)
                              withAttributedString:[self attrString:@"??"  ascii:YES]];
+                store=[STORAGE string];
             }
 //            NSLog(@"%d,%d(%d)->(%d,%d)",idx,i,[store length],idx2,j);
             if (idx>=[store length]) {
@@ -786,9 +796,9 @@ static BOOL PLAYBELL = YES;
                 [STORAGE insertAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO] atIndex:idx];
             }
             else {
-               // NSLog(@"setDoubleWidthString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
-               //       [store substringWithRange:NSMakeRange(idx,i)],idx,i,
-               //       [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]); 
+                //NSLog(@"setDoubleWidthString: About to change [%@](%d+%d) ==> [%@](%d+%d)  (%d)",
+                //      [store substringWithRange:NSMakeRange(idx,i)],idx,i,
+                //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]); 
                 [STORAGE replaceCharactersInRange:NSMakeRange(idx,i)
                              withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
             }
@@ -1466,7 +1476,7 @@ static BOOL PLAYBELL = YES;
         NSLog(@"attrString: nil received!");
         str=@"";
     }
-    [dic setObject:(asc?FONT:NAFONT) forKey:NSFontAttributeName];
+    if (!asc) [dic setObject:NAFONT forKey:NSFontAttributeName];
     [dic setObject:[NSNumber numberWithInt:(asc?1:2)] forKey:NSCharWidthAttributeName];
     attr = [[NSAttributedString alloc]
                initWithString:str

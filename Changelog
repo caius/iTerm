@@ -1,3 +1,7 @@
+2003-01-21	fabian
+    * Fixed bug in SetDoubleWidthString()
+    * Fixed bug in attrString that disabled bold
+    
 2003-01-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Refactored toolbar item popup menu to enable it in 

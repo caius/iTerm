@@ -164,6 +164,7 @@
 				0464AB4E006CD2EC7F000001,
 			);
 			buildSettings = {
+				DEBUGGING_SYMBOLS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_LDFLAGS = "";
@@ -354,9 +355,6 @@
 		DD8CF2DD03CDD34B00A8A065 = {
 			children = (
 				DD8CF2DE03CDD34C00A8A065,
-				DD8CF2EF03CDD99500A8A065,
-				DD8CF2FF03CDD9AA00A8A065,
-				DD8CF33F03CDD9ED00A8A065,
 			);
 			isa = PBXVariantGroup;
 			name = "iTerm Help";
@@ -375,27 +373,6 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
-		};
-		DD8CF2EF03CDD99500A8A065 = {
-			includeInIndex = 1;
-			isa = PBXFolderReference;
-			name = "iTerm Help";
-			path = "Japanese.lproj/iTerm Help";
-			refType = 4;
-		};
-		DD8CF2FF03CDD9AA00A8A065 = {
-			includeInIndex = 1;
-			isa = PBXFolderReference;
-			name = "iTerm Help";
-			path = "zh_CN.lproj/iTerm Help";
-			refType = 4;
-		};
-		DD8CF33F03CDD9ED00A8A065 = {
-			includeInIndex = 1;
-			isa = PBXFolderReference;
-			name = "iTerm Help";
-			path = "zh_TW.lproj/iTerm Help";
-			refType = 4;
 		};
 //DD0
 //DD1

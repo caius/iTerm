@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.75 2003-08-09 07:41:18 ujwal Exp $
+// $Id: PTYTextView.m,v 1.76 2003-08-09 15:54:17 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -88,7 +88,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(frameChanged:)
                                                  name:NSWindowDidResizeNotification
-                                               object:[self window]];
+                                               object:nil];
     
     
     return (self);
@@ -116,7 +116,7 @@
 
     [[NSNotificationCenter defaultCenter] removeObserver:self
 						    name:NSWindowDidResizeNotification
-						  object:[self window]];    
+						  object:nil];    
 
     [super dealloc];
 }
@@ -1300,9 +1300,10 @@
     return rect;
 }
 
-- (void)frameChanged:(NSNotification*)notification;
+- (void)frameChanged:(NSNotification*)notification
 {
-    [[self delegate] textViewResized: self];
+    if([notification object] == [self window] && [[self delegate] respondsToSelector: @selector(textViewResized:)])
+	[[self delegate] textViewResized: self];
 }
 
 
@@ -1388,7 +1389,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(frameChanged:)
                                                  name:NSWindowDidResizeNotification
-                                               object:[self window]];    
+                                               object:nil];    
 
     return (self);
     
@@ -1409,7 +1410,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(frameChanged:)
                                                  name:NSWindowDidResizeNotification
-                                               object: [self window]];
+                                               object: nil];
 
     return (self);
 }
@@ -1432,7 +1433,7 @@
 
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                  name:NSWindowDidResizeNotification
-                                               object: [self window]];
+                                               object: nil];
     
         
     [super dealloc];
@@ -2055,9 +2056,10 @@
     [[NSWorkspace sharedWorkspace] openURL:url];
 }
 
-- (void)frameChanged:(NSNotification*)notification;
+- (void)frameChanged:(NSNotification*)notification
 {
-    [[self delegate] textViewResized: self];
+    if([notification object] == [self window] && [[self delegate] respondsToSelector: @selector(textViewResized:)])
+	[[self delegate] textViewResized: self];
 }
 
 

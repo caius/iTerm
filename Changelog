@@ -1,3 +1,15 @@
+2002-12-10	fabian
+    * Rewritten all the encoding related code. Now all 
+      the encodings that are available on the system will 
+      be usable.
+      (Note, the local settings file will have to be 
+       manually updated)
+    * Fixed a few inconsistencies in the interface about 
+      transparency
+    * Fixed a bug that make user unable to open a new 
+      window from quick run and address book panel.
+    * Now the version number is 0.5.5
+
 2002-12-08	fabian
     * fixed a bug that causes crash when a ended session 
       is manually closed

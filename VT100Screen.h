@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.23 2003-03-14 22:53:03 yfabian Exp $
+// $Id: VT100Screen.h,v 1.24 2003-03-14 23:23:07 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -163,6 +163,7 @@
 - (void) setScreenAttributes;
 - (void) setScreenLock;
 - (void) removeScreenLock;
+- (int) screenLock;
 
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (NSAttributedString *)defaultAttrString:(NSString *)str;

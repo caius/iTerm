@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.73 2003-03-14 22:53:03 yfabian Exp $
+// $Id: VT100Screen.m,v 1.74 2003-03-14 23:23:07 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -2436,6 +2436,11 @@ static BOOL PLAYBELL = YES;
 - (void) removeScreenLock
 {
     if (screenLock) screenLock--;
+}
+
+- (int) screenLock
+{
+    return screenLock;
 }
 
 @end

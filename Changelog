@@ -3,6 +3,7 @@
       more contrast to the highlight
     * Fixed a bug related to input CJK.
     * Updated Japanese nib files by Yuichi OHKAWA
+    * Added a screen lock to prevent conflicting update.
       
 2003-03-13	fabian
     * Added a new option to allow opening the address book

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.85 2004-03-09 01:18:19 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.86 2004-03-14 00:43:58 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -31,6 +31,7 @@
 #import <iTerm/iTermController.h>
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/iTermKeyBindingMgr.h>
+#import <iTerm/iTermDisplayProfileMgr.h>
 
 
 static float versionNumber;
@@ -100,6 +101,7 @@ static float versionNumber;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 	
 	[[iTermKeyBindingMgr singleInstance] setProfiles: [prefs objectForKey: @"KeyBindings"]];
+	[[iTermDisplayProfileMgr singleInstance] setProfiles: [prefs objectForKey: @"Displays"]];
 }
 
 - (void)run
@@ -142,7 +144,8 @@ static float versionNumber;
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
 	[prefs setObject: [wordChars stringValue] forKey: @"WordCharacters"];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
-    
+	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
+
     [[self window] close];
 }
 

@@ -25,6 +25,7 @@
  */
 
 #import <iTerm/iTermKeyBindingMgr.h>
+#import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/iTermProfileWindowController.h>
 
 
@@ -32,16 +33,25 @@
 
 - (IBAction) showProfilesWindow: (id) sender
 {
-	NSEnumerator *kbProfileEnumerator;
+	NSEnumerator *profileEnumerator;
 	NSString *aString;
 	
+	// load up the keyboard profiles
 	[kbProfileSelector removeAllItems];
-	kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
-	while((aString = [kbProfileEnumerator nextObject]) != nil)
+	profileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
+	while((aString = [profileEnumerator nextObject]) != nil)
 		[kbProfileSelector addItemWithTitle: aString];
 	
 	[self kbProfileChanged: nil];
 	[self tableViewSelectionDidChange: nil];	
+	
+	// load up the display profiles
+	[displayProfileSelector removeAllItems];
+	profileEnumerator = [[[iTermDisplayProfileMgr singleInstance] profiles] keyEnumerator];
+	while((aString = [profileEnumerator nextObject]) != nil)
+		[displayProfileSelector addItemWithTitle: aString];
+	
+	[self displayProfileChanged: nil];
 	
 	[self showWindow: self];
 }
@@ -55,11 +65,13 @@
 // Profile editing
 - (IBAction) profileAdd: (id) sender
 {
+	
 	[NSApp beginSheet: addProfile
-       modalForWindow: [self window]
-        modalDelegate: self
-       didEndSelector: @selector(_addKBProfileSheetDidEnd:returnCode:contextInfo:)
-          contextInfo: nil];        
+	   modalForWindow: [self window]
+		modalDelegate: self
+	   didEndSelector: @selector(_addProfileSheetDidEnd:returnCode:contextInfo:)
+		  contextInfo: nil];        
+	
 }
 
 - (IBAction) profileDelete: (id) sender
@@ -67,7 +79,7 @@
 	[NSApp beginSheet: deleteProfile
        modalForWindow: [self window]
         modalDelegate: self
-       didEndSelector: @selector(_deleteKBProfileSheetDidEnd:returnCode:contextInfo:)
+       didEndSelector: @selector(_deleteProfileSheetDidEnd:returnCode:contextInfo:)
           contextInfo: nil];        
 }
 
@@ -261,16 +273,109 @@
 // Display profile UI
 - (IBAction) displayProfileChanged: (id) sender
 {
-	// load the profile
+	NSString *theProfile;
+	
+	theProfile = [displayProfileSelector titleOfSelectedItem];
+	
+	// load the colors
+	[displayFGColor setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_FOREGROUND_COLOR 
+																  forProfile: theProfile]];
+	[displayBGColor setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_BACKGROUND_COLOR 
+																  forProfile: theProfile]];
+	[displayBoldColor setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_BOLD_COLOR 
+																  forProfile: theProfile]];
+	[displaySelectionColor setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_SELECTION_COLOR 
+																  forProfile: theProfile]];
+	[displaySelectedTextColor setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_SELECTED_TEXT_COLOR 
+																  forProfile: theProfile]];
+	[displayCursorColor setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_CURSOR_COLOR 
+																  forProfile: theProfile]];
+	[displayCursorTextColor setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_CURSOR_TEXT_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi0Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_0_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi1Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_1_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi2Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_2_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi3Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_3_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi4Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_4_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi5Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_5_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi6Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_6_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi7Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_7_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi8Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_8_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi9Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_9_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi10Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_10_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi11Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_11_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi12Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_12_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi13Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_13_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi14Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_14_COLOR 
+																  forProfile: theProfile]];
+	[displayAnsi15Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_15_COLOR 
+																  forProfile: theProfile]];
+		
+	// transparency
+	[displayTransparency setStringValue: [NSString stringWithFormat: @"%d", 
+		(int)(100*[[iTermDisplayProfileMgr singleInstance] transparencyForProfile: theProfile])]];
+	
+	// fonts
+	[self _updateFontsDisplay];
+	
+	// anti-alias
+	[displayAntiAlias setState: [[iTermDisplayProfileMgr singleInstance] windowAntiAliasForProfile: theProfile]];
+	
+	// window size
+	[displayColTextField setStringValue: [NSString stringWithFormat: @"%d",
+		[[iTermDisplayProfileMgr singleInstance] windowColumnsForProfile: theProfile]]];
+	[displayRowTextField setStringValue: [NSString stringWithFormat: @"%d",
+		[[iTermDisplayProfileMgr singleInstance] windowRowsForProfile: theProfile]]];
+	
+	[displayProfileDeleteButton setEnabled: ![[iTermDisplayProfileMgr singleInstance] isDefaultProfile: theProfile]];
+
+	
 }
 
 - (IBAction) displaySetAntiAlias: (id) sender
+{
+	if(sender == displayAntiAlias)
+	{
+		[[iTermDisplayProfileMgr singleInstance] setWindowAntiAlias: [sender state] 
+												   forProfile: [displayProfileSelector titleOfSelectedItem]];
+	}
+}
+
+- (IBAction) displayBackgroundImage: (id) sender
 {
 	
 }
 
 - (IBAction) displayChangeColor: (id) sender
 {
+	
+	NSString *aProfileName;
+	int type;
+	
+	aProfileName = [displayProfileSelector titleOfSelectedItem];
+	type = [sender tag];
+	
+	[[iTermDisplayProfileMgr singleInstance] setColor: [sender color]
+											  forType: type
+										   forProfile: aProfileName];
+	
+	// update fonts display
+	[self _updateFontsDisplay];
+	
 }
 
 - (IBAction) displaySelectFont: (id) sender
@@ -330,48 +435,132 @@
 	[addKBEntry close];
 }
 
-- (void)_addKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+- (void)_addProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
-	if(returnCode == NSOKButton && [[kbProfileName stringValue] length] > 0)
+	int selectedTabViewItem;
+	NSPopUpButton *aProfileSelector;
+	NSEnumerator *aProfileEnumerator;
+	SEL aSelector;
+	NSString *aString;
+	id profileMgr;
+	
+	selectedTabViewItem  = [profileTabView indexOfTabViewItem: [profileTabView selectedTabViewItem]];
+	
+	if(selectedTabViewItem == KEYBOARD_PROFILE_TAB)
 	{
-		NSEnumerator *kbProfileEnumerator;
-		NSString *aString;
+		profileMgr = [iTermKeyBindingMgr singleInstance];
+		aSelector = @selector(kbProfileChanged:);
+		aProfileSelector = kbProfileSelector;
+	}
+	else if(selectedTabViewItem == DISPLAY_PROFILE_TAB)
+	{
+		profileMgr = [iTermDisplayProfileMgr singleInstance];
+		aSelector = @selector(displayProfileChanged:);
+		aProfileSelector = displayProfileSelector;
+	}
+	else
+		return;
+	
+	if(returnCode == NSOKButton && [[profileName stringValue] length] > 0)
+	{
 		
-		[[iTermKeyBindingMgr singleInstance] addProfileWithName: [kbProfileName stringValue] 
-													copyProfile: [kbProfileSelector titleOfSelectedItem]];
+		[profileMgr addProfileWithName: [profileName stringValue] 
+													copyProfile: [aProfileSelector titleOfSelectedItem]];
 		
-		[kbProfileSelector removeAllItems];
-		kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
-		while((aString = [kbProfileEnumerator nextObject]) != nil)
-			[kbProfileSelector addItemWithTitle: aString];	
-		[kbProfileSelector selectItemWithTitle: [kbProfileName stringValue]];
-		[self kbProfileChanged: nil];
+		[aProfileSelector removeAllItems];
+		aProfileEnumerator = [[profileMgr profiles] keyEnumerator];
+		while((aString = [aProfileEnumerator nextObject]) != nil)
+			[aProfileSelector addItemWithTitle: aString];	
+		[aProfileSelector selectItemWithTitle: [profileName stringValue]];
+		[self performSelector: aSelector];
 	}
 	
 	[addProfile close];
 }
 
-- (void)_deleteKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+- (void)_deleteProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
+	int selectedTabViewItem;
+	NSPopUpButton *aProfileSelector;
+	NSEnumerator *aProfileEnumerator;
+	SEL aSelector;
+	NSString *aString;
+	id profileMgr;
+	
+	selectedTabViewItem  = [profileTabView indexOfTabViewItem: [profileTabView selectedTabViewItem]];
+	
+	if(selectedTabViewItem == KEYBOARD_PROFILE_TAB)
+	{
+		profileMgr = [iTermKeyBindingMgr singleInstance];
+		aSelector = @selector(kbProfileChanged:);
+		aProfileSelector = kbProfileSelector;
+	}
+	else if(selectedTabViewItem == DISPLAY_PROFILE_TAB)
+	{
+		profileMgr = [iTermDisplayProfileMgr singleInstance];
+		aSelector = @selector(displayProfileChanged:);
+		aProfileSelector = displayProfileSelector;
+	}
+	else
+		return;
+	
 	if(returnCode == NSOKButton)
 	{
-		NSEnumerator *kbProfileEnumerator;
-		NSString *aString;
 		
-		[[iTermKeyBindingMgr singleInstance] deleteProfileWithName: [kbProfileSelector titleOfSelectedItem]];
+		[profileMgr deleteProfileWithName: [aProfileSelector titleOfSelectedItem]];
 		
-		[kbProfileSelector removeAllItems];
-		kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
-		while((aString = [kbProfileEnumerator nextObject]) != nil)
-			[kbProfileSelector addItemWithTitle: aString];
-		if([kbProfileSelector numberOfItems] > 0)
-			[kbProfileSelector selectItemAtIndex: 0];
-		[self kbProfileChanged: nil];
+		[aProfileSelector removeAllItems];
+		aProfileEnumerator = [[profileMgr profiles] keyEnumerator];
+		while((aString = [aProfileEnumerator nextObject]) != nil)
+			[aProfileSelector addItemWithTitle: aString];
+		if([aProfileSelector numberOfItems] > 0)
+			[aProfileSelector selectItemAtIndex: 0];
+		[self performSelector: aSelector];
 	}
 	
 	[deleteProfile close];
 }
 
+- (void) _updateFontsDisplay
+{
+	NSString *theProfile;
+	
+	theProfile = [displayProfileSelector titleOfSelectedItem];
+	
+	// load the fonts
+	NSString *fontName;
+	NSFont *font;
+	
+	font = [[iTermDisplayProfileMgr singleInstance] windowFontForProfile: theProfile];
+	if(font != nil)
+	{
+		fontName = [NSString stringWithFormat: @"%@ %dpt", [font fontName], (int)[font pointSize]];
+		[displayFontTextField setStringValue: fontName];
+		[displayFontTextField setFont: font];
+		[displayFontTextField setTextColor: [displayFGColor color]];
+		[displayFontTextField setBackgroundColor: [displayBGColor color]];
+	}
+	else
+	{
+		fontName = @"";
+		[displayFontTextField setStringValue: fontName];
+	}
+	font = [[iTermDisplayProfileMgr singleInstance] windowNAFontForProfile: theProfile];
+	if(font != nil)
+	{
+		fontName = [NSString stringWithFormat: @"%@ %dpt", [font fontName], (int)[font pointSize]];
+		[displayNAFontTextField setStringValue: fontName];
+		[displayNAFontTextField setFont: font];
+		[displayNAFontTextField setTextColor: [displayFGColor color]];
+		[displayNAFontTextField setBackgroundColor: [displayBGColor color]];
+	}
+	else
+	{
+		fontName = @"";
+		[displayNAFontTextField setStringValue: fontName];
+	}
+	
+}
 
 @end
 

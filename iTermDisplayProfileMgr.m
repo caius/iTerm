@@ -72,9 +72,64 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	{
 		[profiles setDictionary: aDict];
 	}	
+	
+	// if we don't have any profile, create a default profile
+	if([profiles count] == 0)
+	{
+		NSMutableDictionary *aProfile;
+		NSString *defaultName;
+		
+		defaultName = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]],
+														 @"Display Profiles");
+		
+		
+		aProfile = [[NSMutableDictionary alloc] init];
+		[profiles setObject: aProfile forKey: defaultName];
+		[aProfile release];
+		
+		[aProfile setObject: @"Yes" forKey: @"Default Profile"];
+		
+		[self setColor: [NSColor textColor] forType: TYPE_FOREGROUND_COLOR forProfile: defaultName];
+		[self setColor: [NSColor textBackgroundColor] forType: TYPE_BACKGROUND_COLOR forProfile: defaultName];
+		[self setColor: [NSColor redColor] forType: TYPE_BOLD_COLOR forProfile: defaultName];
+		[self setColor: [NSColor selectedTextBackgroundColor] forType: TYPE_SELECTION_COLOR forProfile: defaultName];
+		[self setColor: [NSColor selectedTextColor] forType: TYPE_SELECTED_TEXT_COLOR forProfile: defaultName];
+		[self setColor: [NSColor textColor] forType: TYPE_CURSOR_COLOR forProfile: defaultName];
+		[self setColor: [NSColor textBackgroundColor] forType: TYPE_CURSOR_TEXT_COLOR forProfile: defaultName];
+
+		[self setColor: [NSColor blackColor] forType: TYPE_ANSI_0_COLOR forProfile: defaultName];
+		[self setColor: [NSColor redColor] forType: TYPE_ANSI_1_COLOR forProfile: defaultName];
+		[self setColor: [NSColor greenColor] forType: TYPE_ANSI_2_COLOR forProfile: defaultName];
+		[self setColor: [NSColor yellowColor] forType: TYPE_ANSI_3_COLOR forProfile: defaultName];
+		[self setColor: [NSColor blueColor] forType: TYPE_ANSI_4_COLOR forProfile: defaultName];
+		[self setColor: [NSColor magentaColor] forType: TYPE_ANSI_5_COLOR forProfile: defaultName];
+		[self setColor: [NSColor cyanColor] forType: TYPE_ANSI_6_COLOR forProfile: defaultName];
+		[self setColor: [NSColor whiteColor] forType: TYPE_ANSI_7_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor blackColor] highlightWithLevel: 0.5] 
+			   forType: TYPE_ANSI_8_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor redColor] highlightWithLevel: 0.5] 
+			   forType: TYPE_ANSI_9_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor greenColor] highlightWithLevel: 0.5] 
+			   forType: TYPE_ANSI_10_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor yellowColor] highlightWithLevel: 0.5] 
+			   forType: TYPE_ANSI_11_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor blueColor] highlightWithLevel: 0.5] 
+			   forType: TYPE_ANSI_12_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor magentaColor] highlightWithLevel: 0.5]
+			   forType: TYPE_ANSI_13_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor cyanColor] highlightWithLevel: 0.5] 
+			   forType: TYPE_ANSI_14_COLOR forProfile: defaultName];
+		[self setColor: [[NSColor whiteColor] highlightWithLevel: 0.5]
+			   forType: TYPE_ANSI_15_COLOR forProfile: defaultName];
+		
+		[self setWindowColumns: 80 forProfile: defaultName];
+		[self setWindowRows: 24 forProfile: defaultName];
+		[self setWindowAntiAlias: YES forProfile: defaultName];
+						
+	}
 }
 
-- (void) addProfileWithName: (NSString *) newProfile copyingProfile: (NSString *) sourceProfile
+- (void) addProfileWithName: (NSString *) newProfile copyProfile: (NSString *) sourceProfile
 {
 	NSMutableDictionary *aMutableDict, *aProfile;
 	
@@ -110,9 +165,10 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 }
 
 
-- (NSColor *) color: (int) type ForProfile: (NSString *) profileName
+- (NSColor *) color: (int) type forProfile: (NSString *) profileName
 {
 	NSDictionary *aProfile;
+	NSDictionary *colorDict;
 	NSColor *aColor;
 	
 	if([profileName length] <= 0)
@@ -125,31 +181,71 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	
 	switch (type)
 	{
+		case TYPE_ANSI_0_COLOR:
+		case TYPE_ANSI_1_COLOR:
+		case TYPE_ANSI_2_COLOR:
+		case TYPE_ANSI_3_COLOR:
+		case TYPE_ANSI_4_COLOR:
+		case TYPE_ANSI_5_COLOR:
+		case TYPE_ANSI_6_COLOR:
+		case TYPE_ANSI_7_COLOR:
+		case TYPE_ANSI_8_COLOR:
+		case TYPE_ANSI_9_COLOR:
+		case TYPE_ANSI_10_COLOR:
+		case TYPE_ANSI_11_COLOR:
+		case TYPE_ANSI_12_COLOR:
+		case TYPE_ANSI_13_COLOR:
+		case TYPE_ANSI_14_COLOR:
+		case TYPE_ANSI_15_COLOR:
+			colorDict = [aProfile objectForKey: [NSString stringWithFormat: @"Ansi %d Color", type]];
+			break;
 		case TYPE_FOREGROUND_COLOR:
-			aColor = [aProfile objectForKey: @"Foreground Color"];
+			colorDict = [aProfile objectForKey: @"Foreground Color"];
 			break;
 		case TYPE_BACKGROUND_COLOR:
-			aColor = [aProfile objectForKey: @"Background Color"];
+			colorDict = [aProfile objectForKey: @"Background Color"];
 			break;
 		case TYPE_BOLD_COLOR:
-			aColor = [aProfile objectForKey: @"Bold Color"];
+			colorDict = [aProfile objectForKey: @"Bold Color"];
 			break;
 		case TYPE_SELECTION_COLOR:
-			aColor = [aProfile objectForKey: @"Selection Color"];
+			colorDict = [aProfile objectForKey: @"Selection Color"];
 			break;
 		case TYPE_SELECTED_TEXT_COLOR:
-			aColor = [aProfile objectForKey: @"Selected Text Color"];
+			colorDict = [aProfile objectForKey: @"Selected Text Color"];
 			break;
 		case TYPE_CURSOR_COLOR:
-			aColor = [aProfile objectForKey: @"Cursor Color"];
+			colorDict = [aProfile objectForKey: @"Cursor Color"];
 			break;
 		case TYPE_CURSOR_TEXT_COLOR:
-			aColor = [aProfile objectForKey: @"Cursor Text Color"];
+			colorDict = [aProfile objectForKey: @"Cursor Text Color"];
 			break;
 		default:
-			aColor = nil;
+			colorDict = nil;
 			break;
 	}
+	
+	if(colorDict != nil)
+	{
+		float red, green, blue;
+		NSNumber *aNumber;
+		
+		red = green = blue = 0;
+		
+		aNumber = [colorDict objectForKey: @"Red Component"];
+		if(aNumber != nil)
+			red = [aNumber floatValue];
+		aNumber = [colorDict objectForKey: @"Green Component"];
+		if(aNumber != nil)
+			green = [aNumber floatValue];
+		aNumber = [colorDict objectForKey: @"Blue Component"];
+		if(aNumber != nil)
+			blue = [aNumber floatValue];
+		
+		aColor = [NSColor colorWithCalibratedRed: red green: green blue: blue alpha: 1.0];
+	}
+	else
+		aColor = [NSColor blackColor];
 	
 	return (aColor);
 }
@@ -172,6 +268,24 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	
 	switch (type)
 	{
+		case TYPE_ANSI_0_COLOR:
+		case TYPE_ANSI_1_COLOR:
+		case TYPE_ANSI_2_COLOR:
+		case TYPE_ANSI_3_COLOR:
+		case TYPE_ANSI_4_COLOR:
+		case TYPE_ANSI_5_COLOR:
+		case TYPE_ANSI_6_COLOR:
+		case TYPE_ANSI_7_COLOR:
+		case TYPE_ANSI_8_COLOR:
+		case TYPE_ANSI_9_COLOR:
+		case TYPE_ANSI_10_COLOR:
+		case TYPE_ANSI_11_COLOR:
+		case TYPE_ANSI_12_COLOR:
+		case TYPE_ANSI_13_COLOR:
+		case TYPE_ANSI_14_COLOR:
+		case TYPE_ANSI_15_COLOR:
+			key = [NSString stringWithFormat: @"Ansi %d Color", type];
+			break;
 		case TYPE_FOREGROUND_COLOR:
 			key =  @"Foreground Color";
 			break;
@@ -199,53 +313,25 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	}
 	
 	if(key != nil)
-		[aProfile setObject: aColor forKey: key];
-	
-}
+	{
+		NSMutableDictionary *colorDict;
+		NSColor *rgbColor;
+		
+		rgbColor = [aColor colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
+		if(rgbColor == nil)
+		{
+			NSLog(@"%s: could not convert color to RGB color!", __PRETTY_FUNCTION__);
+			return;
+		}
+		
+		colorDict = [[NSMutableDictionary alloc] init];
+		[colorDict setObject: [NSNumber numberWithFloat: [rgbColor redComponent]] forKey: @"Red Component"];
+		[colorDict setObject: [NSNumber numberWithFloat: [rgbColor greenComponent]] forKey: @"Green Component"];
+		[colorDict setObject: [NSNumber numberWithFloat: [rgbColor blueComponent]] forKey: @"Blue Component"];
 
-- (NSColor *) ansiColor: (int) index highlight: (BOOL) highlight forProfile: (NSString *) profileName
-{
-	NSDictionary *aProfile;
-	NSColor *aColor;
-	NSString *key = nil;
-	
-	if([profileName length] <= 0)
-		return (nil);
-	
-	aProfile = [profiles objectForKey: profileName];
-	
-	if(aProfile == nil)
-		return (nil);
-	
-	if(highlight)
-		key = [NSString stringWithFormat: @"Ansi %dh Color", index];
-	else
-		key = [NSString stringWithFormat: @"Ansi %dh Color", index];
-	
-	aColor = [aProfile objectForKey: key];
-	
-	return (aColor);
-}
-
-- (void) setAnsiColor: (NSColor *) aColor forIndex: (int) index highlight: (BOOL) highlight forProfile: (NSString *) profileName
-{
-	NSMutableDictionary *aProfile;
-	NSString *key = nil;
-	
-	if([profileName length] <= 0)
-		return;
-	
-	aProfile = [profiles objectForKey: profileName];
-	
-	if(aProfile == nil)
-		return;
-	
-	if(highlight)
-		key = [NSString stringWithFormat: @"Ansi %dh Color", index];
-	else
-		key = [NSString stringWithFormat: @"Ansi %dh Color", index];
-	
-	[profiles setObject: aColor forKey: key];
+		[aProfile setObject: colorDict forKey: key];
+		[colorDict release];
+	}
 	
 }
 
@@ -256,7 +342,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 
 - (void) setTransparency: (float) transparency forProfile: (NSString *) profileName
 {
-	[self _setFloatValue: transparency forKey: @"Transparceny" inProfile: profileName];
+	[self _setFloatValue: transparency forKey: @"Transparency" inProfile: profileName];
 }
 
 - (NSString *) backgroundImageForProfile: (NSString *) profileName
@@ -287,26 +373,6 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 		return;
 		
 	[aProfile setObject: imagePath forKey: @"Background Image"];
-}
-
-- (int) windowColumnsForProfile: (NSString *) profileName
-{
-	return ([self _intValueForKey: @"Columns" inProfile: profileName]);
-}
-
-- (void) setWindowColumns: (int) columns forProfile: (NSString *) profileName
-{
-	[self _setIntValue: columns forKey: @"Columns" inProfile: profileName];
-}
-
-- (int) windowRowsForProfile: (NSString *) profileName
-{
-	return ([self _intValueForKey: @"Rows" inProfile: profileName]);
-}
-
-- (void) setWindowRows: (int) rows forProfile: (NSString *) profileName
-{
-	[self _setIntValue: rows forKey: @"Rows" inProfile: profileName];
 }
 
 - (NSFont *) windowFontForProfile: (NSString *) profileName
@@ -393,6 +459,26 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	[aProfile setObject: [NSString stringWithFormat: @"%@-%f", [font fontName], [font pointSize]] forKey: @"NAFont"];
 }
 
+- (int) windowColumnsForProfile: (NSString *) profileName
+{
+	return ([self _intValueForKey: @"Columns" inProfile: profileName]);
+}
+
+- (void) setWindowColumns: (int) columns forProfile: (NSString *) profileName
+{
+	[self _setIntValue: columns forKey: @"Columns" inProfile: profileName];
+}
+
+- (int) windowRowsForProfile: (NSString *) profileName
+{
+	return ([self _intValueForKey: @"Rows" inProfile: profileName]);
+}
+
+- (void) setWindowRows: (int) rows forProfile: (NSString *) profileName
+{
+	[self _setIntValue: rows forKey: @"Rows" inProfile: profileName];
+}
+
 - (float) windowHorizontalCharSpacingForProfile: (NSString *) profileName
 {
 	return ([self _floatValueForKey: @"Horizontal Character Spacing" inProfile: profileName]);
@@ -413,6 +499,17 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	[self _setFloatValue: spacing forKey: @"Vertical Character Spacing" inProfile: profileName];
 }
 
+- (BOOL) windowAntiAliasForProfile: (NSString *) profileName
+{
+	return ([self _intValueForKey: @"Anti Alias" inProfile: profileName]);
+}
+
+- (void) setWindowAntiAlias: (BOOL) antiAlias forProfile: (NSString *) profileName
+{
+	[self _setIntValue: antiAlias forKey: @"Anti Alias" inProfile: profileName];
+}
+
+
 @end
 
 
@@ -421,6 +518,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 - (float) _floatValueForKey: (NSString *) key inProfile: (NSString *) profileName
 {
 	NSDictionary *aProfile;
+	NSNumber *aNumber;
 	
 	if([profileName length] <= 0 || [key length] <= 0)
 		return (0.0);
@@ -430,7 +528,11 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	if(aProfile == nil)
 		return (0.0);
 	
-	return ([[aProfile objectForKey: key] floatValue]);
+	aNumber  = [aProfile objectForKey: key];
+	if(aNumber == nil)
+		return (0.0);
+	
+	return ([aNumber floatValue]);
 }
 
 - (void) _setFloatValue: (float) fval forKey: (NSString *) key inProfile: (NSString *) profileName
@@ -454,6 +556,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 - (int) _intValueForKey: (NSString *) key inProfile: (NSString *) profileName
 {
 	NSDictionary *aProfile;
+	NSNumber *aNumber;
 	
 	if([profileName length] <= 0 || [key length] <= 0)
 		return (0);
@@ -463,7 +566,11 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	if(aProfile == nil)
 		return (0);
 	
-	return ([[aProfile objectForKey: key] intValue]);	
+	aNumber  = [aProfile objectForKey: key];
+	if(aNumber == nil)
+		return (0);
+	
+	return ([aNumber intValue]);	
 }
 
 - (void) _setIntValue: (int) ival forKey: (NSString *) key inProfile: (NSString *) profileName

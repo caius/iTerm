@@ -18,6 +18,7 @@
         }, 
         {
             ACTIONS = {
+                displayBackgroundImage = id; 
                 displayChangeColor = id; 
                 displayProfileChanged = id; 
                 displaySelectFont = id; 
@@ -45,21 +46,21 @@
                 addProfile = NSPanel; 
                 deleteProfile = NSPanel; 
                 displayAnsi0Color = NSColorWell; 
-                displayAnsi0HColor = NSColorWell; 
+                displayAnsi10Color = NSColorWell; 
+                displayAnsi11Color = NSColorWell; 
+                displayAnsi12Color = NSColorWell; 
+                displayAnsi13Color = NSColorWell; 
+                displayAnsi14Color = NSColorWell; 
+                displayAnsi15Color = NSColorWell; 
                 displayAnsi1Color = NSColorWell; 
-                displayAnsi1HColor = NSColorWell; 
                 displayAnsi2Color = NSColorWell; 
-                displayAnsi2HColor = NSColorWell; 
                 displayAnsi3Color = NSColorWell; 
-                displayAnsi3HColor = NSColorWell; 
                 displayAnsi4Color = NSColorWell; 
-                displayAnsi4HColor = NSColorWell; 
                 displayAnsi5Color = NSColorWell; 
-                displayAnsi5HColor = NSColorWell; 
                 displayAnsi6Color = NSColorWell; 
-                displayAnsi6HColor = NSColorWell; 
                 displayAnsi7Color = NSColorWell; 
-                displayAnsi7HColor = NSColorWell; 
+                displayAnsi8Color = NSColorWell; 
+                displayAnsi9Color = NSColorWell; 
                 displayAntiAlias = NSButton; 
                 displayBGColor = NSColorWell; 
                 displayBackgroundImage = NSImageView; 
@@ -72,9 +73,12 @@
                 displayFontSpacingWidth = NSSlider; 
                 displayFontTextField = NSTextField; 
                 displayNAFontTextField = NSTextField; 
+                displayProfileDeleteButton = NSButton; 
+                displayProfileSelector = NSPopUpButton; 
                 displayRowTextField = NSTextField; 
                 displaySelectedTextColor = NSColorWell; 
                 displaySelectionColor = NSColorWell; 
+                displayTransparency = NSTextField; 
                 displayUseBackgroundImage = NSButton; 
                 kbEntryAction = NSPopUpButton; 
                 kbEntryDeleteButton = NSButton; 
@@ -88,8 +92,8 @@
                 kbEntryText = NSTextField; 
                 kbOptionKey = NSMatrix; 
                 kbProfileDeleteButton = NSButton; 
-                kbProfileName = NSTextField; 
                 kbProfileSelector = NSPopUpButton; 
+                profileName = NSTextField; 
                 profileTabView = NSTabView; 
             }; 
             SUPERCLASS = NSWindowController; 

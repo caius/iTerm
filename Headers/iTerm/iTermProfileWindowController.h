@@ -38,10 +38,10 @@
 	// Profile editing
 	IBOutlet NSPanel *addProfile;
 	IBOutlet NSPanel *deleteProfile;
+	IBOutlet NSTextField *profileName;
 
 	// Keybinding profile UI
 	IBOutlet NSPopUpButton *kbProfileSelector;
-	IBOutlet NSTextField *kbProfileName;
 	IBOutlet NSPanel *addKBEntry;
 	IBOutlet NSPopUpButton *kbEntryKey;
 	IBOutlet NSButton *kbEntryKeyModifierOption;
@@ -57,6 +57,8 @@
 	IBOutlet NSMatrix *kbOptionKey;
 	
 	// Display profile UI
+	IBOutlet NSButton *displayProfileDeleteButton;
+	IBOutlet NSPopUpButton *displayProfileSelector;
 	IBOutlet NSColorWell *displayFGColor;
 	IBOutlet NSColorWell *displayBGColor;
 	IBOutlet NSColorWell *displayBoldColor;
@@ -72,14 +74,15 @@
 	IBOutlet NSColorWell *displayAnsi5Color;
 	IBOutlet NSColorWell *displayAnsi6Color;
 	IBOutlet NSColorWell *displayAnsi7Color;
-	IBOutlet NSColorWell *displayAnsi0HColor;
-	IBOutlet NSColorWell *displayAnsi1HColor;
-	IBOutlet NSColorWell *displayAnsi2HColor;
-	IBOutlet NSColorWell *displayAnsi3HColor;
-	IBOutlet NSColorWell *displayAnsi4HColor;
-	IBOutlet NSColorWell *displayAnsi5HColor;
-	IBOutlet NSColorWell *displayAnsi6HColor;
-	IBOutlet NSColorWell *displayAnsi7HColor;
+	IBOutlet NSColorWell *displayAnsi8Color;
+	IBOutlet NSColorWell *displayAnsi9Color;
+	IBOutlet NSColorWell *displayAnsi10Color;
+	IBOutlet NSColorWell *displayAnsi11Color;
+	IBOutlet NSColorWell *displayAnsi12Color;
+	IBOutlet NSColorWell *displayAnsi13Color;
+	IBOutlet NSColorWell *displayAnsi14Color;
+	IBOutlet NSColorWell *displayAnsi15Color;
+	IBOutlet NSTextField *displayTransparency;
 	IBOutlet NSButton *displayUseBackgroundImage;
     IBOutlet NSImageView *displayBackgroundImage;
 	IBOutlet NSTextField *displayColTextField;
@@ -116,6 +119,7 @@
 - (IBAction) displayProfileChanged: (id) sender;
 - (IBAction) displaySetAntiAlias: (id) sender;
 - (IBAction) displayChangeColor: (id) sender;
+- (IBAction) displayBackgroundImage: (id) sender;
 - (IBAction) displaySelectFont: (id) sender;
 - (IBAction) displaySelectNAFont: (id) sender;
 
@@ -124,9 +128,12 @@
 
 @interface iTermProfileWindowController (Private)
 
+- (void)_addProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+- (void)_deleteProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+
 - (void)_addKBEntrySheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-- (void)_addKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-- (void)_deleteKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
+
+- (void) _updateFontsDisplay;
 
 @end
 

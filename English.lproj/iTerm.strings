@@ -132,6 +132,9 @@
 /* Key Binding Profiles */
 "Global"="Global";
 
+/* Display Profiles */
+"Default" = "Default";
+
 /* Key Binding Actions */
 "next tab"="next tab";
 "next window"="next window";

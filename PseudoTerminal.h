@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.32 2003-02-04 00:12:50 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.33 2003-02-04 01:09:35 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -152,8 +152,7 @@
 // NSTabView
 - (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem;
-- (NSMenu *)tabViewContextualMenu: (NSEvent *)theEvent;
-- (void) selectTabContextualMenuAction: (id) sender;
+- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu;
 - (void) closeTabContextualMenuAction: (id) sender;
 
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.93 2003-02-04 00:12:50 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.94 2003-02-04 01:09:35 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1392,44 +1392,25 @@ static NSString *ConfigToolbarItem = @"Config";
     [currentPtySession setLabelAttribute];
 }
 
-- (NSMenu *)tabViewContextualMenu: (NSEvent *)theEvent
+- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
 {
-    int i;
-    NSMenuItem *aMenuItem, *tabViewItemName;
-    NSMenu *cMenu;
+    NSMenuItem *aMenuItem;
+    NSPoint windowPoint, localPoint;
 
-    cMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+    if((theEvent == nil) || (theMenu == nil))
+	return;
 
-    for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
-    {
-        tabViewItemName = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
-										  action:nil keyEquivalent:@""];
-	[cMenu addItem: tabViewItemName];
+    [theMenu addItem: [NSMenuItem separatorItem]];
 
-	// build the submenu
-	NSMenu *tabViewSubmenu = [[[NSMenu alloc] initWithTitle: @""] autorelease];
-	aMenuItem = [[NSMenuItem alloc] initWithTitle:@"Select" action:@selector(selectTabContextualMenuAction:) keyEquivalent:@""];
-        [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
-	[tabViewSubmenu addItem: aMenuItem];
-	[aMenuItem release];
-	aMenuItem = [[NSMenuItem alloc] initWithTitle:@"Close" action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
-        [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
-	[tabViewSubmenu addItem: aMenuItem];
-	[aMenuItem release];
-	
-	// add the submenu
-	[tabViewItemName setSubmenu: tabViewSubmenu];
-	[tabViewItemName release];
-	
-    }
-    return (cMenu);
+    windowPoint = [WINDOW convertScreenToBase: [NSEvent mouseLocation]];
+    localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
 
-}
-
-// selects a tab from the contextual menu
-- (void) selectTabContextualMenuAction: (id) sender
-{
-    [TABVIEW selectTabViewItemWithIdentifier: [sender representedObject]];
+    // add tasks
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:@"Close" action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
+    [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
+    [theMenu addItem: aMenuItem];
+    [aMenuItem release];
+    
 }
 
 // closes a tab

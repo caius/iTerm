@@ -7,6 +7,7 @@
 //
 
 #import "PTYTabView.h"
+#import "PseudoTerminal.h"
 
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0

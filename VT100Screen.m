@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.81 2003-03-28 22:28:29 yfabian Exp $
+// $Id: VT100Screen.m,v 1.82 2003-04-06 02:48:53 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -647,7 +647,7 @@ static BOOL PLAYBELL = YES;
 
     case VT100CSI_DECSET:
     case VT100CSI_DECRST:
-        if (token.u.csi.p[0]==3) {	// set the column
+        if (token.u.csi.p[0]==3 && [TERMINAL allowColumnMode] == YES) {	// set the column
 //            [STORAGE endEditing];
             [[SESSION parent] resizeWindow:([TERMINAL columnMode]?132:80)
                                     height:HEIGHT];

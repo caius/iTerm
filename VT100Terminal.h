@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.23 2003-03-12 20:30:38 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.24 2003-04-06 02:48:53 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -220,6 +220,7 @@ typedef enum {
     BOOL TRACE;
 
     BOOL strictAnsiMode;
+    BOOL allowColumnMode;
     
     NSMutableDictionary *characterAttributeDictionary[2];
     NSMutableDictionary *defaultCharacterAttributeDictionary[2];
@@ -237,6 +238,9 @@ typedef enum {
 
 - (BOOL)strictAnsiMode;
 - (void)setStrictAnsiMode: (BOOL)flag;
+
+- (BOOL)allowColumnMode;
+- (void)setAllowColumnMode: (BOOL)flag;
 
 - (NSStringEncoding)encoding;
 - (void)setEncoding:(NSStringEncoding)encoding;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.47 2003-03-14 16:42:24 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.48 2003-04-06 02:48:52 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1200,6 +1200,7 @@ static VT100TCC decode_string(unsigned char *datap,
     TRACE = NO;
 
     strictAnsiMode = NO;
+    allowColumnMode = NO;
 
     defaultCharacterAttributeDictionary[0] = [[NSMutableDictionary alloc] init];
     defaultCharacterAttributeDictionary[1] = [[NSMutableDictionary alloc] init];
@@ -1249,6 +1250,17 @@ static VT100TCC decode_string(unsigned char *datap,
 {
     strictAnsiMode = flag;
 }
+
+- (BOOL)allowColumnMode
+{
+    return (allowColumnMode);
+}
+
+- (void)setAllowColumnMode: (BOOL)flag
+{
+    allowColumnMode = flag;
+}
+
 
 
 - (NSStringEncoding)encoding
@@ -1718,6 +1730,7 @@ static VT100TCC decode_string(unsigned char *datap,
                 case 7:  WRAPAROUND_MODE = mode; break;
                 case 8:  AUTOREPEAT_MODE = mode; break;
                 case 9:  INTERLACE_MODE  = mode; break;
+		case 40: allowColumnMode = mode; break;
             }
             break;
         case VT100CSI_SM:

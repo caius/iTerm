@@ -5,6 +5,8 @@
     * Now explicitly setting PATH to something sensible 
       since the default includes the user's home directory.
     
+    * Implemented ESC [?40h (allow 132<->80 column mode).
+    
 2003-04-02	ujwal
 
     * Fixed a problem that was causing iTerm to hang when 

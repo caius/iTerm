@@ -66,7 +66,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)initScreen: (NSRect) aRect
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal initScreen]",
+    NSLog(@"%s(%d):-[PTYSession initScreen]",
           __FILE__, __LINE__);
 #endif
 
@@ -106,7 +106,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSMutableDictionary *env = [NSMutableDictionary dictionaryWithDictionary:prog_env];
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@ arguments:%@ environment:%@]",
+    NSLog(@"%s(%d):-[PTYSession startProgram:%@ arguments:%@ environment:%@]",
 	  __FILE__, __LINE__, program, prog_argv, prog_env );
 #endif
     if ([env objectForKey:TERM_ENVNAME] == nil)
@@ -136,7 +136,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession -terminate]", __FILE__, __LINE__);
 #endif
-    [SHELL sendSignal: SIGHUP];
+    [SHELL sendSignal: SIGQUIT];
     if(SHELL != nil)
         [SHELL release];
     if(TERMINAL != nil)
@@ -160,7 +160,7 @@ static NSString *PWD_ENVVALUE = @"~";
     VT100TCC token;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal readTask:%@]", __FILE__, __LINE__, data );
+    NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, data );
 #endif
     if (data == nil)
     {
@@ -180,9 +180,9 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [SCREEN beginEditing];
 
-    while ((token = [TERMINAL getNextToken]), 
+    while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 	   token.type != VT100TCC_NULL &&
-	   token.type != VT100TCC_WAIT)
+	   token.type != VT100TCC_WAIT))
     {
 	if (token.type != VT100TCC_SKIP)
 	    [SCREEN putToken:token];
@@ -199,7 +199,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)brokenPipe
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal brokenPipe]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
 #endif
     [SHELL sendSignal:SIGKILL];
     [SHELL stop];
@@ -342,7 +342,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSData *data;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal insertText:%@]",
+    NSLog(@"%s(%d):-[PTYSession insertText:%@]",
 	  __FILE__, __LINE__, string);
 #endif
 
@@ -355,7 +355,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)insertNewline:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal insertNewline:%@]",
+    NSLog(@"%s(%d):-[PTYSession insertNewline:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [self insertText:@"\n"];
@@ -364,7 +364,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)insertTab:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal insertTab:%@]",
+    NSLog(@"%s(%d):-[PTYSession insertTab:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [self insertText:@"\t"];
@@ -373,7 +373,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)moveUp:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal moveUp:%@]",
+    NSLog(@"%s(%d):-[PTYSession moveUp:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [SHELL writeTask:[TERMINAL keyArrowUp]];
@@ -382,7 +382,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)moveDown:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal moveDown:%@]",
+    NSLog(@"%s(%d):-[PTYSession moveDown:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [SHELL writeTask:[TERMINAL keyArrowDown]];
@@ -391,7 +391,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)moveLeft:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal moveLeft:%@]",
+    NSLog(@"%s(%d):-[PTYSession moveLeft:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [SHELL writeTask:[TERMINAL keyArrowLeft]];
@@ -400,7 +400,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)moveRight:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal moveRight:%@]",
+    NSLog(@"%s(%d):-[PTYSession moveRight:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [SHELL writeTask:[TERMINAL keyArrowRight]];
@@ -409,7 +409,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)pageUp:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal pageUp:%@]",
+    NSLog(@"%s(%d):-[PTYSession pageUp:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [SHELL writeTask:[TERMINAL keyPageUp]];
@@ -418,7 +418,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)pageDown:(id)sender
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal pageDown:%@]",
+    NSLog(@"%s(%d):-[PTYSession pageDown:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [SHELL writeTask:[TERMINAL keyPageDown]];
@@ -430,7 +430,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSString *str;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal paste:...]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[PTYSession paste:...]", __FILE__, __LINE__);
 #endif
 
     board = [NSPasteboard generalPasteboard];
@@ -450,7 +450,7 @@ static NSString *PWD_ENVVALUE = @"~";
     unsigned char p = 0x08;	// Ctrl+H
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal deleteBackward:%@]",
+    NSLog(@"%s(%d):-[PTYSession deleteBackward:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
 
@@ -462,7 +462,7 @@ static NSString *PWD_ENVVALUE = @"~";
     unsigned char p = 0x7F;	// DEL
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal deleteForward:%@]",
+    NSLog(@"%s(%d):-[PTYSession deleteForward:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
     [SHELL writeTask:[NSData dataWithBytes:&p length:1]];
@@ -679,7 +679,7 @@ static NSString *PWD_ENVVALUE = @"~";
     int sts;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal logStart:%@]",
+    NSLog(@"%s(%d):-[PTYSession logStart:%@]",
           __FILE__, __LINE__);
 #endif
 
@@ -695,7 +695,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)logStop
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal logStop:%@]",
+    NSLog(@"%s(%d):-[PTYSession logStop:%@]",
           __FILE__, __LINE__);
 #endif
     [SHELL loggingStop];
@@ -705,7 +705,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)clearBuffer
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal clearBuffer:...]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[PTYSession clearBuffer:...]", __FILE__, __LINE__);
 #endif
     [TERMINAL cleanStream];
 

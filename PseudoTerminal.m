@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.10 2002-12-06 03:26:06 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.11 2002-12-06 16:53:58 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -607,12 +607,12 @@ static NSDictionary *newOutputStateAttribute;
 
 - (IBAction)logStart:(id)sender
 {
-    [currentPtySession logStart];
+    if (![SHELL logging]) [currentPtySession logStart];
 }
 
 - (IBAction)logStop:(id)sender
 {
-    [currentPtySession logStop];
+    if ([SHELL logging]) [currentPtySession logStop];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
@@ -1138,6 +1138,7 @@ static NSDictionary *newOutputStateAttribute;
     }
     
     [ptyListLock unlock];
+    
     
 }
 

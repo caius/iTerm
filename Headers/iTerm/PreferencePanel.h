@@ -47,15 +47,20 @@
     IBOutlet NSButton *focusFollowsMouse;
 	
 	// Keybinding stuff
+	IBOutlet NSPopUpButton *kbProfileSelector;
 	IBOutlet NSTextField *kbProfileName;
 	IBOutlet NSPanel *addKBProfile;
 	IBOutlet NSPanel *deleteKBProfile;
 	IBOutlet NSPanel *addKBEntry;
 	IBOutlet NSPopUpButton *kbEntryKey;
-	IBOutlet NSMatrix *kbEntryKeyModifiers;
+	IBOutlet NSButton *kbEntryKeyModifierOption;
+	IBOutlet NSButton *kbEntryKeyModifierControl;
+	IBOutlet NSButton *kbEntryKeyModifierShift;
+	IBOutlet NSButton *kbEntryKeyModifierCommand;
 	IBOutlet NSPopUpButton *kbEntryAction;
 	IBOutlet NSTextField *kbEntryText;
 	IBOutlet NSTextField *kbEntryKeyCode;
+	IBOutlet NSTableView *kbEntryTableView;
     
     NSUserDefaults *prefs;
 

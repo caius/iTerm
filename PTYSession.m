@@ -376,7 +376,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
     iIdleCount=0;
     
-    // NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)", event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
+    //NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)", event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
     
     // Clear the bell
     [self setBell: NO];

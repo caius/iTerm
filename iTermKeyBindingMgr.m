@@ -65,8 +65,18 @@ static iTermKeyBindingMgr *singleInstance = nil;
 
 - (void) setProfiles: (NSMutableDictionary *) aDict
 {
+	NSEnumerator *keyEnumerator;
+	
 	if(aDict != nil)
 		[profiles setDictionary: aDict];
+	keyEnumerator = [profiles keyEnumerator];
+	currentProfile = [profiles objectForKey: [keyEnumerator nextObject]];
+	if(currentProfile == nil)
+	{
+		currentProfile = [[NSMutableDictionary alloc] init];
+		[profiles setObject: currentProfile forKey: [NSString stringWithFormat: @"Profile %d", [profiles count]]];
+		[currentProfile release];
+	}
 }
 
 - (NSDictionary *) currentProfile
@@ -77,6 +87,62 @@ static iTermKeyBindingMgr *singleInstance = nil;
 - (void) setCurrentProfile: (NSMutableDictionary *) aDict
 {
 	currentProfile = aDict;
+}
+
+- (void) addProfileWithName: (NSString *) aString
+{
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aString);
+	if([aString length] > 0)
+	{
+		NSEnumerator *keyEnumerator;
+		NSDictionary *firstProfile, *newProfile;
+		
+		keyEnumerator = [profiles keyEnumerator];
+		firstProfile = [profiles objectForKey: [keyEnumerator nextObject]];
+		newProfile = [[NSMutableDictionary alloc] initWithDictionary: firstProfile];
+		[profiles setObject: newProfile forKey: aString];
+		[newProfile release];		
+	}
+}
+
+- (void) deleteProfileWithName: (NSString *) aString
+{
+	if([aString length] > 0)
+	{
+		[profiles removeObjectForKey: aString];
+	}
+}
+
+- (int) numberOfEntriesInProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profileName);
+	
+	if([profileName length] > 0)
+	{
+		aProfile = [profiles objectForKey: profileName];
+		return ([aProfile count]);
+	}
+	else
+		return (0);
+}
+
+
+- (void) addEntryForKeyCode: (unsigned int) hexCode 
+				  modifiers: (unsigned int) modifiers
+					 action: (unsigned int) action
+					   text: (NSString *) text
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+}
+
+- (void) addEntryForKey: (unsigned int) key 
+			  modifiers: (unsigned int) modifiers
+				 action: (unsigned int) action
+				   text: (NSString *) text
+{
+	NSLog(@"%s", __PRETTY_FUNCTION__);
 }
 
 - (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode

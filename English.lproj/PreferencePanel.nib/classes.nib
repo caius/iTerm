@@ -32,9 +32,14 @@
                 kbEntryAction = NSPopUpButton; 
                 kbEntryKey = NSPopUpButton; 
                 kbEntryKeyCode = NSTextField; 
-                kbEntryKeyModifiers = NSMatrix; 
+                kbEntryKeyModifierCommand = NSButton; 
+                kbEntryKeyModifierControl = NSButton; 
+                kbEntryKeyModifierOption = NSButton; 
+                kbEntryKeyModifierShift = NSButton; 
+                kbEntryTableView = NSTableView; 
                 kbEntryText = NSTextField; 
                 kbProfileName = NSTextField; 
+                kbProfileSelector = NSPopUpButton; 
                 macnavkeys = id; 
                 openAddressBook = id; 
                 optionKey = id; 

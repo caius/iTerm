@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.71 2004-02-29 02:43:38 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.72 2004-02-29 08:56:41 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -109,6 +109,8 @@ static float versionNumber;
 
 - (void)run
 {
+	NSEnumerator *kbProfileEnumerator;
+	NSString *aString;
 	
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
@@ -122,6 +124,11 @@ static float versionNumber;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [blinkingCursor setState: defaultBlinkingCursor?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
+	
+	[kbProfileSelector removeAllItems];
+	kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
+	while((aString = [kbProfileEnumerator nextObject]) != nil)
+		[kbProfileSelector addItemWithTitle: aString];
     
 	[[self window] setDelegate: self];
 	[self showWindow: self];
@@ -205,7 +212,8 @@ static float versionNumber;
 // Keybinding stuff
 - (IBAction) kbProfileChanged: (id) sender
 {
-	NSLog(@"%s; %@", __PRETTY_FUNCTION__, sender);
+	//NSLog(@"%s; %@", __PRETTY_FUNCTION__, sender);
+	[kbEntryTableView reloadData];
 }
 
 - (IBAction) kbProfileAdd: (id) sender
@@ -253,7 +261,7 @@ static float versionNumber;
 - (IBAction) kbEntryAdd: (id) sender
 {
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	
+	[kbEntryKeyCode setStringValue: @""];
 	[NSApp beginSheet: addKBEntry
        modalForWindow: [self window]
         modalDelegate: self
@@ -278,6 +286,16 @@ static float versionNumber;
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	
 }
+
+// NSTableView data source
+- (int) numberOfRowsInTableView: (NSTableView *)aTableView
+{
+	if([kbProfileSelector numberOfItems] == 0)
+		return (0);
+	
+	return ([[iTermKeyBindingMgr singleInstance] numberOfEntriesInProfile: [kbProfileSelector titleOfSelectedItem]]);
+}
+
 
 
 // accessors for preferences
@@ -367,17 +385,82 @@ static float versionNumber;
 @implementation PreferencePanel (Private)
 
 - (void)_addKBEntrySheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
-{
+{	
+	if(returnCode == NSOKButton)
+	{
+		unsigned int modifiers = 0;
+		unsigned int hexCode = 0;
+		
+		if([kbEntryKeyModifierOption state] == NSOnState)
+			modifiers |= NSAlternateKeyMask;
+		if([kbEntryKeyModifierControl state] == NSOnState)
+			modifiers |= NSControlKeyMask;
+		if([kbEntryKeyModifierShift state] == NSOnState)
+			modifiers |= NSShiftKeyMask;
+		if([kbEntryKeyModifierCommand state] == NSOnState)
+			modifiers |= NSCommandKeyMask;
+
+		if([kbEntryKey indexOfSelectedItem] == KEY_HEX_CODE)
+		{
+			if(sscanf([[kbEntryKeyCode stringValue] UTF8String], "%x", &hexCode) == 1)
+			{
+				[[iTermKeyBindingMgr singleInstance] addEntryForKeyCode: hexCode 
+															  modifiers: modifiers 
+																 action: [kbEntryAction indexOfSelectedItem] 
+																   text: [kbEntryText stringValue]];
+			}
+		}
+		else
+		{
+			[[iTermKeyBindingMgr singleInstance] addEntryForKey: [kbEntryKey indexOfSelectedItem] 
+													  modifiers: modifiers 
+														 action: [kbEntryAction indexOfSelectedItem] 
+														   text: [kbEntryText stringValue]];			
+		}
+		[kbEntryTableView reloadData];
+	}
+	
 	[addKBEntry close];
 }
 
 - (void)_addKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
+	if(returnCode == NSOKButton)
+	{
+		NSEnumerator *kbProfileEnumerator;
+		NSString *aString;
+
+		[[iTermKeyBindingMgr singleInstance] addProfileWithName: [kbProfileName stringValue]];
+		
+		[kbProfileSelector removeAllItems];
+		kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
+		while((aString = [kbProfileEnumerator nextObject]) != nil)
+			[kbProfileSelector addItemWithTitle: aString];	
+		[kbProfileSelector selectItemWithTitle: [kbProfileName stringValue]];
+		[kbEntryTableView reloadData];
+	}
+	
 	[addKBProfile close];
 }
 
 - (void)_deleteKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
+	if(returnCode == NSOKButton)
+	{
+		NSEnumerator *kbProfileEnumerator;
+		NSString *aString;
+		
+		[[iTermKeyBindingMgr singleInstance] deleteProfileWithName: [kbProfileSelector titleOfSelectedItem]];
+		
+		[kbProfileSelector removeAllItems];
+		kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
+		while((aString = [kbProfileEnumerator nextObject]) != nil)
+			[kbProfileSelector addItemWithTitle: aString];
+		if([kbProfileSelector numberOfItems] > 0)
+			[kbProfileSelector selectItemAtIndex: 0];
+		[kbEntryTableView reloadData];
+	}
+		
 	[deleteKBProfile close];
 }
 

@@ -26,6 +26,57 @@
 
 #import <Cocoa/Cocoa.h>
 
+// Key Definitions
+#define KEY_CURSOR_DOWN					0
+#define KEY_CURSOR_LEFT					1
+#define KEY_CURSOR_RIGHT				2
+#define KEY_CURSOR_UP					3
+#define KEY_DEL							4
+#define KEY_DELETE						5
+#define KEY_END							6
+#define KEY_F1							7
+#define KEY_F2							8
+#define KEY_F3							9
+#define KEY_F4							10
+#define KEY_F5							11
+#define KEY_F6							12
+#define KEY_F7							13
+#define KEY_F8							14
+#define KEY_F9							15
+#define KEY_F10							16
+#define KEY_F11							17
+#define KEY_F12							18
+#define KEY_F13							19
+#define KEY_F14							20
+#define KEY_F15							21
+#define KEY_F16							22
+#define KEY_F17							23
+#define KEY_F18							24
+#define KEY_F19							25
+#define KEY_F20							26
+#define KEY_HEX_CODE					27
+#define KEY_HOME						28
+#define KEY_NUMERIC_0					29
+#define KEY_NUMERIC_1					30
+#define KEY_NUMERIC_2					31
+#define KEY_NUMERIC_3					32
+#define KEY_NUMERIC_4					33
+#define KEY_NUMERIC_5					34
+#define KEY_NUMERIC_6					35
+#define KEY_NUMERIC_7					36
+#define KEY_NUMERIC_8					37
+#define KEY_NUMERIC_9					38
+#define KEY_NUMERIC_EQUAL				39
+#define KEY_NUMERIC__DIVIDE				40
+#define KEY_NUMERIC_MULTIPLY			41
+#define KEY_NUMERIC_MINUS				42
+#define KEY_NUMERIC_PLUS				43
+#define KEY_NUMERIC_PERIOD				44
+#define KEY_NUMLOCK						45
+#define KEY_PAGE_DOWN					46
+#define KEY_PAGE_UP						47
+
+
 // Actions for key bindings
 #define KEY_ACTION_NEXT_SESSION			0
 #define KEY_ACTION_NEXT_WINDOW			1
@@ -56,6 +107,18 @@
 - (NSDictionary *) currentProfile;
 - (void) setCurrentProfile: (NSMutableDictionary *) aDict;
 
+- (void) addProfileWithName: (NSString *) aString;
+- (void) deleteProfileWithName: (NSString *) aString;
+- (int) numberOfEntriesInProfile: (NSString *) profileName;
+
+- (void) addEntryForKeyCode: (unsigned int) hexCode 
+				  modifiers: (unsigned int) modifiers
+					 action: (unsigned int) action
+					   text: (NSString *) text;
+- (void) addEntryForKey: (unsigned int) key 
+				  modifiers: (unsigned int) modifiers
+					 action: (unsigned int) action
+					   text: (NSString *) text;
 - (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode;
 - (int) entryAtIndex: (int) index key: (NSString *) unmodkeystr modifiers: (int *) modifiers;
 

@@ -298,7 +298,7 @@
 					<key>English.lproj</key>
 					<dict>
 						<key>description</key>
-						<string>Transparency (%)</string>
+						<string>Transparency (0-1)</string>
 						<key>humanReadableName</key>
 						<string>transparency</string>
 						<key>number</key>

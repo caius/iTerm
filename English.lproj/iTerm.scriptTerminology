@@ -62,7 +62,7 @@
 				<key>transparency</key>
 				<dict>
 					<key>Description</key>
-					<string>Transparency (%)</string>
+					<string>Transparency (0-1)</string>
 					<key>Name</key>
 					<string>transparency</string>
 				</dict>

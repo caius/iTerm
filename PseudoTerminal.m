@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.191 2003-06-22 18:18:37 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.192 2003-06-26 00:51:21 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1308,6 +1308,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     unsigned int modflag = 0;
     BOOL newWin;
+    int nextIndex;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal menuForEvent]", __FILE__, __LINE__);
@@ -1330,9 +1331,33 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"New Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
 	newWin = NO;
     }
+    nextIndex = 1;
+
+    // Create a menu with a submenu to navigate between tabs if there are more than one
+    if([TABVIEW numberOfTabViewItems] > 1)
+    {	
+	[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"Select",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: nextIndex];
+
+	NSMenu *tabMenu = [[NSMenu alloc] initWithTitle:@""];
+	NSMenuItem *tabMenuItem;
+	int i;
+
+	for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
+	{
+	    tabMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
+										 action:@selector(selectTab:) keyEquivalent:@""];
+	    [tabMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
+	    [tabMenu addItem: tabMenuItem];
+	    [tabMenuItem release];
+	}
+	[theMenu setSubmenu: tabMenu forItem: [theMenu itemAtIndex: nextIndex]];
+	[tabMenu release];
+	nextIndex++;
+    }
+    
     
     // Separator
-    [theMenu insertItem:[NSMenuItem separatorItem] atIndex: 1];
+    [theMenu insertItem:[NSMenuItem separatorItem] atIndex: nextIndex];
 
     // Build the bookmarks menu
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];

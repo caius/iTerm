@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.23 2004-04-12 23:07:27 ujwal Exp $
+// $Id: PTYTask.m,v 1.24 2004-10-03 08:28:05 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -145,7 +145,8 @@ static int writep(int fds, char *buf, size_t len)
     id rootProxy;
     NSData *data = nil;
     BOOL exitf = NO;
-    NSAutoreleasePool *arPool;
+    NSAutoreleasePool *arPool = nil;
+	unsigned int iterationCount;
 #if MEASURE_PROCESSING_TIME
     struct timeval tv;
     BOOL newOutput = NO;
@@ -164,108 +165,127 @@ static int writep(int fds, char *buf, size_t len)
     /*
       data receive loop
     */
-    while (exitf == NO) {
-	fd_set rfds,efds;
-	int sts;
-	char readbuf[4096];
-
-        arPool = [[NSAutoreleasePool alloc] init];
-
-	FD_ZERO(&rfds);
-	FD_ZERO(&efds);
-	FD_SET(boss->FILDES, &rfds);
-	FD_SET(boss->FILDES, &efds);
-
+	iterationCount = 0; 
+    while (exitf == NO) 
+	{
+		fd_set rfds,efds;
+		int sts;
+		char readbuf[4096];
+		
+		// periodically refresh our autorelease pool
+		iterationCount++;
+		if(arPool == nil)
+			arPool = [[NSAutoreleasePool alloc] init];
+		
+		FD_ZERO(&rfds);
+		FD_ZERO(&efds);
+		FD_SET(boss->FILDES, &rfds);
+		FD_SET(boss->FILDES, &efds);
+		
 #if MEASURE_PROCESSING_TIME
-	tv.tv_sec = 0;
-	tv.tv_usec = 100000;
-
-	sts = select(boss->FILDES + 1, &rfds, NULL, &efds, &tv);
+		tv.tv_sec = 0;
+		tv.tv_usec = 100000;
+		
+		sts = select(boss->FILDES + 1, &rfds, NULL, &efds, &tv);
 #else
-	sts = select(boss->FILDES + 1, &rfds, NULL, &efds, NULL);
+		sts = select(boss->FILDES + 1, &rfds, NULL, &efds, NULL);
 #endif
-	
-	if (sts < 0) {
-	    [arPool release];
-	    break;
-	}
-	else if (FD_ISSET(boss->FILDES, &efds)) {
-	    sts = read(boss->FILDES, readbuf, 1);
-#if 0 // debug
-	    fprintf(stderr, "read except:%d byte ", sts);
-	    if (readbuf[0] & TIOCPKT_FLUSHREAD)
-		fprintf(stderr, "TIOCPKT_FLUSHREAD ");
-	    if (readbuf[0] & TIOCPKT_FLUSHWRITE)
-		fprintf(stderr, "TIOCPKT_FLUSHWRITE ");
-	    if (readbuf[0] & TIOCPKT_STOP)
-		fprintf(stderr, "TIOCPKT_STOP ");
-	    if (readbuf[0] & TIOCPKT_START)
-		fprintf(stderr, "TIOCPKT_START ");
-	    if (readbuf[0] & TIOCPKT_DOSTOP)
-		fprintf(stderr, "TIOCPKT_DOSTOP ");
-	    if (readbuf[0] & TIOCPKT_NOSTOP)
-		fprintf(stderr, "TIOCPKT_NOSTOP ");
-	    fprintf(stderr, "\n");
-#endif
-	    if (sts == 0) {
-		// session close
-		exitf = YES;
-                [rootProxy readTask: nil];
-	    }
-	}
-	else if (FD_ISSET(boss->FILDES, &rfds)) {
-	    sts = read(boss->FILDES, readbuf, sizeof(readbuf));
 
-	    if (sts == 1 && readbuf[0] != '\0') {
-		data = nil;
-	    }
-	    else if (sts > 1) {
-		data = [NSData dataWithBytes:readbuf +1 length:sts - 1];
-	    }
+		if (sts < 0) {
+			[arPool release];
+			arPool = nil;
+			break;
+		}
+		else if (FD_ISSET(boss->FILDES, &efds)) {
+			sts = read(boss->FILDES, readbuf, 1);
+#if 0 // debug
+			fprintf(stderr, "read except:%d byte ", sts);
+			if (readbuf[0] & TIOCPKT_FLUSHREAD)
+				fprintf(stderr, "TIOCPKT_FLUSHREAD ");
+			if (readbuf[0] & TIOCPKT_FLUSHWRITE)
+				fprintf(stderr, "TIOCPKT_FLUSHWRITE ");
+			if (readbuf[0] & TIOCPKT_STOP)
+				fprintf(stderr, "TIOCPKT_STOP ");
+			if (readbuf[0] & TIOCPKT_START)
+				fprintf(stderr, "TIOCPKT_START ");
+			if (readbuf[0] & TIOCPKT_DOSTOP)
+				fprintf(stderr, "TIOCPKT_DOSTOP ");
+			if (readbuf[0] & TIOCPKT_NOSTOP)
+				fprintf(stderr, "TIOCPKT_NOSTOP ");
+			fprintf(stderr, "\n");
+#endif
+			if (sts == 0) {
+				// session close
+				exitf = YES;
+                [rootProxy readTask: nil];
+			}
+		}
+		else if (FD_ISSET(boss->FILDES, &rfds)) {
+			sts = read(boss->FILDES, readbuf, sizeof(readbuf));
+			
+			if (sts == 1 && readbuf[0] != '\0') {
+				data = nil;
+			}
+			else if (sts > 1) {
+				data = [NSData dataWithBytes:readbuf +1 length:sts - 1];
+			}
             else if (sts == 0) {
                 data = nil;
-
-		exitf = YES;
+				
+				exitf = YES;
             }
-	    else {
-		data = nil;
+			else {
+				data = nil;
             }
-
+			
 #if MEASURE_PROCESSING_TIME
-	    // measure processing time if we want to.
-	    if(newOutput == NO)
-	    {
-		//NSLog(@"PTYTask: Start new output");
-		newOutput = YES;
-	    }
+			// measure processing time if we want to.
+			if(newOutput == NO)
+			{
+				//NSLog(@"PTYTask: Start new output");
+				newOutput = YES;
+			}
 #endif
-
+			
             if (data != nil) {
                 [boss setHasOutput: YES];
-		[rootProxy readTask:data];
+				[rootProxy readTask:data];
             }
             else
                 [boss setHasOutput: NO];
-
-	}
+			
+		}
 #if MEASURE_PROCESSING_TIME
-	else if (sts == 0)
-	{
-	    // time out; do some other tasks in this idle time
+		else if (sts == 0)
+		{
+			// time out; do some other tasks in this idle time
             [boss setHasOutput: NO];
-
-	    // measure processing time if we want to.
-	    if(newOutput == YES)
-	    {
-		//NSLog(@"PTYTask: End new output");
+			
+			// measure processing time if we want to.
+			if(newOutput == YES)
+			{
+				//NSLog(@"PTYTask: End new output");
                 [rootProxy doIdleTasks];
-		newOutput = NO;
-	    }	    
-	}
+				newOutput = NO;
+			}	    
+		}
 #endif
-        [arPool release];
 
+		// periodically refresh our autorelease pool
+		if((iterationCount % 10) == 0)
+		{
+			[arPool release];
+			arPool = nil;
+			iterationCount = 0;
+		}
+		
     }
+	
+	if(arPool != nil)
+	{
+		[arPool release];
+		arPool = nil;
+	}
 
     [rootProxy brokenPipe];
 

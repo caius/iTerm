@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.294 2004-10-03 08:06:59 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.295 2004-10-03 08:28:05 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1635,13 +1635,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) _updateDisplayThread: (void *) incoming
 {
-	int i, n, count;
+	int i, n, iterationCount;
 	NSAutoreleasePool *pool = nil;
 	
-	count = 0;
+	iterationCount = 0;
 	while (EXIT == NO)
 	{
-		count++;
+		iterationCount++;
 		
 		// periodically create and release autorelease pools
 		if(pool == nil)
@@ -1652,10 +1652,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			[[_sessionMgr sessionAtIndex: i] updateDisplay];
 		
 		// periodically create and release autorelease pools
-		if((count % 50) == 0)
+		if((iterationCount % 50) == 0)
 		{
 			[pool release];
 			pool = nil;
+			iterationCount = 0;
 		}
 		
 		usleep(30000);

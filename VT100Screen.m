@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.107 2003-07-16 15:59:51 ujwal Exp $
+// $Id: VT100Screen.m,v 1.108 2003-07-17 07:08:20 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1297,11 +1297,16 @@ static BOOL PLAYBELL = YES;
     if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) {
         CURSOR_Y++;
     }
-    else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
+    // if top of scrolling area is at the top of the screen, add a new line at the bottom of the scrolling area so that
+    // the top line goes into the scrollback buffer.
+    else if (SCROLL_TOP == 0) {
 #if DEBUG_USE_BUFFER
 	if(newLineString == nil)
 	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
-        [BUFFER appendAttributedString:newLineString];
+	if(SCROLL_BOTTOM == HEIGHT - 1)
+	    [BUFFER appendAttributedString:newLineString];
+	else
+	    [BUFFER insertAttributedString: newLineString atIndex: [self getIndexAtX: 0 Y: SCROLL_BOTTOM+1 withPadding: YES]];
 #endif
 
 #if DEBUG_USE_ARRAY

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.248 2003-11-06 16:05:33 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.249 2003-11-06 20:46:45 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -62,7 +62,7 @@ NSString *rowsKey = @"rows";
 NSString *sessionsKey = @"sessions";
 
 #define TABVIEW_TOP_BOTTOM_OFFSET	29
-#define TABVIEW_LEFT_RIGHT_OFFSET	25
+#define TABVIEW_LEFT_RIGHT_OFFSET	29
 #define TOOLBAR_OFFSET			0
 
 // just to keep track of available window positions

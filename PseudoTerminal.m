@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.8 2002-12-04 22:18:52 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.9 2002-12-06 03:03:29 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -274,9 +274,9 @@ static NSDictionary *newOutputStateAttribute;
     SHELL = [aSession SHELL];
     TERMINAL = [aSession TERMINAL];
     SCREEN = [aSession SCREEN];
+    [currentPtySession resetStatus];
     currentSessionIndex = sessionIndex;
     currentPtySession = aSession;
-    [currentPtySession resetStatus];
     [currentPtySession moveLastLine];
     [self _drawSessionButtons];
     [self setWindowTitle];
@@ -600,6 +600,39 @@ static NSDictionary *newOutputStateAttribute;
     }
 }
 
+- (void)clearBuffer:(id)sender
+{
+    [currentPtySession clearBuffer];
+}
+
+- (void)logStart:(id)sender
+{
+    [currentPtySession logStart];
+}
+
+- (void)logStop:(id)sender
+{
+    [currentPtySession logStop];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item
+{
+    BOOL logging = [SHELL logging];
+    BOOL result = YES;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal validateMenuItem:%@]",
+          __FILE__, __LINE__, item );
+#endif
+
+    if ([item action] == @selector(logStart:)) {
+        result = logging == YES ? NO:YES;
+    }
+    else if ([item action] == @selector(logStop:)) {
+        result = logging == NO ? NO:YES;
+    }
+    return result;
+}
 
 - (void)windowDidDeminiaturize:(NSNotification *)aNotification
 {

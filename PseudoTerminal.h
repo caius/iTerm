@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.3 2002-12-04 19:19:12 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.4 2002-12-06 03:03:29 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -114,6 +114,10 @@
 
 // MainMenu
 - (void)setMainMenu:(id) sender;
+- (void)clearBuffer:(id)sender;
+- (void)logStart:(id)sender;
+- (void)logStop:(id)sender;
+- (BOOL)validateMenuItem:(NSMenuItem *)item;
 
 // PTYTextView
 - (void)keyDown:(NSEvent *)theEvent;

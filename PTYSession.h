@@ -111,10 +111,9 @@
 - (void) setAntiIdle:(BOOL)set;
 - (void) setAntiCode:(int)code;
 
-// MainMenu
-- (void)clearBuffer:(id)sender;
-- (void)logStart:(id)sender;
-- (void)logStop:(id)sender;
+- (void)clearBuffer;
+- (void)logStart;
+- (void)logStop;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;
 - (void)setFGColor:(NSColor*) color;
 - (void)setBGColor:(NSColor*) color;

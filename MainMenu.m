@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.3 2002-11-28 19:27:12 ujwal Exp $
+// $Id: MainMenu.m,v 1.4 2002-12-06 03:03:29 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -127,7 +127,7 @@ static BOOL newWindow=YES;
     }
     else if (r == NSRunStoppedResponse) {
         NSDictionary *env=[NSDictionary dictionaryWithObject:[QO_DIR stringValue] forKey:@"PWD"];
-        if (newWindow) {
+        if (newWindow||FRONT==nil) {
             term = [PseudoTerminal newTerminalWindow: self];
             [term setPreference:PREF_PANEL];
             [term initWindow:[PREF_PANEL col]
@@ -228,7 +228,7 @@ static BOOL newWindow=YES;
         else //([enc compare:@"Unicode"]==NSOrderedSame)
             encoding=NSUTF8StringEncoding;
 
-        if (newWindow) {
+        if (newWindow||FRONT==nil) {
             term = [PseudoTerminal newTerminalWindow: self];
             [term setPreference:PREF_PANEL];
             [term initWindow:[[entry objectForKey:@"Col"]intValue]

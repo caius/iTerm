@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.1.1.1 2002-11-26 04:56:51 ujwal Exp $
+// $Id: VT100Screen.m,v 1.2 2002-12-06 03:03:29 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -747,9 +747,9 @@ static BOOL PLAYBELL = YES;
 
 - (void)clearScreen
 {
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen clearScreen]", __FILE__, __LINE__);
-//#endif
+#endif
     [self resizeWidth:WIDTH height:HEIGHT];
 }
 

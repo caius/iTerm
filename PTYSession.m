@@ -480,7 +480,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-
+    
     iIdleCount++; oIdleCount++;
     if (antiIdle) {
         if (iIdleCount>=240) {
@@ -497,6 +497,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [parent _drawSessionButtons];
     }
     [SCREEN blink];
+
 }
 
 
@@ -672,14 +673,14 @@ static NSString *PWD_ENVVALUE = @"~";
     ai_code=code;
 }
 
-- (void)logStart:(id)sender
+- (void)logStart
 {
     NSSavePanel *panel;
     int sts;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal logStart:%@]",
-          __FILE__, __LINE__, sender);
+          __FILE__, __LINE__);
 #endif
 
     panel = [NSSavePanel savePanel];
@@ -691,35 +692,17 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 }
 
-- (void)logStop:(id)sender
+- (void)logStop
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal logStop:%@]",
-          __FILE__, __LINE__, sender);
+          __FILE__, __LINE__);
 #endif
     [SHELL loggingStop];
 }
 
-- (BOOL)validateMenuItem:(NSMenuItem *)item
-{
-    BOOL logging = [SHELL logging];
-    BOOL result = YES;
 
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal validateMenuItem:%@]",
-          __FILE__, __LINE__, item );
-#endif
-
-    if ([item action] == @selector(logStart:)) {
-        result = logging == YES ? NO:YES;
-    }
-    else if ([item action] == @selector(logStop:)) {
-        result = logging == NO ? NO:YES;
-    }
-    return result;
-}
-
-- (void)clearBuffer:(id)sender
+- (void)clearBuffer
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal clearBuffer:...]", __FILE__, __LINE__);

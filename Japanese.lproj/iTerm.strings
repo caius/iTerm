@@ -40,6 +40,9 @@
 
 /* Context menu */
 "Copy" = "コピー";
+"Print..." = "Print...";
+"Print Selection..." = "Print Selection...";
+
 
 /* Removal Alert */
 "Do you really want to remove this item?" = "このアイテムを本当に消去しますか？";

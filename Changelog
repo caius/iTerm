@@ -1,3 +1,9 @@
+2003-03-30	ujwal
+
+    * When dragging a text clipping onto iTerm, we 
+      don't insert the file name of the clipping since 
+      the contents are inserted.
+
 2003-03-28	ujwal
     * Made addressbook non-modal.
     * Fixed a crash in showing preferences window.

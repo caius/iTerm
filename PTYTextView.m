@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.49 2003-03-28 23:22:39 yfabian Exp $
+// $Id: PTYTextView.m,v 1.50 2003-03-30 08:37:09 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -960,10 +960,18 @@
                     if ([delegate respondsToSelector:@selector(pasteString:)])
                         [delegate pasteString: aString];
                 }
-                    // Check for file names
-                    propertyList = [pb propertyListForType: NSFilenamesPboardType];
+		    
+		// Check for file names
+		propertyList = [pb propertyListForType: NSFilenamesPboardType];
                 for(i = 0; i < [propertyList count]; i++)
                 {
+
+		    // Ignore text clippings
+		    if ([[(NSString*)[propertyList objectAtIndex: i] pathExtension] isEqualToString:@"textClipping"])
+		    {
+			continue;
+		    }
+		    
                     // Just paste the file names into the shell after escaping special characters.
                     if ([delegate respondsToSelector:@selector(pasteString:)])
                     {
@@ -1977,6 +1985,13 @@
                 propertyList = [pb propertyListForType: NSFilenamesPboardType];
                 for(i = 0; i < [propertyList count]; i++)
                 {
+
+		    // Ignore text clippings
+		    if ([[(NSString*)[propertyList objectAtIndex: i] pathExtension] isEqualToString:@"textClipping"])
+		    {
+			continue;
+		    }		    
+		    
                     // Just paste the file names into the shell after escaping special characters.
                     if ([delegate respondsToSelector:@selector(pasteString:)])
                     {

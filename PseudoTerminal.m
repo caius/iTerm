@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.150 2003-04-25 02:44:21 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.151 2003-04-25 09:53:02 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -594,7 +594,8 @@ static NSString *ConfigToolbarItem = @"Config";
     NSSize size, vsize, winSize;
     NSWindow *thisWindow;
     int i;
-    NSRect tabviewRect;
+    NSRect tabviewRect, oldFrame;
+    NSPoint topLeft;
 
     // Resize the tabview first if necessary
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
@@ -678,7 +679,17 @@ static NSString *ConfigToolbarItem = @"Config";
         winSize.height = size.height + 0;
     if([[thisWindow toolbar] isVisible] == YES)
 	winSize.height += TOOLBAR_OFFSET;
+
+    // preserve the top left corner of the frame
+    oldFrame = [thisWindow frame];
+    topLeft.x = oldFrame.origin.x;
+    topLeft.y = oldFrame.origin.y + oldFrame.size.height;
+    
     [thisWindow setContentSize:winSize];
+
+    [thisWindow setFrameTopLeftPoint: topLeft];
+    
+    
 }
 
 
@@ -918,15 +929,17 @@ static NSString *ConfigToolbarItem = @"Config";
     HEIGHT = h;
 
     
+
+    // this will cause a recursion, so we protect ourselves at the entry of the method.
+    [self setWindowSize: NO];
+
     // Display the new size in the window title.
     NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [currentPtySession name], WIDTH, HEIGHT];
-    [self setWindowTitle: aTitle];
+    [self setWindowTitle: aTitle];    
 
     // Reset the scrollbar to the bottom
     [[currentPtySession TEXTVIEW] moveLastLine];
 
-    // this will cause a recursion, so we protect ourselves at the entry of the method.
-    [self setWindowSize: NO];
 
     //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 

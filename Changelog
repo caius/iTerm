@@ -1,3 +1,7 @@
+2003-01-24	fabian
+    * Fixed a but in VT100Terminal that causes loss of
+      character sometimes
+      
 2003-01-23	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed mapping of function keys in VT100Terminal.

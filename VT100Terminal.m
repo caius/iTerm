@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.21 2003-01-23 16:35:02 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.22 2003-01-24 21:19:35 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -970,7 +970,6 @@ static VT100TCC decode_string(unsigned char *datap,
     if (encoding == NSUTF8StringEncoding) {
         result = decode_utf8(datap, datalen, rmlen);
     }
-//    else if (encoding == 0x80000930) {
     else if (isGBEncoding(encoding)) {
 //        NSLog(@"Chinese-GB!");
         result = decode_euccn(datap, datalen, rmlen);
@@ -1135,7 +1134,7 @@ static VT100TCC decode_string(unsigned char *datap,
             }
             else if (isString(datap,ENCODING)) {
 		result = decode_string(datap, datalen, &rmlen, ENCODING);
-                if(rmlen == 0) {
+                if(result.type != VT100_WAIT && rmlen == 0) {
                     result.type = VT100_UNKNOWNCHAR;
                     result.u.code = datap[0];
                     rmlen = 1;

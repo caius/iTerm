@@ -5,10 +5,10 @@
       sessions in a new tab or window. The syntax is:
       
       To open a new session in a new tab:
-      launch "<session_name>" in tab
+      launch session "<session_name>" in tab
       
       To open a new session in a new window:
-      launch "<session_name>" in terminal
+      launch session "<session_name>" in terminal
       
       The <session_name> is either the name of a stored 
       addressbook session or "default session" for a 

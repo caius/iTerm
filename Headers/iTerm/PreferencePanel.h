@@ -32,7 +32,7 @@
 
 @class iTermController;
 
-@interface PreferencePanel : NSResponder
+@interface PreferencePanel : NSWindowController
 {
 	IBOutlet NSMatrix *tabPosition;
     IBOutlet id antiAlias;
@@ -41,7 +41,6 @@
     IBOutlet id openAddressBook;
     IBOutlet id optionKey;
     IBOutlet id macnavkeys;
-    IBOutlet id prefPanel;
     IBOutlet id promptOnClose;
     IBOutlet id silenceBell;
     IBOutlet id blinkingCursor;

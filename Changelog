@@ -11,6 +11,7 @@
 	* Added back support for "Focus follows mouse".
 	* Added back support for cmd +/- to change font size on the fly.
 	* Removed preference for "Enforce character alignment".
+	* Made PreferencePanel a NSWindowController.
 
 2004-02-23  ujwal
 

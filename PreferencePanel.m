@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.67 2004-02-24 21:37:43 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.68 2004-02-25 02:04:21 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -105,8 +105,7 @@ static float versionNumber;
     if ([NSBundle loadNibNamed:@"PreferencePanel" owner:self] == NO)
 	return;
 
-    [prefPanel center];
-    
+	
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
@@ -120,14 +119,14 @@ static float versionNumber;
     [blinkingCursor setState: defaultBlinkingCursor?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
     
-    [NSApp runModalForWindow:prefPanel];
-    [prefPanel close];
+	[self showWindow: self];
+	
 }
 
 - (IBAction)cancel:(id)sender
 {
     [self readPreferences];
-    [NSApp abortModal];
+	[[self window] close];
 }
 
 - (IBAction)ok:(id)sender
@@ -157,7 +156,7 @@ static float versionNumber;
     [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
     
-    [NSApp stopModal];
+    [[self window] close];
 }
 
 - (IBAction)restore:(id)sender
@@ -181,6 +180,13 @@ static float versionNumber;
     [tabPosition selectCellWithTag: defaultTabViewType];
     [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
 }
+
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+    // Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
+}
+
 
 - (BOOL) antiAlias
 {

@@ -13,13 +13,12 @@
                 macnavkeys = id; 
                 openAddressBook = id; 
                 optionKey = id; 
-                prefPanel = id; 
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 
                 silenceBell = id; 
                 tabPosition = NSMatrix; 
             }; 
-            SUPERCLASS = NSResponder; 
+            SUPERCLASS = NSWindowController; 
         }
     ); 
     IBVersion = 1; 

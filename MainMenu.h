@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.12 2003-01-21 01:43:21 yfabian Exp $
+// $Id: MainMenu.h,v 1.13 2003-01-27 23:05:12 ujwal Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -63,6 +63,7 @@
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification;
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app;
+- (NSMenu *)applicationDockMenu:(NSApplication *)sender;
 
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newSession:(id)sender;
@@ -102,8 +103,18 @@
 - (NSDictionary *)addressBookEntry: (int) entryIndex;
 - (void) addAddressBookEntry: (NSDictionary *) entry;
 - (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new;
+- (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender;
+- (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm;
 
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender;
+
+@end
+
+// Private interface
+@interface MainMenu (Private)
+
+- (void) _executeABMenuCommandInNewTab: (id) sender;
+- (void) _executeABMenuCommandInNewWindow: (id) sender;
 
 @end

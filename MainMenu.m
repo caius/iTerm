@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.29 2003-01-21 01:43:21 yfabian Exp $
+// $Id: MainMenu.m,v 1.30 2003-01-27 23:05:13 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -24,7 +24,6 @@
 
 static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
 static NSStringEncoding const *encodingList=nil;
-static BOOL newWindow=YES;
 
 // comaparator function for addressbook entries
 NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
@@ -34,6 +33,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
 @implementation MainMenu
 
+// NSApplication delegate methods
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
 #if DEBUG_METHOD_TRACE
@@ -71,6 +71,37 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     return YES;
 }
 
+
+// Creates the dock menu
+- (NSMenu *)applicationDockMenu:(NSApplication *)sender
+{
+    NSMenu *aMenu;
+    NSMenuItem *newTabMenuItem, *newWindowMenuItem;
+    
+    aMenu = [[NSMenu alloc] initWithTitle: @"Dock Menu"];
+    newTabMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTable(@"New Tab",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" ]; 
+    newWindowMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTable(@"New Window",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" ]; 
+    [aMenu addItem: newTabMenuItem];
+    [aMenu addItem: newWindowMenuItem];
+    [newTabMenuItem release];
+    [newWindowMenuItem release];
+    
+    // Create the addressbook submenus for new tabs and windows.
+    NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Address Book Menu"];
+    [self buildAddressBookMenu: abMenu forTerminal: FRONT]; // target the top terminal window.
+    [newTabMenuItem setSubmenu: abMenu];
+    [abMenu release];
+    
+    abMenu = [[NSMenu alloc] initWithTitle: @"Address Book Menu"];
+    [self buildAddressBookMenu: abMenu forTerminal: nil]; // target the top terminal window.
+    [newWindowMenuItem setSubmenu: abMenu];
+    [abMenu release];
+            
+    return ([aMenu autorelease]);
+    
+}
+
+// Action methods
 - (IBAction)newWindow:(id)sender
 {
     PseudoTerminal *term;
@@ -141,11 +172,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
 - (IBAction) executeABCommand: (id) sender
 {
-    PseudoTerminal *term;
-    NSString *cmd;
-    NSArray *arg;
-    NSDictionary *entry;
-    NSStringEncoding encoding;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[MainMenu executeABCommand:%@]",
@@ -157,44 +183,11 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	return;
 
     [NSApp stopModal];
-    newWindow=(sender==adNewWindow);
-    
-    entry = [addressBook objectAtIndex:[adTable selectedRow]];
-    [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
-    //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-    encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
-    
-    if (newWindow||FRONT==nil) {
-        term = [PseudoTerminal newTerminalWindow: self];
-        [term setPreference:PREF_PANEL];
-        [term initWindow:[[entry objectForKey:@"Col"]intValue]
-                    height:[[entry objectForKey:@"Row"] intValue]
-                    font:[entry objectForKey:@"Font"]
-                  nafont:[entry objectForKey:@"NAFont"]];
-    }
-    else term=FRONT;
-    [term initSession:[entry objectForKey:@"Name"]
-        foregroundColor:[entry objectForKey:@"Foreground"]
-        backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]
-        selectionColor:[entry objectForKey:@"SelectionColor"]
-                encoding:encoding
-                    term:[entry objectForKey:@"Term Type"]];
-    
-    NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
-        
-    [term startProgram:cmd arguments:arg environment:env];
-    [[term currentSession] setEncoding:encoding];
-    [[term currentSession] setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
-    [[term currentSession] setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
-    [[term currentSession] setAutoClose:[[entry objectForKey:@"AutoClose"] boolValue]];
-    
-    
-    if (newWindow) {
-        [term setWindowSize: YES];
-    };
-    [term setCurrentSessionName:[entry objectForKey:@"Name"]];
-    [[term currentSession] setAddressBookEntry:entry];
-    [[term currentSession] setDoubleWidth:[[entry objectForKey:@"DoubleWidth"] boolValue]];
+
+    if(sender==adNewWindow)
+        [self executeABCommandAtIndex: [adTable selectedRow] inTerminal: nil];
+    else
+        [self executeABCommandAtIndex: [adTable selectedRow] inTerminal: FRONT];
 }
 
 - (IBAction)adbAddEntry:(id)sender
@@ -740,6 +733,103 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     
 }
 
+// Build the address book menu
+- (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender
+{
+    NSEnumerator *abEnumerator;
+    NSString *abEntry;
+    int i = 0;
+    SEL shellSelector, abCommandSelector;
+
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu buildAddressBookMenu]",
+          __FILE__, __LINE__);
+#endif
+
+    if (sender == nil)
+    {
+	shellSelector = @selector(newWindow:);
+	abCommandSelector = @selector(_executeABMenuCommandInNewWindow:);
+    }
+    else
+    {
+	shellSelector = @selector(newSession:);
+	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
+    }
+
+    [abMenu addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")
+					   action: shellSelector keyEquivalent:@""];
+    [abMenu addItem: [NSMenuItem separatorItem]];
+    abEnumerator = [[self addressBookNames] objectEnumerator];
+    while ((abEntry = [abEnumerator nextObject]) != nil)
+    {
+	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: abCommandSelector keyEquivalent:@""];
+	[abMenuItem setTag: i++];
+        [abMenuItem setRepresentedObject: sender]; // so that we know where this menu item is going to be executed
+	[abMenu addItem: abMenuItem];
+	[abMenuItem release];
+    }
+        
+}
+
+
+// Executes an addressbook command in new window or tab
+- (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm
+{
+    PseudoTerminal *term;
+    NSString *cmd;
+    NSArray *arg;
+    NSDictionary *entry;
+    NSStringEncoding encoding;
+
+    // Grab the addressbook command
+    entry = [addressBook objectAtIndex:theIndex];
+    [MainMenu breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
+    //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
+    encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
+    
+    
+    // Where do we execute this command?
+    if(theTerm == nil)
+    {
+        term = [PseudoTerminal newTerminalWindow: self];
+        [term setPreference:PREF_PANEL];
+        [term initWindow:[[entry objectForKey:@"Col"]intValue]
+                    height:[[entry objectForKey:@"Row"] intValue]
+                    font:[entry objectForKey:@"Font"]
+                nafont:[entry objectForKey:@"NAFont"]];
+    }
+    else
+        term = theTerm;
+    
+    // Initialize a new session        
+    [term initSession:[entry objectForKey:@"Name"]
+        foregroundColor:[entry objectForKey:@"Foreground"]
+        backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]
+        selectionColor:[entry objectForKey:@"SelectionColor"]
+                encoding:encoding
+                    term:[entry objectForKey:@"Term Type"]];
+    
+    NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
+    
+    // Start the command        
+    [term startProgram:cmd arguments:arg environment:env];
+    [[term currentSession] setEncoding:encoding];
+    [[term currentSession] setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
+    [[term currentSession] setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
+    [[term currentSession] setAutoClose:[[entry objectForKey:@"AutoClose"] boolValue]];
+    
+    // If we created a new window, set the size
+    if (theTerm == nil) {
+        [term setWindowSize: YES];
+    };
+    [term setCurrentSessionName:[entry objectForKey:@"Name"]];
+    [[term currentSession] setAddressBookEntry:entry];
+    [[term currentSession] setDoubleWidth:[[entry objectForKey:@"DoubleWidth"] boolValue]];
+
+}
+
 // Returns an entry from the addressbook
 - (NSDictionary *)addressBookEntry: (int) entryIndex
 {
@@ -760,6 +850,21 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 - (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new
 {
     [addressBook replaceObjectAtIndex:[addressBook indexOfObject:old] withObject:new];
+}
+
+@end
+
+// Private interface
+@implementation MainMenu (Private)
+
+- (void) _executeABMenuCommandInNewTab: (id) sender
+{
+    [self executeABCommandAtIndex: [sender tag] inTerminal: [sender representedObject]];
+}
+
+- (void) _executeABMenuCommandInNewWindow: (id) sender
+{
+    [self executeABCommandAtIndex: [sender tag] inTerminal: nil];
 }
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.84 2003-01-24 21:31:39 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.85 2003-01-27 23:05:16 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1294,7 +1294,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Build the address book menu
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
-    [self _buildAddressBookMenu: abMenu newWindow: newWin];
+    [MAINMENU buildAddressBookMenu: abMenu forTerminal: (newWin?nil:self)];
 
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
     [abMenu release];
@@ -1425,61 +1425,6 @@ static NSString *ConfigToolbarItem = @"Config";
 // Private interface
 @implementation PseudoTerminal (Private)
 
-// Build the address book menu
-- (void) _buildAddressBookMenu: (NSMenu *) abMenu newWindow: (BOOL) newWinFlag
-{
-    NSEnumerator *abEnumerator;
-    NSString *abEntry;
-    int i = 0;
-    SEL shellSelector, abCommandSelector;
-
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal _buildAddressBookMenu]",
-          __FILE__, __LINE__);
-#endif
-
-#if 0
-    // build the menu
-    [aPopUpButton removeAllItems];
-    [aPopUpButton addItemWithTitle: @""];
-    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")];
-    [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-    [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
-    [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New")];
-    newwinItem=[aPopUpButton lastItem];
-    [newwinItem setState:(newwin ? NSOnState : NSOffState)];
-#endif
-
-    if (newWinFlag)
-    {
-	shellSelector = @selector(newWindow:);
-	abCommandSelector = @selector(_executeABMenuCommandInNewWindow:);
-    }
-    else
-    {
-	shellSelector = @selector(newSession:);
-	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
-    }
-
-    [abMenu addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")
-					   action: shellSelector keyEquivalent:@""];
-    [abMenu addItem: [NSMenuItem separatorItem]];
-    abEnumerator = [[MAINMENU addressBookNames] objectEnumerator];
-    while ((abEntry = [abEnumerator nextObject]) != nil)
-    {
-	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: abCommandSelector keyEquivalent:@""];
-	[abMenuItem setTag: i++];
-	[abMenu addItem: abMenuItem];
-	[abMenuItem release];
-    }
-    
-    
-//    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-    
-}
-
 - (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem
 {
     NSPopUpButton *aPopUpButton;
@@ -1497,7 +1442,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
 
-    [self _buildAddressBookMenu: [aPopUpButton menu] newWindow: newwin];
+    [MAINMENU buildAddressBookMenu: [aPopUpButton menu] forTerminal: (newwin?nil:self)];
 
     [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
     [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
@@ -1518,7 +1463,7 @@ static NSString *ConfigToolbarItem = @"Config";
     // build a menu representation for text only.
     item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New") action: nil keyEquivalent: @""];
     aMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
-    [self _buildAddressBookMenu: aMenu newWindow: newwin];
+    [MAINMENU buildAddressBookMenu: aMenu forTerminal: (newwin?nil:self)];
     [aMenu addItem: [NSMenuItem separatorItem]];
     [aMenu addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
     newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];
@@ -1568,64 +1513,6 @@ static NSString *ConfigToolbarItem = @"Config";
     [self _reloadAddressBookMenu: nil];
 }
 
-
-- (void) _executeABMenuCommandInNewTab: (id) sender
-{
-    [self _executeABMenuCommand: [sender tag] newWindow: NO];
-}
-
-- (void) _executeABMenuCommandInNewWindow: (id) sender
-{
-    [self _executeABMenuCommand: [sender tag] newWindow: YES];
-}
-
-- (void) _executeABMenuCommand: (int) commandIndex newWindow: (BOOL) theFlag
-{
-    NSDictionary *anEntry;
-    NSString *cmd;
-    NSArray *arg;
-    PseudoTerminal *term;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal _executeABMenuCommand: index = %d, flag = %d]",
-          __FILE__, __LINE__, commandIndex, theFlag);
-#endif    
-    
-    anEntry = [MAINMENU addressBookEntry: commandIndex];
-    if(anEntry == nil)
-	return;
-
-    if (theFlag) {
-	term = [PseudoTerminal newTerminalWindow: MAINMENU];
-	[term setPreference:pref];
-	[term initWindow:[[anEntry objectForKey:@"Col"]intValue]
-	   height:[[anEntry objectForKey:@"Row"] intValue]
-	     font:[anEntry objectForKey:@"Font"]
-	   nafont:[anEntry objectForKey:@"NAFont"]];
-    }
-    else term=self;
-
-    // Init a new session and run the command
-    [term initSession:[anEntry objectForKey:@"Name"]
-      foregroundColor:[anEntry objectForKey:@"Foreground"]
-      backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
-      selectionColor:[anEntry objectForKey:@"SelectionColor"]
-	     encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
-		 term:[anEntry objectForKey:@"Term Type"]];
-
-    NSDictionary *env=[NSDictionary dictionaryWithObject:([anEntry objectForKey:@"Directory"]?[anEntry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
-
-    [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
-    [term startProgram:cmd arguments:arg environment:env];
-    [term setCurrentSessionName:[anEntry objectForKey:@"Name"]];
-    [[term currentSession] setEncoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]];
-    [[term currentSession] setAntiCode:[[anEntry objectForKey:@"AICode"] intValue]];
-    [[term currentSession] setAntiIdle:[[anEntry objectForKey:@"AntiIdle"] boolValue]];
-    [[term currentSession] setAutoClose:[[anEntry objectForKey:@"AutoClose"] boolValue]];
-    [[term currentSession] setDoubleWidth:[[anEntry objectForKey:@"DoubleWidth"] boolValue]];
-    [[term currentSession] setAddressBookEntry:anEntry];
-    
-}
 
 
 @end

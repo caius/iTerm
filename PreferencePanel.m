@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.58 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.59 2003-08-11 13:43:17 sgehrman Exp $
 /*
  **  PreferencePanel.m
  **
@@ -30,18 +30,11 @@
 #import <iTerm/AddressBookWindowController.h>
 #import <iTerm/iTermController.h>
 
-#define NIB_PATH  @"iTermController"
-
-
-
 static unsigned int  SCROLLBACK = 1000000;
-
-
 
 static float versionNumber;
 
 @implementation PreferencePanel
-
 
 - (id)init
 {
@@ -75,18 +68,15 @@ static float versionNumber;
 
 - (void)dealloc
 {
-    
     [super dealloc];
 }
 
 - (void) readPreferences
 {
-    
     prefs = [NSUserDefaults standardUserDefaults];
 
     defaultScrollback=([prefs objectForKey:@"Scrollback"]?[prefs integerForKey:@"Scrollback"]:SCROLLBACK);
     defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
-                                                                      
         
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
     defaultMacNavKeys=[prefs objectForKey:@"MacNavKeys"]?[[prefs objectForKey:@"MacNavKeys"] boolValue]: NO;
@@ -98,24 +88,19 @@ static float versionNumber;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultBlinkingCursor = [prefs objectForKey:@"BlinkingCursor"]?[[prefs objectForKey:@"BlinkingCursor"] boolValue]: NO;
     defaultEnforceCharacterAlignment = [prefs objectForKey:@"EnforceCharacterAlignment"]?[[prefs objectForKey:@"EnforceCharacterAlignment"] boolValue]: YES;
-
-
 }
 
 - (void)run
 {
-    
     // Load our bundle
     if ([NSBundle loadNibNamed:@"PreferencePanel" owner:self] == NO)
 	return;
 
     [prefPanel center];
     
-    
     [scrollbackLines setIntValue:defaultScrollback];
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
-
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
     [tabViewType selectCellWithTag: defaultTabViewType];
@@ -139,10 +124,7 @@ static float versionNumber;
 
 - (IBAction)ok:(id)sender
 {
-
-
     defaultScrollback=[scrollbackLines intValue];
-    
     
     defaultAntiAlias = ([antiAlias state]==NSOnState);
 
@@ -159,7 +141,6 @@ static float versionNumber;
 
     [prefs setInteger:defaultScrollback forKey:@"Scrollback"];
 
-    
     [prefs setBool:defaultMacNavKeys forKey:@"MacNavKeys"];
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
     [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
@@ -173,14 +154,11 @@ static float versionNumber;
     [prefs setBool:defaultEnforceCharacterAlignment forKey:@"EnforceCharacterAlignment"];
     
     [NSApp stopModal];
-
 }
 
 - (IBAction)restore:(id)sender
 {    
-    
     defaultScrollback=SCROLLBACK;
-    
     
     defaultMacNavKeys=YES;
     defaultOption=0;
@@ -193,7 +171,6 @@ static float versionNumber;
     defaultEnforceCharacterAlignment = YES;
 
     [scrollbackLines setIntValue:defaultScrollback];
-    
 
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
@@ -204,9 +181,7 @@ static float versionNumber;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [tabViewType selectCellWithTag: defaultTabViewType];
     [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
-    [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];
-
-    
+    [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];    
 }
 
 - (unsigned int) scrollbackLines
@@ -218,7 +193,6 @@ static float versionNumber;
 {
     return defaultAntiAlias;
 }
-
 
 - (BOOL) macnavkeys
 {
@@ -245,7 +219,6 @@ static float versionNumber;
     return (defaultSilenceBell);
 }
 
-
 - (NSTabViewType) tabViewType
 {
     return (defaultTabViewType);
@@ -271,11 +244,6 @@ static float versionNumber;
     return (defaultEnforceCharacterAlignment);
 }
 
-- (void) setITermController: (iTermController *) theParent
-{
-    iTerm = theParent;
-}
-
 - (IBAction) editDefaultSession: (id) sender
 {
     AddressBookWindowController *abWindowController;
@@ -288,11 +256,11 @@ static float versionNumber;
     abWindowController = [AddressBookWindowController singleInstance];
     if([[abWindowController window] isVisible] == NO)
     {
-	[abWindowController setAddressBook: [iTerm addressBook]];
+	[abWindowController setAddressBook: [[iTermController sharedInstance] addressBook]];
 	[abWindowController setPreferences: self];
     }
-    [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
     
+    [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
 }
 
 @end

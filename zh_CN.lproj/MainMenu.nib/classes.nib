@@ -112,12 +112,11 @@
                 showAbout = id; 
                 showPrefWindow = id; 
             }; 
-            CLASS = iTermController; 
+            CLASS = iTermApplicationDelegate; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 ABOUT = id; 
                 AUTHORS = NSTextView; 
-                FRONT = id; 
                 nextTerminal = NSMenuItem; 
                 previousTerminal = NSMenuItem; 
                 selectTab = NSMenuItem; 

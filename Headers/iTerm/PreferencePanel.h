@@ -63,12 +63,8 @@
     BOOL defaultPromptOnClose;
     BOOL defaultBlinkingCursor;
     BOOL defaultEnforceCharacterAlignment;
-
-    iTermController *iTerm;
-
 }
 
-- (void) setITermController: (iTermController *) theParent;
 - (IBAction) editDefaultSession: (id) sender;
 
 - (id)init;

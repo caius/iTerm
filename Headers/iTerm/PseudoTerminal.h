@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.2 2003-08-11 13:40:11 sgehrman Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -37,9 +37,6 @@
 
 @interface PseudoTerminal : NSWindowController
 {
-    /// iTermController reference
-    iTermController *iTerm;
-    
     /// tab view
     PTYTabView *TABVIEW;
 
@@ -123,8 +120,6 @@
 
 
 // iTermController
-- (iTermController *) iTerm;
-- (void)setITermController:(id) sender;
 - (void)clearBuffer:(id)sender;
 - (void)clearScrollbackBuffer:(id)sender;
 - (IBAction)logStart:(id)sender;

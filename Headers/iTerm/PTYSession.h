@@ -38,11 +38,8 @@
 @class PTYTabViewItem;
 @class VT100TextStorage;
 
-@interface PTYSession : NSResponder {
-    
-    /// iTermController reference
-    iTermController *iTerm;
-    
+@interface PTYSession : NSResponder
+{        
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
 
@@ -58,7 +55,6 @@
     NSDictionary *idleStateAttribute;
     NSDictionary *newOutputStateAttribute;
     NSDictionary *deadStateAttribute;
-
     
     PseudoTerminal *parent;  // parent controller
     NSString *name;
@@ -140,7 +136,6 @@
 
 
 // get/set methods
-- (void) setITermController: (iTermController *) theMainMenu;
 - (PseudoTerminal *) parent;
 - (void) setParent: (PseudoTerminal *) theParent;
 - (PTYTabViewItem *) tabViewItem;

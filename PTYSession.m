@@ -398,7 +398,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		[parent nextSession: nil];
 		return;
 	    case NSDeleteFunctionKey:
-                NSLog(@"### DEBUG ###\n%@", SCREEN);
+                // NSLog(@"### DEBUG ###\n%@", SCREEN);
 		break;
 	    case NSPageUpFunctionKey:
                 [TEXTVIEW scrollPageUp: self];
@@ -439,7 +439,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     else if ((modflag & NSAlternateKeyMask) && (modflag & NSControlKeyMask)) {
 //        NSLog(@"opt_control_key detected(%d)",(modflag & NSShiftKeyMask));
-        [iTerm interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
+        [[iTermController sharedInstance] interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
     }
     else if((modflag & NSAlternateKeyMask) && (unicode == NSDeleteCharacter))
     {
@@ -1018,18 +1018,9 @@ static NSString *PWD_ENVVALUE = @"~";
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
     
-
     // Ask the parent if it has anything to add
     if ([[self parent] respondsToSelector:@selector(menuForEvent: menu:)])
-	[[self parent] menuForEvent:theEvent menu: theMenu];
-    
-}
-
-
-// get/set methods
-- (void) setITermController:(iTermController *) theMainMenu
-{
-    iTerm=theMainMenu;
+	[[self parent] menuForEvent:theEvent menu: theMenu];    
 }
 
 - (PseudoTerminal *) parent
@@ -1115,9 +1106,9 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     // get the session submenu to be rebuilt
-    if([[[self parent] iTerm] frontPseudoTerminal] == [self parent])
+    if([[iTermController sharedInstance] frontPseudoTerminal] == [self parent])
     {
-	[[[self parent] iTerm] buildSessionSubmenu];
+	[[iTermController sharedInstance] buildSessionSubmenu];
     }
     
 }

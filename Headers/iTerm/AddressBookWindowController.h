@@ -95,9 +95,6 @@
 
     // default values from preference
     PreferencePanel *preferences;
-
-    iTermController *iTerm;
-
 }
 
 // init
@@ -119,8 +116,6 @@
 - (void) setAddressBook: (NSMutableArray *) anAddressBook;
 - (PreferencePanel *) preferences;
 - (void) setPreferences: (PreferencePanel *) thePreferences;
-- (iTermController *) iTerm;
-- (void) setITermController: (iTermController *) theController;
 
 // Address book window
 - (IBAction)adbDuplicateEntry:(id)sender;

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.46 2003-05-06 06:39:54 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.47 2003-05-07 15:14:49 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -183,7 +183,7 @@ static float versionNumber;
 - (id)init
 {
     char *userShell, *thisUser;
-    float storedVersionNumber;
+    unsigned int storedMajorVersion = 0, storedMinorVersion = 0, storedMicroVersion = 0;
 #if DEBUG_OBJALLOC
     NSLog(@"%s(%d):-[PreferencePanel init]", __FILE__, __LINE__);
 #endif
@@ -196,18 +196,22 @@ static float versionNumber;
     else if((userShell = getenv("SHELL")) != NULL)
         SHELL = [[NSString stringWithCString: userShell] retain];
 
+    [self readPreferences];
+    
     // get the version
     NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
     versionNumber = [(NSNumber *)[myDict objectForKey:@"CFBundleVersion"] floatValue];
     if([prefs objectForKey: @"iTerm Version"])
-	storedVersionNumber = [prefs floatForKey: @"iTerm Version"];
-    else
-	storedVersionNumber = 0.0;
+    {
+	sscanf([[prefs objectForKey: @"iTerm Version"] cString], "%d.%d.%d", &storedMajorVersion, &storedMinorVersion, &storedMicroVersion);
+	// briefly, version 0.7.0 was stored as 0.70
+	if(storedMajorVersion == 0 && storedMinorVersion == 70)
+	    storedMinorVersion = 7;
+    }
+    //NSLog(@"Stored version = %d.%d.%d", storedMajorVersion, storedMinorVersion, storedMicroVersion);
         
-    [self readPreferences];
-
     // If we are pre 0.70 and are still using the old default font Osaka-Mono, switch to the new FreeMono
-    if(storedVersionNumber < 0.7 && [[defaultFont fontName] isEqualToString: @"Osaka-Mono"])
+    if((storedMajorVersion == 0 && storedMinorVersion < 7) && [[defaultFont fontName] isEqualToString: @"Osaka-Mono"])
     {
 	[defaultFont release];
 	defaultFont = [FONT copy];

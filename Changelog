@@ -1,3 +1,11 @@
+2003-05-07	ujwal
+
+    * Fixed a bug in switching font from Osaka-Mono to FreeMono.
+
+2003-05-06	fabian/ujwal
+
+    * Release of version 0.7.0
+
 2003-05-06	fabian
     * Updated Korean localizations
     * Updated French localizations

@@ -136,7 +136,7 @@
     if([delegate respondsToSelector: @selector(tabView: willRemoveTabViewItem:)])
 	[delegate tabView: self willRemoveTabViewItem: aTabViewItem];
     
-    // add the item
+    // remove the item
     [super removeTabViewItem: aTabViewItem];
     
 }
@@ -152,7 +152,7 @@
     if([delegate respondsToSelector: @selector(tabView: willInsertTabViewItem: atIndex:)])
 	[delegate tabView: self willInsertTabViewItem: tabViewItem atIndex: index];    
 
-    // add the item
+    // insert the item
     [super insertTabViewItem: tabViewItem atIndex: index];
     
 }

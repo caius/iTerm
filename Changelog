@@ -1,3 +1,9 @@
+2003-09-29	ujwal
+
+    * All periodic timer code for each open session is called by a single 
+      timer from iTermController. This should reduce the number of timer 
+      threads running and hence lessen the load on the CPU.
+
 2003-09-29	fabian
 
     * Fixed a bug in ANSICSI_ECH code. It shouldn't move cursor position.

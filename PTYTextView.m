@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.70 2003-06-11 18:38:16 ujwal Exp $
+// $Id: PTYTextView.m,v 1.71 2003-06-15 19:10:22 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1791,23 +1791,21 @@
 }
 
 
-// Override copy and paste to do our stuff
-- (void) copy: (id) sender
+- (NSString *)copyAsString;
 {
-    NSPasteboard *pboard = [NSPasteboard generalPasteboard];
     NSString *aString;
     NSMutableAttributedString *aMutableAttributedString;
     int i = 0;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
+    NSLog(@"%s(%d):-[PTYTextView copyAsString:%@]", __FILE__, __LINE__, sender );
 #endif
 
     aMutableAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString: [[self textStorage] attributedSubstringFromRange: [self selectedRange]]];
     [aMutableAttributedString autorelease];
 
     if((aMutableAttributedString == nil) || ([aMutableAttributedString length] == 0))
-	return;
+	return nil;
 
     // remove linewraps
     while (i < [aMutableAttributedString length])
@@ -1820,14 +1818,29 @@
     // Further process the string
     aString = [aMutableAttributedString string];
     if((aString == nil) || ([aString length] == 0))
-	return;
+	return nil;
     if([aString length] > 1) // Cocoa bug?
 	aString = [aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+    return aString;
+}
+
+// Override copy and paste to do our stuff
+- (void) copy: (id) sender
+{
+    NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+    NSString *aString = [self copyAsString];
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
+#endif
+
+    if((aString == nil) || ([aString length] == 0))
+	return;
 
     // Put the trimmed string on the pasteboard
     [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];
     [pboard setString: aString forType: NSStringPboardType];
-    
 }
 
 - (void)paste:(id)sender
@@ -1842,6 +1855,18 @@
 	[delegate paste:sender];
     else
 	[super paste:sender];
+}
+
+- (void)pasteSelection:(id)sender;
+{
+    id delegate = [self delegate];
+    NSString *aString = [self copyAsString];
+
+    if((aString == nil) || ([aString length] == 0))
+	return;
+
+    if ([delegate respondsToSelector:@selector(pasteString:)])
+	[delegate pasteString:aString];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
@@ -1866,7 +1891,8 @@
     }
     else if ([item action]==@selector(mail:) || 
              [item action]==@selector(browse:) ||
-	     [item action] == @selector(printSelection:)) 
+	     [item action] == @selector(printSelection:) ||
+	     [item action] == @selector(pasteSelection:)) 
     {
 //        NSLog(@"selected range:%d",[self selectedRange].length);
 	return ([self selectedRange].length>0);

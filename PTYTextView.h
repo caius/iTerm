@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.30 2003-06-11 18:38:16 ujwal Exp $
+// $Id: PTYTextView.h,v 1.31 2003-06-15 19:09:34 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -237,8 +237,10 @@
 - (void)unmarkText;
 - (BOOL)hasMarkedText;
 - (NSRange)markedRange;
+- (NSString *)copyAsString;
 - (void)copy: (id) sender;
 - (void)paste:(id)sender;
+- (void)pasteSelection:(id)sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;
 - (void)changeFont:(id)sender;
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent;

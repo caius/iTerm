@@ -1,3 +1,7 @@
+2003-06-15	ujwal
+
+    * Incorporated Peter Lewis' "Paste Selection" patch.
+
 2003-06-14	ujwal
 
     * Reverted back to v1.20 of VT100Typesetter accunting for line 

@@ -12,6 +12,7 @@
                 logStart = id; 
                 logStop = id; 
                 nextSession = id; 
+                pasteSelection = id; 
                 previousSession = id; 
                 printSelection = id; 
                 saveSession = id; 

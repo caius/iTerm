@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.60 2003-02-27 22:29:35 yfabian Exp $
+// $Id: VT100Screen.m,v 1.61 2003-03-01 00:16:02 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -32,8 +32,8 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#define DEBUG_USE_BUFFER	1
-#define DEBUG_USE_ARRAY		0
+#define DEBUG_USE_BUFFER	0
+#define DEBUG_USE_ARRAY		1
 
 #import "VT100Screen.h"
 #import "NSStringITerm.h"
@@ -745,6 +745,7 @@ static BOOL PLAYBELL = YES;
 //        NSLog(@"%d blanks inserted",x);
         [BUFFER insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:x]] atIndex:idx];
         idx+=x;
+        if (idx<minIndex) minIndex=idx;
     }
 
     if (x<0) {

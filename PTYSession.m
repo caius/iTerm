@@ -698,7 +698,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     if (blink>8) { [SCREEN blink]; blink=0; }
-    if (oIdleCount<3||dirty) {
+    if (oIdleCount<2||dirty) {
         if (output>3) {
             // sometimes showCursor will change buffer too
             [SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1];

@@ -19,37 +19,65 @@
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>iTerm:</STRONG></FONT><BR>
-<UL>iTerm is a full featured terminal emulation program written for OS X using Cocoa. It supports language encodings, VT100/ANSI/XTERM emulation and many convenient GUI features.  iTerm was merged from CTerminal and TerminalX, both of which were based on JTerminal project.  A large part of the original code is rewritten from the JTerminal source to implement more features and to run more efficiently.  The current version is still in beta stage.</UL>
+<UL>iTerm is a full featured terminal emulation program written for OS X using 
+	Cocoa. We are aiming at providing users with best command line experience
+	under OS X. The letter <STRONG>i</STRONG> represents a native Apple look 
+	and feel of the program interface, and an emphasis on complete international 
+	support. iTerm was merged from two projects, CTerminal and TerminalX, both 
+	of which were based on JTerminal project. The current version is still in 
+	beta stage. It is however very much functional and usable.</UL>
 
 <FONT SIZE="5"><STRONG>Features:</STRONG></FONT><BR>
 <UL>
-<LI>Native Cocoa application that supports OS X, Jaguar.</LI>
-<LI>Better VT100 emulation</LI>
-<LI>Multi-Tab within one window</LI>
-<LI>Applescript supported</LI>
-<LI>Xterm compatibility</LI>
-<LI>Transparent windows</LI>
-<LI>Address book</LI>
+<LI>Native Cocoa application that supports both Jaguar and Panther.</LI>
+  <UL>
+    <LI>Native OS X user interface</LI>
+	<LI>Support of Applescript</LI>
+	<LI>Transparent windows and custm background pictures</LI>
+  </UL>
+<LI>Complete VT100 emulation, with additional support for most common xterm and 
+	ANSI escape sequences.</LI>
+  <UL>
+    <LI>Custom key-mapping<IMG src="new.gif"></LI>
+	<LI>Supports select-to-copy and mid-button paste</LI>
+	<LI>Supports focus follow mouse</LI>
+	<LI>Supports xterm titling sequence to change tab label</LI>
+	<LI>Supports ANSI 16 colors, which are also fully customizable</LI>
+  </UL>
+<LI>Multi-tab within one window.</LI>
+  <UL>
+	<LI>Tabs can be drag and drop between windows.</LI>
+	<LI>Tab labels can change color to indicate the session activiies</LI>
+	<LI>You can send keyboard input to multiple tabs</LI>
+  </UL>
+<LI>Bookmarks for storing settings of most used sessions</LI>
 <LI>Anti-idle function that avoids disconnection because of no activity</LI>
-<LI>Supported language encodings with localizations for:</LI>
-<UL>
-<LI>Chinese (Simplified and Traditional)</LI>
-<LI>French</LI>
-<LI>German</LI>
-<LI>Japanese</LI>
-<LI>Korean</LI>
-</UL>
+<LI>Supports all language encodings that are available with OS X</LI>
+  <UL>
+    <LI>User can specify a second font to display non-latin characters
+		to achieve best look</LI>
+	<LI>Supports double-width characters, as used in eastern Asia languages</LI>
+	<LI>Localized user interface for:</LI>
+	  <UL>
+		<LI>Chinese (Simplified and Traditional)</LI>
+		<LI>French</LI>
+		<LI>German</LI>
+		<LI>Japanese</LI>
+		<LI>Korean</LI>
+	  </UL>
+  </UL>
 </UL>
 
-<FONT SIZE="5"><STRONG>About Panther Compatibility:</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>What's new</STRONG></FONT><BR>
+<STRONG>0.8.0 released</STRONG> 3/4/2004<BR>
+This is a major update of iTerm. New features include:<BR>
 <UL>
-Version 0.7.8 and under was developed under Jaguar. Development of newer 
-versions has been moved to under Panther. We will still try to keep the
-Jaguar compatibility. Thanks for support.
+<LI>Now supports custom key-mapping.</LI>
+<LI>New drawing code with speed enhancement of several folds.</LI>
+<LI>Re-arrangement of UI.</LI>
+<LI>Other bug fixes and GUI enhancements as usual.</LI>
+For more detail, see <A HREF="history.shtml">Version History</A><BR>
 </UL>
-
-<FONT SIZE="5"><STRONG>Screen shot:</STRONG></FONT><BR>
-<UL><A HREF="screenshot.jpg"><IMG src="screenshot-mini.jpg" ALT="screen shot" WIDTH="141" HEIGHT="118"></A></UL>
 
 </TD>
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.18 2004-02-04 07:31:40 ujwal Exp $
+// $Id: PTYTask.m,v 1.19 2004-03-07 02:24:05 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -310,10 +310,10 @@ static int writep(int fds, char *buf, size_t len)
     NSLog(@"%s(%d):-[PTYTask dealloc]", __FILE__, __LINE__);
 #endif
     if (PID > 0)
-	kill(PID, SIGKILL);
+		kill(PID, SIGKILL);
     if (FILDES >= 0)
-	close(FILDES);
-
+		close(FILDES);
+	
     [DELEGATEOBJECT release];
     [RECVDATA release];
     [TTY release];
@@ -345,67 +345,67 @@ static int writep(int fds, char *buf, size_t len)
     setup_tty_param(&term, &win, width, height);
     PID = forkpty(&FILDES, ttyname, &term, &win);
     if (PID == (pid_t)0) {
-	const char *path = [[progpath stringByStandardizingPath] cString];
-	int max = args == nil ? 0: [args count];
-	const char *argv[max + 2];
-
-	argv[0] = path;
-	if (args != nil) {
+		const char *path = [[progpath stringByStandardizingPath] cString];
+		int max = args == nil ? 0: [args count];
+		const char *argv[max + 2];
+		
+		argv[0] = path;
+		if (args != nil) {
             int i;
-	    for (i = 0; i < max; ++i)
-		argv[i + 1] = [[args objectAtIndex:i] cString];
-	}
-	argv[max + 1] = NULL;
-
-	// set the PATH to something sensible since the inherited path seems to have the user's home directory.
-	setenv("PATH", "/usr/bin:/bin:/usr/sbin:/sbin", 1);
-	
-	if (env != nil ) {
-	    NSArray *keys = [env allKeys];
-	    int i, max = [keys count];
-	    for (i = 0; i < max; ++i) {
-		NSString *key, *value;
-		key = [keys objectAtIndex:i];
-		value = [env objectForKey:key];
-		if (key != nil && value != nil) 
-		    setenv([key cString], [value cString], 1);
-	    }
-	}
+			for (i = 0; i < max; ++i)
+				argv[i + 1] = [[args objectAtIndex:i] cString];
+		}
+		argv[max + 1] = NULL;
+		
+		// set the PATH to something sensible since the inherited path seems to have the user's home directory.
+		setenv("PATH", "/usr/bin:/bin:/usr/sbin:/sbin", 1);
+		
+		if (env != nil ) {
+			NSArray *keys = [env allKeys];
+			int i, max = [keys count];
+			for (i = 0; i < max; ++i) {
+				NSString *key, *value;
+				key = [keys objectAtIndex:i];
+				value = [env objectForKey:key];
+				if (key != nil && value != nil) 
+					setenv([key cString], [value cString], 1);
+			}
+		}
         chdir([[[env objectForKey:@"PWD"] stringByExpandingTildeInPath] cString]);
-	sts = execvp(path, (char * const *) argv);
-
-	/*
-	  exec error
-	*/
-	fprintf(stdout, "## exec failed ##\n");
-	fprintf(stdout, "%s %s\n", path, strerror(errno));
-
-	sleep(1);
-	_exit(-1);
+		sts = execvp(path, (char * const *) argv);
+		
+		/*
+		 exec error
+		 */
+		fprintf(stdout, "## exec failed ##\n");
+		fprintf(stdout, "%s %s\n", path, strerror(errno));
+		
+		sleep(1);
+		_exit(-1);
     }
     else if (PID < (pid_t)0) {
-	NSLog(@"%@ %s", progpath, strerror(errno));
+		NSLog(@"%@ %s", progpath, strerror(errno));
     }
-
+	
     sts = ioctl(FILDES, TIOCPKT, &one);
     NSParameterAssert(sts >= 0);
-
+	
     TTY = [[NSString stringWithCString:ttyname] retain];
     NSParameterAssert(TTY != nil);
-
+	
     /*
-      create data receive thread 
-    */
+	 create data receive thread 
+	 */
     SENDPORT = [NSPort port]; 
     RECVPORT = [NSPort port];
     CONNECTION = [[NSConnection alloc] initWithReceivePort:RECVPORT
-						  sendPort:SENDPORT];
+												  sendPort:SENDPORT];
     [CONNECTION setRootObject:self];
     [self release];
-
+	
     NSParameterAssert(SENDPORT != nil && RECVPORT != nil);
     NSParameterAssert(CONNECTION != nil);
-
+	
     [NSThread detachNewThreadSelector:@selector(_processReadThread:)
             	             toTarget:[PTYTask class]
 	                   withObject:self];

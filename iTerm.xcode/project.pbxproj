@@ -1335,6 +1335,7 @@
 				8742064C0564169600CFC3F1,
 				8742064D0564169600CFC3F1,
 				DD57633705653C5F00F1905E,
+				F65CCFA105F7DE6C00F04CFF,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2061,6 +2062,37 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
+		F65CCFA005F7DE6C00F04CFF = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.html.other;
+			name = screenshot.shtml;
+			path = website/screenshot.shtml;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F65CCFA105F7DE6C00F04CFF = {
+			fileRef = F65CCFA005F7DE6C00F04CFF;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F65CCFFA05F7EB0700F04CFF = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.jpeg;
+			name = "screenshot2-m.jpg";
+			path = "website/screenshot2-m.jpg";
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F65CCFFB05F7EB0700F04CFF = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.jpeg;
+			name = screenshot2.jpg;
+			path = website/screenshot2.jpg;
+			refType = 4;
+			sourceTree = "<group>";
+		};
 		F6FAFD99050E90C300EA4EE7 = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -2295,6 +2327,7 @@
 			children = (
 				FBDF6B8F042A6BD801F955DB,
 				FBDF6B90042A6BD801F955DB,
+				F65CCFA005F7DE6C00F04CFF,
 				FBDF6B91042A6BD801F955DB,
 				FBDF6B92042A6BD801F955DB,
 				FBDF6B93042A6BD801F955DB,
@@ -2308,6 +2341,8 @@
 				FBDF6B98042A6BD801F955DB,
 				FBDF6B99042A6BD801F955DB,
 				FBDF6B9A042A6BD801F955DB,
+				F65CCFFA05F7EB0700F04CFF,
+				F65CCFFB05F7EB0700F04CFF,
 				FBDF6B9B042A6BD801F955DB,
 				FBDF6B9C042A6BD801F955DB,
 				FBDF6B9D042A6BD801F955DB,

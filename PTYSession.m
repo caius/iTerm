@@ -237,11 +237,11 @@ static NSString *PWD_ENVVALUE = @"~";
 	// deregister from the notification center
 	[[NSNotificationCenter defaultCenter] removeObserver:self];    
     
-    [SHELL sendSignal: SIGHUP];
-    while ((pid=waitpid([SHELL pid],&status,0))>0)
-    {
+	[SHELL sendSignal: SIGHUP];
+	while ((pid=waitpid([SHELL pid],&status,0))>0)
+	{
 		usleep(10000);
-    }    
+	}    
     //[SHELL sendSignal: SIGKILL];
     if(tabViewItem)
     {

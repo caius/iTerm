@@ -3,6 +3,8 @@
 	* Fixed "Send Inout to All Tabs" and "Paste".
 	* Fixed selection of complete line by dragging.
 	* Fixed +ESC behaviour.
+	* Changed data structure for key bindings.
+	  Previously saved key bindings will be lost :-( Sorry.
 
 2004-03-03  ujwal
 

@@ -66,11 +66,11 @@ static iTermKeyBindingMgr *singleInstance = nil;
 - (void) setProfiles: (NSMutableDictionary *) aDict
 {
 	NSEnumerator *keyEnumerator;
-	NSMutableDictionary *mappingDict;
+	NSMutableDictionary *mappingDict, *aMutableDict;
 	NSString *profileName;
 	NSDictionary *sourceDict;
-	NSString *commonProfile;
-	
+	BOOL foundGlobalProfile = NO;
+
 	// recursively copy the dictionary to ensure mutability
 	if(aDict != nil)
 	{
@@ -79,23 +79,41 @@ static iTermKeyBindingMgr *singleInstance = nil;
 		{
 			sourceDict = [aDict objectForKey: profileName];
 			mappingDict = [[NSMutableDictionary alloc] initWithDictionary: sourceDict];
+			// make sure key mapping dict is mutable
+			if([sourceDict objectForKey: @"Key Mappings"] != nil)
+			{
+				aMutableDict = [[NSMutableDictionary alloc] initWithDictionary: [sourceDict objectForKey: @"Key Mappings"]];
+				[mappingDict setObject: aMutableDict forKey: @"Key Mappings"];
+				[aMutableDict release];
+			}
 			[profiles setObject: mappingDict forKey: profileName];
 			[mappingDict release];
+			if([[sourceDict objectForKey: @"Global Profile"] isEqualToString: @"Yes"])
+				foundGlobalProfile = YES;
 		}
 	}
 	
-	// Create our common profile if it does not exist yet
-	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", 
-													   [NSBundle bundleForClass: [self class]], 
-													   @"Key Binding Profiles");
-	if([profiles objectForKey: commonProfile] == nil)
+	if(foundGlobalProfile == NO)
 	{
 		mappingDict = [[NSMutableDictionary alloc] init];
-		[profiles setObject: mappingDict forKey: commonProfile];
+		[mappingDict setObject: @"Yes" forKey: @"Global Profile"];
+		[profiles setObject: mappingDict forKey: NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", 
+																					[NSBundle bundleForClass: [self class]], 
+																					@"Key Binding Profiles")];
 		[mappingDict release];
 	}
 }
 
+- (BOOL) isGlobalProfile: (NSString *)profileName
+{
+	NSDictionary *aProfile;
+	
+	if([profileName length] <= 0)
+		return (NO);
+	
+	aProfile = [profiles objectForKey: profileName];
+	return ([[aProfile objectForKey: @"Global Profile"] isEqualToString: @"Yes"]);
+}
 
 - (void) addProfileWithName: (NSString *) aString
 {
@@ -124,14 +142,14 @@ static iTermKeyBindingMgr *singleInstance = nil;
 
 - (int) numberOfEntriesInProfile: (NSString *) profileName
 {
-	NSDictionary *aProfile;
+	NSDictionary *keyMappings;
 	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profileName);
 	
 	if([profileName length] > 0)
 	{
-		aProfile = [profiles objectForKey: profileName];
-		return ([aProfile count]);
+		keyMappings = [[profiles objectForKey: profileName] objectForKey: @"Key Mappings"];
+		return ([keyMappings count]);
 	}
 	else
 		return (0);
@@ -139,7 +157,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 
 - (NSString *) keyCombinationAtIndex: (int) index inProfile: (NSString *) profile
 {
-	NSMutableDictionary *aProfile;
+	NSMutableDictionary *keyMappings;
 	NSArray *allKeys;
 	NSString *theKeyCombination, *aString;
 	NSMutableString *theKeyString;
@@ -147,8 +165,8 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
-	aProfile = [profiles objectForKey: profile];
-	allKeys = [aProfile allKeys];
+	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
+	allKeys = [keyMappings allKeys];
 	
 	if(index >= 0 && index < [allKeys count])
 	{
@@ -308,7 +326,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 
 - (NSString *) actionForKeyCombinationAtIndex: (int) index inProfile: (NSString *) profile
 {
-	NSMutableDictionary *aProfile;
+	NSMutableDictionary *keyMappings;
 	NSArray *allKeys;
 	int action;
 	NSString *actionString;
@@ -316,13 +334,13 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
-	aProfile = [profiles objectForKey: profile];
-	allKeys = [aProfile allKeys];
+	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
+	allKeys = [keyMappings allKeys];
 	
 	if(index >= 0 && index < [allKeys count])
 	{
-		action = [[[aProfile objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Action"] intValue];
-		auxText = [[aProfile objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Text"];
+		action = [[[keyMappings objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Action"] intValue];
+		auxText = [[keyMappings objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Text"];
 	}
 	else
 		return (nil);
@@ -345,7 +363,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 															  @"Key Binding Actions");
 			break;
 		case KEY_ACTION_PREVIOUS_WINDOW:
-			actionString = NSLocalizedStringFromTableInBundle(@"next window",@"iTerm", 
+			actionString = NSLocalizedStringFromTableInBundle(@"previous window",@"iTerm", 
 															  [NSBundle bundleForClass: [self class]], 
 															  @"Key Binding Actions");
 			break;
@@ -414,20 +432,26 @@ static iTermKeyBindingMgr *singleInstance = nil;
 {
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	
-	NSMutableDictionary *aProfile, *keyBinding;
+	NSMutableDictionary *keyMappings, *keyBinding;
 	NSString *keyString;
 	
 	if([profile length] <= 0)
 		return;
 	
-	aProfile = [profiles objectForKey: profile];
+	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
+	if(keyMappings == nil)
+	{
+		keyMappings = [[NSMutableDictionary alloc] init];
+		[[profiles objectForKey: profile] setObject: keyMappings forKey: @"Key Mappings"];
+		[keyMappings release];
+	}
 	
 	keyString = [NSString stringWithFormat: @"0x%x-0x%x", hexCode, modifiers];
 	keyBinding = [[NSMutableDictionary alloc] init];
 	[keyBinding setObject: [NSNumber numberWithInt: action] forKey: @"Action"];
 	if([text length] > 0)
 		[keyBinding setObject:[[text copy] autorelease] forKey: @"Text"];
-	[aProfile setObject: keyBinding forKey: keyString];
+	[keyMappings setObject: keyBinding forKey: keyString];
 	[keyBinding release];
 	
 }
@@ -551,16 +575,16 @@ static iTermKeyBindingMgr *singleInstance = nil;
 
 - (void) deleteEntryAtIndex: (int) index inProfile: (NSString *) profile
 {
-	NSMutableDictionary *aProfile;
+	NSMutableDictionary *keyMappings;
 	NSArray *allKeys;
 	NSString *keyString;
 	
-	aProfile = [profiles objectForKey: profile];
-	allKeys = [aProfile allKeys];
+	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
+	allKeys = [keyMappings allKeys];
 	if(index >= 0 && index < [allKeys count])
 	{
 		keyString = [allKeys objectAtIndex: index];
-		[aProfile removeObjectForKey: keyString];
+		[keyMappings removeObjectForKey: keyString];
 	}
 }
 
@@ -568,7 +592,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 - (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
 {
 	int retCode = -1;
-	NSString *commonProfile;
+	NSString *globalProfile;
 			
 	// search the specified profile first
 	if([profile length] > 0)
@@ -578,11 +602,11 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	if(retCode >= 0)
 		return (retCode);
 	
-	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+	globalProfile = NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
 	
 	// search the common profile if a match was not found
-	if([commonProfile length] > 0)
-		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: commonProfile];	
+	if([globalProfile length] > 0)
+		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: globalProfile];	
 	
 	
 	return (retCode);
@@ -593,9 +617,9 @@ static iTermKeyBindingMgr *singleInstance = nil;
 @implementation iTermKeyBindingMgr (Private)
 - (int) _actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
 {
-	NSDictionary *aProfile;
+	NSDictionary *keyMappings;
 	NSString *keyString;
-	NSDictionary *keyMapping;
+	NSDictionary *theKeyMapping;
 	int retCode = -1;
 	unsigned int theModifiers;
 	
@@ -606,9 +630,9 @@ static iTermKeyBindingMgr *singleInstance = nil;
 		return (-1);
 	}
 	
-	aProfile = [profiles objectForKey: profile];
+	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
 	
-	if(aProfile == nil)
+	if(keyMappings == nil)
 	{
 		if(text)
 			*text = nil;
@@ -623,8 +647,8 @@ static iTermKeyBindingMgr *singleInstance = nil;
 		theModifiers |= NSNumericPadKeyMask;
 	
 	keyString = [NSString stringWithFormat: @"0x%x-0x%x", keyCode, theModifiers];
-	keyMapping = [aProfile objectForKey: keyString];
-	if(keyMapping == nil)
+	theKeyMapping = [keyMappings objectForKey: keyString];
+	if(theKeyMapping == nil)
 	{
 		if(text)
 			*text = nil;
@@ -632,9 +656,9 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	}
 	
 	// parse the mapping
-	retCode = [[keyMapping objectForKey: @"Action"] intValue];
+	retCode = [[theKeyMapping objectForKey: @"Action"] intValue];
 	if(text != nil)
-		*text = [keyMapping objectForKey: @"Text"];
+		*text = [theKeyMapping objectForKey: @"Text"];
 	
 	return (retCode);
 	

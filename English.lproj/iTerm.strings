@@ -130,7 +130,7 @@
 "Script" = "Script";
 
 /* Key Binding Profiles */
-"Common"="Common";
+"Global"="Global";
 
 /* Key Binding Actions */
 "next tab"="next tab";

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.44 2002-12-20 08:08:25 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.45 2002-12-20 08:16:52 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -119,7 +119,7 @@ static NSString *ConfigToolbarItem = @"Config";
     tabviewRect = [[WINDOW contentView] frame];
     tabviewRect.origin.x -= 10;
     tabviewRect.size.width += 20;
-    tabviewRect.origin.y -= 12;
+    tabviewRect.origin.y -= 13;
     tabviewRect.size.height += 10;
     TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];

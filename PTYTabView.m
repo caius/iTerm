@@ -512,11 +512,11 @@
     if(index >= 0)
     {
 	[self insertTabViewItem: aTabViewItem atIndex: index];
-	// make it active
-	[self selectTabViewItemAtIndex: index];
     }
     else
 	[self addTabViewItem: aTabViewItem];
+    // make it active
+    [self selectTabViewItem: aTabViewItem];
     // release the tabViewItem
     [aTabViewItem release];
     

@@ -35,49 +35,24 @@
 @interface PreferencePanel : NSWindowController
 {
 	IBOutlet NSMatrix *tabPosition;
-    IBOutlet id antiAlias;
     IBOutlet NSButton *selectionCopiesText;
     IBOutlet id hideTab;
     IBOutlet id openAddressBook;
-    IBOutlet id optionKey;
     IBOutlet id promptOnClose;
     IBOutlet id silenceBell;
-    IBOutlet id blinkingCursor;
     IBOutlet NSButton *focusFollowsMouse;
 	IBOutlet NSTextField *wordChars;
-	
-	IBOutlet NSWindow *profilesWindow;
-	
-	// Keybinding stuff
-	IBOutlet NSPopUpButton *kbProfileSelector;
-	IBOutlet NSTextField *kbProfileName;
-	IBOutlet NSPanel *addKBProfile;
-	IBOutlet NSPanel *deleteKBProfile;
-	IBOutlet NSPanel *addKBEntry;
-	IBOutlet NSPopUpButton *kbEntryKey;
-	IBOutlet NSButton *kbEntryKeyModifierOption;
-	IBOutlet NSButton *kbEntryKeyModifierControl;
-	IBOutlet NSButton *kbEntryKeyModifierShift;
-	IBOutlet NSButton *kbEntryKeyModifierCommand;
-	IBOutlet NSPopUpButton *kbEntryAction;
-	IBOutlet NSTextField *kbEntryText;
-	IBOutlet NSTextField *kbEntryKeyCode;
-	IBOutlet NSTableView *kbEntryTableView;
-	IBOutlet NSButton *kbProfileDeleteButton;
-	IBOutlet NSButton *kbEntryDeleteButton;
-    
+	    
     NSUserDefaults *prefs;
 
     unsigned int defaultScrollback;
 
-    BOOL defaultAntiAlias;
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
     BOOL defaultSilenceBell;
     int defaultTabViewType;
     BOOL defaultOpenAddressBook;
     BOOL defaultPromptOnClose;
-    BOOL defaultBlinkingCursor;
     BOOL defaultFocusFollowsMouse;
 }
 
@@ -91,20 +66,6 @@
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
 - (IBAction)restore:(id)sender;
-
-// Keybinding stuff
-- (IBAction) kbProfileChanged: (id) sender;
-- (IBAction) kbProfileAdd: (id) sender;
-- (IBAction) kbProfileDelete: (id) sender;
-- (IBAction) kbProfileAddConfirm: (id) sender;
-- (IBAction) kbProfileAddCancel: (id) sender;
-- (IBAction) kbProfileDeleteConfirm: (id) sender;
-- (IBAction) kbProfileDeleteCancel: (id) sender;
-- (IBAction) kbEntryAdd: (id) sender;
-- (IBAction) kbEntryAddConfirm: (id) sender;
-- (IBAction) kbEntryAddCancel: (id) sender;
-- (IBAction) kbEntryDelete: (id) sender;
-- (IBAction) kbEntrySelectorChanged: (id) sender;
 
 - (void)run;
 
@@ -121,10 +82,4 @@
 - (BOOL) focusFollowsMouse;
 - (NSString *) wordChars;
 
-@end
-
-@interface PreferencePanel (Private)
-- (void)_addKBEntrySheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-- (void)_addKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-- (void)_deleteKBProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 @end

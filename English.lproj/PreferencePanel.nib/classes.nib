@@ -2,14 +2,29 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
+            ACTIONS = {cancel = id; editDefaultSession = id; ok = id; restore = id; }; 
+            CLASS = PreferencePanel; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                focusFollowsMouse = NSButton; 
+                hideTab = id; 
+                openAddressBook = id; 
+                promptOnClose = id; 
+                selectionCopiesText = NSButton; 
+                silenceBell = id; 
+                tabPosition = NSMatrix; 
+                wordChars = NSTextField; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }, 
+        {
             ACTIONS = {
-                cancel = id; 
-                editDefaultSession = id; 
                 kbEntryAdd = id; 
                 kbEntryAddCancel = id; 
                 kbEntryAddConfirm = id; 
                 kbEntryDelete = id; 
                 kbEntrySelectorChanged = id; 
+                kbOptionKeyChanged = id; 
                 kbProfileAdd = id; 
                 kbProfileAddCancel = id; 
                 kbProfileAddConfirm = id; 
@@ -17,19 +32,46 @@
                 kbProfileDelete = id; 
                 kbProfileDeleteCancel = id; 
                 kbProfileDeleteConfirm = id; 
-                ok = id; 
-                restore = id; 
+                showProfilesWindow = id; 
             }; 
-            CLASS = PreferencePanel; 
+            CLASS = iTermProfileWindowController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 addKBEntry = NSPanel; 
                 addKBProfile = NSPanel; 
-                antiAlias = id; 
-                blinkingCursor = id; 
                 deleteKBProfile = NSPanel; 
-                focusFollowsMouse = NSButton; 
-                hideTab = id; 
+                displayAnsi0Color = NSColorWell; 
+                displayAnsi0HColor = NSColorWell; 
+                displayAnsi1Color = NSColorWell; 
+                displayAnsi1HColor = NSColorWell; 
+                displayAnsi2Color = NSColorWell; 
+                displayAnsi2HColor = NSColorWell; 
+                displayAnsi3Color = NSColorWell; 
+                displayAnsi3HColor = NSColorWell; 
+                displayAnsi4Color = NSColorWell; 
+                displayAnsi4HColor = NSColorWell; 
+                displayAnsi5Color = NSColorWell; 
+                displayAnsi5HColor = NSColorWell; 
+                displayAnsi6Color = NSColorWell; 
+                displayAnsi6HColor = NSColorWell; 
+                displayAnsi7Color = NSColorWell; 
+                displayAnsi7HColor = NSColorWell; 
+                displayAntiAlias = NSButton; 
+                displayBGColor = NSColorWell; 
+                displayBackgroundImage = NSImageView; 
+                displayBoldColor = NSColorWell; 
+                displayColTextField = NSTextField; 
+                displayCursorColor = NSColorWell; 
+                displayCursorTextColor = NSColorWell; 
+                displayFGColor = NSColorWell; 
+                displayFontSpacingHeight = NSSlider; 
+                displayFontSpacingWidth = NSSlider; 
+                displayFontTextField = NSTextField; 
+                displayNAFontTextField = NSTextField; 
+                displayRowTextField = NSTextField; 
+                displaySelectedTextColor = NSColorWell; 
+                displaySelectionColor = NSColorWell; 
+                displayUseBackgroundImage = NSButton; 
                 kbEntryAction = NSPopUpButton; 
                 kbEntryDeleteButton = NSButton; 
                 kbEntryKey = NSPopUpButton; 
@@ -40,17 +82,10 @@
                 kbEntryKeyModifierShift = NSButton; 
                 kbEntryTableView = NSTableView; 
                 kbEntryText = NSTextField; 
+                kbOptionKey = NSMatrix; 
                 kbProfileDeleteButton = NSButton; 
                 kbProfileName = NSTextField; 
                 kbProfileSelector = NSPopUpButton; 
-                openAddressBook = id; 
-                optionKey = id; 
-                profilesWindow = NSWindow; 
-                promptOnClose = id; 
-                selectionCopiesText = NSButton; 
-                silenceBell = id; 
-                tabPosition = NSMatrix; 
-                wordChars = NSTextField; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

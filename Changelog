@@ -1,3 +1,7 @@
+2004-03-23  ujwal
+
+	* Fixed bug in saving display and terminal profiles.
+
 2004-03-23  fabian
 
 	* Changed version number to 0.8.0

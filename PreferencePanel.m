@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.103 2004-03-22 23:10:31 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.104 2004-03-24 03:16:01 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -116,6 +116,20 @@ static BOOL editingBookmark = NO;
 	[[ITAddressBookMgr sharedInstance] setBookmarks: [prefs objectForKey: @"Bookmarks"]];
 }
 
+- (void) savePreferences
+{
+    [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
+    [prefs setBool:defaultHideTab forKey:@"HideTab"];
+    [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
+    [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
+    [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
+	[prefs setObject: [wordChars stringValue] forKey: @"WordCharacters"];
+	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
+	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
+	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
+	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+}
+
 - (void)run
 {
 	
@@ -151,16 +165,7 @@ static BOOL editingBookmark = NO;
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 
-    [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
-    [prefs setBool:defaultHideTab forKey:@"HideTab"];
-    [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
-    [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
-    [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
-	[prefs setObject: [wordChars stringValue] forKey: @"WordCharacters"];
-	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
-	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
-	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
-	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+	[self savePreferences];
 
     [[self window] performClose: self];
 }

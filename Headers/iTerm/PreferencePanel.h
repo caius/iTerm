@@ -75,6 +75,7 @@
 - (id)initWithWindowNibName: (NSString *) windowNibName;
 
 - (void) readPreferences;
+- (void) savePreferences;
 
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.54 2003-05-18 08:08:26 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.55 2003-05-30 01:05:17 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -88,8 +88,6 @@
     BOOL resizeInProgress;
     BOOL windowInited;
 }
-
-- (void) newSession: (id) sender;
 
 - (id)init;
 - (id) initWithWindowNibName: (NSString *) windowNibName;

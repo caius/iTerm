@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.183 2003-05-30 00:20:56 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.184 2003-05-30 01:05:16 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -68,11 +68,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 @implementation PseudoTerminal
 
-
-- (void) newSession: (id) sender
-{
-    [MAINMENU executeABCommandAtIndex:0 inTerminal: self];
-}
 
 - (id) initWithWindowNibName: (NSString *) windowNibName
 {
@@ -1900,7 +1895,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     else if([session caseInsensitiveCompare: @"Default Session"] == NSOrderedSame)
     {
-	[self newSession: self];
+	[MAINMENU executeABCommandAtIndex: 0 inTerminal: self];
     }
     else
 	NSBeep();

@@ -43,6 +43,9 @@
     unsigned int previousLength;
     VT100Screen *screen;
 
+    NSMutableArray *_glyphRanges, *_lineRects;
+    int _numLines;
+
 }
 
 + (float) lineFragmentPadding;
@@ -52,6 +55,39 @@
 
 - (VT100Screen *) screen;
 - (void) setScreen: (VT100Screen *) aScreen;
+
+@end
+
+
+// object version of NSRange
+@interface NSRangeObject : NSObject
+{
+    NSRange range;
+}
+
++ (id) rangeObjectWithRange: (NSRange) aRange;
+- (id) initWithRange: (NSRange) aRange;
+
+- (NSRange) range;
+- (void) setRange: (NSRange) aRange;
+- (int) location;
+- (int) length;
+
+@end
+
+// object version of NSRect
+@interface NSRectObject : NSObject
+{
+    NSRect rect;
+}
+
++ (id) rectObjectWithRect: (NSRect) aRect;
+- (id) initWithRect: (NSRect) aRect;
+
+- (NSRect) rect;
+- (void) setRect: (NSRect) aRect;
+- (NSPoint) origin;
+- (NSSize) size;
 
 @end
 

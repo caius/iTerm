@@ -319,3 +319,87 @@ static unsigned int invocationId = 0;
 }
 
 @end
+
+// object version of NSRange
+@implementation NSRangeObject
+
++ (id) rangeObjectWithRange: (NSRange) aRange
+{
+    id aRangeObject = [[NSRangeObject alloc] initWithRange: aRange];
+
+    return ([aRangeObject autorelease]);
+}
+
+- (id) initWithRange: (NSRange) aRange
+{
+    if((self = [super init]) == nil)
+	return (nil);
+
+    [self setRange: aRange];
+
+    return (self);
+}
+
+- (NSRange) range
+{
+    return (range);
+}
+
+- (void) setRange: (NSRange) aRange
+{
+    range = aRange;
+}
+
+- (int) location
+{
+    return (range.location);
+}
+
+- (int) length
+{
+    return (range.length);
+}
+
+@end
+
+// object version of NSRect
+@implementation NSRectObject
+
++ (id) rectObjectWithRect: (NSRect) aRect
+{
+    id aRectObject = [[NSRectObject alloc] initWithRect: aRect];
+
+    return ([aRectObject autorelease]);
+}
+
+- (id) initWithRect: (NSRect) aRect
+{
+    if((self = [super init]) == nil)
+	return (nil);
+
+    [self setRect: aRect];
+
+    return (self);
+}
+
+- (NSRect) rect
+{
+    return (rect);
+}
+
+- (void) setRect: (NSRect) aRect
+{
+    rect = aRect;
+}
+
+- (NSPoint) origin
+{
+    return (rect.origin);
+}
+
+- (NSSize) size
+{
+    return (rect.size);
+}
+
+@end

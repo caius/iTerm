@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.168 2003-11-13 23:45:29 ujwal Exp $
+// $Id: VT100Screen.m,v 1.169 2003-12-18 08:10:36 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -2262,6 +2262,8 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen removeOverLine (%d, %d)]:%p",  __FILE__, __LINE__, TOP_LINE, scrollbackLines);
 #endif
 
+    if ([[SESSION TEXTVIEW] hasMarkedText]) return;
+
     [self updateScreen];	// make sure STORAGE and BUFFER is synchronized
     [self setScreenLock];
 
@@ -2306,6 +2308,9 @@ static BOOL PLAYBELL = YES;
     
 	    NSParameterAssert(TOP_LINE >= 0);
     }
+
+    cursorIndex = [self getTVIndex:CURSOR_X y:CURSOR_Y];
+    [[SESSION TEXTVIEW] setCursorIndex: cursorIndex];
 
     [self removeScreenLock];
     

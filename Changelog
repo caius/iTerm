@@ -1,3 +1,8 @@
+2003-12-18	fabian
+    
+    * Fixed a bug related to inputting international characters
+    * Fixed errors in Korean translation (provided by TaeYoung).
+    
 2003-11-27	ujwal
 
     * Added method in PreferencePanel to set tabViewType.

@@ -2,6 +2,9 @@
 
     * Using named color contants instead of building our own 
       in VT100Terminal.
+      
+    * Fixed a bug in setting foreground and background colors at 
+      the same time.
 
 2003-04-15	ujwal
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.53 2003-04-18 21:45:09 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.54 2003-04-18 22:21:29 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1904,14 +1904,13 @@ static VT100TCC decode_string(unsigned char *datap,
     [defaultFGColor release];
     defaultFGColor=[color copy];
     // reset our default character attributes
-    [defaultCharacterAttributeDictionary[0] setObject:color
-                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
-    [defaultCharacterAttributeDictionary[1] setObject:color
-                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
-    [characterAttributeDictionary[0] setObject:color
-                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
-    [characterAttributeDictionary[1] setObject:color
-                                               forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+    [defaultCharacterAttributeDictionary[0] setObject:color forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+    
+    [defaultCharacterAttributeDictionary[1] setObject:color forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+    
+    [characterAttributeDictionary[0] setObject:color forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
+    
+    [characterAttributeDictionary[1] setObject:color forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
 
     [SCREEN setScreenAttributes];
     
@@ -1932,8 +1931,9 @@ static VT100TCC decode_string(unsigned char *datap,
                                             forKey:NSForegroundColorAttributeName];
         [characterAttributeDictionary[1] setObject:color
                                             forKey:NSForegroundColorAttributeName];
-        [SCREEN setScreenAttributes];
     }
+
+    [SCREEN setScreenAttributes];
 
 }
 

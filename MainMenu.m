@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.43 2003-03-28 18:40:52 ujwal Exp $
+// $Id: MainMenu.m,v 1.44 2003-03-28 20:20:50 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -60,12 +60,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSLog(@"%s(%d):-[MainMenu applicationWillFinishLaunching]",
           __FILE__, __LINE__);
 #endif
-    [self initAddressBook];
-    [self initPreferences];
-    encodingList=[NSString availableStringEncodings];
-//    systemEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
-    terminalWindows = [[NSMutableArray alloc] init];
-//  [self showQOWindow:self];
 
     // set the TERM_PROGRAM environment variable
     putenv("TERM_PROGRAM=iTerm.app");
@@ -80,12 +74,12 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     if(([terminalWindows count] > 0) && [PREF_PANEL promptOnClose] && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
 	return (NO);
-    
+
     [terminalWindows removeAllObjects];
-    terminalWindows = nil;
 
     [PREF_PANEL release];
-
+    PREF_PANEL = nil;
+    
     return (YES);
 }
 
@@ -128,6 +122,36 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             
     return ([aMenu autorelease]);
     
+}
+
+// init
+- (id) init
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu init]",
+          __FILE__, __LINE__);
+#endif
+    self = [super init];
+
+    [self initAddressBook];
+    [self initPreferences];
+    encodingList=[NSString availableStringEncodings];
+    terminalWindows = [[NSMutableArray alloc] init];
+
+    return (self);
+}
+
+- (void) dealloc
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu dealloc]",
+          __FILE__, __LINE__);
+#endif
+
+    [terminalWindows removeAllObjects];
+    [terminalWindows release];
+
+    [PREF_PANEL release];    
 }
 
 // Action methods

@@ -1,3 +1,7 @@
+2003-09-23	fabian
+
+    * Updated zh_CN and zh_TW localiztions.
+    
 2003-09-23	ujwal
 
     * While printing, we print a back-on-white copy of the textview.

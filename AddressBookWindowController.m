@@ -544,16 +544,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 {
     [adTable selectRow: 0 byExtendingSelection: NO];
     [self adbDuplicateEntry: nil];
-    // Save the bookmarks.
-    [[NSApp delegate] saveAddressBook];
 
-    // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
-    [[NSNotificationCenter defaultCenter]
-    postNotificationName: @"Reload AddressBook"
-				object: nil
-			      userInfo: nil];
     
-    [self adbEditEntry: nil];
+    [self adbEditEntry: self];
+
 }
 
 

@@ -4,6 +4,11 @@
       endings at the end of the line instead of beginning since the 
       other version was more problematic. This version now handles 
       new line characters at the end correctly.
+      
+    * Laying out each glyph for graphical characters not necessary 
+      anymore. Don't know what made that happen, but since we don't 
+      need to do it, things are much faster in ncurses based apps 
+      like 'mc'.
 
 2003-06-13	ujwal
 

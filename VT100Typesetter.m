@@ -67,7 +67,6 @@ static unsigned int invocationId = 0;
     BOOL atEnd, isValidIndex, lineEndCharExists;
     NSString *theString;
     NSRange characterRange, glyphRange;
-    BOOL hasGraphicalCharacters;
     NSTextStorage *textStorage;
     NSRect previousRect;
 
@@ -113,7 +112,6 @@ static unsigned int invocationId = 0;
     {
 	atEnd = NO;
 	lineEndCharExists = NO;
-	hasGraphicalCharacters = NO;
 
 	// sanity check
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
@@ -186,9 +184,10 @@ static unsigned int invocationId = 0;
 		lineWidth += ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 	    }
 	}
-	
-	
+
+#if 0
 	// did we encounter a graphical character?
+	BOOL hasGraphicalCharacters = NO;
 	NSRange graphicalCharacterRange;
 	id graphicalCharacterAttribute;
 	graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex longestEffectiveRange:&graphicalCharacterRange inRange:characterRange];
@@ -196,6 +195,7 @@ static unsigned int invocationId = 0;
 	{
 	    hasGraphicalCharacters = YES;
 	}
+#endif
 
 
 
@@ -232,6 +232,7 @@ static unsigned int invocationId = 0;
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
 	[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
 
+#if 0
 	// If we encountered graphical characters, we need to lay out each glyph; EXPENSIVE
 	if(hasGraphicalCharacters == YES)
 	{
@@ -239,6 +240,7 @@ static unsigned int invocationId = 0;
 	    float x = 0;
 	    float theWidth;
 
+	    //NSLog(@"Laying out each glyph...");
 	    for (j = lineStartIndex; j <= lineEndIndex; j++)
 	    {
 		singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];
@@ -249,6 +251,7 @@ static unsigned int invocationId = 0;
 	    }
 	    
 	}
+#endif
 
 	// hide new line glyphs
 	if(lineEndCharExists == YES)

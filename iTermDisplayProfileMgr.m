@@ -125,6 +125,8 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 		[self setWindowColumns: 80 forProfile: defaultName];
 		[self setWindowRows: 24 forProfile: defaultName];
 		[self setWindowAntiAlias: YES forProfile: defaultName];
+		[self setWindowHorizontalCharSpacing: 1.0 forProfile: defaultName];
+		[self setWindowVerticalCharSpacing: 1.0 forProfile: defaultName];
 						
 	}
 }
@@ -364,15 +366,18 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 {
 	NSMutableDictionary *aProfile;
 	
-	if([profileName length] <= 0 || [imagePath length]  <= 0)
+	if([profileName length] <= 0)
 		return;
 	
 	aProfile = [profiles objectForKey: profileName];
 	
 	if(aProfile == nil)
 		return;
-		
-	[aProfile setObject: imagePath forKey: @"Background Image"];
+	
+	if([imagePath length] > 0)
+		[aProfile setObject: imagePath forKey: @"Background Image"];
+	else
+		[aProfile removeObjectForKey: @"Background Image"];
 }
 
 - (NSFont *) windowFontForProfile: (NSString *) profileName

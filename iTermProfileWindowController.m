@@ -274,6 +274,7 @@
 - (IBAction) displayProfileChanged: (id) sender
 {
 	NSString *theProfile;
+	NSString *backgroundImagePath;
 	
 	theProfile = [displayProfileSelector titleOfSelectedItem];
 	
@@ -324,7 +325,30 @@
 																  forProfile: theProfile]];
 	[displayAnsi15Color setColor: [[iTermDisplayProfileMgr singleInstance] color: TYPE_ANSI_15_COLOR 
 																  forProfile: theProfile]];
-		
+	
+	// background image
+	backgroundImagePath = [[iTermDisplayProfileMgr singleInstance] backgroundImageForProfile: theProfile];
+	if([backgroundImagePath length] > 0)
+	{
+		NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+		if(anImage != nil)
+		{
+			[displayBackgroundImage setImage: anImage];
+			[anImage release];
+			[displayUseBackgroundImage setState: NSOnState];
+		}
+		else
+		{
+			[displayBackgroundImage setImage: nil];
+			[displayUseBackgroundImage setState: NSOffState];
+		}
+	}
+	else
+	{
+		[displayBackgroundImage setImage: nil];
+		[displayUseBackgroundImage setState: NSOffState];
+	}	
+				
 	// transparency
 	[displayTransparency setStringValue: [NSString stringWithFormat: @"%d", 
 		(int)(100*[[iTermDisplayProfileMgr singleInstance] transparencyForProfile: theProfile])]];
@@ -357,7 +381,18 @@
 
 - (IBAction) displayBackgroundImage: (id) sender
 {
+	NSString *theProfile = [displayProfileSelector titleOfSelectedItem];
 	
+	if (sender == displayUseBackgroundImage)
+	{
+		if ([sender state] == NSOffState)
+		{
+			[displayBackgroundImage setImage: nil];
+			[[iTermDisplayProfileMgr singleInstance] setBackgroundImage: @"" forProfile: theProfile];
+		}
+		else
+			[self _chooseBackgroundImageForProfile: theProfile];
+	}
 }
 
 - (IBAction) displayChangeColor: (id) sender
@@ -380,15 +415,76 @@
 
 - (IBAction) displaySelectFont: (id) sender
 {
+	NSFont *aFont;
+	NSString *theProfile;
+	NSFontPanel *aFontPanel;
 	
+	theProfile = [displayProfileSelector titleOfSelectedItem];
+	aFont = [[iTermDisplayProfileMgr singleInstance] windowFontForProfile: theProfile];
+	
+	// make sure we get the messages from the NSFontManager
+    [[self window] makeFirstResponder:self];
+	aFontPanel = [[NSFontManager sharedFontManager] fontPanel: YES];
+	[aFontPanel setAccessoryView: displayFontAccessoryView];
+    [[NSFontManager sharedFontManager] setSelectedFont:aFont isMultiple:NO];
+    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 
 - (IBAction) displaySelectNAFont: (id) sender
 {
+	NSFont *aFont;
+	NSString *theProfile;
+	NSFontPanel *aFontPanel;
+	
+	theProfile = [displayProfileSelector titleOfSelectedItem];
+	aFont = [[iTermDisplayProfileMgr singleInstance] windowNAFontForProfile: theProfile];
+	
+	// make sure we get the messages from the NSFontManager
+    [[self window] makeFirstResponder:self];
+	aFontPanel = [[NSFontManager sharedFontManager] fontPanel: YES];
+	[aFontPanel setAccessoryView: displayFontAccessoryView];
+    [[NSFontManager sharedFontManager] setSelectedFont:aFont isMultiple:NO];
+    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
+}
+
+- (IBAction) displaySetFontSpacing: (id) sender
+{
+	NSString *theProfile;
+	
+	theProfile = [displayProfileSelector titleOfSelectedItem];
+	
+	if(sender == displayFontSpacingWidth)
+		[[iTermDisplayProfileMgr singleInstance] setWindowHorizontalCharSpacing: [sender floatValue] 
+																	 forProfile: theProfile];
+	else if(sender == displayFontSpacingHeight)
+		[[iTermDisplayProfileMgr singleInstance] setWindowVerticalCharSpacing: [sender floatValue] 
+																	 forProfile: theProfile];
 	
 }
 
+// NSTextField delegate
+- (void)controlTextDidChange:(NSNotification *)aNotification
+{
+	int iVal;
+	float fVal;
+	NSString *theProfile;
+	id sender;
 
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, [aNotification object]);
+
+	theProfile = [displayProfileSelector titleOfSelectedItem];
+	sender = [aNotification object];
+
+	iVal = [sender intValue];
+	fVal = [sender floatValue];
+	if(sender == displayColTextField)
+		[[iTermDisplayProfileMgr singleInstance] setWindowColumns: iVal forProfile: theProfile];
+	if(sender == displayRowTextField)
+		[[iTermDisplayProfileMgr singleInstance] setWindowRows: iVal forProfile: theProfile];
+	if(sender == displayTransparency)
+		[[iTermDisplayProfileMgr singleInstance] setTransparency: fVal/100 forProfile: theProfile];
+
+}
 
 @end
 
@@ -524,6 +620,7 @@
 - (void) _updateFontsDisplay
 {
 	NSString *theProfile;
+	float horizontalSpacing, verticalSpacing;
 	
 	theProfile = [displayProfileSelector titleOfSelectedItem];
 	
@@ -559,6 +656,48 @@
 		fontName = @"";
 		[displayNAFontTextField setStringValue: fontName];
 	}
+	
+	horizontalSpacing = [[iTermDisplayProfileMgr singleInstance] windowHorizontalCharSpacingForProfile: theProfile];
+	verticalSpacing = [[iTermDisplayProfileMgr singleInstance] windowVerticalCharSpacingForProfile: theProfile];
+
+	[displayFontSpacingWidth setFloatValue: horizontalSpacing];
+	[displayFontSpacingHeight setFloatValue: verticalSpacing];
+	
+}
+
+- (void) _chooseBackgroundImageForProfile: (NSString *) theProfile
+{
+    NSOpenPanel *panel;
+    int sts;
+    NSString *filename;
+		
+    panel = [NSOpenPanel openPanel];
+    [panel setAllowsMultipleSelection: NO];
+			
+    sts = [panel runModalForDirectory: NSHomeDirectory() file:@"" types: [NSImage imageFileTypes]];
+    if (sts == NSOKButton) {
+		if([[panel filenames] count] > 0)
+			filename = [[panel filenames] objectAtIndex: 0];
+		
+		if([filename length] > 0)
+		{
+			NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: filename];
+			if(anImage != nil)
+			{
+				[displayBackgroundImage setImage: anImage];
+				[anImage release];
+				[[iTermDisplayProfileMgr singleInstance] setBackgroundImage: filename forProfile: theProfile];
+			}
+			else
+				[displayUseBackgroundImage setState: NSOffState];
+		}
+		else
+			[displayUseBackgroundImage setState: NSOffState];
+    }
+    else
+    {
+		[displayUseBackgroundImage setState: NSOffState];
+    }
 	
 }
 

@@ -89,6 +89,7 @@
 	IBOutlet NSTextField *displayRowTextField;
 	IBOutlet NSTextField *displayFontTextField;
 	IBOutlet NSTextField *displayNAFontTextField;
+	IBOutlet NSView *displayFontAccessoryView;
 	IBOutlet NSSlider *displayFontSpacingWidth;
 	IBOutlet NSSlider *displayFontSpacingHeight;
 	IBOutlet NSButton *displayAntiAlias;
@@ -122,6 +123,9 @@
 - (IBAction) displayBackgroundImage: (id) sender;
 - (IBAction) displaySelectFont: (id) sender;
 - (IBAction) displaySelectNAFont: (id) sender;
+- (IBAction) displaySetFontSpacing: (id) sender;
+// NSTextField delegate
+- (void)controlTextDidChange:(NSNotification *)aNotification;
 
 
 @end
@@ -134,6 +138,8 @@
 - (void)_addKBEntrySheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 
 - (void) _updateFontsDisplay;
+
+- (void) _chooseBackgroundImageForProfile: (NSString *) theProfile;
 
 @end
 

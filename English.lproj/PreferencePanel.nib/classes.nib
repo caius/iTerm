@@ -24,6 +24,7 @@
                 displaySelectFont = id; 
                 displaySelectNAFont = id; 
                 displaySetAntiAlias = id; 
+                displaySetFontSpacing = id; 
                 kbEntryAdd = id; 
                 kbEntryAddCancel = id; 
                 kbEntryAddConfirm = id; 
@@ -69,6 +70,7 @@
                 displayCursorColor = NSColorWell; 
                 displayCursorTextColor = NSColorWell; 
                 displayFGColor = NSColorWell; 
+                displayFontAccessoryView = NSView; 
                 displayFontSpacingHeight = NSSlider; 
                 displayFontSpacingWidth = NSSlider; 
                 displayFontTextField = NSTextField; 

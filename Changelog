@@ -3,6 +3,7 @@
 	* Forcing redraw when tabview is redrawn.
 	* Fixed scrollbar problem.
 	* Added back support for drag-drop into textview.
+	* Added support for triple-click to select line.
 
 2004-02-18  ujwal
 

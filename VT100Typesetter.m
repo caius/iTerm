@@ -158,15 +158,6 @@ static unsigned int invocationId = 0;
 	}
 	lineEndIndex = j;
 
-	// check if the last character on the last line is a new lince char; that has to go on the next line
-	if((lineEndIndex > lineStartIndex) && (lineEndIndex == [theString length] - 1) &&
-    ([theString characterAtIndex: lineEndIndex] == '\n'))
-	{
-	    lineEndIndex--;
-	    lineEndCharExists = NO;
-	}
-
-
 	// build the line
 	characterRange = NSMakeRange(lineStartIndex, lineEndIndex-lineStartIndex+1);
 	glyphRange = [layoutMgr glyphRangeForCharacterRange: characterRange actualCharacterRange: nil];
@@ -248,6 +239,15 @@ static unsigned int invocationId = 0;
 
 	// set the glyphIndex for the next run
 	glyphIndex = glyphRange.location + glyphRange.length;
+
+	// check if the last character on the last line is a new lince char; we have to add an extra line fragment.
+	if((lineEndIndex > lineStartIndex) && (lineEndIndex == [theString length] - 1) &&
+    ([theString characterAtIndex: lineEndIndex] == '\n'))
+	{
+	    lineRect.origin.y += [font defaultLineHeightForFont];
+	    [layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
+	}
+	
 	
 	// if we are at the end of the text, get out
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];

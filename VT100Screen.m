@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.138 2003-09-09 23:16:36 ujwal Exp $
+// $Id: VT100Screen.m,v 1.139 2003-09-10 17:25:12 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1519,7 +1519,7 @@ static BOOL PLAYBELL = YES;
     // if we are clearing the entire screen, move the current screen into the scrollback buffer
     if(x1 == 0 && y1 == 0 && x2 == (WIDTH -1 ) && y2 == (HEIGHT - 1) && clearingBuffer == NO)
     {
-	NSString *newLineString;
+	NSAttributedString *newLineString;
 	
 	[self setScreenLock];
 	[STORAGE beginEditing];

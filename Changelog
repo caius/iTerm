@@ -1,6 +1,7 @@
 2004-09-07  ujwal
 
-	* setHidden method is invoked only if target view supports it (>= 10.3)
+	* setHidden method is invoked only if target view supports it (>= 10.3).
+	* Added keybinding action for numeric enter key.
 
 2004-08-04  ujwal
 

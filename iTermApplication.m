@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplication.m,v 1.4 2004-04-24 19:17:07 ujwal Exp $
+// $Id: iTermApplication.m,v 1.5 2004-09-08 06:11:24 ujwal Exp $
 //
 /*
  **  iTermApplication.m
@@ -52,7 +52,7 @@
 	{
 		modflag = [anEvent modifierFlags];
 		unmodkeystr = [anEvent charactersIgnoringModifiers];
-		unmodunicode = [unmodkeystr length]>0?[unmodkeystr characterAtIndex:0]:0;			
+		unmodunicode = [unmodkeystr length]>0?[unmodkeystr characterAtIndex:0]:0;	
 	}
 	
 	if([anEvent type] == NSKeyDown && (([anEvent modifierFlags] & NSCommandKeyMask) || (unmodunicode == NSHelpFunctionKey)))

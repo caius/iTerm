@@ -67,15 +67,16 @@
 #define KEY_NUMERIC_7					37
 #define KEY_NUMERIC_8					38
 #define KEY_NUMERIC_9					39
-#define KEY_NUMERIC_EQUAL				40
-#define KEY_NUMERIC_DIVIDE				41
-#define KEY_NUMERIC_MULTIPLY			42
-#define KEY_NUMERIC_MINUS				43
-#define KEY_NUMERIC_PLUS				44
-#define KEY_NUMERIC_PERIOD				45
-#define KEY_NUMLOCK						46
-#define KEY_PAGE_DOWN					47
-#define KEY_PAGE_UP						48
+#define KEY_NUMERIC_ENTER				40
+#define KEY_NUMERIC_EQUAL				41
+#define KEY_NUMERIC_DIVIDE				42
+#define KEY_NUMERIC_MULTIPLY			43
+#define KEY_NUMERIC_MINUS				44
+#define KEY_NUMERIC_PLUS				45
+#define KEY_NUMERIC_PERIOD				46
+#define KEY_NUMLOCK						47
+#define KEY_PAGE_DOWN					48
+#define KEY_PAGE_UP						49
 
 
 // Actions for key bindings

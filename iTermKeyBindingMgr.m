@@ -307,6 +307,11 @@ static iTermKeyBindingMgr *singleInstance = nil;
 														 [NSBundle bundleForClass: [self class]], 
 														 @"Key Names");
 			break;
+		case 0x3: // 'enter' on numeric key pad
+			aString = NSLocalizedStringFromTableInBundle(@"enter",@"iTerm", 
+														 [NSBundle bundleForClass: [self class]], 
+														 @"Key Names");
+			break;
 		default:
 			aString = [NSString stringWithFormat: @"%@ 0x%x", 
 				NSLocalizedStringFromTableInBundle(@"hex code",@"iTerm", 
@@ -564,6 +569,9 @@ static iTermKeyBindingMgr *singleInstance = nil;
 		case KEY_NUMERIC_8:
 		case KEY_NUMERIC_9:
 			keyUnicode = '0' + (key - KEY_NUMERIC_0);
+			break;
+		case KEY_NUMERIC_ENTER:
+			keyUnicode = 0x3; // 'enter' on numeric keypad
 			break;
 		case KEY_NUMERIC_EQUAL:
 			keyUnicode = '=';

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.291 2004-05-08 18:49:00 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.292 2004-09-08 06:11:24 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -31,7 +31,6 @@
 // Debug option
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
-#define DEBUG_KEYDOWNDUMP     0
 
 #import <iTerm/iTerm.h>
 #import <iTerm/PseudoTerminal.h>

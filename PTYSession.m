@@ -46,6 +46,7 @@
 
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
+#define DEBUG_KEYDOWNDUMP     0
 
 @implementation PTYSession
 
@@ -393,7 +394,7 @@ static NSString *PWD_ENVVALUE = @"~";
     unmodkeystr = [event charactersIgnoringModifiers];
     unicode = [keystr length]>0?[keystr characterAtIndex:0]:0;
 	unmodunicode = [unmodkeystr length]>0?[unmodkeystr characterAtIndex:0]:0;
-    
+	
     iIdleCount=0;
     
     //NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c) <%d>", event,modflag,keycode,keystr,unmodkeystr,unicode,unicode,(modflag & NSNumericPadKeyMask));
@@ -410,6 +411,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	{
 		NSString *aString;
 		unsigned char hexCode;
+		int hexCodeTmp;
 		
 		switch (keyBindingAction)
 		{
@@ -455,8 +457,9 @@ static NSString *PWD_ENVVALUE = @"~";
 				}
 				break;
 			case KEY_ACTION_HEX_CODE:
-				if([keyBindingText length] > 0 && sscanf([keyBindingText UTF8String], "%hhx", &hexCode) == 1)
+				if([keyBindingText length] > 0 && sscanf([keyBindingText UTF8String], "%x", &hexCodeTmp) == 1)
 				{
+					hexCode = (unsigned char) hexCodeTmp;
 					[self writeTask:[NSData dataWithBytes:&hexCode length: sizeof(hexCode)]];
 				}
 				break;

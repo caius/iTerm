@@ -505,7 +505,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSMutableString *mstring;
     int i, max;
 
-    NSLog(@"insertText: %@",string);
+//    NSLog(@"insertText: %@",string);
     mstring = [NSMutableString stringWithString:string];
     max = [string length];
     for(i=0; i<max; i++) {

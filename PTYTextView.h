@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.23 2003-03-28 22:28:26 yfabian Exp $
+// $Id: PTYTextView.h,v 1.24 2003-03-28 22:45:46 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -93,6 +93,7 @@
 - (void)mouseDown:(NSEvent *)event;
 - (void)mouseUp:(NSEvent *)event;
 - (void)mouseDragged:(NSEvent *)event;
+- (NSString *) selectedText;
 - (void)copy: (id) sender;
 - (void)paste:(id)sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;

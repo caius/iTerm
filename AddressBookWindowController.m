@@ -405,7 +405,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 // misc
 - (void) run;
 {
-    int r;
+//    int r;
 
     [[self window] center];
     [adTable setDataSource: [NSApp delegate]];

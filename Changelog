@@ -9,6 +9,7 @@
     * Fixed a bug in VT100Screen that causes duplicated lines
     * "Save as" now is working, we need a new print function
     * Fixed a crashing bug in "Save Config"
+    * Fixed browse and mail in PTYTextView
     
 2003-03-27	ujwal
 

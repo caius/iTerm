@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.47 2003-03-28 22:28:27 yfabian Exp $
+// $Id: PTYTextView.m,v 1.48 2003-03-28 22:45:46 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -656,10 +656,8 @@
         [self setNeedsDisplayInRect:NSMakeRect(0,endY*fontSize.height,[self frame].size.width,(startY+1)*fontSize.height)];
 }
 
-
-- (void) copy: (id) sender
+- (NSString *) selectedText
 {
-    NSPasteboard *pboard = [NSPasteboard generalPasteboard];
     NSMutableString *aString, *copyString;
     NSMutableAttributedString *aLine;
     int y = 0;
@@ -668,7 +666,9 @@
     NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
 #endif
 
-    copyString=[[NSMutableString alloc] initWithCapacity:10];
+    if (startIndex<0) return nil;
+    
+    copyString=[[[NSMutableString alloc] init] autorelease];
 
     for(y=startY;y<=endY;y++) {
         aLine=[dataSource stringAtLine:y];
@@ -697,11 +697,25 @@
         [aString release];
     }
 
-    if ([copyString length]>0) {
+    return copyString;
+}
+
+- (void) copy: (id) sender
+{
+    NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+    NSString *copyString;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
+#endif
+
+    copyString=[self selectedText];
+
+
+    if (copyString&&[copyString length]>0) {
         [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];
         [pboard setString: copyString forType: NSStringPboardType];
     }
-    [copyString release];
 }
 
 - (void)paste:(id)sender
@@ -797,28 +811,32 @@
 
 - (void) mail:(id)sender
 {
-    NSString *s = [[self attributedSubstringFromRange:[self selectedRange]] string];
+    NSString *s=[self selectedText];
     NSURL *url;
 
-    if (![s hasPrefix:@"mailto:"])
-        url = [NSURL URLWithString:[@"mailto:" stringByAppendingString:s]];
-    else
-        url = [NSURL URLWithString:s];
+    if (s&&[s length]>0) {
+        if (![s hasPrefix:@"mailto:"])
+            url = [NSURL URLWithString:[@"mailto:" stringByAppendingString:s]];
+        else
+            url = [NSURL URLWithString:s];
 
-    [[NSWorkspace sharedWorkspace] openURL:url];
+        [[NSWorkspace sharedWorkspace] openURL:url];
+    }
 }
 
 - (void) browse:(id)sender
 {
-    NSString *s = [[self attributedSubstringFromRange:[self selectedRange]] string];
+    NSString *s=[self selectedText];
     NSURL *url;
 
-    if (![s hasPrefix:@"http://"])
-        url = [NSURL URLWithString:[@"http://" stringByAppendingString:s]];
-    else
-        url = [NSURL URLWithString:s];
+    if (s&&[s length]>0) {
+        if (![s hasPrefix:@"http://"])
+            url = [NSURL URLWithString:[@"http://" stringByAppendingString:s]];
+        else
+            url = [NSURL URLWithString:s];
 
-    [[NSWorkspace sharedWorkspace] openURL:url];
+        [[NSWorkspace sharedWorkspace] openURL:url];
+    }
 }
 
 
@@ -1190,6 +1208,7 @@
     else
         return NSMakeRange([dataSource getIndexAtX:[dataSource cursorX]-1 Y:[dataSource cursorY]-1 withPadding:NO], 0);
 }
+
 
 - (NSRange)selectedRange
 {

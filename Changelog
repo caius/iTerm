@@ -1,3 +1,7 @@
+2003-10-01	ujwal
+
+    * Default font is now chosen with [NSFont userFixedPitchFontOfSize:0].
+
 2003-09-30	ujwal
 
     * All periodic timer code for each open session is called by a single 

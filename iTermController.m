@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.23 2003-09-30 16:01:00 ujwal Exp $
+// $Id: iTermController.m,v 1.24 2003-10-01 15:15:32 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -143,7 +143,7 @@ static BOOL usingAutoLaunchScript = NO;
 // init
 - (id) init
 {
-#if DEBUG_METHOD_TRACE
+#if DEBUG_ALLOC
     NSLog(@"%s(%d):-[iTermController init]",
           __FILE__, __LINE__);
 #endif
@@ -183,7 +183,7 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (void) dealloc
 {
-#if DEBUG_METHOD_TRACE
+#if DEBUG_ALLOC
     NSLog(@"%s(%d):-[iTermController dealloc]",
           __FILE__, __LINE__);
 #endif

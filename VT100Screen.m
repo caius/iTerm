@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.116 2003-07-22 02:12:39 ujwal Exp $
+// $Id: VT100Screen.m,v 1.117 2003-07-22 06:47:52 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1518,6 +1518,7 @@ static BOOL PLAYBELL = YES;
 	    [STORAGE setAttributes:dic range:NSMakeRange(cursorIndex,1)];
 	}
 	[STORAGE endEditing];
+	[self removeOverLine];
 	[self removeScreenLock];
 	[[SESSION TEXTVIEW] scrollEnd];
 
@@ -1527,7 +1528,6 @@ static BOOL PLAYBELL = YES;
 	    if([[BUFFER string] characterAtIndex: i] == '\n')
 		TOP_LINE++;
 	}
-	[self removeOverLine];
     }
     else
 	clearingBuffer = NO;
@@ -2210,7 +2210,11 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
         for(i=0,idx=0;i<over;idx++)
             if ([s characterAtIndex:idx]=='\n') i++;
+
+	[STORAGE beginEditing];
         [STORAGE deleteCharactersInRange:NSMakeRange(0, idx)];
+	[STORAGE endEditing];
+	
         if (idx<updateIndex) updateIndex-=idx;
         else {
             [BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];

@@ -1371,11 +1371,8 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     NSColor *newcolor;
 
-    // set transparency of background image if we have one
-    if([imageView image] != nil)
-    {
-	[imageView setTransparency: transparency];
-    }
+    // set transparency of background image
+    [imageView setTransparency: transparency];
 
     // set alpha channel of background color
     newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency)];

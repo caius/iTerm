@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.232 2003-09-14 06:35:34 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.233 2003-09-14 17:49:00 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -170,7 +170,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
 {
-    NSDictionary *defaultParameters;
+    NSDictionary *addressBookPreferences;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -184,9 +184,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set some default parameters
-    defaultParameters = [[ITAddressBookMgr sharedInstance] addressBookEntry: 0];
-    [aSession setAddressBookEntry:defaultParameters];
-    [aSession setPreferencesFromAddressBookEntry: defaultParameters];
+    addressBookPreferences = [aSession addressBookEntry];
+    if(addressBookPreferences == nil)
+    {
+	// get the default entry
+	addressBookPreferences = [[ITAddressBookMgr sharedInstance] addressBookEntry: 0];
+	[aSession setAddressBookEntry:addressBookPreferences];
+    }
+    [aSession setPreferencesFromAddressBookEntry: addressBookPreferences];
     
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![[PreferencePanel sharedInstance] silenceBell]];

@@ -633,13 +633,15 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) pasteString: (NSString *) aString
 {
 
-    if (aString != nil) {
+    if ([aString length] > 0) {
         NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
                                     dataUsingEncoding:[TERMINAL encoding]
                                 allowLossyConversion:YES];
         if (strdata != nil)
             [SHELL writeTask:strdata];
     }
+    else
+	NSBeep();
     
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.1.1.1 2002-11-26 04:56:50 ujwal Exp $
+// $Id: VT100Screen.h,v 1.2 2002-12-07 19:58:09 ujwal Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -44,6 +44,7 @@
 + (NSSize)requireSizeWithFont:(NSFont *)font;
 + (NSSize)screenSizeInFrame:(NSRect)frame  font:(NSFont *)font;
 + (void)setPlayBellFlag:(BOOL)flag;
++ (NSSize) fontSize:(NSFont *)font;
 
 - (id)init;
 - (void)dealloc;

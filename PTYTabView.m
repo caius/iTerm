@@ -359,12 +359,13 @@
 
     aTabViewItem = (PTYTabViewItem *)[aTabView tabViewItemAtIndex: aTabViewItemIndex];
     if(aTabViewItem == nil)
-	return (NSDragOperationNone);    
+	return (NSDragOperationNone);
     
     NSPoint dropPoint = [sender draggingLocation];
     NSPoint localPoint = [self convertPoint: dropPoint fromView: nil];
     dragTargetTabViewItem = (PTYTabViewItem *)[self tabViewItemAtPoint: localPoint];
-    if (dragTargetTabViewItem == nil)
+    
+    if ((dragTargetTabViewItem == nil))
     {
 	if(dragTargetTabViewItemIndex >= 0)
 	{
@@ -372,7 +373,24 @@
 	    [(PTYTabViewItem *)[self tabViewItemAtIndex: dragTargetTabViewItemIndex] resignDragTarget];
 	}
     }
-    else if(dragTargetTabViewItem != aTabViewItem)
+    else if (dragTargetTabViewItem == aTabViewItem)
+    {
+	if(dragTargetTabViewItemIndex >= 0)
+	{
+	    // Tell the previous drag target that it is not a target anymore
+	    [(PTYTabViewItem *)[self tabViewItemAtIndex: dragTargetTabViewItemIndex] resignDragTarget];
+	}
+
+	dragTargetTabViewItemIndex = aTabViewItemIndex;
+	ret = NSDragOperationNone;
+	
+    }
+    else if((dragTargetTabViewItemIndex >= 0) &&
+	    (dragTargetTabViewItem == (PTYTabViewItem *)[self tabViewItemAtIndex: dragTargetTabViewItemIndex]))
+    {	
+	return (ret);
+    }
+    else 
     {
 	if(dragTargetTabViewItemIndex >= 0)
 	{

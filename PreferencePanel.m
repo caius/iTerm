@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.100 2004-03-21 03:02:30 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.101 2004-03-21 03:03:10 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -123,7 +123,7 @@ static BOOL editingBookmark = NO;
 	if([self window] == nil)
 		[self initWithWindowNibName: @"PreferencePanel"];
 			    
-	[[self window] setDelegate: self];
+	[[self window] setDelegate: self]; // also forces window to load
 	
 	[tabPosition selectCellWithTag: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];

@@ -253,8 +253,14 @@ static unsigned int invocationId = 0;
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
 	if(atEnd == YES || isValidIndex == NO)
 	{
+	    
 	    // pad with empty lines if we need to
 	    float displayHeight = [textView frame].size.height;
+
+	    // if our content size has decreased, we should not be padding so that the layout manager
+	    // can resize the textview.
+	    if(length < previousLength)
+		break;
 
 	    if (lineRect.origin.y + lineRect.size.height < displayHeight)
 	    {
@@ -268,6 +274,9 @@ static unsigned int invocationId = 0;
 	}
 	
     }
+
+    // cache the current for the next run
+    previousLength = length;
 
     // set the next glyph to be laid out
     if(nextGlyph)

@@ -4,6 +4,8 @@
       for easy access.
       
     * Fixed bug in saving sessions.
+    
+    * Fixed "Clear Scrollback Buffer" bug in VT100Typesetter.
 
 2003-06-22	ujwal
 

@@ -39,6 +39,7 @@
     NSTextView *textView;
     NSTextContainer *textContainer;
     float lineFragmentPadding;
+    unsigned int previousLength;
 
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.121 2004-02-19 19:42:58 ujwal Exp $
+// $Id: PTYTextView.m,v 1.122 2004-02-19 20:01:22 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -69,6 +69,12 @@
                                              selector:@selector(frameChanged:)
                                                  name:NSWindowDidResizeNotification
                                                object:nil];
+	
+	// register for drag and drop
+	[self registerForDraggedTypes: [NSArray arrayWithObjects:
+        NSFilenamesPboardType,
+        NSStringPboardType,
+        nil]];
 	
 	// init the cache
 	memset(charImages, 0, CACHESIZE*sizeof(CharCache));	
@@ -1211,9 +1217,9 @@
 //
 - (void) draggingExited:(id <NSDraggingInfo>)sender
 {
-#if DEBUG_METHOD_TRACE
+//#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView draggingExited:%@]", __FILE__, __LINE__, sender );
-#endif
+//#endif
     
     // We don't do anything special, so let the parent NSTextView handle this.
     [super draggingExited: sender];

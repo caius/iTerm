@@ -2,6 +2,7 @@
 
 	* Forcing redraw when tabview is redrawn.
 	* Fixed scrollbar problem.
+	* Added back support for drag-drop into textview.
 
 2004-02-18  ujwal
 

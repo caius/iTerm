@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.99 2003-02-05 02:03:52 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.100 2003-02-09 22:38:02 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -268,13 +268,13 @@ static NSString *ConfigToolbarItem = @"Config";
 
     if([ptyList containsObject: aSession] == NO)
     {
-	[ptyListLock lock];
 	
-	// add to list
-	[ptyList addObject: aSession];
 	[aSession setParent: self];
-	currentSessionIndex = [ptyList count] - 1;
-	currentPtySession = aSession;
+	if([ptyList count] == 0)
+	{
+	    // Tell us whenever something happens with the tab view
+	    [TABVIEW setDelegate: self];
+	}	
 
 	// create a new tab
 	aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: aSession];
@@ -282,11 +282,12 @@ static NSString *ConfigToolbarItem = @"Config";
 	[aTabViewItem setLabel: [aSession name]];
 	[aTabViewItem setView: [aSession SCROLLVIEW]];
 	[TABVIEW addTabViewItem: aTabViewItem];
+	currentSessionIndex = [ptyList count] - 1;
+	currentPtySession = aSession;
 	[aTabViewItem release];
 	[aSession setTabViewItem: aTabViewItem];
 	[self selectSession: currentSessionIndex];
 
-	[ptyListLock unlock];
 
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
@@ -302,11 +303,6 @@ static NSString *ConfigToolbarItem = @"Config";
 	    [self setWindowSize: NO];
 	}
 
-	if([ptyList count] == 1)
-	{
-	    // Tell us whenever something happens with the tab view
-	    [TABVIEW setDelegate: self];
-	}
 
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
@@ -344,13 +340,13 @@ static NSString *ConfigToolbarItem = @"Config";
         if ([ptyList objectAtIndex:i]==aSession)
         {
                     
-            [ptyListLock lock];
             // remove from tabview before terminating!! Terminating will
             // set the internal tabview object in the session to nil.
+	    [aSession retain];
             [TABVIEW removeTabViewItem: [aSession tabViewItem]];
-            [[ptyList objectAtIndex: i] terminate];
-            [ptyList removeObjectAtIndex: i];
-            [ptyListLock unlock];
+            [aSession terminate];
+	    [aSession release];
+	    
             if (i==currentSessionIndex) {
                 if (currentSessionIndex >= [ptyList count])
                     currentSessionIndex = [ptyList count] - 1;
@@ -420,7 +416,7 @@ static NSString *ConfigToolbarItem = @"Config";
 - (IBAction) nextSession:(id)sender
 {
     int theIndex;
-    
+
     if (currentSessionIndex == ([ptyList count] - 1))
     {
         theIndex = 0;
@@ -1375,6 +1371,10 @@ static NSString *ConfigToolbarItem = @"Config";
 - (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {
     PTYSession *aSession;
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
+#endif
+    
     
     aSession = [tabViewItem identifier];
     
@@ -1388,7 +1388,80 @@ static NSString *ConfigToolbarItem = @"Config";
 
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal tabView: didSelectTabViewItem]", __FILE__, __LINE__);
+#endif    
     [currentPtySession setLabelAttribute];
+}
+
+- (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal tabView: willRemoveTabViewItem]", __FILE__, __LINE__);
+#endif
+    
+    [ptyListLock lock];
+    if([ptyList containsObject: [tabViewItem identifier]] &&
+       [[tabViewItem identifier] isKindOfClass: [PTYSession class]])
+	[ptyList removeObject: [tabViewItem identifier]];
+    [ptyListLock unlock];
+
+}
+
+- (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal tabView: willAddTabViewItem]", __FILE__, __LINE__);
+#endif
+
+    [ptyListLock lock];
+    if(![ptyList containsObject: [tabViewItem identifier]] &&
+       [[tabViewItem identifier] isKindOfClass: [PTYSession class]])
+    {
+	PTYSession *aSession = [tabViewItem identifier];
+	
+	[aSession setParent: self];
+	[ptyList addObject: [tabViewItem identifier]];
+
+    }
+    [ptyListLock unlock];
+
+}
+
+
+- (void)tabView:(NSTabView *)tabView willInsertTabViewItem:(NSTabViewItem *)tabViewItem atIndex: (int) index
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal tabView: willInsertTabViewItem: atIndex: %d]", __FILE__, __LINE__, index);
+#endif
+
+    if(tabView == nil || tabViewItem == nil || index < 0)
+	return;
+    
+    [ptyListLock lock];
+    if(![ptyList containsObject: [tabViewItem identifier]] &&
+       [[tabViewItem identifier] isKindOfClass: [PTYSession class]])
+    {
+	PTYSession *aSession = [tabViewItem identifier];
+
+	[aSession setParent: self];
+	
+	if (index >= [ptyList count])
+	    [ptyList addObject: aSession];
+	else
+	    [ptyList insertObject: aSession atIndex: index];
+    }
+    [ptyListLock unlock];
+    
+}
+
+- (void)tabViewDidChangeNumberOfTabViewItems:(NSTabView *)tabView
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal tabViewDidChangeNumberOfTabViewItems]", __FILE__, __LINE__);
+#endif
+    
+    currentSessionIndex = [TABVIEW indexOfTabViewItem: [TABVIEW selectedTabViewItem]];
 }
 
 - (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu

@@ -13,6 +13,7 @@
 @interface PTYTabViewItem : NSTabViewItem {
 
     NSDictionary *labelAttributes;
+    BOOL dragTarget;
 
 }
 
@@ -26,5 +27,9 @@
 // set/get custom label
 - (NSDictionary *) labelAttributes;
 - (void) setLabelAttributes: (NSDictionary *) theLabelAttributes;
+
+// drag-n-drop utilities
+- (void) becomeDragTarget;
+- (void) resignDragTarget;
 
 @end

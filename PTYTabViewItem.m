@@ -20,6 +20,8 @@
     NSLog(@"PTYTabViewItem: -initWithIdentifier");
 #endif
 
+    dragTarget = NO;
+
     return([super initWithIdentifier: anIdentifier]);
 }
 
@@ -47,10 +49,18 @@
 
     if(labelAttributes != nil)
     {
-        NSAttributedString *attributedLabel;
+        NSMutableAttributedString *attributedLabel;
 
-        attributedLabel = [[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
+        attributedLabel = [[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
 	    [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes];
+	// If we are a current drag target, add foreground and background colors
+	if(dragTarget)
+	{
+	    [attributedLabel addAttribute: NSForegroundColorAttributeName value: [NSColor greenColor]
+								    range: NSMakeRange(0, [attributedLabel length])];
+	    [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor]
+								    range: NSMakeRange(0, [attributedLabel length])];
+	}	
         [attributedLabel drawAtPoint:tabRect.origin];
         [attributedLabel release];
         
@@ -66,7 +76,7 @@
 - (NSSize) sizeOfLabel:(BOOL)shouldTruncateLabel
 {
     NSSize aSize;
-    NSAttributedString *attributedLabel;
+    NSMutableAttributedString *attributedLabel;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"PTYTabViewItem: -sizeOfLabel");
@@ -75,8 +85,17 @@
         
     if(labelAttributes != nil)
     {
-        attributedLabel = [[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
+        attributedLabel = [[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
 	    [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes];
+	// If we are a current drag target, add foreground and background colors
+	if(dragTarget)
+	{
+	    [attributedLabel addAttribute: NSForegroundColorAttributeName value: [NSColor greenColor]
+								range: NSMakeRange(0, [attributedLabel length])];
+	    [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor]
+								    range: NSMakeRange(0, [attributedLabel length])];
+
+	}
         aSize = [attributedLabel size];
         [attributedLabel release];
     }
@@ -101,9 +120,7 @@
 #endif
 
     // Do this only if there is a change
-    // Should probably use isEqualToDictionary, but that will eat CPU cycles 
-    // since this gets called a lot.
-    if(labelAttributes == theLabelAttributes)
+    if([labelAttributes isEqualToDictionary: theLabelAttributes])
         return;
     
     if(labelAttributes != nil)
@@ -122,6 +139,29 @@
     [self setLabel: theLabel];
     [theLabel release];
     
+}
+
+// Called when when another tab is being dragged over this one
+- (void) becomeDragTarget
+{
+    dragTarget = YES;
+
+    // redraw the label
+    NSString *theLabel = [[self label] copy];
+    [self setLabel: theLabel];
+    [theLabel release];
+    
+}
+
+// Called when another tab is moved away from this one
+- (void) resignDragTarget
+{
+    dragTarget = NO;
+    
+    // redraw the label
+    NSString *theLabel = [[self label] copy];
+    [self setLabel: theLabel];
+    [theLabel release];    
 }
 
 

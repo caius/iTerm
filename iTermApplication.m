@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplication.m,v 1.3 2004-04-11 07:07:21 ujwal Exp $
+// $Id: iTermApplication.m,v 1.4 2004-04-24 19:17:07 ujwal Exp $
 //
 /*
  **  iTermApplication.m
@@ -43,8 +43,19 @@
 	id aWindow;
 	PseudoTerminal *currentTerminal;
 	PTYSession *currentSession;
+	unsigned int modflag;
+    NSString *unmodkeystr;
+    unichar unmodunicode;	
 	
-	if([anEvent type] == NSKeyDown && ([anEvent modifierFlags] & NSCommandKeyMask))
+	
+	if([anEvent type] == NSKeyDown)
+	{
+		modflag = [anEvent modifierFlags];
+		unmodkeystr = [anEvent charactersIgnoringModifiers];
+		unmodunicode = [unmodkeystr length]>0?[unmodkeystr characterAtIndex:0]:0;			
+	}
+	
+	if([anEvent type] == NSKeyDown && (([anEvent modifierFlags] & NSCommandKeyMask) || (unmodunicode == NSHelpFunctionKey)))
 	{
 		
 		aWindow = [self keyWindow];

@@ -253,6 +253,10 @@ static iTermKeyBindingMgr *singleInstance = nil;
 		case NSF20FunctionKey:
 			aString = [NSString stringWithFormat: @"F%d", (keyCode - NSF1FunctionKey + 1)];
 			break;
+		case NSHelpFunctionKey:
+			aString = NSLocalizedStringFromTableInBundle(@"help",@"iTerm", 
+														 [NSBundle bundleForClass: [self class]], 
+														 @"Key Names");			
 		case NSHomeFunctionKey:
 			aString = NSLocalizedStringFromTableInBundle(@"home",@"iTerm", 
 														 [NSBundle bundleForClass: [self class]], 
@@ -543,6 +547,9 @@ static iTermKeyBindingMgr *singleInstance = nil;
 		case KEY_F20:
 			keyUnicode = NSF1FunctionKey + (key - KEY_F1);
 			break;
+		case KEY_HELP:
+			keyUnicode = NSHelpFunctionKey;
+			break;			
 		case KEY_HOME:
 			keyUnicode = NSHomeFunctionKey;
 			break;

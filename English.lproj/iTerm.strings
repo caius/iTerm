@@ -159,6 +159,7 @@
 "del"="del";
 "delete"="delete";
 "end"="end";
+"help"="help";
 "home"="home";
 "numlock"="numlock";
 "page down"="page down";

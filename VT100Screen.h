@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.3 2002-12-16 23:10:55 yfabian Exp $
+// $Id: VT100Screen.h,v 1.4 2002-12-19 21:02:22 yfabian Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -23,6 +23,7 @@
     int SAVE_CURSOR_Y;
     int SCROLL_TOP;
     int SCROLL_BOTTOM;
+    BOOL tabStop[300];
     BOOL CURSOR_IN_MIDDLE;
 
     NSTextStorage *STORAGE;
@@ -113,6 +114,8 @@
 - (void)showCursor;
 - (void)showCursor:(BOOL)show;
 - (void)blink;
+- (int) cursorX;
+- (int) cursorY;
 
 - (NSMutableDictionary *)characterAttributeDictionary;
 - (NSAttributedString *)attrStringFromChar:(unichar) c;
@@ -121,5 +124,6 @@
 - (int) getIndex:(int)x y:(int)y;
 - (BOOL) isDoubleWidthCharacter:(unichar)code;
 
+- (void) clearTabStop;
 
 @end

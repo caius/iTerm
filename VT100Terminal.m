@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.4 2002-12-18 02:28:31 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.5 2002-12-19 21:02:22 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -92,11 +92,11 @@ static NSColor *DEFAULT_WHITE  = nil;
 static BOOL isCSI(unsigned char *, size_t);
 static BOOL isXTERM(unsigned char *, size_t);
 static BOOL isString(unsigned char *, NSStringEncoding);
-static size_t getCSIParam(unsigned char *, size_t, CSIParam *);
-static VT100TCC decode_csi(unsigned char *, size_t, size_t *);
+static size_t getCSIParam(unsigned char *, size_t, CSIParam *, VT100Screen *);
+static VT100TCC decode_csi(unsigned char *, size_t, size_t *,VT100Screen *);
 static VT100TCC decode_xterm(unsigned char *, size_t, size_t *,NSStringEncoding);
 static VT100TCC decode_other(unsigned char *, size_t, size_t *);
-static VT100TCC decode_control(unsigned char *, size_t, size_t *,NSStringEncoding);
+static VT100TCC decode_control(unsigned char *, size_t, size_t *,NSStringEncoding,VT100Screen *);
 static VT100TCC decode_ascii(unsigned char *, size_t, size_t *);
 static int utf8_reqbyte(unsigned char);
 static VT100TCC decode_utf8(unsigned char *, size_t, size_t *);
@@ -162,7 +162,7 @@ static BOOL isString(unsigned char *code,
 
 static size_t getCSIParam(unsigned char *datap,
 			  size_t datalen,
-			  CSIParam *param)
+			  CSIParam *param, VT100Screen *SCREEN)
 {
     int i;
     BOOL unrecognized=NO;
@@ -224,9 +224,26 @@ static size_t getCSIParam(unsigned char *datap,
 	    break;
 	}
 	else {
+            switch (*datap) {
+                case VT100CC_ENQ: break;
+                case VT100CC_BEL: [SCREEN playBell]; break;
+                case VT100CC_BS:  [SCREEN backSpace]; break;
+                case VT100CC_HT:  [SCREEN setTab]; break;
+                case VT100CC_LF:
+                case VT100CC_VT:
+                case VT100CC_FF:  [SCREEN setNewLine]; break;
+                case VT100CC_CR:  [SCREEN cursorToX:1 Y:[SCREEN cursorY]]; break;
+                case VT100CC_SO:  break;
+                case VT100CC_SI:  break;
+                case VT100CC_DC1: break;
+                case VT100CC_DC3: break;
+                case VT100CC_CAN:
+                case VT100CC_SUB: break;
+                case VT100CC_DEL: [SCREEN deleteCharacters:1];break;
+                default: unrecognized=YES; break;
+            }
             datalen--;
             *datap++;
-            unrecognized=YES;
 	}
     }
     return datap - orgp;
@@ -238,110 +255,110 @@ static size_t getCSIParam(unsigned char *datap,
 
 static VT100TCC decode_csi(unsigned char *datap,
 			   size_t datalen,
-			   size_t *rmlen)
+			   size_t *rmlen,VT100Screen *SCREEN)
 {
     VT100TCC result;
     CSIParam param;
     size_t paramlen;
     int i;
 
-    paramlen = getCSIParam(datap, datalen, &param);
+    paramlen = getCSIParam(datap, datalen, &param, SCREEN);
     if (paramlen > 0 && param.cmd > 0) {
         if (!param.question) {
             switch (param.cmd) {
                 case 'D':		// Cursor Backward
-                    result.type = VT100TCC_CUB;
+                    result.type = VT100CSI_CUB;
                     SET_PARAM_DEFAULT(param, 0, 1);
                     break;
 
                 case 'B':		// Cursor Down
-                    result.type = VT100TCC_CUD;
+                    result.type = VT100CSI_CUD;
                     SET_PARAM_DEFAULT(param, 0, 1);
                     break;
 
                 case 'C':		// Cursor Forward
-                    result.type = VT100TCC_CUF;
+                    result.type = VT100CSI_CUF;
                     SET_PARAM_DEFAULT(param, 0, 1);
                     break;
 
                 case 'A':		// Cursor Up
-                    result.type = VT100TCC_CUU;
+                    result.type = VT100CSI_CUU;
                     SET_PARAM_DEFAULT(param, 0, 1);
                     break;
 
                 case 'H':
-                    result.type = VT100TCC_CUP;
+                    result.type = VT100CSI_CUP;
                     SET_PARAM_DEFAULT(param, 0, 1);
                     SET_PARAM_DEFAULT(param, 1, 1);
                     break;
 
                 case 'c':
-                    result.type = VT100TCC_DA;
+                    result.type = VT100CSI_DA;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
 
                 case 'q':
-                    result.type = VT100TCC_DECLL;
+                    result.type = VT100CSI_DECLL;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
 
                 case 'x':
                     if (param.count == 1)
-                        result.type = VT100TCC_DECREQTPARM;
+                        result.type = VT100CSI_DECREQTPARM;
                     else
-                        result.type = VT100TCC_DECREPTPARM;
+                        result.type = VT100CSI_DECREPTPARM;
                     break;
 
                 case 'r':
-                    result.type = VT100TCC_DECSTBM;
+                    result.type = VT100CSI_DECSTBM;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     SET_PARAM_DEFAULT(param, 1, 0);
                     break;
 
                 case 'y':
                     if (param.count == 2)
-                        result.type = VT100TCC_DECTST;
+                        result.type = VT100CSI_DECTST;
                     else
-                        result.type = VT100TCC_NOTSUPPORT;
+                        result.type = VT100_NOTSUPPORT;
                     break;
 
                 case 'n':
-                    result.type = VT100TCC_DSR;
+                    result.type = VT100CSI_DSR;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
 
                 case 'J':
-                    result.type = VT100TCC_ED;
+                    result.type = VT100CSI_ED;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
 
                 case 'K':
-                    result.type = VT100TCC_EL;
+                    result.type = VT100CSI_EL;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
 
                 case 'f':
-                    result.type = VT100TCC_HVP;
+                    result.type = VT100CSI_HVP;
                     SET_PARAM_DEFAULT(param, 0, 1);
                     SET_PARAM_DEFAULT(param, 1, 1);
                     break;
 
                 case 'l':
-                    result.type = VT100TCC_RM;
+                    result.type = VT100CSI_RM;
                     break;
 
                 case 'm':
-                    result.type = VT100TCC_SGR;
+                    result.type = VT100CSI_SGR;
                     for (i = 0; i < param.count; ++i)
                         SET_PARAM_DEFAULT(param, i, 0);
                         break;
 
                 case 'h':
-                    result.type = VT100TCC_SM;
+                    result.type = VT100CSI_SM;
                     break;
 
                 case 'g':
-                    result.type = VT100TCC_TBC;
+                    result.type = VT100CSI_TBC;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
 
@@ -364,22 +381,22 @@ static VT100TCC decode_csi(unsigned char *datap,
                     break;
 
                 default:
-                    result.type = VT100TCC_NOTSUPPORT;
+                    result.type = VT100_NOTSUPPORT;
                     break;
             }
         }
         else {
             switch (param.cmd) {
                 case 'h':		// Dec private mode set
-                    result.type = VT100TCC_DECSET;
+                    result.type = VT100CSI_DECSET;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
                 case 'l':		// Dec private mode reset
-                    result.type = VT100TCC_DECRST;
+                    result.type = VT100CSI_DECRST;
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
                 default:
-                    result.type = VT100TCC_NOTSUPPORT;
+                    result.type = VT100_NOTSUPPORT;
                     break;
                     
             }       
@@ -394,7 +411,7 @@ static VT100TCC decode_csi(unsigned char *datap,
 	*rmlen = paramlen;
     }
     else {
-	result.type = VT100TCC_WAIT;
+	result.type = VT100_WAIT;
     }
     return result;
 }
@@ -466,7 +483,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
     }
 
     if (unrecognized||!(*rmlen)) {
-        result.type = VT100TCC_WAIT;
+        result.type = VT100_WAIT;
         NSLog(@"invalid: %d",*rmlen);
     }
     else {
@@ -497,76 +514,80 @@ static VT100TCC decode_other(unsigned char *datap,
     switch (c1) {
     case '#':  
 	if (c2 < 0) {
-	    result.type = VT100TCC_WAIT;
+	    result.type = VT100_WAIT;
 	}
 	else {
-	    result.type = VT100TCC_NOTSUPPORT;
+            switch (c2) {
+                case '8': result.type=VT100CSI_DECALN; break;
+                default:    
+                    result.type = VT100_NOTSUPPORT;
+            }
 	    *rmlen = 2;
 	}
 	break;
 
     case '=':
-	result.type = VT100TCC_DECKPAM;
+	result.type = VT100CSI_DECKPAM;
 	*rmlen = 2;
 	break;
 
     case '>':
-	result.type = VT100TCC_DECKPNM;
+	result.type = VT100CSI_DECKPNM;
 	*rmlen = 2;
 	break;
 
     case ')': case '(':
 	if (c2 < 0 || c3 < 0) {
-	    result.type = VT100TCC_WAIT;
+	    result.type = VT100_WAIT;
 	}
 	else {
-	    result.type = VT100TCC_NOTSUPPORT;
+	    result.type = VT100_NOTSUPPORT;
 	    *rmlen = 3;
 	}
 	break;
 
     case '8':
-	result.type = VT100TCC_DECRC;
+	result.type = VT100CSI_DECRC;
 	*rmlen = 2;
 	break;
 
     case '7':
-	result.type = VT100TCC_DECSC;
-	*rmlen = 2;
+	result.type = VT100CSI_DECSC;
+        *rmlen = 2;
 	break;
 
     case 'D':
-	result.type = VT100TCC_IND;
+	result.type = VT100CSI_IND;
 	*rmlen = 2;
 	break;
 
     case 'E':
-	result.type = VT100TCC_NEL;
+	result.type = VT100CSI_NEL;
 	*rmlen = 2;
 	break;
 
     case 'H':
-	result.type = VT100TCC_HTS;
+	result.type = VT100CSI_HTS;
 	*rmlen = 2;
 	break;
 
     case 'M':
-	result.type = VT100TCC_RI;
+	result.type = VT100CSI_RI;
 	*rmlen = 2;
 	break;
 
     case 'Z': 
-	result.type = VT100TCC_DECID;
+	result.type = VT100CSI_DECID;
 	*rmlen = 2;
 	break;
 
     case 'c':
-	result.type = VT100TCC_RIS;
+	result.type = VT100CSI_RIS;
 	*rmlen = 2;
 	break;
 
     default:
-	result.type = VT100TCC_NOTSUPPORT;
+	result.type = VT100_NOTSUPPORT;
 	*rmlen = 2;
 	break;
     }
@@ -577,12 +598,12 @@ static VT100TCC decode_other(unsigned char *datap,
 static VT100TCC decode_control(unsigned char *datap,
 			       size_t datalen,
 			       size_t *rmlen,
-                               NSStringEncoding enc)
+                               NSStringEncoding enc, VT100Screen *SCREEN)
 {
     VT100TCC result;
 
     if (isCSI(datap, datalen)) {
-	result = decode_csi(datap, datalen, rmlen);
+	result = decode_csi(datap, datalen, rmlen, SCREEN);
     }
     else if (isXTERM(datap,datalen)) {
         result = decode_xterm(datap,datalen,rmlen,enc);
@@ -591,8 +612,8 @@ static VT100TCC decode_control(unsigned char *datap,
 	NSCParameterAssert(datalen > 0);
 
 	switch ( *datap ) {
-	case 0:
-	    result.type = VT100TCC_SKIP;
+	case VT100CC_NULL:
+	    result.type = VT100_SKIP;
 	    *rmlen = 0;
 	    while (datalen > 0 && *datap == '\0') {
 		++datap;
@@ -601,47 +622,17 @@ static VT100TCC decode_control(unsigned char *datap,
 	    }
 	    break;
 
-	case ESC:
+	case VT100CC_ESC:
 	    if (datalen == 1) {
-		result.type = VT100TCC_WAIT;
+		result.type = VT100_WAIT;
 	    }
 	    else {
 		result = decode_other(datap, datalen, rmlen);
 	    }
 	    break;
 
-	case '\n':
-	    result.type = VT100TCC_LF;
-	    *rmlen = 1;
-	    break;
-
-	case '\r':
-	    result.type = VT100TCC_CR;
-	    *rmlen = 1;
-	    break;
-
-        case 0x07:
-            result.type = VT100TCC_BELL;
-	    *rmlen = 1;
-            break;
-
-	case 0x08:
-	    result.type = VT100TCC_BS;
-	    *rmlen = 1;
-	    break;
-
-	case 0x09:
-	    result.type = VT100TCC_TAB;
-	    *rmlen = 1;
-	    break;
-
-	case 0x7f:
-	    result.type = VT100TCC_DEL;
-	    *rmlen = 1;
-	    break;
-
 	default:
-	    result.type = VT100TCC_UNKNOWNCHAR;
+	    result.type = *datap;
 	    *rmlen = 1;
 	    break;
 	}
@@ -663,7 +654,7 @@ static VT100TCC decode_ascii(unsigned char *datap,
     }
 
     *rmlen = datalen - len;
-    result.type = VT100TCC_STRING;
+    result.type = VT100_STRING;
     result.u.string = [NSString stringWithCString:datap length:*rmlen];
     
     return result;
@@ -716,11 +707,11 @@ static VT100TCC decode_utf8(unsigned char *datap,
     }
     if (len == datalen) {
         *rmlen = 0;
-        result.type = VT100TCC_WAIT;
+        result.type = VT100_WAIT;
     }
     else {
         *rmlen = datalen - len;
-        result.type = VT100TCC_STRING;
+        result.type = VT100_STRING;
     }
 
     return result;
@@ -758,11 +749,11 @@ static VT100TCC decode_euccn(unsigned char *datap,
     }
     if (len == datalen) {
 	*rmlen = 0;
-	result.type = VT100TCC_WAIT;
+	result.type = VT100_WAIT;
     }
     else {
 	*rmlen = datalen - len;
-	result.type = VT100TCC_STRING;
+	result.type = VT100_STRING;
     }
 
     return result;
@@ -796,11 +787,11 @@ static VT100TCC decode_big5(unsigned char *datap,
     }
     if (len == datalen) {
 	*rmlen = 0;
-	result.type = VT100TCC_WAIT;
+	result.type = VT100_WAIT;
     }
     else {
 	*rmlen = datalen - len;
-	result.type = VT100TCC_STRING;
+	result.type = VT100_STRING;
     }
 
     return result;
@@ -835,11 +826,11 @@ static VT100TCC decode_euc_jp(unsigned char *datap,
     }
     if (len == datalen) {
         *rmlen = 0;
-        result.type = VT100TCC_WAIT;
+        result.type = VT100_WAIT;
     }
     else {
         *rmlen = datalen - len;
-        result.type = VT100TCC_STRING;
+        result.type = VT100_STRING;
     }
 
     return result;
@@ -872,11 +863,11 @@ static VT100TCC decode_sjis(unsigned char *datap,
 
     if (len == datalen) {
         *rmlen = 0;
-        result.type = VT100TCC_WAIT;
+        result.type = VT100_WAIT;
     }
     else {
         *rmlen = datalen - len;
-        result.type = VT100TCC_STRING;
+        result.type = VT100_STRING;
     }
 
     return result;
@@ -904,11 +895,11 @@ static VT100TCC decode_euckr(unsigned char *datap,
     }
     if (len == datalen) {
         *rmlen = 0;
-        result.type = VT100TCC_WAIT;
+        result.type = VT100_WAIT;
     }
     else {
         *rmlen = datalen - len;
-        result.type = VT100TCC_STRING;
+        result.type = VT100_STRING;
     }
 
     return result;
@@ -931,11 +922,11 @@ static VT100TCC decode_other_enc(unsigned char *datap,
     }
     if (len == datalen) {
         *rmlen = 0;
-        result.type = VT100TCC_WAIT;
+        result.type = VT100_WAIT;
     }
     else {
         *rmlen = datalen - len;
-        result.type = VT100TCC_STRING;
+        result.type = VT100_STRING;
     }
 
     return result;
@@ -950,7 +941,7 @@ static VT100TCC decode_string(unsigned char *datap,
     NSData *data;
 
     *rmlen = 1;
-    result.type = VT100TCC_UNKNOWNCHAR;
+    result.type = VT100_UNKNOWNCHAR;
     result.u.code = datap[0];
 
 //    NSLog(@"data: %@",[NSData dataWithBytes:datap length:datalen]);
@@ -983,7 +974,7 @@ static VT100TCC decode_string(unsigned char *datap,
         result = decode_other_enc(datap, datalen, rmlen);
     }
 
-    if (result.type != VT100TCC_WAIT) {
+    if (result.type != VT100_WAIT) {
         data = [NSData dataWithBytes:datap length:*rmlen];
         result.u.string = [[[NSString alloc]
                                    initWithData:data
@@ -1044,7 +1035,9 @@ static VT100TCC decode_string(unsigned char *datap,
     INTERLACE_MODE = NO;
     KEYPAD_MODE = NO;
     INSERT_MODE = NO;
-    CHARATTR = 0;
+    saveCHARSET=CHARSET = NO;
+    XON = YES;
+    saveCHARATTR=CHARATTR = 0;
     FG_COLORCODE = COLORCODE_FG_DEFAULT;
     BG_COLORCODE = COLORCODE_BG_DEFAULT;
     DefaultFG = COLOR_WHITE;
@@ -1106,20 +1099,20 @@ static VT100TCC decode_string(unsigned char *datap,
     datalen = (size_t)[STREAM length];
 
     if (datalen == 0) {
-	result.type = VT100TCC_NULL;
+	result.type = VT100CC_NULL;
     }
     else {
 	size_t rmlen = 0;
 
 	if (iscontrol(datap[0])) {
-	    result = decode_control(datap, datalen, &rmlen, ENCODING);
+	    result = decode_control(datap, datalen, &rmlen, ENCODING, SCREEN);
 	}
 	else {
 	    if (isString(datap,ENCODING)) {
 		result = decode_string(datap, datalen, &rmlen, ENCODING);
 	    }
 	    else {
-		result.type = VT100TCC_UNKNOWNCHAR;
+		result.type = VT100_UNKNOWNCHAR;
 		result.u.code = datap[0];
 		rmlen = 1;
 	    }
@@ -1127,7 +1120,7 @@ static VT100TCC decode_string(unsigned char *datap,
 
 	if (rmlen > 0) {
 	    NSParameterAssert(datalen - rmlen >= 0);
-	    if (TRACE && result.type == VT100TCC_UNKNOWNCHAR) {
+	    if (TRACE && result.type == VT100_UNKNOWNCHAR) {
 //		NSLog(@"INPUT-BUFFER %@, read %d byte, type %d", 
 //                      STREAM, rmlen, result.type);
 	    }
@@ -1283,6 +1276,16 @@ static VT100TCC decode_string(unsigned char *datap,
     return INSERT_MODE;
 }
 
+- (BOOL) xon
+{
+    return XON;
+}
+
+- (BOOL) charset
+{
+    return CHARSET;
+}
+
 - (int)foregroundColorCode
 {
     return FG_COLORCODE;
@@ -1416,47 +1419,73 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void)_setMode:(VT100TCC)token
 {
+    BOOL mode;
+    
+    switch (token.type) {
+        case VT100CSI_DECSET:
+        case VT100CSI_DECRST:
+            mode=(token.type == VT100CSI_DECSET);
 
-    if (token.type == VT100TCC_DECSET ||
-	token.type == VT100TCC_DECRST) 
-    {
-	BOOL mode=(token.type == VT100TCC_DECSET);
+            switch (token.u.csi.p[0]) {
+                case 20: LINE_MODE = mode; break;
+                case 1:  CURSOR_MODE = mode; break;
+                case 2:  ANSI_MODE = mode; break;
+                case 3:  COLUMN_MODE = mode; break;
+                case 4:  SCROLL_MODE = mode; break;
+                case 5:  if (SCREEN_MODE = mode) CHARATTR |= VT100CHARATTR_REVERSEMASK;  else CHARATTR &= (~VT100CHARATTR_REVERSEMASK); break;
+                case 6:  ORIGIN_MODE = mode; break;
+                case 7:  WRAPAROUND_MODE = mode; break;
+                case 8:  AUTOREPEAT_MODE = mode; break;
+                case 9:  INTERLACE_MODE  = mode; break;
+            }
+            break;
+        case VT100CSI_SM:
+        case VT100CSI_RM:
+            mode=(token.type == VT100CSI_SM);
 
-	switch (token.u.csi.p[0]) {
-	case 20: LINE_MODE = mode; break;
-	case 1:  CURSOR_MODE = mode; break;
-	case 3:  COLUMN_MODE = mode; break;
-	case 4:  SCROLL_MODE = mode; break;
-	case 5:  SCREEN_MODE = mode; break;
-	case 6:  ORIGIN_MODE = mode; break;
-	case 7:  WRAPAROUND_MODE = mode; break;
-	case 8:  AUTOREPEAT_MODE = mode; break;
-	case 9:  INTERLACE_MODE  = mode; break;
-	}
+            switch (token.u.csi.p[0]) {
+                case 4:
+                    INSERT_MODE = mode; break;
+            }
+                break;
+        case VT100CSI_DECKPAM:
+            KEYPAD_MODE = YES;
+            break;
+        case VT100CSI_DECKPNM:
+            KEYPAD_MODE = NO;
+            break;
+        case VT100CC_SO:
+            CHARSET = NO;
+            break;
+        case VT100CC_SI:
+            CHARSET = YES;
+            break;
+        case VT100CC_DC1:
+            XON = YES;
+            break;
+        case VT100CC_DC3:
+            XON = NO;
+            break;
+        case VT100CSI_DECRC:
+            CHARATTR=saveCHARATTR;
+            CHARSET=saveCHARSET;
+            break;
+        case VT100CSI_DECSC:
+            saveCHARATTR=CHARATTR;
+            saveCHARSET=CHARSET;
+            break;
     }
-    else if (token.type == VT100TCC_SM||token.type==VT100TCC_RM) {
-        BOOL mode=(token.type == VT100TCC_SM);
-
-        switch (token.u.csi.p[0]) {
-            case 4:
-                INSERT_MODE = mode; break;
-        }
-    }
-    else if (token.type == VT100TCC_DECKPAM)
-	KEYPAD_MODE = YES;
-    else if (token.type == VT100TCC_DECKPNM)
-	KEYPAD_MODE = NO;
 }
 
 - (void)_setCharAttr:(VT100TCC)token
 {
-    if (token.type == VT100TCC_SGR) {
+    if (token.type == VT100CSI_SGR) {
 
         if (token.u.csi.count == 0) {
             // all attribute off
             CHARATTR = 0;       
 	    FG_COLORCODE = COLORCODE_FG_DEFAULT;
-	    BG_COLORCODE = COLORCODE_BG_DEFAULT;
+	    BG_COLORCODE = COLORCODE_BG_DEFAULT; 
         }
         else {
             int i;
@@ -1564,6 +1593,11 @@ static VT100TCC decode_string(unsigned char *datap,
 - (NSColor *) defaultBGColor
 {
     return DefaultBG;
+}
+
+- (void) setScreen:(VT100Screen*) sc
+{
+    SCREEN=sc;
 }
 
 @end

@@ -180,13 +180,13 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCREEN beginEditing];
 
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
-	   token.type != VT100TCC_NULL &&
-	   token.type != VT100TCC_WAIT))
+	   token.type != VT100CC_NULL &&
+	   token.type != VT100_WAIT))
     {
-	if (token.type != VT100TCC_SKIP)
+	if (token.type != VT100_SKIP)
 	    [SCREEN putToken:token];
     }
-    if (token.type == VT100TCC_NOTSUPPORT) {
+    if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
     [SCREEN endEditing];

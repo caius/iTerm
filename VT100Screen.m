@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.4 2002-12-16 23:10:56 yfabian Exp $
+// $Id: VT100Screen.m,v 1.5 2002-12-19 21:02:22 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -137,7 +137,8 @@ static BOOL PLAYBELL = YES;
     TOP_LINE  = 0;
     LINE_LIMIT = DEFAULT_LINELIMIT;
     OLD_CURSOR_INDEX=-1;
-
+    [self clearTabStop];
+    
     return self;
 }
 
@@ -281,6 +282,7 @@ static BOOL PLAYBELL = YES;
 	  __FILE__, __LINE__, terminal);
 #endif
     TERMINAL = terminal;
+    [TERMINAL setScreen: self];
 }
 
 - (VT100Terminal *)terminal
@@ -410,48 +412,114 @@ static BOOL PLAYBELL = YES;
 
 - (void)putToken:(VT100TCC)token
 {
+    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen putToken:%d]",__FILE__, __LINE__, token);
 #endif
+    static unichar s[300];
+    int i;
+    NSString *str;
     
     switch (token.type) {
-    case VT100TCC_STRING:
+    // our special code
+    case VT100_STRING:
 	[self setString:token.u.string];
 	break;
+    case VT100_UNKNOWNCHAR: break;
+    case VT100_NOTSUPPORT: break;
 
-    case VT100TCC_CUB: [self cursorLeft:token.u.csi.p[0]]; break;
-    case VT100TCC_CUF: [self cursorRight:token.u.csi.p[0]]; break;
-    case VT100TCC_CUU: [self cursorUp:token.u.csi.p[0]]; break;
-    case VT100TCC_CUD: [self cursorDown:token.u.csi.p[0]]; break;
-    case VT100TCC_CUP: [self cursorToX:token.u.csi.p[1]
-				     Y:token.u.csi.p[0]];
+    //  VT100 CC
+    case VT100CC_ENQ: break;
+    case VT100CC_BEL: [self playBell]; break;
+    case VT100CC_BS:  [self backSpace]; break;
+    case VT100CC_HT:  [self setTab]; break;
+    case VT100CC_LF:
+    case VT100CC_VT:
+    case VT100CC_FF:  [self setNewLine]; break;
+    case VT100CC_CR:  CURSOR_X = 0; break;
+    case VT100CC_SO:  break;
+    case VT100CC_SI:  break;
+    case VT100CC_DC1: break;
+    case VT100CC_DC3: break;
+    case VT100CC_CAN:
+    case VT100CC_SUB: break;
+    case VT100CC_DEL: [self deleteCharacters:1];break;
+
+    // VT100 CSI
+    case VT100CSI_CPR: break;
+    case VT100CSI_CUB: [self cursorLeft:token.u.csi.p[0]]; break;
+    case VT100CSI_CUD: [self cursorDown:token.u.csi.p[0]]; break;
+    case VT100CSI_CUF: [self cursorRight:token.u.csi.p[0]]; break;
+    case VT100CSI_CUP: [self cursorToX:token.u.csi.p[1]
+                                     Y:token.u.csi.p[0]];
         break;
-    case VT100TCC_TAB:  [self setTab]; break;
-    case VT100TCC_CR:   CURSOR_X = 0; break;
-    case VT100TCC_LF:   [self setNewLine]; break;
-    case VT100TCC_DEL:	[self deleteCharacters:1];break;
-    case VT100TCC_BS:   [self backSpace]; break;
-    case VT100TCC_ED:   [self eraseInDisplay:token]; break;
-    case VT100TCC_EL:   [self eraseInLine:token]; break;
-    case VT100TCC_SGR:  [self selectGraphicRendition:token]; break;
-    case VT100TCC_IND:  [self scrollUp]; break;
-    case VT100TCC_RI:   [self scrollDown]; break;
-    case VT100TCC_DSR:  [self deviceReport:token]; break;
-    case VT100TCC_DA:   [self deviceAttribute:token]; break;
-    case VT100TCC_BELL: [self playBell]; break;
-    case VT100TCC_DECSC: [self saveCursorPosition]; break;
-    case VT100TCC_DECRC: [self restoreCursorPosition]; break;
-    case VT100TCC_DECSTBM: [self setTopBottom:token]; break;
-	
-    case VT100TCC_DECKPAM: break;
-    case VT100TCC_DECKPNM: break;
-    case VT100TCC_SM: break;
-    case VT100TCC_RM: break;
-    case VT100TCC_DECSET: break;
-    case VT100TCC_DECRST: break;
-    case VT100TCC_HTS: break;
-    case VT100TCC_TBC: break;
+    case VT100CSI_CUU: [self cursorUp:token.u.csi.p[0]]; break;
+    case VT100CSI_DA:   [self deviceAttribute:token]; break;
+    case VT100CSI_DECALN:
+        for (i=0;i<WIDTH;i++) s[i]='E';
+        str=[NSString stringWithCharacters:s length:WIDTH];
+        for(i=0;i<HEIGHT;i++)
+            [self setStringToX:0 Y:i string:str];
+        break;
+    case VT100CSI_DECDHL: break;
+    case VT100CSI_DECDWL: break;
+    case VT100CSI_DECID: break;
+    case VT100CSI_DECKPAM: break;
+    case VT100CSI_DECKPNM: break;
+    case VT100CSI_DECLL: break;
+    case VT100CSI_DECRC: [self restoreCursorPosition]; break;
+    case VT100CSI_DECREPTPARM: break;
+    case VT100CSI_DECREQTPARM: break;
+    case VT100CSI_DECSC: [self saveCursorPosition]; break;
+    case VT100CSI_DECSTBM: [self setTopBottom:token]; break;
+    case VT100CSI_DECSWL: break;
+    case VT100CSI_DECTST: break;
+    case VT100CSI_DSR:  [self deviceReport:token]; break;
+    case VT100CSI_ED:   [self eraseInDisplay:token]; break;
+    case VT100CSI_EL:   [self eraseInLine:token]; break;
+    case VT100CSI_HTS: tabStop[CURSOR_X]=YES; break;
+    case VT100CSI_HVP: [self cursorToX:token.u.csi.p[1]
+                                     Y:token.u.csi.p[0]];
+        break;
+    case VT100CSI_NEL:
+        CURSOR_X=0;
+    case VT100CSI_IND:
+        CURSOR_Y++;
+        if (CURSOR_Y>=HEIGHT) {
+            CURSOR_Y=HEIGHT-1;
+            [self scrollUp];
+        }
+        break;
+    case VT100CSI_RI:
+        CURSOR_Y--;
+        if (CURSOR_Y<0) {
+            CURSOR_Y=0;
+            [self scrollDown];
+        }
+            break;
+    case VT100CSI_RIS: break;
+    case VT100CSI_RM: break;
+    case VT100CSI_SCS: break;
+    case VT100CSI_SGR:  [self selectGraphicRendition:token]; break;
+    case VT100CSI_SM: break;
+    case VT100CSI_TBC:
+        switch (token.u.csi.p[0]) {
+            case 3: [self clearTabStop]; break;
+            case 0: tabStop[CURSOR_X]=NO;
+        }
+        break;
 
+    case VT100CSI_DECSET:
+    case VT100CSI_DECRST:
+        if (token.u.csi.p[0]==3) {	// set the column
+            [STORAGE endEditing];
+            [[SESSION parent] resizeWindow:([TERMINAL columnMode]?132:80)
+                                    height:HEIGHT];
+            [STORAGE beginEditing];
+        }
+        break;
+        
+    // XTERM extensions
     case XTERMCC_TITLE:
         //[SESSION setName:token.u.string];
         [WINDOW setTitle:token.u.string];
@@ -461,8 +529,6 @@ static BOOL PLAYBELL = YES;
     case XTERMCC_DELCH: [self deleteCharacters:token.u.csi.p[0]]; break;
     case XTERMCC_DELLN: [self deleteLines:token.u.csi.p[0]]; break;
         
-    case VT100TCC_UNKNOWNCHAR: break;
-    case VT100TCC_NOTSUPPORT: break;
 
     default:
 	NSLog(@"%s(%d): bug?? token.type = %d", 
@@ -751,7 +817,7 @@ static BOOL PLAYBELL = YES;
 	[self setString:str width:1];
     }
 #else
-    CURSOR_X += dif;
+    for(;!tabStop[CURSOR_X]&&CURSOR_X<WIDTH; CURSOR_X++);
 #endif
 }
 
@@ -822,6 +888,7 @@ static BOOL PLAYBELL = YES;
     switch (token.u.csi.p[0]) {
     case 1:
         [self setStringSpaceToX:0 Y:CURSOR_Y length:CURSOR_X+1];
+        break;
     case 2:
 	CURSOR_X = 0;
 	// continue, next case....
@@ -844,7 +911,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)cursorLeft:(int)n
 {
-    int x = CURSOR_X - n;
+    int x = CURSOR_X - (n>0?n:1);
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorLeft:%d]", 
@@ -855,12 +922,12 @@ static BOOL PLAYBELL = YES;
     if (x >= 0 && x < WIDTH)
 	CURSOR_X = x;
     [self getIndex:CURSOR_X y:CURSOR_Y];
-    if (CURSOR_IN_MIDDLE) CURSOR_X--;
+//    if (CURSOR_IN_MIDDLE) CURSOR_X--;
 }
 
 - (void)cursorRight:(int)n
 {
-    int x = CURSOR_X + n;
+    int x = CURSOR_X + (n>0?n:1);
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorRight:%d]", 
@@ -871,42 +938,47 @@ static BOOL PLAYBELL = YES;
     if (x >= 0 && x < WIDTH)
 	CURSOR_X = x;
     [self getIndex:CURSOR_X y:CURSOR_Y];
-    if (CURSOR_IN_MIDDLE) if (CURSOR_X<WIDTH-1) CURSOR_X++; else CURSOR_X--;
-    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
+//   if (CURSOR_IN_MIDDLE) if (CURSOR_X<WIDTH-1) CURSOR_X++; else CURSOR_X--;
+//    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
 
 
 }
 
 - (void)cursorUp:(int)n
 {
-    int y = CURSOR_Y - n;
+    int y = CURSOR_Y - (n>0?n:1);
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorUp:%d]", 
 	  __FILE__, __LINE__, n);
 #endif
-    NSParameterAssert(SCROLL_TOP >= 0 && SCROLL_TOP < HEIGHT);
-    NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
-    NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM);
+    CURSOR_Y=y<SCROLL_TOP?SCROLL_TOP:y;
+    
+/*
+ NSParameterAssert(SCROLL_TOP >= 0 && SCROLL_TOP < HEIGHT);
+ NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
+ NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM);
 
-    for (; y < SCROLL_TOP; ++y) {
+ for (; y < SCROLL_TOP; ++y) {
 	[self scrollDown];
     }
     CURSOR_Y = y;
     [self getIndex:CURSOR_X y:CURSOR_Y];
-    if (CURSOR_IN_MIDDLE) CURSOR_X--;
-
+//    if (CURSOR_IN_MIDDLE) CURSOR_X--;
+*/
 }
 
 - (void)cursorDown:(int)n
 {
-    int y = CURSOR_Y + n;
+    int y = CURSOR_Y + (n>0?n:1);
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorDown:%d]", 
 	  __FILE__, __LINE__, n);
 #endif
-    NSParameterAssert(SCROLL_TOP >= 0 && SCROLL_TOP < HEIGHT);
+    CURSOR_Y=y>SCROLL_BOTTOM?SCROLL_BOTTOM:y;
+/*
+ NSParameterAssert(SCROLL_TOP >= 0 && SCROLL_TOP < HEIGHT);
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM);
 
@@ -915,7 +987,8 @@ static BOOL PLAYBELL = YES;
     }
     CURSOR_Y = y;
     [self getIndex:CURSOR_X y:CURSOR_Y];
-    if (CURSOR_IN_MIDDLE) CURSOR_X--;
+//    if (CURSOR_IN_MIDDLE) CURSOR_X--;
+*/
 }
 
 - (void)cursorToX:(int)x Y:(int)y
@@ -924,20 +997,22 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen cursorToX:%d Y:%d]", 
 	  __FILE__, __LINE__, x, y);
 #endif
-    x=(x-1)%WIDTH+1;
-    y=(y-1)%HEIGHT+1;
-    if (x >= 1 && x <= WIDTH &&
-	y >= 1 && y <= HEIGHT) 
+    if ([TERMINAL originMode]) y+=SCROLL_TOP;
+    
+    x=(x-1)%WIDTH;
+    y=(y-1)%HEIGHT;
+    if (x >= 0 && x < WIDTH &&
+	y >= 0 && y < HEIGHT) 
     {
-	CURSOR_X = x - 1;
-	CURSOR_Y = y - 1;
+	CURSOR_X = x ;
+	CURSOR_Y = y ;
         [self getIndex:CURSOR_X y:CURSOR_Y];
-        if (CURSOR_IN_MIDDLE) CURSOR_X--;
+//        if (CURSOR_IN_MIDDLE) CURSOR_X--;
     }
     else {
         NSLog(@"cursorToXY: out of bound:(%d,%d)",x,y);
     }
-    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
+//    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
 
 }
 
@@ -966,7 +1041,7 @@ static BOOL PLAYBELL = YES;
     CURSOR_X = SAVE_CURSOR_X;
     CURSOR_Y = SAVE_CURSOR_Y;
     [self getIndex:CURSOR_X y:CURSOR_Y];
-    if (CURSOR_IN_MIDDLE) CURSOR_X--;
+//    if (CURSOR_IN_MIDDLE) CURSOR_X--;
     
     if (CURSOR_X >= 0 && CURSOR_X < WIDTH)
     
@@ -1217,12 +1292,17 @@ static BOOL PLAYBELL = YES;
 
 - (NSMutableDictionary *)characterAttributeDictionary{
     NSMutableDictionary *dic = [TERMINAL characterAttributeDictionary];
+    //NSFont *f=FONT;
     //unsigned int attr = [TERMINAL characterAttribute];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen characterAttributeDictionary]", 
 	  __FILE__, __LINE__);
 #endif
+    
+//    if ([TERMINAL characterAttribute]&VT100CHARATTR_BOLD)
+//        f=[[NSFontManager  sharedFontManager] convertFont:FONT toHaveTrait:NSBoldFontMask];
+    
     [dic setObject:FONT forKey:NSFontAttributeName];
 //    NSLog(@"attribute:%@",dic);
 
@@ -1320,5 +1400,22 @@ static BOOL PLAYBELL = YES;
     }
     
 }
+
+- (int) cursorX
+{
+    return CURSOR_X+1;
+}
+
+- (int) cursorY
+{
+    return CURSOR_Y+1;
+}
+
+- (void) clearTabStop
+{
+    int i;
+    for(i=0;i<300;i++) tabStop[i]=NO;
+}
+
 @end
 

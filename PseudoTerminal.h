@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.16 2002-12-18 04:56:51 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.17 2002-12-19 21:02:22 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -113,6 +113,7 @@
 - (void)setWindowTitle: (NSString *)title;
 - (void)setAllFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
+
 
 // MainMenu
 - (void)setMainMenu:(id) sender;

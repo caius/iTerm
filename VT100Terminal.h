@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.1.1.1 2002-11-26 04:56:51 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.2 2002-12-19 21:02:22 yfabian Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -10,56 +10,71 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class VT100Screen;
+
 // VT100TCC types
-#define VT100TCC_NULL        0
-#define VT100TCC_WAIT        1
-#define VT100TCC_NOTSUPPORT  2
-#define VT100TCC_SKIP        3
+#define VT100CC_NULL        0
+#define VT100CC_ENQ         5    // Transmit ANSWERBACK message
+#define VT100CC_BEL         7    // Sound bell
+#define VT100CC_BS          8    // Move cursor to the left
+#define VT100CC_HT          9    // Move cursor to the next tab stop
+#define VT100CC_LF         10    // line feed or new line operation
+#define VT100CC_VT         11    // Same as <LF>.
+#define VT100CC_FF         12	 // Same as <LF>.
+#define VT100CC_CR         13    // Move the cursor to the left margin
+#define VT100CC_SO         14    // Invoke the G1 character set
+#define VT100CC_SI         15    // Invoke the G0 character set
+#define VT100CC_DC1        17    // Causes terminal to resume transmission (XON).
+#define VT100CC_DC3        19    // Causes terminal to stop transmitting all codes except XOFF and XON (XOFF).
+#define VT100CC_CAN        24    // Cancel a control sequence
+#define VT100CC_SUB        26    // Same as <CAN>.
+#define VT100CC_ESC        27    // Introduces a control sequence.
+#define VT100CC_DEL       255    // Ignored on input; not stored in buffer.
+                                                                              
+#define VT100_WAIT        	1000
+#define VT100_NOTSUPPORT  	1001
+#define VT100_SKIP        	1002
+#define VT100_STRING      	1003       // ascii string
+#define VT100_UNKNOWNCHAR 	1004
+#define VT100CSI_DECSET		1005
+#define VT100CSI_DECRST		1006
 
-#define VT100TCC_STRING      10       // ascii string
-#define VT100TCC_UNKNOWNCHAR 13
+#define VT100CSI_CPR         2000       // Cursor Position Report
+#define VT100CSI_CUB         2001       // Cursor Backward
+#define VT100CSI_CUD         2002       // Cursor Down
+#define VT100CSI_CUF         2003       // Cursor Forward
+#define VT100CSI_CUP         2004       // Cursor Position
+#define VT100CSI_CUU         2005       // Cursor Up
+#define VT100CSI_DA          2006       // Device Attributes
+#define VT100CSI_DECALN	     2007	// Screen Alignment Display
+#define VT100CSI_DECDHL      2013       // Double Height Line
+#define VT100CSI_DECDWL      2014       // Double Width Line
+#define VT100CSI_DECID       2015       // Identify Terminal
+#define VT100CSI_DECKPAM     2017       // Keypad Application Mode
+#define VT100CSI_DECKPNM     2018       // Keypad Numeric Mode
+#define VT100CSI_DECLL       2019       // Load LEDS
+#define VT100CSI_DECRC       2021       // Restore Cursor
+#define VT100CSI_DECREPTPARM 2022       // Report Terminal Parameters
+#define VT100CSI_DECREQTPARM 2023       // Request Terminal Parameters
+#define VT100CSI_DECSC       2024       // Save Cursor
+#define VT100CSI_DECSTBM     2027       // Set Top and Bottom Margins
+#define VT100CSI_DECSWL      2028       // Single-width Line
+#define VT100CSI_DECTST      2029       // Invoke Confidence Test
+#define VT100CSI_DSR         2030       // Device Status Report
+#define VT100CSI_ED          2031       // Erase In Display
+#define VT100CSI_EL          2032       // Erase In Line
+#define VT100CSI_HTS         2033       // Horizontal Tabulation Set
+#define VT100CSI_HVP         2034       // Horizontal and Vertical Position
+#define VT100CSI_IND         2035       // Index
+#define VT100CSI_NEL         2037       // Next Line
+#define VT100CSI_RI          2038       // Reverse Index
+#define VT100CSI_RIS         2039       // Reset To Initial State
+#define VT100CSI_RM          2040       // Reset Mode
+#define VT100CSI_SCS         2041       // Select Character Set
+#define VT100CSI_SGR         2042       // Select Graphic Rendition
+#define VT100CSI_SM          2043       // Set Mode
+#define VT100CSI_TBC         2044       // Tabulation Clear
 
-#define VT100TCC_CPR         30       // Cursor Position Report
-#define VT100TCC_CUB         31       // Cursor Backward
-#define VT100TCC_CUD         32       // Cursor Down
-#define VT100TCC_CUF         33       // Cursor Forward
-#define VT100TCC_CUP         34       // Cursor Position
-#define VT100TCC_CUU         35       // Cursor Up
-#define VT100TCC_DA          36       // Device Attributes
-#define VT100TCC_DECDHL      43       // Double Height Line
-#define VT100TCC_DECDWL      44       // Double Width Line
-#define VT100TCC_DECID       45       // Identify Terminal
-#define VT100TCC_DECKPAM     47       // Keypad Application Mode
-#define VT100TCC_DECKPNM     48       // Keypad Numeric Mode
-#define VT100TCC_DECLL       49       // Load LEDS
-#define VT100TCC_DECRC       51       // Restore Cursor
-#define VT100TCC_DECREPTPARM 52       // Report Terminal Parameters
-#define VT100TCC_DECREQTPARM 53       // Request Terminal Parameters
-#define VT100TCC_DECSC       54       // Save Cursor
-#define VT100TCC_DECSTBM     57       // Set Top and Bottom Margins
-#define VT100TCC_DECSWL      58       // Single-width Line
-#define VT100TCC_DECTST      59       // Invoke Confidence Test
-#define VT100TCC_DSR         60       // Device Status Report
-#define VT100TCC_ED          61       // Erase In Display
-#define VT100TCC_EL          62       // Erase In Line
-#define VT100TCC_HTS         63       // Horizontal Tabulation Set
-#define VT100TCC_HVP         64       // Horizontal and Vertical Position
-#define VT100TCC_IND         65       // Index
-#define VT100TCC_NEL         67       // Next Line
-#define VT100TCC_RI          68       // Reverse Index
-#define VT100TCC_RIS         69       // Reset To Initial State
-#define VT100TCC_RM          70       // Reset Mode
-#define VT100TCC_SCS         71       // Select Character Set
-#define VT100TCC_SGR         72       // Select Graphic Rendition
-#define VT100TCC_SM          73       // Set Mode
-#define VT100TCC_TBC         74       // Tabulation Clear
-
-#define VT100TCC_TAB         80       // TAB
-#define VT100TCC_CR          81       // CR
-#define VT100TCC_LF          82       // LF
-#define VT100TCC_DEL         83       // DELETE
-#define VT100TCC_BS          84       // BACKSPACE
-#define VT100TCC_BELL        85       // BELL
 
 // some xterm extension
 #define XTERMCC_TITLE	     86	      // Set window title
@@ -67,8 +82,6 @@
 #define XTERMCC_INSLN	     88	      // Insert lines
 #define XTERMCC_DELCH	     89       // delete blank
 #define XTERMCC_DELLN	     90	      // delete lines
-#define VT100TCC_DECSET	     91
-#define VT100TCC_DECRST	     92
 
 #define VT100CSIPARAM_MAX    16
 
@@ -137,6 +150,8 @@ typedef struct {
 {
     NSStringEncoding  ENCODING;
     NSMutableData     *STREAM;
+    VT100Screen       *SCREEN;
+
     NSColor *COLOR_BLACK;
     NSColor *COLOR_RED;
     NSColor *COLOR_GREEN;
@@ -148,6 +163,7 @@ typedef struct {
     
     BOOL LINE_MODE;		// YES=Newline, NO=Line feed
     BOOL CURSOR_MODE;		// YES=Application, NO=Cursor
+    BOOL ANSI_MODE;		// YES=ANSI, NO=VT52
     BOOL COLUMN_MODE;		// YES=132 Column, NO=80 Column
     BOOL SCROLL_MODE;		// YES=Smooth, NO=Jump
     BOOL SCREEN_MODE;		// YES=Reverse, NO=Normal
@@ -157,13 +173,18 @@ typedef struct {
     BOOL INTERLACE_MODE;	// YES=On, NO=Off
     BOOL KEYPAD_MODE;		// YES=Application, NO=Numeric
     BOOL INSERT_MODE;		// YES=Insert, NO=Replace
-
+    BOOL CHARSET;		// YES=G1, NO=G0
+    BOOL XON;			// YES=XON, NO=XOFF
+    
     unsigned int CHARATTR;
     int FG_COLORCODE;
     int BG_COLORCODE;
 
     NSColor *DefaultFG;
     NSColor *DefaultBG;
+
+    unsigned int saveCHARATTR;
+    BOOL saveCHARSET;
     
     BOOL TRACE;
 }
@@ -206,6 +227,8 @@ typedef struct {
 - (BOOL)interlaceMode;
 - (BOOL)keypadMode;
 - (BOOL)insertMode;
+- (BOOL)charset;
+- (BOOL)xon;
 
 - (int)foregroundColorCode;
 - (int)backgroundColorCode;
@@ -232,6 +255,8 @@ typedef struct {
 
 - (void)_setMode:(VT100TCC)token;
 - (void)_setCharAttr:(VT100TCC)token;
+
+- (void) setScreen:(VT100Screen *)sc;
 
 @end
 

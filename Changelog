@@ -1,3 +1,6 @@
+2002-12-19	fabian
+    * Fixed a lot of bugs related to VT100 emulation.
+    
 2002-12-18	fabian
     * change the shortcut key to close terminal to command-w
       and close window to shift-command-w, a la mozilla

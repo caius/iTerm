@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.292 2004-09-08 06:11:24 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.293 2004-09-12 07:15:22 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -569,12 +569,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     return HEIGHT;
 }
 
-- (void)setCharWidth:(int)width height:(int)height
-{
-	charWidth=width;
-	charHeight=height;
-}
-
 - (void)setCharSizeUsingFont: (NSFont *)font
 {
 	int i;
@@ -963,11 +957,38 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction) toggleInputToAllSessions: (id) sender
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal toggleInputToAllSessions:%@]",
+		  __FILE__, __LINE__, sender);
+#endif
     sendInputToAllSessions = !sendInputToAllSessions;
     
     // cause reloading of menus
     [[iTermController sharedInstance] setCurrentTerminal: self];
 }
+
+- (void) setFontSizeFollowWindowResize: (BOOL) flag
+{
+    fontSizeFollowWindowResize = flag;
+}
+
+- (IBAction) toggleFontSizeFollowWindowResize: (id) sender
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal toggleFontSizeFollowWindowResize:%@]",
+		  __FILE__, __LINE__, sender);
+#endif
+    fontSizeFollowWindowResize = !fontSizeFollowWindowResize;
+    
+    // cause reloading of menus
+    [[iTermController sharedInstance] setCurrentTerminal: self];
+}
+
+- (BOOL) fontSizeFollowWindowResize
+{
+    return (fontSizeFollowWindowResize);
+}
+
 
 // NSWindow delegate methods
 - (void)windowDidDeminiaturize:(NSNotification *)aNotification
@@ -1065,6 +1086,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 		  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
+
+	if (fontSizeFollowWindowResize) {
+		//scale = defaultFrame.size.height / [sender frame].size.height;
+		float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] frame].size.height;
+		float scale = (proposedFrameSize.height - nch) / HEIGHT / charHeight;
+		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
+		font = [self _getMaxFont:font height:proposedFrameSize.height - nch lines:HEIGHT];
+		proposedFrameSize.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
+		NSLog(@"actual height: %f\t scale: %f\t new size:%f\told:%f",proposedFrameSize.height,scale, [font pointSize], [FONT pointSize]);
+	}
 	
     return (proposedFrameSize);
 }
@@ -1081,27 +1112,57 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 	
     frame = [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect];
-#if 0
+#if 1
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 		  frame.origin.x, frame.origin.y,
 		  frame.size.width, frame.size.height);
 #endif
-		    
-    w = (int)((frame.size.width - MARGIN * 2)/charWidth);
-    h = (int)(frame.size.height/charHeight);
+	if (fontSizeFollowWindowResize) {
+		float scale = (frame.size.height) / HEIGHT / charHeight;
+		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
+		font = [self _getMaxFont:font height:frame.size.height lines:HEIGHT];
+		
+		float height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier;
 
+		if (height != charHeight) {
+			NSLog(@"Old size: %f\t proposed New size:%f\tWindow Height: %f",[FONT pointSize], [font pointSize],frame.size.height);
+			NSFont *nafont = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([NAFONT pointSize] * scale))];
+			nafont = [self _getMaxFont:nafont height:frame.size.height lines:HEIGHT];
+			
+			[self setFont:font nafont:nafont];
+			//[self resizeWindow:WIDTH height:HEIGHT];
+			NSString *aTitle = [NSString stringWithFormat:@"%@ (@%.0f)", [[_sessionMgr currentSession] name], [font pointSize]];
+			[self setWindowTitle: aTitle];    
+			//for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+			//	[[[_sessionMgr sessionAtIndex:i] TEXTVIEW] setFrameSize:frame.size];		
+			//}
+			[self setWindowSize: YES];
 
-    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
-        [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
-        [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
-    }
-    
-    WIDTH = w;
-    HEIGHT = h;
-	// Display the new size in the window title.
-    NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[_sessionMgr currentSession] name], WIDTH, HEIGHT];
-    [self setWindowTitle: aTitle];    
-	
+		}
+		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
+		h = (int)(frame.size.height/charHeight);
+		if (w!=WIDTH || h!=HEIGHT) {
+			for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+				[[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
+				[[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
+			}
+		}
+	}
+	else {	    
+		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
+		h = (int)(frame.size.height/charHeight);
+
+		for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+			[[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
+			[[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
+		}
+		
+		WIDTH = w;
+		HEIGHT = h;
+		// Display the new size in the window title.
+		NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[_sessionMgr currentSession] name], WIDTH, HEIGHT];
+		[self setWindowTitle: aTitle];    
+	}	
 	// Reset the scrollbar to the bottom
     [[[_sessionMgr currentSession] TEXTVIEW] scrollEnd];
 	
@@ -1119,7 +1180,41 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 }
 
-
+- (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal windowWillUseStandardFrame: defaultFramewidth = %f, height = %f]",
+		  __FILE__, __LINE__, defaultFrame.size.width, defaultFrame.size.height);
+#endif
+	float height, width, scale;
+	
+	if (fontSizeFollowWindowResize) {
+		float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] frame].size.height;
+		scale = (defaultFrame.size.height - nch) / HEIGHT / charHeight;
+		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
+		font = [self _getMaxFont:font height:defaultFrame.size.height - nch lines:HEIGHT];
+		NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+		NSSize sz;
+		[dic setObject:font forKey:NSFontAttributeName];
+		sz = [@"W" sizeWithAttributes:dic];
+		
+		
+		height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
+		width = sz.width * charHorizontalSpacingMultiplier * WIDTH;
+		NSLog(@"proposed height: %f\t actual height: %f\t (nch=%f) scale: %f\t new font:%f\told:%f",defaultFrame.size.height,height,nch,scale, [font pointSize], [FONT pointSize]);
+		defaultFrame.size.height = height;
+		defaultFrame.size.width = width;
+	}
+	else {
+		width = [sender frame].size.width;
+		height = defaultFrame.size.height;
+	}
+	
+	return [[PreferencePanel sharedInstance] maxVertically] ? 
+		  NSMakeRect([sender frame].origin.x, defaultFrame.origin.y, width, height)
+	     :defaultFrame;
+}
+	
 // Close Window
 - (BOOL)showCloseWindow
 {
@@ -1553,6 +1648,23 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 	
 	[pool release];
+}
+
+- (NSFont *) _getMaxFont:(NSFont* ) font 
+				  height:(float) height
+				   lines:(float) lines
+{
+	float newSize = [font pointSize], newHeight;
+	NSFont *newfont=nil;
+	
+	do {
+		newfont = font;
+		font = [[NSFontManager sharedFontManager] convertFont:font toSize:newSize];
+		newSize++;
+		newHeight = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * lines;
+	} while (height >= newHeight);
+	
+	return newfont;
 }
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.23 2004-05-24 17:51:43 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.24 2004-09-12 07:15:22 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -310,7 +310,12 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 	[sendInputToAllSessions setState: NSOnState];
     else
 	[sendInputToAllSessions setState: NSOffState];
-    
+
+	if([frontTerminal fontSizeFollowWindowResize] == YES)
+		[fontSizeFollowWindowResize setState: NSOnState];
+    else
+		[fontSizeFollowWindowResize setState: NSOffState];
+	
 }
 
 - (void) nonTerminalWindowBecameKey: (NSNotification *) aNotification

@@ -18,6 +18,7 @@
                 saveTerminalProfile = id; 
                 showConfigWindow = id; 
                 showFindPanel = id; 
+                toggleFontSizeFollowWindowResize = id; 
                 toggleInputToAllSessions = id; 
                 toggleRemapDeleteKey = id; 
             }; 
@@ -125,6 +126,7 @@
                 AUTHORS = NSTextView; 
                 closeTab = NSMenuItem; 
                 closeWindow = NSMenuItem; 
+                fontSizeFollowWindowResize = NSMenuItem; 
                 logStart = NSMenuItem; 
                 logStop = NSMenuItem; 
                 newTab = NSMenuItem; 

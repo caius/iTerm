@@ -1,7 +1,21 @@
+2004-09-12  fabian
+	
+	* More fix for "Font Size Follows Window Resize" option. Largely works now,
+	  but maximization still has weird behavior sometimes.
+	  
 2004-09-07  ujwal
 
 	* setHidden method is invoked only if target view supports it (>= 10.3).
 	* Added keybinding action for numeric enter key.
+
+2004-09-02	fabian
+	
+	* Added "Maximize Vertically Only" option.
+	* Added "Font Size Follows Window Resize" option (not working well yet)
+	
+2004-08-30	fabian
+	
+	* Removed unused [PseudoTerminal setCharWidth:(int)width height:(int)height];
 
 2004-08-04  ujwal
 

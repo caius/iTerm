@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.25 2004-05-19 20:38:06 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.26 2004-09-12 07:15:29 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -52,6 +52,7 @@
     BOOL tabViewDragOperationInProgress;
     BOOL windowInited;
 	BOOL sendInputToAllSessions;
+	BOOL fontSizeFollowWindowResize;
 	
 	BOOL EXIT;
 }
@@ -95,10 +96,9 @@
 - (NSFont *) nafont;
 - (BOOL) antiAlias;
 - (void) setAntiAlias: (BOOL) bAntiAlias;
-- (void)setWidth:(int)width height:(int)height;
 - (int)width;
 - (int)height;
-- (void)setCharWidth:(int)width height:(int)height;
+- (void)setWidth:(int)width height:(int)height;
 - (void)setCharSizeUsingFont: (NSFont *)font;
 - (int)charWidth;
 - (int)charHeight;
@@ -112,6 +112,11 @@
 - (void) setSendInputToAllSessions: (BOOL) flag;
 - (IBAction) toggleInputToAllSessions: (id) sender;
 - (void) sendInputToAllSessions: (NSData *) data;
+
+// controls resize behavior
+- (BOOL) fontSizeFollowWindowResize;
+- (void) setFontSizeFollowWindowResize: (BOOL) flag;
+- (IBAction) toggleFontSizeFollowWindowResize: (id) sender;
 
 // iTermController
 - (void)clearBuffer:(id)sender;
@@ -129,6 +134,7 @@
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize;
 - (void)windowDidResize:(NSNotification *)aNotification;
 - (void) resizeWindow:(int) w height:(int)h;
+- (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame;
 
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;
@@ -182,6 +188,10 @@
 
 - (void) _commonInit;
 - (void) _updateDisplayThread: (void *) incoming;
+
+- (NSFont *) _getMaxFont:(NSFont* ) font 
+				  height:(float) height
+				   lines:(float) lines;
 
 @end
 

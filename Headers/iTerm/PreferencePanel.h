@@ -45,6 +45,7 @@
 	IBOutlet NSWindow *profilesWindow;
 	IBOutlet NSButton *enableRendezvous;
 	IBOutlet NSButton *cmdSelection;
+	IBOutlet NSButton *maxVertically;
 	
 	// Bookmark stuff
 	IBOutlet NSOutlineView *bookmarksView;
@@ -76,6 +77,7 @@
     BOOL defaultFocusFollowsMouse;
 	BOOL defaultEnableRendezvous;
 	BOOL defaultCmdSelection;
+	BOOL defaultMaxVertically;
 	NSString *defaultWordChars;
 }
 
@@ -116,6 +118,7 @@
 - (BOOL) focusFollowsMouse;
 - (BOOL) enableRendezvous;
 - (BOOL) cmdSelection;
+- (BOOL) maxVertically;
 - (NSString *) wordChars;
 
 @end

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.119 2004-07-06 02:40:06 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.120 2004-09-12 07:15:22 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -123,6 +123,7 @@ static BOOL editingBookmark = NO;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 	defaultEnableRendezvous = [prefs objectForKey:@"EnableRendezvous"]?[[prefs objectForKey:@"EnableRendezvous"] boolValue]: YES;
 	defaultCmdSelection = [prefs objectForKey:@"CommandSelection"]?[[prefs objectForKey:@"CommandSelection"] boolValue]: YES;
+	defaultMaxVertically = [prefs objectForKey:@"MaxVertically"]?[[prefs objectForKey:@"MaxVertically"] boolValue]: YES;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
 	
@@ -162,6 +163,7 @@ static BOOL editingBookmark = NO;
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
 	[prefs setBool:defaultEnableRendezvous forKey:@"EnableRendezvous"];
 	[prefs setBool:defaultCmdSelection forKey:@"CommandSelection"];
+	[prefs setBool:defaultMaxVertically forKey:@"MaxVertically"];
 	[prefs setObject: defaultWordChars forKey: @"WordCharacters"];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
 	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
@@ -186,6 +188,7 @@ static BOOL editingBookmark = NO;
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
 	[enableRendezvous setState: defaultEnableRendezvous?NSOnState:NSOffState];
 	[cmdSelection setState: defaultCmdSelection?NSOnState:NSOffState];
+	[maxVertically setState: defaultMaxVertically?NSOnState:NSOffState];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
 	
 	[self showWindow: self];
@@ -209,6 +212,7 @@ static BOOL editingBookmark = NO;
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 	defaultEnableRendezvous = ([enableRendezvous state] == NSOnState);
 	defaultCmdSelection = ([cmdSelection state] == NSOnState);
+	defaultMaxVertically = ([maxVertically state] == NSOnState);
 	[defaultWordChars release];
 	defaultWordChars = [[wordChars stringValue] retain];
 
@@ -569,6 +573,11 @@ static BOOL editingBookmark = NO;
 - (BOOL) cmdSelection
 {
 	return (defaultCmdSelection);
+}
+
+- (BOOL) maxVertically
+{
+	return (defaultMaxVertically);
 }
 
 - (NSString *) wordChars

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.60 2003-05-07 17:53:31 yfabian Exp $
+// $Id: MainMenu.m,v 1.61 2003-05-07 19:24:39 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -488,7 +488,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         [NSNumber numberWithInt:10],@"Transparency",
         @"xterm",@"Term Type",
         [@"~"  stringByExpandingTildeInPath],@"Directory",
-        [NSFont userFixedPitchFontOfSize: 12],@"Font",
+        [NSFont fontWithName:@"FreeMonoBold" size:13],@"Font",
         [NSFont fontWithName:@"Osaka-Mono"
 			    size:14],@"NAFont",
         [NSNumber numberWithBool:false],@"AntiIdle",

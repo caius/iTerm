@@ -1,3 +1,8 @@
+2003-05-07	ujwal
+
+    * When a new Default Session entry is created, the font is 
+      set to FreeMonoBold.
+
 2003-05-07	fabian
     * Incorporated patch from Peter Lewis
     * Added paragraph style into deault attributes: We now clip

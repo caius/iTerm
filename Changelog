@@ -1,3 +1,8 @@
+2003-04-15	ujwal
+
+    * Implemented NSApplication delegate applicationDidUnide: 
+      since a user reported problems after an unhide operation.
+
 2003-04-11	fabian
     * Fixed a bug that causes iTerm to hang when illege UTF-8
       characters encountered. We now display a '#' whenever

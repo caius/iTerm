@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.41 2003-03-21 00:16:21 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.42 2003-04-15 15:12:24 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -112,6 +112,7 @@
 - (IBAction) nextSession:(id)sender;
 - (IBAction) saveSession:(id)sender;
 - (PTYSession *) currentSession;
+- (int) currentSessionIndex;
 - (NSString *) currentSessionName;
 - (void) setCurrentSessionName: (NSString *) theSessionName;
 

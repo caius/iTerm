@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.45 2003-04-01 22:12:27 yfabian Exp $
+// $Id: MainMenu.m,v 1.46 2003-04-15 15:12:23 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -92,6 +92,14 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     else [self newWindow:nil];
     
     return YES;
+}
+
+// sent when application is made visible after a hide operation. Should not really need to implement this,
+// but some users reported that keyboard input is blocked after a hide/unhide operation.
+- (void)applicationDidUnhide:(NSNotification *)aNotification
+{
+    // Make sure that the first responder stuff is set up OK.
+    [FRONT selectSession: [FRONT currentSessionIndex]];
 }
 
 

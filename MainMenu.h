@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.17 2003-03-27 01:36:22 ujwal Exp $
+// $Id: MainMenu.h,v 1.18 2003-04-15 15:12:24 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -55,6 +55,7 @@
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification;
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app;
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender;
+- (void)applicationDidUnhide:(NSNotification *)aNotification;
 
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newSession:(id)sender;

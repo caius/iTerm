@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.143 2003-04-15 02:19:10 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.144 2003-04-15 15:12:24 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -485,6 +485,10 @@ static NSString *ConfigToolbarItem = @"Config";
     return (currentPtySession);
 }
 
+- (int) currentSessionIndex
+{
+    return (currentSessionIndex);
+}
 
 - (void)dealloc
 {

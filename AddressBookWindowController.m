@@ -351,14 +351,35 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 {
     int r;
     NSStringEncoding const *p=encodingList;
-    id entry;
+    id entry = nil;
 
-    if ([adTable selectedRow]<0) return;
+    if(sender == nil)
+    {
+	// edit the default entry;
+	int i;
+	for(i = 0; i < [[self addressBook] count]; i++)
+	{
+	    entry = [[self addressBook] objectAtIndex: i];
+
+	    if([entry objectForKey: @"DefaultEntry"] != nil)
+		break;
+	}
+	if (i == [[self addressBook] count])
+	    entry = nil;
+	
+    }
+    else if ([adTable selectedRow]>= 0)
+    {
+	entry=[[self addressBook] objectAtIndex:[adTable selectedRow]];
+    }
+
+    if(entry == nil)
+	return;
+    
     [AE_PANEL center];
 
     [tabView selectTabViewItemAtIndex: [tabSelection indexOfSelectedItem]];
     
-    entry=[[self addressBook] objectAtIndex:[adTable selectedRow]];
     defaultEntry = isDefaultEntry( entry );
     [adName setStringValue:[entry objectForKey:@"Name"]];
     [adCommand setStringValue:[entry objectForKey:@"Command"]];
@@ -500,7 +521,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     if (r == NSRunStoppedResponse) {
         NSDictionary *ae;
         ae=[self _getUpdatedPropertyDictionary];
-        [[self addressBook] replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
+        [[self addressBook] replaceObjectAtIndex:[[self addressBook] indexOfObject: entry] withObject:ae];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
 	//        NSLog(@"%s(%d):-[Address entry replaced:%@]",
  //              __FILE__, __LINE__, ae );

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.79 2003-06-23 05:54:54 ujwal Exp $
+// $Id: MainMenu.m,v 1.80 2003-06-26 15:14:30 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -415,6 +415,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (void) initPreferences
 {
     PREF_PANEL = [[PreferencePanel alloc] init];
+    [PREF_PANEL setMainMenu: self];
 }
 
 // Utility

@@ -140,6 +140,7 @@
 // misc
 - (void) run;
 
+
 // Table data source
 - (int)numberOfRowsInTableView:(NSTableView*)table;
 - (id)tableView:(NSTableView*)table objectValueForTableColumn:(NSTableColumn*)col

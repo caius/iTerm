@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.53 2003-06-25 15:11:45 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.54 2003-06-26 15:14:30 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -27,6 +27,8 @@
 
 #import "PreferencePanel.h"
 #import "NSStringITerm.h"
+#import "AddressBookWindowController.h"
+#import "MainMenu.h"
 
 #define NIB_PATH  @"MainMenu"
 
@@ -267,6 +269,30 @@ static float versionNumber;
 - (BOOL) enforceCharacterAlignment;
 {
     return (defaultEnforceCharacterAlignment);
+}
+
+- (void) setMainMenu: (MainMenu *) theParent
+{
+    iTerm = theParent;
+}
+
+- (IBAction) editDefaultSession: (id) sender
+{
+    AddressBookWindowController *abWindowController;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu showABWindow:%@]",
+          __FILE__, __LINE__, sender);
+#endif
+
+    abWindowController = [AddressBookWindowController singleInstance];
+    if([[abWindowController window] isVisible] == NO)
+    {
+	[abWindowController setAddressBook: [iTerm addressBook]];
+	[abWindowController setPreferences: self];
+    }
+    [abWindowController adbEditEntry: nil];
+    
 }
 
 @end

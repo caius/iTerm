@@ -30,6 +30,8 @@
 #define OPT_META   1
 #define OPT_ESC    2
 
+@class MainMenu;
+
 @interface PreferencePanel : NSResponder
 {
     IBOutlet id antiAlias;
@@ -62,8 +64,12 @@
     BOOL defaultBlinkingCursor;
     BOOL defaultEnforceCharacterAlignment;
 
+    MainMenu *iTerm;
+
 }
 
+- (void) setMainMenu: (MainMenu *) theParent;
+- (IBAction) editDefaultSession: (id) sender;
 
 - (id)init;
 - (void)dealloc;

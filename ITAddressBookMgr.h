@@ -74,6 +74,7 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 - (BOOL) mayDeleteBookmarkNode: (TreeNode *) aNode;
 - (TreeNode *) rootNode;
 
+- (NSDictionary *) defaultBookmarkData;
 
 @end
 

@@ -3,6 +3,7 @@
 	* Completed required aspects of new bookmark editor. 
 	* Removed remapping of delete key function. Handled by 
 	  custom key mapping.
+	* New bookmark code activated.
 
 2004-03-14  fabian
 

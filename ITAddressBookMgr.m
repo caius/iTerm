@@ -306,6 +306,10 @@ static TreeNode *defaultBookmark = nil;
 	return (bookmarks);
 }
 
+- (NSDictionary *) defaultBookmarkData
+{
+	return ([defaultBookmark nodeData]);
+}
 
 @end
 

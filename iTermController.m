@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.30 2004-03-14 06:05:37 ujwal Exp $
+// $Id: iTermController.m,v 1.31 2004-03-19 01:43:40 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -39,6 +39,9 @@
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/AddressBookWindowController.h>
 #import <iTerm/ITAddressBookMgr.h>
+#import <iTerm/iTermTerminalProfileMgr.h>
+#import <iTerm/iTermDisplayProfileMgr.h>
+#import <iTerm/Tree.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
@@ -117,7 +120,7 @@ static BOOL usingAutoLaunchScript = NO;
 // Creates the dock menu
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
 {
-    NSMenu *aMenu;
+    NSMenu *aMenu, *abMenu;
     NSMenuItem *newTabMenuItem, *newWindowMenuItem;
     
     aMenu = [[NSMenu alloc] initWithTitle: @"Dock Menu"];
@@ -129,15 +132,11 @@ static BOOL usingAutoLaunchScript = NO;
     [newWindowMenuItem release];
     
     // Create the addressbook submenus for new tabs and windows.
-    NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks Menu"];
-    [self buildAddressBookMenu: abMenu target: FRONT withShortcuts: NO]; // target the top terminal window.
+    abMenu = [self buildAddressBookMenuWithTarget: FRONT withShortcuts: NO]; // target the top terminal window.
     [newTabMenuItem setSubmenu: abMenu];
-    [abMenu release];
     
-    abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks Menu"];
-    [self buildAddressBookMenu: abMenu target: nil withShortcuts: NO]; // target the top terminal window.
+    abMenu = [self buildAddressBookMenuWithTarget: nil withShortcuts: NO]; // target the top terminal window.
     [newWindowMenuItem setSubmenu: abMenu];
-    [abMenu release];
             
     return ([aMenu autorelease]);
 }
@@ -199,22 +198,22 @@ static BOOL usingAutoLaunchScript = NO;
 // Action methods
 - (IBAction)newWindow:(id)sender
 {
-    [self executeABCommandAtIndex:0 inTerminal: nil];
+    [self launchBookmark:nil inTerminal: nil];
 }
 
 - (void) newSessionInTabAtIndex: (id) sender
 {
-    [self executeABCommandAtIndex:[sender tag] inTerminal:FRONT];
+    [self launchBookmark:[sender representedObject] inTerminal:FRONT];
 }
 
 - (void)newSessionInWindowAtIndex: (id) sender
 {
-    [self executeABCommandAtIndex:[sender tag] inTerminal: nil];
+    [self launchBookmark:[sender representedObject] inTerminal:nil];
 }
 
 - (IBAction)newSession:(id)sender
 {
-    [self executeABCommandAtIndex:0 inTerminal: FRONT];
+    [self launchBookmark:nil inTerminal: FRONT];
 }
 
 // navigation
@@ -329,59 +328,48 @@ static BOOL usingAutoLaunchScript = NO;
 }
 
 // Build the bookmarks menu
-- (void) buildAddressBookMenu:(NSMenu *)abMenu target:(id)target withShortcuts: (BOOL) withShortcuts
+- (NSMenu *) buildAddressBookMenuWithTarget:(id)target withShortcuts: (BOOL) withShortcuts
 {
-    NSEnumerator *abEnumerator;
-    NSDictionary *abEntry;
-    NSString *shortcut;
-    unsigned int mask;
-    int i = 0;
     SEL action;
+	TreeNode *bookmarks;
+	
+	bookmarks = [[ITAddressBookMgr sharedInstance] rootNode];
     
     if (target == nil)
         action = @selector(newSessionInWindowAtIndex:);
     else
         action = @selector(newSessionInTabAtIndex:);
     
-    abEnumerator = [[[ITAddressBookMgr sharedInstance] addressBook] objectEnumerator];
-    while ((abEntry = [abEnumerator nextObject]) != nil)
-    {
-	shortcut=([[abEntry objectForKey:@"Shortcut"] intValue]? [NSString stringWithFormat:@"%c",[[abEntry objectForKey:@"Shortcut"] intValue]]:@"");
-	shortcut = [shortcut lowercaseString];
-	mask = NSCommandKeyMask | NSControlKeyMask;
-	if(target == nil)
-	    mask |= NSShiftKeyMask;	
-	if(isDefaultEntry(abEntry))
-	{
-	    shortcut = target?@"t":@"n";
-	    mask = NSCommandKeyMask;
-	}
-	if(withShortcuts == NO)
-	    shortcut = @"";
-	NSMenuItem *abMenuItem = [[[NSMenuItem alloc] initWithTitle: entryVisibleName(abEntry, self) action:action keyEquivalent:shortcut] autorelease];
-	[abMenuItem setKeyEquivalentModifierMask: mask];
-	[abMenuItem setTag:i++];
-	[abMenuItem setTarget:target];
-
-        [abMenu addItem: abMenuItem];
-    }
+	return ([self _menuForNode: bookmarks action: action target: target withShortcuts: withShortcuts]);
 }
 
 // Executes an addressbook command in new window or tab
-- (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm
+- (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm
 {
     PseudoTerminal *term;
     PTYSession *aSession;
     NSString *cmd;
     NSArray *arg;
-    NSDictionary *entry;
-
-    // Grab the addressbook command
-    entry = [[[ITAddressBookMgr sharedInstance] addressBook] objectAtIndex:theIndex];
-    [iTermController breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
-    //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-    
-    // Where do we execute this command?
+    NSDictionary *aDict;
+	NSString *displayProfile, *terminalProfile;
+	
+	aDict = bookmarkData;
+	if(aDict == nil)
+		aDict = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
+	
+	// Grab the addressbook command
+	cmd = [aDict objectForKey: KEY_COMMAND];
+    [iTermController breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
+	
+	// grab the profiles
+	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
+	if(displayProfile == nil)
+		displayProfile = [[iTermDisplayProfileMgr singleInstance] defaultProfileName];
+	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
+	if(terminalProfile == nil)
+		terminalProfile = [[iTermTerminalProfileMgr singleInstance] defaultProfileName];	
+	
+	// Where do we execute this command?
     if(theTerm == nil)
     {
         term = [[PseudoTerminal alloc] init];
@@ -389,32 +377,31 @@ static BOOL usingAutoLaunchScript = NO;
 		[self addInTerminals: term];
 		[term release];
 		
-		[term setColumns: [[entry objectForKey:@"Col"]intValue]];
-		[term setRows: [[entry objectForKey:@"Row"]intValue]];
-		[term setFont: [entry objectForKey:@"Font"] nafont: [entry objectForKey:@"NAFont"]];
+		[term setColumns: [[iTermDisplayProfileMgr singleInstance] windowColumnsForProfile: displayProfile]];
+		[term setRows: [[iTermDisplayProfileMgr singleInstance] windowRowsForProfile: displayProfile]];
+		[term setFont: [[iTermDisplayProfileMgr singleInstance] windowFontForProfile: displayProfile] 
+			   nafont: [[iTermDisplayProfileMgr singleInstance] windowNAFontForProfile: displayProfile]];
     }
     else
         term = theTerm;
-    
-    // Initialize a new session
+		
+	// Initialize a new session
     aSession = [[PTYSession alloc] init];
     // set our preferences
-    [aSession setAddressBookEntry:entry];
+    [aSession setAddressBookEntry: aDict];
     // Add this session to our term and make it current
     [term addInSessions: aSession];
     [aSession release];
-
-    if ([entry objectForKey: @"Scrollback"])
-        [[aSession SCREEN] setScrollback:[[entry objectForKey: @"Scrollback"] intValue]];
-    else
-        [[aSession SCREEN] setScrollback:100000];
+	
+	[[aSession SCREEN] setScrollback:[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: terminalProfile]];
     
-    NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
+    NSDictionary *env=[NSDictionary dictionaryWithObject:[aDict objectForKey: KEY_WORKING_DIRECTORY] forKey:@"PWD"];
     
     // Start the command        
     [term startProgram:cmd arguments:arg environment:env];
-        
-    [term setCurrentSessionName:[entry objectForKey:@"Name"]];
+	
+    [term setCurrentSessionName:[aDict objectForKey: KEY_NAME]];	
+	
 }
 
 - (void) launchScript: (id) sender
@@ -534,3 +521,56 @@ NSString *terminalsKey = @"terminals";
 
 @end
 
+@implementation iTermController (Private)
+
+- (NSMenu *) _menuForNode: (TreeNode *) theNode action: (SEL) aSelector target: (id) aTarget withShortcuts: (BOOL) withShortcuts
+{
+	NSMenu *aMenu, *subMenu;
+	NSMenuItem *aMenuItem;
+	NSEnumerator *entryEnumerator;
+	NSDictionary *dataDict;
+	TreeNode *childNode;
+	NSString *shortcut;
+	unsigned int modifierMask;
+	
+	aMenu = [[NSMenu alloc] init];
+	
+	entryEnumerator = [[theNode children] objectEnumerator];
+	
+	while ((childNode = [entryEnumerator nextObject]))
+	{
+		dataDict = [childNode nodeData];
+		aMenuItem = [[[NSMenuItem alloc] initWithTitle: [dataDict objectForKey: KEY_NAME] action:aSelector keyEquivalent:@""] autorelease];
+		if([childNode isGroup])
+		{
+			subMenu = [self _menuForNode: childNode action: aSelector target: aTarget withShortcuts: withShortcuts];
+			[aMenuItem setSubmenu: subMenu];
+		}
+		else
+		{
+			if(withShortcuts)
+			{
+				if([[ITAddressBookMgr sharedInstance] defaultBookmarkData] == dataDict)
+				{
+					if(aTarget == nil)
+						shortcut = @"n";
+					else
+						shortcut = @"t";
+					modifierMask = NSCommandKeyMask;
+					
+					[aMenuItem setKeyEquivalent: shortcut];
+					[aMenuItem setKeyEquivalentModifierMask: modifierMask];
+				}
+			}
+			[aMenuItem setRepresentedObject: dataDict];
+			[aMenuItem setTarget: aTarget];
+		}
+		[aMenu addItem: aMenuItem];
+	}
+	
+	return ([aMenu autorelease]);
+}
+
+
+
+@end

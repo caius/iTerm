@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.11 2004-03-14 06:05:38 ujwal Exp $
+// $Id: iTermController.h,v 1.12 2004-03-19 01:43:45 ujwal Exp $
 /*
  **  iTermController.h
  **
@@ -31,6 +31,7 @@
 
 @class PseudoTerminal;
 @class PTYTextView;
+@class TreeNode;
 
 @interface iTermController : NSObject
 {
@@ -61,8 +62,8 @@
 - (PseudoTerminal *) currentTerminal;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
-- (void) buildAddressBookMenu:(NSMenu *)abMenu target:(id)target withShortcuts: (BOOL) withShortcuts;
-- (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm;
+- (NSMenu *) buildAddressBookMenuWithTarget:(id)target withShortcuts: (BOOL) withShortcuts;
+- (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm;
 - (PTYTextView *) frontTextView;
 
 @end
@@ -86,5 +87,12 @@
 
 // a class method to provide the keys for KVC:
 - (NSArray*)kvcKeys;
+
+@end
+
+
+@interface iTermController (Private)
+
+- (NSMenu *) _menuForNode: (TreeNode *) theNode action: (SEL) aSelector target: (id) aTarget withShortcuts: (BOOL) withShortcuts;
 
 @end

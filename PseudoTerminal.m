@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.271 2004-03-18 20:58:43 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.272 2004-03-19 01:43:37 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -277,7 +277,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) newSessionInTabAtIndex: (id) sender
 {
-    [[iTermController sharedInstance] executeABCommandAtIndex:[sender tag] inTerminal:self];
+    [[iTermController sharedInstance] launchBookmark: [sender representedObject] inTerminal:self];
 }
 
 - (void) selectSessionAtIndex: (int) sessionIndex
@@ -1103,6 +1103,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     unsigned int modflag = 0;
     BOOL newWin;
     int nextIndex;
+	NSMenu *abMenu;
     NSMenuItem *aMenuItem;
     
 #if DEBUG_METHOD_TRACE
@@ -1154,11 +1155,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [theMenu insertItem:[NSMenuItem separatorItem] atIndex: nextIndex];
 	
     // Build the bookmarks menu
-    NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [[iTermController sharedInstance] buildAddressBookMenu: abMenu target: (newWin?nil:self) withShortcuts: NO];
+    abMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: (newWin?nil:self) withShortcuts: NO];
 	
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
-    [abMenu release];
 	
     // Separator
     [theMenu addItem:[NSMenuItem separatorItem]];

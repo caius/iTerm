@@ -38,6 +38,9 @@
 #import <iTerm/PTYTabViewitem.h>
 #import <iTerm/AddressBookWindowController.h>
 #import <iTerm/iTermKeyBindingMgr.h>
+#import <iTerm/ITAddressBookMgr.h>
+#import <iTerm/iTermTerminalProfileMgr.h>
+#import <iTerm/iTermDisplayProfileMgr.h>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -382,7 +385,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unicode 
 																   modifiers: modflag 
 																		 text: &keyBindingText 
-																	 profile: nil];
+																	 profile: [[self addressBookEntry] objectForKey: KEY_KEYBOARD_PROFILE]];
 	if(keyBindingAction >= 0)
 	{
 		NSString *aString;
@@ -943,69 +946,61 @@ static NSString *PWD_ENVVALUE = @"~";
     NSColor *colorTable[2][8];
     int i;
     NSString *imageFilePath;
+	NSString *displayProfile, *terminalProfile;
+	NSDictionary *aDict;
+	iTermTerminalProfileMgr *terminalProfileMgr;
+	iTermDisplayProfileMgr *displayProfileMgr;
+	ITAddressBookMgr *bookmarkManager;
+	
+	// get our shared managers
+	terminalProfileMgr = [iTermTerminalProfileMgr singleInstance];
+	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+	bookmarkManager = [ITAddressBookMgr sharedInstance];
+	
+	aDict = aePrefs;
+	if(aDict == nil)
+		aDict = [bookmarkManager defaultBookmarkData];
+	
+	// grab the profiles
+	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
+	if(displayProfile == nil)
+		displayProfile = [displayProfileMgr defaultProfileName];
+	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
+	if(terminalProfile == nil)
+		terminalProfile = [terminalProfileMgr defaultProfileName];	
+	
 	
     // colors
-    [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
-    [self setBackgroundColor: [aePrefs objectForKey: @"Background"]];
-    if([aePrefs objectForKey: @"SelectionColor"] != nil)
-		[self setSelectionColor: [aePrefs objectForKey: @"SelectionColor"]];
-    else
-		[self setSelectionColor: [AddressBookWindowController defaultSelectionColor]];
-    if([aePrefs objectForKey: @"BoldColor"] != nil)
-		[self setBoldColor: [aePrefs objectForKey: @"BoldColor"]];
-    else
-		[self setBoldColor: [AddressBookWindowController defaultBoldColor]];
-	if([aePrefs objectForKey: @"CursorColor"] != nil)
-		[self setCursorColor: [aePrefs objectForKey: @"CursorColor"]];
-    else
-		[self setCursorColor: [AddressBookWindowController defaultCursorColor]];	
-    if([aePrefs objectForKey: @"AnsiBlackColor"] == nil)
-    {
-		for(i = 0; i < 8; i++)
-		{
-			colorTable[0][i] = [AddressBookWindowController colorFromTable: i highLight: NO];
-			colorTable[1][i] = [AddressBookWindowController colorFromTable: i highLight: YES];
-		}
-    }
-    else
-    {
-		colorTable[0][0]= [aePrefs objectForKey:@"AnsiBlackColor"];
-		colorTable[0][1]= [aePrefs objectForKey:@"AnsiRedColor"];
-		colorTable[0][2]= [aePrefs objectForKey:@"AnsiGreenColor"];
-		colorTable[0][3]= [aePrefs objectForKey:@"AnsiYellowColor"];
-		colorTable[0][4]= [aePrefs objectForKey:@"AnsiBlueColor"];
-		colorTable[0][5]= [aePrefs objectForKey:@"AnsiMagentaColor"];
-		colorTable[0][6]= [aePrefs objectForKey:@"AnsiCyanColor"];
-		colorTable[0][7]= [aePrefs objectForKey:@"AnsiWhiteColor"];
-		colorTable[1][0]= [aePrefs objectForKey:@"AnsiHiBlackColor"];
-		colorTable[1][1]= [aePrefs objectForKey:@"AnsiHiRedColor"];
-		colorTable[1][2]= [aePrefs objectForKey:@"AnsiHiGreenColor"];
-		colorTable[1][3]= [aePrefs objectForKey:@"AnsiHiYellowColor"];
-		colorTable[1][4]= [aePrefs objectForKey:@"AnsiHiBlueColor"];
-		colorTable[1][5]= [aePrefs objectForKey:@"AnsiHiMagentaColor"];
-		colorTable[1][6]= [aePrefs objectForKey:@"AnsiHiCyanColor"];
-		colorTable[1][7]= [aePrefs objectForKey:@"AnsiHiWhiteColor"];
-    }
+    [self setForegroundColor: [displayProfileMgr color: TYPE_FOREGROUND_COLOR forProfile: displayProfile]];
+    [self setBackgroundColor: [displayProfileMgr color: TYPE_BACKGROUND_COLOR forProfile: displayProfile]];
+	[self setSelectionColor: [displayProfileMgr color: TYPE_SELECTION_COLOR forProfile: displayProfile]];
+	[self setBoldColor: [displayProfileMgr color: TYPE_BOLD_COLOR forProfile: displayProfile]];
+	[self setCursorColor: [displayProfileMgr color: TYPE_CURSOR_COLOR forProfile: displayProfile]];	
+	for(i = TYPE_ANSI_0_COLOR; i < TYPE_ANSI_8_COLOR; i++)
+	{
+		colorTable[0][i] = [displayProfileMgr color: i forProfile: displayProfile];
+		colorTable[1][i] = [displayProfileMgr color: (i + TYPE_ANSI_8_COLOR)  forProfile: displayProfile];
+	}	
     for(i=0;i<8;i++) {
         [self setColorTable:i highLight:NO color:colorTable[0][i]];
         [self setColorTable:i highLight:YES color:colorTable[1][i]];
     }
 		
     // background image
-    imageFilePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
+    imageFilePath = [displayProfileMgr backgroundImageForProfile: displayProfile];
     if([imageFilePath length] > 0)
 		[self setBackgroundImagePath: imageFilePath];
 	
     // transparency
-    [self setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];    
+    [self setTransparency: [displayProfileMgr transparencyForProfile: displayProfile]];    
 	
     // set up the rest of the preferences
-    [self setEncoding: [[aePrefs objectForKey:@"Encoding"] unsignedIntValue]];
-    [self setTERM_VALUE: [aePrefs objectForKey:@"Term Type"]];
-    [self setAntiCode:[[aePrefs objectForKey:@"AICode"] intValue]];
-    [self setAntiIdle:[[aePrefs objectForKey:@"AntiIdle"] boolValue]];
-    [self setAutoClose:[[aePrefs objectForKey:@"AutoClose"] boolValue]];
-    [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
+    [self setEncoding: [terminalProfileMgr encodingForProfile: terminalProfile]];
+    [self setTERM_VALUE: [terminalProfileMgr typeForProfile: terminalProfile]];
+    [self setAntiCode: [terminalProfileMgr idleCharForProfile: terminalProfile]];
+    [self setAntiIdle: [terminalProfileMgr sendIdleCharForProfile: terminalProfile]];
+    [self setAutoClose: [terminalProfileMgr closeOnSessionEndForProfile: terminalProfile]];
+    [self setDoubleWidth:[terminalProfileMgr doubleWidthForProfile: terminalProfile]];
     
 }
 

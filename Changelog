@@ -1,3 +1,10 @@
+2003-01-15	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Removed adjustScroll override in PTYTextView.
+      Not needed anymore and was conflicting with 
+      scrolling in vi.
+      
+
 2003-01-14	fabian
     * Enhanced save session
     * Fixed insert mode bug

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.9 2003-01-15 20:20:53 yfabian Exp $
+// $Id: PTYTextView.h,v 1.10 2003-01-16 04:37:12 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -55,8 +55,6 @@
 - (void) browse:(id)sender;
 - (void) mail:(id)sender;
 
-// NSView
-- (NSRect)adjustScroll:(NSRect)proposedVisibleRect;
 
 // get/set methods
 - (BOOL) antiAlias;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.41 2002-12-19 23:52:21 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.42 2002-12-20 00:06:44 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -18,6 +18,8 @@
 #import "NSStringITerm.h"
 #import "PTYSession.h"
 #import "VT100Screen.h"
+#import "PTYTabView.h"
+#import "PTYTabViewItem.h"
 
 @implementation PseudoTerminal
 
@@ -27,12 +29,6 @@ static NSString *NewToolbarItem = @"New";
 static NSString *ABToolbarItem = @"Address";
 static NSString *CloseToolbarItem = @"Close";
 static NSString *ConfigToolbarItem = @"Config";
-
-static NSDictionary *normalStateAttribute;
-static NSDictionary *chosenStateAttribute;
-static NSDictionary *idleStateAttribute;
-static NSDictionary *newOutputStateAttribute;
-static NSDictionary *deadStateAttribute;
 
 
 + (PseudoTerminal *)newTerminalWindow: (id) sender
@@ -92,21 +88,8 @@ static NSDictionary *deadStateAttribute;
 
     // Allocate a list for our sessions
     ptyList = [[NSMutableArray alloc] init];
-    buttonList = [[NSMutableArray alloc] init];
     ptyListLock = [[NSLock alloc] init];
 
-    if (normalStateAttribute == nil) {
-        normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor darkGrayColor],NSForegroundColorAttributeName,nil] retain];
-        chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
-        idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor redColor],NSForegroundColorAttributeName,nil] retain];
-        newOutputStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blueColor],NSForegroundColorAttributeName,nil] retain];
-        deadStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
-    }
     return self;
 }
 
@@ -117,8 +100,8 @@ static NSDictionary *deadStateAttribute;
 {
     WIDTH=width;
     HEIGHT=height;
+    NSRect tabviewRect;
 //    NSColor *bgColor;
-    NSRect scrollViewFrame;
 
     if (!font)
         font = [pref font];
@@ -132,29 +115,21 @@ static NSDictionary *deadStateAttribute;
     if (NAFONT) [NAFONT autorelease];
     NAFONT=[[nafont copy] retain];
     
-    // Create the scrollview
-    scrollViewFrame = [[WINDOW contentView] frame];
-    scrollViewFrame.origin.y += 30;
-    scrollViewFrame.size.height -= 30;
-    SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: scrollViewFrame];
-    NSParameterAssert(SCROLLVIEW != nil);
-    [[WINDOW contentView] addSubview: SCROLLVIEW];
-    [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-    [SCROLLVIEW setLineScroll: ([VT100Screen fontSize: FONT].height)];
-    [SCROLLVIEW release];
-    
-    
-    // Init the session pulldown menu button
-    [sessionPopup setBordered: NO];
-    [sessionPopup setTarget: self];
-    [sessionPopup setAction: @selector(_sessionPopupSelectionDidChange:)];
-    [sessionPopup setTransparent: YES];
-    [sessionPopup setEnabled: NO];
-    
-/*    // set the background color for the scrollview with the appropriate transparency
-    bgColor = [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)];
-    [SCROLLVIEW setBackgroundColor: bgColor]; */
-    
+    // Create the tabview
+    tabviewRect = [[WINDOW contentView] frame];
+    tabviewRect.origin.x -= 10;
+    tabviewRect.size.width += 20;
+    tabviewRect.origin.y -= 12;
+    tabviewRect.size.height += 10;
+    TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
+    [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [TABVIEW setAllowsTruncatedLabels: NO];
+    [TABVIEW setControlSize: NSSmallControlSize];
+    // Add to the window
+    [[WINDOW contentView] addSubview: TABVIEW];
+    [[WINDOW contentView] setAutoresizesSubviews: YES];
+    [TABVIEW release];
+        
     [WINDOW setDelegate: self];
     
     // Add ourselves as an observer for notifications to reload the addressbook.
@@ -172,23 +147,45 @@ static NSDictionary *deadStateAttribute;
               term:(NSString *)term
 {
     PTYSession *aSession;
+    PTYTabViewItem *aTabViewItem;
+    PTYScrollView *aScrollView;
+    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal initSession]",
           __FILE__, __LINE__);
 #endif
 
-    // Allocate a new session and initialize it
+    // Allocate a new session
     aSession = [[PTYSession alloc] init];
     NSParameterAssert(aSession != nil);
+
+
+    // Allocate a new tabview item
+    aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: aSession];
+    NSParameterAssert(aTabViewItem != nil);
+    [TABVIEW addTabViewItem: aTabViewItem];
+    [aTabViewItem release];
+
+    
+    // Allocate a scrollview and add to the tabview
+    aScrollView = [[PTYScrollView alloc] initWithFrame: [TABVIEW contentRect]];
+    NSParameterAssert(aScrollView != nil);
+    [aTabViewItem setView: aScrollView];
+    [aScrollView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [SCROLLVIEW setLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [aScrollView release];
+
+    // Init the rest of the session
+    [aSession setTabViewItem: aTabViewItem];
     [aSession setParent: self];
     [aSession setPreference: pref];
     [aSession setMainMenu: MAINMENU];
     [aSession initScreen: [SCROLLVIEW documentVisibleRect]];
-
     // Set this session to be the current session
-    [SCROLLVIEW setDocumentView:[aSession TEXTVIEW]];
-    //[SCROLLVIEW setNextResponder:textview];
+    [aScrollView setDocumentView:[aSession TEXTVIEW]];
+    [aTabViewItem setLabel: @""];
 
+    SCROLLVIEW = (PTYScrollView *)[aTabViewItem view];
     SHELL = [aSession SHELL];
     TERMINAL = [aSession TERMINAL];
     SCREEN = [aSession SCREEN];
@@ -226,7 +223,12 @@ static NSDictionary *deadStateAttribute;
     [TERMINAL setTrace:YES];	// debug vt100 escape sequence decode
     
     if([ptyList count] == 0)
+    {
         [self setWindowSize];
+        // Tell us whenever something happens with the tab view
+        [TABVIEW setDelegate: self];
+    }
+
     [SHELL setWidth:WIDTH  height:HEIGHT];
 
     [WINDOW makeFirstResponder:TEXTVIEW];
@@ -245,8 +247,9 @@ static NSDictionary *deadStateAttribute;
     currentSessionIndex = [ptyList count] - 1;
     [currentPtySession resetStatus];
     currentPtySession = aSession;
-    [self _drawSessionButtons];
-    
+    [TABVIEW selectTabViewItem: aTabViewItem];
+    [self setCurrentSessionName: nil];
+        
 }
 
 - (void) switchSession: (id) sender
@@ -266,12 +269,8 @@ static NSDictionary *deadStateAttribute;
     if (sessionIndex<0||sessionIndex >= [ptyList count]) return;
 
     aSession = [ptyList objectAtIndex: sessionIndex];
-    if(([SCROLLVIEW backgroundColor] != [[aSession TERMINAL] defaultBGColor]) || 
-        ([[SCROLLVIEW backgroundColor] alphaComponent] != [[[aSession TERMINAL] defaultBGColor] alphaComponent]))
-    {
-        [SCROLLVIEW setBackgroundColor: [[aSession TERMINAL] defaultBGColor]];
-    }
-    [SCROLLVIEW setDocumentView: [aSession TEXTVIEW]];
+    [TABVIEW selectTabViewItemWithIdentifier: aSession];
+    SCROLLVIEW = (PTYScrollView *)[[TABVIEW selectedTabViewItem] view];
     TEXTVIEW = [aSession TEXTVIEW];
     SHELL = [aSession SHELL];
     TERMINAL = [aSession TERMINAL];
@@ -279,8 +278,6 @@ static NSDictionary *deadStateAttribute;
     if (currentPtySession) [currentPtySession resetStatus];
     currentSessionIndex = sessionIndex;
     currentPtySession = aSession;
-    [currentPtySession moveLastLine];
-    [self _drawSessionButtons];
     [self setWindowTitle];
     [WINDOW makeFirstResponder:TEXTVIEW];
     [WINDOW setNextResponder:self];
@@ -298,21 +295,28 @@ static NSDictionary *deadStateAttribute;
         return;
     }
 
-    for(i=0;i<n;i++) if ([ptyList objectAtIndex:i]==aSession) break;
-    [ptyListLock lock];
-    [[ptyList objectAtIndex: i] terminate];
-    [ptyList removeObjectAtIndex: i];
-    [ptyListLock unlock];
-    if (i==currentSessionIndex) {
-        if (currentSessionIndex >= [ptyList count])
-            currentSessionIndex = [ptyList count] - 1;
-
-        currentPtySession = nil;
-        [self selectSession: currentSessionIndex];
+    for(i=0;i<n;i++) 
+    {
+        if ([ptyList objectAtIndex:i]==aSession)
+        {
+            [ptyListLock lock];
+            [[ptyList objectAtIndex: i] terminate];
+            [ptyList removeObjectAtIndex: i];
+            [ptyListLock unlock];
+            if (i==currentSessionIndex) {
+                if (currentSessionIndex >= [ptyList count])
+                    currentSessionIndex = [ptyList count] - 1;
+        
+                currentPtySession = nil;
+                [self selectSession: currentSessionIndex];
+            }
+            else if (i<currentSessionIndex) currentSessionIndex--;
+            
+            [TABVIEW removeTabViewItem: [aSession tabViewItem]];
+            
+            break;
+        }
     }
-    else if (i<currentSessionIndex) currentSessionIndex--;
-
-    [self _drawSessionButtons];
 
 }
 
@@ -340,15 +344,7 @@ static NSDictionary *deadStateAttribute;
         return;
     }
 
-    [ptyListLock lock];
-    [[ptyList objectAtIndex: currentSessionIndex] terminate];
-    [ptyList removeObjectAtIndex: currentSessionIndex];
-    [ptyListLock unlock];
-    if (currentSessionIndex >= [ptyList count])
-        currentSessionIndex = [ptyList count] - 1;
-
-    currentPtySession = nil;
-    [self selectSession: currentSessionIndex];
+    [self closeSession: currentPtySession];
     
 }
 
@@ -398,6 +394,7 @@ static NSDictionary *deadStateAttribute;
     if(theSessionName != nil)
     {
         [currentPtySession setName: theSessionName];
+        [[currentPtySession tabViewItem] setLabel: theSessionName];
     }
     else {
         NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[SHELL path] pathComponents] lastObject], currentSessionIndex];
@@ -408,6 +405,8 @@ static NSDictionary *deadStateAttribute;
             [title appendString:progpath];
 
         [currentPtySession setName: title];
+        [[currentPtySession tabViewItem] setLabel: title];
+
     }
     [self setWindowTitle];
 }
@@ -444,31 +443,16 @@ static NSDictionary *deadStateAttribute;
         [ptyList removeAllObjects];
         [ptyList release];
     }
-    if([buttonList count] > 0)
-    {
-        [buttonList removeAllObjects];
-        [buttonList release];
-    }
     [ptyListLock unlock];
     [ptyListLock release];
     ptyListLock = nil;
    
     ptyList = nil;
-    buttonList = nil; 
 
     SHELL    = nil;
     TERMINAL = nil;
     SCREEN   = nil;
-    
-    [normalStateAttribute release];
-    normalStateAttribute = nil;
-    [chosenStateAttribute release];
-    chosenStateAttribute = nil;
-    [idleStateAttribute release];
-    idleStateAttribute = nil;
-    [newOutputStateAttribute release];
-    newOutputStateAttribute = nil;
-    
+        
     // Remove ourselves as an observer for notifications to reload the addressbook.
     [[NSNotificationCenter defaultCenter] removeObserver: self
         name: @"Reload AddressBook"
@@ -535,6 +519,7 @@ static NSDictionary *deadStateAttribute;
 {
     NSSize size, vsize, winSize;
     NSWindow *thisWindow;
+    int i;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
@@ -549,12 +534,17 @@ static NSDictionary *deadStateAttribute;
 			      hasVerticalScroller:YES
 			   	       borderType:NSNoBorder];
 
+    for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
+    {
+        [[[TABVIEW tabViewItemAtIndex: i] view] setFrameSize:size];
+        [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: ([VT100Screen fontSize: FONT].height)];
+        [[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] documentView] setFrameSize:vsize];
+    }
+
     thisWindow = [SCROLLVIEW window];
     winSize = size;
-    winSize.height = size.height + 30;
+    winSize.height = size.height + 3*[SCROLLVIEW lineScroll];
     [thisWindow setContentSize:winSize];
-    [SCROLLVIEW setFrameSize:size];
-    [[SCROLLVIEW documentView] setFrameSize:vsize];
 }
 
 
@@ -770,7 +760,6 @@ static NSDictionary *deadStateAttribute;
     HEIGHT = h;
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
 
-    [self _drawSessionButtons];
 
 }
 
@@ -862,9 +851,10 @@ static NSDictionary *deadStateAttribute;
     }
     WIDTH=w;
     HEIGHT=h;
-//    NSLog(@"resize window: %d,%d",WIDTH,HEIGHT);
+    //NSLog(@"resize window: %d,%d",WIDTH,HEIGHT);
 
     [self setWindowSize];
+    
 }
 
 - (IBAction)windowConfigOk:(id)sender
@@ -1084,6 +1074,27 @@ static NSDictionary *deadStateAttribute;
 }
 
 
+// NSTabView
+- (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    PTYSession *aSession;
+    
+    aSession = [tabViewItem identifier];
+    
+    SCROLLVIEW = (PTYScrollView *)[tabViewItem view];
+    TEXTVIEW = [aSession TEXTVIEW];
+    SHELL = [aSession SHELL];
+    TERMINAL = [aSession TERMINAL];
+    SCREEN = [aSession SCREEN];
+    if (currentPtySession) [currentPtySession resetStatus];
+    currentSessionIndex = [TABVIEW indexOfTabViewItem: tabViewItem];
+    currentPtySession = aSession;
+    [self setWindowTitle];
+    [WINDOW makeFirstResponder:TEXTVIEW];
+    [WINDOW setNextResponder:self];
+}
+
+
 - (NSWindow *) window;
 {
     return WINDOW;
@@ -1106,116 +1117,6 @@ static NSDictionary *deadStateAttribute;
     pref=preference;
 }
 
-
-- (void) _drawSessionButtons
-{
-    int sessionCount;
-    int i;
-    NSDictionary *attr;
-    int buttonWidth = 80;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal _drawSessionButtons]",
-          __FILE__, __LINE__);
-#endif
-
-    [ptyListLock lock];
-    
-    sessionCount = [ptyList count];
-    
-    // Discard all previous buttons
-    for(i = 0; i < [buttonList count]; i++)
-    {
-        [[buttonList objectAtIndex: i] removeFromSuperview];
-    }
-    [buttonList removeAllObjects];
-    
-    //[[WINDOW contentView] setNeedsDisplay: YES];
-
-    // Reset the session popup
-    [sessionPopup setEnabled: NO];
-    [sessionPopup setTransparent: YES];
-    [sessionPopup removeAllItems];
-    [sessionPopup addItemWithTitle: @""];
-                
-    for (i = 0; i < sessionCount; i++)
-    {
-        NSRect aFrame;
-        id aButton;
-
-        // Construct a menu 
-        [sessionPopup addItemWithTitle: [[ptyList objectAtIndex: i] name]];
-        if(currentSessionIndex == i)
-        {
-            [sessionPopup selectItemAtIndex: 1];
-        }
-
-        
-        // If the window is not wide enough to accommodate all our buttons,
-        // draw an arrow button with a menu and get out.
-        if(([SCROLLVIEW frame].size.width - i*buttonWidth) >= buttonWidth)
-        {
-
-            aFrame.origin.x = i * buttonWidth;
-            aFrame.origin.y = 0;
-            aFrame.size.width = buttonWidth;
-            if(buttonWidth > ([TEXTVIEW frame].size.width - (i * buttonWidth)))
-                aFrame.size.width = [TEXTVIEW frame].size.width - (i * buttonWidth);
-            aFrame.size.height = [[WINDOW contentView] frame].size.height - [SCROLLVIEW frame].size.height;
-            aButton = [[NSButton alloc] initWithFrame: aFrame];
-            [aButton setTarget: self];
-            [aButton setAction: @selector(switchSession:)];
-            [aButton setTag: i];
-            [aButton setButtonType: NSOnOffButton];
-            //[aButton setShowsStateBy: NSChangeBackgroundCellMask];
-            attr=normalStateAttribute;
-            if(i == currentSessionIndex)
-            {
-    //            [aButton highlight: YES];
-                [aButton setBordered: YES];
-                [self setWindowTitle];
-                attr=chosenStateAttribute;
-            }
-            else {
-    //            [aButton highlight: NO];
-                [aButton setBordered: NO];
-                if ([[ptyList objectAtIndex: i] refreshed])
-                    attr=([[ptyList objectAtIndex: i] idle])?idleStateAttribute:newOutputStateAttribute;
-            }
-
-            if ([[ptyList objectAtIndex: i] exited])
-                attr=deadStateAttribute;
-            if ([[[ptyList objectAtIndex: i] name] length]<=15) {
-                [aButton setAttributedTitle:[[NSAttributedString alloc] initWithString:[[ptyList objectAtIndex: i] name]
-                                                                attributes:attr]];
-            }
-            else {
-                [aButton setAttributedTitle:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@...%@",
-                                [[[ptyList objectAtIndex: i] name] substringToIndex:5],
-                                [[[ptyList objectAtIndex: i] name] substringFromIndex:
-                                    [[[ptyList objectAtIndex: i] name] length]-3]]
-                                                                            attributes:attr]];
-            }
-            
-            // display the button and add to the list
-            [[WINDOW contentView] addSubview: aButton];
-            [buttonList addObject: aButton];
-            [aButton release];
-
-        }
-        else
-        {
-            // Enable and display the session popup
-            [sessionPopup setEnabled: YES];
-            [sessionPopup setTransparent: NO];
-        }
-                        
-    }
-    
-    [ptyListLock unlock];
-    
-    
-}
 
 @end
 

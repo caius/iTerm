@@ -16,6 +16,7 @@
 @class PreferencePanel;
 @class PseudoTerminal;
 @class MainMenu;
+@class PTYTabViewItem;
 
 @interface PTYSession : NSResponder {
     
@@ -25,6 +26,9 @@
     /// Terminal Window
     NSWindow *WINDOW;
 
+    // Owning tab view item
+    PTYTabViewItem *tabViewItem;
+    
     PseudoTerminal *parent;  // parent controller
     NSString *name;
     
@@ -93,6 +97,8 @@
 - (void) setWindow: (NSWindow *) theWindow;
 - (PseudoTerminal *) parent;
 - (void) setParent: (PseudoTerminal *) theParent;
+- (PTYTabViewItem *) tabViewItem;
+- (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem;
 - (NSString *) name;
 - (void) setName: (NSString *) theName;
 - (PTYTask *) SHELL;

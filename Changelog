@@ -1,3 +1,9 @@
+2002-12-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * changed UI from button based to real-tab based 
+      using NSTabView based on user feedback.
+      
+
 2002-12-19	fabian
     * Changed version number to 0.6.0
     * Fixed a bug in zh_TW nib file

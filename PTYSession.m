@@ -15,6 +15,7 @@
 #import "PseudoTerminal.h"
 #import "MainMenu.h"
 #import "NSStringITerm.h"
+#import "PTYTabViewitem.h"
 
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
@@ -26,6 +27,12 @@ static NSString *TERM_ENVNAME = @"TERM";
 static NSString *PWD_ENVNAME = @"PWD";
 static NSString *PWD_ENVVALUE = @"~";
 
+static NSDictionary *normalStateAttribute;
+static NSDictionary *chosenStateAttribute;
+static NSDictionary *idleStateAttribute;
+static NSDictionary *newOutputStateAttribute;
+static NSDictionary *deadStateAttribute;
+
 
 // init/dealloc
 - (id) init
@@ -35,6 +42,19 @@ static NSString *PWD_ENVVALUE = @"~";
     
     iIdleCount=oIdleCount=0;
     waiting=antiIdle=EXIT=NO;
+    
+    if (normalStateAttribute == nil) {
+        normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor darkGrayColor],NSForegroundColorAttributeName,nil] retain];
+        chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
+        idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor redColor],NSForegroundColorAttributeName,nil] retain];
+        newOutputStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor purpleColor],NSForegroundColorAttributeName,nil] retain];
+        deadStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
+            [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
+    }
     
     return (self);
     
@@ -57,6 +77,15 @@ static NSString *PWD_ENVVALUE = @"~";
         
     if(name)
         [name release];
+        
+    [normalStateAttribute release];
+    normalStateAttribute = nil;
+    [chosenStateAttribute release];
+    chosenStateAttribute = nil;
+    [idleStateAttribute release];
+    idleStateAttribute = nil;
+    [newOutputStateAttribute release];
+    newOutputStateAttribute = nil;
         
     [super dealloc];    
     
@@ -94,6 +123,8 @@ static NSString *PWD_ENVVALUE = @"~";
                                             repeats:YES] retain];
     antiIdle = NO;
     REFRESHED = NO;
+    
+    [tabViewItem setLabelAttributes: chosenStateAttribute];
         
 }
 
@@ -172,7 +203,15 @@ static NSString *PWD_ENVVALUE = @"~";
     oIdleCount=0;
     if (REFRESHED==NO) {
         REFRESHED=YES;
-        [parent _drawSessionButtons];
+        if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
+        {
+            if ([self idle])
+                [tabViewItem setLabelAttributes: idleStateAttribute];
+            else
+                [tabViewItem setLabelAttributes: newOutputStateAttribute];
+            [tabViewItem redrawLabel];
+        }
+        //[parent _drawSessionButtons];
     }
     
     [TERMINAL putStreamData:data];
@@ -203,6 +242,12 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL sendSignal:SIGKILL];
     [SHELL stop];
     EXIT = YES;
+    if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
+    {
+        [tabViewItem setLabelAttributes: deadStateAttribute];
+        [tabViewItem redrawLabel];
+    }
+
 
     if (timer) {
         [timer invalidate];
@@ -545,11 +590,27 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     if (oIdleCount>5&&!waiting) {
         waiting=YES;
-        [parent _drawSessionButtons];
+        if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
+        {
+            if ([self idle])
+                [tabViewItem setLabelAttributes: idleStateAttribute];
+            else
+                [tabViewItem setLabelAttributes: newOutputStateAttribute];
+            [tabViewItem redrawLabel];
+        }
+        //[parent _drawSessionButtons];
     }
     else if (waiting&&oIdleCount<=5) {
         waiting=NO;
-        [parent _drawSessionButtons];
+        if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
+        {
+            if ([self idle])
+                [tabViewItem setLabelAttributes: idleStateAttribute];
+            else
+                [tabViewItem setLabelAttributes: newOutputStateAttribute];
+            [tabViewItem redrawLabel];
+        }
+        //[parent _drawSessionButtons];
     }
     [SCREEN blink];
 
@@ -578,6 +639,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     return (parent);
 }
+
 - (void) setParent: (PseudoTerminal *) theParent
 {
     if(parent)
@@ -591,6 +653,17 @@ static NSString *PWD_ENVVALUE = @"~";
         parent = theParent;
     }
 }
+
+- (PTYTabViewItem *) tabViewItem
+{
+    return (tabViewItem);
+}
+
+- (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem
+{
+    tabViewItem = theTabViewItem;
+}
+
 
 - (NSString *) name
 {
@@ -608,7 +681,8 @@ static NSString *PWD_ENVVALUE = @"~";
         [theName retain];
         name = theName;
     }
-    [parent _drawSessionButtons];
+    [tabViewItem setLabel: theName];
+    //[parent _drawSessionButtons];
 }
 
 - (PTYTask *) SHELL
@@ -819,7 +893,10 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) resetStatus;
 {
+    iIdleCount=oIdleCount=0;
     waiting=REFRESHED=NO;
+    [tabViewItem setLabelAttributes: chosenStateAttribute];
+    [tabViewItem redrawLabel];
 }
 
 - (BOOL)idle

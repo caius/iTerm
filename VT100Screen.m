@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.202 2004-03-19 22:10:26 ujwal Exp $
+// $Id: VT100Screen.m,v 1.203 2004-04-14 01:05:12 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1004,6 +1004,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 	int idx, x1 ,x2;
 	
+	x1 = x2 = 0;
     switch (token.u.csi.p[0]) {
     case 1:
 		x1=0;

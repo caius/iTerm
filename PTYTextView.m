@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.201 2004-04-14 00:25:25 ujwal Exp $
+// $Id: PTYTextView.m,v 1.202 2004-04-14 01:05:12 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -657,11 +657,11 @@ static SInt32 systemVersion;
     unichar *buf;
 	NSRect bgRect;
 	NSColor *aColor;
-	char  *fg, *bg, *dirty;
+	char  *fg, *bg, *dirty = NULL;
 	BOOL need_draw;
 	int bgstart, ulstart;
     float curX, curY;
-	unsigned int bgcode, fgcode;
+	unsigned int bgcode = 0, fgcode = 0;
 	int y1, x1;
 	BOOL double_width;
 	BOOL reversed = [[dataSource terminal] screenMode]; 
@@ -2091,7 +2091,7 @@ static SInt32 systemVersion;
 	width = [dataSource width];
 	height = [dataSource numberOfLines];
 	bfHeight = height - [dataSource height];
-	if (startX == -1) startIdx = width*height+1;
+	if (startX == -1) startIdx = endIdx = width*height+1;
 	else {
 		startIdx = startx + starty * width;
 		endIdx = endx + endy * width;

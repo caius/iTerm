@@ -816,7 +816,7 @@ static NSStringEncoding const *encodingList = nil;
 {
     NSOpenPanel *panel;
     int sts;
-    NSString *filename;
+    NSString *filename = nil;
 		
     panel = [NSOpenPanel openPanel];
     [panel setAllowsMultipleSelection: NO];

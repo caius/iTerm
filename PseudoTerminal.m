@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.155 2003-04-28 08:03:14 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.156 2003-04-28 15:18:57 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -75,6 +75,10 @@ static int windowCount = 0;
 
     aSession = [[PTYSession alloc] init];
     [self setupSession:aSession title: nil];
+    // Add this session to our list and make it current
+    [self addInSessions: aSession];
+    [aSession release];
+    
     [aSession setForegroundColor: [pref foreground]];
     [aSession setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
     [aSession setSelectionColor: [pref selectionColor]];
@@ -83,11 +87,6 @@ static int windowCount = 0;
     [aSession setEncoding:[pref encoding]];
     // term value
     [aSession setTERM_VALUE: [pref terminalType]];
-
-    // Add this session to our list and make it current
-    [self addInSessions: aSession];
-    [aSession release];    
-
     
     [self startProgram:cmd arguments:arg];
     [self setCurrentSessionName:nil];
@@ -140,6 +139,7 @@ static int windowCount = 0;
               font:(NSFont *)font
             nafont:(NSFont *)nafont
 {
+
     WIDTH=width;
     HEIGHT=height;
     NSRect tabviewRect;
@@ -1732,6 +1732,13 @@ static int windowCount = 0;
 {
     // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x atIndex: %d", object, index);
     [self setupSession: object title: nil];
+    [object setForegroundColor: [pref foreground]];
+    [object setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
+    [object setSelectionColor: [pref selectionColor]];
+    [object setBoldColor: [pref boldColor]];
+    [object setEncoding: [pref encoding]];
+    // term value
+    [object setTERM_VALUE: [pref terminalType]];
     [self insertSession: object atIndex: index];
 }
 

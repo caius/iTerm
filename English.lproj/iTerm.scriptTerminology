@@ -150,23 +150,6 @@
 		</dict>
 		<key>select</key>
 		<dict>
-			<key>Arguments</key>
-			<dict>
-				<key>sessionName</key>
-				<dict>
-					<key>Description</key>
-					<string>Name of session to be selected</string>
-					<key>Name</key>
-					<string>session name</string>
-				</dict>
-				<key>sessionNumber</key>
-				<dict>
-					<key>Description</key>
-					<string>Index of session to be selected</string>
-					<key>Name</key>
-					<string>session number</string>
-				</dict>
-			</dict>
 			<key>Description</key>
 			<string>Selects a specified session</string>
 			<key>Name</key>

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.159 2003-04-28 19:52:31 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.160 2003-04-28 22:40:35 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -258,29 +258,39 @@ static int windowCount = 0;
 
 - (void) switchSession: (id) sender
 {
-    [self selectSession: [sender tag]];
+    [self selectSessionAtIndex: [sender tag]];
 }
 
-- (void) selectSession: (int) sessionIndex
+- (void) selectSession: (PTYSession *) aSession
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal selectSession:%@]",
+          __FILE__, __LINE__, aSession);
+#endif
+    
+    [TABVIEW selectTabViewItemWithIdentifier: aSession];
+    if (currentPtySession) [currentPtySession resetStatus];
+    currentSessionIndex = [ptyList indexOfObject: aSession];
+    currentPtySession = aSession;
+    [self setWindowTitle];
+    [currentPtySession setLabelAttribute];
+    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
+    [WINDOW setNextResponder:self];
+}
+
+
+- (void) selectSessionAtIndex: (int) sessionIndex
 {
     PTYSession *aSession;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal selectSession:%d]",
+    NSLog(@"%s(%d):-[PseudoTerminal selectSessionAtIndex:%d]",
           __FILE__, __LINE__, sessionIndex);
 #endif
     
     if (sessionIndex<0||sessionIndex >= [ptyList count]) return;
 
     aSession = [ptyList objectAtIndex: sessionIndex];
-    [TABVIEW selectTabViewItemWithIdentifier: aSession];
-    if (currentPtySession) [currentPtySession resetStatus];
-    currentSessionIndex = sessionIndex;
-    currentPtySession = aSession;
-    [self setWindowTitle];
-    [currentPtySession setLabelAttribute];
-    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
-    [WINDOW setNextResponder:self];
 
 }
 
@@ -316,7 +326,7 @@ static int windowCount = 0;
 	//currentPtySession = aSession;
 	[aTabViewItem release];
 	[aSession setTabViewItem: aTabViewItem];
-	[self selectSession: index];
+	[self selectSessionAtIndex: index];
 
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
@@ -363,7 +373,7 @@ static int windowCount = 0;
                     currentSessionIndex = [ptyList count] - 1;
         
                 currentPtySession = nil;
-                [self selectSession: currentSessionIndex];
+                [self selectSessionAtIndex: currentSessionIndex];
             }
             else if (i<currentSessionIndex) currentSessionIndex--;
             
@@ -408,7 +418,7 @@ static int windowCount = 0;
     {
         theIndex = currentSessionIndex - 1;
     }
-    [self selectSession: theIndex];    
+    [self selectSessionAtIndex: theIndex];    
 }
 
 - (IBAction) nextSession:(id)sender
@@ -424,7 +434,7 @@ static int windowCount = 0;
         theIndex = currentSessionIndex + 1;
     }
     
-    [self selectSession: theIndex];
+    [self selectSessionAtIndex: theIndex];
 
 }
 
@@ -817,7 +827,7 @@ static int windowCount = 0;
 	  __FILE__, __LINE__, aNotification);
 #endif
 
-    [self selectSession: [self currentSessionIndex]];
+    [self selectSessionAtIndex: [self currentSessionIndex]];
     
     [MAINMENU setFrontPseudoTerminal: self];
 
@@ -1543,7 +1553,7 @@ static int windowCount = 0;
     // If this is the current session, make previous one active.
     if(aSession == currentPtySession)
     {
-	[self selectSession: (currentSessionIndex - 1)];
+	[self selectSessionAtIndex: (currentSessionIndex - 1)];
     }
 
     aTabViewItem = [aSession tabViewItem];
@@ -1830,46 +1840,6 @@ static int windowCount = 0;
     
     return;
 }
-
--(void)handleSelectScriptCommand: (NSScriptCommand *)command
-{
-    // Get the command's arguments:
-    NSDictionary *args = [command evaluatedArguments];
-    // optional argument follows (might be nil):
-    NSString *sessionName = [args objectForKey:@"sessionName"];
-    // optional argument follows (might be nil):
-    NSNumber *sessionNumber = [args objectForKey:@"sessionNumber"];
-
-    // don't allow both to be set
-    if(sessionName != nil && sessionNumber != nil)
-    {
-	NSBeep();
-	return;
-    }
-
-    // check if we have an index first
-    if(sessionNumber != nil)
-    {
-	[self selectSession: [sessionNumber intValue]];
-	return;
-    }
-
-    int i;
-
-    for (i = 0; i < [ptyList count]; i++)
-    {
-	PTYSession *aSession;
-
-	aSession = [ptyList objectAtIndex: i];
-
-	if([[aSession name] isEqualToString: sessionName] == YES)
-	{
-	    [self selectSession: i];
-	    break;
-	}
-    }
-}
-
 
 @end
 

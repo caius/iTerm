@@ -50,10 +50,6 @@ static NSString *PWD_ENVVALUE = @"~";
 - (id) init
 {
 
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYSession init]", __FILE__, __LINE__);
-#endif
-
     if((self = [super init]) == nil)
         return (nil);
 
@@ -77,6 +73,10 @@ static NSString *PWD_ENVVALUE = @"~";
             [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
     }
     addressBookEntry=nil;
+
+#if DEBUG_ALLOC
+    NSLog(@"%s(%d):-[PTYSession init 0x%x]", __FILE__, __LINE__, self);
+#endif    
     
     return (self);
     
@@ -85,7 +85,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYSession dealloc]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[PTYSession dealloc 0x%x]", __FILE__, __LINE__, self);
 #endif
 
     [parent release];
@@ -372,7 +372,7 @@ static NSString *PWD_ENVVALUE = @"~";
                 
 	    default:
 		if ((modflag & NSCommandKeyMask) && (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey)) {
-		    [parent selectSession:unicode-NSF1FunctionKey];
+		    [parent selectSessionAtIndex:unicode-NSF1FunctionKey];
 		}
                     
 		break;
@@ -1336,6 +1336,12 @@ static NSString *PWD_ENVVALUE = @"~";
 
     return;
 }
+
+-(void)handleSelectScriptCommand: (NSScriptCommand *)command
+{
+    [parent selectSession: self];
+}
+
 
 
 @end

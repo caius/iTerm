@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.53 2003-04-28 17:17:37 ujwal Exp $
+// $Id: MainMenu.m,v 1.54 2003-04-28 22:40:33 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -112,7 +112,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (void)applicationDidUnhide:(NSNotification *)aNotification
 {
     // Make sure that the first responder stuff is set up OK.
-    [FRONT selectSession: [FRONT currentSessionIndex]];
+    [FRONT selectSessionAtIndex: [FRONT currentSessionIndex]];
 }
 
 

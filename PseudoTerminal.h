@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.45 2003-04-28 08:03:14 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.46 2003-04-28 22:40:35 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -100,7 +100,8 @@
 - (void)setupSession: (PTYSession *) aSession title: (NSString *)title;
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index;
 - (void) switchSession: (id) sender;
-- (void) selectSession: (int) sessionIndex;
+- (void) selectSession: (PTYSession *) aSession;
+- (void) selectSessionAtIndex: (int) sessionIndex;
 - (void) closeSession: (PTYSession*) aSession;
 - (IBAction) closeCurrentSession: (id) sender;
 - (IBAction) previousSession:(id)sender;

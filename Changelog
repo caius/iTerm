@@ -6,6 +6,7 @@
 2003-09-10	ujwal
 
     * Fixed massive memory leaks.
+    * Fixed "Prompt on Close" preference bug.
 
 2003-09-09	ujwal
 

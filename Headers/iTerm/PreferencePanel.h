@@ -42,7 +42,6 @@
     IBOutlet id macnavkeys;
     IBOutlet id prefPanel;
     IBOutlet id promptOnClose;
-    IBOutlet id scrollbackLines;
     IBOutlet id silenceBell;
     IBOutlet id tabViewType;
     IBOutlet id blinkingCursor;

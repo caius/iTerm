@@ -1,3 +1,8 @@
+2004-02-29  ujwal
+
+	* Fixed bug in [PseudoTerminal saveSession:].
+	* Added more code for keybinding manager. Still incomplete.
+
 2004-02-27 fabian
 	
 	* Fixed a bug in [VT100Screen putToken], ANSIECH, which causes a crash.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.264 2004-02-26 01:28:34 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.265 2004-02-29 09:04:35 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1428,6 +1428,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 		
 		[[[ITAddressBookMgr sharedInstance] addressBook] replaceObjectAtIndex: [[[ITAddressBookMgr sharedInstance] addressBook] indexOfObject: [[_sessionMgr currentSession] addressBookEntry]] withObject: currentABEntry];
+		[[_sessionMgr currentSession] setAddressBookEntry: currentABEntry];
 		
 		NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
 						[currentABEntry objectForKey:@"Name"],

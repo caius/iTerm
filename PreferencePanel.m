@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.24 2003-02-13 07:43:42 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.25 2003-02-13 07:55:44 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -373,6 +373,8 @@ static int TRANSPARENCY  =10;
     defaultCopySelection=YES;
     defaultSilenceBell=NO;
     defaultDoubleWidth=YES;
+    defaultTabViewType = NSTopTabsBezelBorder;
+    defaultRemapDeleteKey = YES;
     
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
@@ -404,6 +406,8 @@ static int TRANSPARENCY  =10;
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
+    [remapDeleteKey setState:defaultRemapDeleteKey?NSOnState:NSOffState];
+    [tabViewType selectCellWithTag: defaultTabViewType];
 
     
 }

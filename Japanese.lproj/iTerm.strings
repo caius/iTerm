@@ -70,10 +70,10 @@
 "Save" = "保存";
 
 /* Context menu */
-"Select" = "Select";
+"Select" = "タブを選択";
 
 /* Context menu */
-"Move to new window" = "Move to new window";
+"Move to new window" = "新規ウインドウに移動";
 
 /* Anti-Idle: wrong input */
 "Please enter a valid code (0~255)" = "正しいコードを入力して下さい (0~255)";

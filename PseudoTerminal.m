@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.201 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.202 2003-08-08 22:16:51 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -137,19 +137,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // initViewWithFrame is mainly meant for embedding a terminal view in a non-iTerm window.
 - (PTYTabView*) initViewWithFrame: (NSRect) frame
 {
-    NSRect tabviewRect, contentRect;
-    NSSize termSize;
-    NSFont *aFont1, *aFont2;
-
-    aFont1 = FONT;
-    if(aFont1 == nil)
-    {
-	NSDictionary *defaultSession = [iTerm defaultAddressBookEntry];
-	aFont1 = [defaultSession objectForKey:@"Font"];
-	aFont2 = [defaultSession objectForKey:@"NAFont"];
-	[self setFont: aFont1 nafont: aFont2]; 
-    }
-    NSParameterAssert(aFont1 != nil);
+    NSRect tabviewRect;
 
     // Create the tabview
     TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
@@ -157,11 +145,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [TABVIEW setAllowsTruncatedLabels: NO];
     [TABVIEW setControlSize: NSSmallControlSize];
 
-    // Calculate the size of the terminal
-    contentRect = [TABVIEW contentRect];
-    termSize = [VT100Screen screenSizeInFrame: contentRect font: aFont1];
-    [self setWidth: (int) termSize.width height: (int) termSize.height];
-
+    WIDTH = HEIGHT = 0;
+    
     return ([TABVIEW autorelease]);
 }
 
@@ -197,13 +182,34 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		       title: (NSString *)title
 {
     NSDictionary *defaultParameters;
+    NSFont *aFont1, *aFont2;
+    NSSize termSize;
+    NSRect contentRect;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
           __FILE__, __LINE__);
 #endif
 
-    NSParameterAssert(aSession != nil);    
+    NSParameterAssert(aSession != nil);
+
+    if(WIDTH == 0)
+    {
+	aFont1 = FONT;
+	if(aFont1 == nil)
+	{
+	    NSDictionary *defaultSession = [iTerm defaultAddressBookEntry];
+	    aFont1 = [defaultSession objectForKey:@"Font"];
+	    aFont2 = [defaultSession objectForKey:@"NAFont"];
+	    [self setFont: aFont1 nafont: aFont2];
+	}
+	NSParameterAssert(aFont1 != nil);
+	// Calculate the size of the terminal
+	contentRect = [TABVIEW contentRect];
+	termSize = [VT100Screen screenSizeInFrame: contentRect font: aFont1];
+	[self setWidth: (int) termSize.width height: (int) termSize.height];
+    }
+    
     
     // Init the rest of the session
     [aSession setParent: self];
@@ -1354,6 +1360,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     unsigned int modflag = 0;
     BOOL newWin;
     int nextIndex;
+    NSMenuItem *aMenuItem;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal menuForEvent]", __FILE__, __LINE__);
@@ -1384,16 +1391,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"Select",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: nextIndex];
 
 	NSMenu *tabMenu = [[NSMenu alloc] initWithTitle:@""];
-	NSMenuItem *tabMenuItem;
 	int i;
 
 	for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
 	{
-	    tabMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
+	    aMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
 										 action:@selector(selectTab:) keyEquivalent:@""];
-	    [tabMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
-	    [tabMenu addItem: tabMenuItem];
-	    [tabMenuItem release];
+	    [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
+	    [aMenuItem setTarget: TABVIEW];
+	    [tabMenu addItem: aMenuItem];
+	    [aMenuItem release];
 	}
 	[theMenu setSubmenu: tabMenu forItem: [theMenu itemAtIndex: nextIndex]];
 	[tabMenu release];
@@ -1415,14 +1422,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [theMenu addItem:[NSMenuItem separatorItem]];
 
     // Close current session
-    [theMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: Close Session")
-						   action:@selector(closeCurrentSession:) keyEquivalent:@""];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:@selector(closeCurrentSession:) keyEquivalent:@""];
+    [aMenuItem setTarget: self];
+    [theMenu addItem: aMenuItem];
+    [aMenuItem release];
 
 
     // Configure
-    [theMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Configure...",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-				     action:@selector(showConfigWindow:) keyEquivalent:@""];
-    
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Configure...",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:@selector(showConfigWindow:) keyEquivalent:@""];
+    [aMenuItem setTarget: self];
+    [theMenu addItem: aMenuItem];
+    [aMenuItem release];
+        
 }
 
 

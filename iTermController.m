@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.5 2003-08-08 20:12:57 ujwal Exp $
+// $Id: iTermController.m,v 1.6 2003-08-08 22:16:56 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -577,6 +577,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     {
 	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: abCommandSelector keyEquivalent:@""];
 	[abMenuItem setTag: i++];
+	[abMenuItem setTarget: self];
         [abMenuItem setRepresentedObject: sender]; // so that we know where this menu item is going to be executed
 	[abMenu addItem: abMenuItem];
 	[abMenuItem release];

@@ -995,13 +995,18 @@ static NSString *PWD_ENVVALUE = @"~";
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu
 {
+    NSMenuItem *aMenuItem;
+    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession menuForEvent]", __FILE__, __LINE__);
 #endif
 
     // Clear buffer
-    [theMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Clear Buffer",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-		     action:@selector(clearBuffer:) keyEquivalent:@""];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Clear Buffer",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:@selector(clearBuffer:) keyEquivalent:@""];
+    [aMenuItem setTarget: [self parent]];
+    [theMenu addItem: aMenuItem];
+    [aMenuItem release];
+    
 
     // Ask the parent if it has anything to add
     if ([[self parent] respondsToSelector:@selector(menuForEvent: menu:)])

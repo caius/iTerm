@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.28 2003-11-12 03:09:10 ujwal Exp $
+// $Id: iTermController.m,v 1.29 2004-02-13 21:36:16 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -385,13 +385,13 @@ static BOOL usingAutoLaunchScript = NO;
     if(theTerm == nil)
     {
         term = [[PseudoTerminal alloc] init];
-	[term initWindow];
-	[self addInTerminals: term];
-	[term release];
-
-	[term setColumns: [[entry objectForKey:@"Col"]intValue]];
-	[term setRows: [[entry objectForKey:@"Row"]intValue]];
-	[term setAllFont: [entry objectForKey:@"Font"] nafont: [entry objectForKey:@"NAFont"]];
+		[term initWindow];
+		[self addInTerminals: term];
+		[term release];
+		
+		[term setColumns: [[entry objectForKey:@"Col"]intValue]];
+		[term setRows: [[entry objectForKey:@"Row"]intValue]];
+		[term setFont: [entry objectForKey:@"Font"] nafont: [entry objectForKey:@"NAFont"]];
     }
     else
         term = theTerm;

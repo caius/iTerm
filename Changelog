@@ -1,3 +1,7 @@
+2004-02-13  fabian
+
+	* Massive rewrite of drawing code. Some lost functionality needs to be recovered.
+
 2004-02-05  ujwal
 
 	* Selection is maintained after screen update unless text of selection has changed.

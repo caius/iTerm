@@ -39,10 +39,6 @@
 #import <iTerm/AddressBookWindowController.h>
 #import <iTerm/iTermImageView.h>
 
-#import <iTerm/VT100TextStorage.h>
-#import <iTerm/VT100LayoutManager.h>
-#import <iTerm/VT100Typesetter.h>
-
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -60,7 +56,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     if((self = [super init]) == nil)
         return (nil);
-    
+	
     iIdleCount=0;
     oIdleCount=1000;
     blink = 0;
@@ -70,21 +66,19 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if (normalStateAttribute == nil) 
     {
-		NSFont *tabLabelFont = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
-		
         normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blackColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
+            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
         chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blackColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
+            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
         idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor redColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
+            [NSColor redColor],NSForegroundColorAttributeName,nil] retain];
         newOutputStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor purpleColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
+            [NSColor purpleColor],NSForegroundColorAttributeName,nil] retain];
         deadStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor grayColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
+            [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
     }
     addressBookEntry=nil;
-    
+	
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession init 0x%x]", __FILE__, __LINE__, self);
 #endif    
@@ -97,18 +91,15 @@ static NSString *PWD_ENVVALUE = @"~";
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession dealloc 0x%x]", __FILE__, __LINE__, self);
 #endif
-    
+	
     [SHELL release];
     SHELL = nil;
-    
+	
     [SCREEN release];
     SCREEN = nil;
     [TERMINAL release];
     TERMINAL = nil;    
-    
-    [textStorage release];
-    textStorage = nil;
-    
+	
     
     [TERM_VALUE release];
     [view release];
@@ -116,7 +107,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [windowTitle release];
     [addressBookEntry release];
     [backgroundImagePath release];
-    
+	
     [normalStateAttribute release];
     normalStateAttribute = nil;
     [chosenStateAttribute release];
@@ -125,112 +116,72 @@ static NSString *PWD_ENVVALUE = @"~";
     idleStateAttribute = nil;
     [newOutputStateAttribute release];
     newOutputStateAttribute = nil;
-    
+	
     [super dealloc];    
 }
 
 // Session specific methods
-- (void)initScreen: (NSRect) aRect
+- (void)initScreen: (NSRect) aRect width:(int)width height:(int) height
 {
     NSSize aSize;
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession initScreen]",
           __FILE__, __LINE__);
 #endif
-    
+	
     // Allocate screen, shell, and terminal objects
     SHELL = [[PTYTask alloc] init];
-    TERMINAL = [[VT100Terminal alloc] init];
+    TERMINAL = [[VT100Terminal alloc] init:parent];
     SCREEN = [[VT100Screen alloc] init];
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
-    
+	
     [SCREEN setSession:self];
+	[SCREEN setWidth:width height:height];
     [self setName:@"Shell"];
-    
+	
     // allocate an imageview for the background image
     imageView = [[iTermImageView alloc] initWithFrame: aRect];
     [imageView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-    
+	
     // Allocate a scrollview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
     [SCROLLVIEW setHasVerticalScroller:YES];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-    
+	
     // add the scrollview as a subview to the imageview
     [imageView addSubview: SCROLLVIEW];
     [SCROLLVIEW release];
-    
+	
     // assign the main view
     view = imageView;
     
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
-#if USE_CUSTOM_DRAWING
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
-#else
-    
-#if 0
-    if([[PreferencePanel sharedInstance] enforceCharacterAlignment] == NO)
-    {
-		// use standard text system
-		TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
-    }
-    else
-#endif
-		// use our custom text system
-    {
-		VT100LayoutManager* aLayoutManager = [[VT100LayoutManager alloc] init];
-		VT100Typesetter *aTypesetter;
-		NSTextContainer *aTextContainer;
-		
-		textStorage = [[VT100TextStorage alloc] init];
-		[textStorage addLayoutManager:aLayoutManager];
-		[aLayoutManager release];
-		
-        aTextContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize(aSize.width, 1e7)];
-		[aLayoutManager addTextContainer:aTextContainer];
-		[aTextContainer release];
-		
-        aTypesetter = [[VT100Typesetter alloc] init];
-		[aTypesetter setScreen: SCREEN];
-		[aLayoutManager setTypesetter: aTypesetter];
-		[aTypesetter release];
-		
-        TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
-		[aTextContainer setWidthTracksTextView:YES];
-		[aTextContainer setHeightTracksTextView:NO];
-		[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
-		[TEXTVIEW setHorizontallyResizable:NO];
-		[TEXTVIEW setVerticallyResizable:YES];
-    }
-    
-    [TEXTVIEW setDrawsBackground:NO];
-    [TEXTVIEW setEditable:YES]; // For NSTextInput protocol
-    [TEXTVIEW setSelectable:YES];
-    [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-    [SCREEN setTextStorage:[TEXTVIEW textStorage]];
-    
-#endif
-    
+	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+	
     // assign terminal and task objects
     [SCREEN setShellTask:SHELL];
     [SCREEN setTerminal:TERMINAL];
     [TERMINAL setScreen: SCREEN];
     [SHELL setDelegate:self];
-    
+	
+    // initialize the screen
+    [SCREEN initScreenWithWidth:width Height:height];
+	
     [TEXTVIEW setDataSource: SCREEN];
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [[PreferencePanel sharedInstance] antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
     [TEXTVIEW release];
     [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
-    
+
     ai_code=0;
     antiIdle = NO;
     REFRESHED = NO;
-    
+	
     [tabViewItem setLabelAttributes: chosenStateAttribute];
 }
 
@@ -255,39 +206,24 @@ static NSString *PWD_ENVVALUE = @"~";
     NSString *path = program;
     NSMutableArray *argv = [NSMutableArray arrayWithArray:prog_argv];
     NSMutableDictionary *env = [NSMutableDictionary dictionaryWithDictionary:prog_env];
-    NSSize screenSize, textViewSize, scrollViewSize;
-    
-    // set screen size
-    screenSize = [VT100Screen screenSizeInFrame: [[self TEXTVIEW] frame] font: [[self SCREEN] font]];
-    [[self SCREEN] setWidth: (int) screenSize.width height: (int) screenSize.height];
-    textViewSize = [VT100Screen requireSizeWithFont:[[self SCREEN] tallerFont] width:(int) screenSize.width height:(int) screenSize.height];
-    //[[self TEXTVIEW] setFrame: NSMakeRect(0, 0, textViewSize.width, textViewSize.height)];
-    scrollViewSize = [PTYScrollView frameSizeForContentSize:textViewSize
-									  hasHorizontalScroller:NO
-										hasVerticalScroller:YES
-												 borderType:NSNoBorder];
-    //[[self SCROLLVIEW] setFrame: NSMakeRect(0, 0, scrollViewSize.width, scrollViewSize.height)];
-    
-    
-    // initialize the screen
-    [[self SCREEN] initScreen];
-    
+	
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession startProgram:%@ arguments:%@ environment:%@]",
 		  __FILE__, __LINE__, program, prog_argv, prog_env );
 #endif
     if ([env objectForKey:TERM_ENVNAME] == nil)
         [env setObject:TERM_VALUE forKey:TERM_ENVNAME];
-    
+	
     if ([env objectForKey:PWD_ENVNAME] == nil)
         [env setObject:[PWD_ENVVALUE stringByExpandingTildeInPath] forKey:PWD_ENVNAME];
-    
+	
     [SHELL launchWithPath:path
 				arguments:argv
 			  environment:env
 					width:[SCREEN width]
 				   height:[SCREEN height]];
-    
+	
 }
 
 
@@ -296,7 +232,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession -terminate: retainCount = %d]", __FILE__, __LINE__, [self retainCount]);
 #endif
-    
+	
     int pid, status;
     
     [SHELL sendSignal: SIGHUP];
@@ -312,16 +248,17 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     [addressBookEntry release];
     addressBookEntry = nil;
-    
+	
     [SHELL setDelegate:nil];
     [SCREEN setShellTask:nil];
     [SCREEN setSession: nil];
     [SCREEN setTerminal: nil];
     [TERMINAL setScreen: nil];
     [TEXTVIEW setDataSource: nil];
+	[TEXTVIEW setDelegate: nil];
     [TEXTVIEW removeFromSuperview];
     [self setTabViewItem: nil];    
-    
+	
     
     if (timer)
     {
@@ -331,6 +268,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }  
     
     parent = nil;
+	
 }
 
 - (void)writeTask:(NSData *)data
@@ -350,29 +288,22 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)readTask:(NSData *)data
 {
     VT100TCC token;
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, [[[NSString alloc] initWithData: data encoding: nil] autorelease] );
 #endif
     if (data == nil)
         return;
-    
+	
     [TERMINAL putStreamData:data];
-    
-    if ([SCREEN screenIsLocked]) 
-        return;
-    
+	
     if (REFRESHED==NO)
     {
         REFRESHED=YES;
         if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
     }
-    
-#if USE_CUSTOM_DRAWING
-    [TEXTVIEW hideCursor];
-#endif
-    
+	
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 					  token.type != VT100CC_NULL &&
 					  token.type != VT100_WAIT))
@@ -385,12 +316,9 @@ static NSString *PWD_ENVVALUE = @"~";
     if (token.type == VT100_NOTSUPPORT) {
 		NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
-    
-#if USE_CUSTOM_DRAWING
-    [TEXTVIEW showCursor];
-    [TEXTVIEW refresh];
-    //    [TEXTVIEW moveLastLine];
-#endif
+	
+	//    [TEXTVIEW showCursor];
+	//    [TEXTVIEW refresh];
 }
 
 - (void)brokenPipe
@@ -401,7 +329,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL sendSignal:SIGKILL];
     [SHELL stop];
     EXIT = YES;
-    
+	
     if (timer) 
     {
         [timer invalidate];
@@ -651,6 +579,8 @@ static NSString *PWD_ENVVALUE = @"~";
 		
 		// Make sure we scroll down to the end
 		[TEXTVIEW scrollEnd];
+		PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
+		[ptys setUserScroll: NO];
 		
 		if (EXIT == NO ) 
         {
@@ -671,18 +601,10 @@ static NSString *PWD_ENVVALUE = @"~";
 			
 			[self writeTask:[NSData dataWithBytes:dataPtr length:dataLength]];
 			
-#if USE_CUSTOM_DRAWING
-            [TEXTVIEW scrollEnd];
-#else
-			// scroll to the end
-            //[TEXTVIEW scrollEnd];
-            PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
-            [ptys setUserScroll: NO];
-			//[SCREEN updateScreen];
-#endif
 		}
     }
 }
+
 
 - (BOOL)willHandleEvent: (NSEvent *) theEvent
 {
@@ -702,27 +624,26 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) handleOptionClick: (NSEvent *) theEvent
 {
     // Here we will attempt to position the cursor to the mouse-click
-    
+	
     NSPoint locationInWindow, locationInTextView, locationInScrollView;
-    NSSize fontSize;
     int x, y;
-    
+	float w=[parent charWidth], h=[parent charHeight];
+	
     locationInWindow = [theEvent locationInWindow];
     locationInTextView = [TEXTVIEW convertPoint: locationInWindow fromView: nil];
     locationInScrollView = [SCROLLVIEW convertPoint: locationInWindow fromView: nil];
-    
-    fontSize = [SCREEN characterSize];
-    x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
-    y = locationInScrollView.y/fontSize.height + 1;
-    
+	
+	x = locationInTextView.x/w;
+    y = locationInScrollView.y/h + 1;
+	
     // NSLog(@"loc_x = %f; loc_y = %f", locationInTextView.x, locationInScrollView.y);
     // NSLog(@"font width = %f, font height = %f", fontSize.width, fontSize.height);
     // NSLog(@"x = %d; y = %d", x, y);
-    
-    
+	
+	
     if(x == [SCREEN cursorX] && y == [SCREEN cursorY])
 		return;
-    
+	
     NSData *data;
     int i;
     // now move the cursor up or down
@@ -751,7 +672,6 @@ static NSString *PWD_ENVVALUE = @"~";
 // do any idle tasks here
 - (void) doIdleTasks
 {
-    [SCREEN removeOverLine];
 }
 
 - (void)insertText:(NSString *)string
@@ -759,8 +679,8 @@ static NSString *PWD_ENVVALUE = @"~";
     NSData *data;
     NSMutableString *mstring;
     int i, max;
-    
-    //    NSLog(@"insertText: %@",string);
+	
+	//    NSLog(@"insertText: %@",string);
     mstring = [NSMutableString stringWithString:string];
     max = [string length];
     for(i=0; i<max; i++) {
@@ -768,12 +688,12 @@ static NSString *PWD_ENVVALUE = @"~";
             [mstring replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
         }
     }
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession insertText:%@]",
 		  __FILE__, __LINE__, mstring);
 #endif
-    
+	
     //if([TERMINAL encoding] != NSUTF8StringEncoding) {
     //    data = [mstring dataUsingEncoding:[TERMINAL encoding]
     //                allowLossyConversion:YES];
@@ -786,7 +706,7 @@ static NSString *PWD_ENVVALUE = @"~";
 				 allowLossyConversion:YES];
 
     if (data != nil) 
-    [self writeTask:data];
+	[self writeTask:data];
 }
 
 - (void)insertNewline:(id)sender
@@ -865,11 +785,11 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     NSPasteboard *board;
     NSString *str;
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession paste:...]", __FILE__, __LINE__);
 #endif
-    
+	
     board = [NSPasteboard generalPasteboard];
     NSParameterAssert(board != nil );
     str = [board stringForType:NSStringPboardType];
@@ -896,19 +816,19 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)deleteBackward:(id)sender
 {
     unsigned char p = 0x08;	// Ctrl+H
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession deleteBackward:%@]",
 		  __FILE__, __LINE__, sender);
 #endif
-    
+	
     [self writeTask:[NSData dataWithBytes:&p length:1]];
 }
 
 - (void)deleteForward:(id)sender
 {
     unsigned char p = 0x7F;	// DEL
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession deleteForward:%@]",
 		  __FILE__, __LINE__, sender);
@@ -922,11 +842,9 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession textViewDidChangeSelection]",
 		  __FILE__, __LINE__);
 #endif
-    
+	
     if([[PreferencePanel sharedInstance] copySelection])
 		[TEXTVIEW copy: self];
-	
-	[SCREEN textViewDidChangeSelection: [TEXTVIEW selectedRange]];
 }
 
 - (void) textViewResized: (PTYTextView *) textView;
@@ -935,16 +853,13 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession textViewResized: 0x%x]",
 		  __FILE__, __LINE__, textView);
 #endif
-    
+	
     [[self parent] windowDidResize: nil];
     [textView scrollEnd];
-	
 }
 
 - (void) timerTick:(NSTimer*)sender
 {
-    //   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
     iIdleCount++; oIdleCount++; blink++;
     if (++output>1000) output=1000;
     
@@ -958,20 +873,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
         [self setLabelAttribute];
-    
-#if USE_CUSTOM_DRAWING
-    if (output>10&&dirty) {
-		// If the user has not scrolled up, move to the end
-		//	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
-		//    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
-        if (![(PTYScroller *)[SCROLLVIEW verticalScroller] userScroll])
-			[TEXTVIEW scrollEnd];
-        output=0;
-        dirty=NO;
-    }
-    if (oIdleCount<2) dirty=YES;
-    
-#else
+	
     if (blink>15) {
 		[SCREEN blink];
 		blink=0;
@@ -980,21 +882,12 @@ static NSString *PWD_ENVVALUE = @"~";
     {
         if (output>3) 
         {
-            [SCREEN updateScreen];
-			//NSLog(@"floatValue = %f", [[SCROLLVIEW verticalScroller] floatValue]);
-            // If the user has not scrolled up, move to the end
-			//	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
-			//    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
-			if (![(PTYScroller *)[SCROLLVIEW verticalScroller] userScroll])
-                [TEXTVIEW scrollEnd];
+            [TEXTVIEW refresh];
             output=0;
             dirty=NO;
         }
         else dirty=YES;
-    }
-#endif
-    
-    //    [pool release];
+    }    
 }
 
 - (void) setLabelAttribute
@@ -1033,7 +926,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs
 {
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession setPreferencesFromAddressBookEntry:");
 #endif
@@ -1041,7 +934,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSColor *colorTable[2][8];
     int i;
     NSString *imageFilePath;
-    
+	
     // colors
     [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
     [self setBackgroundColor: [aePrefs objectForKey: @"Background"]];
@@ -1084,21 +977,21 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setColorTable:i highLight:NO color:colorTable[0][i]];
         [self setColorTable:i highLight:YES color:colorTable[1][i]];
     }
-    
+	
     // set the font
-    [[self SCREEN] setFont: [aePrefs objectForKey:@"Font"] nafont: [aePrefs objectForKey:@"NAFont"]];
+    //[parent setFont: [aePrefs objectForKey:@"Font"] nafont: [aePrefs objectForKey:@"NAFont"]];
     // set the scrolling
-    [[self SCROLLVIEW] setVerticalLineScroll: [[self SCREEN] characterSize].height];
+    [[self SCROLLVIEW] setVerticalLineScroll: [parent height]];
     [[self SCROLLVIEW] setVerticalPageScroll: [[self TEXTVIEW] frame].size.height];
-    
+	
     // background image
     imageFilePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
     if([imageFilePath length] > 0)
 		[self setBackgroundImagePath: imageFilePath];
-    
+	
     // transparency
     [self setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];    
-    
+	
     // set up the rest of the preferences
     [self setEncoding: [[aePrefs objectForKey:@"Encoding"] unsignedIntValue]];
     [self setTERM_VALUE: [aePrefs objectForKey:@"Term Type"]];
@@ -1118,7 +1011,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession menuForEvent]", __FILE__, __LINE__);
 #endif
-    
+	
     // Clear buffer
     aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Clear Buffer",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:@selector(clearBuffer:) keyEquivalent:@""];
     [aMenuItem setTarget: [self parent]];
@@ -1169,7 +1062,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setName: (NSString *) theName
 {
     NSMutableString *aMutableString;
-    
+	
     if([name isEqualToString: theName])
 		return;
     
@@ -1200,7 +1093,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabel: theName];
         [self setBell: NO];
     }
-    
+	
     // get the session submenu to be rebuilt
     if([[iTermController sharedInstance] currentTerminal] == [self parent])
     {
@@ -1370,7 +1263,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (NSColor *) foregroundColor
 {
-    return ([TERMINAL defaultFGColor]);
+    return ([TEXTVIEW defaultFGColor]);
 }
 
 - (void)setForegroundColor:(NSColor*) color
@@ -1378,34 +1271,29 @@ static NSString *PWD_ENVVALUE = @"~";
     if(color == nil)
         return;
     
-#if USE_CUSTOM_DRAWING
-#else
-    [TEXTVIEW setTextColor: color];
-#endif
-    
-    if(([TERMINAL defaultFGColor] != color) || 
-       ([[TERMINAL defaultFGColor] alphaComponent] != [color alphaComponent]))
+    if(([TEXTVIEW defaultFGColor] != color) || 
+	   ([[TEXTVIEW defaultFGColor] alphaComponent] != [color alphaComponent]))
     {
         // Change the fg color for future stuff
-        [TERMINAL setFGColor: color];
+        [TEXTVIEW setFGColor: color];
     }
 }
 
 - (NSColor *) backgroundColor
 {
-    return ([TERMINAL defaultBGColor]);
+    return ([TEXTVIEW defaultBGColor]);
 }
 
 - (void)setBackgroundColor:(NSColor*) color
 {
     if(color == nil)
         return;
-    
-    if(([TERMINAL defaultBGColor] != color) || 
-       ([[TERMINAL defaultBGColor] alphaComponent] != [color alphaComponent]))
+	
+    if(([TEXTVIEW defaultBGColor] != color) || 
+	   ([[TEXTVIEW defaultBGColor] alphaComponent] != [color alphaComponent]))
     {
         // Change the bg color for future stuff
-        [TERMINAL setBGColor: color];
+        [TEXTVIEW setBGColor: color];
     }
     
     [[self SCROLLVIEW] setBackgroundColor: color];
@@ -1413,12 +1301,12 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (NSColor *) boldColor
 {
-    return ([TERMINAL defaultBoldColor]);
+    return ([TEXTVIEW defaultBoldColor]);
 }
 
 - (void)setBoldColor:(NSColor*) color
 {
-    [[self TERMINAL] setBoldColor: color];
+    [[self TEXTVIEW] setBoldColor: color];
 }
 
 - (NSColor *) selectionColor
@@ -1435,19 +1323,19 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (float) transparency
 {
-    return (1 - [[TERMINAL defaultBGColor] alphaComponent]);
+    return (1 - [[TEXTVIEW defaultBGColor] alphaComponent]);
 }
 
 - (void)setTransparency:(float)transparency
 {
     NSColor *newcolor;
-    
+	
     // set transparency of background image
     [imageView setTransparency: transparency];
-    
+	
     // set alpha channel of background color
-    newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency)];
-    if (newcolor != nil && newcolor != [TERMINAL defaultBGColor])
+    newcolor = [[TEXTVIEW defaultBGColor] colorWithAlphaComponent:(1 - transparency)];
+    if (newcolor != nil && newcolor != [TEXTVIEW defaultBGColor])
     {
 		[self setBackgroundColor: newcolor];
 		[TEXTVIEW setNeedsDisplay: YES];
@@ -1456,7 +1344,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
 {
-    [TERMINAL setColorTable:index highLight:hili color:c];
+    [TEXTVIEW setColorTable:index highLight:hili color:c];
 }
 
 - (BOOL) antiIdle
@@ -1510,7 +1398,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     NSSavePanel *panel;
     int sts;
-    
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession logStart:%@]",
           __FILE__, __LINE__);
@@ -1540,7 +1428,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession clearBuffer:...]", __FILE__, __LINE__);
 #endif
     //[TERMINAL cleanStream];
-    
+	
     [SCREEN clearBuffer];
     // tell the shell to clear the screen
     //[self writeTask:[NSData dataWithBytes:&formFeed length:1]];
@@ -1587,11 +1475,6 @@ static NSString *PWD_ENVVALUE = @"~";
     remapDeleteKey = flag;
 }
 
-- (NSTextStorage *) textStorage
-{
-    return ([TEXTVIEW textStorage]);
-}
-
 @end
 
 @implementation PTYSession (ScriptingSupport)
@@ -1601,9 +1484,9 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     unsigned index = 0;
     id classDescription = nil;
-    
+	
     NSScriptObjectSpecifier *containerRef = nil;
-    
+	
     NSArray *recipients = [[self parent] sessions];
     index = [recipients indexOfObjectIdenticalTo:self];
     if (index != NSNotFound)
@@ -1620,7 +1503,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		// NSLog(@"recipient not found!");
         return nil;
     }
-    
+	
 }
 
 // Handlers for supported commands:
@@ -1636,12 +1519,12 @@ static NSString *PWD_ENVVALUE = @"~";
     // Get the command's arguments:
     NSDictionary *args = [aCommand evaluatedArguments];
     NSString *command = [args objectForKey:@"command"];
-    
+	
     NSString *cmd;
     NSArray *arg;
-    
+	
     [iTermController breakDown:command cmdPath:&cmd cmdArgs:&arg];
-    
+	
     [self startProgram:cmd arguments:arg environment:[NSDictionary dictionary]];
     
     return;
@@ -1662,19 +1545,19 @@ static NSString *PWD_ENVVALUE = @"~";
     NSString *text = [args objectForKey:@"text"];
     NSData *data = nil;
     NSString *aString = nil;
-    
+	
     if(text != nil)
     {
 		aString = [NSString stringWithFormat:@"%@\n", text];
 		data = [aString dataUsingEncoding: [TERMINAL encoding]];
     }
-    
+	
     if(contentsOfFile != nil)
     {
 		aString = [NSString stringWithContentsOfFile: contentsOfFile];
 		data = [aString dataUsingEncoding: [TERMINAL encoding]];
     }
-    
+	
     if(data != nil && [SHELL pid] > 0)
     {
 		int i = 0;

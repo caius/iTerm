@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.12 2004-01-28 20:06:09 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.13 2004-02-13 21:36:17 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -43,12 +43,13 @@
     
     /////////////////////////////////////////////////////////////////////////
     int WIDTH,HEIGHT;
+	int charWidth, charHeight;
     NSFont *FONT, *NAFONT;
     float alpha;
     BOOL tabViewDragOperationInProgress;
     BOOL resizeInProgress;
     BOOL windowInited;
-    BOOL sendInputToAllSessions;
+	BOOL sendInputToAllSessions;
 }
 
 - (id)init;
@@ -83,13 +84,15 @@
 - (void)setWindowTitle;
 - (void)setWindowTitle: (NSString *)title;
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
-- (void)setAllFont:(NSFont *)font nafont:(NSFont *)nafont;
-- (void) changeFontSize: (BOOL) increase;
-- (float) largerSizeForSize: (float) aSize;
-- (float) smallerSizeForSize: (float) aSize;
+- (NSFont *) font;
+- (NSFont *) nafont;
 - (void)setWidth:(int)width height:(int)height;
 - (int)width;
 - (int)height;
+- (void)setCharWidth:(int)width height:(int)height;
+- (void)setCharSizeUsingFont: (NSFont *)font;
+- (int)charWidth;
+- (int)charHeight;
 
 - (ITSessionMgr*)sessionMgr;
 

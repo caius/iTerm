@@ -102,10 +102,10 @@
         
         [currentSession setEncoding:[[iTermController sharedInstance] encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
         
-        if ((configFont != nil && [[currentSession SCREEN] font] != configFont) ||
-            (configNAFont != nil && [[currentSession SCREEN] nafont] != configNAFont)) 
+        if ((configFont != nil && [_pseudoTerminal font] != configFont) ||
+            (configNAFont != nil && [_pseudoTerminal nafont] != configNAFont)) 
         {
-            [_pseudoTerminal setAllFont:configFont nafont:configNAFont];
+            [_pseudoTerminal setFont:configFont nafont:configNAFont];
             [_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
         }
         
@@ -328,20 +328,20 @@
   
     PTYSession* currentSession = [_pseudoTerminal currentSession];
 
-    [CONFIG_FOREGROUND setColor:[[currentSession TERMINAL] defaultFGColor]];
-    [CONFIG_BACKGROUND setColor:[[currentSession TERMINAL] defaultBGColor]];
+    [CONFIG_FOREGROUND setColor:[[currentSession TEXTVIEW] defaultFGColor]];
+    [CONFIG_BACKGROUND setColor:[[currentSession TEXTVIEW] defaultBGColor]];
     [CONFIG_BACKGROUND setEnabled: ([currentSession image] == nil)?YES:NO];
     [CONFIG_SELECTION setColor:[[currentSession TEXTVIEW] selectionColor]];
-    [CONFIG_BOLD setColor: [[currentSession TERMINAL] defaultBoldColor]];
-    configFont=[[currentSession SCREEN] font];
+    [CONFIG_BOLD setColor: [[currentSession TEXTVIEW] defaultBoldColor]];
+    configFont=[_pseudoTerminal font];
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
-    [CONFIG_EXAMPLE setTextColor:[[currentSession TERMINAL] defaultFGColor]];
-    [CONFIG_EXAMPLE setBackgroundColor:[[currentSession TERMINAL] defaultBGColor]];
+    [CONFIG_EXAMPLE setTextColor:[[currentSession TEXTVIEW] defaultFGColor]];
+    [CONFIG_EXAMPLE setBackgroundColor:[[currentSession TEXTVIEW] defaultBGColor]];
     [CONFIG_EXAMPLE setFont:configFont];
-    configNAFont=[[currentSession SCREEN] nafont];
+    configNAFont=[_pseudoTerminal nafont];
     [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
-    [CONFIG_NAEXAMPLE setTextColor:[[currentSession TERMINAL] defaultFGColor]];
-    [CONFIG_NAEXAMPLE setBackgroundColor:[[currentSession TERMINAL] defaultBGColor]];
+    [CONFIG_NAEXAMPLE setTextColor:[[currentSession TEXTVIEW] defaultFGColor]];
+    [CONFIG_NAEXAMPLE setBackgroundColor:[[currentSession TEXTVIEW] defaultBGColor]];
     [CONFIG_NAEXAMPLE setFont:configNAFont];
     [CONFIG_COL setIntValue:[_pseudoTerminal width]];
     [CONFIG_ROW setIntValue:[_pseudoTerminal height]];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.2 2004-02-13 21:36:17 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -30,6 +30,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class VT100Screen;
+@class PseudoTerminal;
 
 // VT100TCC types
 #define VT100CC_NULL        0
@@ -54,7 +55,7 @@
 #define VT100_NOTSUPPORT  	1001
 #define VT100_SKIP        	1002
 #define VT100_STRING      	1003       // string
-#define VT100_ASCIISTRING	1004	   // ASCII string
+
 #define VT100_UNKNOWNCHAR 	1005
 #define VT100CSI_DECSET		1006
 #define VT100CSI_DECRST		1007
@@ -208,18 +209,22 @@ typedef enum {
 #define VT100CHARATTR_BG_HI_WHITE     (VT100CHARATTR_BG_HI_BASE + COLORCODE_WHITE)
 
 
-#define DEFAULT_FG_COLOR_CODE	-1
-#define DEFAULT_BG_COLOR_CODE	-2
+#define DEFAULT_FG_COLOR_CODE	16
+#define DEFAULT_BG_COLOR_CODE	17
+#define BOLD_MASK 32
+#define UNDER_MASK 64
+#define BLINK_MASK 128
 
 @interface VT100Terminal : NSObject
 {
     NSStringEncoding  ENCODING;
     NSMutableData     *STREAM;
     VT100Screen       *SCREEN;
+	PseudoTerminal    *PARENT;
 
-    BOOL LINE_MODE;		// YES=Newline, NO=Line feed
+    BOOL LINE_MODE;			// YES=Newline, NO=Line feed
     BOOL CURSOR_MODE;		// YES=Application, NO=Cursor
-    BOOL ANSI_MODE;		// YES=ANSI, NO=VT52
+    BOOL ANSI_MODE;			// YES=ANSI, NO=VT52
     BOOL COLUMN_MODE;		// YES=132 Column, NO=80 Column
     BOOL SCROLL_MODE;		// YES=Smooth, NO=Jump
     BOOL SCREEN_MODE;		// YES=Reverse, NO=Normal
@@ -229,21 +234,16 @@ typedef enum {
     BOOL INTERLACE_MODE;	// YES=On, NO=Off
     BOOL KEYPAD_MODE;		// YES=Application, NO=Numeric
     BOOL INSERT_MODE;		// YES=Insert, NO=Replace
-    int  CHARSET;		// G0...G3
-    BOOL XON;			// YES=XON, NO=XOFF
-    BOOL numLock;		// YES=ON, NO=OFF, default=YES;
+    int  CHARSET;			// G0...G3
+    BOOL XON;				// YES=XON, NO=XOFF
+    BOOL numLock;			// YES=ON, NO=OFF, default=YES;
     BOOL printToAnsi;		// YES=ON, NO=OFF, default=NO;
     
     int FG_COLORCODE;
     int BG_COLORCODE;
-    NSColor* colorTable[2][8];
-    NSColor* defaultFGColor;
-    NSColor* defaultBGColor;
-    NSColor* defaultBoldColor;
-    int	bold, under, blink, reversed;
-    BOOL highlight, saveHighlight;
+    int	bold, under, blink, reversed, highlight;
 
-    int saveBold, saveUnder, saveBlink, saveReversed;
+    int saveBold, saveUnder, saveBlink, saveReversed, saveHighlight;
     int saveCHARSET;
     
     BOOL TRACE;
@@ -251,9 +251,6 @@ typedef enum {
     BOOL strictAnsiMode;
     BOOL allowColumnMode;
     
-    NSMutableDictionary *characterAttributeDictionary[2];
-    NSMutableDictionary *defaultCharacterAttributeDictionary[2];
-
     unsigned int streamOffset;
 
     // for interprocess communication
@@ -262,7 +259,7 @@ typedef enum {
 
 + (void)initialize;
 
-- (id)init;
+- (id)init:(PseudoTerminal *) parent;
 - (void)dealloc;
 
 - (BOOL)trace;
@@ -283,10 +280,10 @@ typedef enum {
 - (void)cleanStream;
 - (void)putStreamData:(NSData *)data;
 - (VT100TCC)getNextToken;
-- (void) printToken: (VT100TCC) token;
+- (void)printToken: (VT100TCC) token;
 
-- (void) toggleNumLock;
-- (BOOL) numLock;
+- (void)toggleNumLock;
+- (BOOL)numLock;
 
 - (NSData *)keyArrowUp:(unsigned int)modflag;
 - (NSData *)keyArrowDown:(unsigned int)modflag;
@@ -319,28 +316,14 @@ typedef enum {
 
 - (int)foregroundColorCode;
 - (int)backgroundColorCode;
-- (void) setFGColor:(NSColor*)color;
-- (void) setBGColor:(NSColor*)color;
-- (void) setBoldColor:(NSColor*)color;
-- (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
-- (NSColor *) defaultFGColor;
-- (NSColor *) defaultBGColor;
-- (NSColor *) defaultBoldColor;
-- (NSColor *) colorFromTable:(int) index bold:(BOOL) b;
 
 - (NSData *)reportActivePositionWithX:(int)x Y:(int)y;
 - (NSData *)reportStatus;
 - (NSData *)reportDeviceAttribute;
 
-- (NSMutableDictionary *)characterAttributeDictionary: (BOOL) asc;
-- (NSMutableDictionary *)defaultCharacterAttributeDictionary:  (BOOL) asc;
-- (void) initDefaultCharacterAttributeDictionary;
-- (void) setCharacterAttributeDictionary;
-
 - (void)_setMode:(VT100TCC)token;
 - (void)_setCharAttr:(VT100TCC)token;
 
 - (void) setScreen:(VT100Screen *)sc;
-
 @end
 

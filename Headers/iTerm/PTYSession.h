@@ -36,16 +36,12 @@
 @class PseudoTerminal;
 @class iTermController;
 @class PTYTabViewItem;
-@class VT100TextStorage;
 @class iTermImageView;
 
 @interface PTYSession : NSResponder
 {        
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
-
-    // text storage
-    VT100TextStorage *textStorage;
 
     // tty device
     NSString *tty;
@@ -92,7 +88,7 @@
 - (void) dealloc;
 
 // Session specific methods
-- (void)initScreen: (NSRect) aRect;
+- (void)initScreen: (NSRect) aRect width:(int)width height:(int) height;
 - (void)startProgram:(NSString *)program
 	   arguments:(NSArray *)prog_argv
 	 environment:(NSDictionary *)prog_env;
@@ -198,7 +194,6 @@
 - (float) transparency;
 - (void)setTransparency:(float)transparency;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
-- (NSTextStorage *) textStorage;
 
 
 // Session status
@@ -207,7 +202,7 @@
 - (BOOL)exited;
 - (void)setLabelAttribute;
 - (void)setBell;
-- (void) setBell: (BOOL) flag;
+- (void)setBell: (BOOL) flag;
 
 @end
 

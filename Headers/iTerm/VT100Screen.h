@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.6 2004-02-05 16:58:47 ujwal Exp $
+// $Id: VT100Screen.h,v 1.7 2004-02-13 21:36:17 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -30,6 +30,8 @@
 #import <Cocoa/Cocoa.h>
 #import <iTerm/VT100Terminal.h>
 
+#define ISDOUBLEWIDTHCHARACTER(c) ((c)>=0x1000)
+
 @class PTYTask;
 @class PTYSession;
 
@@ -48,71 +50,53 @@
     int SCROLL_BOTTOM;
     BOOL tabStop[TABWINDOW];
     BOOL CURSOR_IN_MIDDLE;
-	int selectionStartColumn;
-	int selectionStartRow;
-	int selectionEndColumn;
-	int selectionEndRow;
 
-    NSTextStorage *STORAGE;
-    NSFont *FONT, *NAFONT;
-    NSSize FONT_SIZE;
     VT100Terminal *TERMINAL;
     PTYTask *SHELL;
     PTYSession *SESSION;
     int charset[4], saveCharset[4];
-    NSMutableAttributedString *BUFFER;
-    NSAttributedString *savedBuffer;
-    int updateIndex, minIndex;
     BOOL blinkShow;
 
-    NSMutableArray *screenLines;
     
-    unsigned int  TOP_LINE;
-    unsigned int  scrollbackLines;
-    int OLD_CURSOR_INDEX;
-    NSLock *screenLock;
-    BOOL screenIsLocked;
     BOOL blinkingCursor;
-    NSMutableAttributedString *newLineString;
     NSView *display;
+	
+	unichar *screenLines;
+	char	*screenBGColor;
+	char	*screenFGColor;
+	char	*dirty;
 
+	unichar *bufferLines;
+	char	*bufferBGColor;
+	char	*bufferFGColor;
+    unsigned int  scrollbackLines;
+	
+	int		bufferWrapped, lastBufferLineIndex;
+	
+	unichar *tempBuffer;
+	unichar sc[300]; 
 }
 
-+ (NSSize)requireSizeWithFont:(NSFont *)font
-			width:(int)width
-		       height:(int)height;
-+ (NSSize)requireSizeWithFont:(NSFont *)font;
-+ (NSSize)screenSizeInFrame:(NSRect)frame  font:(NSFont *)font;
 + (void)setPlayBellFlag:(BOOL)flag;
-+ (NSSize) fontSize:(NSFont *)font;
 
 - (id)init;
 - (void)dealloc;
 
 - (NSString *)description;
 
-- (void)initScreen;
-- (void)setWidth:(int)width height:(int)height;
+- (void)initScreenWithWidth:(int)width Height:(int)height;
 - (void)resizeWidth:(int)width height:(int)height;
+- (void)setWidth:(int)width height:(int)height;
 - (int)width;
 - (int)height;
 - (unsigned int)scrollbackLines;
 - (void)setScrollback:(unsigned int)lines;
-
 - (void)setTerminal:(VT100Terminal *)terminal;
 - (VT100Terminal *)terminal;
 - (void)setShellTask:(PTYTask *)shell;
 - (PTYTask *)shellTask;
 - (PTYSession *) session;
 - (void)setSession:(PTYSession *)session;
-
-- (void)setTextStorage:(NSTextStorage *)storage;
-- (NSTextStorage *)textStorage;
-- (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
-- (NSFont *)font;
-- (NSFont *)nafont;
-- (NSFont *)tallerFont;
-- (NSSize) characterSize;
 
 - (NSView *) display;
 - (void) setDisplay: (NSView *) aDisplay;
@@ -125,19 +109,19 @@
 - (void)putToken:(VT100TCC)token;
 - (void)clearBuffer;
 - (void)clearScrollbackBuffer;
-- (void) saveBuffer;
-- (void) restoreBuffer;
+- (void)saveBuffer;
+- (void)restoreBuffer;
 
 // internal
-- (void)setDoubleWidthString:(NSString *)s;
-- (void)setASCIIString:(NSString *)s;
-- (void)setASCIIStringToX:(int)x
-                     Y:(int)y
-                string:(NSString *)string;
+- (void)setString:(NSString *)s;
+- (void)setStringToX:(int)x
+				   Y:(int)y
+			  string:(NSString *)string;
 - (void)setNewLine;
 - (void)deleteCharacters:(int)n;
 - (void)backSpace;
 - (void)setTab;
+- (void)clearTabStop;
 - (void)clearScreen;
 - (void)eraseInDisplay:(VT100TCC)token;
 - (void)eraseInLine:(VT100TCC)token;
@@ -154,45 +138,29 @@
 - (void)scrollUp;
 - (void)scrollDown;
 - (void)playBell;
-- (void)removeOverLine;
 - (void)deviceReport:(VT100TCC)token;
 - (void)deviceAttribute:(VT100TCC)token;
 - (void)insertBlank: (int)n;
 - (void)insertLines: (int)n;
 - (void)deleteLines: (int)n;
-- (void)trimLine: (int) y;
-- (void)showCursor;
 - (void)blink;
 - (int) cursorX;
 - (int) cursorY;
-- (int) topLines;
 
-- (NSMutableAttributedString *) buffer;
-- (void) updateScreen;
-- (void) forceUpdateScreen;
-- (void) renewBuffer;
+- (void)updateScreen;
 - (int) numberOfLines;
+- (int) lastBufferLineIndex;
 
-- (void) textViewDidChangeSelection: (NSRange) selectedRange;
-- (void) setScreenAttributes;
-- (void) setScreenLock;
-- (void) removeScreenLock;
-- (BOOL) screenIsLocked;
+- (unichar *)screenLines;
+- (char *)screenBGColor;
+- (char	*)screenFGColor;
+- (char	*)dirty;
 
-- (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
-- (NSAttributedString *)defaultAttrString:(NSString *)str;
-- (int) getIndexAtX:(int)x Y:(int)y withPadding:(BOOL)padding;
-- (int) getX: (int *)x Y: (int *)y atIndex: (int) index;
-- (int) getTVIndex:(int)x y:(int)y;
-- (BOOL) isDoubleWidthCharacter:(unichar)code;
+- (unichar *)bufferLines;
+- (char *)bufferBGColor;
+- (char	*)bufferFGColor;
 
-- (void) clearTabStop;
-
-- (NSString *)translate: (NSString *)s;
-#if USE_CUSTOM_DRAWING
-- (NSMutableAttributedString *)stringAtLine: (int) n;
-- (NSArray *) screenLines;
-#else
-#endif
+- (void)resetDirty;
+- (void)setDirty;
 
 @end

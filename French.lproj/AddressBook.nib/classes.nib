@@ -17,6 +17,7 @@
                 chooseBackgroundImage = id; 
                 editColorScheme = id; 
                 executeABCommand = id; 
+                useBackgroundImage = id; 
             }; 
             CLASS = AddressBookWindowController; 
             LANGUAGE = ObjC; 

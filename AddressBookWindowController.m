@@ -482,11 +482,12 @@ static NSColor* xtermColorTable[2][8];
     // background image
     [useBackgroundImage setState:([entry objectForKey:@"UseBackgroundImage"]==nil?NO:[[entry objectForKey:@"UseBackgroundImage"] boolValue])?NSOnState:NSOffState];
     backgroundImagePath = [[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
-    if([backgroundImagePath length] > 0)
+    if([[entry objectForKey:@"UseBackgroundImage"] boolValue] && [backgroundImagePath length] > 0)
     {
 	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
 	[backgroundImage setImage: anImage];
 	[anImage release];
+	[adBackground setEnabled: (anImage == nil)?YES:NO];
     }    
 
 
@@ -748,6 +749,11 @@ static NSColor* xtermColorTable[2][8];
         [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
         [adTextExample setFont:aeFont];
     }
+}
+
+- (IBAction) useBackgroundImage: (id) sender
+{
+    [adBackground setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
 }
 
 - (IBAction) chooseBackgroundImage: (id) sender

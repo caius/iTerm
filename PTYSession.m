@@ -1203,6 +1203,11 @@ static NSString *PWD_ENVVALUE = @"~";
     SCREEN = [theSCREEN retain];
 }
 
+- (NSImage *) image
+{
+    return ([imageView image]);
+}
+
 - (NSView *) view
 {
     return (view);

@@ -241,6 +241,7 @@
 
     [CONFIG_FOREGROUND setColor:[[currentSession TERMINAL] defaultFGColor]];
     [CONFIG_BACKGROUND setColor:[[currentSession TERMINAL] defaultBGColor]];
+    [CONFIG_BACKGROUND setEnabled: ([currentSession image] == nil)?YES:NO];
     [CONFIG_SELECTION setColor:[[currentSession TEXTVIEW] selectionColor]];
     [CONFIG_BOLD setColor: [[currentSession TERMINAL] defaultBoldColor]];
     configFont=[[currentSession SCREEN] font];

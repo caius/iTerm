@@ -156,6 +156,7 @@
 - (void) setTERM_VALUE: (NSString *) theTERM_VALUE;
 - (VT100Screen *) SCREEN;
 - (void) setSCREEN: (VT100Screen *) theSCREEN;
+- (NSImage *) image;
 - (NSView *) view;
 - (PTYTextView *) TEXTVIEW;
 - (void) setTEXTVIEW: (PTYTextView *) theTEXTVIEW;

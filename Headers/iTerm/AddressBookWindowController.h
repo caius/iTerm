@@ -135,6 +135,7 @@
 - (IBAction)changeTab: (id) sender;
 - (IBAction)changeColorScheme:(id)sender;
 - (IBAction)editColorScheme: (id) sender;
+- (IBAction) useBackgroundImage: (id) sender;
 - (IBAction) chooseBackgroundImage: (id) sender;
 
 // misc

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.14 2003-02-21 21:30:47 yfabian Exp $
+// $Id: VT100Screen.h,v 1.15 2003-02-21 22:12:08 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -92,8 +92,6 @@
 
 - (void)setTextStorage:(NSTextStorage *)storage;
 - (NSTextStorage *)textStorage;
-- (void)beginEditing;
-- (void)endEditing;
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (NSFont *)font;
 - (NSFont *)nafont;
@@ -137,11 +135,11 @@
 - (void)deleteLines: (int)n;
 - (void)trimLine: (int) y;
 - (void)showCursor;
-- (void)showCursor:(BOOL)show;
 - (void)blink;
 - (int) cursorX;
 - (int) cursorY;
 
+- (NSMutableAttributedString *) buffer;
 - (void) updateScreen;
 - (void) renewBuffer;
 

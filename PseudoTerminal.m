@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.110 2003-02-21 21:00:16 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.111 2003-02-21 22:12:07 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -954,9 +954,7 @@ static NSString *ConfigToolbarItem = @"Config";
                                       height:h];
 
     for(i=0;i<[ptyList count]; i++) {
-        [[[ptyList objectAtIndex:i] SCREEN] beginEditing];
         [[[ptyList objectAtIndex:i] SCREEN] resizeWidth:w height:h];
-        [[[ptyList objectAtIndex:i] SCREEN] endEditing];
         [[[ptyList objectAtIndex:i] SHELL] setWidth:w  height:h];
         //[[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
@@ -1054,9 +1052,7 @@ static NSString *ConfigToolbarItem = @"Config";
                                       height:h];
     
     for(i=0;i<[ptyList count]; i++) {
-        [[[ptyList objectAtIndex:i] SCREEN] beginEditing];
         [[[ptyList objectAtIndex:i] SCREEN] resizeWidth:w height:h];
-        [[[ptyList objectAtIndex:i] SCREEN] endEditing];
         [[[ptyList objectAtIndex:i] SHELL] setWidth:w height:h];
         [[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
@@ -1070,9 +1066,6 @@ static NSString *ConfigToolbarItem = @"Config";
 
 - (IBAction)windowConfigOk:(id)sender
 {
-
-    [[currentPtySession SCREEN] showCursor: NO];
-    
     if ([CONFIG_COL intValue]<1||[CONFIG_ROW intValue]<1) {
         NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
@@ -1143,8 +1136,6 @@ static NSString *ConfigToolbarItem = @"Config";
             
         }
 
-        [[currentPtySession SCREEN] showCursor: YES];
-	
         [[self currentSession] moveLastLine];
         [self setCurrentSessionName: [CONFIG_NAME stringValue]]; 
     

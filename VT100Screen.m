@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.44 2003-02-21 21:30:47 yfabian Exp $
+// $Id: VT100Screen.m,v 1.45 2003-02-21 22:12:09 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -55,11 +55,9 @@
 //#define ISDOUBLEWIDTHCHARACTER(c) ((c)>=0x1000)
 #define ISDOUBLEWIDTHCHARACTER(idx) ([SESSION doubleWidth]&&[[BUFFER attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue]==2)
 
-static NSString *NSReversedAttributeName=@"NSReversedAttributeName";
 static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 static NSString *NSBlinkColorAttributeName=@"NSBlinkColorAttributeName";
 static NSString *NSCharWidthAttributeName=@"NSCharWidthAttributeName";
-static NSString *NSCursorAttributeName=@"NSCursorAttributeName";
 
 static unichar spaces[300]={0};
 
@@ -367,22 +365,6 @@ static BOOL PLAYBELL = YES;
     }
 }
     
-- (void)beginEditing
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen beginEditing]", __FILE__, __LINE__ );
-#endif
-//    [STORAGE beginEditing];
-}
-
-- (void)endEditing
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen endEditing]", __FILE__, __LINE__ );
-#endif
-//    [STORAGE endEditing];
-}
-
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
 {
 
@@ -908,11 +890,6 @@ static BOOL PLAYBELL = YES;
 
 - (void)showCursor
 {
-    [self showCursor:YES];
-}
-
-- (void)showCursor:(BOOL)show
-{
     NSColor *fg, *bg;
     NSMutableDictionary *dic;
 
@@ -920,77 +897,29 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen showCursor]", __FILE__, __LINE__);
 #endif
-//    NSLog(@"----showCursor: (%d,%d):%d",CURSOR_X,CURSOR_Y,show);
-
-    // Erase cursor at old position by resetting foreground/background colors
-    if (OLD_CURSOR_INDEX>=0&&OLD_CURSOR_INDEX<[[BUFFER string] length]) {
-        if ([[BUFFER attribute:NSReversedAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil] isEqualToString:@"YES"]) {
-            if ([[BUFFER attribute:NSCursorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil] isEqualToString:@"YES"]) {
-                [BUFFER deleteCharactersInRange:NSMakeRange(OLD_CURSOR_INDEX, 1)];
-            } else {
-                dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:OLD_CURSOR_INDEX effectiveRange:nil]];
-                fg=[dic objectForKey:NSBackgroundColorAttributeName];
-                bg=[dic objectForKey:NSForegroundColorAttributeName];
-                //            NSLog(@"reset fg=%@\nbg=%@",fg,bg);
-                [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-                [dic setObject:fg forKey:NSForegroundColorAttributeName];
-                [dic setObject:@"NO" forKey:NSReversedAttributeName];
-                //            NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:OLD_CURSOR_INDEX],[[BUFFER string] characterAtIndex:OLD_CURSOR_INDEX]);
-                [BUFFER setAttributes:dic range:NSMakeRange(OLD_CURSOR_INDEX,1)];
-            }
-OLD_CURSOR_INDEX=-1;
-        }
-    }
 
     // Show cursor at new position by reversing foreground/background colors
-    if (show && CURSOR_X >= 0 && CURSOR_X < WIDTH &&
+    if (CURSOR_X >= 0 && CURSOR_X < WIDTH &&
         CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
     {
-        int idx = [self getIndex:CURSOR_X y:CURSOR_Y];
-        if (idx>=[[BUFFER string] length]) {
-            [BUFFER appendAttributedString:[self defaultAttrString:@" "]];
-            dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:idx effectiveRange:nil]];
-            fg=[dic objectForKey:NSBackgroundColorAttributeName];
-            bg=[dic objectForKey:NSForegroundColorAttributeName];
-            //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
-            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-            [dic setObject:fg forKey:NSForegroundColorAttributeName];
-            [dic setObject:@"YES" forKey:NSReversedAttributeName];
-            [dic setObject:@"YES" forKey:NSCursorAttributeName];
-            //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:idx],[[BUFFER string] characterAtIndex:idx]);
-            [BUFFER setAttributes:dic range:NSMakeRange(idx,1)];
-            
+        int idx = [self getIndex:CURSOR_X y:CURSOR_Y] + updateIndex;
+        //NSLog(@"showCursor: %d(%d)",idx,[[STORAGE string] length]);
+        if (idx>=[[STORAGE string] length]) {
+            [STORAGE appendAttributedString:[self defaultAttrString:@" "]];
         }
-        else if ([[BUFFER string] characterAtIndex:idx]=='\n') {
-            [BUFFER insertAttributedString:[self defaultAttrString:@" "] atIndex:idx];
-            dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:idx effectiveRange:nil]];
-            fg=[dic objectForKey:NSBackgroundColorAttributeName];
-            bg=[dic objectForKey:NSForegroundColorAttributeName];
-            //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
-            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-            [dic setObject:fg forKey:NSForegroundColorAttributeName];
-            [dic setObject:@"YES" forKey:NSReversedAttributeName];
-            [dic setObject:@"YES" forKey:NSCursorAttributeName];
-            //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:idx],[[BUFFER string] characterAtIndex:idx]);
-            [BUFFER setAttributes:dic range:NSMakeRange(idx,1)];
+        else if ([[STORAGE string] characterAtIndex:idx]=='\n') {
+            [STORAGE insertAttributedString:[self defaultAttrString:@" "] atIndex:idx];
         }
-        else {
-            // reverse the video on the position where the cursor is supposed to be shown.
-            dic=[NSMutableDictionary dictionaryWithDictionary: [BUFFER attributesAtIndex:idx effectiveRange:nil]];
-            fg=[dic objectForKey:NSBackgroundColorAttributeName];
-            bg=[dic objectForKey:NSForegroundColorAttributeName];
-            //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
-            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-            [dic setObject:fg forKey:NSForegroundColorAttributeName];
-            [dic setObject:@"YES" forKey:NSReversedAttributeName];
-            //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[BUFFER string] characterAtIndex:idx],[[BUFFER string] characterAtIndex:idx]);
-            [BUFFER setAttributes:dic range:NSMakeRange(idx,1)];
-        }
-        OLD_CURSOR_INDEX=idx;
-
+        // reverse the video on the position where the cursor is supposed to be shown.
+        dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
+        fg=[dic objectForKey:NSBackgroundColorAttributeName];
+        bg=[dic objectForKey:NSForegroundColorAttributeName];
+        //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
+        [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+        [dic setObject:fg forKey:NSForegroundColorAttributeName];
+        //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
+        [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
     }
-    else OLD_CURSOR_INDEX=-1;
-    
 }
 
 - (void)deleteCharacters:(int) n
@@ -1707,6 +1636,11 @@ OLD_CURSOR_INDEX=-1;
    
 }
 
+- (NSMutableAttributedString *) buffer
+{
+    return BUFFER;
+}
+
 - (void) renewBuffer
 {
 #if DEBUG_METHOD_TRACE
@@ -1732,6 +1666,8 @@ OLD_CURSOR_INDEX=-1;
 - (void) updateScreen
 {
 //    NSLog(@"changing %d,%d,%d",updateIndex,[STORAGE length]-updateIndex,[BUFFER length]);
+    if ([BUFFER length]<=0) return;
+    
     [STORAGE beginEditing];
     [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex,[STORAGE length]-updateIndex)
                  withAttributedString:BUFFER];

@@ -246,10 +246,6 @@ static NSString *PWD_ENVVALUE = @"~";
         }
     }
     
-
-//    [SCREEN beginEditing];
-    [SCREEN showCursor:NO];
-    
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 	   token.type != VT100CC_NULL &&
 	   token.type != VT100_WAIT))
@@ -260,15 +256,6 @@ static NSString *PWD_ENVVALUE = @"~";
     if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
-    [SCREEN showCursor:YES];
-/*    [SCREEN endEditing];
-    [TEXTVIEW setCursorIndex:[SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-
-    // If the user has not scrolled up, move to the end
-    if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-	[[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-       ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-	[self moveLastLine]; */
 }
 
 - (void)brokenPipe
@@ -709,6 +696,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (oIdleCount<2) {
         [SCREEN updateScreen];
         [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+        [SCREEN showCursor];
         // If the user has not scrolled up, move to the end
         if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
             [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
@@ -961,11 +949,11 @@ static NSString *PWD_ENVVALUE = @"~";
         // Change the fg color for future stuff
         [TERMINAL setFGColor: color];
         // Change the attributes for the current stuff in the text storage
-        [[SCREEN textStorage] removeAttribute:  NSForegroundColorAttributeName 
-                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
-        [[SCREEN textStorage] addAttribute:  NSForegroundColorAttributeName 
+        [[SCREEN buffer] removeAttribute:  NSForegroundColorAttributeName 
+                                range: NSMakeRange(0, [[SCREEN buffer] length])];
+        [[SCREEN buffer] addAttribute:  NSForegroundColorAttributeName 
                                 value: color
-                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
+                                range: NSMakeRange(0, [[SCREEN buffer] length])];
     }
 
 }
@@ -983,11 +971,12 @@ static NSString *PWD_ENVVALUE = @"~";
         // Change the bg color for future stuff
         [TERMINAL setBGColor: color];
         // Change the attributes for the current stuff in the text storage
-        [[SCREEN textStorage] removeAttribute:  NSBackgroundColorAttributeName 
-                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
-        [[SCREEN textStorage] addAttribute:  NSBackgroundColorAttributeName 
+        [[SCREEN buffer] removeAttribute:  NSBackgroundColorAttributeName 
+                                range: NSMakeRange(0, [[SCREEN buffer] length])];
+        [[SCREEN buffer] addAttribute:  NSBackgroundColorAttributeName 
                                 value: color
-                                range: NSMakeRange(0, [[SCREEN textStorage] length])];
+                                range: NSMakeRange(0, [[SCREEN buffer] length])];
+        [SCREEN updateScreen];
     }
 }
 
@@ -1080,10 +1069,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
     [TERMINAL cleanStream];
 
-    [SCREEN beginEditing];
     [SCREEN clearBuffer];
-    [SCREEN endEditing];
-    [SCREEN showCursor];
     // tell the shell to clear the screen
     [SHELL writeTask:[NSData dataWithBytes:&formFeed length:1]];
 }

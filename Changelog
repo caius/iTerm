@@ -1,4 +1,7 @@
 2003-02-21	fabian
+    * Fixed a bug in showCursor. Cleaned overall cursor
+      Code.
+    * Fixed bugs related to color/font settings in buffer
     * Fixed a bug affecting CJK input
     * Perfromace improvement. Now a buffer is used in
       displaying the text. Significantly improve the

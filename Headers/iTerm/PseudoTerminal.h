@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.20 2004-03-23 03:19:57 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.21 2004-03-26 04:41:17 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -96,6 +96,8 @@
 - (void)setCharSizeUsingFont: (NSFont *)font;
 - (int)charWidth;
 - (int)charHeight;
+- (float) charSpacingVertical;
+- (float) charSpacingHorizontal;
 
 - (ITSessionMgr*)sessionMgr;
 

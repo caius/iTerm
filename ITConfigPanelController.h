@@ -58,6 +58,8 @@
     
     NSFont *configFont, *configNAFont;
     BOOL changingNA;
+	IBOutlet NSSlider *charHorizontalSpacing;
+	IBOutlet NSSlider *charVerticalSpacing;
 
     // background image
     IBOutlet NSButton *useBackgroundImage;

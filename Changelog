@@ -8,6 +8,7 @@
 	
 	* Re-implemented bold drawing to use NSStrokeAttributeName on 
 	  Panther systems and above.
+	* Added controls for character spacing in config panel.
 
 2004-03-24  ujwal
 

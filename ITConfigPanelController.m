@@ -101,8 +101,17 @@
             [_pseudoTerminal setFont:configFont nafont:configNAFont];
             [_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
         }
+		
+		if([charHorizontalSpacing floatValue] != [_pseudoTerminal charSpacingHorizontal] || 
+		   [charVerticalSpacing floatValue] != [_pseudoTerminal charSpacingVertical])
+		{
+			[_pseudoTerminal setCharacterSpacingHorizontal: [charHorizontalSpacing floatValue] 
+												  vertical: [charVerticalSpacing floatValue]];
+			[_pseudoTerminal setFont:configFont nafont:configNAFont];
+			[_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
+		}
         
-        // resiz the window if asked for
+        // resize the window if asked for
         if(([_pseudoTerminal width] != [CONFIG_COL intValue]) || ([_pseudoTerminal height] != [CONFIG_ROW intValue]))
             [_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
         
@@ -355,6 +364,8 @@
     [CONFIG_NAEXAMPLE setFont:configNAFont];
     [CONFIG_COL setIntValue:[_pseudoTerminal width]];
     [CONFIG_ROW setIntValue:[_pseudoTerminal height]];
+	[charHorizontalSpacing setFloatValue: [_pseudoTerminal charSpacingHorizontal]];
+	[charVerticalSpacing setFloatValue: [_pseudoTerminal charSpacingVertical]];
     [CONFIG_NAME setStringValue:[_pseudoTerminal currentSessionName]];
     [CONFIG_ENCODING removeAllItems];
     r=0;

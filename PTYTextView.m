@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.172 2004-03-19 08:11:54 ujwal Exp $
+// $Id: PTYTextView.m,v 1.173 2004-03-19 15:39:59 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -630,13 +630,16 @@
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
     
+	// make sure margins are filled in
 	if (forceUpdate) {
 		if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
 		{
 			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
 		}
 		else {
-			[[self colorForCode:DEFAULT_BG_COLOR_CODE] set];
+			aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
+			aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
+			[aColor set];
 			NSRectFill(rect);
 		}
 	}
@@ -654,7 +657,7 @@
 		
 	// [self adjustScroll] should've made sure we are at an integer multiple of a line
 	curY=rect.origin.y +lineHeight;
-	
+		
     for(i = 0; i < numLines; i++)
     {
 		curX = MARGIN;

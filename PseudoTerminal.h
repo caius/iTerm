@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.33 2003-02-04 01:09:35 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.34 2003-02-04 22:59:55 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -59,13 +59,8 @@
     NSLock *ptyListLock;
     
     /////////////////////////////////////////////////////////////////////////
-    PTYTask *SHELL;
-    VT100Terminal *TERMINAL;
-    NSString *TERM_VALUE;
-    VT100Screen   *SCREEN;
     int WIDTH,HEIGHT;
     NSFont *FONT, *NAFONT;
-    PTYTextView *TEXTVIEW;
     BOOL pending;
     float alpha;
     NSFont *configFont, *configNAFont;

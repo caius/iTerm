@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.95 2003-02-04 16:25:52 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.96 2003-02-04 22:59:54 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -68,8 +68,8 @@ static NSString *ConfigToolbarItem = @"Config";
     [MainMenu breakDown:[pref shell] cmdPath:&cmd cmdArgs:&arg];
 
     [self initSession:nil
-     foregroundColor:[TERMINAL defaultFGColor]
-     backgroundColor:[[TERMINAL defaultBGColor] colorWithAlphaComponent: [[TERMINAL defaultBGColor] alphaComponent]]
+     foregroundColor:[[currentPtySession TERMINAL] defaultFGColor]
+     backgroundColor:[[[currentPtySession TERMINAL] defaultBGColor] colorWithAlphaComponent: [[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]]
      selectionColor: [pref selectionColor]
             encoding:[pref encoding]
                 term:[pref terminalType]];
@@ -192,21 +192,25 @@ static NSString *ConfigToolbarItem = @"Config";
     [aScrollView setDocumentView:[aSession TEXTVIEW]];
     [aTabViewItem setLabel: @""];
 
+    // Add this session to our list and make it current
+    [ptyList addObject: aSession];
+    [aSession release];
+    currentSessionIndex = [ptyList count] - 1;
+    [currentPtySession resetStatus];
+    currentPtySession = aSession;
+    [TABVIEW selectTabViewItem: aTabViewItem];
+    [self setCurrentSessionName: nil];    
+
     SCROLLVIEW = (PTYScrollView *)[aTabViewItem view];
-    SHELL = [aSession SHELL];
-    TERMINAL = [aSession TERMINAL];
-    SCREEN = [aSession SCREEN];
-    NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
 
    
-    TEXTVIEW = [aSession TEXTVIEW];
-    [TEXTVIEW setDelegate: aSession];
+    [[currentPtySession TEXTVIEW] setDelegate: aSession];
 
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![pref silenceBell]];
     
     // Set the anti-alias
-    [TEXTVIEW setAntiAlias: [pref antiAlias]];
+    [[currentPtySession TEXTVIEW] setAntiAlias: [pref antiAlias]];
     
     // Set the colors
     if (fg) [aSession setFGColor:fg];
@@ -227,17 +231,17 @@ static NSString *ConfigToolbarItem = @"Config";
         [aSession setTERM_VALUE: [pref terminalType]];
     }
     
-    [SCREEN setTerminal:TERMINAL];
-    [SCREEN setShellTask:SHELL];
-    [SCREEN setTextStorage:[TEXTVIEW textStorage]];
-    [SCREEN setWindow:WINDOW];
-    [SCREEN setWidth:WIDTH height:HEIGHT];
+    [[currentPtySession SCREEN] setTerminal:[currentPtySession TERMINAL]];
+    [[currentPtySession SCREEN] setShellTask:[currentPtySession SHELL]];
+    [[currentPtySession SCREEN] setTextStorage:[[currentPtySession TEXTVIEW] textStorage]];
+    [[currentPtySession SCREEN] setWindow:WINDOW];
+    [[currentPtySession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
-    [SCREEN initScreen];
+    [[currentPtySession SCREEN] initScreen];
     
 
-    [TERMINAL setEncoding:encoding];
-    [TERMINAL setTrace:YES];	// debug vt100 escape sequence decode
+    [[currentPtySession TERMINAL] setEncoding:encoding];
+    [[currentPtySession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
     
     if([ptyList count] == 0)
     {
@@ -245,9 +249,9 @@ static NSString *ConfigToolbarItem = @"Config";
         [TABVIEW setDelegate: self];
     }
 
-    [SHELL setWidth:WIDTH  height:HEIGHT];
+    [[currentPtySession SHELL] setWidth:WIDTH  height:HEIGHT];
 
-    [WINDOW makeFirstResponder:TEXTVIEW];
+    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
     [WINDOW setNextResponder:self];
 
     pending = NO;
@@ -257,14 +261,6 @@ static NSString *ConfigToolbarItem = @"Config";
         [aSession setName: title];
     }
      
-    // Add this session to our list and make it current
-    [ptyList addObject: aSession];
-    [aSession release];
-    currentSessionIndex = [ptyList count] - 1;
-    [currentPtySession resetStatus];
-    currentPtySession = aSession;
-    [TABVIEW selectTabViewItem: aTabViewItem];
-    [self setCurrentSessionName: nil];
 
     if ([TABVIEW numberOfTabViewItems] == 1)
     {
@@ -305,16 +301,12 @@ static NSString *ConfigToolbarItem = @"Config";
     aSession = [ptyList objectAtIndex: sessionIndex];
     [TABVIEW selectTabViewItemWithIdentifier: aSession];
     SCROLLVIEW = (PTYScrollView *)[[TABVIEW selectedTabViewItem] view];
-    TEXTVIEW = [aSession TEXTVIEW];
-    SHELL = [aSession SHELL];
-    TERMINAL = [aSession TERMINAL];
-    SCREEN = [aSession SCREEN];
     if (currentPtySession) [currentPtySession resetStatus];
     currentSessionIndex = sessionIndex;
     currentPtySession = aSession;
     [self setWindowTitle];
     [currentPtySession setLabelAttribute];
-    [WINDOW makeFirstResponder:TEXTVIEW];
+    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
     [WINDOW setNextResponder:self];
 
 }
@@ -447,7 +439,7 @@ static NSString *ConfigToolbarItem = @"Config";
         [[currentPtySession tabViewItem] setLabel: theSessionName];
     }
     else {
-        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[SHELL path] pathComponents] lastObject], currentSessionIndex];
+        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[[currentPtySession SHELL] path] pathComponents] lastObject], currentSessionIndex];
 
         if ([currentPtySession exited])
             [title appendString:@"Finish"];
@@ -500,9 +492,6 @@ static NSString *ConfigToolbarItem = @"Config";
    
     ptyList = nil;
 
-    SHELL    = nil;
-    TERMINAL = nil;
-    SCREEN   = nil;
         
     // Remove ourselves as an observer for notifications to reload the addressbook.
     [[NSNotificationCenter defaultCenter] removeObserver: self
@@ -620,7 +609,7 @@ static NSString *ConfigToolbarItem = @"Config";
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
 #endif
-    vsize = [VT100Screen requireSizeWithFont:[SCREEN font]
+    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] font]
 				      width:WIDTH
 				     height:HEIGHT];
 
@@ -702,8 +691,8 @@ static NSString *ConfigToolbarItem = @"Config";
     NSLog(@"%s(%d):-[PseudoTerminal setFont:%@]",
           __FILE__, __LINE__, font);
 #endif
-    [TEXTVIEW  setFont:font];
-    [SCREEN  setFont:font nafont:nafont];
+    [[currentPtySession TEXTVIEW]  setFont:font];
+    [[currentPtySession SCREEN]  setFont:font nafont:nafont];
 /*    if (FONT) [FONT autorelease];
     FONT=[[font copy] retain]; */
 }
@@ -737,17 +726,17 @@ static NSString *ConfigToolbarItem = @"Config";
 
 - (IBAction)logStart:(id)sender
 {
-    if (![SHELL logging]) [currentPtySession logStart];
+    if (![[currentPtySession SHELL] logging]) [currentPtySession logStart];
 }
 
 - (IBAction)logStop:(id)sender
 {
-    if ([SHELL logging]) [currentPtySession logStop];
+    if ([[currentPtySession SHELL] logging]) [currentPtySession logStop];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
-    BOOL logging = [SHELL logging];
+    BOOL logging = [[currentPtySession SHELL] logging];
     BOOL result = YES;
 
 #if DEBUG_METHOD_TRACE
@@ -876,13 +865,13 @@ static NSString *ConfigToolbarItem = @"Config";
 
                                        
     // Now calculate an appropriate terminal height for this in integers.
-    h = floor(textviewSize.height/[VT100Screen requireSizeWithFont: [SCREEN font]].height);
+    h = floor(textviewSize.height/[VT100Screen requireSizeWithFont: [[currentPtySession SCREEN] font]].height);
     //NSLog(@"h = %d", h);
     
     // Now do the reverse calculation
     
     // Calculate the textview size
-    textviewSize.height = h*[VT100Screen requireSizeWithFont: [SCREEN font]].height;
+    textviewSize.height = h*[VT100Screen requireSizeWithFont: [[currentPtySession SCREEN] font]].height;
     //NSLog(@"textview size: width = %f; height = %f", textviewSize.width, textviewSize.height);
 
     // Calculate scrollview size
@@ -934,12 +923,12 @@ static NSString *ConfigToolbarItem = @"Config";
 	  frame.size.width, frame.size.height);
 #endif
 
-    termSize = [VT100Screen screenSizeInFrame: frame font: [SCREEN font]];
+    termSize = [VT100Screen screenSizeInFrame: frame font: [[currentPtySession SCREEN] font]];
     
     w = (int)(termSize.width);
     h = (int)(termSize.height);
     
-    vsize = [VT100Screen requireSizeWithFont:[SCREEN font]
+    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] font]
                                        width:w
                                       height:h];
 
@@ -990,18 +979,18 @@ static NSString *ConfigToolbarItem = @"Config";
     NSLog(@"%s(%d):-[PseudoTerminal showConfigWindow:%@]",
           __FILE__, __LINE__, sender);
 #endif
-    [CONFIG_FOREGROUND setColor:[TERMINAL defaultFGColor]];
-    [CONFIG_BACKGROUND setColor:[TERMINAL defaultBGColor]];
-    [CONFIG_SELECTION setColor:[TEXTVIEW selectionColor]];
-    configFont=[SCREEN font];
+    [CONFIG_FOREGROUND setColor:[[currentPtySession TERMINAL] defaultFGColor]];
+    [CONFIG_BACKGROUND setColor:[[currentPtySession TERMINAL] defaultBGColor]];
+    [CONFIG_SELECTION setColor:[[currentPtySession TEXTVIEW] selectionColor]];
+    configFont=[[currentPtySession SCREEN] font];
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
-    [CONFIG_EXAMPLE setTextColor:[TERMINAL defaultFGColor]];
-    [CONFIG_EXAMPLE setBackgroundColor:[TERMINAL defaultBGColor]];
+    [CONFIG_EXAMPLE setTextColor:[[currentPtySession TERMINAL] defaultFGColor]];
+    [CONFIG_EXAMPLE setBackgroundColor:[[currentPtySession TERMINAL] defaultBGColor]];
     [CONFIG_EXAMPLE setFont:configFont];
-    configNAFont=[SCREEN nafont];
+    configNAFont=[[currentPtySession SCREEN] nafont];
     [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
-    [CONFIG_NAEXAMPLE setTextColor:[TERMINAL defaultFGColor]];
-    [CONFIG_NAEXAMPLE setBackgroundColor:[TERMINAL defaultBGColor]];
+    [CONFIG_NAEXAMPLE setTextColor:[[currentPtySession TERMINAL] defaultFGColor]];
+    [CONFIG_NAEXAMPLE setBackgroundColor:[[currentPtySession TERMINAL] defaultBGColor]];
     [CONFIG_NAEXAMPLE setFont:configNAFont];
     [CONFIG_COL setIntValue:WIDTH];
     [CONFIG_ROW setIntValue:HEIGHT];
@@ -1011,16 +1000,16 @@ static NSString *ConfigToolbarItem = @"Config";
     while (*p) {
         //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
         [CONFIG_ENCODING addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[TERMINAL encoding]) r=p-[MAINMENU encodingList];
+        if (*p==[[currentPtySession TERMINAL] encoding]) r=p-[MAINMENU encodingList];
         p++;
     }
     [CONFIG_ENCODING selectItemAtIndex:r];
-    [CONFIG_TRANSPARENCY setIntValue:100-[[TERMINAL defaultBGColor] alphaComponent]*100];
-    [CONFIG_TRANS2 setIntValue:100-[[TERMINAL defaultBGColor] alphaComponent]*100];
+    [CONFIG_TRANSPARENCY setIntValue:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100];
+    [CONFIG_TRANS2 setIntValue:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100];
     [AI_ON setState:[[self currentSession] antiIdle]?NSOnState:NSOffState];
     [AI_CODE setIntValue:[[self currentSession] antiCode]];
     
-    [CONFIG_ANTIALIAS setState: [TEXTVIEW antiAlias]];
+    [CONFIG_ANTIALIAS setState: [[currentPtySession TEXTVIEW] antiAlias]];
     
 //    [CONFIG_PANEL center];
     pending=YES;
@@ -1039,7 +1028,7 @@ static NSString *ConfigToolbarItem = @"Config";
           __FILE__, __LINE__, w, h);
 #endif
     
-    vsize = [VT100Screen requireSizeWithFont:[SCREEN font]
+    vsize = [VT100Screen requireSizeWithFont:[[currentPtySession SCREEN] font]
                                        width:w
                                       height:h];
     
@@ -1073,7 +1062,8 @@ static NSString *ConfigToolbarItem = @"Config";
                         nil,nil);
     }else {
         [[self currentSession] setEncoding:[MAINMENU encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
-        if ((configFont != nil&&[SCREEN font]!=configFont)||(configNAFont!= nil&&[SCREEN nafont]!=configNAFont)) {
+        if ((configFont != nil&&[[currentPtySession SCREEN] font]!=configFont) ||
+	    (configNAFont!= nil&&[[currentPtySession SCREEN] nafont]!=configNAFont)) {
             [self setAllFont:configFont nafont:configNAFont];
             [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
         }
@@ -1083,7 +1073,7 @@ static NSString *ConfigToolbarItem = @"Config";
             [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
         
         // set the anti-alias if it has changed
-        if([CONFIG_ANTIALIAS state] != [TEXTVIEW antiAlias])
+        if([CONFIG_ANTIALIAS state] != [[currentPtySession TEXTVIEW] antiAlias])
         {
             int i;
             PTYSession *aSession;
@@ -1094,17 +1084,17 @@ static NSString *ConfigToolbarItem = @"Config";
                 [[aSession TEXTVIEW] setAntiAlias: [CONFIG_ANTIALIAS state]];
             }
             
-            [TEXTVIEW setNeedsDisplay: YES];
+            [[currentPtySession TEXTVIEW] setNeedsDisplay: YES];
 
         }
         
         // set the selection color if it has changed
-        if([TEXTVIEW selectionColor] != [CONFIG_SELECTION color])
-            [TEXTVIEW setSelectionColor: [CONFIG_SELECTION color]];
+        if([[currentPtySession TEXTVIEW] selectionColor] != [CONFIG_SELECTION color])
+            [[currentPtySession TEXTVIEW] setSelectionColor: [CONFIG_SELECTION color]];
             
-        if(([pref transparency] != (100-[[TERMINAL defaultBGColor] alphaComponent]*100)) || 
-            ([TERMINAL defaultFGColor] != [CONFIG_FOREGROUND color]) || 
-            ([TERMINAL defaultBGColor] != [CONFIG_BACKGROUND color]))
+        if(([pref transparency] != (100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100)) || 
+            ([[currentPtySession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 
+            ([[currentPtySession TERMINAL] defaultBGColor] != [CONFIG_BACKGROUND color]))
         {
             NSColor *bgColor;
 /*            int i;
@@ -1128,7 +1118,7 @@ static NSString *ConfigToolbarItem = @"Config";
             [SCROLLVIEW setNeedsDisplay: YES];
             
         }
-        [SCREEN showCursor];
+        [[currentPtySession SCREEN] showCursor];
         [[self currentSession] moveLastLine];
         [self setCurrentSessionName: [CONFIG_NAME stringValue]]; 
     
@@ -1375,15 +1365,11 @@ static NSString *ConfigToolbarItem = @"Config";
     aSession = [tabViewItem identifier];
     
     SCROLLVIEW = (PTYScrollView *)[tabViewItem view];
-    TEXTVIEW = [aSession TEXTVIEW];
-    SHELL = [aSession SHELL];
-    TERMINAL = [aSession TERMINAL];
-    SCREEN = [aSession SCREEN];
     if (currentPtySession) [currentPtySession resetStatus];
     currentSessionIndex = [TABVIEW indexOfTabViewItem: tabViewItem];
     currentPtySession = aSession;
     [self setWindowTitle];
-    [WINDOW makeFirstResponder:TEXTVIEW];
+    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
     [WINDOW setNextResponder:self];
 }
 
@@ -1455,17 +1441,17 @@ static NSString *ConfigToolbarItem = @"Config";
         new=[[NSDictionary alloc] initWithObjectsAndKeys:
             [old objectForKey:@"Name"],@"Name",
             [old objectForKey:@"Command"],@"Command",
-            [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
-            [TERMINAL defaultFGColor],@"Foreground",
-            [TERMINAL defaultBGColor],@"Background",
-            [TEXTVIEW selectionColor],@"SelectionColor",
+            [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]],@"Encoding",
+            [[currentPtySession TERMINAL] defaultFGColor],@"Foreground",
+            [[currentPtySession TERMINAL] defaultBGColor],@"Background",
+            [[currentPtySession TEXTVIEW] selectionColor],@"SelectionColor",
             [NSString stringWithInt:WIDTH],@"Col",
             [NSString stringWithInt:HEIGHT],@"Row",
-            [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
+            [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",
             [[self currentSession] TERM_VALUE],@"Term Type",
             [old objectForKey:@"Directory"],@"Directory",
-            [SCREEN font],@"Font",
-            [SCREEN nafont],@"NAFont",
+            [[currentPtySession SCREEN] font],@"Font",
+            [[currentPtySession SCREEN] nafont],@"NAFont",
             [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
             [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
@@ -1477,17 +1463,17 @@ static NSString *ConfigToolbarItem = @"Config";
     else {
         new=[[NSDictionary alloc] initWithObjectsAndKeys:
             [self currentSessionName],@"Name",
-            (old?[old objectForKey:@"Command"]:[SHELL path]),@"Command",
-            [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
-            [TERMINAL defaultFGColor],@"Foreground",
-            [TERMINAL defaultBGColor],@"Background",
+            (old?[old objectForKey:@"Command"]:[[currentPtySession SHELL] path]),@"Command",
+            [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]],@"Encoding",
+            [[currentPtySession TERMINAL] defaultFGColor],@"Foreground",
+            [[currentPtySession TERMINAL] defaultBGColor],@"Background",
             [NSString stringWithInt:WIDTH],@"Col",
             [NSString stringWithInt:HEIGHT],@"Row",
-            [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
+            [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",
             [[self currentSession] TERM_VALUE],@"Term Type",
             (old?[old objectForKey:@"Directory"]:@""),@"Directory",
-            [SCREEN font],@"Font",
-            [SCREEN nafont],@"NAFont",
+            [[currentPtySession SCREEN] font],@"Font",
+            [[currentPtySession SCREEN] nafont],@"NAFont",
             [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
             [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",

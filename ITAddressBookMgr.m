@@ -28,6 +28,7 @@
 
 #import "ITAddressBookMgr.h"
 
+#import <iTerm/PreferencePanel.h>
 #import <iTerm/Tree.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermKeyBindingMgr.h>
@@ -37,6 +38,8 @@
 
 
 #define SAFENODE(n) 		((TreeNode*)((n)?(n):(bookmarks)))
+
+static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/AddressBook";
 
 
 static TreeNode *defaultBookmark = nil;
@@ -144,7 +147,7 @@ static TreeNode *defaultBookmark = nil;
 	{
 		[bookmarks insertChild: rendezvousGroup atIndex: [bookmarks numberOfChildren]];
 	}	
-	
+
 }
 
 - (NSDictionary *) bookmarks
@@ -300,6 +303,49 @@ static TreeNode *defaultBookmark = nil;
 {
 	return ([self _getBookmarkNodeWithName: bookmarkName searchFromNode: bookmarks]);
 }
+
+// migrate any old bookmarks in the old format we might have
+- (void) migrateOldBookmarks
+{
+	NSMutableArray *_addressBookArray = [[NSUnarchiver unarchiveObjectWithFile: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath]] retain];
+	NSDictionary *_adEntry;
+	NSMutableDictionary *aBookmarkData;
+	int i;
+	NSFileManager *fileManager;
+	TreeNode *childNode;
+	
+	for (i = 0; i < [_addressBookArray count]; i++)
+	{
+		_adEntry = [_addressBookArray objectAtIndex: i];
+		
+		// add all entries except for default entry
+		if([[_adEntry objectForKey:@"DefaultEntry"] boolValue] == NO)
+		{
+			aBookmarkData = [[NSMutableDictionary alloc] init];
+			[aBookmarkData setObject: [_adEntry objectForKey: @"Name"] forKey: KEY_NAME];
+			[aBookmarkData setObject: [_adEntry objectForKey: @"Command"] forKey: KEY_DESCRIPTION];
+			[aBookmarkData setObject: [_adEntry objectForKey: @"Command"] forKey: KEY_COMMAND];
+			[aBookmarkData setObject: [_adEntry objectForKey: @"Directory"] forKey: KEY_WORKING_DIRECTORY];
+			[aBookmarkData setObject: [[iTermTerminalProfileMgr singleInstance] defaultProfileName] forKey: KEY_TERMINAL_PROFILE];
+			[aBookmarkData setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
+			[aBookmarkData setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
+			
+			childNode = [[TreeNode alloc] initWithData: aBookmarkData parent: nil children: [NSArray array]];
+			[childNode setIsLeaf: YES];
+			[bookmarks insertChild: childNode atIndex: [bookmarks numberOfChildren]];
+			[childNode release];						
+			[aBookmarkData release];
+		}
+		
+	}
+	
+	// delete old addressbook file.
+	fileManager = [NSFileManager defaultManager];
+	if([fileManager isDeletableFileAtPath: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
+		[fileManager removeFileAtPath: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath] handler: nil];
+	
+}
+
 
 // NSNetServiceBrowser delegate methods
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didFindService:(NSNetService *)aNetService moreComing:(BOOL)moreComing 

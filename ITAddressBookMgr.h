@@ -57,6 +57,8 @@
 - (void) setBookmarks: (NSDictionary *) aDict;
 - (NSDictionary *) bookmarks;
 
+- (void) migrateOldBookmarks;
+
 // Model for NSOutlineView tree structure
 - (id) child:(int)index ofItem:(id)item;
 - (BOOL) isExpandable:(id)item;

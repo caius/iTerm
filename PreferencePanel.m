@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.111 2004-04-09 23:30:33 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.112 2004-04-11 02:05:43 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -112,7 +112,6 @@ static BOOL editingBookmark = NO;
 	NSMutableDictionary *profilesDictionary, *keybindingProfiles, *displayProfiles, *terminalProfiles;
 		
     prefs = [NSUserDefaults standardUserDefaults];
-
          
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
@@ -143,6 +142,9 @@ static BOOL editingBookmark = NO;
 	
 	// load bookmarks
 	[[ITAddressBookMgr sharedInstance] setBookmarks: [prefs objectForKey: @"Bookmarks"]];
+	// migrate old bookmarks, if any
+	[[ITAddressBookMgr sharedInstance] migrateOldBookmarks];
+	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
 }
 
 - (void) savePreferences

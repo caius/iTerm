@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.21 2004-03-31 04:29:17 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.22 2004-04-11 02:05:43 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -356,7 +356,6 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
     NSMenu *newMenu;
     PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
 
-    
     // clear whatever menus we already have
     [newTab setSubmenu: nil];
     [newWindow setSubmenu: nil];

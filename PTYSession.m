@@ -70,18 +70,18 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if (normalStateAttribute == nil) 
     {
-	NSFont *tabLableFont = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
+	NSFont *tabLabelFont = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
 		
         normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blackColor],NSForegroundColorAttributeName, tabLableFont, NSFontAttributeName, nil] retain];
+            [NSColor blackColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
         chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blackColor],NSForegroundColorAttributeName, tabLableFont, NSFontAttributeName, nil] retain];
+            [NSColor blackColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
         idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor redColor],NSForegroundColorAttributeName, tabLableFont, NSFontAttributeName, nil] retain];
+            [NSColor redColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
         newOutputStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor purpleColor],NSForegroundColorAttributeName, tabLableFont, NSFontAttributeName, nil] retain];
+            [NSColor purpleColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
         deadStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor grayColor],NSForegroundColorAttributeName, tabLableFont, NSFontAttributeName, nil] retain];
+            [NSColor grayColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
     }
     addressBookEntry=nil;
 	

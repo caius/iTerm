@@ -192,7 +192,7 @@ static NSString *PWD_ENVVALUE = @"~";
     VT100TCC token;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, data );
+    NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, [[[NSString alloc] initWithData: data encoding: nil] autorelease] );
 #endif
     if (data == nil)
     {

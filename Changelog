@@ -1,6 +1,6 @@
 2003-09-07	ujwal
 
-    * Fixed printSelection where unnecessary white space being printed.
+    * Fixed printSelection where unnecessary white space was being printed.
 
 2003-09-07	fabian
 

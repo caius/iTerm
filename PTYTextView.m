@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.87 2003-09-07 10:48:05 yfabian Exp $
+// $Id: PTYTextView.m,v 1.88 2003-09-07 18:49:02 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1332,7 +1332,6 @@
     
     self = [super init];
     deadkey = NO;
-    printingSelection = NO;
     
     return (self);
 }
@@ -1340,7 +1339,6 @@
 - (void)commonInit;
 {
     deadkey = NO;
-    printingSelection = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(frameChanged:)
@@ -1531,25 +1529,7 @@
     // set the antialias flag
     [[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
     
-    // Check if we are printing a selection
-    if([NSGraphicsContext currentContextDrawingToScreen] == NO && printingSelection == YES)
-    {
-        NSRange selectedRange = [self selectedRange];
-        NSRectArray rectArray;
-        unsigned int rectCount, i;
-        
-        // get the array of rects that define the selected region
-        rectArray = [[self layoutManager] rectArrayForCharacterRange: selectedRange withinSelectedCharacterRange: selectedRange inTextContainer: [self textContainer] rectCount: &rectCount];
-        
-        // draw all the rects
-        for (i = 0; i < rectCount; i++)
-        {
-            NSRect theRect = *(rectArray + i);
-            [super drawRect: theRect];
-        }
-    }
-    else
-        [super drawRect: rect];
+    [super drawRect: rect];
     
 }
 
@@ -2150,11 +2130,17 @@
         NSBeep();
         return;
     }
-    printingSelection = YES;
+
+    PTYTextView *tempView;
+    NSAttributedString *selectedText;
     
-    [self print: self];
-    
-    printingSelection = NO;
+    // create a temporary view with the selected text as contents and print it
+    tempView = [[PTYTextView alloc] initWithFrame: [[self enclosingScrollView] documentVisibleRect]];
+    selectedText = [[self textStorage] attributedSubstringFromRange: [self selectedRange]];
+    [[tempView textStorage] setAttributedString: selectedText];
+    [tempView print: nil];
+    [tempView release];
+
 }
 
 // Save method

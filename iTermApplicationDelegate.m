@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.6 2003-10-02 23:14:56 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.7 2003-10-03 00:07:14 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -58,6 +58,14 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    NSImage *scriptIcon = [NSImage imageNamed: @"script"];
+    NSMenu *scriptMenu = [[NSMenu alloc] initWithTitle: @"Script"];
+    NSMenuItem *scriptMenuItem = [[NSMenuItem alloc] initWithTitle: @"Script Item" action: nil keyEquivalent: @""];
+    [scriptMenuItem setSubmenu: scriptMenu];
+    [scriptMenu release];
+    [scriptMenuItem setImage: scriptIcon];
+    [[NSApp mainMenu] addItem: scriptMenuItem];
+    [scriptMenuItem release];
 }
 
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification

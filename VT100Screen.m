@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.141 2003-09-10 23:42:01 yfabian Exp $
+// $Id: VT100Screen.m,v 1.142 2003-09-11 00:49:30 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -819,6 +819,7 @@ static BOOL PLAYBELL = YES;
     }
     [savedBuffer release];
     savedBuffer = nil;
+    updateIndex=0;
 }
 
 - (int) getIndexAtX:(int)x Y:(int)y withPadding:(BOOL)padding
@@ -1543,9 +1544,9 @@ static BOOL PLAYBELL = YES;
 	}
 	[STORAGE endEditing];
 	[self removeScreenLock];
-	[[SESSION TEXTVIEW] scrollEnd];
+	[[SESSION TEXTVIEW] scrollEnd]; */
 	// update TOP_LINE
-	TOP_LINE += HEIGHT; */
+	TOP_LINE += HEIGHT; 
         for(i=0;i<HEIGHT;i++) [BUFFER appendAttributedString:newLineString];
         return;
 	
@@ -2210,7 +2211,7 @@ static BOOL PLAYBELL = YES;
 {
   
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen removeOverLine]",  __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[VT100Screen removeOverLine (%d, %d)]",  __FILE__, __LINE__, TOP_LINE, scrollbackLines);
 #endif
 
     [self setScreenLock];

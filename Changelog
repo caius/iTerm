@@ -3,6 +3,7 @@
 	* Removed obsolete code.
 	* Minor fix with margins.
 	* Shift click extends selection.
+	* Added support for horizontal and vertical character spacing.
 
 2004-03-18  ujwal
 

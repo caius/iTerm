@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.18 2004-03-19 08:12:01 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.19 2004-03-19 23:53:33 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -44,6 +44,7 @@
     /////////////////////////////////////////////////////////////////////////
     int WIDTH,HEIGHT;
 	int charWidth, charHeight;
+	float charHorizontalSpacingMultiplier, charVerticalSpacingMultiplier;
     NSFont *FONT, *NAFONT;
     float alpha;
     BOOL tabViewDragOperationInProgress;
@@ -82,6 +83,7 @@
 - (void)setWindowTitle;
 - (void)setWindowTitle: (NSString *)title;
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
+- (void) setCharacterSpacingHorizontal: (float) horizontal vertical: (float) vertical;
 - (void) changeFontSize: (BOOL) increase;
 - (float) largerSizeForSize: (float) aSize;
 - (float) smallerSizeForSize: (float) aSize;

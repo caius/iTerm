@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.274 2004-03-19 08:55:57 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.275 2004-03-19 23:53:33 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -91,6 +91,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 	
     _sessionMgr = [[ITSessionMgr alloc] init];
+	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
 	
     tabViewDragOperationInProgress = NO;
      
@@ -227,12 +228,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	{
 		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
 			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
+		[self setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
+								   vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
     }
     
     [aSession setPreferencesFromAddressBookEntry: tempPrefs];
-	
 	 	
-	[self setCharSizeUsingFont: FONT];
     [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
 	[[aSession TEXTVIEW] setFont:FONT nafont:NAFONT];
     [[aSession TEXTVIEW] setLineHeight: charHeight];
@@ -582,8 +583,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [dic setObject:font forKey:NSFontAttributeName];
     sz = [@"W" sizeWithAttributes:dic];
 	
-	charWidth=sz.width;
-	charHeight=[font defaultLineHeightForFont];
+	charWidth=sz.width * charHorizontalSpacingMultiplier;
+	charHeight=[font defaultLineHeightForFont] * charVerticalSpacingMultiplier;
 	
 	[[self window] setResizeIncrements: NSMakeSize(charWidth, charHeight)];
 	
@@ -803,6 +804,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     return 8.0; 
 } 
 
+- (void) setCharacterSpacingHorizontal: (float) horizontal vertical: (float) vertical
+{
+	charHorizontalSpacingMultiplier = horizontal;
+	charVerticalSpacingMultiplier = vertical;
+	//NSLog(@"horizontal = %f; vertical = %f", horizontal, vertical);
+	[self setCharSizeUsingFont: FONT];
+}
 
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
 {

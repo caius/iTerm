@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.32 2004-03-19 08:11:55 ujwal Exp $
+// $Id: iTermController.m,v 1.33 2004-03-19 23:53:33 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -350,6 +350,7 @@ static BOOL usingAutoLaunchScript = NO;
     NSArray *arg;
     NSDictionary *aDict;
 	NSString *displayProfile, *terminalProfile;
+	iTermDisplayProfileMgr *displayProfileMgr;
 	
 	aDict = bookmarkData;
 	if(aDict == nil)
@@ -359,13 +360,15 @@ static BOOL usingAutoLaunchScript = NO;
 	cmd = [aDict objectForKey: KEY_COMMAND];
     [iTermController breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
 	
+	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+	
 	// grab the profiles
 	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
 	if(displayProfile == nil)
-		displayProfile = [[iTermDisplayProfileMgr singleInstance] defaultProfileName];
+		displayProfile = [displayProfileMgr defaultProfileName];
 	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
 	if(terminalProfile == nil)
-		terminalProfile = [[iTermTerminalProfileMgr singleInstance] defaultProfileName];	
+		terminalProfile = [displayProfileMgr defaultProfileName];	
 	
 	// Where do we execute this command?
     if(theTerm == nil)
@@ -375,10 +378,12 @@ static BOOL usingAutoLaunchScript = NO;
 		[self addInTerminals: term];
 		[term release];
 		
-		[term setColumns: [[iTermDisplayProfileMgr singleInstance] windowColumnsForProfile: displayProfile]];
-		[term setRows: [[iTermDisplayProfileMgr singleInstance] windowRowsForProfile: displayProfile]];
-		[term setFont: [[iTermDisplayProfileMgr singleInstance] windowFontForProfile: displayProfile] 
-			   nafont: [[iTermDisplayProfileMgr singleInstance] windowNAFontForProfile: displayProfile]];
+		[term setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
+		[term setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
+		[term setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
+			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
+		[term setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
+							  vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
     }
     else
         term = theTerm;

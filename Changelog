@@ -1,3 +1,13 @@
+2003-01-05	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added Address Book into contextual menu. Entries 
+      will be executed in a new session.
+    
+    * Refactored the contextual menu code, so that the 
+      text view does not have know about the address book 
+      and session configuration.
+
+
 2003-01-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Can't reproduce the emacs editing bug anymore.

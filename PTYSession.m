@@ -620,6 +620,30 @@ static NSString *PWD_ENVVALUE = @"~";
     pref=preference;
 }
 
+// Contextual menu
+- (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYSession menuForEvent]", __FILE__, __LINE__);
+#endif
+
+    // Clear buffer
+    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Clear Buffer",@"iTerm",@"Context menu")
+		     action:@selector(clearBuffer:) keyEquivalent:@""];
+
+    // Separator
+    [theMenu addItem:[NSMenuItem separatorItem]];
+
+    // Configure
+    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Configure...",@"iTerm",@"Context menu")
+		     action:@selector(showConfigWindow:) keyEquivalent:@""];
+
+    // Ask the parent if it has anything to add
+    if ([[self parent] respondsToSelector:@selector(menuForEvent: menu:)])
+	[[self parent] menuForEvent:theEvent menu: theMenu];
+    
+}
+
 
 // get/set methods
 - (void) setMainMenu:(MainMenu *) theMainMenu

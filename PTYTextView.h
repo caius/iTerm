@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.4 2002-12-31 00:40:16 ujwal Exp $
+// $Id: PTYTextView.h,v 1.5 2003-01-05 08:34:17 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -12,7 +12,6 @@
 
 @interface PTYTextView : NSTextView
 {
-    NSMenu *cMenu;
     
     BOOL IM_INPUT_INSERT;
     NSRange IM_INPUT_SELRANGE;

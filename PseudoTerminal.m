@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.57 2003-01-04 03:02:05 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.58 2003-01-05 08:34:17 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1176,6 +1176,45 @@ static NSString *ConfigToolbarItem = @"Config";
     return [toolbar autorelease];
 }
 
+// Contextual menu
+- (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal menuForEvent]", __FILE__, __LINE__);
+#endif
+
+    if(theEvent == nil || theMenu == nil)
+	return;
+
+    // Address Book
+    [theMenu insertItemWithTitle:NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")
+						      action:nil keyEquivalent:@"" atIndex: 0];
+    
+    // Separator
+    [theMenu insertItem:[NSMenuItem separatorItem] atIndex: 1];
+
+    // Build the address book menu
+    NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
+    NSEnumerator *abEnumerator;
+    NSString *abEntry;
+    int i = 0;
+    
+    [abMenu addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")
+			     action:@selector(newSession:) keyEquivalent:@""];
+    [abMenu addItem: [NSMenuItem separatorItem]];
+    abEnumerator = [[MAINMENU addressBookNames] objectEnumerator];
+    while ((abEntry = [abEnumerator nextObject]) != nil)
+    {
+	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: @selector(_executeABMenuCommand:) keyEquivalent:@""];
+	[abMenuItem setTag: i++];
+	[abMenu addItem: abMenuItem];
+	[abMenuItem release];
+    }
+
+    [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
+    [abMenu release];
+}
+
 
 // NSTabView
 - (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1235,10 +1274,6 @@ static NSString *ConfigToolbarItem = @"Config";
 - (void) _addressbookPopupSelectionDidChange: (id) sender
 {
     int commandIndex;
-    NSDictionary *anEntry;
-    NSString *cmd;
-    NSArray *arg;
-    PseudoTerminal *term;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal _addressbookPopupSelectionDidChange]",
@@ -1263,30 +1298,7 @@ static NSString *ConfigToolbarItem = @"Config";
         else [MAINMENU newSession:nil];
     }
     else {
-        anEntry = [MAINMENU addressBookEntry: commandIndex-2];
-
-        if (newwin) {
-            term = [PseudoTerminal newTerminalWindow: MAINMENU];
-            [term setPreference:pref];
-            [term initWindow:[[anEntry objectForKey:@"Col"]intValue]
-                      height:[[anEntry objectForKey:@"Row"] intValue]
-                        font:[anEntry objectForKey:@"Font"]
-                      nafont:[anEntry objectForKey:@"NAFont"]];
-        }
-        else term=self;
-
-        // Init a new session and run the command
-        [term initSession:[anEntry objectForKey:@"Name"]
-          foregroundColor:[anEntry objectForKey:@"Foreground"]
-          backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
-                 encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
-                     term:[anEntry objectForKey:@"Term Type"]];
-
-        NSDictionary *env=[NSDictionary dictionaryWithObject:([anEntry objectForKey:@"Directory"]?[anEntry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
-
-        [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
-        [term startProgram:cmd arguments:arg environment:env];
-        [term setCurrentSessionName:[anEntry objectForKey:@"Name"]];
+	[self _executeABMenuCommand: (commandIndex - 2) newWindow: newwin];
     }
 }
 
@@ -1356,6 +1368,50 @@ static NSString *ConfigToolbarItem = @"Config";
         }
         
     }
+    
+}
+
+- (void) _executeABMenuCommand: (id) sender
+{
+    [self _executeABMenuCommand: [sender tag] newWindow: NO];
+}
+
+- (void) _executeABMenuCommand: (int) commandIndex newWindow: (BOOL) theFlag
+{
+    NSDictionary *anEntry;
+    NSString *cmd;
+    NSArray *arg;
+    PseudoTerminal *term;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal _executeABMenuCommand: index = %d, flag = %d]",
+          __FILE__, __LINE__, commandIndex, theFlag);
+#endif    
+    
+    anEntry = [MAINMENU addressBookEntry: commandIndex];
+
+    if (theFlag) {
+	term = [PseudoTerminal newTerminalWindow: MAINMENU];
+	[term setPreference:pref];
+	[term initWindow:[[anEntry objectForKey:@"Col"]intValue]
+	   height:[[anEntry objectForKey:@"Row"] intValue]
+	     font:[anEntry objectForKey:@"Font"]
+	   nafont:[anEntry objectForKey:@"NAFont"]];
+    }
+    else term=self;
+
+    // Init a new session and run the command
+    [term initSession:[anEntry objectForKey:@"Name"]
+      foregroundColor:[anEntry objectForKey:@"Foreground"]
+      backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
+	     encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
+		 term:[anEntry objectForKey:@"Term Type"]];
+
+    NSDictionary *env=[NSDictionary dictionaryWithObject:([anEntry objectForKey:@"Directory"]?[anEntry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
+
+    [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
+    [term startProgram:cmd arguments:arg environment:env];
+    [term setCurrentSessionName:[anEntry objectForKey:@"Name"]];
     
 }
 

@@ -98,6 +98,9 @@
 // Misc
 - (void)moveLastLine;
 
+// Contextual menu
+- (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;
+
 
 // get/set methods
 - (void) setMainMenu: (MainMenu *) theMainMenu;

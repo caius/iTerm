@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.10 2003-01-01 21:38:14 ujwal Exp $
+// $Id: PTYTextView.m,v 1.11 2003-01-05 08:34:17 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -32,11 +32,7 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTextView: -dealloc");
 #endif
-    
-    if(cMenu != nil)
-        [cMenu release];
-    cMenu = nil;
-    
+        
     [super dealloc];
 }
 
@@ -301,30 +297,42 @@
 
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent
 {
-    if (!cMenu) {
-        cMenu = [[[NSMenu alloc] initWithTitle:@"test"] retain];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Browser",@"iTerm",@"Context menu")
-                         action:@selector(browse:) keyEquivalent:@""];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Mail",@"iTerm",@"Context menu")
-                         action:@selector(mail:) keyEquivalent:@""];
-        [cMenu addItem:[NSMenuItem separatorItem]];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Copy",@"iTerm",@"Context menu")
-                         action:@selector(copy:) keyEquivalent:@""];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Paste",@"iTerm",@"Context menu")
-                         action:@selector(paste:) keyEquivalent:@""];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Save",@"iTerm",@"Context menu")
-                         action:@selector(saveDocumentAs:) keyEquivalent:@""];
-        [cMenu addItem:[NSMenuItem separatorItem]];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Select All",@"iTerm",@"Context menu")
-                         action:@selector(selectAll:) keyEquivalent:@""];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Clear Buffer",@"iTerm",@"Context menu")
-                         action:@selector(clearBuffer:) keyEquivalent:@""];
-        [cMenu addItem:[NSMenuItem separatorItem]];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Configure...",@"iTerm",@"Context menu")
-                         action:@selector(showConfigWindow:) keyEquivalent:@""];
-    }
+    NSMenu *cMenu;
     
-    return cMenu;
+    // Allocate a menu
+    cMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
+
+    // Menu items for acting on text selections
+    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Browser",@"iTerm",@"Context menu")
+			action:@selector(browse:) keyEquivalent:@""];
+    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Mail",@"iTerm",@"Context menu")
+			action:@selector(mail:) keyEquivalent:@""];
+
+    // Separator
+    [cMenu addItem:[NSMenuItem separatorItem]];
+
+    // Copy,  paste, and save
+    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Copy",@"iTerm",@"Context menu")
+			action:@selector(copy:) keyEquivalent:@""];
+    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Paste",@"iTerm",@"Context menu")
+			action:@selector(paste:) keyEquivalent:@""];
+    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Save",@"iTerm",@"Context menu")
+			action:@selector(saveDocumentAs:) keyEquivalent:@""];
+
+    // Separator
+    [cMenu addItem:[NSMenuItem separatorItem]];
+
+    // Select all
+    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Select All",@"iTerm",@"Context menu")
+			action:@selector(selectAll:) keyEquivalent:@""];
+
+    
+    // Ask the delegae if there is anything to be added
+    if ([[self delegate] respondsToSelector:@selector(menuForEvent: menu:)])
+	[[self delegate] menuForEvent:theEvent menu: cMenu];
+
+    
+    return [cMenu autorelease];
 }
 
 - (void) mail:(id)sender

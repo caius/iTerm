@@ -82,6 +82,7 @@
     BOOL waiting;
     BOOL autoClose;
     BOOL doubleWidth;
+    BOOL remapDeleteKey;
     NSFont *configFont;
     PreferencePanel *pref;
     NSDictionary *addressBookEntry;
@@ -173,6 +174,8 @@
 - (void) setAddressBookEntry:(NSDictionary*) entry;
 - (int) number;
 - (NSString *) tty;
+- (BOOL) remapDeleteKey;
+- (void) setRemapDeleteKey: (BOOL) flag;
 
 - (void)clearBuffer;
 - (void)clearScrollbackBuffer;

@@ -439,6 +439,16 @@ static NSString *PWD_ENVVALUE = @"~";
 //        NSLog(@"opt_control_key detected(%d)",(modflag & NSShiftKeyMask));
         [MAINMENU interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
     }
+    else if(modflag & NSAlternateKeyMask)
+    {
+	switch (unicode)
+	{
+	    case NSDeleteCharacter:
+		// toggle our setting for remapping the delete key.
+		[self setRemapDeleteKey: ![self remapDeleteKey]];
+		break;
+	}
+    }
         
     else {
 
@@ -532,7 +542,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 
 	    // Check if we want to remap the delete key to backspace
-	    if((unicode == NSDeleteCharacter) && [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue])
+	    if((unicode == NSDeleteCharacter) && [self remapDeleteKey])
 		data = [TERMINAL keyBackspace];
 
 	    if (data != nil ) {
@@ -968,6 +978,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setAntiIdle:[[aePrefs objectForKey:@"AntiIdle"] boolValue]];
     [self setAutoClose:[[aePrefs objectForKey:@"AutoClose"] boolValue]];
     [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
+    [self setRemapDeleteKey: [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue]];
     
 }
 
@@ -1427,6 +1438,17 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     return addressBookEntry;
 }
+
+- (BOOL) remapDeleteKey
+{
+    return (remapDeleteKey);
+}
+
+- (void) setRemapDeleteKey: (BOOL) flag
+{
+    remapDeleteKey = flag;
+}
+
 
 @end
 

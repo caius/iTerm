@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.12 2004-02-18 22:57:43 yfabian Exp $
+// $Id: PTYTextView.h,v 1.13 2004-02-19 02:50:18 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -95,6 +95,9 @@ typedef struct
     //selection
     int startX, startY, endX, endY;
 	
+	//find support
+	int lastFindX, lastFindY;
+	
 	//cache
 	CharCache	charImages[CACHESIZE];
 }
@@ -110,7 +113,9 @@ typedef struct
 - (void)mouseUp:(NSEvent *)event;
 - (void)mouseDragged:(NSEvent *)event;
 - (void) otherMouseDown: (NSEvent *) event;
+- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy;
 - (NSString *) selectedText;
+- (NSString *) content;
 - (void)copy: (id) sender;
 - (void)paste:(id)sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;
@@ -118,6 +123,7 @@ typedef struct
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent;
 - (void) browse:(id)sender;
 - (void) mail:(id)sender;
+- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck;
 
 //get/set methods
 - (NSFont *)font;
@@ -181,6 +187,9 @@ typedef struct
     // Save method
 - (void) saveDocumentAs: (id) sender;
 - (void) print:(id)sender;
+
+	// Find method
+- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck;
 
     // NSTextInput
 - (void)insertText:(id)aString;

@@ -209,14 +209,12 @@ static FindPanelWindowController *sharedInstance = nil;
     if (textView)
     {
         // get the selected text
-        NSRange aRange = [textView selectedRange];
-        if(aRange.length <= 0)
-        {
+        NSString *contentString = [textView selectedText];
+		if (!contentString) {
             NSBeep();
             return;
         }
-        NSString *contentString = [[textView textStorage] string];
-        [self setSearchString: [contentString substringWithRange: aRange]];
+        [self setSearchString: contentString];
         _lastSearchLocation = 0;
         [self findNext];
     }
@@ -251,51 +249,8 @@ static FindPanelWindowController *sharedInstance = nil;
             return;
         }
         
-        NSString *contentString = [[textView textStorage] string];
-        
-        if(_lastSearchLocation >= [contentString length] || _lastSearchLocation < 0)
-            _lastSearchLocation = 0;
-        
-        NSRange searchRange, foundRange;
-        unsigned int searchOptions = 0;
-        
-        if(direction == YES)
-            searchRange = NSMakeRange(_lastSearchLocation, [contentString length] - _lastSearchLocation);
-        else
-        {
-            searchRange = NSMakeRange(0, _lastSearchLocation);
-            searchOptions |= NSBackwardsSearch;
-        }
-        
-        if(searchRange.length <= 0)
-            searchRange.length = 1;
-        
-        if(caseCheck == YES)
-            searchOptions |= NSCaseInsensitiveSearch;
-        
-        foundRange = [contentString rangeOfString: subString options: searchOptions range: searchRange];
-        if(foundRange.length > 0)
-        {
-            if(direction == YES)
-                _lastSearchLocation = foundRange.location + 1;
-            else
-                _lastSearchLocation = foundRange.location + foundRange.length - 1;
-            [textView setSelectedRange: foundRange];
-            [self jumpToSelection];
-            [[textView window] makeKeyAndOrderFront: self];
-        }
-        else
-        {
-            NSBeep();
-            
-            if (direction)
-                _lastSearchLocation = 0;
-            else if ([contentString length])
-                _lastSearchLocation = [contentString length] - 1;
-        }
-    }
-    else
-        NSBeep();
+		[textView findString:subString forwardDirection: direction ignoringCase: caseCheck];
+	}
 }
 
 - (NSString*)searchString;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.117 2004-02-19 01:49:29 ujwal Exp $
+// $Id: PTYTextView.m,v 1.118 2004-02-19 02:50:18 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -57,7 +57,7 @@
             NULL]];
     deadkey = NO;
 	CURSOR=YES;
-    startX=-1;
+    lastFindX=startX=-1;
     [[self window] useOptimizedDrawing:YES];
     markedText=nil;
 	
@@ -407,6 +407,7 @@
 
 - (NSRect)adjustScroll:(NSRect)proposedVisibleRect
 {
+	forceUpdate = YES;
 	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
 	return proposedVisibleRect;
 }
@@ -417,6 +418,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll];
+	//forceUpdate = YES;
 	//[self setNeedsDisplay: YES];
     //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
     [self scrollRectToVisible: scrollRect];
@@ -428,6 +430,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalLineScroll];
+	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -437,6 +440,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
+	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -446,6 +450,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalPageScroll];
+	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -455,6 +460,7 @@
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y = 0;
+	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -471,6 +477,7 @@
 		aFrame.origin.y = (numberOfLines - 1) * lineHeight;
 		aFrame.size.width = [self frame].size.width;
 		aFrame.size.height = lineHeight;
+		//forceUpdate = YES;
 		[self scrollRectToVisible: aFrame];
     }
 }
@@ -592,7 +599,7 @@
 	NSRect bgRect;
 	NSColor *aColor;
 	char  *fg, *bg, *dirty;
-	BOOL need_draw, charDirty;
+	BOOL need_draw;
 	int bgstart, ulstart;
     float curX, curY;
 	char bgcode, sel, fgcode;
@@ -608,7 +615,7 @@
 	lineOffset = rect.origin.y/lineHeight;
     
 	// How many lines do we need to draw?
-	numLines=rect.size.height/lineHeight;
+	numLines = rect.size.height/lineHeight;
 
 	// Which line is our screen start?
 	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
@@ -658,8 +665,7 @@
 		for(j=0;j<WIDTH;j++) {
 			if (buf[j]==0xffff) continue;
 			// Check if we need to redraw next char
-			charDirty = (line < startScreenLineIndex)?NO:dirty[j];
-			need_draw = line < startScreenLineIndex || forceUpdate || charDirty || (fg[j]&BLINK_MASK);
+			need_draw = line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK);
 			// find out if the current char is being selected
 			sel=(x1!=-1&&((line>y1&&line<y2)||(line==y1&&y1==y2&&j>=x1&&j<x2)||(line==y1&&y1!=y2&&j>=x1)||(line==y2&&y1!=y2&&j<x2)))?-1:bg[j];
 			
@@ -730,8 +736,7 @@
 		
 		//draw all char
 		for(j=0;j<WIDTH;j++) {
-			charDirty = (line < startScreenLineIndex)?NO:dirty[j];
-			need_draw = (buf[j] && buf[j]!=0xffff) && line < startScreenLineIndex || forceUpdate || charDirty || (fg[j]&BLINK_MASK);
+			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
 			if (need_draw) { 	
 				[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
 				if (fg[j]&BLINK_MASK) { //if blink is set, switch the fg/bg color
@@ -944,27 +949,19 @@
     //    NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }
 
-- (NSString *) selectedText
+- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy
 {
-	
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
-#endif
-    
-    if (startX<0) 
-        return nil;
-	
 	unichar *temp;
-	int j, idx, line, scline;
+	int j, line, scline;
 	int width, y, x1, x2;
 	NSString *str;
 	unichar *buf;
 	
 	width = [dataSource width];
 	scline = [dataSource numberOfLines]-[dataSource height];
-	temp = (unichar *) malloc(((endY-startY)*(width+1)+(endX-startX))*sizeof(unichar));
+	temp = (unichar *) malloc(((endy-starty)*(width+1)+(endx-startx))*sizeof(unichar));
 	j=0;
-	for (y=startY;y<=endY;y++) {
+	for (y=starty;y<=endy;y++) {
 		if (y<scline) {
 			line=[dataSource lastBufferLineIndex]-scline+y;
 			if (line<0) line+=[dataSource scrollbackLines];
@@ -974,9 +971,9 @@
 			buf=[dataSource screenLines]+line*width;
 		}
 		x1=0; x2=width;
-		if (y==startY) x1=startX;
-		if (y==endY) x2=endX;
-		for(;x1<x2;x1++,idx++,j++) {
+		if (y==starty) x1=startx;
+		if (y==endy) x2=endx;
+		for(;x1<x2;x1++,j++) {
 			if (buf[x1]!=0xffff) {
 				temp[j]=buf[x1]?buf[x1]:' ';
 			}
@@ -991,6 +988,29 @@
 	free(temp);
 	
 	return str;
+}
+
+- (NSString *) selectedText
+{
+	
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
+#endif
+    
+    if (startX<0) 
+        return nil;
+	
+	return [self contentFromX:startX Y:startY ToX:endX Y:endY];
+}
+
+- (NSString *) content
+{
+	
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
+#endif
+    	
+	return [self contentFromX:0 Y:0 ToX:[dataSource width] Y:[dataSource numberOfLines]-1];
 }
 
 - (void) copy: (id) sender
@@ -1324,51 +1344,14 @@
 	
     NSData *aData;
     NSSavePanel *aSavePanel;
-    NSMutableString *aString;
-	unichar *temp;
-	int j, idx, line, scline;
-	int width, y, x1, x2;
-	unichar *buf;
-    int sy=startY, ey=endY, sx=startX, ex=endX;
+    NSString *aString;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView saveDocumentAs:%@]", __FILE__, __LINE__, sender );
 #endif
     
     // We get our content of the textview or selection, if any
-	width = [dataSource width];
-    if (startX<0) { //no selection, so grab the whole
-        sy=0;
-        ey=[dataSource numberOfLines]-1;
-        sx=0;
-        ex=width;
-    }
-	
-	scline = [dataSource numberOfLines]-[dataSource height];
-	temp = (unichar *) malloc(((ey-sy)*(width+1)+(ex-sx))*sizeof(unichar));
-	j=0;
-	for (y=sy;y<=ey;y++) {
-		if (y<scline) {
-			line=[dataSource lastBufferLineIndex]-scline+y;
-			if (line<0) line+=[dataSource scrollbackLines];
-			buf=[dataSource bufferLines]+line*width;
-		} else {
-			line=y-scline;
-			buf=[dataSource screenLines]+line*width;
-		}
-		x1=0; x2=width;
-		if (y==sy) x1=sx;
-		if (y==ey) x2=ex;
-		for(;x1<x2;x1++,idx++) {
-			if (buf[x1]!=0xffff) {
-				temp[j]=buf[x1]?buf[x1]:' ';
-				j++;
-			}
-		}				
-		temp[j++]='\n';
-	}
-	
-	aString=[NSString stringWithCharacters:temp length:j];
+	aString = (startX<0) ? [self content] : [self selectedText];
     aData = [aString
             dataUsingEncoding: NSASCIIStringEncoding
          allowLossyConversion: YES];
@@ -1556,6 +1539,85 @@
 	//[self refresh];
 }
 
+- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck
+{
+/*	int j, line, scline;
+	int startx, starty, endx, endy;
+	int width, y, x1, x2;
+	int fx, fy, tx, tp;
+	unichar *buf;
+		
+	if ([aString length] <= 0)
+	{
+		NSBeep();
+		return;
+	}
+
+	width = [dataSource width];
+	scline = [dataSource numberOfLines]-[dataSource height];
+	if (lastFindX==-1) {				
+		startx=0;
+		starty=0;
+		endx=[dataSource width];
+		endy=[dataSource numberOfLines]-1;
+	}
+	else if (direction) {
+		startx=lastFindX+1;
+		starty=lastFindY;
+		endx=[dataSource width];
+		endy=[dataSource numberOfLines]-1;
+	}
+	else {
+		startx=0;
+		starty=0;
+		endx=lastFindX-1;
+		endY=lastFindY;
+	}
+	
+	fx=-1;
+	for (y=starty;y<=endy;y++) {
+		if (y<scline) {
+			line=[dataSource lastBufferLineIndex]-scline+y;
+			if (line<0) line+=[dataSource scrollbackLines];
+			buf=[dataSource bufferLines]+line*width;
+		} else {
+			line=y-scline;
+			buf=[dataSource screenLines]+line*width;
+		}
+		x1=0; x2=width;
+		if (y==starty) x1=startx;
+		if (y==endy) x2=endx;
+		for(;x1<x2;x1++) {
+			if (buf[x1]!=0xffff) {
+				if (buf[x1]==[aString characterAtIndex:j]) {
+					j++;
+					NSLog(@"%d",j);
+					if (fx==-1) { fx=x1; fy=y; }
+					startx=x1+1;
+					starty=y;
+					if (startx>=width) { startx=0; starty++; }
+					if (j>=[aString length]) break;
+				}
+				else {
+					if (j) {
+						j=0;
+						y=starty--;
+					}
+					fx=-1;
+				}
+			}
+		}		
+		if (j>=[aString length]) { // Found!
+			startX=lastFindX=fx;
+			startY=lastFindY=fy;
+			endX=x1;
+			endY=y;
+			return;
+		}
+	}
+	lastFindX = -1;
+	NSBeep(); */
+}
 @end
 
 //

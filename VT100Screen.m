@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.185 2004-02-18 22:57:41 yfabian Exp $
+// $Id: VT100Screen.m,v 1.186 2004-02-19 02:50:18 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1425,6 +1425,8 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
 #endif
 	int i;
+	
+	return;
 		
 	for (i=0; i<WIDTH*HEIGHT; i++) {
 		if (dirty[i]) break;

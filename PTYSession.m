@@ -538,9 +538,6 @@ static NSString *PWD_ENVVALUE = @"~";
 				}
 			}
 			
-			// Check if we want to remap the delete key to backspace
-			if((unicode == NSDeleteCharacter) && [self remapDeleteKey])
-				data = [TERMINAL keyBackspace];
 			
 			if (data != nil ) {
 				send_str = (char *)[data bytes];
@@ -1009,7 +1006,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setAntiIdle:[[aePrefs objectForKey:@"AntiIdle"] boolValue]];
     [self setAutoClose:[[aePrefs objectForKey:@"AutoClose"] boolValue]];
     [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
-    [self setRemapDeleteKey: [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue]];
     
 }
 
@@ -1493,15 +1489,6 @@ static NSString *PWD_ENVVALUE = @"~";
     return addressBookEntry;
 }
 
-- (BOOL) remapDeleteKey
-{
-    return (remapDeleteKey);
-}
-
-- (void) setRemapDeleteKey: (BOOL) flag
-{
-    remapDeleteKey = flag;
-}
 
 @end
 

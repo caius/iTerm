@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.270 2004-03-14 06:05:37 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.271 2004-03-18 20:58:43 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -903,14 +903,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     // cause reloading of menus
     [[iTermController sharedInstance] setCurrentTerminal: self];
-}
-
-- (IBAction) toggleRemapDeleteKey: (id) sender
-{
-	[[_sessionMgr currentSession] setRemapDeleteKey: ![[_sessionMgr currentSession] remapDeleteKey]];
-	
-	// cause reloading of menus
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [_sessionMgr currentSession]];
 }
 
 // NSWindow delegate methods

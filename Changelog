@@ -1,3 +1,8 @@
+2002-12-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Using user's default shell in setting initial preferences.
+    
+
 2002-12-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Removed ugly hack of spinning off a new thread when 
@@ -17,7 +22,7 @@
       the addressbook icon, but I couldn't get it to work.
       More research needs to be done on that...
       
-    * Fixed bugs in MainMenu that dod not save addressbook 
+    * Fixed bugs in MainMenu that did not save addressbook 
       when entries were deleted.
       
 

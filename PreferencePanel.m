@@ -33,11 +33,16 @@ static int TRANSPARENCY  =10;
 
 - (id)init
 {
+    char *userShell;
 #if DEBUG_OBJALLOC
     NSLog(@"%s(%d):-[PreferencePanel init]", __FILE__, __LINE__);
 #endif
     if ((self = [super init]) == nil)
         return nil;
+        
+    // Get the user's default shell
+    if((userShell = getenv("SHELL")) != NULL)
+        SHELL = [NSString stringWithCString: userShell];
 
     prefs = [NSUserDefaults standardUserDefaults];
     encodingList=[NSString availableStringEncodings];

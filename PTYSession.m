@@ -37,7 +37,6 @@
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/PTYTabViewitem.h>
 #import <iTerm/AddressBookWindowController.h>
-#import <iTerm/iTermImageView.h>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -139,28 +138,20 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCREEN setSession:self];
 	[SCREEN setWidth:width height:height];
     [self setName:@"Shell"];
-	
-    // allocate an imageview for the background image
-    imageView = [[iTermImageView alloc] initWithFrame: aRect];
-    [imageView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-	
+		
     // Allocate a scrollview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
     [SCROLLVIEW setHasVerticalScroller:YES];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-	
-    // add the scrollview as a subview to the imageview
-	[imageView addSubview: SCROLLVIEW];
-    [SCROLLVIEW release];
-	
+		
     // assign the main view
-    view = imageView;
+    view = SCROLLVIEW;
     
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
-	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable];
 	
     // assign terminal and task objects
     [SCREEN setShellTask:SHELL];
@@ -1165,7 +1156,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (NSImage *) image
 {
-    return ([imageView image]);
+    return ([SCROLLVIEW backgroundImage]);
 }
 
 - (NSView *) view
@@ -1239,9 +1230,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		if(anImage != nil)
 		{
 			[SCROLLVIEW setDrawsBackground: NO];
-			[imageView setImage: anImage];
-			[anImage setScalesWhenResized: YES];
-			[imageView setImageScaling: NSScaleToFit];
+			[SCROLLVIEW setBackgroundImage: anImage];
 			[anImage release];
 		}
 		else
@@ -1253,8 +1242,8 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     else
     {
-		[imageView setImage: nil];
-		[SCROLLVIEW setDrawsBackground: YES];
+		[SCROLLVIEW setBackgroundImage: nil];
+		[SCROLLVIEW setDrawsBackground: NO];
 		[backgroundImagePath release];
 		backgroundImagePath = nil;
     }
@@ -1331,7 +1320,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSColor *newcolor;
 	
     // set transparency of background image
-    [imageView setTransparency: transparency];
+    [SCROLLVIEW setTransparency: transparency];
 	
     // set alpha channel of background color
     newcolor = [[TEXTVIEW defaultBGColor] colorWithAlphaComponent:(1 - transparency)];

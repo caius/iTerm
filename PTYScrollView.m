@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.12 2004-01-28 16:44:32 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.13 2004-02-18 00:56:53 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -95,6 +95,8 @@
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYScrollView dealloc]", __FILE__, __LINE__);
 #endif
+	
+	[backgroundImage release];
     
     [super dealloc];
 }
@@ -117,7 +119,28 @@
     aScroller=[[PTYScroller alloc] init];
     [self setVerticalScroller: aScroller];
     [aScroller release];
+		
     return self;
+}
+
+- (void) drawBackgroundImageRect: (NSRect) rect
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);	
+	
+	NSRect srcRect;
+	
+	//NSLogRect([self frame]);
+	
+	// resize image if we need to
+	if([backgroundImage size].width != [self documentVisibleRect].size.width ||
+       [backgroundImage size].height != [self documentVisibleRect].size.height)
+	{
+		[backgroundImage setSize: [self documentVisibleRect].size];
+	}	
+	
+	srcRect = rect;
+	srcRect.origin.y -= [self documentVisibleRect].origin.y;
+	[[self backgroundImage] drawInRect: rect fromRect: srcRect operation: NSCompositeSourceOver fraction: (1.0 - [self transparency])];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -143,6 +166,58 @@
 	[verticalScroller setUserScroll: YES];
     else
 	[verticalScroller setUserScroll: NO];
+}
+
+// background image
+- (NSImage *) backgroundImage
+{
+	return (backgroundImage);
+}
+
+- (void) setBackgroundImage: (NSImage *) anImage
+{
+	if(anImage != nil)
+	{
+		// rotate the image 180 degrees
+		NSImage *targetImage = [[NSImage alloc] initWithSize: [anImage size]];
+		NSAffineTransform *trans = [NSAffineTransform transform];
+		
+		[targetImage lockFocus];
+		[trans translateXBy:[anImage size].width/2 yBy:[anImage size].height/2];
+		[trans rotateByDegrees: 180];
+		[trans translateXBy:-[anImage size].width/2 yBy:-[anImage size].height/2];
+		[trans set];
+		[anImage drawInRect:NSMakeRect(0,0,[anImage size].width,[anImage size].height) 
+				   fromRect:NSMakeRect(0,0,[anImage size].width,[anImage size].height) 
+				  operation:NSCompositeSourceOver
+				   fraction:1];
+		[targetImage unlockFocus];
+		[targetImage setScalesWhenResized: YES];
+		[targetImage setSize: [self documentVisibleRect].size];
+		// set the image
+		[backgroundImage release];
+		backgroundImage = targetImage;		
+	}
+	else
+	{
+		[backgroundImage release];
+		backgroundImage = nil;
+	}
+	
+}
+
+- (float) transparency
+{
+    return (transparency);
+}
+
+- (void) setTransparency: (float) theTransparency
+{
+    if(theTransparency >= 0 && theTransparency <= 1)
+    {
+		transparency = theTransparency;
+		[self setNeedsDisplay: YES];
+    }
 }
 
 @end

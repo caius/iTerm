@@ -1,3 +1,8 @@
+2004-02-17  ujwal
+
+	* Added back support for background images. Image is currently flipped 
+	  horizontally.
+
 2004-02-16  ujwal
 
 	* Forcing update in texview drawRect until drawing issue is resolved.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.9 2004-02-17 00:07:01 ujwal Exp $
+// $Id: PTYTextView.h,v 1.10 2004-02-18 00:57:02 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -158,9 +158,9 @@ typedef struct
 - (void) showCursor;
 - (void) hideCursor;
 
-    //
-    // Drag and Drop methods for our text view
-    //
+//
+// Drag and Drop methods for our text view
+//
 - (unsigned int) draggingEntered: (id<NSDraggingInfo>) sender;
 - (unsigned int) draggingUpdated: (id<NSDraggingInfo>) sender;
 - (void) draggingExited: (id<NSDraggingInfo>) sender;

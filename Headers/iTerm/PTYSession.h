@@ -36,7 +36,6 @@
 @class PseudoTerminal;
 @class iTermController;
 @class PTYTabViewItem;
-@class iTermImageView;
 
 @interface PTYSession : NSResponder
 {        
@@ -66,7 +65,6 @@
     VT100Screen   *SCREEN;
     BOOL EXIT;
     NSView *view;
-    iTermImageView *imageView;
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
     NSTimer *timer;

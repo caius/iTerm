@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.109 2004-02-17 20:39:44 ujwal Exp $
+// $Id: PTYTextView.m,v 1.110 2004-02-18 00:56:53 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -118,7 +118,7 @@
     [font release];
 	[nafont release];
     [markedTextAttributes release];
-	
+		
     [self resetCharCache];
     [super dealloc];
 }
@@ -378,6 +378,8 @@
 
 - (void) refresh
 {
+	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
+
     NSSize aSize;
     int height;
     
@@ -590,11 +592,11 @@
 
 - (void)drawRect:(NSRect)rect
 {
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView drawRect:(%f,%f,%f,%f)]",
           __FILE__, __LINE__,
           rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
-//#endif
+#endif
 	
 		
     int numLines, i, j, t, lineOffset, WIDTH;
@@ -658,7 +660,6 @@
 		line = i + lineOffset;
 		
 		// sanity check
-		NSLog(@"line = %d; numLines = %d", line, [dataSource numberOfLines]);
 		if(line >= [dataSource numberOfLines])
 			break;
 
@@ -712,10 +713,9 @@
 					NSRectFill(bgRect);
 					
 					// if we have a background image and we are using the background image, redraw image
-					if([[self delegate] image] != nil && [aColor isEqual: defaultBGColor])
+					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
 					{
-						bgRect.origin.y -= [self visibleRect].origin.y;
-						[[[self delegate] view] drawRect: bgRect];
+						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
 					
 				}						
@@ -748,10 +748,9 @@
 					NSRectFill(bgRect);
 					
 					// if we have a background image and we are using the background image, redraw image
-					if([[self delegate] image] != nil && [aColor isEqual: defaultBGColor])
+					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
 					{
-						bgRect.origin.y -= [self visibleRect].origin.y;
-						[[[self delegate] view] drawRect: bgRect];
+						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
 					
 					bgcode=sel;
@@ -783,10 +782,9 @@
 		bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
 		NSRectFill(bgRect);
 		// if we have a background image and we are using the background image, redraw image
-		if([[self delegate] image] != nil && [aColor isEqual: defaultBGColor])
+		if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
 		{
-			bgRect.origin.y -= [self visibleRect].origin.y;
-			[[[self delegate] view] drawRect: bgRect];
+			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 		}
 		
 		if (ulstart>=0) {
@@ -1621,9 +1619,11 @@
 
 - (void)frameChanged:(NSNotification*)notification
 {
-	// NSLog(@"%s", __PRETTY_FUNCTION__);
+	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
+	//NSLogRect([self frame]);
     if([notification object] == [self window] && [[self delegate] respondsToSelector: @selector(textViewResized:)])
         [[self delegate] textViewResized: self];
+	[self refresh];
 }
 
 @end

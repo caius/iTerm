@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.h,v 1.4 2004-01-28 16:44:36 ujwal Exp $
+// $Id: PTYScrollView.h,v 1.5 2004-02-18 00:57:02 ujwal Exp $
 /*
  **  PTYScrollView.h
  **
@@ -45,11 +45,20 @@
 
 @interface PTYScrollView : NSScrollView
 {
+	NSImage *backgroundImage;
+	float transparency;
 }
 
 - (void) dealloc;
 - (id)initWithFrame:(NSRect)frame;
 - (void)scrollWheel:(NSEvent *)theEvent;
 - (void)detectUserScroll;
+
+// background image
+- (NSImage *) backgroundImage;
+- (void) setBackgroundImage: (NSImage *) anImage;
+- (void) drawBackgroundImageRect: (NSRect) rect;
+- (float) transparency;
+- (void) setTransparency: (float) theTransparency;
 
 @end

@@ -652,7 +652,7 @@ static NSString *PWD_ENVVALUE = @"~";
 // do any idle tasks here
 - (void) doIdleTasks
 {
-    //[SCREEN removeOverLine];
+    [SCREEN removeOverLine];
 }
 
 - (void)insertText:(NSString *)string

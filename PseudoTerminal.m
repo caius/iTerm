@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.94 2003-02-04 01:09:35 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.95 2003-02-04 16:25:52 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1406,7 +1406,7 @@ static NSString *ConfigToolbarItem = @"Config";
     localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
 
     // add tasks
-    aMenuItem = [[NSMenuItem alloc] initWithTitle:@"Close" action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
     [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.30 2003-04-29 17:11:05 yfabian Exp $
+// $Id: VT100Screen.h,v 1.31 2003-05-18 03:33:05 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -53,7 +53,6 @@
     VT100Terminal *TERMINAL;
     PTYTask *SHELL;
     PTYSession *SESSION;
-    //NSWindow *WINDOW;
     int charset[4], saveCharset[4];
     NSMutableAttributedString *BUFFER;
     int updateIndex, minIndex;

@@ -33,6 +33,7 @@
         {
             ACTIONS = {
                 clearBuffer = id; 
+                clearScrollbackBuffer = id; 
                 closeCurrentSession = id; 
                 closeTabContextualMenuAction = id; 
                 logStart = id; 
@@ -70,8 +71,6 @@
                 "CONFIG_SELECTION" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
-                TABVIEW = id; 
-                WINDOW = id; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

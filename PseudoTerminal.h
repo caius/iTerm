@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.52 2003-05-18 02:14:56 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.53 2003-05-18 03:33:05 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -37,14 +37,15 @@
 #import "VT100Screen.h"
 #import "PTYSession.h"
 
+@class PTYTabView;
+
 @interface PseudoTerminal : NSWindowController
 {
     /// MainMenu reference
     MainMenu *MAINMENU;
     
-    /// Terminal Window
-    IBOutlet id TABVIEW;
-    IBOutlet id WINDOW;
+    /// tab view
+    PTYTabView *TABVIEW;
 
     // config window
     IBOutlet id CONFIG_PANEL;

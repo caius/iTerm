@@ -42,9 +42,6 @@
     /// MainMenu reference
     MainMenu *MAINMENU;
     
-    /// Terminal Window
-    //NSWindow *WINDOW;
-
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
 

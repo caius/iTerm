@@ -2,6 +2,9 @@
 
     * Made PseudoTerminal a true NSWindowController class.
 
+    * Removed all references to WINDOW.
+    
+    * Saving all nibs in both pre and post-10.2 format.
 
 2003-05-16	ujwal
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.174 2003-05-18 02:14:20 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.175 2003-05-18 03:33:05 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -93,8 +93,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if ((self = [super initWithWindowNibName: windowNibName]) == nil)
 	return nil;
 
-    WINDOW = [self window];
-
     // setup our toolbar
     [[self window] setToolbar:[self setupToolbar]];
 
@@ -157,7 +155,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NAFONT=[nafont copy];
     
     // Create the tabview
-    tabviewRect = [[WINDOW contentView] frame];
+    tabviewRect = [[[self window] contentView] frame];
     tabviewRect.origin.x -= 10;
     tabviewRect.size.width += 20;
     tabviewRect.origin.y -= 13;
@@ -167,11 +165,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [TABVIEW setAllowsTruncatedLabels: NO];
     [TABVIEW setControlSize: NSSmallControlSize];
     // Add to the window
-    [[WINDOW contentView] addSubview: TABVIEW];
-    [[WINDOW contentView] setAutoresizesSubviews: YES];
+    [[[self window] contentView] addSubview: TABVIEW];
+    [[[self window] contentView] setAutoresizesSubviews: YES];
     [TABVIEW release];
         
-    [WINDOW setDelegate: self];
+    [[self window] setDelegate: self];
     
     // Add ourselves as an observer for notifications to reload the addressbook.
     [[NSNotificationCenter defaultCenter] addObserver: self
@@ -290,8 +288,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     currentPtySession = aSession;
     [self setWindowTitle];
     [currentPtySession setLabelAttribute];
-    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
-    [WINDOW setNextResponder:self];
+    [[self window] makeFirstResponder:[currentPtySession TEXTVIEW]];
+    [[self window] setNextResponder:self];
 }
 
 
@@ -355,7 +353,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	}
 
-	[WINDOW makeKeyAndOrderFront: self];
+	[[self window] makeKeyAndOrderFront: self];
 	
     }
 }
@@ -370,7 +368,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     if(n == 1)
     {
-        [WINDOW close];
+        [[self window] close];
         return;
     }
 
@@ -550,10 +548,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	     arguments:[NSArray array]
            environment:[NSDictionary dictionary]];
 
-    if ([[WINDOW title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
+    if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
 
 //    [window center];
-    [WINDOW makeKeyAndOrderFront:self];
+    [[self window] makeKeyAndOrderFront:self];
 
 }
 
@@ -567,10 +565,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
              arguments:prog_argv
            environment:[NSDictionary dictionary]];
 
-    if ([[WINDOW title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
+    if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
 
 //    [window center];
-    [WINDOW makeKeyAndOrderFront:self];
+    [[self window] makeKeyAndOrderFront:self];
 
 }
 
@@ -586,10 +584,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                           arguments:prog_argv
                         environment:prog_env];
 
-    if ([[WINDOW title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
+    if ([[[self window] title] compare:@"Window"]==NSOrderedSame) [self setWindowTitle];
 
     //    [window center];
-    [WINDOW makeKeyAndOrderFront:self];
+    [[self window] makeKeyAndOrderFront:self];
 
 }
 
@@ -605,7 +603,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // Resize the tabview first if necessary
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
     {
-	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect = [[[self window] contentView] frame];
 	tabviewRect.origin.x -= 10;
 	tabviewRect.size.width += 20;
 	tabviewRect.origin.y -= 13;
@@ -613,7 +611,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     else if([TABVIEW tabViewType] == NSLeftTabsBezelBorder)
     {
-	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect = [[[self window] contentView] frame];
 	tabviewRect.origin.x += 2;
 	tabviewRect.size.width += 8;
 	tabviewRect.origin.y -= 13;
@@ -621,7 +619,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     else if([TABVIEW tabViewType] == NSBottomTabsBezelBorder)
     {
-	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect = [[[self window] contentView] frame];
 	tabviewRect.origin.x -= 10;
 	tabviewRect.size.width += 20;
 	tabviewRect.origin.y += 2;
@@ -629,7 +627,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
     {
-	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect = [[[self window] contentView] frame];
 	tabviewRect.origin.x -= 10;
 	tabviewRect.size.width += 8;
 	tabviewRect.origin.y -= 13;
@@ -637,7 +635,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     else
     {
-	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect = [[[self window] contentView] frame];
 	tabviewRect.origin.x -= 10;
 	tabviewRect.size.width += 20;
 	tabviewRect.origin.y -= 13;
@@ -705,9 +703,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 
     if([[self currentSession] windowTitle] == nil)
-	[WINDOW setTitle:[self currentSessionName]];
+	[[self window] setTitle:[self currentSessionName]];
     else
-	[WINDOW setTitle:[[self currentSession] windowTitle]];
+	[[self window] setTitle:[[self currentSession] windowTitle]];
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle: exiting]",
@@ -718,7 +716,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) setWindowTitle: (NSString *)title
 {
-    [WINDOW setTitle:title];
+    [[self window] setTitle:title];
 }
 
 - (void)setAllFont:(NSFont *)font nafont:(NSFont *) nafont
@@ -842,7 +840,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     [self releaseObjects];
 
-    WINDOW = nil;
     // Release our window postion
     for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
     {
@@ -915,7 +912,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowDidResize: width = %f, height = %f]",
-	  __FILE__, __LINE__, [WINDOW frame].size.width, [WINDOW frame].size.height);
+	  __FILE__, __LINE__, [[self window] frame].size.width, [[self window] frame].size.height);
 #endif
 
     // To prevent death by recursion
@@ -966,7 +963,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[currentPtySession TEXTVIEW] moveLastLine];
 
 
-    //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
+    //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [[self window] frame].size.width, [[self window] frame].size.height);
 
     
     resizeInProgress = NO;
@@ -1039,7 +1036,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
 //    [CONFIG_PANEL center];
     pending=YES;
-    [NSApp beginSheet:CONFIG_PANEL modalForWindow:WINDOW
+    [NSApp beginSheet:CONFIG_PANEL modalForWindow:[self window]
         modalDelegate:self didEndSelector:nil contextInfo:nil];
 }
 
@@ -1394,8 +1391,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     currentSessionIndex = [TABVIEW indexOfTabViewItem: tabViewItem];
     currentPtySession = aSession;
     [self setWindowTitle];
-    [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
-    [WINDOW setNextResponder:self];
+    [[self window] makeFirstResponder:[currentPtySession TEXTVIEW]];
+    [[self window] setNextResponder:self];
 }
 
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1533,7 +1530,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if((theEvent == nil) || (theMenu == nil))
 	return;
 
-    windowPoint = [WINDOW convertScreenToBase: [NSEvent mouseLocation]];
+    windowPoint = [[self window] convertScreenToBase: [NSEvent mouseLocation]];
     localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
 
     if([TABVIEW tabViewItemAtPoint:localPoint] == nil)
@@ -1618,7 +1615,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)closeWindow:(id)sender
 {
-    [WINDOW performClose:sender];
+    [[self window] performClose:sender];
 }
 
 - (void) setMainMenu:(id) sender
@@ -2001,7 +1998,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__);
 #endif
     
-    toolbarItemArray = [[WINDOW toolbar] items];
+    toolbarItemArray = [[[self window] toolbar] items];
     
     // Find the addressbook popup item and reset it
     for(i = 0; i < [toolbarItemArray count]; i++)
@@ -2010,7 +2007,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         
         if([[aToolbarItem itemIdentifier] isEqual: NewToolbarItem])
         {
-            [self _buildToolbarItemPopUpMenu: aToolbarItem forToolbar: [WINDOW toolbar]];
+            [self _buildToolbarItemPopUpMenu: aToolbarItem forToolbar: [[self window] toolbar]];
                         
             break;
         }

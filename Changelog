@@ -1,3 +1,10 @@
+2003-06-13	ujwal
+
+    * Fixed bug in VT100Typesetter line bounds calculation where 
+      the new line character should be at the beginning rather 
+      than at the end. Otherwise text ending in a new line character 
+      will not display the ending new line.
+
 2003-06-12	ujwal
 
     * Created VT100TextStorage class subclassing NSTextStorage.

@@ -62,9 +62,10 @@ static unsigned int invocationId = 0;
 #endif
     
     NSRect lineRect;
-    unsigned int glyphIndex, charIndex, lineStartIndex, lineEndIndex;
+    unsigned int glyphIndex, charIndex;
+    int lineStartIndex, lineEndIndex;
     int numLines, j, length;
-    BOOL atEnd, isValidIndex, lineEndCharExists;
+    BOOL atEnd, isValidIndex, newLineCharExists;
     NSString *theString;
     NSRange characterRange, glyphRange;
     BOOL hasGraphicalCharacters;
@@ -111,7 +112,7 @@ static unsigned int invocationId = 0;
     for(numLines = 0; numLines < maxNumLines; numLines++)
     {
 	atEnd = NO;
-	lineEndCharExists = NO;
+	newLineCharExists = NO;
 	hasGraphicalCharacters = NO;
 
 	// sanity check
@@ -125,39 +126,41 @@ static unsigned int invocationId = 0;
 	// get the corresponding character index
 	charIndex = [layoutMgr characterIndexForGlyphAtIndex: glyphIndex];
 	
-	// go to the beginning of the line
+	// go to the beginning of the line which includes the new line character
+	//NSLog(@"finding line start...");
 	j = charIndex;
 	while (j >= 0)
 	{
 	    if([theString characterAtIndex: j] == '\n')
+	    {
+		newLineCharExists = YES;
 		break;
+	    }
 	    j--;
 	}
-	lineStartIndex = j + 1;
-	if(lineStartIndex  > charIndex)
-	    lineStartIndex = charIndex;
+	lineStartIndex = j;
+	if(lineStartIndex  < 0)
+	{
+	    lineStartIndex = 0;
+	    newLineCharExists = NO;
+	}
+	//NSLog(@"found line start = %d", lineStartIndex);
 	
 
 	// go to the end of the line
-	j = charIndex;
+	j = charIndex+1;
+       //NSLog(@"finding new line...");
 	while (j < length)
 	{
 	    
 	    if([theString characterAtIndex: j] == '\n')
 	    {
-		lineEndCharExists = YES;
 		break;
 	    }
 	    j++;
 	}
-	// Check if we reached the end of the text
-	if(j == length)
-	{
-	    j--;
-	    atEnd = YES;
-	    lineEndCharExists = NO;
-	}
-	lineEndIndex = j;
+	lineEndIndex = j - 1;
+	//NSLog(@"found new line = %d", lineEndIndex);
 
 
 	// build the line
@@ -167,14 +170,23 @@ static unsigned int invocationId = 0;
 	// calculate line width accounting for double width characters
 	NSRange doubleWidthCharacterRange;
 	id doubleWidthCharacterAttribute;
-	float lineWidth = characterRange.length * charWidth;
-	doubleWidthCharacterAttribute = [textStorage attribute:@"NSCharWidthAttributeName" atIndex:lineStartIndex longestEffectiveRange:&doubleWidthCharacterRange inRange:characterRange];
+	float lineWidth;
+	if(newLineCharExists == YES)
+	    lineWidth = (characterRange.length - 1) * charWidth; // new line character isnot displayed
+	else
+	    lineWidth = (characterRange.length) * charWidth;
+	    
+	doubleWidthCharacterAttribute = [textStorage attribute:@"NSCharWidthAttributeName"
+							atIndex:lineStartIndex
+							longestEffectiveRange:&doubleWidthCharacterRange
+							inRange:characterRange];
 	if(doubleWidthCharacterAttribute != nil || doubleWidthCharacterRange.length != characterRange.length)
 	{
 	    lineWidth = 0;
 	    for (j = lineStartIndex; j < lineEndIndex + 1; j++)
 	    {
-		lineWidth += ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
+		if([theString characterAtIndex: j] != '\n')
+		    lineWidth += ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 	    }
 	}
 	
@@ -182,7 +194,10 @@ static unsigned int invocationId = 0;
 	// did we encounter a graphical character?
 	NSRange graphicalCharacterRange;
 	id graphicalCharacterAttribute;
-	graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex longestEffectiveRange:&graphicalCharacterRange inRange:characterRange];
+	graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter"
+							atIndex:lineStartIndex
+							longestEffectiveRange:&graphicalCharacterRange
+							inRange:characterRange];
 	if(graphicalCharacterAttribute != nil || graphicalCharacterRange.length != characterRange.length)
 	{
 	    hasGraphicalCharacters = YES;
@@ -200,11 +215,16 @@ static unsigned int invocationId = 0;
 	    NSRect lastGlyphRect;
 	    // check if we just processed the previous line, otherwise ask the layout manager.
 	    if(previousRect.size.width > 0)
+	    {
 		lastGlyphRect = previousRect;
+	    }
 	    else
+	    {
 		lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
+	    }
 	    // calculate next line based on previous line rectangle
-	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont], [textContainer containerSize].width, [font defaultLineHeightForFont]);
+	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont],
+			   [textContainer containerSize].width, [font defaultLineHeightForFont]);
 	}
 #if DEBUG_METHOD_TRACE
 	NSLog(@"(%d) Laying out line %f; numLines = %d", callId, lineRect.origin.y/[font defaultLineHeightForFont] + 1, numLines);
@@ -242,9 +262,9 @@ static unsigned int invocationId = 0;
 	}
 
 	// hide new line glyphs
-	if(lineEndCharExists == YES)
+	if(newLineCharExists == YES)
 	{
-	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
+	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location];
 	}
 	
 

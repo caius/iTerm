@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.68 2003-03-11 00:11:21 yfabian Exp $
+// $Id: VT100Screen.m,v 1.69 2003-03-11 01:27:52 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -661,6 +661,9 @@ static BOOL PLAYBELL = YES;
         break;
     case ANSICSI_VPR:
         [self cursorToX: CURSOR_X Y: token.u.csi.p[0]+CURSOR_Y];
+        break;
+    case ANSICSI_ECH:
+        [self setASCIIString:[NSString stringWithCharacters:spaces length:token.u.csi.p[0]<=WIDTH?token.u.csi.p[0]:WIDTH]];
         break;
         
     case STRICT_ANSI_MODE:

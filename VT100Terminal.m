@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.40 2003-03-10 23:38:09 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.41 2003-03-11 01:27:52 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -485,6 +485,10 @@ static VT100TCC decode_csi(unsigned char *datap,
                     break;
                 case 'e':
                     result.type = ANSICSI_VPR;
+                    SET_PARAM_DEFAULT(param,0,1);
+                    break;
+                case 'X':
+                    result.type = ANSICSI_ECH;
                     SET_PARAM_DEFAULT(param,0,1);
                     break;
                 default:

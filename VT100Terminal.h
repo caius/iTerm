@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.19 2003-03-10 23:38:09 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.20 2003-03-11 01:27:52 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -112,6 +112,7 @@
 #define ANSICSI_CHA	     3000	// Cursor Horizontal Absolute
 #define ANSICSI_VPA	     3001	// Vert Position Absolute
 #define ANSICSI_VPR	     3002	// Vert Position Relative
+#define ANSICSI_ECH	     3003	// Erase Character
 
 // Toggle between ansi/vt52
 #define STRICT_ANSI_MODE		4000

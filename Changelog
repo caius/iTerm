@@ -1,8 +1,11 @@
+2003-10-10	fabian
+
+    * Corrected the encoding for the French version of iTerm.strings.
+    
 2003-10-09	ujwal
 
     * Reverted to individual timer threads for each session. Other code 
       is not fully tested yet.
-
 
 2003-10-09	fabian
 

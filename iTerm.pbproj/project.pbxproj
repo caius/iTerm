@@ -1926,7 +1926,7 @@
 			refType = 4;
 		};
 		FB01DCDE04433DFB01F955DB = {
-			fileEncoding = 30;
+			fileEncoding = 10;
 			isa = PBXFileReference;
 			name = French;
 			path = French.lproj/iTerm.strings;

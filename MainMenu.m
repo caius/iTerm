@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.21 2003-01-11 21:29:37 ujwal Exp $
+// $Id: MainMenu.m,v 1.22 2003-01-11 22:15:12 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -129,6 +129,11 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 //    NSLog(@"showABWindow: %d\n%@",[addressBook count], addressBook);
 
     [AB_PANEL center];
+    if([adTable numberOfRows] > 0){
+	[adTable selectRow: 0 byExtendingSelection: NO];
+	[AB_PANEL makeFirstResponder: adTable];
+    }
+    [adTable setDoubleAction: @selector(adbEditEntry:)];
     r= [NSApp runModalForWindow:AB_PANEL];
     [AB_PANEL close];
 }

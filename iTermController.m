@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.10 2003-08-11 16:37:11 sgehrman Exp $
+// $Id: iTermController.m,v 1.11 2003-08-12 03:17:19 sgehrman Exp $
 /*
  **  iTermController.m
  **
@@ -207,35 +207,12 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 // Action methods
 - (IBAction)newWindow:(id)sender
 {
-//    PseudoTerminal *term;
-    
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController newWindow]",
-          __FILE__, __LINE__);
-#endif
-    
     [self executeABCommandAtIndex:0 inTerminal: nil];
-
-//    term = [[PseudoTerminal alloc] init];
-//    [self addInTerminals: term];
-//    [term release];
-    
-//    [term setPreference:PREF_PANEL];
-//    [term newSession:nil];
 }
 
 - (IBAction)newSession:(id)sender
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController newSession]",
-          __FILE__, __LINE__);
-#endif
-
     [self executeABCommandAtIndex:0 inTerminal: FRONT];
-//    if(FRONT == nil)
-//        [self newWindow:nil];
-//    else
-//        [FRONT newSession: self];
 }
 
 // navigation
@@ -260,7 +237,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
     
 }
-- (IBAction) nextTerminal: (id) sender
+- (IBAction)nextTerminal: (id) sender
 {
     unsigned int currentIndex;
 

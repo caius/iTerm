@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.213 2003-08-11 16:36:55 sgehrman Exp $
+// $Id: PseudoTerminal.m,v 1.214 2003-08-12 03:17:07 sgehrman Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -33,8 +33,6 @@
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
-
-
 #import <iTerm/iTerm.h>
 #import <iTerm/PseudoTerminal.h>
 #import <iTerm/PTYScrollView.h>
@@ -51,7 +49,7 @@
 #import <iTerm/VT100Terminal.h>
 #import <iTerm/VT100Screen.h>
 #import <iTerm/PTYSession.h>
-
+#import <iTerm/PTToolbarController.h>
 
 // keys for attributes:
 NSString *columnsKey = @"columns";
@@ -59,25 +57,15 @@ NSString *rowsKey = @"rows";
 // keys for to-many relationships:
 NSString *sessionsKey = @"sessions";
 
-
-#define NIB_PATH  @"PseudoTerminal"
-
 #define TABVIEW_TOP_BOTTOM_OFFSET	29
 #define TABVIEW_LEFT_RIGHT_OFFSET	25
 #define TOOLBAR_OFFSET			0
-
-static NSString *NewToolbarItem = @"New";
-static NSString *ABToolbarItem = @"Address";
-static NSString *CloseToolbarItem = @"Close";
-static NSString *ConfigToolbarItem = @"Config";
 
 // just to keep track of available window positions
 #define CACHED_WINDOW_POSITIONS		100
 static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];  
 
-
 @implementation PseudoTerminal
-
 
 - (id) initWithWindowNibName: (NSString *) windowNibName
 {
@@ -101,17 +89,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     ptyList = [[NSMutableArray alloc] init];
     ptyListLock = [[NSLock alloc] init];
 
-    // Read the preference on whether to open new sessions in new tabs or windows
-    newwin = [[NSUserDefaults standardUserDefaults] boolForKey:@"SESSION_IN_NEW_WINDOW"];
-
     tabViewDragOperationInProgress = NO;
     resizeInProgress = NO;
-
-    // Add ourselves as an observer for notifications to reload the addressbook.
-    [[NSNotificationCenter defaultCenter] addObserver: self
-					     selector: @selector(_reloadAddressBookMenu:)
-						 name: @"Reload AddressBook"
-					       object: nil];
     
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal init: 0x%x]", __FILE__, __LINE__, self);
@@ -122,9 +101,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (id)init
 {
-
-    return ([self initWithWindowNibName: NIB_PATH]);
-    
+    return ([self initWithWindowNibName: @"PseudoTerminal"]);
 }
 
 // Do not use both initViewWithFrame and initWindow
@@ -165,11 +142,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Do not use both initViewWithFrame and initWindow
 - (void)initWindow
 {
-
     NSRect tabviewRect;
 
-    // setup our toolbar
-    [[self window] setToolbar:[self setupToolbar]];
+    _toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
     
     // Create the tabview
     tabviewRect = [[[self window] contentView] frame];
@@ -503,6 +478,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal dealloc: 0x%x]", __FILE__, __LINE__, self);
 #endif
     [self releaseObjects];
+    [_toolbarController release];
     
     [super dealloc];
 }
@@ -528,13 +504,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     ptyListLock = nil;
    
     ptyList = nil;
-
-        
-    // Remove ourselves as an observer for notifications to reload the addressbook.
-    [[NSNotificationCenter defaultCenter] removeObserver: self
-        name: @"Reload AddressBook"
-        object: nil];
-    
 }
 
 - (void)startProgram:(NSString *)program
@@ -1207,154 +1176,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [CONFIG_EXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
 }
 
-
-//Toolbar related
-- (NSArray *) toolbarDefaultItemIdentifiers: (NSToolbar *) toolbar
-{
-    NSMutableArray* itemIdentifiers= [[[NSMutableArray alloc]init] autorelease];
-
-    [itemIdentifiers addObject: NewToolbarItem];
-    [itemIdentifiers addObject: ABToolbarItem];
-    [itemIdentifiers addObject: ConfigToolbarItem];
-    [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
-    [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
-    [itemIdentifiers addObject: CloseToolbarItem];
-    [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
-
-    return itemIdentifiers;
-}
-
-- (NSArray *) toolbarAllowedItemIdentifiers: (NSToolbar *) toolbar
-{
-    NSMutableArray* itemIdentifiers = [[[NSMutableArray alloc]init] autorelease];
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal toolbarAllowedItemIdentifiers]", __FILE__, __LINE__);
-#endif    
-
-    [itemIdentifiers addObject: NewToolbarItem];
-    [itemIdentifiers addObject: ABToolbarItem];
-    [itemIdentifiers addObject: ConfigToolbarItem];
-    [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
-    [itemIdentifiers addObject: CloseToolbarItem];
-    [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
-    [itemIdentifiers addObject: NSToolbarSpaceItemIdentifier];
-    [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
-
-    return itemIdentifiers;
-}
-    
-- (NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *) itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted
-{
-    NSToolbarItem *toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
-    NSBundle *thisBundle = [NSBundle bundleForClass: [self class]];
-    NSString *imagePath;
-    NSImage *anImage;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal itemForItemIdentifier]", __FILE__, __LINE__);
-#endif    
-
-    if ([itemIdent isEqual: ABToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item:Bookmarks")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item:Bookmarks")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the bookmarks",@"iTerm", thisBundle, @"Toolbar Item Tip:Bookmarks")];
-	imagePath = [thisBundle pathForResource:@"addressbook"
-				    ofType:@"png"];
-	anImage = [[NSImage alloc] initByReferencingFile: imagePath];
-        [toolbarItem setImage: anImage];
-	[anImage release];
-        [toolbarItem setTarget: [iTermController sharedInstance]];
-        [toolbarItem setAction: @selector(showABWindow:)];
-    }
-    else if ([itemIdent isEqual: CloseToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", thisBundle, @"Toolbar Item: Close Session")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", thisBundle, @"Toolbar Item: Close Session")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Close the current session",@"iTerm", thisBundle, @"Toolbar Item Tip: Close")];
-	imagePath = [thisBundle pathForResource:@"close"
-							      ofType:@"png"];
-	anImage = [[NSImage alloc] initByReferencingFile: imagePath];
-        [toolbarItem setImage: anImage];
-	[anImage release];
-        [toolbarItem setTarget: self];
-        [toolbarItem setAction: @selector(closeCurrentSession:)];
-    }
-   else if ([itemIdent isEqual: ConfigToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", thisBundle, @"Toolbar Item:Configure") ];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", thisBundle, @"Toolbar Item:Configure") ];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Configure current window",@"iTerm", thisBundle, @"Toolbar Item Tip:Configure")];
-	imagePath = [thisBundle pathForResource:@"config"
-							      ofType:@"png"];
-	anImage = [[NSImage alloc] initByReferencingFile: imagePath];
-        [toolbarItem setImage: anImage];
-	[anImage release];
-        [toolbarItem setTarget: self];
-        [toolbarItem setAction: @selector(showConfigWindow:)];
-    } 
-    else if ([itemIdent isEqual: NewToolbarItem])
-    {
-        NSPopUpButton *aPopUpButton;
-
-	if([toolbar sizeMode] == NSToolbarSizeModeSmall)
-	{
-	    aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 40.0, 24.0) pullsDown: YES];
-	}
-	else
-	{
-	    aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 48.0, 32.0) pullsDown: YES];
-	}
-        [aPopUpButton setTarget: self];
-        [aPopUpButton setBordered: NO];
-        [[aPopUpButton cell] setArrowPosition:NSPopUpArrowAtBottom];
-	[toolbarItem setView: aPopUpButton];
-        // Release the popup button since it is retained by the toolbar item.
-        [aPopUpButton release];
-
-	// build the menu
-	[self _buildToolbarItemPopUpMenu: toolbarItem forToolbar: toolbar];
-
-	[toolbarItem setMinSize:[aPopUpButton bounds].size];
-	[toolbarItem setMaxSize:[aPopUpButton bounds].size];
-	[toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", thisBundle, @"Toolbar Item:New")];
-	[toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", thisBundle, @"Toolbar Item:New")];
-	[toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open a new session",@"iTerm", thisBundle, @"Toolbar Item:New")];
-
-    }
-    else { 
-        toolbarItem=nil;
-    }
-
-    return toolbarItem;
-}
-
-- (NSToolbar *) setupToolbar;
-{
-    NSToolbar* toolbar;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal setupToolbar]", __FILE__, __LINE__);
-#endif    
-
-    toolbar = [[NSToolbar alloc] initWithIdentifier: @"Terminal Toolbar"];
-    [toolbar setVisible:true];
-    [toolbar setDelegate:self];
-    [toolbar setAllowsUserCustomization:YES];
-    [toolbar setAutosavesConfiguration:YES];
-    [toolbar setDisplayMode:NSToolbarDisplayModeDefault];
-    [toolbar insertItemWithItemIdentifier: NewToolbarItem atIndex:0];
-    [toolbar insertItemWithItemIdentifier: ABToolbarItem atIndex:1];
-    [toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:2];
-    [toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:3];
-    [toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:4];
-    [toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:5];
-    [toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:6];
-
-
-//    NSLog(@"Toolbar created");
-
-    return [toolbar autorelease];
-}
-
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu
 {
@@ -1838,8 +1659,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     return result;
 }
 
-
-
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -replaceInSessions: 0x%x atIndex: %d", object, index);
@@ -1970,118 +1789,3 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 @end
 
-// Private interface
-@implementation PseudoTerminal (Private)
-
-- (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem forToolbar: (NSToolbar *)toolbar
-{
-    NSPopUpButton *aPopUpButton;
-    NSMenuItem *item;
-    NSMenu *aMenu;
-    id newwinItem;
-    NSString *imagePath;
-    NSImage *anImage;
-    NSBundle *thisBundle = [NSBundle bundleForClass: [self class]];
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal _buildToolbarItemPopUpMenu]",
-          __FILE__, __LINE__);
-#endif
-    
-
-    if (toolbarItem == nil)
-	return;
-    
-    aPopUpButton = (NSPopUpButton *)[toolbarItem view];
-    //[aPopUpButton setAction: @selector(_addressbookPopupSelectionDidChange:)];
-    [aPopUpButton setAction: nil];
-    [aPopUpButton removeAllItems];
-    [aPopUpButton addItemWithTitle: @""];
-
-    [[iTermController sharedInstance] buildAddressBookMenu: [aPopUpButton menu] forTerminal: (newwin?nil:self)];
-
-    [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-    [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
-    newwinItem=[aPopUpButton lastItem];
-    [newwinItem setState:(newwin ? NSOnState : NSOffState)];    
-    
-    // Now set the icon
-    item = [[aPopUpButton cell] menuItem];
-    imagePath = [thisBundle pathForResource:@"newwin"
-								 ofType:@"png"];
-    anImage = [[NSImage alloc] initByReferencingFile: imagePath];
-    [toolbarItem setImage: anImage];
-    [anImage release];
-    [anImage setScalesWhenResized:YES];
-    if([toolbar sizeMode] == NSToolbarSizeModeSmall)
-    {
-	[anImage setSize:NSMakeSize(24.0, 24.0)];
-    }
-    else
-    {
-	[anImage setSize:NSMakeSize(30.0, 30.0)];
-    }
-    [item setImage:anImage];
-    [item setOnStateImage:nil];
-    [item setMixedStateImage:nil];
-    [aPopUpButton setPreferredEdge:NSMinXEdge];
-    [[[aPopUpButton menu] menuRepresentation] setHorizontalEdgePadding:0.0];
-
-    // build a menu representation for text only.
-    item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New") action: nil keyEquivalent: @""];
-    aMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [[iTermController sharedInstance] buildAddressBookMenu: aMenu forTerminal: (newwin?nil:self)];
-    [aMenu addItem: [NSMenuItem separatorItem]];
-    [aMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
-    newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];
-    [newwinItem setState:(newwin ? NSOnState : NSOffState)];
-    
-    [item setSubmenu: aMenu];
-    [aMenu release];
-    [toolbarItem setMenuFormRepresentation: item];
-    [item release];
-    
-}
-
-
-// Reloads the addressbook entries into the popup toolbar item
-- (void) _reloadAddressBookMenu: (NSNotification *) aNotification
-{
-    NSArray *toolbarItemArray;
-    NSToolbarItem *aToolbarItem;
-    int i;
-    
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal _reloadAddressBookMenu]",
-          __FILE__, __LINE__);
-#endif
-    
-    toolbarItemArray = [[[self window] toolbar] items];
-    
-    // Find the addressbook popup item and reset it
-    for(i = 0; i < [toolbarItemArray count]; i++)
-    {
-        aToolbarItem = [toolbarItemArray objectAtIndex: i];
-        
-        if([[aToolbarItem itemIdentifier] isEqual: NewToolbarItem])
-        {
-            [self _buildToolbarItemPopUpMenu: aToolbarItem forToolbar: [[self window] toolbar]];
-                        
-            break;
-        }
-        
-    }
-    
-}
-
-- (void) _toggleNewWindowState: (id) sender
-{
-    newwin = !newwin;
-    [self _reloadAddressBookMenu: nil];
-    // Save our latest preference on where to open new sessions
-    [[NSUserDefaults standardUserDefaults] setBool: newwin forKey:@"SESSION_IN_NEW_WINDOW"];    
-}
-
-
-
-@end

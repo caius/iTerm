@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.3 2003-08-11 16:37:53 sgehrman Exp $
+// $Id: PseudoTerminal.h,v 1.4 2003-08-12 03:17:33 sgehrman Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -29,16 +29,13 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class PreferencePanel;
-
-@class PTYTabView;
-@class PTYSession;
-@class iTermController;
+@class PTYSession, PTYTabView, iTermController, PTToolbarController;
 
 @interface PseudoTerminal : NSWindowController
 {
     /// tab view
     PTYTabView *TABVIEW;
+    PTToolbarController* _toolbarController;
 
     // config window
     IBOutlet id CONFIG_PANEL;
@@ -74,7 +71,6 @@
     float alpha;
     NSFont *configFont, *configNAFont;
     BOOL changingNA;
-    BOOL newwin;
     BOOL tabViewDragOperationInProgress;
     BOOL resizeInProgress;
     BOOL windowInited;
@@ -133,12 +129,6 @@
 - (void)windowDidResignMain:(NSNotification *)aNotification;
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize;
 - (void)windowDidResize:(NSNotification *)aNotification;
-
-// Toolbar
-- (NSToolbar*) setupToolbar;
-- (NSArray *) toolbarAllowedItemIdentifiers: (NSToolbar *) toolbar;
-- (NSArray *) toolbarDefaultItemIdentifiers: (NSToolbar *) toolbar;
-- (NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *) itemIdent willBeInsertedIntoToolbar: (BOOL) willBeInserted;
 
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;
@@ -212,10 +202,6 @@
 @end
 
 @interface PseudoTerminal (Private)
-
-- (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem forToolbar: (NSToolbar *)toolbar;
-- (void) _reloadAddressBookMenu: (NSNotification *) aNotification;
 - (void) _toggleNewWindowState: (id) sender;
-
 @end
 

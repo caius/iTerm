@@ -51,6 +51,8 @@
 				87D5C490043229390073D10E,
 				DD4BAB7C0470C44C00A8A065,
 				FBD0AD0A0337A5B701F955DB,
+				2076B15704E8817300000106,
+				2076B15804E8817300000106,
 				E8CF755F026DDA6303A80106,
 				E8CF7561026DDA6303A80106,
 				E8CF7560026DDA6303A80106,
@@ -359,6 +361,34 @@
 //202
 //203
 //204
+		2076B15704E8817300000106 = {
+			expectedFileType = sourcecode.c.h;
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = PTToolbarController.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2076B15804E8817300000106 = {
+			expectedFileType = sourcecode.c.objc;
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = PTToolbarController.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		2076B15F04E882F800000106 = {
+			fileRef = 2076B15804E8817300000106;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		2076B16604E8830300000106 = {
+			fileRef = 2076B15704E8817300000106;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		209E898B04E777ED00000106 = {
 			containerPortal = 0464AB0C006CD2EC7F000001;
 			isa = PBXContainerItemProxy;
@@ -1140,6 +1170,7 @@
 				872EBC8404E42E320073D10E,
 				872EBC8504E42E320073D10E,
 				872EBC8604E42E320073D10E,
+				2076B16604E8830300000106,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1189,6 +1220,7 @@
 				DDA86B9F048EFCF500A8A065,
 				DD12B4D90491DAA000A8A065,
 				8793A10404992C7D0073D10E,
+				2076B15F04E882F800000106,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

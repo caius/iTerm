@@ -1,4 +1,9 @@
 2004-10-20  ujwal
+	
+	* Fixed more reverse video issues on OpenVMS: in [VT100Screen: -eraseDisplay], all 
+	  erased characters get default foreground and background colors.
+
+2004-10-20  ujwal
 
 	* Fixed reverse video problem in OpenVMS again. Hopefully, this time it 
 	  is the correct fix. In [VT100Screen: -scrollUp] and [VT100Screen: -scrollDown], 

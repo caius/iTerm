@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.38 2003-02-12 07:52:47 ujwal Exp $
+// $Id: VT100Screen.m,v 1.39 2003-02-14 20:02:20 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -741,9 +741,13 @@ static BOOL PLAYBELL = YES;
     // if we did a wrapAround, mark the position so that we can strip them out when copying
     if(didWrap)
     {
-	if([[STORAGE string] characterAtIndex: ([self getIndex: CURSOR_X y: CURSOR_Y] - 2)] == VT100CC_LF)
-	    [STORAGE addAttribute: @"VT100LineWrap" value: @"YES"
-						 range: NSMakeRange(([self getIndex: CURSOR_X y: CURSOR_Y] - 2), 1)];
+	int anIndex = [self getIndex: CURSOR_X y: CURSOR_Y] - 2;
+
+	if(anIndex < [[STORAGE string] length])
+	{
+	    if([[STORAGE string] characterAtIndex: anIndex] == VT100CC_LF)
+		[STORAGE addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange(([self getIndex: CURSOR_X y: CURSOR_Y] - 2), 1)];
+	}
     }
 }
 

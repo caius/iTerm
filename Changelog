@@ -1,3 +1,15 @@
+2002-12-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Removed addressbook toolbar item since the 
+      addressbook popup menu gives similar functionality.
+      Ideally, the icon for the popup button should be 
+      the addressbook icon, but I couldn't get it to work.
+      More research needs to be done on that...
+      
+    * Fixed bugs in MainMenu that dod not save addressbook 
+      when entries were deleted.
+      
+
 2002-12-16	fabian
     * Change version number to 0.5.6
     * Make author name localized strings in About panel.

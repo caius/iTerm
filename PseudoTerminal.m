@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.27 2002-12-15 04:07:51 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.28 2002-12-16 21:11:24 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -29,7 +29,6 @@ static NSString *QRToolbarItem = @"Open";
 static NSString *ABToolbarItem = @"Address";
 static NSString *CloseToolbarItem = @"Close";
 static NSString *ConfigToolbarItem = @"Config";
-static NSString *ShortcutPopUpItem = @"ShortcutPopUp";
 
 static NSDictionary *normalStateAttribute;
 static NSDictionary *chosenStateAttribute;
@@ -958,14 +957,11 @@ static NSDictionary *deadStateAttribute;
     [itemIdentifiers addObject: NewWToolbarItem];
     [itemIdentifiers addObject: NewSToolbarItem];
     [itemIdentifiers addObject: QRToolbarItem];
-    [itemIdentifiers addObject: ABToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
-    [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
-    [itemIdentifiers addObject: ShortcutPopUpItem];
-    [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
+    [itemIdentifiers addObject: ABToolbarItem];
 
     return itemIdentifiers;
 }
@@ -981,7 +977,6 @@ static NSDictionary *deadStateAttribute;
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
-    [itemIdentifiers addObject: ShortcutPopUpItem];
     [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
     [itemIdentifiers addObject: NSToolbarSpaceItemIdentifier];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
@@ -1014,13 +1009,6 @@ static NSDictionary *deadStateAttribute;
         [toolbarItem setTarget: MAINMENU];
         [toolbarItem setAction: @selector(showQOWindow:)];
     }
-    else if ([itemIdent isEqual: ABToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open the address book",@"iTerm",@"Toolbar Item Tip:Address Book")];
-        [toolbarItem setImage: [NSImage imageNamed: @"addressbook"]];
-        [toolbarItem setTarget: MAINMENU];
-        [toolbarItem setAction: @selector(showABWindow:)];
-    }
     else if ([itemIdent isEqual: CloseToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")];
         [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Close the current session",@"iTerm",@"Toolbar Item Tip: Close")];
@@ -1035,21 +1023,23 @@ static NSDictionary *deadStateAttribute;
         [toolbarItem setTarget: self];
         [toolbarItem setAction: @selector(showConfigWindow:)];
     } 
-    else if ([itemIdent isEqual: ShortcutPopUpItem])
+    else if ([itemIdent isEqual: ABToolbarItem])
     {
         NSPopUpButton *aPopUpButton;
         
-        aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 84.0, 32.0) pullsDown: YES];
+        aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 130.0, 32.0) pullsDown: YES];
         [aPopUpButton setTarget: self];
         [aPopUpButton setAction: @selector(_addressbookPopupSelectionDidChange:)];
-        [aPopUpButton addItemWithTitle: @"New"];
+        [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
         [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
+        [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
+        [aPopUpButton addItemWithTitle: @"Edit Address Book"];
         [toolbarItem setView: aPopUpButton];
         // Release the popup button since it is retained by the toolbar item.
         [aPopUpButton release];
         [toolbarItem setMinSize:[aPopUpButton bounds].size];
         [toolbarItem setMaxSize:[aPopUpButton bounds].size];
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Shortcut",@"iTerm",@"Toolbar Item:Shortcut")];
+        [toolbarItem setLabel: @""];
         [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Shortcut to address book commands",@"iTerm",@"Toolbar Item Tip:Shortcut")];
     }
     else {
@@ -1072,13 +1062,12 @@ static NSDictionary *deadStateAttribute;
     [toolbar insertItemWithItemIdentifier: NewWToolbarItem atIndex:0];
     [toolbar insertItemWithItemIdentifier: NewSToolbarItem atIndex:1];
     [toolbar insertItemWithItemIdentifier: QRToolbarItem atIndex:2];
-    [toolbar insertItemWithItemIdentifier: ABToolbarItem atIndex:3];
-    [toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:4];
-    [toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:5];
-    [toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:6];
-    [toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:7];
-    [toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:8];
-    [toolbar insertItemWithItemIdentifier: ShortcutPopUpItem atIndex:9];
+    [toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:3];
+    [toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:4];
+    [toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:5];
+    [toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:6];
+    [toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:7];
+    [toolbar insertItemWithItemIdentifier: ABToolbarItem atIndex:8];
 
 
 //    NSLog(@"Toolbar created");
@@ -1239,6 +1228,13 @@ static NSDictionary *deadStateAttribute;
           __FILE__, __LINE__);
 #endif
     
+    // If we selected tha last item, show the address book.
+    if([sender indexOfSelectedItem] == [sender indexOfItem: [sender lastItem]])
+    {
+        [MAINMENU showABWindow: self];
+        return;
+    }
+    
     commandIndex = [sender indexOfSelectedItem] - 1;
     
     if(commandIndex < 0)
@@ -1281,13 +1277,15 @@ static NSDictionary *deadStateAttribute;
     {
         aToolbarItem = [toolbarItemArray objectAtIndex: i];
         
-        if([[aToolbarItem itemIdentifier] isEqual: ShortcutPopUpItem])
+        if([[aToolbarItem itemIdentifier] isEqual: ABToolbarItem])
         {
             addressbookPopup = (NSPopUpButton *)[aToolbarItem view];
             [addressbookPopup selectItemAtIndex: -1];
             [addressbookPopup removeAllItems];
-            [addressbookPopup addItemWithTitle: @"New"];
+            [addressbookPopup addItemWithTitle: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
             [addressbookPopup addItemsWithTitles: [MAINMENU addressBookNames]];
+            [[addressbookPopup menu] addItem: [NSMenuItem separatorItem]];
+            [addressbookPopup addItemWithTitle: @"Edit Address Book"];
             
             break;
         }

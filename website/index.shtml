@@ -34,13 +34,14 @@
     <LI>Native OS X user interface</LI>
 	<LI>Support of Applescript</LI>
 	<LI>Transparent windows and custm background pictures</LI>
+    <LI>Rendezvous support<IMG src="new.gif"></LI>
   </UL>
 <LI>Complete VT100 emulation, with additional support for most common xterm and 
 	ANSI escape sequences.</LI>
   <UL>
     <LI>Custom key-mapping<IMG src="new.gif"></LI>
 	<LI>Supports select-to-copy and mid-button paste</LI>
-	<LI>Supports focus follow mouse</LI>
+	<LI>Supports focus follow mouse<IMG src="new.gif"></LI>
 	<LI>Supports xterm titling sequence to change tab label</LI>
 	<LI>Supports ANSI 16 colors, which are also fully customizable</LI>
   </UL>
@@ -75,7 +76,7 @@ This is a major update of iTerm. New features include:<BR>
 <LI>Now supports custom key-mapping.</LI>
 <LI>New drawing code with speed enhancement up to several folds.</LI>
 <LI>New improved bookmarks organization.</LI>
-<LI>Rendevouz support.</LI>
+<LI>Rendezvous support.</LI>
 <LI>Supports customizable character spacing.</LI>
 <LI>Other bug fixes and GUI enhancements as usual.</LI>
 For more detail, see <A HREF="history.shtml">Version History</A><BR>

@@ -542,7 +542,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		else 
 		{
 			int max = [keystr length];
-			NSData *data;
+			NSData *data=nil;
 			
 			if (max!=1||[keystr characterAtIndex:0] > 0x7f)
 				data = [keystr dataUsingEncoding:[TERMINAL encoding]];

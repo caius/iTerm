@@ -34,7 +34,6 @@ Download from <A HREF="http://www.vector.org.uk/resource/simpl02.zip">here</A></
 <LI><STRONG>FreeMono</STRONG> A nice font made available by Free UCS Outline Fonts project. It is bundled with iTerm.app starting from version 0.70. Visit their <A HREF="http://www.nongnu.org/freefont/"> website </A>.</LI>
 <LI><STRONG>Wen Ding Chinese fonts</STRONG> A set of simplified and traditional Chinese fonts. Download from <A HREF="http://www.arphic.net/tw/service/resource_cont.asp?id=1&toppage=2">here</A>. Thanks for Miyang Lin for providing us information.</LI>
 </UL>
-Starting from version 0.7.5, iTerm supports rendering of graphical characters with fonts that do not support them natively, such as Monaco, Andale Mono, etc. You can turn on this support enabling the "Enforce character alignment" preference in the Preferences panel. This will ensure proper alignment of graphical characters, but with a performance penalty. 
 <BR>
 <BR>
 <FONT SIZE="4"><STRONG>Icon Gallery</STRONG></FONT><BR>

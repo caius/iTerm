@@ -1,3 +1,8 @@
+2004-04-18  fabian
+
+    * Fix for dead key and related issues.
+    * Fixes of Japanaese and German translatons.
+    
 2004-04-18  ujwal
 
 	* Potential fix for dead key and key repeat issue.

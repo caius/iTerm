@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.40 2004-03-31 06:02:42 ujwal Exp $
+// $Id: PTYTextView.h,v 1.41 2004-04-18 22:26:08 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -63,9 +63,6 @@ typedef struct
     // anti-alias flag
     BOOL antiAlias;
 
-    // dead key support
-    BOOL deadkey;
-	
 	// NSTextInput support
     BOOL IM_INPUT_INSERT;
     NSRange IM_INPUT_SELRANGE;

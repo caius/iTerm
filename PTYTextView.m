@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.208 2004-04-18 08:05:30 ujwal Exp $
+// $Id: PTYTextView.m,v 1.209 2004-04-18 22:26:02 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -44,7 +44,6 @@
 
 static SInt32 systemVersion;
 
-
 @implementation PTYTextView
 
 + (void) initialize
@@ -70,7 +69,6 @@ static SInt32 systemVersion;
             font, NSFontAttributeName,
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
-    deadkey = NO;
 	CURSOR=YES;
 	lastFindX = startX = -1;
     markedText=nil;
@@ -943,7 +941,6 @@ static SInt32 systemVersion;
 {
     NSInputManager *imana = [NSInputManager currentInputManager];
     BOOL IMEnable = [imana wantsToInterpretAllKeystrokes];
-    BOOL put;
     id delegate = [self delegate];
     
 #if DEBUG_METHOD_TRACE
@@ -953,47 +950,28 @@ static SInt32 systemVersion;
     
     // Hide the cursor
     [NSCursor setHiddenUntilMouseMoves: YES];   
-	
-	[self interpretKeyEvents:[NSArray arrayWithObject:event]];
-    	
-    // Check for dead keys
-	if([[self delegate] optionKey] == OPT_NORMAL)
-	{
-		if (deadkey) {
-			//[self interpretKeyEvents:[NSArray arrayWithObject:event]];
-			deadkey=[self hasMarkedText];
-			return;
-		}
-		else if ([[event characters] length]<1) {
-			deadkey=YES;
-			//[self interpretKeyEvents:[NSArray arrayWithObject:event]];
-			return;
-		}
-	}
-	    
+
+    IM_INPUT_INSERT = NO;
     if (IMEnable) {
         BOOL prev = [self hasMarkedText];
-        IM_INPUT_INSERT = NO;
-        //[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+        [self interpretKeyEvents:[NSArray arrayWithObject:event]];
         
-#if GREED_KEYDOWN
         if (prev == NO &&
             IM_INPUT_INSERT == NO &&
             [self hasMarkedText] == NO)
         {
-            put = YES;
+            [delegate keyDown:event];
         }
-        else
-            put = NO;
-#else
-        put = NO;
-#endif
     }
-    else
-        put = YES;
-    
-    if (put == YES) {
-		[delegate keyDown:event];
+    else {
+        if([[self delegate] optionKey] == OPT_NORMAL)
+        {
+            [self interpretKeyEvents:[NSArray arrayWithObject:event]];
+        }
+        
+        if (IM_INPUT_INSERT == NO) {
+            [delegate keyDown:event];
+        }
     }
 }
 
@@ -1762,22 +1740,22 @@ static SInt32 systemVersion;
     NSLog(@"%s(%d):-[PTYTextView insertText:%@]",
           __FILE__, __LINE__, aString);
 #endif
-    IM_INPUT_INSERT = YES;
     
     if ([self hasMarkedText]) {
         IM_INPUT_MARKEDRANGE = NSMakeRange(0, 0);
         [markedText release];
 		markedText=nil;
     }
-    
-	if(deadkey)
-	{
-		if ([_delegate respondsToSelector:@selector(insertText:)])
-			[_delegate insertText:aString];
-		else
-			[super insertText:aString];
-	}
-	
+
+    if ([(NSString*)aString length]>0) {
+        if ([_delegate respondsToSelector:@selector(insertText:)])
+            [_delegate insertText:aString];
+        else
+            [super insertText:aString];
+
+        IM_INPUT_INSERT = YES;
+    }
+
 }
 
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange

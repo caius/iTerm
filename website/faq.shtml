@@ -22,9 +22,10 @@
 	Versions before 0.8 require monospace fonts. New version no longer requires monospace 
 	fonts. All fonts will be displayed in correct alignment.<BR><BR></LI>
 <LI><STRONG>Where does iTerm store its settings?</STRONG><BR>
-	The settings is stored in ~/Library/Preferences/iTerm.plist. The bookmarks data file is
-	~/Library/Application Support/iTerm/Addressbook. In case something goes wrong, you can
-	delete these files and iTerm will generate new copies that should always work.<BR><BR></LI>
+	The settings is stored in ~/Library/Preferences/iTerm.plist. The bookmarks data file before
+    version 0.8.0 is ~/Library/Application Support/iTerm/Addressbook. Since version 0.8.0, 
+    everything is stored in ~/Library/Preferences/iTerm.plist. In case something goes wrong, 
+    you can delete these files and iTerm will generate new copies that should always work.<BR><BR></LI>
 <LI><STRONG>My iTerm is too slow. What can I do to improve its performance?</STRONG><BR>
 	First of all, upgrade to the latest version. We are constantly updating the program to
 	improve its performance. The latest version should run at least as fast as Apple's Terminal.app.

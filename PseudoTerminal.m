@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.222 2003-09-07 10:48:05 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.223 2003-09-08 05:42:33 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -360,8 +360,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             // the above code removes the item and resets the currentSessionIndex
             [self selectSessionAtIndex:[_sessionMgr currentSessionIndex]];
 
-	    [[iTermController sharedInstance] buildSessionSubmenu];
-                        
+	    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];
+	    
             break;
         }
     }

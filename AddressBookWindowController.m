@@ -286,7 +286,7 @@ static NSColor* xtermColorTable[2][8];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
     [[NSNotificationCenter defaultCenter]
-    postNotificationName: @"Reload AddressBook"
+    postNotificationName: @"iTermReloadAddressBook"
 				object: nil
 			      userInfo: nil];    
 }
@@ -490,7 +490,7 @@ static NSColor* xtermColorTable[2][8];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
-    postNotificationName: @"Reload AddressBook"
+    postNotificationName: @"iTermReloadAddressBook"
 					      object: nil
 				     userInfo: nil];	
         [adTable reloadData];
@@ -544,7 +544,7 @@ static NSColor* xtermColorTable[2][8];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
-    postNotificationName: @"Reload AddressBook"
+    postNotificationName: @"iTermReloadAddressBook"
 				object: nil
 			      userInfo: nil];	
     }

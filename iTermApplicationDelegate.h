@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.1 2003-08-11 12:59:36 sgehrman Exp $
+// $Id: iTermApplicationDelegate.h,v 1.2 2003-09-08 05:42:34 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -41,6 +41,8 @@
     IBOutlet NSMenuItem *selectTab;
     IBOutlet NSMenuItem *previousTerminal;
     IBOutlet NSMenuItem *nextTerminal;
+    IBOutlet NSMenuItem *newTab;
+    IBOutlet NSMenuItem *newWindow;
 }
 
 // NSApplication Delegate methods
@@ -63,6 +65,11 @@
     // navigation
 - (IBAction) previousTerminal: (id) sender;
 - (IBAction) nextTerminal: (id) sender;
+
+// Notifications
+- (void) reloadMenus: (NSNotification *) aNotification;
+- (void) buildSessionSubmenu: (NSNotification *) aNotification;
+- (void) buildAddressBookMenu : (NSNotification *) aNotification;
 
 @end
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.13 2003-09-02 05:53:04 yfabian Exp $
+// $Id: iTermController.m,v 1.14 2003-09-08 05:42:34 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -311,50 +311,14 @@ static BOOL usingAutoLaunchScript = NO;
 {
     FRONT = thePseudoTerminal;
 
-    [previousTerminal setAction: (FRONT?@selector(previousTerminal:):nil)];
-    [nextTerminal setAction: (FRONT?@selector(nextTerminal:):nil)];
+    // Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
 
-    [self buildSessionSubmenu];
 }
 
 - (PseudoTerminal *) frontPseudoTerminal
 {
     return (FRONT);
-}
-
-- (void) buildSessionSubmenu
-{
-    // build a submenu to select tabs
-    NSMenu *aMenu = [[NSMenu alloc] initWithTitle: @"SessionMenu"];
-    NSEnumerator *anEnumerator;
-    PTYSession *aSession;
-    int i;
-
-    // clear whatever menu we already have
-    [selectTab setSubmenu: nil];
-
-    anEnumerator = [[FRONT sessions] objectEnumerator];
-
-    i = 0;
-    while((aSession = [anEnumerator nextObject]) != nil)
-    {
-	NSMenuItem *aMenuItem;
-
-	i++;
-
-	if(i < 10)
-	{
-	    aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(selectSessionAtIndexAction:) keyEquivalent: [NSString stringWithFormat: @"%d", i]];
-	    [aMenuItem setTag: i-1];
-
-	    [aMenu addItem: aMenuItem];
-	    [aMenuItem release];
-	}
-	
-    }
-    [selectTab setSubmenu: aMenu];
-
-    [aMenu release];
 }
 
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow
@@ -375,7 +339,9 @@ static BOOL usingAutoLaunchScript = NO;
 - (void)buildAddressBookMenu:(NSMenu *) abMenu target:(id)target
 {
     NSEnumerator *abEnumerator;
-    NSString *abEntry;
+    NSDictionary *abEntry;
+    NSString *shortcut;
+    unsigned int mask;
     int i = 0;
     SEL action;
     
@@ -384,10 +350,21 @@ static BOOL usingAutoLaunchScript = NO;
     else
         action = @selector(newSessionInTabAtIndex:);
     
-    abEnumerator = [[[ITAddressBookMgr sharedInstance] addressBookNames] objectEnumerator];
+    abEnumerator = [[[ITAddressBookMgr sharedInstance] addressBook] objectEnumerator];
     while ((abEntry = [abEnumerator nextObject]) != nil)
     {
-	NSMenuItem *abMenuItem = [[[NSMenuItem alloc] initWithTitle: abEntry action:action keyEquivalent:@""] autorelease];
+	shortcut=([[abEntry objectForKey:@"Shortcut"] intValue]? [NSString stringWithFormat:@"%c",[[abEntry objectForKey:@"Shortcut"] intValue]]:@"");
+	shortcut = [shortcut lowercaseString];
+	mask = NSCommandKeyMask | NSAlternateKeyMask;
+	if(target == nil)
+	    mask |= NSShiftKeyMask;	
+	if(isDefaultEntry(abEntry))
+	{
+	    shortcut = target?@"t":@"n";
+	    mask = NSCommandKeyMask;
+	}
+	NSMenuItem *abMenuItem = [[[NSMenuItem alloc] initWithTitle: entryVisibleName(abEntry, self) action:action keyEquivalent:shortcut] autorelease];
+	[abMenuItem setKeyEquivalentModifierMask: mask];
 	[abMenuItem setTag:i++];
 	[abMenuItem setTarget:target];
 
@@ -447,21 +424,6 @@ static BOOL usingAutoLaunchScript = NO;
         [term setWindowSize: NO];
     
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
-}
-
-- (void) interpreteKey: (int) code newWindow:(BOOL) newWin
-{
-    int i, c, n=[[[ITAddressBookMgr sharedInstance] addressBook] count];
-
-    if (code>='a'&&code<='z') code+='A'-'a';
-//    NSLog(@"got code:%d (%s)",code,(newWin?"new":"old"));
-    
-    for(i=0; i<n; i++) {
-        c=[[[[[ITAddressBookMgr sharedInstance] addressBook] objectAtIndex:i] objectForKey:@"Shortcut"] intValue];
-        if (code==c) {
-            [self executeABCommandAtIndex:i inTerminal: newWin?nil:FRONT];
-        }
-    }
 }
 
 - (PTYTextView *) frontTextView

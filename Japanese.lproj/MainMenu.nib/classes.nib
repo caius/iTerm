@@ -117,6 +117,8 @@
             OUTLETS = {
                 ABOUT = id; 
                 AUTHORS = NSTextView; 
+                newTab = NSMenuItem; 
+                newWindow = NSMenuItem; 
                 nextTerminal = NSMenuItem; 
                 previousTerminal = NSMenuItem; 
                 selectTab = NSMenuItem; 

@@ -429,11 +429,6 @@ static NSString *PWD_ENVVALUE = @"~";
 		break;
 	}
     }
-    else if ((modflag & NSAlternateKeyMask) && (modflag & NSControlKeyMask)) 
-    {
-//        NSLog(@"opt_control_key detected(%d)",(modflag & NSShiftKeyMask));
-        [[iTermController sharedInstance] interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
-    }
     else if((modflag & NSAlternateKeyMask) && (unicode == NSDeleteCharacter))
 	[self setRemapDeleteKey: ![self remapDeleteKey]];
     else 
@@ -1047,6 +1042,10 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setName: (NSString *) theName
 {
     NSMutableString *aMutableString;
+
+    if([name isEqualToString: theName])
+	return;
+    
     if(name)
     {
 	// clear the window title if it is not different
@@ -1077,7 +1076,9 @@ static NSString *PWD_ENVVALUE = @"~";
 
     // get the session submenu to be rebuilt
     if([[iTermController sharedInstance] frontPseudoTerminal] == [self parent])
-	[[iTermController sharedInstance] buildSessionSubmenu];    
+    {
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNameOfSessionDidChange" object: self userInfo: nil];
+    }
 }
 
 - (NSString *) windowTitle

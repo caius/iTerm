@@ -51,7 +51,7 @@ NSString *ConfigToolbarItem = @"Config";
     // Add ourselves as an observer for notifications to reload the addressbook.
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(reloadAddressBookMenu:)
-                                                 name: @"Reload AddressBook"
+                                                 name: @"iTermReloadAddressBook"
                                                object: nil];
     
     [self setupToolbar];

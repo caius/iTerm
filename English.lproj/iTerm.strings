@@ -137,6 +137,8 @@
 "next window"="next window";
 "previous tab"="previous tab";
 "previous window"="previous window";
+"scroll end"="scroll end";
+"scroll home"="scroll home";
 "scroll line down"="scroll line down";
 "scroll line up"="scroll line up";
 "scroll page down"="scroll page down";

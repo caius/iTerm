@@ -349,6 +349,16 @@ static iTermKeyBindingMgr *singleInstance = nil;
 															  [NSBundle bundleForClass: [self class]], 
 															  @"Key Binding Actions");
 			break;
+		case KEY_ACTION_SCROLL_END:
+			actionString = NSLocalizedStringFromTableInBundle(@"scroll end",@"iTerm", 
+															  [NSBundle bundleForClass: [self class]], 
+															  @"Key Binding Actions");
+			break;
+		case KEY_ACTION_SCROLL_HOME:
+			actionString = NSLocalizedStringFromTableInBundle(@"scroll home",@"iTerm", 
+															  [NSBundle bundleForClass: [self class]], 
+															  @"Key Binding Actions");
+			break;			
 		case KEY_ACTION_SCROLL_LINE_DOWN:
 			actionString = NSLocalizedStringFromTableInBundle(@"scroll line down",@"iTerm", 
 															  [NSBundle bundleForClass: [self class]], 

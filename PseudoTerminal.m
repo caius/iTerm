@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.255 2004-02-13 21:36:16 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.256 2004-02-16 19:31:02 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -937,12 +937,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	
     // To prevent death by recursion
-    /*if(resizeInProgress == YES)
+    if(resizeInProgress == YES)
     {
 		return;
-    }*/
+    }
 	
-    resizeInProgress = YES;    
 	
     frame = [[[[_sessionMgr currentSession] SCROLLVIEW] contentView] frame];
 #if 0
@@ -950,6 +949,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  frame.origin.x, frame.origin.y,
 		  frame.size.width, frame.size.height);
 #endif
+	
+	resizeInProgress = YES;    
 	    
     w = (int)(frame.size.width/charWidth + 0.1);
     h = (int)(frame.size.height/charHeight + 0.1);
@@ -1296,18 +1297,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		return;
 	
     // create a new terminal window
-    term = [[[PseudoTerminal alloc] init] autorelease];
+    term = [[PseudoTerminal alloc] init];
     if(term == nil)
 		return;
 	
-    [[iTermController sharedInstance] addInTerminals: term];
-	
-    if([term windowInited] == NO)
+	if([term windowInited] == NO)
     {
 		[term setWidth: WIDTH height: HEIGHT];
 		[term setFont: FONT nafont: NAFONT];
 		[term initWindow];
-    }
+    }	
+	
+    [[iTermController sharedInstance] addInTerminals: term];
+	[term release];
+	
 	
     // If this is the current session, make previous one active.
     if(aSession == [_sessionMgr currentSession])

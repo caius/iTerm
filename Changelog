@@ -2,6 +2,7 @@
 
 	* Forcing update in texview drawRect until drawing issue is resolved.
 	* Fixed bold display bug.
+	* Fixed a crash in moving tab to another window.
 
 2004-02-14  ujwal
 

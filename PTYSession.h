@@ -95,6 +95,7 @@
 - (void) terminate;
 - (void) timerTick:(NSTimer*)sender;
 - (void) startTimer;
+- (BOOL) isActiveSession;
 
 // Preferences
 - (void)setPreference:(id)preference;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.94 2003-05-30 06:44:46 ujwal Exp $
+// $Id: VT100Screen.m,v 1.95 2003-05-30 06:54:29 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2281,7 +2281,7 @@ static BOOL PLAYBELL = YES;
     }
 
     // Check if the cursor needs to blink
-    if([self blinkingCursor] == YES)
+    if([self blinkingCursor] == YES && [SESSION isActiveSession] == YES)
     {
 	idx = [self getTVIndex: CURSOR_X y: CURSOR_Y];
 	if(idx < len)

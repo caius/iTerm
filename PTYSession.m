@@ -159,6 +159,11 @@ static NSString *PWD_ENVVALUE = @"~";
         
 }
 
+- (BOOL) isActiveSession
+{
+    return ([[[self tabViewItem] tabView] selectedTabViewItem] == [self tabViewItem]);
+}
+
 - (void) startTimer
 {
     timer =[[NSTimer scheduledTimerWithTimeInterval:0.01

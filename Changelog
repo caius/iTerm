@@ -1,3 +1,8 @@
+2003-09-21	ujwal
+
+    * When PTYSession: terminate is called, we wait for shell task to exit 
+      after sending it the SIGHUP signal.
+
 2003-09-16	ujwal
 
     * Added support to change background image after session has been opened.

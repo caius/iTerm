@@ -44,6 +44,7 @@
 #import <iTerm/VT100Typesetter.h>
 
 #include <unistd.h>
+#include <sys/wait.h>
 
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
@@ -288,7 +289,14 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession -terminate: retainCount = %d]", __FILE__, __LINE__, [self retainCount]);
 #endif
 
+    int pid, status;
+    
     [SHELL sendSignal: SIGHUP];
+    while ((pid=waitpid([SHELL pid],&status,0))>0)
+    {
+	usleep(10000);
+    }    
+    //[SHELL sendSignal: SIGKILL];
     if(tabViewItem)
     {
         [tabViewItem release];

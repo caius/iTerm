@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.156 2003-09-24 06:59:06 ujwal Exp $
+// $Id: VT100Screen.m,v 1.157 2003-09-24 18:11:44 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -67,7 +67,8 @@
 #if USE_CUSTOM_DRAWING
 #else
 static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
-static NSString *NSBlinkColorAttributeName=@"NSBlinkColorAttributeName";
+static NSString *NSBlinkForegroundColorAttributeName=@"NSBlinkForegroundColorAttributeName";
+static NSString *NSBlinkBackgroundColorAttributeName=@"NSBlinkBackgroundColorAttributeName";
 #endif
 
 static NSString *NSCharWidthAttributeName=@"NSCharWidthAttributeName";
@@ -2422,7 +2423,7 @@ static BOOL PLAYBELL = YES;
 #if USE_CUSTOM_DRAWING
 #else
     int blinkType;
-    NSColor *fg, *bg,*blink;
+    NSColor *fg, *bg,*fgBlink, *bgBlink;
     NSDictionary *dic;
     NSRange range;
     int len=[[STORAGE string] length];
@@ -2441,15 +2442,15 @@ static BOOL PLAYBELL = YES;
             for(;idx<range.length+range.location;idx++) {
                 fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
                 bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
-                blink=[STORAGE attribute:NSBlinkColorAttributeName atIndex:idx effectiveRange:nil];
-                if (blink==nil) {
-                    blink=fg;
+                fgBlink=[STORAGE attribute:NSBlinkForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+                if (fgBlink==nil) {
+                    fgBlink=fg;
                 }
 		
 		dic=[NSDictionary dictionaryWithObjectsAndKeys:
 		    bg,NSBackgroundColorAttributeName,
-		    (blinkShow?blink:bg),NSForegroundColorAttributeName,
-		    blink,NSBlinkColorAttributeName,
+		    (fgBlink?fgBlink:bg),NSForegroundColorAttributeName,
+		    fgBlink,NSBlinkForegroundColorAttributeName,
 		    [NSNumber numberWithInt:1],NSBlinkAttributeName,
 		    nil];
 		[STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
@@ -2468,12 +2469,37 @@ static BOOL PLAYBELL = YES;
 	{
 	    fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
 	    bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+	    fgBlink=[STORAGE attribute:NSBlinkForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+	    bgBlink=[STORAGE attribute:NSBlinkBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+	    if (fgBlink==nil) {
+		fgBlink=fg;
+	    }
+	    if (bgBlink==nil) {
+		bgBlink=bg;
+	    }	    
 
-	    dic=[NSDictionary dictionaryWithObjectsAndKeys:
-		(blinkShow?fg:bg),NSBackgroundColorAttributeName,
-		(blinkShow?bg:fg),NSForegroundColorAttributeName,
-		nil];
-	    [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+	    if([[self session] image] != nil)
+	    {
+		dic=[NSDictionary dictionaryWithObjectsAndKeys:
+		    (blinkShow?bgBlink:fgBlink),NSForegroundColorAttributeName,
+		    (blinkShow?fgBlink:bgBlink),NSBackgroundColorAttributeName,
+		    fgBlink,NSBlinkForegroundColorAttributeName,
+		    bgBlink,NSBlinkBackgroundColorAttributeName,
+		    nil];
+		[STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+		if(blinkShow)
+		    [STORAGE removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(idx,1)];
+	    }
+	    else
+	    {
+		dic=[NSDictionary dictionaryWithObjectsAndKeys:
+		    (blinkShow?fg:bg),NSBackgroundColorAttributeName,
+		    (blinkShow?bg:fg),NSForegroundColorAttributeName,
+		    fgBlink,NSBlinkForegroundColorAttributeName,
+		    bgBlink,NSBlinkBackgroundColorAttributeName,
+		    nil];
+		[STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
+	    }
 	}
     }
     

@@ -64,7 +64,6 @@
     NSRange characterRange, glyphRange;
     BOOL hasGraphicalCharacters;
     NSTextStorage *textStorage;
-    float lineWidth;
 
 
     // grab the text container; we should have only one
@@ -167,17 +166,16 @@
 	// calculate line width accounting for double width characters
 	NSRange doubleWidthCharacterRange;
 	id doubleWidthCharacterAttribute;
-	lineWidth = 0;
+	float lineWidth = characterRange.length * charWidth;
 	doubleWidthCharacterAttribute = [textStorage attribute:@"NSCharWidthAttributeName" atIndex:lineStartIndex longestEffectiveRange:&doubleWidthCharacterRange inRange:characterRange];
 	if(doubleWidthCharacterAttribute != nil || doubleWidthCharacterRange.length != characterRange.length)
 	{
+	    lineWidth = 0;
 	    for (j = lineStartIndex; j < lineEndIndex - lineStartIndex + 1; j++)
 	    {
 		lineWidth += ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 	    }
 	}
-	else
-	    lineWidth = characterRange.length * charWidth;
 	
 	
 	// did we encounter a graphical character?
@@ -204,7 +202,7 @@
 	
 	// Now fill the line
 	NSRect usedRect = lineRect;
-	usedRect.size.width = (glyphRange.length * charWidth) + 2*lineFragmentPadding;
+	usedRect.size.width = lineWidth + 2*lineFragmentPadding;
 	if(usedRect.size.width > lineRect.size.width)
 	    usedRect.size.width = lineRect.size.width;
 	[layoutMgr setTextContainer: textContainer forGlyphRange: glyphRange];

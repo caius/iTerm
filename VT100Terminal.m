@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.68 2003-06-11 23:16:45 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.69 2003-06-11 23:35:12 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1757,8 +1757,8 @@ static VT100TCC decode_string(unsigned char *datap,
                                         forKey:NSLigatureAttributeName];
     [characterAttributeDictionary[0] setObject:[NSNumber numberWithFloat:(0)]
                                         forKey:NSKernAttributeName];
-    [characterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
-                                        forKey:@"NSCharWidthAttributeName"];
+    //[characterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
+    //                                    forKey:@"NSCharWidthAttributeName"];
     [characterAttributeDictionary[0] setObject:pstyle
                                         forKey:NSParagraphStyleAttributeName];
     [characterAttributeDictionary[1] setObject:fg

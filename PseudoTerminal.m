@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.23 2002-12-11 17:18:25 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.24 2002-12-11 23:22:23 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -593,43 +593,6 @@ static NSDictionary *deadStateAttribute;
     [SCREEN  setFont:font];
     if (FONT) [FONT autorelease];
     FONT=[[font copy] retain];
-}
-
-
-- (void)keyDown:(NSEvent *)theEvent
-{
-    unsigned int mod_flag;
-    unsigned short key_code;
-    NSString *keystr;
-    NSString *unmod_keystr;
-    unichar unicode;
-
-    mod_flag = [theEvent modifierFlags];
-    key_code = [theEvent keyCode];
-    keystr = [theEvent characters];
-    unmod_keystr = [theEvent charactersIgnoringModifiers];
-    unicode = [keystr characterAtIndex:0];
-
-    // Check if we are navigating through sessions
-    if ((mod_flag & NSFunctionKeyMask) && (mod_flag & NSShiftKeyMask)) 
-    {
-        // function key's
-        switch (unicode) 
-        {
-            case NSLeftArrowFunctionKey: // cursor left
-                // Check if we want to just move to the previous session
-                [self previousSession: nil];
-                break;
-            case NSRightArrowFunctionKey: // cursor left
-                // Check if we want to just move to the next session
-                [self nextSession: nil];
-                break;  
-            default:
-                break;      
-        }
-    }
-    else // Re-direct the event to the appropriate session
-        [currentPtySession keyDown: theEvent];
 }
 
 - (void)changeFont:(id)sender

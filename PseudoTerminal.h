@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.9 2002-12-10 18:26:29 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.10 2002-12-11 23:22:25 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -120,7 +120,6 @@
 - (BOOL)validateMenuItem:(NSMenuItem *)item;
 
 // PTYTextView
-- (void)keyDown:(NSEvent *)theEvent;
 - (void)changeFont:(NSFont *)font;
 
 // NSWindow

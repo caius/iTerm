@@ -1,3 +1,9 @@
+2004-10-03  ujwal
+
+	* Periodically refreshing autorelease pool in display update thread to avoid 
+	  memory leak from autoreleased objects.
+	* Fixed code for numeric enter from \012 to \015.
+
 2004-09-25  ujwal
 	
 	* Fixed problem when PTYSession: -keyDown is never called when numeric or function 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.293 2004-09-12 07:15:22 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.294 2004-10-03 08:06:59 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1635,19 +1635,38 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) _updateDisplayThread: (void *) incoming
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	int i, n;
+	int i, n, count;
+	NSAutoreleasePool *pool = nil;
 	
+	count = 0;
 	while (EXIT == NO)
 	{
+		count++;
+		
+		// periodically create and release autorelease pools
+		if(pool == nil)
+			pool = [[NSAutoreleasePool alloc] init];
+		
 		n = [_sessionMgr numberOfSessions];
 		for (i = 0; i < n; i++)
 			[[_sessionMgr sessionAtIndex: i] updateDisplay];
 		
+		// periodically create and release autorelease pools
+		if((count % 50) == 0)
+		{
+			[pool release];
+			pool = nil;
+		}
+		
 		usleep(30000);
 	}
 	
-	[pool release];
+	if(pool != nil)
+	{
+		[pool release];
+		pool = nil;
+	}
+	
 }
 
 - (NSFont *) _getMaxFont:(NSFont* ) font 

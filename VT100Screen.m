@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.153 2003-09-15 23:08:10 yfabian Exp $
+// $Id: VT100Screen.m,v 1.154 2003-09-16 16:07:02 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -771,32 +771,49 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen clearBuffer]",  __FILE__, __LINE__ );
 #endif
+    NSAttributedString *aLine;
+    int idx, idx2;
+    int cursor_x = CURSOR_X;
 
-    // clear everything up to the current line
-#if DEBUG_USE_BUFFER
     [self setScreenLock];
-
-    int idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:NO];
-    int idx2 = idx+updateIndex;
-
-    if(idx2 >= [STORAGE length])
-	idx2 = [STORAGE length];
-
-    [STORAGE deleteCharactersInRange:NSMakeRange(0, idx2)];
-    [BUFFER deleteCharactersInRange:NSMakeRange(0, idx)];
+    idx = [self getIndexAtX: 0 Y: CURSOR_Y withPadding: YES];
+    if(CURSOR_Y == HEIGHT - 1)
+	idx2 = [BUFFER length] - 1;
+    else
+	idx2 = [self getIndexAtX: 0 Y: CURSOR_Y+1 withPadding: YES];
+    if(idx2 > idx)
+    {
+	aLine = [BUFFER attributedSubstringFromRange: NSMakeRange(idx, idx2-idx)];
+	[aLine retain];
+    }
+    else
+    {
+	aLine = nil;
+	NSLog(@"VT100Screen: clearBuffer: could not get last line!; idx = %d; idx2 = %d; CURSOR_Y = %d", idx, idx2, CURSOR_Y);
+    }
+#if DEBUG_USE_BUFFER
+    [STORAGE deleteCharactersInRange:NSMakeRange(0, [STORAGE length])];
+    [BUFFER deleteCharactersInRange:NSMakeRange(0, [BUFFER length])];
     updateIndex=0;
     minIndex=0;
-    [self removeScreenLock];
 #endif
 
 #if DEBUG_USE_ARRAY
-    int i;
-
-    for(i = 0; i < TOP_LINE + CURSOR_Y; i++)
-        [screenLines removeObjectAtIndex: 0];
+    [screenLines removeAllObjects];
 #endif
-    TOP_LINE = 0;
+
+    [self clearScreen];
+    [self initScreen];
+    CURSOR_X = CURSOR_Y = 0;
     clearingBuffer = YES;
+    if([aLine length] > 0)
+    {
+	[BUFFER replaceCharactersInRange: NSMakeRange(0, 1) withAttributedString: aLine];
+	[aLine release];
+	CURSOR_X = cursor_x;
+    }
+    [self removeScreenLock];
+    [self forceUpdateScreen];
 }
 
 - (void)clearScrollbackBuffer

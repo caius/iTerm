@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.54 2003-01-01 02:39:44 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.55 2003-01-01 02:55:32 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -730,12 +730,19 @@ static NSString *ConfigToolbarItem = @"Config";
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
 {
-    NSSize winSize, contentSize, scrollviewSize, textviewSize;
-    int h;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 	  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
+
+#if 1
+
+    return (proposedFrameSize);
+
+#else
+
+    NSSize winSize, contentSize, scrollviewSize, textviewSize;
+    int h;
 
     // This calculation ensures that the window size is pruned to display an interger number of lines.
 
@@ -784,6 +791,8 @@ static NSString *ConfigToolbarItem = @"Config";
     //NSLog(@"window size: width = %f; height = %f", winSize.width, winSize.height);
         
     return (winSize);
+    
+#endif
 
 }
 
@@ -825,7 +834,7 @@ static NSString *ConfigToolbarItem = @"Config";
     WIDTH = w;
     HEIGHT = h;
     
-    //[self setWindowSize];
+    [self setWindowSize];
     //NSLog(@"w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 
 

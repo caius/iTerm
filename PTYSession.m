@@ -336,8 +336,15 @@ static NSString *PWD_ENVVALUE = @"~";
                 send_str = (char *)[data bytes];
                 send_strlen = [data length];
             }
+            if (modflag & NSNumericPadKeyMask &&
+                     send_strlen == 1 &&
+                     send_str[0] == 0x03)
+            {
+                send_str = "\012";  // NumericPad Entry -> 0x0a
+                send_strlen = 1;
+            }
         }
-
+        
         if (EXIT == NO ) {
             if (send_pchr >= 0) {
                 char c = send_pchr;
@@ -354,6 +361,7 @@ static NSString *PWD_ENVVALUE = @"~";
             }
         }
     }
+    
 }
 
 - (void)insertText:(NSString *)string

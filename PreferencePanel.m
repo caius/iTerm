@@ -49,7 +49,7 @@ static int TRANSPARENCY  =10;
 
     defaultCol=([prefs integerForKey:@"Col"]?[prefs integerForKey:@"Col"]:COL);
     defaultRow=([prefs integerForKey:@"Row"]?[prefs integerForKey:@"Row"]:ROW);
-    defaultTransparency=([prefs integerForKey:@"Transparency"]?[prefs integerForKey:@"Transparency"]:TRANSPARENCY);
+    defaultTransparency=([prefs stringForKey:@"Transparency"]!=nil?[prefs integerForKey:@"Transparency"]:TRANSPARENCY);
 
     defaultTerminal=[[([prefs objectForKey:@"Terminal"]?[prefs objectForKey:@"Terminal"]:TERM)
                     copy] retain];

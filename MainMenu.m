@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.15 2002-12-18 02:28:31 yfabian Exp $
+// $Id: MainMenu.m,v 1.16 2002-12-19 21:36:33 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -283,8 +283,8 @@ static BOOL newWindow=YES;
         [adTransparency2 setIntValue:[[entry objectForKey:@"Transparency"] intValue]];
     }
     else {
-        [adTransparency setIntValue:0];
-        [adTransparency2 setIntValue:0];
+        [adTransparency setIntValue:[PREF_PANEL transparency]];
+        [adTransparency2 setIntValue:[PREF_PANEL transparency]];
     }
     if ([entry objectForKey:@"Directory"]) {
         [adDir setStringValue:[entry objectForKey:@"Directory"]];

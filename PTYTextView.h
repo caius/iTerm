@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.29 2003-05-27 06:09:55 ujwal Exp $
+// $Id: PTYTextView.h,v 1.30 2003-06-11 18:38:16 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -219,6 +219,9 @@
 
     // print selection
     BOOL printingSelection;
+
+    // for the typesetter
+    NSFont *font;
 }
 
 - (id)init;
@@ -256,6 +259,9 @@
 - (void) setLineHeight: (float) aLineHeight;
 - (float) lineWidth;
 - (void) setLineWidth: (float) aLineWidth;
+
+- (NSFont *) font;
+- (void) setFont: (NSFont *)aFont;
 
 - (void) refresh;
 - (void) scrollHome;

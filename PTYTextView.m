@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.69 2003-06-05 15:36:32 ujwal Exp $
+// $Id: PTYTextView.m,v 1.70 2003-06-11 18:38:16 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1383,6 +1383,9 @@
 	[dataSource release];
 	dataSource = nil;
     }
+
+    [font release];
+    font = nil;
         
     [super dealloc];
 }
@@ -1473,6 +1476,30 @@
 {
     lineWidth = aLineWidth;
 }
+
+- (NSFont *) font
+{
+    if(font == nil)
+	return ([super font]);
+    return (font);
+}
+
+- (void) setFont: (NSFont *)aFont
+{
+    if(font != nil)
+    {
+	[font release];
+	font = nil;
+    }
+    
+    if(aFont != nil)
+    {
+	[aFont retain];
+	font = aFont;
+    }
+    
+}
+
 
 - (void) refresh
 {

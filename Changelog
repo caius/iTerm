@@ -1,3 +1,8 @@
+2003-06-11	ujwal
+
+    * Using embedded FreeMono font for graphical characters 
+      since that font provides all the glyphs.
+
 2003-06-10	ujwal
 
     * Bug fixes and speed improvement to VT100Typesetter.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.103 2003-06-11 00:13:18 ujwal Exp $
+// $Id: VT100Screen.m,v 1.104 2003-06-11 18:38:16 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2226,7 +2226,7 @@ static BOOL PLAYBELL = YES;
     // Mark graphical characters and use our embedded font that has the necessary glyphs
     if(charset[[TERMINAL charset]])
     {
-	//[attr addAttribute: NSFontAttributeName value: [NSFont fontWithName:@"FreeMonoBold" size:[[self font] pointSize]] range: NSMakeRange(0, [attr length])];
+	[attr addAttribute: NSFontAttributeName value: [NSFont fontWithName:@"FreeMonoBold" size:[[self font] pointSize]] range: NSMakeRange(0, [attr length])];
 	[attr addAttribute: @"VT100GraphicalCharacter" value: [NSNumber numberWithInt:1] range: NSMakeRange(0, [attr length])];
     }
     

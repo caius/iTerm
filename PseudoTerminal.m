@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.263 2004-02-25 23:57:17 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.264 2004-02-26 01:28:34 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1208,6 +1208,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[_sessionMgr currentSession] setLabelAttribute];
 	[[[_sessionMgr currentSession] SCREEN] setDirty];
 	[[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
+	// do this to set up mouse tracking rects again
+	[[[_sessionMgr currentSession] TEXTVIEW] becomeFirstResponder];
 }
 
 - (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem

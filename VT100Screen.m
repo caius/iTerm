@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.7 2002-12-20 18:21:47 yfabian Exp $
+// $Id: VT100Screen.m,v 1.8 2002-12-22 02:26:57 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -139,6 +139,11 @@ static BOOL PLAYBELL = YES;
     LINE_LIMIT = DEFAULT_LINELIMIT;
     OLD_CURSOR_INDEX=-1;
     [self clearTabStop];
+    
+    // set initial tabs
+    int i;
+    for(i = TABSIZE; i < TABWINDOW; i += TABSIZE)
+        tabStop[i] = YES;
     
     return self;
 }
@@ -819,6 +824,7 @@ static BOOL PLAYBELL = YES;
 	[self setString:str width:1];
     }
 #else
+    CURSOR_X++; // ensure we go to the next tab in case we are already on one
     for(;!tabStop[CURSOR_X]&&CURSOR_X<WIDTH; CURSOR_X++);
 #endif
 }

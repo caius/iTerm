@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.4 2002-12-19 21:02:22 yfabian Exp $
+// $Id: VT100Screen.h,v 1.5 2002-12-22 02:26:57 ujwal Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -13,6 +13,8 @@
 #import "PTYTask.h"
 #import "PTYSession.h"
 
+#define TABWINDOW	300
+
 @interface VT100Screen : NSObject
 {
     int WIDTH;
@@ -23,7 +25,7 @@
     int SAVE_CURSOR_Y;
     int SCROLL_TOP;
     int SCROLL_BOTTOM;
-    BOOL tabStop[300];
+    BOOL tabStop[TABWINDOW];
     BOOL CURSOR_IN_MIDDLE;
 
     NSTextStorage *STORAGE;

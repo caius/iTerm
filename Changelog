@@ -3,6 +3,12 @@
     * Added Save/Print functionality.
       Chinese NIBs and localized strings file need to be 
       updated.
+      
+    * Fixed some horizontal tabbing issues in VT100Screeen.
+      Now pre-populating tab array with tabs every TABWIDTH 
+      on init since we won't always get CSI_HTS command 
+      before a tab is issued. Also ensuring that we move 
+      to the next tab if we are already on one.
 
 
 2002-12-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>

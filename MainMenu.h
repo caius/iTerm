@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.7 2002-12-18 02:28:31 yfabian Exp $
+// $Id: MainMenu.h,v 1.8 2003-01-08 17:20:13 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -36,6 +36,7 @@
     IBOutlet id adNewWindow;
     IBOutlet id adAI;
     IBOutlet id adAICode;
+    IBOutlet id adClose;
     IBOutlet NSTextField *adNATextExample;
     
     NSFont *aeFont, *aeNAFont;

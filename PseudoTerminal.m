@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.67 2003-01-08 16:52:38 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.68 2003-01-08 17:20:19 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -74,7 +74,7 @@ static NSString *ConfigToolbarItem = @"Config";
                 term:[pref terminalType]];
     [self startProgram:cmd arguments:arg];
     [self setCurrentSessionName:nil];
-
+    [currentPtySession setAutoClose: [pref autoclose]];
 }
 
 - (id)init

@@ -1,3 +1,7 @@
+2003-01-08	fabian
+    * Added new option in address book entries that allow
+      user to set "close session automatically" individually
+      
 2003-01-08	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Save menu item in contextual menu is always validated. 

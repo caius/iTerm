@@ -80,6 +80,7 @@
 
 /* Context menu */
 "Select All" = "Select All";
+"Save" = "Save";
 
 /* Removal Alert */
 "There is no undo for this operation." = "There is no undo for this operation.";

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.17 2002-12-30 19:49:46 ujwal Exp $
+// $Id: MainMenu.m,v 1.18 2003-01-08 17:20:14 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -92,6 +92,8 @@ static BOOL newWindow=YES;
                 term:[PREF_PANEL terminalType]];
     [term startProgram:cmd arguments:arg];
     [term setCurrentSessionName:nil];
+    [[term currentSession] setAutoClose:[PREF_PANEL autoclose]];
+
 }
 
 - (IBAction)newSession:(id)sender
@@ -168,6 +170,8 @@ static BOOL newWindow=YES;
     [[term currentSession] setEncoding:encoding];
     [[term currentSession] setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
     [[term currentSession] setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
+    [[term currentSession] setAutoClose:[[entry objectForKey:@"AutoClose"] intValue]];
+    
     
     if (newWindow) {
         [term setWindowSize];
@@ -213,6 +217,7 @@ static BOOL newWindow=YES;
     [adNATextExample setFont:aeNAFont];
     [adAI setState:[PREF_PANEL ai]?NSOnState:NSOffState];
     [adAICode setIntValue:[PREF_PANEL aiCode]];
+    [adClose setState:[PREF_PANEL autoclose]?NSOnState:NSOffState];
     
     [adTransparency setIntValue:[PREF_PANEL transparency]];
     [adTransparency2 setIntValue:[PREF_PANEL transparency]];
@@ -237,6 +242,7 @@ static BOOL newWindow=YES;
             aeNAFont,@"NAFont",
             [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
+            [NSNumber numberWithBool:[adClose state]],@"AutoClose",
             NULL];
         [addressBook addObject:ae];
 //        NSLog(@"%s(%d):-[Address entry added:%@]",
@@ -310,6 +316,7 @@ static BOOL newWindow=YES;
     [adNATextExample setFont:aeNAFont];
     [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[PREF_PANEL ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
     [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[PREF_PANEL aiCode]:[[entry objectForKey:@"AICode"] intValue]];
+    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?[PREF_PANEL autoclose]:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
 
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
@@ -331,6 +338,7 @@ static BOOL newWindow=YES;
             aeNAFont,@"NAFont",
             [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
+            [NSNumber numberWithBool:[adClose state]],@"AutoClose",
             NULL];
         [addressBook replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
 //        NSLog(@"%s(%d):-[Address entry replaced:%@]",

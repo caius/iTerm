@@ -47,6 +47,7 @@
                 adAI = id; 
                 adAICode = id; 
                 adBackground = NSColorWell; 
+                adClose = id; 
                 adCol = id; 
                 adCommand = NSTextField; 
                 adDir = id; 

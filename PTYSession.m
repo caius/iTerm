@@ -244,7 +244,7 @@ static NSString *PWD_ENVVALUE = @"~";
         timer=nil;
     }
     
-    if ([pref autoclose]) {
+    if (autoClose) {
         [parent closeSession:self];
     }
     else 
@@ -893,6 +893,11 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setAntiCode:(int)code
 {
     ai_code=code;
+}
+
+- (void) setAutoClose:(BOOL)set
+{
+    autoClose=set;
 }
 
 - (void)logStart

@@ -54,6 +54,7 @@
     BOOL REFRESHED;
     BOOL antiIdle;
     BOOL waiting;
+    BOOL autoClose;
     NSFont *configFont;
     PreferencePanel *pref;
 
@@ -126,6 +127,7 @@
 - (int) antiCode;
 - (void) setAntiIdle:(BOOL)set;
 - (void) setAntiCode:(int)code;
+- (void) setAutoClose:(BOOL)set;
 
 - (void)clearBuffer;
 - (void)logStart;

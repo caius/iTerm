@@ -115,16 +115,32 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	return ([[aProfile objectForKey: @"Global Profile"] isEqualToString: @"Yes"]);
 }
 
-- (void) addProfileWithName: (NSString *) aString
+- (void) addProfileWithName: (NSString *) aString copyProfile: (NSString *) profileName
 {
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aString);
 	if([aString length] > 0 && [profiles objectForKey: aString] == nil)
 	{
-		NSEnumerator *keyEnumerator;
-		NSMutableDictionary *newProfile;
+		NSMutableDictionary *newProfile, *sourceProfile, *mappingDict;
+				
+		if([profileName length] > 0)
+		{
+			sourceProfile = [profiles objectForKey: profileName];
+			newProfile = [[NSMutableDictionary alloc] initWithDictionary: sourceProfile];				
+
+			// make sure key mapping dict is mutable
+			if([sourceProfile objectForKey: @"Key Mappings"] != nil)
+			{
+				mappingDict = [[NSMutableDictionary alloc] initWithDictionary: [sourceProfile objectForKey: @"Key Mappings"]];
+				[newProfile setObject: mappingDict forKey: @"Key Mappings"];
+				[mappingDict release];
+			}
+			[newProfile removeObjectForKey: @"Global Profile"];
+		}	
+		else
+		{
+			newProfile = [[NSMutableDictionary alloc] init];				
+		}
 		
-		keyEnumerator = [profiles keyEnumerator];
-		newProfile = [[NSMutableDictionary alloc] init];
 		[profiles setObject: newProfile forKey: aString];
 		[newProfile release];		
 	}

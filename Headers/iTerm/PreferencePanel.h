@@ -45,6 +45,8 @@
     IBOutlet id blinkingCursor;
     IBOutlet NSButton *focusFollowsMouse;
 	
+	IBOutlet NSWindow *profilesWindow;
+	
 	// Keybinding stuff
 	IBOutlet NSPopUpButton *kbProfileSelector;
 	IBOutlet NSTextField *kbProfileName;

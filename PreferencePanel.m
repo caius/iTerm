@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.81 2004-03-05 16:04:59 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.82 2004-03-08 02:37:20 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -222,7 +222,7 @@ static float versionNumber;
 - (IBAction) kbProfileAdd: (id) sender
 {
 	[NSApp beginSheet: addKBProfile
-       modalForWindow: [self window]
+       modalForWindow: profilesWindow
         modalDelegate: self
        didEndSelector: @selector(_addKBProfileSheetDidEnd:returnCode:contextInfo:)
           contextInfo: nil];        
@@ -231,7 +231,7 @@ static float versionNumber;
 - (IBAction) kbProfileDelete: (id) sender
 {
 	[NSApp beginSheet: deleteKBProfile
-       modalForWindow: [self window]
+       modalForWindow: profilesWindow
         modalDelegate: self
        didEndSelector: @selector(_deleteKBProfileSheetDidEnd:returnCode:contextInfo:)
           contextInfo: nil];        
@@ -310,7 +310,7 @@ static float versionNumber;
 	
 	
 	[NSApp beginSheet: addKBEntry
-       modalForWindow: [self window]
+       modalForWindow: profilesWindow
         modalDelegate: self
        didEndSelector: @selector(_addKBEntrySheetDidEnd:returnCode:contextInfo:)
           contextInfo: nil];        
@@ -528,7 +528,8 @@ static float versionNumber;
 		NSEnumerator *kbProfileEnumerator;
 		NSString *aString;
 
-		[[iTermKeyBindingMgr singleInstance] addProfileWithName: [kbProfileName stringValue]];
+		[[iTermKeyBindingMgr singleInstance] addProfileWithName: [kbProfileName stringValue] 
+													copyProfile: [kbProfileSelector titleOfSelectedItem]];
 		
 		[kbProfileSelector removeAllItems];
 		kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];

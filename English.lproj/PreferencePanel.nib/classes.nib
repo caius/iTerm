@@ -45,6 +45,7 @@
                 kbProfileSelector = NSPopUpButton; 
                 openAddressBook = id; 
                 optionKey = id; 
+                profilesWindow = NSWindow; 
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 
                 silenceBell = id; 

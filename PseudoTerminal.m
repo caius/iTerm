@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.234 2003-09-14 18:46:50 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.235 2003-09-14 19:21:48 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -173,7 +173,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
 {
-    NSDictionary *addressBookPreferences;
+    NSMutableDictionary *addressBookPreferences;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -187,18 +187,24 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set some default parameters
-    addressBookPreferences = [aSession addressBookEntry];
-    if(addressBookPreferences == nil)
+    if([aSession addressBookEntry] == nil)
     {
 	// get the default entry
-	addressBookPreferences = [[ITAddressBookMgr sharedInstance] addressBookEntry: 0];
+	addressBookPreferences = [NSMutableDictionary dictionaryWithDictionary: [[ITAddressBookMgr sharedInstance] addressBookEntry: 0]];
+	[addressBookPreferences removeObjectForKey: @"UseBackgroundImage"];
+	[addressBookPreferences removeObjectForKey: @"BackgroundImagePath"];
 	[aSession setAddressBookEntry:addressBookPreferences];
+	[aSession setPreferencesFromAddressBookEntry: addressBookPreferences];
+	if(FONT == nil)
+	{
+	    [self setAllFont: [addressBookPreferences objectForKey:@"Font"] nafont: [addressBookPreferences objectForKey:@"NAFont"]];
+	}	
     }
-    if(FONT == nil)
+    else
     {
-	[self setAllFont: [addressBookPreferences objectForKey:@"Font"] nafont: [addressBookPreferences objectForKey:@"NAFont"]];
-    }    
-    [aSession setPreferencesFromAddressBookEntry: addressBookPreferences];
+	[aSession setPreferencesFromAddressBookEntry: [aSession addressBookEntry]];
+    }
+
     
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![[PreferencePanel sharedInstance] silenceBell]];

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.115 2004-04-12 08:54:57 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.116 2004-04-13 19:26:33 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -428,7 +428,7 @@ static BOOL editingBookmark = NO;
 	
 	shortcut = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_SHORTCUT inItem: selectedItem];
 	shortcut = [shortcut uppercaseString];
-	if([shortcut length] < 0)
+	if([shortcut length] <= 0)
 		shortcut = @"";
 	[bookmarkShortcut selectItemWithTitle: shortcut];
 
@@ -560,7 +560,7 @@ static BOOL editingBookmark = NO;
 	NSMutableDictionary *aDict;
 	TreeNode *targetNode;
 	int selectedRow;
-	NSString *aName, *aCmd, *aPwd;
+	NSString *aName, *aCmd, *aPwd, *shortcut;
 	
 	if(returnCode == NSOKButton)
 	{
@@ -594,7 +594,10 @@ static BOOL editingBookmark = NO;
 		[aDict setObject: [bookmarkTerminalProfile titleOfSelectedItem] forKey: KEY_TERMINAL_PROFILE];
 		[aDict setObject: [bookmarkKeyboardProfile titleOfSelectedItem] forKey: KEY_KEYBOARD_PROFILE];
 		[aDict setObject: [bookmarkDisplayProfile titleOfSelectedItem] forKey: KEY_DISPLAY_PROFILE];
-		[aDict setObject: [bookmarkShortcut titleOfSelectedItem] forKey: KEY_SHORTCUT];
+		shortcut = [bookmarkShortcut titleOfSelectedItem];
+		if([shortcut length] <= 0)
+			shortcut = @"";
+		[aDict setObject: shortcut forKey: KEY_SHORTCUT];
 		
 		selectedRow = [bookmarksView selectedRow];
 		

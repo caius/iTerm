@@ -1,3 +1,8 @@
+2003-09-07	fabian
+
+    * Fixed some memory leaks. Cleaned up the alloc/dealloc code to make
+      coding more consistent.
+      
 2003-09-06	fabian
     
     * Added PTYScroller to completely fix the scrolling problem.

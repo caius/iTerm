@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.76 2003-09-02 05:53:04 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.77 2003-09-07 10:48:05 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1147,7 +1147,7 @@ static VT100TCC decode_string(unsigned char *datap,
             int i;
             NSLog(@"Null:%@",data);
             for(i=0;i<*rmlen;i++) datap[i]=UNKNOWN;
-            result.u.string = [[NSString alloc] initWithCString:datap length:*rmlen];
+            result.u.string = [[[NSString alloc] initWithCString:datap length:*rmlen] autorelease];
         }
     }
     return result;
@@ -1217,13 +1217,16 @@ static VT100TCC decode_string(unsigned char *datap,
     
     int i;
     
-    if(STREAM != nil)
-	[STREAM release];
-
+    [STREAM release];
+    [SCREEN release];
+    
     for(i=0;i<8;i++) {
         [colorTable[0][i] release];
         [colorTable[1][i] release];
     }
+    [defaultFGColor release];
+    [defaultBGColor release];
+    [defaultBoldColor release];
     [characterAttributeDictionary[0] release];
     [characterAttributeDictionary[1] release];
     [defaultCharacterAttributeDictionary[0] release];
@@ -1749,6 +1752,7 @@ static VT100TCC decode_string(unsigned char *datap,
     NSColor *fg, *bg;
     NSMutableParagraphStyle *pstyle=[[NSMutableParagraphStyle alloc] init];
 
+    [pstyle autorelease];
     [pstyle setLineBreakMode:NSLineBreakByClipping];
     [pstyle setParagraphSpacing:0];
     [pstyle setLineSpacing:0];
@@ -2043,8 +2047,9 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void) setFGColor:(NSColor*)color
 {
     [defaultFGColor release];
-    defaultFGColor=[color copy];
-    // reset our default character attributes
+    [color retain];
+    defaultFGColor=color;
+ // reset our default character attributes
     [defaultCharacterAttributeDictionary[0] setObject:color forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
     
     [defaultCharacterAttributeDictionary[1] setObject:color forKey:(SCREEN_MODE?NSBackgroundColorAttributeName:NSForegroundColorAttributeName)];
@@ -2060,7 +2065,8 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void) setBGColor:(NSColor*)color
 {
     [defaultBGColor release];
-    defaultBGColor=[color copy];
+    [color retain];
+    defaultBGColor=color;
 
     // reset our default character attributes
     if (SCREEN_MODE) {
@@ -2081,7 +2087,8 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void) setBoldColor: (NSColor*)color
 {
     [defaultBoldColor release];
-    defaultBoldColor=[color copy];
+    [color retain];
+    defaultBoldColor=color;
 }
 
 - (NSColor *) defaultFGColor
@@ -2102,11 +2109,14 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
 {
     [colorTable[hili?1:0][index] release];
-    colorTable[hili?1:0][index]=[c copy];
+    [c retain];
+    colorTable[hili?1:0][index]=c;
 }
 
 - (void) setScreen:(VT100Screen*) sc
 {
+    [SCREEN release];
+    [sc retain];
     SCREEN=sc;
 }
 

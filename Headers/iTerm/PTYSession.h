@@ -79,7 +79,7 @@
     BOOL autoClose;
     BOOL doubleWidth;
     BOOL remapDeleteKey;
-    NSFont *configFont;
+    //NSFont *configFont;
     NSDictionary *addressBookEntry;
 }
 

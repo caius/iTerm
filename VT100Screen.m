@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.135 2003-09-05 15:17:01 ujwal Exp $
+// $Id: VT100Screen.m,v 1.136 2003-09-07 10:48:05 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -222,6 +222,7 @@ static BOOL PLAYBELL = YES;
     screenLock = nil;
     
     [FONT release];
+    [NAFONT release];
 
     [display release];
     [BUFFER release];
@@ -229,7 +230,10 @@ static BOOL PLAYBELL = YES;
 
     [screenLines autorelease];
 
-    [STORAGE release];    
+    [STORAGE release];
+    [SHELL release];
+    [TERMINAL release];
+    [SESSION release];
 
     [super dealloc];
 }
@@ -358,6 +362,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)setSession:(PTYSession *)session
 {
+    [session retain];
     SESSION=session;
 }
 
@@ -367,7 +372,9 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen setTerminal:%@]",
 	  __FILE__, __LINE__, terminal);
 #endif
+    [terminal retain];
     TERMINAL = terminal;
+    
     [TERMINAL setScreen: self];
 }
 
@@ -385,6 +392,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen setShellTask:%@]",
 	  __FILE__, __LINE__, shell);
 #endif
+    [shell retain];
     SHELL = shell;
 }
 
@@ -490,9 +498,11 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen setFont:%@]", __FILE__, __LINE__, font );
 #endif
     [FONT release];
-    FONT = [font copy];
+    [font retain];
+    FONT = font;
     [NAFONT release];
-    NAFONT = [nafont copy];
+    [nafont retain];
+    NAFONT = nafont;
     FONT_SIZE = [VT100Screen fontSize:FONT];
 
 #if DEBUG_USE_BUFFER

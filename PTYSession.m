@@ -107,7 +107,7 @@ static NSString *PWD_ENVVALUE = @"~";
     idleStateAttribute = nil;
     [newOutputStateAttribute release];
     newOutputStateAttribute = nil;
-        
+     
     [super dealloc];    
 }
 
@@ -843,7 +843,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+ //   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
     iIdleCount++; oIdleCount++; blink++;
     if (++output>1000) output=1000;
@@ -894,7 +894,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 #endif
 
-    [pool release];
+//    [pool release];
 }
 
 - (void) setLabelAttribute

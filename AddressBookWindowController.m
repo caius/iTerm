@@ -462,7 +462,9 @@ static NSColor* xtermColorTable[2][8];
     [adTextExample setFont:aeFont];
 
     aeNAFont=[entry objectForKey:@"NAFont"];
-    if (aeNAFont==nil) aeNAFont=[aeFont copy];
+    if (aeNAFont==nil) {
+        aeNAFont = aeFont;
+    }
     [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
     [adNATextExample setTextColor:[entry objectForKey:@"Foreground"]];
     [adNATextExample setBackgroundColor:[entry objectForKey:@"Background"]];
@@ -492,7 +494,6 @@ static NSColor* xtermColorTable[2][8];
 					      object: nil
 				     userInfo: nil];	
         [adTable reloadData];
-        [ae release];
     }
     else if (newEntry)
     {
@@ -849,6 +850,7 @@ static NSColor* xtermColorTable[2][8];
 	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
 	NULL];
 
+    [ae autorelease];
     return (ae);
 }
 

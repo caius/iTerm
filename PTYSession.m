@@ -482,7 +482,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	}
 
 	// Make sure we scroll down to the end
-	[self moveLastLine];
+	[TEXTVIEW moveLastLine];
 
 	if (EXIT == NO ) {
 	    if (send_pchr >= 0) {
@@ -676,16 +676,6 @@ static NSString *PWD_ENVVALUE = @"~";
     
 }
 
-// Misc
-- (void)moveLastLine
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession moveLastLine] %d", __FILE__, __LINE__, [[SCREEN textStorage] length] );
-#endif
-    
-    [TEXTVIEW scrollRangeToVisible:NSMakeRange([[SCREEN textStorage] length],0)];
-}
-
 - (void) timerTick:(NSTimer*)sender
 {
     iIdleCount++; oIdleCount++; blink++; output++;
@@ -711,7 +701,7 @@ static NSString *PWD_ENVVALUE = @"~";
             /*       if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
                 [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
 ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height)) */
-           [self moveLastLine];
+           [TEXTVIEW moveLastLine];
             output=0;
             dirty=NO;
         }

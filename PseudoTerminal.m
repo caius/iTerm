@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.115 2003-02-24 23:08:02 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.116 2003-02-25 16:06:11 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -32,6 +32,8 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
+
+#define USE_CUSTOM_DRAWING	0
 
 #import "PseudoTerminal.h"
 #import "PTYScrollView.h"
@@ -231,7 +233,14 @@ static NSString *ConfigToolbarItem = @"Config";
     // assign terminal and task objects
     [[aSession SCREEN] setTerminal:[aSession TERMINAL]];
     [[aSession SCREEN] setShellTask:[aSession SHELL]];
+#if USE_CUSTOM_DRAWING
+    [[aSession TEXTVIEW] setDataSource: [aSession SCREEN]];
+    [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
+    [[aSession TEXTVIEW] setLineHeight: [VT100Screen fontSize: FONT].height];
+    [[aSession TEXTVIEW] setLineWidth: WIDTH * [VT100Screen fontSize: FONT].height];
+#else
     [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
+#endif
     [[aSession SCREEN] setWindow:WINDOW];
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
@@ -1111,7 +1120,7 @@ static NSString *ConfigToolbarItem = @"Config";
             
         }
 
-        [[self currentSession] moveLastLine];
+        [[[self currentSession] TEXTVIEW] moveLastLine];
         [self setCurrentSessionName: [CONFIG_NAME stringValue]]; 
     
         [CONFIG_PANEL setDelegate:CONFIG_PANEL];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.14 2003-02-13 16:29:41 yfabian Exp $
+// $Id: PTYTextView.h,v 1.15 2003-02-25 16:06:11 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -29,6 +29,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "VT100Screen.h"
 
 @interface PTYTextView : NSTextView
 {
@@ -57,6 +58,14 @@
     NSEvent *deadKeyEvent;
     BOOL deadkey;
     int	cursorIndex;
+
+    float lineHeight;
+    float lineWidth;
+
+    // data source
+    id dataSource;
+    int numberOfLines;
+
 }
 
 - (id)init;
@@ -86,6 +95,17 @@
 - (void) setAntiAlias: (BOOL) antiAliasFlag;
 - (NSColor *) selectionColor;
 - (void) setSelectionColor: (NSColor *) aColor;
+
+- (id) dataSource;
+- (void) setDataSource: (id) aDataSource;
+
+- (float) lineHeight;
+- (void) setLineHeight: (float) aLineHeight;
+- (float) lineWidth;
+- (void) setLineWidth: (float) aLineWidth;
+
+- (void) refresh;
+- (void)moveLastLine;
 
 //
 // Drag and Drop methods for our text view

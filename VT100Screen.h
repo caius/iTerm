@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.15 2003-02-21 22:12:08 yfabian Exp $
+// $Id: VT100Screen.h,v 1.16 2003-02-25 16:06:11 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -57,10 +57,16 @@
     int charset[4], saveCharset[4];
     NSMutableAttributedString *BUFFER;
     int updateIndex;
+
+    NSMutableArray *screenLines;
+    int screenTop;
+    int screenBottom;
     
     unsigned int  TOP_LINE;
     unsigned int  LINE_LIMIT;
     int  OLD_CURSOR_INDEX;
+
+    NSView *display;
 }
 
 + (NSSize)requireSizeWithFont:(NSFont *)font
@@ -96,6 +102,9 @@
 - (NSFont *)font;
 - (NSFont *)nafont;
 - (void)setLineLimit:(unsigned int)maxline;
+
+- (NSView *) display;
+- (void) setDisplay: (NSView *) aDisplay;
 
 // edit screen buffer
 - (void)putToken:(VT100TCC)token;
@@ -140,8 +149,12 @@
 - (int) cursorY;
 
 - (NSMutableAttributedString *) buffer;
+- (NSArray *) screenLines;
+- (int) screenTop;
 - (void) updateScreen;
 - (void) renewBuffer;
+- (int) numberOfLines;
+- (NSAttributedString *)stringAtLine: (int) n;
 
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (NSAttributedString *)defaultAttrString:(NSString *)str;

@@ -119,9 +119,6 @@
 - (void) textViewDidChangeSelection: (NSNotification *) aNotification;
 
 
-// Misc
-- (void)moveLastLine;
-
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;
 

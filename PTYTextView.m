@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.31 2003-02-21 21:30:47 yfabian Exp $
+// $Id: PTYTextView.m,v 1.32 2003-02-25 16:06:14 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -73,6 +73,12 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTextView: -dealloc");
 #endif
+
+    if(dataSource != nil)
+    {
+	[dataSource release];
+	dataSource = nil;
+    }    
         
     [super dealloc];
 }
@@ -123,6 +129,93 @@
 }
 
 
+- (id) dataSource
+{
+    return (dataSource);
+}
+
+- (void) setDataSource: (id) aDataSource
+{
+    if(dataSource != nil)
+    {
+	[dataSource release];
+	dataSource = nil;
+    }
+    if(aDataSource != nil)
+    {
+	[aDataSource retain];
+	dataSource = aDataSource;
+    }
+}
+
+
+
+- (float) lineHeight
+{
+    return (lineHeight);
+}
+
+- (void) setLineHeight: (float) aLineHeight
+{
+    lineHeight = aLineHeight;
+}
+
+- (float) lineWidth
+{
+    return (lineWidth);
+}
+
+- (void) setLineWidth: (float) aLineWidth
+{
+    lineWidth = aLineWidth;
+}
+
+- (void) refresh
+{
+    NSSize aSize;
+
+    if([self dataSource] != nil)
+    {
+	numberOfLines = [dataSource numberOfLines];
+	aSize = [self frame].size;
+	aSize.height = numberOfLines * lineHeight;
+	if(aSize.height > [[self enclosingScrollView] documentVisibleRect].size.height)
+	{
+	    NSRect aFrame;
+
+	    aFrame = [self frame];
+	    aFrame.size.height = aSize.height;
+	    [self setFrame: aFrame];
+	}
+	[self setNeedsDisplay: YES];
+    }
+
+    
+}
+
+- (void)moveLastLine
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView moveLastLine]", __FILE__, __LINE__ );
+#endif
+
+    if (numberOfLines > 0)
+    {
+	NSRect aFrame;
+
+	aFrame.origin.x = 0;
+	aFrame.origin.y = (numberOfLines - 1) * lineHeight;
+	aFrame.size.width = [self frame].size.width;
+	aFrame.size.height = lineHeight;
+
+	[self scrollRectToVisible: aFrame];
+    }
+    else
+	[self scrollRangeToVisible:NSMakeRange([[self textStorage] length],0)];
+    
+}
+
+
 - (void)drawRect:(NSRect)rect
 {
 
@@ -135,7 +228,40 @@
     // set the antialias flag
     [[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 
-    [super drawRect:rect];
+    [super drawRect: rect];
+
+    // if we have a data source, ask it to supply the text
+    if(dataSource != nil)
+    {
+	int numLines, i, lineOffset;
+	NSAttributedString *aLine;
+	NSRect aRect;
+	
+	if(lineHeight <= 0 || lineWidth <= 0)
+	    return;
+
+	numLines = rect.size.height/lineHeight;
+	lineOffset = rect.origin.y/lineHeight;
+
+	for(i = 0; i < numLines; i++)
+	{
+	    aLine = [[self dataSource] stringAtLine: i + lineOffset];
+	    if(aLine == nil)
+	    {
+		//NSLog(@"Got a nil line...");
+		continue;
+	    }
+
+	    aRect.origin.x = rect.origin.x;
+	    aRect.origin.y = rect.origin.y + i*lineHeight;
+	    aRect.size.width = lineWidth;
+	    aRect.size.height = lineHeight;
+
+	    [aLine drawInRect: aRect];
+	    
+	}
+	
+    }
 }
 
 

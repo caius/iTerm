@@ -1,5 +1,14 @@
 2003-02-24	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
+    * Added highly experimental code to do custom drawing 
+      for high speed. Still very buggy. To enable the 
+      code, turn on the USE_CUSTOM_DRAWING flag in 
+      PseudoTerminal.m, turn on the DEBUG_USE_ARRAY 
+      and turn off the DEBUG_USE_BUFFER flags in VT100Screen.m
+      
+
+2003-02-24	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
     * Fixed and simplified screen updating code.
 
 2003-02-24	fabian

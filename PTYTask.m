@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.3 2003-02-12 07:52:47 ujwal Exp $
+// $Id: PTYTask.m,v 1.4 2003-02-25 16:06:15 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -40,6 +40,7 @@
 #import <sys/ioctl.h>
 #import <sys/types.h>
 #import <sys/wait.h>
+#import <sys/time.h>
 
 #import "PTYTask.h"
 
@@ -116,6 +117,8 @@ static int writep(int fds, char *buf, size_t len)
     id rootProxy;
     NSData *data = nil;
     BOOL exitf = NO;
+    struct timeval tv;
+    BOOL newOutput = NO;
 
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:%@] start",
@@ -141,7 +144,10 @@ static int writep(int fds, char *buf, size_t len)
 	FD_SET(boss->FILDES, &rfds);
 	FD_SET(boss->FILDES, &efds);
 
-	sts = select(boss->FILDES + 1, &rfds, NULL, &efds, NULL);
+	tv.tv_sec = 0;
+	tv.tv_usec = 100000;
+
+	sts = select(boss->FILDES + 1, &rfds, NULL, &efds, &tv);
 	if (sts < 0) {
 	    break;
 	}
@@ -187,8 +193,22 @@ static int writep(int fds, char *buf, size_t len)
 		data = nil;
             }
 
+	    if(newOutput == NO)
+	    {
+		NSLog(@"PTYTask: Start new output");
+		newOutput = YES;
+	    }
+
 	    if (data != nil)
 		[rootProxy readTask:data];
+	}
+	else if (sts == 0)
+	{
+	    if(newOutput == YES)
+	    {
+		NSLog(@"PTYTask: End new output");
+		newOutput = NO;
+	    }	    
 	}
 
 	[pool release];

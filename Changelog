@@ -2,6 +2,7 @@
 
 	* Fixed bug in VT100Screen: setString when text wraps.
 	* Drawing a nicer cursor. We can later allow the user to pick cursor color.
+	* Not forcing an update on scrollEnd...gives big speed boost.
 
 2004-02-13  ujwal
 

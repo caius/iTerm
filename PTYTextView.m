@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.102 2004-02-15 08:59:16 ujwal Exp $
+// $Id: PTYTextView.m,v 1.103 2004-02-15 09:44:46 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -478,7 +478,7 @@
 		aFrame.origin.y = (numberOfLines - 1) * lineHeight;
 		aFrame.size.width = [self frame].size.width;
 		aFrame.size.height = lineHeight;
-		forceUpdate=YES;
+		//forceUpdate=YES;
 		[self scrollRectToVisible: aFrame];
 		//		}
     }
@@ -639,10 +639,6 @@
 			x2=endX;
 		}
 		
-		if (pre_x1 != x1 || pre_y1 != y1 || pre_y2 != y2|| pre_x2 != x2) 
-		{
-			forceUpdate=YES; //force redraw everything
-		}
 	}
 	else 
 		x1 = -1;
@@ -843,24 +839,10 @@
 		curY += lineHeight;
 	}
 	//[dataSource resetDirty];
-	
-	// draw any text for NSTextInput
+		
+	//draw cursor
 	x1 = [dataSource cursorX] - 1;
 	y1 = [dataSource cursorY] - 1;
-	if([self hasMarkedText]) 
-	{
-		int len;
-		
-		len = [markedText length];
-		if (len > [dataSource width] - x1) 
-			len = [dataSource width] - x1;
-		[markedText drawInRect:NSMakeRect(x1*charWidth,
-										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
-										  (WIDTH-x1)*charWidth,lineHeight)];
-		memset([dataSource dirty]+y1*[dataSource width]+x1, 1,len*2); //len*2 is an over-estimation, but safe
-	}
-	
-	//draw cursor
 	if (CURSOR) 
 	{
 		[defaultFGColor set];
@@ -880,6 +862,20 @@
 		}
 		[dataSource dirty][i] = 1; //cursor loc is dirty
 	}
+	
+	// draw any text for NSTextInput
+	if([self hasMarkedText]) 
+	{
+		int len;
+		
+		len = [markedText length];
+		if (len > [dataSource width] - x1) 
+			len = [dataSource width] - x1;
+		[markedText drawInRect:NSMakeRect(x1*charWidth,
+										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
+										  (WIDTH-x1)*charWidth,lineHeight)];
+		memset([dataSource dirty]+y1*[dataSource width]+x1, 1,len*2); //len*2 is an over-estimation, but safe
+	}	
 	
 	forceUpdate = NO;
 	//    NSLog(@"enddraw");

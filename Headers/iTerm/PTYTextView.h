@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.7 2004-02-13 21:36:17 ujwal Exp $
+// $Id: PTYTextView.h,v 1.8 2004-02-15 09:44:48 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -93,8 +93,6 @@ typedef struct
     VT100Screen *dataSource;
     id _delegate;
 	
-	int pre_x1, pre_x2, pre_y1, pre_y2;
-
     //selection
     int startX, startY, endX, endY;
 	

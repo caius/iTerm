@@ -19,6 +19,18 @@
 <FONT SIZE="5"><STRONG>Version History:</STRONG></FONT>
 <BR><BR>
 
+<STRONG>0.8.0 released</STRONG> 3/4/2004<BR>
+This is a major update of iTerm. New features include:<BR>
+<UL>
+<LI>Now supports custom key-mapping.</LI>
+<LI>New drawing code with speed enhancement up to several folds.</LI>
+<LI>New improved bookmarks organization.</LI>
+<LI>Rendevouz support.</LI>
+<LI>Supports customizable character spacing.</LI>
+<LI>Other bug fixes and GUI enhancements as usual.</LI>
+For more detail, see <A HREF="history.shtml">Version History</A><BR>
+</UL>
+
 <STRONG>0.7.8</STRONG> 11/4/2003<BR>
 <UL>This is mainly a bug fix version</UL>
 <UL>

@@ -73,9 +73,9 @@
 This is a major update of iTerm. New features include:<BR>
 <UL>
 <LI>Now supports custom key-mapping.</LI>
-<LI>New drawing code with speed enhancement of several folds.</LI>
-<LI>Re-arrangement of UI.</LI>
-<LI>Supports Rendevouz.</LI>
+<LI>New drawing code with speed enhancement up to several folds.</LI>
+<LI>New improved bookmarks organization.</LI>
+<LI>Rendevouz support.</LI>
 <LI>Supports customizable character spacing.</LI>
 <LI>Other bug fixes and GUI enhancements as usual.</LI>
 For more detail, see <A HREF="history.shtml">Version History</A><BR>

@@ -1,6 +1,7 @@
 2003-02-28	fabian
     * Fixed a bug that cause incorrect screen update
-    
+      in BUFFER mode
+      
 2003-02-27	fabian
     * Fixed cursor code in ARRAY mode
     * Fixed more double-width character stuff in ARRAY mode, 

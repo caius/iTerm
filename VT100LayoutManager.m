@@ -92,9 +92,44 @@
 
 
     [super textStorage: aTextStorage edited: mask range: range changeInLength: lengthChange invalidatedRange: invalidatedCharRange];
-
-
     
 }
+
+#if 0
+
+- (void)drawGlyphsForGlyphRange:(NSRange)glyphRange atPoint:(NSPoint)containerOrigin
+{
+    int i;
+    NSMutableAttributedString *attrSubstring;
+    NSRect lineFragmentRect;
+    NSRange lineGlyphRange, lineCharRange;
+
+    lineCharRange = [self characterRangeForGlyphRange: glyphRange actualGlyphRange: nil];
+
+    // draw line by line
+    i = glyphRange.location;
+    while(i < glyphRange.location + glyphRange.length)
+    {
+	lineFragmentRect = [self lineFragmentRectForGlyphAtIndex: i effectiveRange: &lineGlyphRange];
+	lineCharRange = [self characterRangeForGlyphRange: lineGlyphRange actualGlyphRange: nil];
+	// skip new line characters
+	if([[[self textStorage] string] characterAtIndex: lineCharRange.location] == '\n')
+	{
+	    lineCharRange.location++;
+	    lineCharRange.length--;
+	}
+	if(lineCharRange.length > 0)
+	{
+	    attrSubstring = [[[self textStorage] attributedSubstringFromRange: lineCharRange] mutableCopy];
+	    // remove the background color
+	    [attrSubstring removeAttribute: NSBackgroundColorAttributeName range: NSMakeRange(0, [attrSubstring length])];
+	    [attrSubstring drawInRect: lineFragmentRect];
+	}
+	i = lineGlyphRange.location + lineGlyphRange.length;
+    }
+    
+}
+
+#endif
 
 @end

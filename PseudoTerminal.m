@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.31 2002-12-17 00:07:36 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.32 2002-12-17 01:33:50 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1348,7 +1348,7 @@ static NSDictionary *deadStateAttribute;
             [addressbookPopup addItemWithTitle: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
             [addressbookPopup addItemsWithTitles: [MAINMENU addressBookNames]];
             [[addressbookPopup menu] addItem: [NSMenuItem separatorItem]];
-            [addressbookPopup addItemWithTitle: @"Edit Address Book"];
+            [addressbookPopup addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
             
             break;
         }

@@ -3,9 +3,9 @@
 	* Fixed problem when PTYSession: -keyDown is never called when numeric or function 
 	  keys were pressed. This messes up switching between application and numeric 
 	  keypad modes. Now PTYTextView: -keyDown: invokes PTYSession: -keyDown: when 
-	  numeric or function keys are pressed.
-	  
-	* Fixed printing to NOT wrap text.
+	  numeric or function keys are pressed.	  
+	* Fixed printing to NOT wrap text.	
+	* Added support to launch command line tools from Finder.
 
 2004-09-12  fabian
 	

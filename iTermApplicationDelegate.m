@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.24 2004-09-12 07:15:22 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.25 2004-09-25 20:26:43 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -33,6 +33,7 @@
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/PseudoTerminal.h>
 #import <iTerm/PTYSession.h>
+#import <iTerm/VT100Terminal.h>
 #import <iTerm/FindPanelWindowController.h>
 
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
@@ -103,6 +104,29 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification
 {
     return [[iTermController sharedInstance] applicationShouldTerminate:theNotification];
+}
+
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
+{
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, filename);
+	
+	// open a new default session in the front terminal
+	[self newSession: self];
+	
+	// launch the command
+	NSData *data = nil;
+    NSString *aString = nil;
+	PseudoTerminal *theTerminal = [[iTermController sharedInstance] currentTerminal];
+	PTYSession *theSession = [theTerminal currentSession];
+	if(filename != nil)
+    {
+		aString = [NSString stringWithFormat:@"%@\n", filename];
+		data = [aString dataUsingEncoding: [[theSession TERMINAL] encoding]];
+		[theSession writeTask: data];
+    }
+	
+	
+	return (YES);
 }
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app

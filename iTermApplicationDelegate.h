@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.13 2004-09-12 07:15:22 yfabian Exp $
+// $Id: iTermApplicationDelegate.h,v 1.14 2004-09-25 20:26:43 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -55,6 +55,7 @@
 // NSApplication Delegate methods
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification;
+- (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename;
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app;
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender;
 - (void)applicationDidUnhide:(NSNotification *)aNotification;

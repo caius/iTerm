@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.58 2003-05-13 15:50:02 ujwal Exp $
+// $Id: PTYTextView.m,v 1.59 2003-05-13 18:23:09 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -43,7 +43,7 @@
 - (id)init
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -init");
+    NSLog(@"PTYTextView: -init 0x%x", self);
 #endif
     NSDictionary *dic;
 
@@ -66,7 +66,7 @@
 - (id)initWithFrame: (NSRect) aRect
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -init");
+    NSLog(@"PTYTextView: -init 0x%x", self);
 #endif
     NSDictionary *dic;
     
@@ -95,7 +95,7 @@
 - (void) dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -dealloc");
+    NSLog(@"PTYTextView: -dealloc 0x%x", self);
 #endif
 
     [dataSource release];
@@ -1332,7 +1332,7 @@
 - (id)init
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -init");
+    NSLog(@"PTYTextView: -init 0x%x", self);
 #endif
 
     self = [super init];
@@ -1344,7 +1344,7 @@
 - (id)initWithFrame: (NSRect) aRect
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -init");
+    NSLog(@"PTYTextView: -init 0x%x", self);
 #endif
 
     self = [super initWithFrame: aRect];
@@ -1358,7 +1358,7 @@
 - (void) dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -dealloc");
+    NSLog(@"PTYTextView: -dealloc 0x%x", self);
 #endif
 
     if(dataSource != nil)

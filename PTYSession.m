@@ -92,8 +92,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [parent release];
     [TERM_VALUE release];
-    [TEXTVIEW release];
-    [SCROLLVIEW release];    
+    [TEXTVIEW removeFromSuperview];
+    [SCROLLVIEW release];
     [name release];
     [windowTitle release];
         
@@ -138,6 +138,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [pref antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
+    [TEXTVIEW release];
     [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
 
     
@@ -211,6 +212,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL release];
     [TERMINAL release];
     [SCREEN release];
+    [TEXTVIEW setDataSource: nil];
 
     if (timer) {
         [timer invalidate];

@@ -12,7 +12,7 @@
 
     * Fixed massive memory leaks.
     * Fixed "Prompt on Close" preference bug.
-    * Clear Buffer is not local: clears clears everything up the current line.
+    * Clear Buffer is now local: clears clears everything up the current line.
     * Changed keyboard short for "Save Config" so that it does not interfere with 
       bookmarks shortcuts.
 

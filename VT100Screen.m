@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.134 2003-09-05 00:10:42 yfabian Exp $
+// $Id: VT100Screen.m,v 1.135 2003-09-05 15:17:01 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2506,6 +2506,8 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     int len, slen;
     int idx;
+    NSRange selectedRange;
+    NSString *selectedString;
     
     idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
     if ([[SESSION TEXTVIEW] hasMarkedText]) {
@@ -2517,7 +2519,14 @@ static BOOL PLAYBELL = YES;
         slen=[STORAGE length];
     }
     if (len<=0||minIndex>len) return;
+
+    // acquire lock
     [self setScreenLock];
+
+    // cache any text selection
+    selectedRange = [[SESSION TEXTVIEW] selectedRange];
+    if(selectedRange.length > 0)
+	selectedString = [[[SESSION TEXTVIEW] string] substringWithRange: selectedRange];    
 
     //NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
 
@@ -2541,6 +2550,13 @@ static BOOL PLAYBELL = YES;
     //NSLog(@"showCursor");
     [self showCursor];
     //NSLog(@"shown");
+
+
+    // re-select any previous text selection unless text has changed
+    if(selectedRange.length > 0 && [[[[SESSION TEXTVIEW] string] substringWithRange: selectedRange] isEqualToString: selectedString])
+	[[SESSION TEXTVIEW] setSelectedRange: selectedRange];
+    
+    // release lock
     [self removeScreenLock];
 #endif
 

@@ -1,3 +1,7 @@
+2003-09-05	ujwal
+
+    * Caching text selection and re-applying in VT100Screen: updateScreen.
+
 2003-09-04	fabian
 
     * Added support for mid-button paste.

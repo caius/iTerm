@@ -3,6 +3,12 @@
 	* Significant improvement in display/layout speed for curses based applications 
 	  by adjusting position only for graphical glyphs, and NOT for ALL GLYPHS on 
 	  in the line.
+	  
+	* iTerm's text system is the only supported one now since it is now proven to 
+	  work well and much faster than Cocoa's default text system. You can switch to 
+	  Cocoa's built in text system at compile time. "Enforce character alignment" 
+	  preference can now be turned off for fonts that have native support for 
+	  graphical characters.
 
 2004-01-23  ujwal
 

@@ -29,6 +29,8 @@
 #import "PreferencePanel.h"
 #import "MainMenu.h"
 
+#define DEBUG_ALLOC	0
+
 static NSStringEncoding const *encodingList=nil;
 static AddressBookWindowController *singleInstance = nil;
 
@@ -71,14 +73,30 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
 - (id) initWithWindowNibName: (NSString *) windowNibName
 {
+#if DEBUG_ALLOC
+    NSLog(@"AddressBookWindowController: -initWithWindowNibName");
+#endif
+    
     self = [super initWithWindowNibName: windowNibName];
     encodingList=[NSString availableStringEncodings];
 
     // We finally set our autosave window frame name and restore the one from the user's defaults.
     [[self window] setFrameAutosaveName: @"AddressBook"];
-    [[self window] setFrameUsingName: @"AddressBook"];    
+    [[self window] setFrameUsingName: @"AddressBook"];
+
+    [[self window] setDelegate: self];
 
     return (self);
+}
+
+- (void) dealloc
+{
+#if DEBUG_ALLOC
+    NSLog(@"AddressBookWindowController: -dealloc");
+#endif
+
+    singleInstance = nil;
+    
 }
 
 - (void) awakeFromNib
@@ -88,6 +106,14 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     // Other the scrollview is not activated for large addressbooks.
     // Cocoa bug?
     [adTable noteNumberOfRowsChanged];
+    
+}
+
+// NSWindow delegate methods
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+
+    [self autorelease];
     
 }
 

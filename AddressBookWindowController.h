@@ -76,6 +76,10 @@
 // init
 + (id) singleInstance;
 - (id) initWithWindowNibName: (NSString *)windowNibName;
+- (void) dealloc;
+
+// NSWindow delegate methods
+- (void)windowWillClose:(NSNotification *)aNotification;
 
 // get/set methods
 - (NSMutableArray *) addressBook;

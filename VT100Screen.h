@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.24 2003-03-14 23:23:07 yfabian Exp $
+// $Id: VT100Screen.h,v 1.25 2003-03-25 17:33:29 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -60,8 +60,6 @@
     BOOL blinkShow;
 
     NSMutableArray *screenLines;
-    int screenTop;
-    int screenBottom;
     
     unsigned int  TOP_LINE;
     unsigned int  LINE_LIMIT;
@@ -153,13 +151,10 @@
 - (int) topLines;
 
 - (NSMutableAttributedString *) buffer;
-- (NSArray *) screenLines;
-- (int) screenTop;
 - (void) updateScreen;
 - (void) forceUpdateScreen;
 - (void) renewBuffer;
 - (int) numberOfLines;
-- (NSAttributedString *)stringAtLine: (int) n;
 - (void) setScreenAttributes;
 - (void) setScreenLock;
 - (void) removeScreenLock;
@@ -167,12 +162,18 @@
 
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (NSAttributedString *)defaultAttrString:(NSString *)str;
-- (int) getIndex:(int)x y:(int)y;
+- (int) getIndexAtX:(int)x Y:(int)y withPadding:(BOOL)padding;
 - (int) getTVIndex:(int)x y:(int)y;
 - (BOOL) isDoubleWidthCharacter:(unichar)code;
 
 - (void) clearTabStop;
 
 - (NSString *)translate: (NSString *)s;
+
+#if USE_CUSTOM_DRAWING
+- (NSMutableAttributedString *)stringAtLine: (int) n;
+- (NSArray *) screenLines;
+#else
+#endif
 
 @end

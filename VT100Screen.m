@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.74 2003-03-14 23:23:07 yfabian Exp $
+// $Id: VT100Screen.m,v 1.75 2003-03-25 17:33:30 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -290,7 +290,7 @@ static BOOL PLAYBELL = YES;
         }
         else {
             TOP_LINE+=HEIGHT-height;
-	    screenTop += HEIGHT - height;
+            NSLog(@"topline += %d-->%d",HEIGHT-height,TOP_LINE);
             CURSOR_Y-=HEIGHT-height;
             if (CURSOR_Y<0) CURSOR_Y=0;
             SAVE_CURSOR_Y-=HEIGHT-height;
@@ -414,11 +414,7 @@ static BOOL PLAYBELL = YES;
 
 - (void) setDisplay: (NSView *) aDisplay
 {
-    if(display != nil)
-    {
-	[display release];
-	display = nil;
-    }
+    [display release];
     if(aDisplay != nil)
     {
 	[aDisplay retain];
@@ -460,8 +456,6 @@ static BOOL PLAYBELL = YES;
     [aLine release];
 #endif
     
-    screenTop = 0;
-    screenBottom = HEIGHT - 1;
     blinkShow=YES;
 }
     
@@ -505,7 +499,6 @@ static BOOL PLAYBELL = YES;
 - (NSFont *) tallerFont
 {
 #if DEBUG_USE_ARRAY
-
     float a=[VT100Screen fontSize:FONT].height;
     float b=[VT100Screen fontSize:NAFONT].height;
 
@@ -721,11 +714,11 @@ static BOOL PLAYBELL = YES;
     CURSOR_X = CURSOR_Y = 0;
 }
 
-- (int) getIndex:(int)x y:(int)y
+- (int) getIndexAtX:(int)x Y:(int)y withPadding:(BOOL)padding
 {
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen getIndex]:(%d,%d)",  __FILE__, __LINE__ , x, y );
+    NSLog(@"%s(%d):-[VT100Screen getIndexAtX]:(%d,%d)",  __FILE__, __LINE__ , x, y );
 #endif
 
 
@@ -735,7 +728,7 @@ static BOOL PLAYBELL = YES;
     int idx=len-1;
     
     if (x>=WIDTH||y>=HEIGHT||x<0||y<0) {
-        NSLog(@"getIndex: out of bound: x = %d; y = %d, WIDTH = %d; HEIGHT = %d", x, y, WIDTH, HEIGHT);
+        NSLog(@"getIndexAtX: out of bound: x = %d; y = %d, WIDTH = %d; HEIGHT = %d", x, y, WIDTH, HEIGHT);
         return -1;
     }
     for(;y<HEIGHT&&idx>=0;idx--) {
@@ -766,14 +759,14 @@ static BOOL PLAYBELL = YES;
     else CURSOR_IN_MIDDLE=NO;
     
     if (idx<0) {
-        NSLog(@"getIndex Error! x:%d, y:%d",x,y);
+        NSLog(@"getIndexAtX Error! x:%d, y:%d",x,y);
     }
 //    NSLog(@"index:%d[%d] (CURSOR_IN_MIDDLE:%d)",idx,[s length],CURSOR_IN_MIDDLE);
     if (idx<minIndex) minIndex=idx;
     
 #else
 
-    NSMutableAttributedString *aLine= [screenLines objectAtIndex: screenTop + y];
+    NSMutableAttributedString *aLine= [screenLines objectAtIndex: TOP_LINE + y];
     NSString *s=[aLine string];
     int len=[s length];
     int idx=0;
@@ -786,7 +779,7 @@ static BOOL PLAYBELL = YES;
         }
         else x--;
     }
-    if (x>0) {
+    if (x>0&&padding) {
         //        NSLog(@"%d blanks inserted",x);
         [aLine appendAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:x]]];
         idx+=x;
@@ -800,7 +793,7 @@ static BOOL PLAYBELL = YES;
     else CURSOR_IN_MIDDLE=NO;
 
     if (idx<0) {
-        NSLog(@"getIndex Error! x:%d, y:%d",x,y);
+        NSLog(@"getIndexAtX Error! x:%d, y:%d",x,y);
     }
 #endif
 
@@ -816,7 +809,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen getTVIndex]:(%d,%d)",  __FILE__, __LINE__ , x, y );
 #endif
 
-    return [self getIndex:x y:y] + updateIndex;
+    return [self getIndexAtX:x Y:y withPadding:YES] + updateIndex;
 }
 
 - (void)setASCIIString:(NSString *)string
@@ -866,7 +859,7 @@ static BOOL PLAYBELL = YES;
                 break;
             }
             [self insertBlank:j];
-            idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+            idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
 
 #if DEBUG_USE_BUFFER
             [BUFFER replaceCharactersInRange:NSMakeRange(idx,j)
@@ -875,7 +868,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // do the same on our line array
-	    aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
+	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
 	    [aLine replaceCharactersInRange:NSMakeRange(idx,j)
 			      withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)] ascii:YES]];
 #endif
@@ -884,7 +877,7 @@ static BOOL PLAYBELL = YES;
             idx2+=j;
         }
         else {
-            idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+            idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
             if(WIDTH-CURSOR_X<=len-idx2) x=WIDTH;
             else x=CURSOR_X+len-idx2;
             j=x-CURSOR_X;
@@ -937,7 +930,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // Do the same for our line array
-	    aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
+	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
 	    if(idx >= [aLine length])
 	    {
                 [aLine appendAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
@@ -991,7 +984,7 @@ static BOOL PLAYBELL = YES;
 	}
 	else
 	{
-	    searchRange.location = [self getIndex: CURSOR_X y: CURSOR_Y] - 10;
+	    searchRange.location = [self getIndexAtX: CURSOR_X Y: CURSOR_Y withPadding:YES] - 10;
 	}
 	searchRange.length = 10;
 
@@ -1052,7 +1045,7 @@ static BOOL PLAYBELL = YES;
                 break;
             }
             [self insertBlank:x-CURSOR_X];
-            idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+            idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
 #if DEBUG_USE_BUFFER
             [BUFFER replaceCharactersInRange:NSMakeRange(idx,x-CURSOR_X)
                          withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
@@ -1060,7 +1053,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // do the same on our line array
-	    aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
+	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
 	    [aLine replaceCharactersInRange:NSMakeRange(idx,x-idx)
 		    withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
 #endif
@@ -1069,7 +1062,7 @@ static BOOL PLAYBELL = YES;
             idx2+=j;
         }
         else {
-            idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+            idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
             if(WIDTH-CURSOR_X<=(len-idx2)*2) x=WIDTH;
             else x=CURSOR_X+(len-idx2)*2;
             j=(x-CURSOR_X+1)/2;
@@ -1122,7 +1115,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // Do the same for our line array
-	    aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
+	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
 	    if(idx >= [aLine length])
 	    {
                 [aLine appendAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];
@@ -1174,7 +1167,7 @@ static BOOL PLAYBELL = YES;
 	}
 	else
 	{
-	    searchRange.location = [self getIndex: CURSOR_X y: CURSOR_Y] - 10;
+	    searchRange.location = [self getIndexAtX: CURSOR_X Y: CURSOR_Y withPadding:YES] - 10;
 	}
 	searchRange.length = 10;
 
@@ -1224,8 +1217,6 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
         [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
 #endif
-        TOP_LINE++;
-        [self removeOverLine];
 
 #if DEBUG_USE_ARRAY
 	// add a line to our array
@@ -1233,8 +1224,9 @@ static BOOL PLAYBELL = YES;
 	aLine = [[NSMutableAttributedString alloc] init];
 	[screenLines addObject: aLine];
 	[aLine release];
-	screenTop++;
 #endif
+        TOP_LINE++;
+        [self removeOverLine];
 	
     }
     else {
@@ -1262,7 +1254,7 @@ static BOOL PLAYBELL = YES;
     {
 	int idx;
         idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];
-        //NSLog(@"showCursor: %d(%d)(%d+%d)(%d)",idx,[[STORAGE string] length],[self getIndex:CURSOR_X y:CURSOR_Y], updateIndex,[BUFFER length]);
+        //NSLog(@"showCursor: %d(%d)(%d+%d)(%d)",idx,[[STORAGE string] length],[self getIndexAtX:CURSOR_X y:CURSOR_Y], updateIndex,[BUFFER length]);
         if (idx>=[[STORAGE string] length]) {
             [STORAGE appendAttributedString:[self defaultAttrString:@" "]];
         }
@@ -1299,7 +1291,7 @@ static BOOL PLAYBELL = YES;
 	    NSMutableAttributedString *aLine;
 #endif
 
-	    int idx = [self getIndex:CURSOR_X y:CURSOR_Y];
+	    int idx = [self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
 
 #if DEBUG_USE_BUFFER	    
             width = [[BUFFER attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
@@ -1312,7 +1304,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // delete from line
-	    aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
+	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
             width = [[aLine attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
             if(idx < [aLine length]) {
                 [aLine deleteCharactersInRange:NSMakeRange(idx, 1)];
@@ -1402,7 +1394,7 @@ static BOOL PLAYBELL = YES;
                 [self setASCIIStringToX:x1  Y:y  string:[NSString stringWithCharacters:spaces length:x2 - x1+1]];
         }
         else if (y == y1) {
-            i=idx=[self getIndex:x1 y:y];
+            i=idx=[self getIndexAtX:x1 Y:y withPadding:YES];
 #if DEBUG_USE_BUFFER
             for(;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
 //            NSLog(@"start: %d,%d",idx,i);
@@ -1411,7 +1403,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // erase in our line
-	    aLine = [screenLines objectAtIndex: screenTop  + y];
+	    aLine = [screenLines objectAtIndex: TOP_LINE  + y];
             if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length]-idx)];
 #endif
 
@@ -1420,7 +1412,7 @@ static BOOL PLAYBELL = YES;
             [self setASCIIStringToX:0  Y:y  string:[NSString stringWithCharacters:spaces length:x2+1]];
         }
         else {
-            i=idx=[self getIndex:0 y:y];
+            i=idx=[self getIndexAtX:0 Y:y withPadding:YES];
 #if DEBUG_USE_BUFFER
             for(;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
            // NSLog(@"whole line %d(%d,%d)",y,idx,i);
@@ -1428,7 +1420,7 @@ static BOOL PLAYBELL = YES;
 #endif
 #if DEBUG_USE_ARRAY
 	    // erase in our line
-	    aLine = [screenLines objectAtIndex: screenTop  + y];
+	    aLine = [screenLines objectAtIndex: TOP_LINE  + y];
            // NSLog(@"whole line %d(%d,%d)",y,idx,i);
             if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(0,[aLine length])];
 #endif
@@ -1462,7 +1454,7 @@ static BOOL PLAYBELL = YES;
 	// continue, next case....
 
     case 0:
-        i=idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+        i=idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
 #if DEBUG_USE_BUFFER
         s=[BUFFER string];
         for(;i<[s length]&&[s characterAtIndex:i]!='\n';i++);
@@ -1471,8 +1463,8 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	// erase in our line
-	aLine = [screenLines objectAtIndex: screenTop  + CURSOR_Y];
-        idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+	aLine = [screenLines objectAtIndex: TOP_LINE  + CURSOR_Y];
+        idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
         if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length] - idx)];
 #endif
 	    
@@ -1676,9 +1668,9 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_BUFFER
     //NSLog(@"SCROLL-UP[%d-%d]; Y = %d",SCROLL_TOP,SCROLL_BOTTOM, CURSOR_Y);
-    idx=[self getIndex:0 y:SCROLL_TOP];
+    idx=[self getIndexAtX:0 Y:SCROLL_TOP withPadding:YES];
     if (SCROLL_TOP==HEIGHT-1) idx2=[BUFFER length];
-    else idx2=[self getIndex:0 y:SCROLL_TOP+1];
+    else idx2=[self getIndexAtX:0 Y:SCROLL_TOP+1 withPadding:YES];
     aRange = NSMakeRange(idx,idx2-idx);
     if(aRange.length <= 0)
         aRange.length = 1;
@@ -1687,7 +1679,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
     // delete from our line array
-    [screenLines removeObjectAtIndex: screenTop + SCROLL_TOP];
+    [screenLines removeObjectAtIndex: TOP_LINE + SCROLL_TOP];
 #endif
 
     if (SCROLL_BOTTOM>=HEIGHT-1) {
@@ -1704,14 +1696,14 @@ static BOOL PLAYBELL = YES;
     }
     else if(CURSOR_Y <= SCROLL_BOTTOM) {
 #if DEBUG_USE_BUFFER
-        idx=[self getIndex:0 y:SCROLL_BOTTOM+1];
+        idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM+1 withPadding:YES];
         [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
 	// insert a line into our array
 	aLine = [[NSMutableAttributedString alloc] init];
-	[screenLines insertObject: aLine atIndex:screenTop + SCROLL_BOTTOM];
+	[screenLines insertObject: aLine atIndex:TOP_LINE + SCROLL_BOTTOM];
 	[aLine release];
 #endif
     }
@@ -1738,20 +1730,20 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_BUFFER
     //NSLog(@"SCROLL-DOWN[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
-    idx=[self getIndex:0 y:SCROLL_TOP];
+    idx=[self getIndexAtX:0 Y:SCROLL_TOP withPadding:YES];
     [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
     // insert a line into our array
     aLine = [[NSMutableAttributedString alloc] init];
-    [screenLines insertObject: aLine atIndex:screenTop + SCROLL_TOP];
+    [screenLines insertObject: aLine atIndex:TOP_LINE + SCROLL_TOP];
     [aLine release];
 #endif
     
     if (SCROLL_BOTTOM>=HEIGHT-1) {
 #if DEBUG_USE_BUFFER
-        idx=[self getIndex:0 y:SCROLL_BOTTOM];
+        idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM withPadding:YES];
         aRange = NSMakeRange(idx-1, [BUFFER length]-idx);
         if(aRange.length <= 0)
             aRange.length = 1;
@@ -1765,8 +1757,8 @@ static BOOL PLAYBELL = YES;
     }
     else {
 #if DEBUG_USE_BUFFER
-        idx=[self getIndex:0 y:SCROLL_BOTTOM];
-        idx2=[self getIndex:0 y:SCROLL_BOTTOM+1];
+        idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM withPadding:YES];
+        idx2=[self getIndexAtX:0 Y:SCROLL_BOTTOM+1 withPadding:YES];
         aRange = NSMakeRange(idx,idx2-idx);
         if(aRange.length <= 0)
             aRange.length = 1;
@@ -1774,7 +1766,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	// delete from our line array
-        [screenLines removeObjectAtIndex: screenTop + SCROLL_BOTTOM+1];
+        [screenLines removeObjectAtIndex: TOP_LINE + SCROLL_BOTTOM+1];
 #endif
 	
     }
@@ -1798,7 +1790,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_BUFFER
-    idx=[self getIndex:0 y:y];
+    idx=[self getIndexAtX:0 Y:y withPadding:YES];
     for(x=0;x<WIDTH&&idx<[store length]&&[store characterAtIndex:idx]!='\n';idx++,x++)
 //        if (ISDOUBLEWIDTHCHARACTER([store characterAtIndex:idx])) x++;
         if (ISDOUBLEWIDTHCHARACTER(idx)) x++;
@@ -1808,7 +1800,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY   
     // delete from line
-    aLine = [screenLines objectAtIndex: screenTop + y];
+    aLine = [screenLines objectAtIndex: TOP_LINE + y];
     for(x=0, idx=0;x<WIDTH&&idx<[aLine length];idx++,x++)
         if (ISDOUBLEWIDTHCHARACTERINLINE(idx, aLine)) x++;
     if (idx < [aLine length])
@@ -1824,11 +1816,11 @@ static BOOL PLAYBELL = YES;
     int idx;
 
 #if DEBUG_USE_ARRAY
-    NSMutableAttributedString *aLine = [screenLines objectAtIndex: screenTop + CURSOR_Y];
+    NSMutableAttributedString *aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
 #endif
 
 //    NSLog(@"insertBlank[%d@(%d,%d)]",n,CURSOR_X,CURSOR_Y);
-    idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+    idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
 
     if (CURSOR_IN_MIDDLE) {
 #if DEBUG_USE_BUFFER
@@ -1883,18 +1875,18 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
     for(;n>0;n--) {
 #if DEBUG_USE_BUFFER
-        idx=[self getIndex:0 y:CURSOR_Y];
+        idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:YES];
         [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
 	aLine = [[NSMutableAttributedString alloc] init];
-	[screenLines insertObject: aLine atIndex: screenTop + CURSOR_Y];
+	[screenLines insertObject: aLine atIndex: TOP_LINE + CURSOR_Y];
 	[aLine release];
 #endif
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
 #if DEBUG_USE_BUFFER
-            idx=[self getIndex:0 y:SCROLL_BOTTOM];
+            idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM withPadding:YES];
             aRange = NSMakeRange(idx-1,[BUFFER length]-idx);
             if(aRange.length <= 0)
                 aRange.length = 1;
@@ -1902,15 +1894,15 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // delete from our line array
-	    for(i = [screenLines count] - 1; i >= screenTop + SCROLL_BOTTOM; i--)
+	    for(i = [screenLines count] - 1; i >= TOP_LINE + SCROLL_BOTTOM; i--)
 		[screenLines removeObjectAtIndex: i];
 #endif
 	    
         }
         else {
 #if DEBUG_USE_BUFFER
-            idx=[self getIndex:0 y:SCROLL_BOTTOM];
-            idx2=[self getIndex:0 y:SCROLL_BOTTOM+1];
+            idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM withPadding:YES];
+            idx2=[self getIndexAtX:0 Y:SCROLL_BOTTOM+1 withPadding:YES];
             aRange = NSMakeRange(idx,idx2-idx);
             if(aRange.length <= 0)
                 aRange.length = 1;
@@ -1918,7 +1910,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // delete from our line array
-            [screenLines removeObjectAtIndex: screenTop + SCROLL_BOTTOM + 1];
+            [screenLines removeObjectAtIndex: TOP_LINE + SCROLL_BOTTOM + 1];
 #endif
 	    
         }
@@ -1944,8 +1936,8 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"deleteLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
     for(;n>0;n--) {
 #if DEBUG_USE_BUFFER
-        idx=[self getIndex:0 y:CURSOR_Y];
-        idx2=[self getIndex:0 y:CURSOR_Y+1];
+        idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:YES];
+        idx2=[self getIndexAtX:0 Y:CURSOR_Y+1 withPadding:YES];
         aRange = NSMakeRange(idx, idx2-idx);
         if(aRange.length <= 0)
             aRange.length = 1;
@@ -1953,7 +1945,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
-	[screenLines removeObjectAtIndex: screenTop + CURSOR_Y];
+	[screenLines removeObjectAtIndex: TOP_LINE + CURSOR_Y];
 
 	aLine = [[NSMutableAttributedString alloc] init];
 #endif
@@ -1968,7 +1960,7 @@ static BOOL PLAYBELL = YES;
         }
         else {
 #if DEBUG_USE_BUFFER
-            idx=[self getIndex:0 y:SCROLL_BOTTOM+1];
+            idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM+1 withPadding:YES];
             [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
 #endif
 #if DEBUG_USE_ARRAY
@@ -2014,13 +2006,12 @@ static BOOL PLAYBELL = YES;
         [BUFFER deleteCharactersInRange:NSMakeRange(0, idx+1)];
 #endif
 	
-        TOP_LINE -= over;
 
 #if DEBUG_USE_ARRAY
 	for(i = 0; i < over; i++)
 	    [screenLines removeObjectAtIndex: 0];
-	screenTop -= over;
 #endif
+        TOP_LINE -= over;
 
         NSParameterAssert(TOP_LINE >= 0);
     }
@@ -2215,15 +2206,6 @@ static BOOL PLAYBELL = YES;
     return BUFFER;
 }
 
-- (NSArray *) screenLines
-{
-    return (screenLines);
-}
-
-- (int) screenTop
-{
-    return screenTop;
-}
 
 - (int) numberOfLines
 {
@@ -2250,79 +2232,13 @@ static BOOL PLAYBELL = YES;
     return (lineCount);
     
 #elif DEBUG_USE_ARRAY
+   
     return ([screenLines count]);
 #else
     return (0);
 #endif
 }
 
-- (NSAttributedString *)stringAtLine: (int) n
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen lineAtIndex: %d]",  __FILE__, __LINE__, n );
-#endif
-
-    if(n < 0)
-	return (nil);
-
-#if DEBUG_USE_BUFFER
-
-    int i, length;
-    int lineNumber = 0;
-    NSString *store;
-    int idx1 = 0, idx2 = 0;
-
-    store = [STORAGE string];
-    length = [store length];
-    if(length <= 0)
-	return (nil);
-
-    for(i = 0; i < length; i++)
-    {
-	if([store characterAtIndex: i] == '\n')
-	{
-
-	    // first line
-	    if (n == 0)
-	    {
-		idx1 = 0;
-		idx2 = i - 1;
-		break;
-	    }
-	    
-	    lineNumber++;
-	    if(lineNumber == n)
-	    {
-		// beginning of line
-		idx1 = i + 1;
-		// end of line
-		for(idx2 = idx1; idx2 < length; idx2++)
-		{
-		    if([store characterAtIndex: idx2] == '\n')
-			break;
-		}
-		break;
-	    }	    
-	}
-    }
-
-    if (idx2 > idx1)
-    {
-	return ([STORAGE attributedSubstringFromRange: NSMakeRange(idx1, idx2-idx1)]);
-    }
-    else
-	return (nil);
-    
-#elif DEBUG_USE_ARRAY
-    if(n < [screenLines count])
-	return ([screenLines objectAtIndex: n]);
-    else
-	return (nil);
-#else
-    return (nil);
-#endif
-    
-}
 
 - (void) renewBuffer
 {
@@ -2365,7 +2281,7 @@ static BOOL PLAYBELL = YES;
     int idx;
 
 
-    idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+    idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
     if ([[SESSION TEXTVIEW] hasMarkedText]) {
         len=idx;
         slen=[[SESSION TEXTVIEW] markedRange].location;
@@ -2442,6 +2358,28 @@ static BOOL PLAYBELL = YES;
 {
     return screenLock;
 }
+
+#if USE_CUSTOM_DRAWING
+- (NSArray *) screenLines
+{
+    return (screenLines);
+}
+
+- (NSMutableAttributedString *)stringAtLine: (int) n
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen lineAtIndex: %d]",  __FILE__, __LINE__, n );
+#endif
+
+    if(n>=0&&n < [screenLines count])
+        return ([screenLines objectAtIndex: n]);
+    else
+        return (nil);
+    
+}
+
+#else
+#endif
 
 @end
 

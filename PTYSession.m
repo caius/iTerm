@@ -124,10 +124,13 @@ static NSString *PWD_ENVVALUE = @"~";
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
+#if USE_CUSTOM_DRAWING
+#else
     [TEXTVIEW setDrawsBackground:NO];
     [TEXTVIEW setEditable:YES];
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+#endif
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [pref antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
@@ -147,7 +150,6 @@ static NSString *PWD_ENVVALUE = @"~";
     antiIdle = NO;
     REFRESHED = NO;
 
-//    [TEXTVIEW setCursorIndex:[SCREEN getIndex:0 y:0]];
     [tabViewItem setLabelAttributes: chosenStateAttribute];
 
         
@@ -1035,9 +1037,12 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     if(color == nil)
         return;
-        
-    [TEXTVIEW setTextColor: color];
 
+#if USE_CUSTOM_DRAWING
+#else
+    [TEXTVIEW setTextColor: color];
+#endif
+    
     if(([TERMINAL defaultFGColor] != color) || 
         ([[TERMINAL defaultFGColor] alphaComponent] != [color alphaComponent]))
     {

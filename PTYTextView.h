@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.18 2003-03-22 08:55:39 ujwal Exp $
+// $Id: PTYTextView.h,v 1.19 2003-03-25 17:33:26 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -29,8 +29,147 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import "iTerm.h"
 #import "VT100Screen.h"
 
+#if USE_CUSTOM_DRAWING
+@interface PTYTextView : NSView <NSTextInput>
+{
+    BOOL IM_INPUT_INSERT;
+    NSRange IM_INPUT_SELRANGE;
+    NSRange IM_INPUT_MARKEDRANGE;
+
+    // This is a flag to let us know whether we are handling this
+    // particular drag and drop operation. We are using it because
+    // the prepareDragOperation and performDragOperation of the
+    // parent NSTextView class return "YES" even if the parent
+    // cannot handle the drag type. To make matters worse, the
+    // concludeDragOperation does not have any return value.
+    // This all results in the inability to test whether the
+    // parent could handle the drag type properly. Is this a Cocoa
+    // implementation bug?
+    // Fortunately, the draggingEntered and draggingUpdated methods
+    // seem to return a real status, based on which we can set this flag.
+    BOOL bExtendedDragNDrop;
+
+    // anti-alias flag
+    BOOL antiAlias;
+
+    // dead key support
+    BOOL deadkey;
+    int	cursorIndex;
+
+    float lineHeight;
+    float lineWidth;
+
+    NSDictionary *markedTextAttributes;
+    NSColor *selectionColor;
+    NSColor *bgColor;
+    NSFont *font;
+    NSFont *nafont;
+    
+    // data source
+    id dataSource;
+    int numberOfLines;
+    id _delegate;
+
+    //selection
+    int startIndex, endIndex;
+    
+}
+
+- (id)init;
+- (void)dealloc;
+- (BOOL)isFlipped;
+- (BOOL)shouldDrawInsertionPoint;
+- (void)drawRect:(NSRect)rect;
+- (void)keyDown:(NSEvent *)event;
+- (void)mouseDown:(NSEvent *)event;
+- (void)mouseUp:(NSEvent *)event;
+- (void)mouseDragged:(NSEvent *)event;
+- (void)otherMouseDown:(NSEvent *)theEvent;
+- (void)copy: (id) sender;
+- (void)paste:(id)sender;
+- (BOOL)validateMenuItem:(NSMenuItem *)item;
+- (void)changeFont:(id)sender;
+- (NSMenu *)menuForEvent:(NSEvent *)theEvent;
+- (void) browse:(id)sender;
+- (void) mail:(id)sender;
+- (void) setCursorIndex:(int)idx;
+
+    // get/set methods
+- (NSColor *) backgroundColor;
+- (void) setBackgroundColor: (NSColor *)color;
+- (NSFont *)font;
+- (NSFont *)nafont;
+- (void) setFont:(NSFont*)aFont nafont:(NSFont*)naFont;
+- (BOOL) antiAlias;
+- (void) setAntiAlias: (BOOL) antiAliasFlag;
+- (NSColor *) selectionColor;
+- (void) setSelectionColor: (NSColor *) aColor;
+- (NSDictionary*) markedTextAttributes;
+- (void) setMarkedTextAttributes: (NSDictionary *) attr;
+- (id) dataSource;
+- (void) setDataSource: (id) aDataSource;
+- (id) delegate;
+- (void) setDelegate: (id) delegate;
+- (float) lineHeight;
+- (void) setLineHeight: (float) aLineHeight;
+- (float) lineWidth;
+- (void) setLineWidth: (float) aLineWidth;
+
+- (void) refresh;
+- (void)moveLastLine;
+
+    //
+    // Drag and Drop methods for our text view
+    //
+- (unsigned int) draggingEntered: (id<NSDraggingInfo>) sender;
+- (unsigned int) draggingUpdated: (id<NSDraggingInfo>) sender;
+- (void) draggingExited: (id<NSDraggingInfo>) sender;
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>) sender;
+- (BOOL) performDragOperation: (id<NSDraggingInfo>) sender;
+- (void) concludeDragOperation: (id<NSDraggingInfo>) sender;
+
+    // Cursor control
+- (void)resetCursorRects;
+
+// Scrolling control
+-(void) scrollLineUp:(id) receiver;
+-(void) scrollLineDown:(id) receiver;
+-(void) scrollPageUp:(id) receiver;
+-(void) scrollPageDown:(id) receiver;
+
+    // Save method
+- (void) saveDocumentAs: (id) sender;
+
+    // NSTextInput
+- (void)insertText:(id)aString;
+- (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange;
+- (void)unmarkText;
+- (BOOL)hasMarkedText;
+- (NSRange)markedRange;
+- (NSRange)selectedRange;
+- (NSArray *)validAttributesForMarkedText;
+- (NSAttributedString *)attributedSubstringFromRange:(NSRange)theRange;
+- (void)doCommandBySelector:(SEL)aSelector;
+- (unsigned int)characterIndexForPoint:(NSPoint)thePoint;
+- (long)conversationIdentifier;
+- (NSRect)firstRectForCharacterRange:(NSRange)theRange;
+
+@end
+
+//
+// private methods
+//
+@interface PTYTextView (Private)
+
+- (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender;
+- (void) _savePanelDidEnd: (NSSavePanel *) theSavePanel returnCode: (int) theReturnCode contextInfo: (void *) theContextInfo;
+
+@end
+
+#else
 @interface PTYTextView : NSTextView
 {
     
@@ -67,6 +206,7 @@
 }
 
 - (id)init;
+- (id)initWithFrame: (NSRect) aRect;
 - (void)dealloc;
 - (BOOL)shouldDrawInsertionPoint;
 - (void)drawRect:(NSRect)rect;
@@ -78,7 +218,7 @@
 - (void)unmarkText;
 - (BOOL)hasMarkedText;
 - (NSRange)markedRange;
-- (void) copy: (id) sender;
+- (void)copy: (id) sender;
 - (void)paste:(id)sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;
 - (void)changeFont:(id)sender;
@@ -114,9 +254,6 @@
 - (BOOL) performDragOperation: (id<NSDraggingInfo>) sender;
 - (void) concludeDragOperation: (id<NSDraggingInfo>) sender;
 
-// Cursor control
-- (void)resetCursorRects;
-
 // Save method
 - (void) saveDocumentAs: (id) sender;
 
@@ -132,3 +269,4 @@
 
 @end
 
+#endif

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.132 2003-03-21 00:16:21 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.133 2003-03-25 17:33:28 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -199,7 +199,11 @@ static NSString *ConfigToolbarItem = @"Config";
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set the font
+#if USE_CUSTOM_DRAWING    
+    [[aSession TEXTVIEW]  setFont:FONT nafont:NAFONT];
+#else
     [[aSession TEXTVIEW]  setFont:FONT];
+#endif
     [[aSession SCREEN]  setFont:FONT nafont:NAFONT];
     
     // set the srolling
@@ -334,7 +338,10 @@ static NSString *ConfigToolbarItem = @"Config";
 
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
+#if USE_CUSTOM_DRAWING
+#else
 	    [[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
+#endif
 	}
 
 	[WINDOW makeKeyAndOrderFront: self];
@@ -693,7 +700,10 @@ static NSString *ConfigToolbarItem = @"Config";
     int i;
 
     for(i=0;i<[ptyList count]; i++) {
+#if USE_CUSTOM_DRAWING
+#else
         [[[ptyList objectAtIndex:i] TEXTVIEW]  setFont:font];
+#endif
         [[[ptyList objectAtIndex:i] SCREEN]  setFont:font nafont:nafont];
     }
     [FONT autorelease];
@@ -901,12 +911,12 @@ static NSString *ConfigToolbarItem = @"Config";
     else if([TABVIEW tabViewType] == NSRightTabsBezelBorder)
 	contentSize.width = scrollviewSize.width + 25;
     else
-	contentSize.height = scrollviewSize.height + 0;    
-    //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
+	contentSize.height = scrollviewSize.height + 0;
+    //NSLog(@"WillResize:content size: width = %f; height = %f", contentSize.width, contentSize.height);
     
     // Finally calculate the window frame size
     winSize = [NSWindow frameRectForContentRect: NSMakeRect(0, 0, contentSize.width, contentSize.height) styleMask: [WINDOW styleMask]].size;
-    //NSLog(@"window size: width = %f; height = %f", winSize.width, winSize.height);
+    //NSLog(@"WillResize: window size: width = %f; height = %f", winSize.width, winSize.height);
 
     return (winSize);
     
@@ -949,8 +959,8 @@ static NSString *ConfigToolbarItem = @"Config";
     
     WIDTH = w;
     HEIGHT = h;
-    
-    //NSLog(@"w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
+
+    //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 
 
 }
@@ -1485,7 +1495,10 @@ static NSString *ConfigToolbarItem = @"Config";
 	    PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
 	    [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 	    [self setWindowSize: NO];
+#if USE_CUSTOM_DRAWING
+#else
 	    [[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
+#endif
 	}
 	else
 	{

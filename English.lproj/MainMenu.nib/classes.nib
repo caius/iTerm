@@ -71,6 +71,7 @@
         {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
         {
             ACTIONS = {
+                cancel = id; 
                 changeBackground = id; 
                 changeFontButton = id; 
                 changeForeground = id; 

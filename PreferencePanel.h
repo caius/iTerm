@@ -62,11 +62,14 @@
 - (id)init;
 - (void)dealloc;
 
+- (void) readPreferences;
+
 - (IBAction)changeBackground:(id)sender;
 - (IBAction)changeFontButton:(id)sender;
 - (IBAction)changeNAFontButton:(id)sender;
 - (IBAction)changeForeground:(id)sender;
 - (IBAction)ok:(id)sender;
+- (IBAction)cancel:(id)sender;
 - (IBAction)restore:(id)sender;
 - (void)changeFont:(id)fontManager;
 

@@ -1254,6 +1254,7 @@
 			};
 		};
 		FB8D9E6503D6136101F955DB = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			path = charmaps.h;
 			refType = 4;

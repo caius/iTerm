@@ -47,7 +47,35 @@ static int TRANSPARENCY  =10;
         SHELL = [[NSString stringWithFormat: @"login -fp %s", thisUser] retain];
     else if((userShell = getenv("SHELL")) != NULL)
         SHELL = [[NSString stringWithCString: userShell] retain];
+        
+    [self readPreferences];
 
+                 
+    return self;
+}
+
+- (void)dealloc
+{
+    if(defaultTerminal != nil)
+        [defaultTerminal release];
+    if(defaultShell != nil)
+        [defaultShell release];    
+    if(defaultForeground != nil)
+        [defaultForeground release];                        
+    if(defaultBackground != nil)
+        [defaultBackground release];                        
+    if(defaultSelectionColor != nil)
+        [defaultSelectionColor release];                        
+    if(defaultFont != nil)
+        [defaultFont release];                        
+    if(defaultNAFont != nil)
+        [defaultNAFont release];            
+        
+    [super dealloc];
+}
+
+- (void) readPreferences
+{
     prefs = [NSUserDefaults standardUserDefaults];
     encodingList=[NSString availableStringEncodings];
 
@@ -56,6 +84,8 @@ static int TRANSPARENCY  =10;
     defaultTransparency=([prefs stringForKey:@"Transparency"]!=nil?[prefs integerForKey:@"Transparency"]:TRANSPARENCY);
     defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
 
+    if(defaultTerminal != nil)
+        [defaultTerminal release];
     defaultTerminal=[[([prefs objectForKey:@"Terminal"]?[prefs objectForKey:@"Terminal"]:TERM)
                     copy] retain];
 
@@ -70,25 +100,42 @@ static int TRANSPARENCY  =10;
     else {
         defaultEncoding=[prefs objectForKey:@"Encoding"]?[[prefs objectForKey:@"Encoding"] unsignedIntValue]:CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     }
-    
+
+    if(defaultShell != nil)
+        [defaultShell release];    
     defaultShell=[[([prefs objectForKey:@"Shell"]?[prefs objectForKey:@"Shell"]:SHELL)
                  copy] retain];
-                    
+
+    if(defaultForeground != nil)
+        [defaultForeground release];                        
     defaultForeground=[[([prefs objectForKey:@"Foreground"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Foreground"]]:FOREGROUND)
                       copy] retain];
+                      
+    if(defaultBackground != nil)
+        [defaultBackground release];                        
     defaultBackground=[[([prefs objectForKey:@"Background"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Background"]]:BACKGROUND)
                       copy] retain];
+                      
+    if(defaultSelectionColor != nil)
+        [defaultSelectionColor release];                        
     defaultSelectionColor=[[([prefs objectForKey:@"SelectionColor"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"SelectionColor"]]:SELECTION)
                       copy] retain];
+                      
+    if(defaultFont != nil)
+        [defaultFont release];                        
     defaultFont=[[([prefs objectForKey:@"Font"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Font"]]:FONT)
                       copy] retain];
+                      
+    if(defaultNAFont != nil)
+        [defaultNAFont release];                        
     defaultNAFont=[[([prefs objectForKey:@"NAFont"]?
                    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"NAFont"]]:FONT)
         copy] retain];
+        
     defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
@@ -96,12 +143,7 @@ static int TRANSPARENCY  =10;
     defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
     defaultDoubleWidth=[[prefs objectForKey:@"DoubleWidth"] boolValue];
     changingNA=NO;
-                 
-    return self;
-}
 
-- (void)dealloc
-{
 }
 
 - (void)run
@@ -150,6 +192,12 @@ static int TRANSPARENCY  =10;
    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
+}
+
+- (IBAction)cancel:(id)sender
+{
+    [self readPreferences];
+    [NSApp abortModal];
 }
 
 - (IBAction)changeBackground:(id)sender

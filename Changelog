@@ -1,3 +1,9 @@
+2003-01-29	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Incorporated patch by Aaron Gerber to add a "Cancel" 
+      button in the preferences panel.
+      
+
 2003-01-27	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Refactored a lot of the addressbook menu building code.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.204 2003-08-08 22:34:08 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.205 2003-08-09 05:02:12 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1591,7 +1591,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if((theEvent == nil) || (theMenu == nil))
 	return;
 
-    windowPoint = [[self window] convertScreenToBase: [NSEvent mouseLocation]];
+    windowPoint = [[TABVIEW window] convertScreenToBase: [NSEvent mouseLocation]];
     localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
 
     if([TABVIEW tabViewItemAtPoint:localPoint] == nil)

@@ -1,3 +1,8 @@
+2003-01-11	Aaron D. Gerber <gerber@trvnet.net>
+
+    * When you edit or add an entry to the address book,
+      it will be sorted.
+      
 2003-01-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed bugs in syncing transparency value and control 

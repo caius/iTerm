@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.20 2003-01-08 21:10:23 ujwal Exp $
+// $Id: MainMenu.m,v 1.21 2003-01-11 21:29:37 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -25,6 +25,12 @@
 static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
 static NSStringEncoding const *encodingList=nil;
 static BOOL newWindow=YES;
+
+// comaparator function for addressbook entries
+NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
+{
+    return ([(NSString *)[entry1 objectForKey: @"Name"] caseInsensitiveCompare: (NSString *)[entry2 objectForKey: @"Name"]]);
+}
 
 @implementation MainMenu
 
@@ -244,6 +250,7 @@ static BOOL newWindow=YES;
             [NSNumber numberWithBool:[adClose state]],@"AutoClose",
             NULL];
         [addressBook addObject:ae];
+	[addressBook sortUsingFunction: addressBookComparator context: nil];
 //        NSLog(@"%s(%d):-[Address entry added:%@]",
 //              __FILE__, __LINE__, ae );
         [adTable reloadData];
@@ -340,6 +347,7 @@ static BOOL newWindow=YES;
             [NSNumber numberWithBool:[adClose state]],@"AutoClose",
             NULL];
         [addressBook replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
+	[addressBook sortUsingFunction: addressBookComparator context: nil];
 //        NSLog(@"%s(%d):-[Address entry replaced:%@]",
 //              __FILE__, __LINE__, ae );
         [adTable reloadData];
@@ -383,6 +391,7 @@ static BOOL newWindow=YES;
 {
     if ( returnCode == NSAlertAlternateReturn) {
         [addressBook removeObjectAtIndex:[adTable selectedRow]];
+	[addressBook sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
     }
 }

@@ -111,6 +111,7 @@
                 terminalDoubleWidth = NSButton; 
                 terminalEncoding = NSPopUpButton; 
                 terminalIdleChar = NSTextField; 
+                terminalProfileDeleteButton = NSButton; 
                 terminalProfileSelector = NSPopUpButton; 
                 terminalScrollback = NSTextField; 
                 terminalSendIdleChar = NSButton; 

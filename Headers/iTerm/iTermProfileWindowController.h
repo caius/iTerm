@@ -98,6 +98,7 @@
 	
 	// Terminal Profile UI
 	IBOutlet NSPopUpButton *terminalProfileSelector;
+	IBOutlet NSButton *terminalProfileDeleteButton;
 	IBOutlet NSPopUpButton *terminalType;
 	IBOutlet NSPopUpButton *terminalEncoding;
 	IBOutlet NSTextField *terminalScrollback;

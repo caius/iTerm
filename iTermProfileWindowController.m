@@ -564,6 +564,9 @@ static NSStringEncoding const *encodingList = nil;
 	[terminalSendIdleChar setState: [[iTermTerminalProfileMgr singleInstance] sendIdleCharForProfile: theProfile]];
 	[terminalIdleChar setStringValue: [NSString stringWithFormat: @"%d",  
 		[[iTermTerminalProfileMgr singleInstance] idleCharForProfile: theProfile]]];
+	
+	[terminalProfileDeleteButton setEnabled: ![[iTermTerminalProfileMgr singleInstance] isDefaultProfile: theProfile]];
+
 }
 
 - (IBAction) terminalSetType: (id) sender

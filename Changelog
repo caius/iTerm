@@ -1,9 +1,3 @@
-2003-07-17	ujwal
-
-    * Minor changes to scrolling code to save scrolled lines to 
-      scrollback buffer even if the SCROLL_BOTTOM is not at the 
-      bottom of the screen. SCROLL_TOP has to be 0 though.
-
 2003-07-16	ujwal
 
     * Added support for ANSI 16 color sequences.

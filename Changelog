@@ -6,6 +6,7 @@
 
 	* Fixed bug in [PTYTextView getCharImage].
 	* Changed blinking behavior. No we no longer reverse fg/bg
+	* Changed bold behavior. Bold now works for all fonts.
 	
 2004-02-22  ujwal
 

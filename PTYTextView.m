@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.137 2004-02-24 00:14:20 ujwal Exp $
+// $Id: PTYTextView.m,v 1.138 2004-02-24 06:16:11 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -519,10 +519,11 @@
 	NSAttributedString  *crap;
 	NSDictionary *attrib;
 	
-	aFont=bold?[[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask]:aFont;
+	//aFont=bold?[[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask]:aFont;
 	attrib=[NSDictionary dictionaryWithObjectsAndKeys:
         aFont, NSFontAttributeName,
         color, NSForegroundColorAttributeName,
+		[NSNumber numberWithFloat: (float)bold*0.2], NSStrokeWidthAttributeName,
         nil];
 	
 	
@@ -541,12 +542,15 @@
 	int j;
 	NSImage *image;
 	int width;
-	int c;
+	unsigned char c;
+	int seed;
 	
 	c= fg&(BOLD_MASK|0x1f);
 	if (!code) return nil;
 	width=ISDOUBLEWIDTHCHARACTER(code)?2:1;
-	srand( code<<6 + c );
+	seed=code;
+	seed<<=6;
+	srand( seed + c );
 	i=rand()%(CACHESIZE-CELLSIZE);
 	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {
@@ -559,12 +563,12 @@
 				withChar: code
 			   withColor: [self colorForCode:fg] 
 				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
-					bold: fg&BOLD_MASK];
+					bold: c&BOLD_MASK];
 		
 		return image;
 	}
 	else if (j>=CELLSIZE) {
-		//		NSLog(@"new char, but cache full");
+		NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
 		int t;
 		t=1;
 		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
@@ -583,7 +587,7 @@
 				withChar: code
 			   withColor: [self colorForCode:fg] 
 				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
-					bold: fg&BOLD_MASK];
+					bold: c&BOLD_MASK];
 		return image;
 	}
 	else {

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.235 2003-09-14 19:21:48 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.236 2003-09-14 22:33:50 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -145,7 +145,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Do not use both initViewWithFrame and initWindow
 - (void)initWindow
 {
-    if([self windowInited])
+    if(TABVIEW != nil)
 	return;
 
     _toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];

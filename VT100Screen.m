@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.204 2004-04-16 20:14:06 ujwal Exp $
+// $Id: VT100Screen.m,v 1.205 2004-04-27 00:19:23 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -248,7 +248,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		}
 	}
 	else { //new screen smaller, so only copy the bottom part
-		for(i=HEIGHT-height;i<height;i++) {
+		for(i=HEIGHT-height;i<HEIGHT;i++) {
 			memcpy(sl+width*(i-HEIGHT+height), screenLines+WIDTH*i, sw*sizeof(unichar));
 			memcpy(sfg+width*(i-HEIGHT+height), screenFGColor+WIDTH*i, sw*sizeof(char));
 			memcpy(sbg+width*(i-HEIGHT+height), screenBGColor+WIDTH*i, sw*sizeof(char));

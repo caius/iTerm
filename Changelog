@@ -1,3 +1,7 @@
+2004-04-26  ujwal
+	
+	* Fixed resize bug in VT100Screen.
+
 2004-04-24  ujwal
 
 	* Removed some code in PTToolbarController that triggered a 

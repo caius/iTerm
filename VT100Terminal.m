@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.80 2003-09-24 06:59:06 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.81 2003-11-12 08:13:31 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1636,6 +1636,9 @@ static VT100TCC decode_string(unsigned char *datap,
 	case 0x03:
 	    theData = [NSData dataWithBytes:ALT_KP_ENTER length:conststr_sizeof(ALT_KP_ENTER)];
 	    break;
+	default:
+	    theData = [keystr dataUsingEncoding:NSUTF8StringEncoding];
+	    break;	    
     }
 
     return (theData);

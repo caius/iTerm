@@ -43,6 +43,7 @@
                 adTextExample = NSTextField; 
                 adTransparency = id; 
                 adTransparency2 = id; 
+                addButton = NSButton; 
                 ansiBlack = NSColorWell; 
                 ansiBlue = NSColorWell; 
                 ansiCyan = NSColorWell; 
@@ -60,6 +61,9 @@
                 ansiWhite = NSColorWell; 
                 ansiYellow = NSColorWell; 
                 colorScheme = id; 
+                deleteButton = NSButton; 
+                duplicateButton = NSButton; 
+                editButton = NSButton; 
                 openInTab = NSButton; 
                 openInWindow = NSButton; 
                 tabSelection = NSPopUpButton; 

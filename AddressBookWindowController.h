@@ -76,7 +76,14 @@
     IBOutlet NSColorWell *ansiHiMagenta;
     IBOutlet NSColorWell *ansiHiCyan;
     IBOutlet NSColorWell *ansiHiWhite;
-    
+
+    // buttons
+    IBOutlet NSButton *addButton;
+    IBOutlet NSButton *deleteButton;
+    IBOutlet NSButton *duplicateButton;
+    IBOutlet NSButton *editButton;
+    IBOutlet NSButton *openInTab;
+    IBOutlet NSButton *openInWindow;
 
     NSFont *aeFont, *aeNAFont;
     BOOL changingNA;
@@ -88,8 +95,6 @@
     // default values from preference
     PreferencePanel *preferences;
 
-    IBOutlet NSButton *openInTab;
-    IBOutlet NSButton *openInWindow;
 
 }
 
@@ -135,10 +140,13 @@
 // misc
 - (void) run;
 
-    // Table data source
+// Table data source
 - (int)numberOfRowsInTableView:(NSTableView*)table;
 - (id)tableView:(NSTableView*)table objectValueForTableColumn:(NSTableColumn*)col
 			  row:(int)rowIndex;
+
+// Table view delegate
+- (void)tableViewSelectionIsChanging:(NSNotification *)aNotification;
 
 @end
 

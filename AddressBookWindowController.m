@@ -644,10 +644,21 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
     [NSApp stopModal];
 
-    if(sender == openInWindow)
-        [[NSApp delegate] executeABCommandAtIndex: [adTable selectedRow] inTerminal: nil];
-    else
-        [[NSApp delegate] executeABCommandAtIndex: [adTable selectedRow] inTerminal: [[NSApp delegate] frontPseudoTerminal]];
+    NSEnumerator *selectedRowEnumerator = [adTable selectedRowEnumerator];
+    NSNumber *selectedRow;
+
+    // launch all the selected sessions
+    while((selectedRow = [selectedRowEnumerator nextObject]) != nil)
+    {
+	if(sender == openInWindow)
+	    [[NSApp delegate] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
+	else
+	    [[NSApp delegate] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[NSApp delegate] frontPseudoTerminal]];
+    }
+
+    // close the bookmarks window
+    [[self window] close];
+
 }
 
 - (IBAction)editColorScheme: (id) sender
@@ -722,6 +733,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
     [[self window] center];
     [adTable setDataSource: self];
+    [adTable setDelegate: self];
     if([adTable numberOfRows] > 0){
 	[adTable selectRow: 0 byExtendingSelection: NO];
 	[[self window] makeFirstResponder: adTable];
@@ -782,6 +794,37 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     return s;
 }
 
+
+// Table view delegate
+- (void)tableViewSelectionIsChanging:(NSNotification *)aNotification
+{
+    if([adTable numberOfSelectedRows] == 1)
+    {
+	[addButton setEnabled: YES];
+	[deleteButton setEnabled: YES];
+	[duplicateButton setEnabled: YES];
+	[editButton setEnabled: YES];
+    }
+    else
+    {
+	[addButton setEnabled: NO];
+	[deleteButton setEnabled: NO];
+	[duplicateButton setEnabled: NO];
+	[editButton setEnabled: NO];
+    }
+
+    if([adTable numberOfSelectedRows] > 0)
+    {
+	[openInTab setEnabled: YES];
+	[openInWindow setEnabled: YES];
+    }
+    else
+    {
+	[openInTab setEnabled: NO];
+	[openInWindow setEnabled: NO];
+    }
+    
+}
 
 
 @end

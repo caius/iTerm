@@ -5,6 +5,8 @@
     * Added UI preference to enforce character alignment.
     
     * Removed "Save" and "Cancel" buttons from Bookmarks window.
+    
+    * Added support to select and launch multiple sessions in bookmarks.
 
 2003-06-16	ujwal
 

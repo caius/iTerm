@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.13 2004-02-18 00:56:53 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.14 2004-02-18 06:04:14 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -49,31 +49,31 @@
     [super mouseDown: theEvent];
     
     if([self floatValue] != 1)
-	userScroll=YES;
+		userScroll=YES;
     else
-	userScroll = NO;    
+		userScroll = NO;    
 }
 
 - (void)trackScrollButtons:(NSEvent *)theEvent
 {
     [super trackScrollButtons:theEvent];
-
+	
     //NSLog(@"scrollbutton");
     if([self floatValue] != 1)
-	userScroll=YES;
+		userScroll=YES;
     else
-	userScroll = NO;
+		userScroll = NO;
 }
 
 - (void)trackKnob:(NSEvent *)theEvent
 {
     [super trackKnob:theEvent];
-
+	
     //NSLog(@"trackKnob: %f", [self floatValue]);
     if([self floatValue] != 1)
-	userScroll=YES;
+		userScroll=YES;
     else
-	userScroll = NO;
+		userScroll = NO;
 }
 
 - (BOOL)userScroll
@@ -105,21 +105,21 @@
 {
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYScrollView initWithFrame:%d,%d,%d,%d]",
-	  __FILE__, __LINE__, 
-	  frame.origin.x, frame.origin.y, 
-	  frame.size.width, frame.size.height);
+		  __FILE__, __LINE__, 
+		  frame.origin.x, frame.origin.y, 
+		  frame.size.width, frame.size.height);
 #endif
     if ((self = [super initWithFrame:frame]) == nil)
-	return nil;
-
+		return nil;
+	
     NSParameterAssert([self contentView] != nil);
-
+	
     PTYScroller *aScroller;
-
+	
     aScroller=[[PTYScroller alloc] init];
     [self setVerticalScroller: aScroller];
     [aScroller release];
-		
+	
     return self;
 }
 
@@ -139,33 +139,38 @@
 	}	
 	
 	srcRect = rect;
+	// normalize to origin of visible rectangle
 	srcRect.origin.y -= [self documentVisibleRect].origin.y;
-	[[self backgroundImage] drawInRect: rect fromRect: srcRect operation: NSCompositeSourceOver fraction: (1.0 - [self transparency])];
+	// do a vertical flip of coordinates
+	srcRect.origin.y = [backgroundImage size].height - srcRect.origin.y - srcRect.size.height;
+	
+	// draw the image rect
+	[[self backgroundImage] compositeToPoint: NSMakePoint(rect.origin.x, rect.origin.y + rect.size.height) fromRect: srcRect operation: NSCompositeSourceOver fraction: (1.0 - [self transparency])];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
 {
     PTYScroller *verticalScroller = (PTYScroller *)[self verticalScroller];
-
+	
     [super scrollWheel: theEvent];
-
+	
     //NSLog(@"PTYScrollView: scrollWheel: %f", [verticalScroller floatValue]);
     if([verticalScroller floatValue] < 1.0)
-	[verticalScroller setUserScroll: YES];
+		[verticalScroller setUserScroll: YES];
     else
-	[verticalScroller setUserScroll: NO];
+		[verticalScroller setUserScroll: NO];
 }
 
 - (void)detectUserScroll
 {
     PTYScroller *verticalScroller = (PTYScroller *)[self verticalScroller];
-
+	
     //NSLog(@"PTYScrollView: detectUserScroll: %f", [verticalScroller floatValue]);
     
     if([verticalScroller floatValue] < 1.0)
-	[verticalScroller setUserScroll: YES];
+		[verticalScroller setUserScroll: YES];
     else
-	[verticalScroller setUserScroll: NO];
+		[verticalScroller setUserScroll: NO];
 }
 
 // background image
@@ -184,7 +189,7 @@
 		
 		[targetImage lockFocus];
 		[trans translateXBy:[anImage size].width/2 yBy:[anImage size].height/2];
-		[trans rotateByDegrees: 180];
+		//[trans rotateByDegrees: 180];
 		[trans translateXBy:-[anImage size].width/2 yBy:-[anImage size].height/2];
 		[trans set];
 		[anImage drawInRect:NSMakeRect(0,0,[anImage size].width,[anImage size].height) 
@@ -194,9 +199,10 @@
 		[targetImage unlockFocus];
 		[targetImage setScalesWhenResized: YES];
 		[targetImage setSize: [self documentVisibleRect].size];
+		//[targetImage setFlipped: YES];
 		// set the image
 		[backgroundImage release];
-		backgroundImage = targetImage;		
+		backgroundImage = targetImage;	
 	}
 	else
 	{

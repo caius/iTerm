@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.136 2003-03-27 21:08:42 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.137 2003-03-28 22:28:28 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1492,11 +1492,11 @@ static NSString *ConfigToolbarItem = @"Config";
     {
 	if([pref hideTab])
 	{
-	    PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
 	    [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 	    [self setWindowSize: NO];
 #if USE_CUSTOM_DRAWING
 #else
+            PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
 	    [[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
 #endif
 	}
@@ -1653,7 +1653,7 @@ static NSString *ConfigToolbarItem = @"Config";
         //    NSLog(@"new entry:%@",ae);
         [MAINMENU replaceAddressBookEntry:old with:new];
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
-                        [old objectForKey:@"Name"],
+                        [new objectForKey:@"Name"],
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
         

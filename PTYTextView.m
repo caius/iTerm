@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.46 2003-03-28 18:29:03 yfabian Exp $
+// $Id: PTYTextView.m,v 1.47 2003-03-28 22:28:27 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -305,9 +305,9 @@
 {
     NSRect scrollRect;
 
-    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll];
-    NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
+    //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -315,7 +315,7 @@
 {
     NSRect scrollRect;
 
-    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalLineScroll];
     [self scrollRectToVisible: scrollRect];
 }
@@ -324,7 +324,7 @@
 {
     NSRect scrollRect;
 
-    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
     [self scrollRectToVisible: scrollRect];
 }
@@ -333,7 +333,7 @@
 {
     NSRect scrollRect;
 
-    scrollRect= [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalPageScroll];
     [self scrollRectToVisible: scrollRect];
 }
@@ -425,6 +425,7 @@
             NSLog(@"Got a nil line...");
             ;
         }else {
+            //NSLog(@"Line %d at %f:[%@]",i+lineOffset,rect.origin.y,[aLine string]);
             if (startIndex!=-1&&lstartY<=i+lineOffset&&i+lineOffset<=lendY) {
                 if ([aLine length]<=0) continue;
                 NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
@@ -450,25 +451,43 @@
             else if (CURSOR&&i+lineOffset==y&&![self hasMarkedText]) {
                 // show the cursor in the line array
                 int idx=[dataSource getIndexAtX:[dataSource cursorX]-1 Y:[dataSource cursorY]-1 withPadding:YES];
-                NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
-                NSMutableDictionary *dic;
-                NSColor *fg, *bg;
+                if (idx<0) {
+                   // NSLog(@"Line:[%@]",aLine);
+                    [aLine drawInRect: aRect];
+                }
+                else {
+                    NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
+                    NSMutableDictionary *dic;
+                    NSColor *fg, *bg;
 
-                if(idx >= [aLine length])
-                    [s appendAttributedString:[dataSource defaultAttrString:@" "]];
-                else if ([[s string] characterAtIndex:idx]=='\n')
-                    [s insertAttributedString:[dataSource defaultAttrString:@" "] atIndex:idx];
-                // reverse the video on the position where the cursor is supposed to be shown.
-                dic=[NSMutableDictionary dictionaryWithDictionary: [s attributesAtIndex:idx effectiveRange:nil]];
-                fg=[dic objectForKey:NSBackgroundColorAttributeName];
-                bg=[dic objectForKey:NSForegroundColorAttributeName];
-                [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-                [dic setObject:fg forKey:NSForegroundColorAttributeName];
-                [s setAttributes:dic range:NSMakeRange(idx,1)];
-                [s drawInRect: aRect];
-                [s release];
-            } 
-            else [aLine drawInRect: aRect];
+                    if(idx >= [aLine length])
+                        [s appendAttributedString:[dataSource defaultAttrString:@" "]];
+                    else if ([[s string] characterAtIndex:idx]=='\n')
+                        [s insertAttributedString:[dataSource defaultAttrString:@" "] atIndex:idx];
+                    // reverse the video on the position where the cursor is supposed to be shown.
+                    dic=[NSMutableDictionary dictionaryWithDictionary: [s attributesAtIndex:idx effectiveRange:nil]];
+                    fg=[dic objectForKey:NSBackgroundColorAttributeName];
+                    bg=[dic objectForKey:NSForegroundColorAttributeName];
+                    [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+                    [dic setObject:fg forKey:NSForegroundColorAttributeName];
+                    [s setAttributes:dic range:NSMakeRange(idx,1)];
+                    [s drawInRect: aRect];
+                    [s release];
+                }
+            }
+            else {
+                [aLine drawInRect: aRect];
+                /*NSAttributedString *one;
+                NSPoint loc=aRect.origin;
+                int idx;
+                
+                for(idx=0;idx<[aLine length];idx++) {
+                    one=[aLine attributedSubstringFromRange:NSMakeRange(idx,1)];
+                    [one drawAtPoint:loc];
+                    loc.x+=[dataSource characterSize].width;
+                }*/
+            }
+                    
         }
         //NSLog(@"line %d[%@]: %f",i + lineOffset, [aLine string], aRect.origin.y);
         aRect.origin.y += lineHeight;
@@ -550,8 +569,12 @@
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
     y = locationInTextView.y/fontSize.height;
     if (x>=[(VT100Screen*)dataSource width]) x=[(VT100Screen*)dataSource width]-1;
-    startIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
-    startY=y;
+    endIndex=startIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
+    endY=startY=y;
+
+    if([_delegate respondsToSelector: @selector(willHandleEvent:)] &&
+       [_delegate willHandleEvent: event])
+        [_delegate handleEvent: event];
 }
 
 - (void)mouseUp:(NSEvent *)event
@@ -597,12 +620,10 @@
 #endif
     NSPoint locationInWindow = [event locationInWindow];
     NSPoint locationInTextView = [self convertPoint: locationInWindow fromView: nil];
-    NSRect  rectInTextView = [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
+    NSRect  rectInTextView = [self visibleRect];
     NSSize fontSize;
     int x, y;
 
-    locationInWindow = [event locationInWindow];
-    locationInTextView = [self convertPoint: locationInWindow fromView: nil];
  /*   NSLog(@"(%f,%f)->(%f,%f)->(%f,%f)",locationInWindow.x,locationInWindow.y,
           locationInTextView.x,locationInTextView.y,
           locationInScrollView.x,locationInScrollView.y); */
@@ -672,15 +693,10 @@
         else {
             aString=[[NSMutableString alloc] initWithString:[aLine string]];
         }
-/*        if([aString length] > 1) {// Cocoa bug?
-            [aString autorelease];
-            aString = [[NSMutableString alloc] initWithString:[aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]]];
-        } */
         [copyString appendString:aString];
         [aString release];
     }
 
-    // Put the trimmed string on the pasteboard
     if ([copyString length]>0) {
         [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];
         [pboard setString: copyString forType: NSStringPboardType];
@@ -985,20 +1001,53 @@
 - (void) saveDocumentAs: (id) sender
 {
 
-    NSString *aString;
     NSData *aData;
     NSSavePanel *aSavePanel;
+    NSMutableString *aString, *copyString;
+    NSMutableAttributedString *aLine;
+    int y = 0, sy=startY, ey=endY, si=startIndex, ei=endIndex;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView saveDocumentAs:%@]", __FILE__, __LINE__, sender );
 #endif
 
     // We get our content of the textview or selection, if any
-    if([self selectedRange].length > 0)
-        aString = [[self attributedSubstringFromRange:[self selectedRange]] string];
-    else
-        aString = [[dataSource stringAtLine:[dataSource cursorY]-1+[dataSource topLines]] string];
-    aData = [aString
+    copyString=[[NSMutableString alloc] init];
+    if (startIndex<0) {
+        sy=0;
+        ey=[dataSource numberOfLines]-1;
+        si=0;
+        ei=[[dataSource stringAtLine:ey] length]-1;
+    }
+    
+    for(y=sy;y<=ey;y++) {
+        aLine=[dataSource stringAtLine:y];
+        if ([aLine length]<=0) continue;
+        if (y==sy&&y==ey) {
+            if (si<[aLine length]) {
+                if (ei>=[aLine length]) ei=[aLine length]-1;
+                aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(si,ei-si+1)]];
+            }
+            else continue;
+        }
+        else if (y==sy) {
+            if (si<[aLine length]) {
+                aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(si,[aLine length]-si)]];
+            }
+            else continue;
+        }
+        else if (y==ey) {
+            if (ei>=[aLine length]) ei=[aLine length]-1;
+            aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(0,ei+1)]];
+        }
+        else {
+            aString=[[NSMutableString alloc] initWithString:[aLine string]];
+        }
+        [copyString appendString:aString];
+        [aString release];
+    }
+
+    aData = [copyString
             dataUsingEncoding: NSASCIIStringEncoding
          allowLossyConversion: YES];
     // retain here so that is does not go away...
@@ -1016,8 +1065,11 @@
                          modalDelegate: self
                         didEndSelector: @selector(_savePanelDidEnd: returnCode: contextInfo:)
                            contextInfo: aData];
+}
 
-
+- (void) print:(id)sender
+{
+    NSLog(@"print...");
 }
 
 - (void)resetCursorRects

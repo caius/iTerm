@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.80 2003-03-28 18:29:04 yfabian Exp $
+// $Id: VT100Screen.m,v 1.81 2003-03-28 22:28:29 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -89,7 +89,7 @@ static BOOL PLAYBELL = YES;
     return NSMakeSize(sz.width,[font defaultLineHeightForFont]);
 #else
 //    return NSMakeSize(sz.width, sz.height);
-    return NSMakeSize(sz.width,[font defaultLineHeightForFont]);
+    return NSMakeSize(sz.width,[font defaultLineHeightForFont]-1);
 #endif
 }
 
@@ -1879,7 +1879,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
     int y,y2;
-    NSMutableAttributedString *aLine=[[NSMutableAttributedString alloc] init];
+    NSMutableAttributedString *aLine;
 #endif
     
 //    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
@@ -1890,7 +1890,9 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
+        aLine=[[NSMutableAttributedString alloc] init];
 	[screenLines insertObject: aLine atIndex: TOP_LINE + CURSOR_Y];
+        [aLine release];
 #endif
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
 #if DEBUG_USE_BUFFER
@@ -1928,7 +1930,6 @@ static BOOL PLAYBELL = YES;
 	
     }
 #if DEBUG_USE_ARRAY
-    [aLine release];
     y2=SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1?SCROLL_BOTTOM:HEIGHT-1;
     for(y=CURSOR_Y;y<=y2;y++)     [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
 #endif

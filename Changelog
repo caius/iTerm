@@ -1,13 +1,14 @@
 2003-03-28	ujwal
-
     * Made addressbook non-modal.
-    
     * Fixed a crash in showing preferences window.
 
 2003-03-28	fabian
     * Fixed bugs in selection
     * Fixed context menu
     * Fixed wrong setDirtyLine calls in VT100Screen
+    * Fixed a bug in VT100Screen that causes duplicated lines
+    * "Save as" now is working, we need a new print function
+    * Fixed a crashing bug in "Save Config"
     
 2003-03-27	ujwal
 

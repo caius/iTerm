@@ -793,9 +793,9 @@ static NSString *PWD_ENVVALUE = @"~";
 #if USE_CUSTOM_DRAWING
     if (output>10&&dirty) {
         if([TEXTVIEW resized]||([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-            [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+                                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
            ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-        [TEXTVIEW moveLastLine];
+            [TEXTVIEW moveLastLine];
         output=0;
         dirty=NO;
     }

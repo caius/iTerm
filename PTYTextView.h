@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.22 2003-03-28 18:29:02 yfabian Exp $
+// $Id: PTYTextView.h,v 1.23 2003-03-28 22:28:26 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -151,6 +151,7 @@
 
     // Save method
 - (void) saveDocumentAs: (id) sender;
+- (void) print:(id)sender;
 
     // NSTextInput
 - (void)insertText:(id)aString;

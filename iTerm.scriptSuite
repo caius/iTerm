@@ -6,35 +6,6 @@
 	<string>ITRM</string>
 	<key>Classes</key>
 	<dict>
-		<key>NSApplication</key>
-		<dict>
-			<key>AppleEventCode</key>
-			<string>capp</string>
-			<key>Superclass</key>
-			<string>NSCoreSuite.NSApplication</string>
-			<key>ToManyRelationships</key>
-			<dict>
-				<key>terminals</key>
-				<dict>
-					<key>AppleEventCode</key>
-					<string>Ptrm</string>
-					<key>LocationRequiredToCreate</key>
-					<string>NO</string>
-					<key>Type</key>
-					<string>PseudoTerminal</string>
-				</dict>
-			</dict>
-			<key>ToOneRelationships</key>
-			<dict>
-				<key>currentTerminal</key>
-				<dict>
-					<key>AppleEventCode</key>
-					<string>Ctrm</string>
-					<key>Type</key>
-					<string>PseudoTerminal</string>
-				</dict>
-			</dict>
-		</dict>
 		<key>PTYSession</key>
 		<dict>
 			<key>AppleEventCode</key>
@@ -192,6 +163,35 @@
 					<string>Cssn</string>
 					<key>Type</key>
 					<string>PTYSession</string>
+				</dict>
+			</dict>
+		</dict>
+		<key>iTermApplication</key>
+		<dict>
+			<key>AppleEventCode</key>
+			<string>capp</string>
+			<key>Superclass</key>
+			<string>NSCoreSuite.NSApplication</string>
+			<key>ToManyRelationships</key>
+			<dict>
+				<key>terminals</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Ptrm</string>
+					<key>LocationRequiredToCreate</key>
+					<string>NO</string>
+					<key>Type</key>
+					<string>PseudoTerminal</string>
+				</dict>
+			</dict>
+			<key>ToOneRelationships</key>
+			<dict>
+				<key>currentTerminal</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Ctrm</string>
+					<key>Type</key>
+					<string>PseudoTerminal</string>
 				</dict>
 			</dict>
 		</dict>

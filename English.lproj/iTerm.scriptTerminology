@@ -4,25 +4,6 @@
 <dict>
 	<key>Classes</key>
 	<dict>
-		<key>NSApplication</key>
-		<dict>
-			<key>Description</key>
-			<string>Main application class</string>
-			<key>Name</key>
-			<string>application</string>
-			<key>PluralName</key>
-			<string>applications</string>
-			<key>ToOneRelationships</key>
-			<dict>
-				<key>currentTerminal</key>
-				<dict>
-					<key>Description</key>
-					<string>currently active terminal</string>
-					<key>Name</key>
-					<string>current terminal</string>
-				</dict>
-			</dict>
-		</dict>
 		<key>PTYSession</key>
 		<dict>
 			<key>Attributes</key>
@@ -148,6 +129,25 @@
 					<string>current session in the terminal</string>
 					<key>Name</key>
 					<string>current session</string>
+				</dict>
+			</dict>
+		</dict>
+		<key>iTermApplication</key>
+		<dict>
+			<key>Description</key>
+			<string>Main application class</string>
+			<key>Name</key>
+			<string>i term application</string>
+			<key>PluralName</key>
+			<string>i term applications</string>
+			<key>ToOneRelationships</key>
+			<dict>
+				<key>currentTerminal</key>
+				<dict>
+					<key>Description</key>
+					<string>currently active terminal</string>
+					<key>Name</key>
+					<string>current terminal</string>
 				</dict>
 			</dict>
 		</dict>

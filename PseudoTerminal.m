@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.242 2003-09-30 06:51:08 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.243 2003-09-30 16:01:01 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -139,6 +139,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     termSize = [VT100Screen screenSizeInFrame: NSMakeRect(0, 0, contentSize.width, contentSize.height) font: aFont1];
     [self setWidth: (int) termSize.width height: (int) termSize.height];
 
+    if(timer == nil)
+    {
+	// start a common timer for all the periodic timer code for all sessions
+	timer =[[NSTimer scheduledTimerWithTimeInterval:0.02
+					  target:self
+					selector:@selector(timerTick:)
+					userInfo:nil
+					 repeats:YES] retain];	
+    }
+
     return ([TABVIEW autorelease]);
 }
 
@@ -161,8 +171,30 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [TABVIEW release];
         
     [[self window] setDelegate: self];
+
+    if(timer == nil)
+    {
+	// start a common timer for all the periodic timer code for all sessions
+	timer =[[NSTimer scheduledTimerWithTimeInterval:0.02
+									     target:self
+									   selector:@selector(timerTick:)
+									   userInfo:nil
+									    repeats:YES] retain];
+    }    
     
     [self setWindowInited: YES];
+}
+
+- (void) timerTick: (NSTimer *) sender
+{
+    PTYSession *aSession;
+    NSEnumerator *sessionEnumerator;
+
+    // call periodic code in each session
+    sessionEnumerator = [[self sessions] objectEnumerator];
+    while ((aSession = [sessionEnumerator nextObject]) != nil)
+	[aSession timerTick: sender];    
+
 }
 
 - (ITSessionMgr*)sessionMgr;
@@ -473,6 +505,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal dealloc: 0x%x]", __FILE__, __LINE__, self);
 #endif
+    [timer release];
     [self releaseObjects];
     [_toolbarController release];
         
@@ -800,7 +833,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         if ([[_sessionMgr sessionAtIndex: i] exited]==NO)
             [[[_sessionMgr sessionAtIndex: i] SHELL] stopNoWait];
     }
-    
+
+    [timer invalidate];
     [self releaseObjects];
 
     // Release our window postion

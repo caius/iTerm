@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.5 2003-08-13 05:05:43 sgehrman Exp $
+// $Id: PseudoTerminal.h,v 1.6 2003-09-30 16:00:45 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -47,6 +47,7 @@
     BOOL tabViewDragOperationInProgress;
     BOOL resizeInProgress;
     BOOL windowInited;
+    NSTimer *timer;
 }
 
 - (id)init;

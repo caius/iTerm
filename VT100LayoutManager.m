@@ -29,7 +29,8 @@
 #import <iTerm/VT100LayoutManager.h>
 #import <iTerm/VT100Typesetter.h>
 
-#define DEBUG_METHOD_TRACE    0
+#define DEBUG_METHOD_TRACE    	0
+#define DEBUG_ALLOC		0
 
 @implementation VT100LayoutManager
 
@@ -91,5 +92,21 @@
     [super textStorage: aTextStorage edited: mask range: range changeInLength: lengthChange invalidatedRange: invalidatedCharRange];
 }
 
+- (id) init
+{
+#if DEBUG_ALLOC
+    NSLog(@"VT100LayoutManager: init");
+#endif
+    self = [super init];
+    return self;
+}
+
+- (void) dealloc
+{
+#if DEBUG_ALLOC
+    NSLog(@"VT100LayoutManager: dealloc");
+#endif
+    [super dealloc];
+}
 
 @end

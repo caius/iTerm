@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.15 2003-09-08 19:39:36 ujwal Exp $
+// $Id: iTermController.m,v 1.16 2003-09-10 20:36:45 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -404,9 +404,10 @@ static BOOL usingAutoLaunchScript = NO;
         term = theTerm;
     
     // Initialize a new session
-    aSession = [[[PTYSession alloc] init] autorelease];
+    aSession = [[PTYSession alloc] init];
     // Add this session to our term and make it current
     [term addInSessions: aSession];
+    [aSession release];
 
     // set our preferences
     [aSession setAddressBookEntry:entry];

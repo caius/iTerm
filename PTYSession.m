@@ -94,6 +94,18 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession dealloc 0x%x]", __FILE__, __LINE__, self);
 #endif
 
+    [SHELL release];
+    SHELL = nil;
+
+    [SCREEN release];
+    SCREEN = nil;
+    [TERMINAL release];
+    TERMINAL = nil;    
+    
+    [textStorage release];
+    textStorage = nil;
+    
+    
     [TERM_VALUE release];
     [SCROLLVIEW release];
     [name release];
@@ -144,21 +156,24 @@ static NSString *PWD_ENVVALUE = @"~";
 
     if([[PreferencePanel sharedInstance] enforceCharacterAlignment] == YES)
     {
-        VT100LayoutManager* aLayoutManager = [[[VT100LayoutManager alloc] init] autorelease];
+        VT100LayoutManager* aLayoutManager = [[VT100LayoutManager alloc] init];
 	VT100Typesetter *aTypesetter;
 	NSTextContainer *aTextContainer;
 
 	textStorage = [[VT100TextStorage alloc] init];
 	[textStorage addLayoutManager:aLayoutManager];
+	[aLayoutManager release];
 
-        aTextContainer = [[[NSTextContainer alloc] initWithContainerSize: NSMakeSize(aSize.width, 1e7)] autorelease];
+        aTextContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize(aSize.width, 1e7)];
 	[aLayoutManager addTextContainer:aTextContainer];
+	[aTextContainer release];
 
-        aTypesetter = [[[VT100Typesetter alloc] init] autorelease];
+        aTypesetter = [[VT100Typesetter alloc] init];
 	[aTypesetter setScreen: SCREEN];
 	[aLayoutManager setTypesetter: aTypesetter];
+	[aTypesetter release];
 
-        TEXTVIEW = [[[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer] autorelease];
+        TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
 	[aTextContainer setWidthTracksTextView:YES];
 	[aTextContainer setHeightTracksTextView:NO];
 	[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
@@ -174,6 +189,15 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     
 #endif
+
+    // assign terminal and task objects
+    [SCREEN setShellTask:SHELL];
+    [SCREEN setTextStorage:[TEXTVIEW textStorage]];
+    [SCREEN setTerminal:TERMINAL];
+    [TERMINAL setScreen: SCREEN];
+    [SHELL setDelegate:self];
+
+    [TEXTVIEW setDataSource: SCREEN];
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [[PreferencePanel sharedInstance] antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
@@ -219,7 +243,6 @@ static NSString *PWD_ENVVALUE = @"~";
     if ([env objectForKey:PWD_ENVNAME] == nil)
         [env setObject:[PWD_ENVVALUE stringByExpandingTildeInPath] forKey:PWD_ENVNAME];
 
-    [SHELL setDelegate:self];
     [SHELL launchWithPath:path
 		arguments:argv
 	      environment:env
@@ -232,7 +255,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) terminate
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYSession -terminate]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[PTYSession -terminate: retainCount = %d]", __FILE__, __LINE__, [self retainCount]);
 #endif
 
     [SHELL sendSignal: SIGHUP];
@@ -244,21 +267,16 @@ static NSString *PWD_ENVVALUE = @"~";
     [addressBookEntry release];
     addressBookEntry = nil;
 
-    [SHELL release];
-    SHELL    = nil;
-
-    [TERMINAL release];
-    TERMINAL = nil;
-
+    [SHELL setDelegate:nil];
+    [SCREEN setShellTask:nil];
+    [SCREEN setSession: nil];
+    [SCREEN setTerminal: nil];
+    [TERMINAL setScreen: nil];
     [TEXTVIEW setDataSource: nil];
     [TEXTVIEW removeFromSuperview];
-    
-    [textStorage release];
-    textStorage = nil;
-    
-    [SCREEN release];
-    SCREEN   = nil;
+    [self setTabViewItem: nil];    
 
+    
     if (timer)
     {
         [timer invalidate];

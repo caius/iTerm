@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.139 2003-09-10 17:25:12 ujwal Exp $
+// $Id: VT100Screen.m,v 1.140 2003-09-10 20:36:44 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -362,6 +362,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)setSession:(PTYSession *)session
 {
+    [SESSION release];
     [session retain];
     SESSION=session;
 }
@@ -372,10 +373,10 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen setTerminal:%@]",
 	  __FILE__, __LINE__, terminal);
 #endif
+    [TERMINAL release];
     [terminal retain];
     TERMINAL = terminal;
     
-    [TERMINAL setScreen: self];
 }
 
 - (VT100Terminal *)terminal
@@ -392,6 +393,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen setShellTask:%@]",
 	  __FILE__, __LINE__, shell);
 #endif
+    [SHELL release];
     [shell retain];
     SHELL = shell;
 }

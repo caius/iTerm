@@ -1,7 +1,6 @@
 2003-09-10	ujwal
 
-    * Fixed big memory leak where text view and scrollview were not being 
-      released.
+    * Fixed massive memory leaks.
 
 2003-09-09	ujwal
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.225 2003-09-10 15:01:30 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.226 2003-09-10 20:36:44 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -206,16 +206,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // Set the blinking cursor option
     [[aSession SCREEN] setBlinkingCursor: [[PreferencePanel sharedInstance] blinkingCursor]];
 
-    // assign terminal and task objects
-    [[aSession SCREEN] setTerminal:[aSession TERMINAL]];
-    [[aSession SCREEN] setShellTask:[aSession SHELL]];
-    [[aSession TEXTVIEW] setDataSource: [aSession SCREEN]];
 #if USE_CUSTOM_DRAWING
     [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
     [[aSession TEXTVIEW] setLineHeight: [[aSession SCREEN] characterSize].height];
     [[aSession TEXTVIEW] setLineWidth: WIDTH * [VT100Screen fontSize: FONT].width];
-#else
-    [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
 #endif
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
@@ -310,7 +304,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	NSParameterAssert(aTabViewItem != nil);
 	[aTabViewItem setLabel: [aSession name]];
 	[aTabViewItem setView: [aSession SCROLLVIEW]];
-	[[aSession SCROLLVIEW] release];
 	[[aSession SCROLLVIEW] setVerticalPageScroll: 0.0];
 	[TABVIEW insertTabViewItem: aTabViewItem atIndex: index];
 

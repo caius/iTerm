@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.89 2003-09-08 18:04:11 ujwal Exp $
+// $Id: PTYTextView.m,v 1.90 2003-09-10 20:36:44 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1439,7 +1439,7 @@
 
 - (void)setDataSource: (id) aDataSource
 {
-    [dataSource autorelease];
+    [dataSource release];
     dataSource = [aDataSource retain];
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.42 2004-04-20 15:43:10 ujwal Exp $
+// $Id: PTYTextView.h,v 1.43 2004-04-27 00:28:17 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -176,7 +176,6 @@ typedef struct
 - (void)setCursorColor:(NSColor*) color;
 - (void) setSelectedTextColor: (NSColor *) aColor;
 - (void) setCursorTextColor:(NSColor*) color;
-- (void) forceUpdate;
 
 
 - (NSDictionary*) markedTextAttributes;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.211 2004-04-20 15:55:51 ujwal Exp $
+// $Id: PTYTextView.m,v 1.212 2004-04-27 00:28:16 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -648,11 +648,6 @@ static SInt32 systemVersion;
 -(void) showCursor
 {
     CURSOR=YES;
-}
-
--(void) forceUpdate
-{
-	forceUpdate = YES;
 }
 
 - (void)drawRect:(NSRect)rect

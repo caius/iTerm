@@ -1853,6 +1853,28 @@
 //F52
 //F53
 //F54
+//F60
+//F61
+//F62
+//F63
+//F64
+		F6FAFD99050E90C300EA4EE7 = {
+			isa = PBXFileReference;
+			name = contrib.png;
+			path = website/contrib.png;
+			refType = 4;
+		};
+		F6FAFD9A050E90C300EA4EE7 = {
+			isa = PBXFileReference;
+			name = "iTerm-orig.png";
+			path = "website/iTerm-orig.png";
+			refType = 4;
+		};
+//F60
+//F61
+//F62
+//F63
+//F64
 //FB0
 //FB1
 //FB2
@@ -2024,6 +2046,8 @@
 				FBDF6B94042A6BD801F955DB,
 				FBDF6B95042A6BD801F955DB,
 				FBDF6B96042A6BD801F955DB,
+				F6FAFD99050E90C300EA4EE7,
+				F6FAFD9A050E90C300EA4EE7,
 				FBDF6B97042A6BD801F955DB,
 				FBDF6B98042A6BD801F955DB,
 				FBDF6B99042A6BD801F955DB,

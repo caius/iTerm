@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.45 2003-02-21 22:12:09 yfabian Exp $
+// $Id: VT100Screen.m,v 1.46 2003-02-22 00:00:31 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -172,7 +172,7 @@ static BOOL PLAYBELL = YES;
     for(i=0;i<300;i++) spaces[i]=' ';
     for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
 
-    BUFFER=[[[NSMutableAttributedString alloc] init] retain];
+    BUFFER=[[NSMutableAttributedString alloc] init];
     
     return self;
 }
@@ -184,6 +184,9 @@ static BOOL PLAYBELL = YES;
 #endif
 
     [FONT release];
+
+    if(BUFFER != nil)
+	[BUFFER release];
 
     [super dealloc];
 }

@@ -3,6 +3,10 @@
     * Manually firing screen update timer after a keyDown 
       to make user input more responsive.
       
+    * Fixed memory leak by properly releasing BUFFER in 
+      VT100Screen: -dealloc. Also no need to retain 
+      BUFFER after alloc and init.
+      
 
 2003-02-21	fabian
     * Fixed a bug in function key mapping: F1~F12

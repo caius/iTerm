@@ -1,3 +1,7 @@
+2004-04-18  ujwal
+
+	* Potential fix for dead key and key repeat issue.
+
 2004-04-16  ujwal
 
 	* Honoring anti-aliasing for bold also. We don't use strokewidth for 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.207 2004-04-18 04:49:48 ujwal Exp $
+// $Id: PTYTextView.m,v 1.208 2004-04-18 08:05:30 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -143,7 +143,6 @@ static SInt32 systemVersion;
 	[nafont release];
     [markedTextAttributes release];
 	[markedText release];
-	
 	
     [self resetCharCache];
     [super dealloc];
@@ -953,27 +952,29 @@ static SInt32 systemVersion;
 #endif
     
     // Hide the cursor
-    [NSCursor setHiddenUntilMouseMoves: YES];    
-    
+    [NSCursor setHiddenUntilMouseMoves: YES];   
+	
+	[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+    	
     // Check for dead keys
 	if([[self delegate] optionKey] == OPT_NORMAL)
 	{
 		if (deadkey) {
-			[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+			//[self interpretKeyEvents:[NSArray arrayWithObject:event]];
 			deadkey=[self hasMarkedText];
 			return;
 		}
 		else if ([[event characters] length]<1) {
 			deadkey=YES;
-			[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+			//[self interpretKeyEvents:[NSArray arrayWithObject:event]];
 			return;
 		}
 	}
-    
+	    
     if (IMEnable) {
         BOOL prev = [self hasMarkedText];
         IM_INPUT_INSERT = NO;
-        [self interpretKeyEvents:[NSArray arrayWithObject:event]];
+        //[self interpretKeyEvents:[NSArray arrayWithObject:event]];
         
 #if GREED_KEYDOWN
         if (prev == NO &&
@@ -1769,10 +1770,14 @@ static SInt32 systemVersion;
 		markedText=nil;
     }
     
-    if ([_delegate respondsToSelector:@selector(insertText:)])
-        [_delegate insertText:aString];
-    else
-        [super insertText:aString];
+	if(deadkey)
+	{
+		if ([_delegate respondsToSelector:@selector(insertText:)])
+			[_delegate insertText:aString];
+		else
+			[super insertText:aString];
+	}
+	
 }
 
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange
@@ -1874,7 +1879,7 @@ static SInt32 systemVersion;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView conversationIdentifier]", __FILE__, __LINE__);
 #endif
-    return [self hash]; //not sure about this
+    return (long)self; //not sure about this
 }
 
 - (NSRect)firstRectForCharacterRange:(NSRange)theRange

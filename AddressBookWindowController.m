@@ -448,8 +448,8 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         [adTransparency2 setIntValue:[[entry objectForKey:@"Transparency"] intValue]];
     }
     else {
-        [adTransparency setIntValue:[[self preferences] transparency]];
-        [adTransparency2 setIntValue:[[self preferences] transparency]];
+        [adTransparency setIntValue:10];
+        [adTransparency2 setIntValue:10];
     }
     if ([entry objectForKey:@"Directory"]) {
         [adDir setStringValue:[entry objectForKey:@"Directory"]];
@@ -470,10 +470,12 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [adNATextExample setTextColor:[entry objectForKey:@"Foreground"]];
     [adNATextExample setBackgroundColor:[entry objectForKey:@"Background"]];
     [adNATextExample setFont:aeNAFont];
-    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[[self preferences] ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
-    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[[self preferences] aiCode]:[[entry objectForKey:@"AICode"] intValue]];
-    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?[[self preferences] autoclose]:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
+    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?NO:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
+    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?0:[[entry objectForKey:@"AICode"] intValue]];
+    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?NO:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
     [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?[[self preferences] doubleWidth]:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
+    [adRemapDeleteKey setState:([entry objectForKey:@"RemapDeleteKey"]==nil?NO:[[entry objectForKey:@"RemapDeleteKey"] boolValue])?NSOnState:NSOffState];
+
 
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
@@ -790,6 +792,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 	[NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
 	[NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
 	[NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
+	[NSNumber numberWithBool:([adRemapDeleteKey state]==NSOnState)],@"RemapDeleteKey",
 	[NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
 	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
 	NULL];

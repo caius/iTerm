@@ -1,3 +1,7 @@
+2003-05-22	ujwal
+
+    * Moved "Remap Delete Key" preference to addressbook session.
+
 2003-05-19	ujwal
 
     * Consolidation of preferences into "Default Session" of 

@@ -52,6 +52,7 @@
     IBOutlet id adAI;
     IBOutlet id adAICode;
     IBOutlet id adClose;
+    IBOutlet NSButton *adRemapDeleteKey;
     IBOutlet id adDoubleWidth;
     IBOutlet id adShortcut;
     IBOutlet NSTextField *adNATextExample;

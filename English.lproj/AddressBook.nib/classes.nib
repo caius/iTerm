@@ -35,6 +35,7 @@
                 adForeground = NSColorWell; 
                 adNATextExample = NSTextField; 
                 adName = NSTextField; 
+                adRemapDeleteKey = NSButton; 
                 adRow = id; 
                 adSelection = NSColorWell; 
                 adShortcut = id; 

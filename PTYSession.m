@@ -495,7 +495,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 
 	    // Check if we want to remap the delete key to backspace
-	    if((unicode == NSDeleteCharacter) && [[parent preference] remapDeleteKey])
+	    if((unicode == NSDeleteCharacter) && [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue])
 		data = [TERMINAL keyBackspace];
 
 	    if (data != nil ) {

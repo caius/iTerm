@@ -75,20 +75,26 @@ static ITConfigPanelController *singleInstance = nil;
 	}
 }
 
-- (id)init;
+- (id)init
 {
     self = [super init];
     
     return self;
 }
 
-- (void)dealloc;
+- (void)dealloc
 {
     [backgroundImagePath release];
     backgroundImagePath = nil;
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	singleInstance = nil;
     [super dealloc];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+    // Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -100,7 +106,7 @@ static ITConfigPanelController *singleInstance = nil;
     [self autorelease];
 }
 
-- (void)windowDidLoad;
+- (void)windowDidLoad
 {
     [ITViewLocalizer localizeWindow:[self window] table:@"configPanel" bundle:[NSBundle bundleForClass: [self class]]];
 }
@@ -140,7 +146,11 @@ static ITConfigPanelController *singleInstance = nil;
 
 - (IBAction) setTransparency: (id) sender
 {
-	[[_pseudoTerminal currentSession] setTransparency:  [CONFIG_TRANSPARENCY floatValue]/100.0];
+	[[_pseudoTerminal currentSession] setTransparency:  [sender floatValue]/100.0];
+	if(sender == CONFIG_TRANS2)
+		[CONFIG_TRANSPARENCY setFloatValue:([[_pseudoTerminal currentSession] transparency]*100)];
+	else if (sender == CONFIG_TRANSPARENCY)
+		[CONFIG_TRANS2 setFloatValue:([[_pseudoTerminal currentSession] transparency]*100)];
 }
 
 - (IBAction) setForegroundColor: (id) sender
@@ -513,8 +523,8 @@ static ITConfigPanelController *singleInstance = nil;
         p++;
     }
     [CONFIG_ENCODING selectItemAtIndex:r];
-    [CONFIG_TRANSPARENCY setIntValue:(int)([currentSession transparency]*100)];
-    [CONFIG_TRANS2 setIntValue:(int)([currentSession transparency]*100)];
+    [CONFIG_TRANSPARENCY setFloatValue:([currentSession transparency]*100)];
+    [CONFIG_TRANS2 setFloatValue:([currentSession transparency]*100)];
     [AI_ON setState:[currentSession antiIdle]?NSOnState:NSOffState];
     [AI_CODE setIntValue:[currentSession antiCode]];
     

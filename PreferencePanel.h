@@ -67,6 +67,7 @@
     IBOutlet id promptOnClose;
     IBOutlet id remapDeleteKey;
     IBOutlet id row;
+    IBOutlet id scrollbackLines;
     IBOutlet id selectionColor;
     IBOutlet id shell;
     IBOutlet id silenceBell;
@@ -88,6 +89,7 @@
     
     int defaultCol;
     int defaultRow;
+    unsigned int defaultScrollback;
     
     NSStringEncoding defaultEncoding;
     NSString* defaultShell;
@@ -137,6 +139,7 @@
 - (NSColor*) foreground;
 - (int) col;
 - (int) row;
+- (unsigned int) scrollbackLines;
 - (NSStringEncoding) encoding;
 - (NSString*) shell;
 - (NSString*) terminalType;

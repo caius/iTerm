@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.88 2003-04-29 00:24:06 ujwal Exp $
+// $Id: VT100Screen.m,v 1.89 2003-04-29 17:11:05 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -46,7 +46,7 @@
 #define DEFAULT_HEIGHT    25
 #define DEFAULT_FONTNAME  @"Osaka-Mono"
 #define DEFAULT_FONTSIZE  14
-#define DEFAULT_LINELIMIT 1000000
+#define DEFAULT_SCROLLBACK 1000
 
 #define MIN_WIDTH     10
 #define MIN_HEIGHT    3
@@ -175,7 +175,7 @@ static BOOL PLAYBELL = YES;
     SHELL = nil;
 
     TOP_LINE  = 0;
-    LINE_LIMIT = DEFAULT_LINELIMIT;
+    scrollbackLines = DEFAULT_SCROLLBACK;
     OLD_CURSOR_INDEX=-1;
     [self clearTabStop];
     
@@ -323,6 +323,16 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen height]", __FILE__, __LINE__);
 #endif
     return HEIGHT;
+}
+
+- (unsigned int)scrollbackLines
+{
+    return scrollbackLines;
+}
+
+- (void)setScrollback:(unsigned int)lines;
+{
+    scrollbackLines=lines;
 }
 
 - (void)setSession:(PTYSession *)session
@@ -494,15 +504,6 @@ static BOOL PLAYBELL = YES;
 - (NSSize) characterSize
 {
     return [VT100Screen requireSizeWithFont: [self tallerFont]];
-}
-
-- (void)setLineLimit:(unsigned int)maxline
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen setLineLimit:%d]",
-	  __FILE__, __LINE__, maxline);
-#endif
-    LINE_LIMIT = maxline;
 }
 
 - (void)putToken:(VT100TCC)token
@@ -1253,7 +1254,6 @@ static BOOL PLAYBELL = YES;
 	[aLine release];
 #endif
         TOP_LINE++;
-        [self removeOverLine];
 	
     }
     else {
@@ -2078,18 +2078,23 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen removeOverLine]",  __FILE__, __LINE__);
 #endif
 
-    if (TOP_LINE + HEIGHT > LINE_LIMIT) {
+    if (TOP_LINE > scrollbackLines) {
 #if DEBUG_USE_BUFFER
 	int idx;
-	NSString *s=[BUFFER string];
+	NSString *s=[STORAGE string];
 #endif
-	int over = TOP_LINE + HEIGHT - LINE_LIMIT;
+	int over = TOP_LINE - scrollbackLines;
         int i;
 
 #if DEBUG_USE_BUFFER
         for(i=0,idx=0;i<over;idx++)
             if ([s characterAtIndex:idx]=='\n') i++;
-        [BUFFER deleteCharactersInRange:NSMakeRange(0, idx+1)];
+        [STORAGE deleteCharactersInRange:NSMakeRange(0, idx)];
+        if (idx<updateIndex) updateIndex-=idx;
+        else {
+            [BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];
+            updateIndex=0;
+        }
 #endif
 	
 
@@ -2391,6 +2396,7 @@ static BOOL PLAYBELL = YES;
     //NSLog(@"updated: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
     //if ([BUFFER length]>[STORAGE length]) NSLog(@"%@",BUFFER);
     [self renewBuffer];
+    [self removeOverLine];
     //NSLog(@"renewed: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
     [[SESSION TEXTVIEW] setCursorIndex:[self getTVIndex:CURSOR_X y:CURSOR_Y]];
     //NSLog(@"showCursor");

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.55 2003-04-29 00:24:06 ujwal Exp $
+// $Id: MainMenu.m,v 1.56 2003-04-29 17:11:03 yfabian Exp $
 /*
  **  MainMenu.m
  **
@@ -179,10 +179,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (IBAction)newWindow:(id)sender
 {
     PseudoTerminal *term;
-    PTYSession *aSession;
-    NSString *cmd;
-    NSArray *arg;
-    int i;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[MainMenu newWindow]",
@@ -194,31 +190,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [term release];
     
     [term setPreference:PREF_PANEL];
-    [MainMenu breakDown:[PREF_PANEL shell] cmdPath:&cmd cmdArgs:&arg];
-    //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-    aSession = [[PTYSession alloc] init];
-    // Add this session to our term and make it current
-    [term addInSessions: aSession];
-    [aSession release];
-    
-    [aSession setForegroundColor: [PREF_PANEL foreground]];
-    [aSession setBackgroundColor: [[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]];
-    [aSession setSelectionColor: [PREF_PANEL selectionColor]];
-    [aSession setBoldColor: [PREF_PANEL boldColor]];
-    [aSession setEncoding: [PREF_PANEL encoding]];
-    // term value
-    [aSession setTERM_VALUE: [PREF_PANEL terminalType]];
-
-    
-    [term startProgram:cmd arguments:arg];
-    [term setCurrentSessionName:nil];
-    [[term currentSession] setAutoClose:[PREF_PANEL autoclose]];
-    [[term currentSession] setDoubleWidth:[PREF_PANEL doubleWidth]];
-    for(i=0;i<8;i++) {
-        [[term currentSession] setColorTable:i highLight:NO color:[PREF_PANEL colorFromTable:i highLight:NO]];
-        [[term currentSession] setColorTable:i highLight:YES color:[PREF_PANEL colorFromTable:i highLight:YES]];
-    }
-    
+    [term newSession:nil];
 }
 
 - (IBAction)newSession:(id)sender

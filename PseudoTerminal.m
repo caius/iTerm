@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.164 2003-04-29 15:18:17 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.165 2003-04-29 17:11:04 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -219,6 +219,7 @@ static int windowCount = 0;
     [[aSession SCREEN] setTextStorage:[[aSession TEXTVIEW] textStorage]];
 #endif
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
+    [[aSession SCREEN] setScrollback:[pref scrollbackLines]];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
 
     // set up default encoding and terminal type
@@ -1747,13 +1748,6 @@ static int windowCount = 0;
 {
     // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x atIndex: %d", object, index);
     [self setupSession: object title: nil];
-    [object setForegroundColor: [pref foreground]];
-    [object setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
-    [object setSelectionColor: [pref selectionColor]];
-    [object setBoldColor: [pref boldColor]];
-    [object setEncoding: [pref encoding]];
-    // term value
-    [object setTERM_VALUE: [pref terminalType]];
     [self insertSession: object atIndex: index];
 }
 

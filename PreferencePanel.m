@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.40 2003-04-28 02:03:58 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.41 2003-04-29 17:11:04 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -47,6 +47,7 @@ static NSFont* FONT;
 
 static int   COL   = 80;
 static int   ROW   = 25;
+static unsigned int  SCROLLBACK = 100000;
 
 static NSString* TERM    =@"xterm";
 static NSString* SHELL   =@"/bin/bash --login";
@@ -225,6 +226,7 @@ static int TRANSPARENCY  =10;
 
     defaultCol=([prefs integerForKey:@"Col"]?[prefs integerForKey:@"Col"]:COL);
     defaultRow=([prefs integerForKey:@"Row"]?[prefs integerForKey:@"Row"]:ROW);
+    defaultScrollback=([prefs integerForKey:@"Scrollback"]?[prefs integerForKey:@"Scrollback"]:SCROLLBACK);
     defaultTransparency=([prefs stringForKey:@"Transparency"]!=nil?[prefs integerForKey:@"Transparency"]:TRANSPARENCY);
     defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
 
@@ -372,6 +374,7 @@ static int TRANSPARENCY  =10;
     
     [row setIntValue:defaultRow];
     [col setIntValue:defaultCol];
+    [scrollbackLines setIntValue:defaultScrollback];
     [transparency setIntValue:defaultTransparency];
     [transparency_control setIntValue:defaultTransparency];
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
@@ -500,6 +503,7 @@ static int TRANSPARENCY  =10;
     
     defaultCol=[col intValue];
     defaultRow=[row intValue];
+    defaultScrollback=[scrollbackLines intValue];
     
     defaultEncoding=encodingList[[encoding indexOfSelectedItem]];
     defaultShell=[shell stringValue];
@@ -619,6 +623,7 @@ static int TRANSPARENCY  =10;
     
     defaultCol=COL;
     defaultRow=ROW;
+    defaultScrollback=SCROLLBACK;
     
     defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     defaultShell=[SHELL copy];
@@ -671,6 +676,7 @@ static int TRANSPARENCY  =10;
     
     [row setIntValue:defaultRow];
     [col setIntValue:defaultCol];
+    [scrollbackLines setIntValue:defaultScrollback];
     [transparency setIntValue:defaultTransparency];
     
     [fontExample setTextColor:defaultForeground];
@@ -710,6 +716,11 @@ static int TRANSPARENCY  =10;
 - (int) row
 {
     return defaultRow;
+}
+
+- (unsigned int) scrollbackLines
+{
+    return defaultScrollback;
 }
 
 - (NSStringEncoding) encoding

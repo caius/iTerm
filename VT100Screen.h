@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.29 2003-04-29 00:24:06 ujwal Exp $
+// $Id: VT100Screen.h,v 1.30 2003-04-29 17:11:05 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -62,7 +62,7 @@
     NSMutableArray *screenLines;
     
     unsigned int  TOP_LINE;
-    unsigned int  LINE_LIMIT;
+    unsigned int  scrollbackLines;
     int OLD_CURSOR_INDEX;
     int screenLock;
 
@@ -87,6 +87,8 @@
 - (void)resizeWidth:(int)width height:(int)height;
 - (int)width;
 - (int)height;
+- (unsigned int)scrollbackLines;
+- (void)setScrollback:(unsigned int)lines;
 
 - (void)setTerminal:(VT100Terminal *)terminal;
 - (VT100Terminal *)terminal;
@@ -100,7 +102,6 @@
 - (NSFont *)font;
 - (NSFont *)nafont;
 - (NSFont *)tallerFont;
-- (void)setLineLimit:(unsigned int)maxline;
 - (NSSize) characterSize;
 
 - (NSView *) display;

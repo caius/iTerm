@@ -4,6 +4,7 @@
         1. speed is much slower (~2x), 
         2. change font with a large scrollback buffer takes for
            ever (due to re-layout, I think).
+    * Added double width character support in VT100Typesetter.
            
 2003-06-09	ujwal
 

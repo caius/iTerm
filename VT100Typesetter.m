@@ -30,6 +30,8 @@
 
 #define DEBUG_METHOD_TRACE    0
 
+#define ISDOUBLEWIDTHCHARACTER(idx) ([[[layoutMgr textStorage] attribute:@"NSCharWidthAttributeName" atIndex:(idx) effectiveRange:nil] intValue]==2)
+
 @implementation VT100Typesetter
 
 
@@ -51,8 +53,8 @@
     int i, j, length;
     BOOL atEnd, isValidIndex, lineEndCharExists;
     NSString *theString;
-    NSRange characterRange, glyphRange, gr;
-    float x;
+    NSRange characterRange, glyphRange;
+    float x, y, w;
 
 
     // grab the text container; we should have only one
@@ -108,22 +110,28 @@
 
 	// get the corresponding character index
 	charIndex = [layoutMgr characterIndexForGlyphAtIndex: glyphIndex];
-	
-	// go to the beginning of the line
-	j = charIndex;
-	while (j >= 0)
-	{
-	    if([theString characterAtIndex: j] == '\n')
-		break;
-	    j--;
-	}
-	lineStartIndex = j + 1;
-	if(lineStartIndex  > charIndex)
-	    lineStartIndex = charIndex;
+        if (charIndex==0) {
+            x=0;
+            y=0;
+        }
+        else {
+            NSRect lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: charIndex-1 effectiveRange: nil];
+            if ([theString characterAtIndex: charIndex-1] == '\n') {
+                x=0;
+                y=lastGlyphRect.origin.y + [font defaultLineHeightForFont];
+            }
+            else {
+                x = lastGlyphRect.origin.x + ISDOUBLEWIDTHCHARACTER(charIndex-1)?charWidth*2:charWidth;
+                y = lastGlyphRect.origin.y;
+            }
+        }
+        
+	lineStartIndex = charIndex;
 	
 
 	// go to the end of the line
 	j = charIndex;
+        w=0;
 	while (j < length)
 	{
 	    if([theString characterAtIndex: j] == '\n')
@@ -131,6 +139,7 @@
 		lineEndCharExists = YES;
 		break;
 	    }
+            w+=ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 	    j++;
 	}
 	// Check if we reached the end of the text
@@ -144,40 +153,31 @@
 
 	// build the line
 	characterRange = NSMakeRange(lineStartIndex, lineEndIndex-lineStartIndex+1);
+        lineRect = NSMakeRect(x, y, [textContainer containerSize].width - x, [font defaultLineHeightForFont]);	
 	glyphRange = [layoutMgr glyphRangeForCharacterRange: characterRange actualCharacterRange: nil];
 
-	// calculate the line fragment rectangle
-	if(lineStartIndex == 0)
-	{
-	    lineRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
-	}
-	else
-	{
-	    NSRect lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
-	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont], [textContainer containerSize].width, [font defaultLineHeightForFont]);
-	}
-	
+
 	// Now fill the line
 	NSRect usedRect = lineRect;
-	usedRect.size.width = (glyphRange.length) * charWidth + 2*lineFragmentPadding;
+	usedRect.size.width = w;
 	if(usedRect.size.width > lineRect.size.width)
 	    usedRect.size.width = lineRect.size.width;
 	[layoutMgr setTextContainer: textContainer forGlyphRange: glyphRange];
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
-        gr=NSMakeRange(glyphRange.location,1);
-        x=0;
-        for(j=0;j<=lineEndIndex-lineStartIndex;j++,x+=charWidth) {
-            [layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: gr];
-            gr.location++;
+        glyphRange=NSMakeRange(glyphRange.location,1);
+        for(j=lineStartIndex;j<=lineEndIndex;j++) {
+            [layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
+            glyphRange.location++;
+            x+=ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
         }
         
 	if(lineEndCharExists == YES)
 	{
-	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
+	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location  - 1];
 	}
 
 	// set the glyphIndex for the next run
-	glyphIndex = glyphRange.location + glyphRange.length;
+	glyphIndex = glyphRange.location;
 	
 	// if we are at the end of the text, get out
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];

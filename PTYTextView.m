@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.64 2003-05-18 06:56:18 ujwal Exp $
+// $Id: PTYTextView.m,v 1.65 2003-05-18 07:02:11 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1788,17 +1788,11 @@
 	return (YES);
     }
     else if ([item action]==@selector(mail:) || 
-             [item action]==@selector(browse:)) 
+             [item action]==@selector(browse:) ||
+	     [item action] == @selector(printSelection:)) 
     {
 //        NSLog(@"selected range:%d",[self selectedRange].length);
 	return ([self selectedRange].length>0);
-    }
-    else if ([item action] == @selector(printSelection:))
-    {
-	if([self selectedRange].length <= 0)
-	    return (NO);
-	else
-	    return (YES);
     }
     else
         return [super validateMenuItem:item];

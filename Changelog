@@ -2,6 +2,7 @@
 
 	* Fixed "Send Inout to All Tabs" and "Paste".
 	* Fixed selection of complete line by dragging.
+	* Fixed +ESC behaviour.
 
 2004-03-03  ujwal
 

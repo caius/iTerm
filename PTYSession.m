@@ -355,7 +355,6 @@ static NSString *PWD_ENVVALUE = @"~";
     unsigned char *dataPtr = NULL;
     int dataLength = 0;
     size_t send_strlen = 0;
-    int send_chr = -1;
     int send_pchr = -1;
 	int keyBindingAction;
 	NSString *keyBindingText;
@@ -504,7 +503,6 @@ static NSString *PWD_ENVVALUE = @"~";
 			}
             if ([[PreferencePanel sharedInstance] option] == OPT_ESC) {
 				send_pchr = '\e';
-				//                send_chr=unmodkeystr;
             }
 			else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) 
             {
@@ -597,19 +595,15 @@ static NSString *PWD_ENVVALUE = @"~";
 				char c = send_pchr;
 				dataPtr = &c;
 				dataLength = 1;
+				[self writeTask:[NSData dataWithBytes:dataPtr length:dataLength]];
 			}
-			if (send_chr >= 0) {
-				char c = send_chr;
-				dataPtr = &c;
-				dataLength = 1;
-			}
+
 			if (send_str != NULL) {
 				dataPtr = send_str;
 				dataLength = send_strlen;
+				[self writeTask:[NSData dataWithBytes:dataPtr length:dataLength]];
 			}
-			
-			[self writeTask:[NSData dataWithBytes:dataPtr length:dataLength]];
-			
+						
 		}
     }
 }

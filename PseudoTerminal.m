@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.187 2003-05-31 20:00:15 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.188 2003-06-02 15:45:00 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1622,29 +1622,31 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)saveSession:(id)sender
 {
-    NSDictionary *new, *old=[currentPtySession addressBookEntry];
+    NSDictionary *new, *old;
+
+    old=[currentPtySession addressBookEntry];
+    
+    new=[[NSDictionary alloc] initWithObjectsAndKeys:
+	([[old objectForKey:@"Name"] isEqualToString:[currentPtySession name]]?[old objectForKey:@"Name"]:[self currentSessionName]),@"Name",
+	(old?[old objectForKey:@"Command"]:[[currentPtySession SHELL] path]),@"Command",
+	[NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]],@"Encoding",
+	[[currentPtySession TERMINAL] defaultFGColor],@"Foreground",
+	[[currentPtySession TERMINAL] defaultBGColor],@"Background",
+	[NSString stringWithInt:WIDTH],@"Col",
+	[NSString stringWithInt:HEIGHT],@"Row",
+	[NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",
+	[[self currentSession] TERM_VALUE],@"Term Type",
+	(old?[old objectForKey:@"Directory"]:@""),@"Directory",
+	[[currentPtySession SCREEN] font],@"Font",
+	[[currentPtySession SCREEN] nafont],@"NAFont",
+	[NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
+	[NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
+	[NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
+	[NSNumber numberWithBool:[[self currentSession] doubleWidth]],@"doubleWidth",
+	NULL];
+    
 
     if (old&&[[old objectForKey:@"Name"] isEqualToString:[currentPtySession name]]) {
-        new=[[NSDictionary alloc] initWithObjectsAndKeys:
-            [old objectForKey:@"Name"],@"Name",
-            [old objectForKey:@"Command"],@"Command",
-            [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]],@"Encoding",
-            [[currentPtySession TERMINAL] defaultFGColor],@"Foreground",
-            [[currentPtySession TERMINAL] defaultBGColor],@"Background",
-            [[currentPtySession TEXTVIEW] selectionColor],@"SelectionColor",
-            [NSString stringWithInt:WIDTH],@"Col",
-            [NSString stringWithInt:HEIGHT],@"Row",
-            [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",
-            [[self currentSession] TERM_VALUE],@"Term Type",
-            [old objectForKey:@"Directory"],@"Directory",
-            [[currentPtySession SCREEN] font],@"Font",
-            [[currentPtySession SCREEN] nafont],@"NAFont",
-            [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
-            [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
-            [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
-            [NSNumber numberWithBool:[[self currentSession] doubleWidth]],@"doubleWidth",
-            NULL];
-        //    NSLog(@"new entry:%@",ae);
         [MAINMENU replaceAddressBookEntry:old with:new];
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
                         [new objectForKey:@"Name"],
@@ -1654,25 +1656,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         
     }
     else {
-        new=[[NSDictionary alloc] initWithObjectsAndKeys:
-            [self currentSessionName],@"Name",
-            (old?[old objectForKey:@"Command"]:[[currentPtySession SHELL] path]),@"Command",
-            [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]],@"Encoding",
-            [[currentPtySession TERMINAL] defaultFGColor],@"Foreground",
-            [[currentPtySession TERMINAL] defaultBGColor],@"Background",
-            [NSString stringWithInt:WIDTH],@"Col",
-            [NSString stringWithInt:HEIGHT],@"Row",
-            [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",
-            [[self currentSession] TERM_VALUE],@"Term Type",
-            (old?[old objectForKey:@"Directory"]:@""),@"Directory",
-            [[currentPtySession SCREEN] font],@"Font",
-            [[currentPtySession SCREEN] nafont],@"NAFont",
-            [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
-            [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
-            [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
-            [NSNumber numberWithBool:[[self currentSession] doubleWidth]],@"doubleWidth",
-            NULL];
-        //    NSLog(@"new entry:%@",ae);
         [MAINMENU addAddressBookEntry: new];
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
                         [new objectForKey:@"Name"],

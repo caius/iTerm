@@ -213,6 +213,9 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem release];
         tabViewItem = nil;
     }
+    [addressBookEntry release];
+    addressBookEntry = nil;
+
     [SHELL release];
     [TERMINAL release];
     [SCREEN release];
@@ -1370,7 +1373,16 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setAddressBookEntry:(NSDictionary*) entry
 {
-    addressBookEntry=entry;
+    if (addressBookEntry != nil)
+    {
+	[addressBookEntry release];
+	addressBookEntry = nil;
+    }
+    if(entry != nil)
+    {
+	[entry retain];
+	addressBookEntry=entry;
+    }
 }
 
 - (NSDictionary *) addressBookEntry

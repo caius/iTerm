@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.141 2003-04-10 20:37:38 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.142 2003-04-11 15:24:09 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -817,7 +817,10 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, aNotification);
 #endif
 
-    [MAINMENU setFrontPseudoTerminal: self];    
+    [MAINMENU setFrontPseudoTerminal: self];
+
+    // update the cursor
+    [[currentPtySession SCREEN] showCursor];
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
@@ -828,6 +831,9 @@ static NSString *ConfigToolbarItem = @"Config";
 #endif
 
     [self windowDidResignMain: aNotification];
+
+    // update the cursor
+    [[currentPtySession SCREEN] showCursor];
 
 }
 

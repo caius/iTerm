@@ -1,3 +1,8 @@
+2003-04-11	ujwal
+
+    * Setting cursor color to a mix of foreground and 
+      background colors when window is inactive.
+
 2003-04-10	fabian
     * Fixed some bugs in setNeedsDisplayInRect of PTYTextView
     * Removed background attributes when background is default

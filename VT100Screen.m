@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.85 2003-04-10 20:37:39 yfabian Exp $
+// $Id: VT100Screen.m,v 1.86 2003-04-11 15:24:11 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1277,8 +1277,25 @@ static BOOL PLAYBELL = YES;
         }
         // reverse the video on the position where the cursor is supposed to be shown.
         dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
-        [dic setObject:[TERMINAL defaultFGColor] forKey:NSBackgroundColorAttributeName];
-        [dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
+	if([[self window] isKeyWindow] == YES)
+	{
+	    [dic setObject:[TERMINAL defaultFGColor] forKey:NSBackgroundColorAttributeName];
+	    [dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
+	}
+	else
+	{
+	    NSColor *aColor = [[TERMINAL defaultBGColor] blendedColorWithFraction: 0.5 ofColor: [TERMINAL defaultFGColor]];
+	    if(aColor != nil)
+	    {
+		[dic setObject: aColor forKey:NSBackgroundColorAttributeName];
+		//[dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
+	    }
+	    else
+	    {
+		[dic setObject:[TERMINAL defaultFGColor] forKey:NSBackgroundColorAttributeName];
+		[dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
+	    }
+	}
         //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
     }

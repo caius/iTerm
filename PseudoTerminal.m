@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.244 2003-10-02 23:14:55 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.245 2003-10-05 19:38:37 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -993,7 +993,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     WIDTH=w;
     HEIGHT=h;
 
-    [self setWindowSize: YES];
+    [self setWindowSize: NO];
 }
 
 // Contextual menu

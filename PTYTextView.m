@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.134 2004-02-23 09:13:57 ujwal Exp $
+// $Id: PTYTextView.m,v 1.135 2004-02-23 09:24:39 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -756,11 +756,12 @@
 			
 			bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
 			NSRectFill(bgRect);
-		}
-		// if we have a background image and we are using the background image, redraw image
-		if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
-		{
-			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+			
+			// if we have a background image and we are using the background image, redraw image
+			if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && [aColor isEqual: defaultBGColor])
+			{
+				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+			}			
 		}
 		
 		if (ulstart>=0) {
@@ -773,14 +774,15 @@
 			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
 			if (need_draw) { 	
 				[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
-				if (fg[j]&BLINK_MASK) { //if blink is set, switch the fg/bg color
-					t=fg[j]&0x1f;
-					fg[j]=(fg[j]&0xe0)+bg[j];
-					bg[j]=t;
-				}
-				else if(line>=startScreenLineIndex) 
-					dirty[j]=0;
 			}
+			if (buf[j] && (fg[j]&BLINK_MASK)) { //if blink is set, switch the fg/bg color
+				t=fg[j]&0x1f;
+				fg[j]=(fg[j]&0xe0)+bg[j];
+				bg[j]=t;
+			}
+			else if(line>=startScreenLineIndex) 
+				dirty[j]=0;
+			
 			curX+=charWidth;
 		}
 		//if (line>=startScreenLineIndex) memset(dirty,0,WIDTH);

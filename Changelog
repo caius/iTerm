@@ -1,3 +1,10 @@
+2002-12-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added Save/Print functionality.
+      Chinese NIBs and localized strings file need to be 
+      updated.
+
+
 2002-12-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed a bug that cause the tabview item label 

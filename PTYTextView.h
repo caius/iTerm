@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.2 2002-12-17 09:02:32 ujwal Exp $
+// $Id: PTYTextView.h,v 1.3 2002-12-21 23:28:19 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -61,6 +61,8 @@
 - (BOOL) performDragOperation: (id<NSDraggingInfo>) sender;
 - (void) concludeDragOperation: (id<NSDraggingInfo>) sender;
 
+// Save method
+- (void) saveDocumentAs: (id) sender;
 
 @end
 
@@ -70,6 +72,7 @@
 @interface PTYTextView (Private)
 
 - (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender;
+- (void) _savePanelDidEnd: (NSSavePanel *) theSavePanel returnCode: (int) theReturnCode contextInfo: (void *) theContextInfo;
 
 @end
 

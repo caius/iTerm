@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.6 2002-12-20 15:55:47 ujwal Exp $
+// $Id: PTYTextView.m,v 1.7 2002-12-21 23:28:19 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -242,7 +242,9 @@
         return YES;
     else if ([item action ] == @selector(cut:))
         return NO;
-    else if ([item action]==@selector(mail:)||[item action]==@selector(browse:)) {
+    else if ([item action]==@selector(mail:) || 
+             [item action]==@selector(browse:) || 
+             [item action]==@selector(saveDocumentAs:)) {
 //        NSLog(@"selected range:%d",[self selectedRange].length);
 	return ([self selectedRange].length>0);
     }
@@ -278,6 +280,8 @@
                          action:@selector(copy:) keyEquivalent:@""];
         [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Paste",@"iTerm",@"Context menu")
                          action:@selector(paste:) keyEquivalent:@""];
+        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Save",@"iTerm",@"Context menu")
+                         action:@selector(saveDocumentAs:) keyEquivalent:@""];
         [cMenu addItem:[NSMenuItem separatorItem]];
         [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Select All",@"iTerm",@"Context menu")
                          action:@selector(selectAll:) keyEquivalent:@""];
@@ -492,6 +496,45 @@
     bExtendedDragNDrop = NO;
 }
 
+// Save method
+- (void) saveDocumentAs: (id) sender
+{
+    
+    NSString *aString;
+    NSData *aData;
+    NSSavePanel *aSavePanel;
+    
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView saveDocumentAs:%@]", __FILE__, __LINE__, sender );
+#endif
+
+    // We get our content of the textview or selection, if any
+    if([self selectedRange].length > 0)
+        aString = [[self string] substringWithRange: [self selectedRange]];
+    else
+        aString = [self string];
+    aData = [aString 
+            dataUsingEncoding: NSASCIIStringEncoding
+            allowLossyConversion: YES];
+    // retain here so that is does not go away...        
+    [aData retain];
+    
+    // initialize a save panel
+    aSavePanel = [NSSavePanel savePanel];
+    [aSavePanel setAccessoryView: nil];
+    [aSavePanel setRequiredFileType: @""];
+    
+    // Run the save panel as a sheet
+    [aSavePanel beginSheetForDirectory: @"" 
+                file: @"Unknown" 
+                modalForWindow: [self window]
+                modalDelegate: self 
+                didEndSelector: @selector(_savePanelDidEnd: returnCode: contextInfo:) 
+                contextInfo: aData];
+
+    
+}
+
 
 @end
 
@@ -520,6 +563,25 @@
   
   return iResult;
 }
+
+- (void) _savePanelDidEnd: (NSSavePanel *) theSavePanel
+	       returnCode: (int) theReturnCode
+	      contextInfo: (void *) theContextInfo
+{
+  // If successful, save file under designated name
+  if (theReturnCode == NSOKButton)
+    {
+      if ( ![(NSData *)theContextInfo writeToFile: [theSavePanel filename]
+                    atomically: YES] )
+	{
+	  NSBeep();
+	}
+    }
+    // release our hold on the data
+    [(NSData *)theContextInfo release];
+    
+}
+
 
 @end
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.42 2004-04-12 08:27:34 ujwal Exp $
+// $Id: iTermController.m,v 1.43 2004-04-12 23:13:34 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -573,7 +573,7 @@ NSString *terminalsKey = @"terminals";
 				{
 					modifierMask = NSCommandKeyMask | NSControlKeyMask;
 					if(aTarget == nil)
-						modifierMask |= NSShiftKeyMask;
+						modifierMask |= NSAlternateKeyMask;
 					
 					shortcut=[dataDict objectForKey: KEY_SHORTCUT];
 					shortcut = [shortcut lowercaseString];

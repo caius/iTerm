@@ -1,8 +1,8 @@
 2003-03-25	fabian
     * PTYTextView is now a subclass of NSView under ARRAY 
-      mode. Text input works properly. Selection, copy and
-      paste is not working yet.
-    
+      mode. Text input works properly. 
+    * Working selection and copy/paste 
+        
 2003-03-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
     
     * Added option-click support to position cursor.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.75 2003-03-25 17:33:30 yfabian Exp $
+// $Id: VT100Screen.m,v 1.76 2003-03-26 00:03:34 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -85,7 +85,8 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     return NSMakeSize(sz.width,[font defaultLineHeightForFont]);
 #else
-    return NSMakeSize(sz.width, sz.height);
+//    return NSMakeSize(sz.width, sz.height);
+    return NSMakeSize(sz.width,[font defaultLineHeightForFont]);
 #endif
 }
 
@@ -444,7 +445,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
-	aLine = [[NSMutableAttributedString alloc] init];
+        aLine = [[NSMutableAttributedString alloc] initWithString:@"\n"];
 	[screenLines addObject: aLine];
 	[aLine release];
 #endif
@@ -506,6 +507,11 @@ static BOOL PLAYBELL = YES;
 #else
     return FONT;
 #endif
+}
+
+- (NSSize) characterSize
+{
+    return [VT100Screen requireSizeWithFont: [self tallerFont]];
 }
 
 - (void)setLineLimit:(unsigned int)maxline
@@ -771,7 +777,7 @@ static BOOL PLAYBELL = YES;
     int len=[s length];
     int idx=0;
     
-    for(;x>0&&idx<len;idx++) {
+    for(;x>0&&idx<len&&[s characterAtIndex:idx]!='\n';idx++) {
         //        if (ISDOUBLEWIDTHCHARACTER([s characterAtIndex:idx])) {
         if (ISDOUBLEWIDTHCHARACTERINLINE(idx,aLine)) {
             //            NSLog(@"X");
@@ -817,7 +823,6 @@ static BOOL PLAYBELL = YES;
     int i,idx,x2;
     BOOL doubleWidth=[SESSION doubleWidth];
     int j, idx2, len, x;
-    BOOL didWrap = NO;
 
 #if DEBUG_USE_ARRAY
     NSMutableAttributedString *aLine;
@@ -841,9 +846,15 @@ static BOOL PLAYBELL = YES;
          store=[BUFFER string];
         if (CURSOR_X>=WIDTH) {
             if ([TERMINAL wraparoundMode]) {
-		didWrap = YES;
+#if USE_CUSTOM_DRAWING
+                aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
+                [aLine addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([aLine length]-1,1)];
+#else
+		[BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([self getIndexAtX:WIDTH-1 Y:CURSOR_Y withPadding:NO],1)];
+#endif
                 [self setNewLine];
                 CURSOR_X=0;
+                
             }
             else {
                 CURSOR_X=WIDTH-1;
@@ -971,40 +982,12 @@ static BOOL PLAYBELL = YES;
             idx2+=j;
         }
     }
-
-#if DEBUG_USE_BUFFER
-    // if we did a wrapAround, mark the position so that we can strip them out when copying
-    if(didWrap)
-    {
-	NSRange searchRange, aRange;
-
-	if(CURSOR_X >= WIDTH || CURSOR_Y >= HEIGHT)
-	{
-	    searchRange.location = [[BUFFER string] length] - 10;
-	}
-	else
-	{
-	    searchRange.location = [self getIndexAtX: CURSOR_X Y: CURSOR_Y withPadding:YES] - 10;
-	}
-	searchRange.length = 10;
-
-	aRange = [[BUFFER string] rangeOfString: @"\n" options: NSBackwardsSearch range: searchRange];
-
-	if(aRange.length > 0)
-	{
-	    [BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: aRange];
-	}
-    }
-#endif
-    
 }
 
 - (void)setDoubleWidthString:(NSString *)string
 {
     int i,idx,x2;
     int j, idx2, len, x;
-
-    BOOL didWrap = NO;
 
 #if DEBUG_USE_ARRAY
     NSMutableAttributedString *aLine;
@@ -1027,7 +1010,12 @@ static BOOL PLAYBELL = YES;
         store=[BUFFER string];
         if (CURSOR_X>=WIDTH) {
             if ([TERMINAL wraparoundMode]) {
-                didWrap = YES;
+#if USE_CUSTOM_DRAWING
+                aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
+                [aLine addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([aLine length]-1,1)];
+#else
+                [BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([self getIndexAtX:WIDTH-1 Y:CURSOR_Y withPadding:NO],1)];
+#endif
                 [self setNewLine];
                 CURSOR_X=0;
             }
@@ -1155,30 +1143,6 @@ static BOOL PLAYBELL = YES;
             idx2+=j;
         }
     }
-    #if DEBUG_USE_BUFFER
-    // if we did a wrapAround, mark the position so that we can strip them out when copying
-    if(didWrap)
-    {
-	NSRange searchRange, aRange;
-
-	if(CURSOR_X >= WIDTH || CURSOR_Y >= HEIGHT)
-	{
-	    searchRange.location = [[BUFFER string] length] - 10;
-	}
-	else
-	{
-	    searchRange.location = [self getIndexAtX: CURSOR_X Y: CURSOR_Y withPadding:YES] - 10;
-	}
-	searchRange.length = 10;
-
-	aRange = [[BUFFER string] rangeOfString: @"\n" options: NSBackwardsSearch range: searchRange];
-
-	if(aRange.length > 0)
-	{
-	    [BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: aRange];
-	}
-    }
-#endif
 
 //    NSLog(@"setDoubleWidthString: done");
 }
@@ -1211,7 +1175,15 @@ static BOOL PLAYBELL = YES;
 #endif
 
     if (CURSOR_Y  < SCROLL_BOTTOM) {
-	CURSOR_Y++;
+#if USE_CUSTOM_DRAWING
+        NSMutableAttributedString *aLine;
+
+        aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
+        [aLine removeAttribute: @"VT100LineWrap" range: NSMakeRange([aLine length]-1,1)];
+#else
+        [BUFFER removeAttribute: @"VT100LineWrap" range: NSMakeRange([self getIndexAtX:WIDTH-1 Y:CURSOR_Y withPadding:NO],1)];
+#endif
+        CURSOR_Y++;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
 #if DEBUG_USE_BUFFER
@@ -1221,7 +1193,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY
 	// add a line to our array
 	NSMutableAttributedString *aLine;
-	aLine = [[NSMutableAttributedString alloc] init];
+        aLine = [[NSMutableAttributedString alloc] initWithString:@"\n"];
 	[screenLines addObject: aLine];
 	[aLine release];
 #endif

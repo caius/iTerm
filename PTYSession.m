@@ -554,7 +554,7 @@ static NSString *PWD_ENVVALUE = @"~";
     locationInTextView = [TEXTVIEW convertPoint: locationInWindow fromView: nil];
     locationInScrollView = [SCROLLVIEW convertPoint: locationInWindow fromView: nil];
 
-    fontSize = [VT100Screen fontSize: [SCREEN font]];
+    fontSize = [SCREEN characterSize];
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
     y = locationInScrollView.y/fontSize.height + 1;
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.202 2004-04-14 01:05:12 ujwal Exp $
+// $Id: PTYTextView.m,v 1.203 2004-04-15 15:51:20 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -861,7 +861,20 @@ static SInt32 systemVersion;
 	blinkShow = !blinkShow;
 	x1=[dataSource cursorX]-1;
 	y1=[dataSource cursorY]-1;
-	//draw cursor
+	
+	//draw cursor	
+	float cursorWidth, cursorHeight;				
+				
+	if(charWidth < charWidthWithoutSpacing)
+		cursorWidth = charWidth;
+	else
+		cursorWidth = charWidthWithoutSpacing;
+	
+	if(lineHeight < charHeightWithoutSpacing)
+		cursorHeight = lineHeight;
+	else
+		cursorHeight = charHeightWithoutSpacing;
+	
 	if([self blinkingCursor])
 		showCursor = !showCursor;
 	else
@@ -872,22 +885,9 @@ static SInt32 systemVersion;
 		i = y1*[dataSource width]+x1;
 		fg=[dataSource screenFGColor]+y1*WIDTH;
 		if(showCursor)
-		{
-			float cursorWidth, cursorHeight;
-			
+		{			
 			[[[self defaultCursorColor] colorWithAlphaComponent: (1 - transparency)] set];
-			
-			if(charWidth < charWidthWithoutSpacing)
-				cursorWidth = charWidth;
-			else
-				cursorWidth = charWidthWithoutSpacing;
-			
-			if(lineHeight < charHeightWithoutSpacing)
-				cursorHeight = lineHeight;
-			else
-				cursorHeight = charHeightWithoutSpacing;
-			
-			
+
 			if([[self window] isKeyWindow])
 			{
 				NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
@@ -928,9 +928,9 @@ static SInt32 systemVersion;
 		
 		len=[markedText length];
 		if (len>[dataSource width]-x1) len=[dataSource width]-x1;
-		[markedText drawInRect:NSMakeRect(x1 * charWidth + MARGIN,
-										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
-										  (WIDTH-x1)*charWidth,lineHeight)];
+		[markedText drawInRect:NSMakeRect(floor(x1 * charWidth + MARGIN),
+										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
+										  ceil((WIDTH-x1)*cursorWidth),cursorHeight)];
 		memset([dataSource dirty]+y1*[dataSource width]+x1, 1,len*2); //len*2 is an over-estimation, but safe
 	}
 	

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.22 2003-01-24 21:19:35 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.23 2003-02-08 07:08:54 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -321,7 +321,10 @@ static VT100TCC decode_csi(unsigned char *datap,
                     if (param.count == 2)
                         result.type = VT100CSI_DECTST;
                     else
-                        result.type = VT100_NOTSUPPORT;
+		    {
+			NSLog(@"1: Unknown token %c", param.cmd);
+			result.type = VT100_NOTSUPPORT;
+		    }
                     break;
 
                 case 'n':
@@ -389,6 +392,7 @@ static VT100TCC decode_csi(unsigned char *datap,
 		    break;
 
                 default:
+		    NSLog(@"2: Unknown token %c; %s", param.cmd, datap);
                     result.type = VT100_NOTSUPPORT;
                     break;
             }
@@ -404,6 +408,7 @@ static VT100TCC decode_csi(unsigned char *datap,
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
                 default:
+		    NSLog(@"3: Unknown token %c", param.cmd);
                     result.type = VT100_NOTSUPPORT;
                     break;
                     
@@ -535,7 +540,8 @@ static VT100TCC decode_other(unsigned char *datap,
 	else {
             switch (c2) {
                 case '8': result.type=VT100CSI_DECALN; break;
-                default:    
+                default:
+		    NSLog(@"4: Unknown token %c", c2);
                     result.type = VT100_NOTSUPPORT;
             }
 	    *rmlen = 3;
@@ -549,6 +555,11 @@ static VT100TCC decode_other(unsigned char *datap,
 
     case '>':
 	result.type = VT100CSI_DECKPNM;
+	*rmlen = 2;
+	break;
+
+    case '<':
+	result.type = STRICT_ANSI_MODE;
 	*rmlen = 2;
 	break;
 
@@ -634,6 +645,7 @@ static VT100TCC decode_other(unsigned char *datap,
 	break;
 
     default:
+	NSLog(@"5: Unknown token %c", c1);
 	result.type = VT100_NOTSUPPORT;
 	*rmlen = 2;
 	break;
@@ -1066,6 +1078,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
     TRACE = NO;
 
+    strictAnsiMode = NO;
+
     return self;
 }
 
@@ -1085,6 +1099,17 @@ static VT100TCC decode_string(unsigned char *datap,
 {
     TRACE = flag;
 }
+
+- (BOOL)strictAnsiMode
+{
+    return (strictAnsiMode);
+}
+
+- (void)setStrictAnsiMode: (BOOL)flag
+{
+    strictAnsiMode = flag;
+}
+
 
 - (NSStringEncoding)encoding
 {

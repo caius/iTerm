@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.7 2003-01-21 19:28:05 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.8 2003-02-08 07:08:54 ujwal Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -92,6 +92,10 @@
 
 // Some ansi stuff
 #define ANSICSI_CHA		3000	// Cursor Horizontal Absolute
+
+// Toggle between ansi/vt52
+#define STRICT_ANSI_MODE		4000
+
 
 #define VT100CSIPARAM_MAX    16
 
@@ -197,6 +201,8 @@ typedef struct {
     int saveCHARSET;
     
     BOOL TRACE;
+
+    BOOL strictAnsiMode;
 }
 
 + (void)initialize;
@@ -206,6 +212,9 @@ typedef struct {
 
 - (BOOL)trace;
 - (void)setTrace:(BOOL)flag;
+
+- (BOOL)strictAnsiMode;
+- (void)setStrictAnsiMode: (BOOL)flag;
 
 - (NSStringEncoding)encoding;
 - (void)setEncoding:(NSStringEncoding)encoding;

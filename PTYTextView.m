@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.9 2002-12-31 00:40:16 ujwal Exp $
+// $Id: PTYTextView.m,v 1.10 2003-01-01 21:38:14 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -257,7 +257,12 @@
 #endif
 
     if ([item action] == @selector(paste:))
-        return YES;
+    {
+        NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+        
+        // Check if there is a string type on the pasteboard
+        return ([pboard stringForType:NSStringPboardType] != nil);
+    }
     else if ([item action ] == @selector(cut:))
         return NO;
     else if ([item action]==@selector(saveDocumentAs:))

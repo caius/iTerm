@@ -11,6 +11,7 @@
 				05A162CF006CD5FC7F000001,
 				FB094A1A033D71D501F955DB,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -195,7 +196,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.6.2</string>
+	<string>0.6.3</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>iTerm Help</string>
 	<key>CFBundleHelpBookName</key>
@@ -211,11 +212,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.6.2</string>
+	<string>0.6.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.6.2</string>
+	<string>0.6.3</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
 	<key>NSExtensions</key>
@@ -227,7 +228,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -1048,7 +1048,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		FB7EECDB0340D3CD01F955DB = {
 			buildActionMask = 2147483647;

@@ -3,6 +3,8 @@
     * Now displaying tab number in label to make it easier 
       to switch between tabs using function keys.
       
+    * Changed version number in Info.plist to 0.6.3.
+      
 
 2003-02-05	fabian
     * Fixed a bug in showCursor that causes the loss of

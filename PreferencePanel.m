@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.51 2003-05-30 02:04:26 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.52 2003-06-18 05:47:17 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -95,6 +95,7 @@ static float versionNumber;
     defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultBlinkingCursor = [prefs objectForKey:@"BlinkingCursor"]?[[prefs objectForKey:@"BlinkingCursor"] boolValue]: NO;
+    defaultEnforceCharacterAlignment = [prefs objectForKey:@"EnforceCharacterAlignment"]?[[prefs objectForKey:@"EnforceCharacterAlignment"] boolValue]: YES;
 
 
 }
@@ -122,7 +123,8 @@ static float versionNumber;
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [blinkingCursor setState: defaultBlinkingCursor?NSOnState:NSOffState];
-   
+    [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];
+    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
 }
@@ -151,6 +153,7 @@ static float versionNumber;
     defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultBlinkingCursor = ([blinkingCursor state] == NSOnState);
+    defaultEnforceCharacterAlignment = ([enforceCharacterAlignment state] == NSOnState);
 
     [prefs setInteger:defaultScrollback forKey:@"Scrollback"];
 
@@ -165,6 +168,7 @@ static float versionNumber;
     [prefs setBool:defaultOpenAddressBook forKey:@"OpenAddressBook"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
+    [prefs setBool:defaultEnforceCharacterAlignment forKey:@"EnforceCharacterAlignment"];
     
     [NSApp stopModal];
 
@@ -184,6 +188,7 @@ static float versionNumber;
     defaultTabViewType = NSTopTabsBezelBorder;
     defaultOpenAddressBook = NO;
     defaultBlinkingCursor = NO;
+    defaultEnforceCharacterAlignment = YES;
 
     [scrollbackLines setIntValue:defaultScrollback];
     
@@ -197,7 +202,7 @@ static float versionNumber;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [tabViewType selectCellWithTag: defaultTabViewType];
     [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
-
+    [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];
 
     
 }
@@ -259,5 +264,9 @@ static float versionNumber;
     return (defaultBlinkingCursor);
 }
 
+- (BOOL) enforceCharacterAlignment;
+{
+    return (defaultEnforceCharacterAlignment);
+}
 
 @end

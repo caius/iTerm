@@ -136,7 +136,8 @@ static NSString *PWD_ENVVALUE = @"~";
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 #else
 
-    #if USE_CUSTOM_LAYOUT
+    if([pref enforceCharacterAlignment] == YES)
+    {
 	VT100LayoutManager *aLayoutManager;
 	VT100Typesetter *aTypesetter;
 	NSTextContainer *aTextContainer;
@@ -157,9 +158,9 @@ static NSString *PWD_ENVVALUE = @"~";
 	[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
 	[TEXTVIEW setHorizontallyResizable:NO];
 	[TEXTVIEW setVerticallyResizable:YES];
-    #else
+    }
+    else
 	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
-    #endif
     
     [TEXTVIEW setDrawsBackground:YES];
     [TEXTVIEW setEditable:YES]; // For NSTextInput protocol

@@ -44,6 +44,7 @@
     IBOutlet id silenceBell;
     IBOutlet id tabViewType;
     IBOutlet id blinkingCursor;
+    IBOutlet NSButton *enforceCharacterAlignment;
     
     NSUserDefaults *prefs;
 
@@ -59,6 +60,7 @@
     BOOL defaultOpenAddressBook;
     BOOL defaultPromptOnClose;
     BOOL defaultBlinkingCursor;
+    BOOL defaultEnforceCharacterAlignment;
 
 }
 
@@ -85,5 +87,6 @@
 - (BOOL) promptOnClose;
 - (BOOL)openAddressBook;
 - (BOOL) blinkingCursor;
+- (BOOL) enforceCharacterAlignment;
 
 @end

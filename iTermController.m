@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.8 2003-08-11 13:03:57 sgehrman Exp $
+// $Id: iTermController.m,v 1.9 2003-08-11 14:56:40 sgehrman Exp $
 /*
  **  iTermController.m
  **
@@ -74,18 +74,12 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
     if(([terminalWindows count] > 0) && [PREF_PANEL promptOnClose] && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
 	return (NO);
-
-    [terminalWindows removeAllObjects];
-
-    [PREF_PANEL release];
-    PREF_PANEL = nil;
     
     return (YES);
 }
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app
 {
-
     // Check if we have an autolauch script to execute. Do it only once, i.e. at application launch.
     if(usingAutoLaunchScript == NO &&
        [[NSFileManager defaultManager] fileExistsAtPath: [AUTO_LAUNCH_SCRIPT stringByExpandingTildeInPath]] != nil)
@@ -108,10 +102,10 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     }
 
     // else do the usual default stuff.
-    if ([PREF_PANEL openAddressBook]) {
+    if ([PREF_PANEL openAddressBook])
         [self showABWindow:nil];
-    }
-    else [self newWindow:nil];
+    else
+        [self newWindow:nil];
     
     return YES;
 }
@@ -150,7 +144,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     [abMenu release];
             
     return ([aMenu autorelease]);
-    
 }
 
 // init
@@ -205,12 +198,11 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     NSLog(@"%s(%d):-[iTermController dealloc]",
           __FILE__, __LINE__);
 #endif
-
+    
     [terminalWindows removeAllObjects];
     [terminalWindows release];
 
     [PREF_PANEL release];
-    
 }
 
 // Action methods
@@ -235,7 +227,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 - (IBAction)newSession:(id)sender
 {
-
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[iTermController newSession]",
           __FILE__, __LINE__);
@@ -289,15 +280,12 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
     // make that terminal's window active
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
-    
 }
 
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender
 {
-//    PreferencePanel *pref=[[PreferencePanel alloc] init];
     [PREF_PANEL run];
-//    [pref dealloc];
 }
 
 - (PreferencePanel *) preferencePanel
@@ -409,26 +397,21 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     [selectTab setSubmenu: aMenu];
 
     [aMenu release];
-    
 }
 
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow
 {
     if(FRONT == theTerminalWindow)
-    {
 	[self setFrontPseudoTerminal: nil];
-    }
+
     if(theTerminalWindow)
-    {
         [terminalWindows removeObject: theTerminalWindow];
-    }
 }
 
 - (NSStringEncoding const*) encodingList
 {
     return encodingList;
 }
-
 
 // Build the bookmarks menu
 - (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender
@@ -438,7 +421,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     int i = 0;
 //    SEL shellSelector;
     SEL abCommandSelector;
-
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[iTermController buildAddressBookMenu]",
@@ -469,9 +451,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 	[abMenu addItem: abMenuItem];
 	[abMenuItem release];
     }
-        
 }
-
 
 // Executes an addressbook command in new window or tab
 - (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm
@@ -486,7 +466,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     entry = [[self addressBook] objectAtIndex:theIndex];
     [iTermController breakDown:[entry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-    
     
     // Where do we execute this command?
     if(theTerm == nil)
@@ -548,7 +527,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 @end
 
-
 // AddressBook/Bookmark methods
 @implementation iTermController (AddressBook)
 
@@ -567,9 +545,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
           __FILE__, __LINE__, sender);
 #endif
 
-    [self initAddressBook];
-    //    NSLog(@"showABWindow: %d\n%@",[[self addressBook] count], [self addressBook]);
-
     abWindowController = [AddressBookWindowController singleInstance];
     [abWindowController setAddressBook: [self addressBook]];
     [abWindowController setPreferences: PREF_PANEL];
@@ -578,16 +553,10 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 - (void) initAddressBook
 {
-
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[iTermController initAddressBook]",
           __FILE__, __LINE__);
 #endif
-
-    if ([self addressBook]!=nil)
-    {
-	[[self addressBook] release];
-    }
 
     // We have a new location for the addressbook
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -624,11 +593,9 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 - (void) saveAddressBook
 {
-    if (![NSArchiver archiveRootObject:[self addressBook] toFile:[ADDRESS_BOOK_FILE stringByExpandingTildeInPath]]) {
+    if (![NSArchiver archiveRootObject:[self addressBook] toFile:[ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
         NSLog(@"Save failed");
-    }
 }
-
 
 // Returns an entry from the addressbook
 - (NSMutableDictionary *)addressBookEntry: (int) entryIndex
@@ -637,7 +604,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
         return (nil);
 
     return ([[self addressBook] objectAtIndex: entryIndex]);
-
 }
 
 - (NSMutableDictionary *) defaultAddressBookEntry
@@ -705,7 +671,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     return ae;
 }
 
-
 - (void) addAddressBookEntry: (NSDictionary *) entry
 {
     [[self addressBook] addObject:entry];
@@ -733,9 +698,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     }
 
     return ([anArray autorelease]);
-
 }
-
 
 @end
 
@@ -789,7 +752,6 @@ NSString *terminalsKey = @"terminals";
     [self insertInTerminals: object atIndex: [terminalWindows count]];
 }
 
-
 -(void)insertInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
 {
     if([terminalWindows containsObject: object] == YES)
@@ -804,7 +766,6 @@ NSString *terminalsKey = @"terminals";
     [terminalWindows removeObjectAtIndex: index];
 }
 
-
 // a class method to provide the keys for KVC:
 - (NSArray*)kvcKeys
 {
@@ -816,9 +777,7 @@ NSString *terminalsKey = @"terminals";
     return _kvcKeys;
 }
 
-
 @end
-
 
 // Private interface
 @implementation iTermController (Private)

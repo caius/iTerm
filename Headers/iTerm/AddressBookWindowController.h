@@ -28,7 +28,6 @@
 #import <AppKit/AppKit.h>
 
 @class PreferencePanel;
-@class iTermController;
 
 @interface AddressBookWindowController : NSWindowController {
 
@@ -99,7 +98,6 @@
 
 // init
 + (id) singleInstance;
-- (id) initWithWindowNibName: (NSString *)windowNibName;
 - (void) dealloc;
 
 // other class methods

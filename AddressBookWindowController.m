@@ -44,7 +44,6 @@ static NSColor *xtermSelection;
 static NSColor *xtermBold;
 static NSColor* xtermColorTable[2][8];
 
-
 // comaparator function for addressbook entries
 BOOL isDefaultEntry( NSDictionary *entry )
 {
@@ -79,8 +78,9 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     if ( !singleInstance )
     {
 	singleInstance = [[self alloc] initWithWindowNibName: @"AddressBook"];
+        [singleInstance window]; // force the window to load now
     }
-
+    
     return singleInstance;
 }
 
@@ -162,7 +162,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         xtermColorTable[1][i]=[[AddressBookWindowController highlightColor:xtermColorTable[0][i]] retain];
         iTermColorTable[1][i]=[[AddressBookWindowController highlightColor:iTermColorTable[0][i]] retain];
     }
-
 }
 
 + (NSColor *) highlightColor:(NSColor *)color
@@ -205,23 +204,18 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     return color;
 }
 
-
-- (id) initWithWindowNibName: (NSString *) windowNibName
+- (void)windowDidLoad;
 {
-#if DEBUG_ALLOC
-    NSLog(@"AddressBookWindowController: -initWithWindowNibName");
-#endif
-    
-    self = [super initWithWindowNibName: windowNibName];
     encodingList=[NSString availableStringEncodings];
-
+    
     // We finally set our autosave window frame name and restore the one from the user's defaults.
     [[self window] setFrameAutosaveName: @"Bookmarks"];
-    [[self window] setFrameUsingName: @"Bookmarks"];
-
+    if (![[self window] setFrameUsingName: @"Bookmarks"])
+        [[self window] center];
+    
     [[self window] setDelegate: self];
-
-    return (self);
+    
+    [adTable noteNumberOfRowsChanged];
 }
 
 - (void) dealloc
@@ -231,7 +225,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 #endif
 
     singleInstance = nil;
-    
 }
 
 + (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili
@@ -258,23 +251,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     return (iTermBold);
 }
 
-
-- (void) awakeFromNib
-{
-    //    NSLog(@ "initAddressBook: %d\n%@",[addressBook count], addressBook);
-    // Tell the addressbook table in the gui that number of rows have changed.
-    // Other the scrollview is not activated for large addressbooks.
-    // Cocoa bug?
-    [adTable noteNumberOfRowsChanged];
-    
-}
-
 // NSWindow delegate methods
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-
     [self autorelease];
-    
 }
 
 // get/set methods
@@ -341,14 +321,11 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [[NSNotificationCenter defaultCenter]
     postNotificationName: @"Reload AddressBook"
 				object: nil
-			      userInfo: nil];
-    
-    
+			      userInfo: nil];    
 }
 
 - (IBAction)adbEditEntry:(id)sender
 {
-
     if(sender == nil)
     {
 	// edit the default entry;
@@ -380,7 +357,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	return;
 
     entry=[[self addressBook] objectAtIndex: index];
-
 
     if(entry == nil)
 	return;
@@ -489,7 +465,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     else
 	[ansiHiWhite setColor:iTermColorTable[1][7]];
     
-        
     [adRow setStringValue:[entry objectForKey:@"Row"]];
     [adCol setStringValue:[entry objectForKey:@"Col"]];
     if ([entry objectForKey:@"Transparency"]) {
@@ -525,7 +500,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?0:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
     [adRemapDeleteKey setState:([entry objectForKey:@"RemapDeleteKey"]==nil?NO:[[entry objectForKey:@"RemapDeleteKey"] boolValue])?NSOnState:NSOffState];
 
-
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
     if (r == NSRunStoppedResponse) {
@@ -558,11 +532,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adTable selectRow: 0 byExtendingSelection: NO];
     [self adbDuplicateEntry: nil];
 
-
     [self adbEditEntryAtIndex: [adTable selectedRow] newEntry: YES];
-
 }
-
 
 - (IBAction)adbRemoveEntry:(id)sender
 {
@@ -664,12 +635,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
 - (IBAction) executeABCommand: (id) sender
 {
-
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[AddressBookWindowController executeABCommand:%@]",
           __FILE__, __LINE__, sender);
 #endif
-
 
     if(([adTable selectedRow] < 0) || ([adTable numberOfRows] == 0))
 	return;
@@ -690,7 +659,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
     // close the bookmarks window
     [[self window] close];
-
 }
 
 - (IBAction)editColorScheme: (id) sender
@@ -754,16 +722,11 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adNATextExample setBackgroundColor:[adBackground color]];
     [adTextExample setTextColor:[adForeground color]];
     [adNATextExample setTextColor:[adForeground color]];
-    
 }
-
 
 // misc
 - (void) run;
 {
-//    int r;
-
-    [[self window] center];
     [adTable setDataSource: self];
     [adTable setDelegate: self];
     if([adTable numberOfRows] > 0 && [adTable numberOfSelectedRows] <= 0){
@@ -778,8 +741,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
     [adTable setDoubleAction: @selector(executeABCommand:)];
     [adTable setAllowsColumnReordering: NO];
-    //r= [NSApp runModalForWindow:[self window]];
-    //[[self window] close];
+
     [self showWindow: self];
 }
 
@@ -862,9 +824,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[openInTab setEnabled: NO];
 	[openInWindow setEnabled: NO];
     }
-    
 }
-
 
 @end
 

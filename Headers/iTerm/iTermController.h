@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.2 2003-08-11 13:39:21 sgehrman Exp $
+// $Id: iTermController.h,v 1.3 2003-08-11 14:57:17 sgehrman Exp $
 /*
  **  iTermController.h
  **
@@ -35,7 +35,6 @@
 
 @interface iTermController : NSObject
 {
-    
     // preference window
     PreferencePanel *PREF_PANEL;
 

@@ -205,7 +205,7 @@ static FindPanelWindowController *sharedInstance = nil;
 
 - (IBAction) findWithSelection
 {
-    NSTextView* textView = [self currentTextView];
+    PTYTextView* textView = [self currentTextView];
     if (textView)
     {
         // get the selected text
@@ -226,7 +226,7 @@ static FindPanelWindowController *sharedInstance = nil;
 
 - (IBAction)jumpToSelection
 {
-    NSTextView* textView = [self currentTextView];
+    PTYTextView* textView = [self currentTextView];
     if (textView)
     {        
         NSRange aRange = [textView selectedRange];
@@ -242,7 +242,7 @@ static FindPanelWindowController *sharedInstance = nil;
 
 - (void) findSubString: (NSString *) subString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck
 {
-    NSTextView* textView = [self currentTextView];
+    PTYTextView* textView = [self currentTextView];
     if (textView)
     {        
         if ([subString length] <= 0)

@@ -1,6 +1,8 @@
 2004-01-28  ujwal
 
     * Fixed problem resetting scrollbar at bottom on new output while scrolling.
+	* Toggling of "Remap Delete Key" is handled by menu item and shortcut with 
+	  cmd-Delete. This frees up opt-delete for applications that need it.
 
 2004-01-27  ujwal
 

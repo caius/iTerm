@@ -512,8 +512,6 @@ static NSString *PWD_ENVVALUE = @"~";
 		break;
 	}
     }
-    else if((modflag & NSAlternateKeyMask) && (unicode == NSDeleteCharacter))
-	[self setRemapDeleteKey: ![self remapDeleteKey]];
     else 
     {
 	if (modflag & NSFunctionKeyMask)

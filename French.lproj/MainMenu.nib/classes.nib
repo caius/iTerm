@@ -19,6 +19,7 @@
                 showConfigWindow = id; 
                 showFindPanel = id; 
                 toggleInputToAllSessions = id; 
+                toggleRemapDeleteKey = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
@@ -128,6 +129,7 @@
                 newWindow = NSMenuItem; 
                 nextTerminal = NSMenuItem; 
                 previousTerminal = NSMenuItem; 
+                remapDeleteKey = NSMenuItem; 
                 selectTab = NSMenuItem; 
                 sendInputToAllSessions = NSMenuItem; 
             }; 

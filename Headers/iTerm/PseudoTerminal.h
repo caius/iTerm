@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.11 2004-01-23 00:45:01 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.12 2004-01-28 20:06:09 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -98,6 +98,7 @@
 - (void) setSendInputToAllSessions: (BOOL) flag;
 - (IBAction) toggleInputToAllSessions: (id) sender;
 - (void) sendInputToAllSessions: (NSData *) data;
+- (IBAction) toggleRemapDeleteKey: (id) sender;
 
 // iTermController
 - (void)clearBuffer:(id)sender;

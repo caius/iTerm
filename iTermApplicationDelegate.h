@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.8 2004-01-23 00:43:21 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.9 2004-01-28 20:05:48 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -48,6 +48,7 @@
     IBOutlet NSMenuItem *closeTab;
     IBOutlet NSMenuItem *closeWindow;
     IBOutlet NSMenuItem *sendInputToAllSessions;
+	IBOutlet NSMenuItem *remapDeleteKey;
 }
 
 // NSApplication Delegate methods
@@ -75,7 +76,7 @@
 - (void) reloadMenus: (NSNotification *) aNotification;
 - (void) buildSessionSubmenu: (NSNotification *) aNotification;
 - (void) buildAddressBookMenu: (NSNotification *) aNotification;
-- (void) resetLogMenu: (NSNotification *) aNotification;
+- (void) reloadSessionMenus: (NSNotification *) aNotification;
 - (void) nonTerminalWindowBecameKey: (NSNotification *) aNotification;
 
 // font control

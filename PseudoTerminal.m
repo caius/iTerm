@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.253 2004-01-23 00:42:53 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.254 2004-01-28 20:05:48 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -919,7 +919,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[iTermController sharedInstance] setCurrentTerminal: self];
 }
 
-
+- (IBAction) toggleRemapDeleteKey: (id) sender
+{
+	[[_sessionMgr currentSession] setRemapDeleteKey: ![[_sessionMgr currentSession] remapDeleteKey]];
+	
+	// cause reloading of menus
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [_sessionMgr currentSession]];
+}
 
 // NSWindow delegate methods
 - (void)windowDidDeminiaturize:(NSNotification *)aNotification
@@ -1455,6 +1461,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]] forKey: @"AICode"];
 	[currentABEntry setObject: [[[_sessionMgr currentSession] SCREEN] nafont] forKey: @"NAFont"];
 	[currentABEntry setObject: [[_sessionMgr currentSession] backgroundImagePath]?[[_sessionMgr currentSession] backgroundImagePath]:@"" forKey: @"BackgroundImagePath"];
+	[currentABEntry setObject: [NSNumber numberWithBool: [[self currentSession] remapDeleteKey]] forKey: @"RemapDeleteKey"];
 
 
 	[[[ITAddressBookMgr sharedInstance] addressBook] replaceObjectAtIndex: [[[ITAddressBookMgr sharedInstance] addressBook] indexOfObject: [[_sessionMgr currentSession] addressBookEntry]] withObject: currentABEntry];
@@ -1488,6 +1495,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	    [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
 	    [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
 	    [NSNumber numberWithBool:[[self currentSession] doubleWidth]],@"DoubleWidth",
+		[NSNumber numberWithBool:[[self currentSession] remapDeleteKey]],@"RemapDeleteKey",
 	    NULL];
         [[ITAddressBookMgr sharedInstance] addAddressBookEntry: new];
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),

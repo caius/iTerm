@@ -3,6 +3,9 @@
     * Fixed a bug in resizing tabs and window when closing 
       a session.
       
+    * Using smaller icon for popup menu in toolbar when 
+      toolbar size mode is NSToolbarSizeModeSmall.
+      
 
 2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

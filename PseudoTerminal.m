@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.112 2003-02-22 16:31:06 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.113 2003-02-22 17:25:43 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1254,8 +1254,15 @@ static NSString *ConfigToolbarItem = @"Config";
     else if ([itemIdent isEqual: NewToolbarItem])
     {
         NSPopUpButton *aPopUpButton;
-        
-        aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 48.0, 32.0) pullsDown: YES];
+
+	if([toolbar sizeMode] == NSToolbarSizeModeSmall)
+	{
+	    aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 40.0, 24.0) pullsDown: YES];
+	}
+	else
+	{
+	    aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 48.0, 32.0) pullsDown: YES];
+	}
         [aPopUpButton setTarget: self];
         [aPopUpButton setBordered: NO];
         [[aPopUpButton cell] setArrowPosition:NSPopUpArrowAtBottom];
@@ -1264,7 +1271,7 @@ static NSString *ConfigToolbarItem = @"Config";
         [aPopUpButton release];
 
 	// build the menu
-	[self _buildToolbarItemPopUpMenu: toolbarItem];
+	[self _buildToolbarItemPopUpMenu: toolbarItem forToolbar: toolbar];
 
 	[toolbarItem setMinSize:[aPopUpButton bounds].size];
 	[toolbarItem setMaxSize:[aPopUpButton bounds].size];
@@ -1679,7 +1686,7 @@ static NSString *ConfigToolbarItem = @"Config";
 // Private interface
 @implementation PseudoTerminal (Private)
 
-- (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem
+- (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem forToolbar: (NSToolbar *)toolbar
 {
     NSPopUpButton *aPopUpButton;
     NSMenuItem *item;
@@ -1707,7 +1714,14 @@ static NSString *ConfigToolbarItem = @"Config";
     item = [[aPopUpButton cell] menuItem];
     image=[NSImage imageNamed:@"newwin"];
     [image setScalesWhenResized:YES];
-    [image setSize:NSMakeSize(30.0,30.0)];
+    if([toolbar sizeMode] == NSToolbarSizeModeSmall)
+    {
+	[image setSize:NSMakeSize(24.0, 24.0)];
+    }
+    else
+    {
+	[image setSize:NSMakeSize(30.0, 30.0)];
+    }
     [item setImage:image];
     [item setOnStateImage:nil];
     [item setMixedStateImage:nil];
@@ -1752,7 +1766,7 @@ static NSString *ConfigToolbarItem = @"Config";
         
         if([[aToolbarItem itemIdentifier] isEqual: NewToolbarItem])
         {
-            [self _buildToolbarItemPopUpMenu: aToolbarItem];
+            [self _buildToolbarItemPopUpMenu: aToolbarItem forToolbar: [WINDOW toolbar]];
                         
             break;
         }

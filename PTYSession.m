@@ -843,7 +843,6 @@ static NSString *PWD_ENVVALUE = @"~";
 	  __FILE__, __LINE__, textView);
 #endif
 
-    NSSize termSize;
     [[self parent] windowDidResize: nil];
     [textView scrollEnd];
 }

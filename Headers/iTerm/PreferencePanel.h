@@ -66,6 +66,7 @@
 - (IBAction) editDefaultSession: (id) sender;
 
 + (PreferencePanel*)sharedInstance;
+- (id)initWithWindowNibName: (NSString *) windowNibName;
 
 - (void) readPreferences;
 

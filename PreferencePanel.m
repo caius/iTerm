@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.69 2004-02-25 02:58:42 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.70 2004-02-25 20:38:08 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -41,12 +41,15 @@ static float versionNumber;
     static PreferencePanel* shared = nil;
     
     if (!shared)
-        shared = [[PreferencePanel alloc] init];
+	{
+		shared = [[self alloc] initWithWindowNibName: @"PreferencePanel"];
+        [shared window]; // force the window to load now
+	}
     
     return shared;
 }
 
-- (id)init
+- (id)initWithWindowNibName: (NSString *) windowNibName
 {
     unsigned int storedMajorVersion = 0, storedMinorVersion = 0, storedMicroVersion = 0;
 #if DEBUG_OBJALLOC
@@ -54,6 +57,8 @@ static float versionNumber;
 #endif
     if ((self = [super init]) == nil)
         return nil;
+	
+	[super initWithWindowNibName: windowNibName];
     
     [self readPreferences];
     
@@ -101,10 +106,6 @@ static float versionNumber;
 
 - (void)run
 {
-    // Load our bundle
-    if ([NSBundle loadNibNamed:@"PreferencePanel" owner:self] == NO)
-	return;
-
 	
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     

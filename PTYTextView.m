@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.11 2003-01-05 08:34:17 ujwal Exp $
+// $Id: PTYTextView.m,v 1.12 2003-01-08 16:52:19 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -263,12 +263,8 @@
         return NO;
     else if ([item action]==@selector(saveDocumentAs:))
     {
-        // If we are calling from the main menu, we validate it always
-        if([[item menu] supermenu] != nil)
-            return YES;
-        // Else this is being called from the contextual menu; validate only if there is a selection.
-        else 
-            return ([self selectedRange].length>0);
+	// We always validate the "Save" command
+	return (YES);
     }
     else if ([item action]==@selector(mail:) || 
              [item action]==@selector(browse:)) 

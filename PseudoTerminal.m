@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.138 2003-03-28 23:22:39 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.139 2003-04-01 16:22:58 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -960,6 +960,10 @@ static NSString *ConfigToolbarItem = @"Config";
     
     WIDTH = w;
     HEIGHT = h;
+
+    // Display the new size in the window title.
+    NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [currentPtySession name], WIDTH, HEIGHT];
+    [self setWindowTitle: aTitle];
 
     //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 

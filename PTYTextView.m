@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.67 2003-05-30 00:20:56 ujwal Exp $
+// $Id: PTYTextView.m,v 1.68 2003-06-02 05:37:06 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -519,6 +519,9 @@
     NSLog(@"%s(%d):-[PTYTextView keyDown:%@]",
           __FILE__, __LINE__, event );
 #endif
+
+    // Hide the cursor
+    [NSCursor setHiddenUntilMouseMoves: YES];    
 
     // Check for dead keys
     if (deadkey) {
@@ -1333,6 +1336,7 @@
 
 }
 
+
 @end
 
 #else
@@ -1378,7 +1382,7 @@
     {
 	[dataSource release];
 	dataSource = nil;
-    }    
+    }
         
     [super dealloc];
 }
@@ -1572,6 +1576,10 @@
     NSLog(@"%s(%d):-[PTYTextView keyDown:%@]",
 	  __FILE__, __LINE__, event );
 #endif
+
+
+    // Hide the cursor
+    [NSCursor setHiddenUntilMouseMoves: YES];    
 
     // Check for dead keys
     if (deadkey) {
@@ -2379,6 +2387,7 @@ static BOOL ignoreCase = NO;
     [(NSData *)theContextInfo release];
     
 }
+
 
 @end
 

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.52 2003-06-18 05:47:17 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.53 2003-06-25 15:11:45 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -87,7 +87,7 @@ static float versionNumber;
                                                                       
         
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
-    defaultMacNavKeys=[prefs objectForKey:@"MacNavKeys"]?[[prefs objectForKey:@"MacNavKeys"] boolValue]: YES;
+    defaultMacNavKeys=[prefs objectForKey:@"MacNavKeys"]?[[prefs objectForKey:@"MacNavKeys"] boolValue]: NO;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;

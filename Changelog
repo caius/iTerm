@@ -1,3 +1,9 @@
+2003-02-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added support for alternate keypad mode and 
+      PF1, PF2, PF3, PF4 keys.
+      
+
 2003-02-10	fabian
     * Cleaned up showCursor code
     * Incorparated Japanese nib files from OHKAWA

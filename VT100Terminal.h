@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.8 2003-02-08 07:08:54 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.9 2003-02-10 20:27:43 ujwal Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -234,6 +234,8 @@ typedef struct {
 - (NSData *)keyPageUp;
 - (NSData *)keyPageDown;
 - (NSData *)keyFunction:(int)no;
+- (NSData *)keyPFn: (int) n;
+- (NSData *)keypadData: (unichar) unicode keystr: (NSString *) keystr;
 
 - (BOOL)lineMode;
 - (BOOL)cursorMode;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.24 2003-02-10 16:43:40 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.25 2003-02-10 20:27:43 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -63,6 +63,27 @@ static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 #define KEY_HOME             "\033[1~"
 #define KEY_END              "\033[4~"
 #define KEY_DEL		     "\033[3~"
+
+#define KEY_PF1		     "\033OP"
+#define KEY_PF2		     "\033OQ"
+#define KEY_PF3	             "\033OR"
+#define KEY_PF4		     "\033OS"
+
+#define ALT_KP_0		"\033Op"
+#define ALT_KP_1		"\033Oq"
+#define ALT_KP_2		"\033Or"
+#define ALT_KP_3		"\033Os"
+#define ALT_KP_4		"\033Ot"
+#define ALT_KP_5		"\033Ou"
+#define ALT_KP_6		"\033Ov"
+#define ALT_KP_7		"\033Ow"
+#define ALT_KP_8		"\033Ox"
+#define ALT_KP_9		"\033Oy"
+#define ALT_KP_MINUS		"\033Om"
+#define ALT_KP_PERIOD		"\033On"
+#define ALT_KP_ENTER		"\033OM"
+
+
 
 #define KEY_FUNCTION_FORMAT  "\033[%d~"
 
@@ -1321,6 +1342,85 @@ static VT100TCC decode_string(unsigned char *datap,
 
     len = strlen(str);
     return [NSData dataWithBytes:str length:len];
+}
+
+- (NSData *)keyPFn: (int) n
+{
+    NSData *theData;
+    
+    switch (n)
+    {
+	case 4:
+	    theData = [NSData dataWithBytes:KEY_PF4 length:conststr_sizeof(KEY_PF4)];
+	    break;
+	case 3:
+	    theData = [NSData dataWithBytes:KEY_PF3 length:conststr_sizeof(KEY_PF3)];
+	    break;
+	case 2:
+	    theData = [NSData dataWithBytes:KEY_PF2 length:conststr_sizeof(KEY_PF2)];
+	    break;
+	case 1:
+	default:
+	    theData = [NSData dataWithBytes:KEY_PF1 length:conststr_sizeof(KEY_PF1)];
+	    break;
+    }
+
+    return (theData);
+}
+
+- (NSData *) keypadData: (unichar) unicode keystr: (NSString *) keystr
+{
+    NSData *theData = nil;
+
+    // numeric keypad mode
+    if(![self keypadMode])
+	return ([keystr dataUsingEncoding:NSUTF8StringEncoding]);
+
+    // alternate keypad mode
+    switch (unicode)
+    {
+	case '0':
+	    theData = [NSData dataWithBytes:ALT_KP_0 length:conststr_sizeof(ALT_KP_0)];
+	    break;
+	case '1':
+	    theData = [NSData dataWithBytes:ALT_KP_1 length:conststr_sizeof(ALT_KP_1)];
+	    break;
+	case '2':
+	    theData = [NSData dataWithBytes:ALT_KP_2 length:conststr_sizeof(ALT_KP_2)];
+	    break;
+	case '3':
+	    theData = [NSData dataWithBytes:ALT_KP_3 length:conststr_sizeof(ALT_KP_3)];
+	    break;
+	case '4':
+	    theData = [NSData dataWithBytes:ALT_KP_4 length:conststr_sizeof(ALT_KP_4)];
+	    break;
+	case '5':
+	    theData = [NSData dataWithBytes:ALT_KP_5 length:conststr_sizeof(ALT_KP_5)];
+	    break;
+	case '6':
+	    theData = [NSData dataWithBytes:ALT_KP_6 length:conststr_sizeof(ALT_KP_6)];
+	    break;
+	case '7':
+	    theData = [NSData dataWithBytes:ALT_KP_7 length:conststr_sizeof(ALT_KP_7)];
+	    break;
+	case '8':
+	    theData = [NSData dataWithBytes:ALT_KP_8 length:conststr_sizeof(ALT_KP_8)];
+	    break;
+	case '9':
+	    theData = [NSData dataWithBytes:ALT_KP_9 length:conststr_sizeof(ALT_KP_9)];
+	    break;
+	case '-':
+	    theData = [NSData dataWithBytes:ALT_KP_MINUS length:conststr_sizeof(ALT_KP_MINUS)];
+	    break;
+	case '.':
+	    theData = [NSData dataWithBytes:ALT_KP_PERIOD length:conststr_sizeof(ALT_KP_PERIOD)];
+	    break;	    
+	case 0x03:
+	    theData = [NSData dataWithBytes:ALT_KP_ENTER length:conststr_sizeof(ALT_KP_ENTER)];
+	    break;
+    }
+
+    return (theData);
 }
 
 - (BOOL)lineMode

@@ -316,8 +316,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
         iIdleCount=0;
 
-//        NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
-//              event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
+        //NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
+        //      event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
 
         // Check if we are navigating through sessions or scrolling
         if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
@@ -393,6 +393,9 @@ static NSString *PWD_ENVVALUE = @"~";
                     case NSScrollLockFunctionKey:
                     case NSPauseFunctionKey:
                         break;
+		    case NSClearLineFunctionKey:
+			data = [TERMINAL keyPFn: 1];
+			break;
                 }
 
                 //            if ((modflag&NSShiftKeyMask)&&f>=0) f+=12;
@@ -434,6 +437,27 @@ static NSString *PWD_ENVVALUE = @"~";
                         [mstr replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
 
                 data = [mstr dataUsingEncoding:NSUTF8StringEncoding];
+
+		// Check if we are in keypad mode
+		if(modflag & NSNumericPadKeyMask)
+		{
+		    switch (unicode)
+		    {
+			case '=':
+			    data = [TERMINAL keyPFn: 2];;
+			    break;
+			case '/':
+			    data = [TERMINAL keyPFn: 3];
+			    break;
+			case '*':
+			    data = [TERMINAL keyPFn: 4];
+			    break;
+			default:
+			    data = [TERMINAL keypadData: unicode keystr: keystr];
+			    break;
+		    }
+
+		}		
 
                 if (data != nil ) {
                     send_str = (char *)[data bytes];

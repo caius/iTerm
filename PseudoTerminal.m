@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.32 2002-12-17 01:33:50 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.33 2002-12-17 01:50:03 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1060,24 +1060,9 @@ static NSDictionary *deadStateAttribute;
         NSMenuItem *item;
         NSImage *image;
         
-/*        aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 130.0, 32.0) pullsDown: YES];
-        [aPopUpButton setTarget: self];
-        [aPopUpButton setAction: @selector(_addressbookPopupSelectionDidChange:)];
-        [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-        [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
-        [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-        [aPopUpButton addItemWithTitle: @"Edit Address Book"];
-        [toolbarItem setView: aPopUpButton];
-        // Release the popup button since it is retained by the toolbar item.
-        [aPopUpButton release];
-        [toolbarItem setMinSize:[aPopUpButton bounds].size];
-        [toolbarItem setMaxSize:[aPopUpButton bounds].size];
-        [toolbarItem setLabel: @""];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Shortcut to address book commands",@"iTerm",@"Toolbar Item Tip:Shortcut")]; */
         aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 48.0, 32.0) pullsDown: YES];
         [aPopUpButton setTarget: self];
         [aPopUpButton setBordered: NO];
-//        [[aPopUpButton cell] setBezelStyle:NSShadowlessSquareBezelStyle];
         [[aPopUpButton cell] setArrowPosition:NSPopUpArrowAtBottom];
         [[aPopUpButton cell] setUsesItemFromMenu:NO];
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.172 2003-05-17 06:04:08 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.173 2003-05-17 06:40:50 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -62,7 +62,8 @@ static NSString *ABToolbarItem = @"Address";
 static NSString *CloseToolbarItem = @"Close";
 static NSString *ConfigToolbarItem = @"Config";
 
-static int windowCount = 0;
+static unsigned int windowCount = 0;
+static unsigned int availableWindowPosition = 0;
 
 - (void) newSession: (id) sender
 {
@@ -90,10 +91,13 @@ static int windowCount = 0;
     [self setMainMenu:[NSApp delegate]];
     if ([NSBundle loadNibNamed:NIB_PATH owner:self] == NO)
 	return nil;
+    windowNumber = availableWindowPosition;
+    windowCount++;
+    availableWindowPosition = windowCount;
     // save up to 10 window positions
-    if(windowCount++ < 10)
+    if(windowNumber < 10)
     {
-	[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", windowCount]];
+	[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", windowNumber]];
     }
     [[self window] setToolbar:[self setupToolbar]];
 
@@ -512,7 +516,6 @@ static int windowCount = 0;
     ptyListLock = nil;
    
     ptyList = nil;
-    WINDOW = nil;
 
         
     // Remove ourselves as an observer for notifications to reload the addressbook.
@@ -823,6 +826,10 @@ static int windowCount = 0;
     }
     
     [self releaseObjects];
+
+    windowCount--;
+    availableWindowPosition = windowNumber;
+    WINDOW = nil;    
 
     [MAINMENU terminalWillClose: self];
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.50 2003-05-07 21:01:07 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.51 2003-05-17 06:40:50 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -73,6 +73,7 @@
     int currentSessionIndex;
     PTYSession *currentPtySession;
     NSLock *ptyListLock;
+    unsigned int windowNumber;
     
     /////////////////////////////////////////////////////////////////////////
     int WIDTH,HEIGHT;

@@ -2,6 +2,9 @@
 
     * Fixed a crash when closing a window with both "close session 
       when it ends" and "Prompt on closing" are unselected.
+      
+    * When a window is created, it grabs the first available position 
+      for the frame name.
 
 2003-05-15	ujwal
 

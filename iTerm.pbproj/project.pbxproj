@@ -11,7 +11,6 @@
 				05A162CF006CD5FC7F000001,
 				FB094A1A033D71D501F955DB,
 			);
-			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -21,6 +20,7 @@
 				Chinese,
 				zh_CN,
 				zh_TW,
+				Korean,
 			);
 			mainGroup = 0464AB0D006CD2EC7F000001;
 			productRefGroup = 0464AB32006CD2EC7F000001;
@@ -231,6 +231,7 @@
 </dict>
 </plist>
 ";
+			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -499,6 +500,7 @@
 				FBBB8B49039D9E6501F955DB,
 				FBBB8B4A039D9E6D01F955DB,
 				FB80352E03CA060201F955DB,
+				FBDF6A55042795CE01F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -523,6 +525,7 @@
 				FBBB8B4B039D9E7E01F955DB,
 				FBBB8B4C039D9E8501F955DB,
 				FB80352F03CA060A01F955DB,
+				FBDF6A56042795EB01F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = PseudoTerminal.nib;
@@ -971,6 +974,7 @@
 				FBBB8B47039D9E1701F955DB,
 				FBBB8B48039D9E1F01F955DB,
 				FB80353003CA062601F955DB,
+				FBDF6A570427960101F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = iTerm.strings;
@@ -1091,6 +1095,7 @@
 </dict>
 </plist>
 ";
+			shouldUseHeadermap = 0;
 		};
 		FB7EECDB0340D3CD01F955DB = {
 			buildActionMask = 2147483647;
@@ -1477,6 +1482,24 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
+		};
+		FBDF6A55042795CE01F955DB = {
+			isa = PBXFileReference;
+			name = Korean;
+			path = Korean.lproj/MainMenu.nib;
+			refType = 4;
+		};
+		FBDF6A56042795EB01F955DB = {
+			isa = PBXFileReference;
+			name = Korean;
+			path = Korean.lproj/PseudoTerminal.nib;
+			refType = 4;
+		};
+		FBDF6A570427960101F955DB = {
+			isa = PBXFileReference;
+			name = Korean;
+			path = Korean.lproj/iTerm.strings;
+			refType = 4;
 		};
 	};
 	rootObject = 0464AB0C006CD2EC7F000001;

@@ -49,6 +49,9 @@
 
 -(void)drawRect:(NSRect)rect
 {
+    if([self image] == nil)
+	return;
+    
     [[NSColor clearColor] set];
     NSRectFill([self bounds]);
     [[self image] setSize: [self bounds].size];

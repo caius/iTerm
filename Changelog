@@ -1,7 +1,7 @@
 2003-02-02	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added basic Applescript support. One can now write 
-      Applescripts to open on or more default or addressbook 
+      Applescripts to open one or more default or addressbook 
       sessions in a new tab or window. The syntax is:
       
       To open a new session in a new tab:

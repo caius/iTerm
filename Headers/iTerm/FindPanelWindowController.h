@@ -29,29 +29,20 @@
 
 @class PTYTextView;
 
-@interface FindPanelWindowController : NSWindowController {
-
+@interface FindPanelWindowController : NSWindowController
+{
     IBOutlet NSTextField *searchStringField;
     IBOutlet NSButton *caseCheckBox;
 
-    NSString *searchString;
-    BOOL ignoreCase;
-
     id delegate;
-
-    NSWindow *respondingWindow;
-
 }
 
 // init
-+ (id) singleInstance;
-- (id) initWithWindowNibName: (NSString *)windowNibName;
-- (void) dealloc;
++ (id)sharedInstance;
 
 // NSWindow delegate methods
 - (void)windowWillClose:(NSNotification *)aNotification;
 - (void)windowDidLoad;
-- (void) respondingWindowFocusDidChange: (NSNotification *) aNotification;
 
 // action methods
 - (IBAction) findNext: (id) sender;
@@ -62,7 +53,29 @@
 - (void) setDelegate: (id) theDelegate;
 - (NSString *) searchString;
 - (void) setSearchString: (NSString *) aString;
-- (BOOL) ignoreCase;
-- (void) setIgnoreCase: (BOOL) flag;
 
 @end
+
+@interface FindCommandHandler : NSObject
+{
+    NSString* _searchString;
+    BOOL _ignoresCase;
+    
+    // last search location
+    unsigned int _lastSearchLocation;
+}
+
++ (id)sharedInstance;
+
+- (IBAction) findNext;
+- (IBAction) findPrevious;
+- (IBAction) findWithSelection;
+- (IBAction) jumpToSelection;
+- (void) findSubString:(NSString *) subString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck;
+- (void)setSearchString:(NSString*)searchString;
+- (NSString*)searchString;
+- (BOOL)ignoresCase;
+- (void)setIgnoresCase:(BOOL)set;
+
+@end
+

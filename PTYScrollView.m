@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.6 2003-08-11 16:35:59 sgehrman Exp $
+// $Id: PTYScrollView.m,v 1.7 2003-08-12 06:28:30 sgehrman Exp $
 /*
  **  PTYScrollView.m
  **
@@ -47,8 +47,6 @@
 
 - (id)initWithFrame:(NSRect)frame
 {
-    //PTYTextView *textview;
-
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYScrollView initWithFrame:%d,%d,%d,%d]",
 	  __FILE__, __LINE__, 
@@ -60,8 +58,6 @@
 
     [self setHasVerticalScroller:YES];
 
-
-    //NSParameterAssert(textview != nil);
     NSParameterAssert([self contentView] != nil);
 
     return self;

@@ -66,7 +66,8 @@ static NSString *PWD_ENVVALUE = @"~";
     dirty = NO;
     waiting=antiIdle=EXIT=NO;
     
-    if (normalStateAttribute == nil) {
+    if (normalStateAttribute == nil) 
+    {
         normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
         chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
@@ -134,7 +135,6 @@ static NSString *PWD_ENVVALUE = @"~";
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     
-
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
 #if USE_CUSTOM_DRAWING
@@ -143,22 +143,21 @@ static NSString *PWD_ENVVALUE = @"~";
 
     if([[PreferencePanel sharedInstance] enforceCharacterAlignment] == YES)
     {
-	VT100LayoutManager *aLayoutManager;
+        VT100LayoutManager* aLayoutManager = [[[VT100LayoutManager alloc] init] autorelease];
 	VT100Typesetter *aTypesetter;
 	NSTextContainer *aTextContainer;
 
 	textStorage = [[VT100TextStorage alloc] init];
-	aLayoutManager = [[VT100LayoutManager alloc] init];
 	[textStorage addLayoutManager:aLayoutManager];
-	[aLayoutManager release];
-	aTextContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize(aSize.width, 1e7)];
+
+        aTextContainer = [[[NSTextContainer alloc] initWithContainerSize: NSMakeSize(aSize.width, 1e7)] autorelease];
 	[aLayoutManager addTextContainer:aTextContainer];
-	[aTextContainer release];
-	aTypesetter = [[VT100Typesetter alloc] init];
+
+        aTypesetter = [[[VT100Typesetter alloc] init] autorelease];
 	[aTypesetter setScreen: SCREEN];
 	[aLayoutManager setTypesetter: aTypesetter];
-	[aTypesetter release];
-	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
+
+        TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
 	[aTextContainer setWidthTracksTextView:YES];
 	[aTextContainer setHeightTracksTextView:NO];
 	[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
@@ -173,7 +172,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     
-    
 #endif
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [[PreferencePanel sharedInstance] antiAlias]];
@@ -181,15 +179,11 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW release];
     [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
 
-    
-
     ai_code=0;
     antiIdle = NO;
     REFRESHED = NO;
 
     [tabViewItem setLabelAttributes: chosenStateAttribute];
-
-        
 }
 
 - (BOOL) isActiveSession
@@ -250,24 +244,28 @@ static NSString *PWD_ENVVALUE = @"~";
     addressBookEntry = nil;
 
     [SHELL release];
+    SHELL    = nil;
+
     [TERMINAL release];
+    TERMINAL = nil;
+
     [TEXTVIEW setDataSource: nil];
     [TEXTVIEW removeFromSuperview];
+    
     [textStorage release];
+    textStorage = nil;
+    
     [SCREEN release];
+    SCREEN   = nil;
 
-
-    if (timer) {
+    if (timer)
+    {
         [timer invalidate];
         [timer release];
+        timer = nil;
     }  
     
-    SHELL    = nil;
-    TERMINAL = nil;
-    SCREEN   = nil;
-    timer = nil;
     parent = nil;
-
 }
 
 - (void)readTask:(NSData *)data
@@ -278,19 +276,16 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, [[[NSString alloc] initWithData: data encoding: nil] autorelease] );
 #endif
     if (data == nil)
-    {
         return;
-    }
 
     [TERMINAL putStreamData:data];
     if ([parent pending]||[SCREEN screenIsLocked]) return;
 
-    if (REFRESHED==NO) {
+    if (REFRESHED==NO)
+    {
         REFRESHED=YES;
         if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-        {
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
-        }
     }
 
 #if USE_CUSTOM_DRAWING
@@ -325,21 +320,20 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL stop];
     EXIT = YES;
 
-    if (timer) {
+    if (timer) 
+    {
         [timer invalidate];
         [timer release];
         timer=nil;
     }
     
-    if (autoClose) {
+    if (autoClose)
         [parent closeSession:self];
-    }
     else 
     {
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
         [tabViewItem setLabelAttributes: deadStateAttribute];
     }
-
 }
 
 // PTYTextView
@@ -426,27 +420,26 @@ static NSString *PWD_ENVVALUE = @"~";
                 break;
                 
 	    default:
-		if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey) {
-		    [parent selectSessionAtIndex:unicode-NSF1FunctionKey];
-		}
-                    
+		if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
+		    [parent selectSessionAtIndex:unicode-NSF1FunctionKey];                    
 		break;
 	}
     }
-    else if ((modflag & NSAlternateKeyMask) && (modflag & NSControlKeyMask)) {
+    else if ((modflag & NSAlternateKeyMask) && (modflag & NSControlKeyMask)) 
+    {
 //        NSLog(@"opt_control_key detected(%d)",(modflag & NSShiftKeyMask));
         [[iTermController sharedInstance] interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
     }
     else if((modflag & NSAlternateKeyMask) && (unicode == NSDeleteCharacter))
-    {
 	[self setRemapDeleteKey: ![self remapDeleteKey]];
-    }
-    else {
-
-	if (modflag & NSFunctionKeyMask) {
+    else 
+    {
+	if (modflag & NSFunctionKeyMask)
+        {
 	    NSData *data = nil;
 
-	    switch(unicode) {
+	    switch(unicode) 
+            {
                 case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp:modflag]; break;
 		case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown:modflag]; break;
 		case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft:modflag]; break;
@@ -473,9 +466,8 @@ static NSString *PWD_ENVVALUE = @"~";
 		    break;
 	    }
 
-            if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey) {
+            if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
                 data = [TERMINAL keyFunction:unicode-NSF1FunctionKey+1];
-            }
 
 	    if (data != nil) {
 		send_str = (char *)[data bytes];
@@ -497,14 +489,15 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_pchr = '\e';
 //                send_chr=unmodkeystr;
             }
-	    else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) {
+	    else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) 
+            {
 		int i;
-		for (i = 0; i < send_strlen; ++i) {
+		for (i = 0; i < send_strlen; ++i)
 		    send_str[i] |= 0x80;
-		}
 	    }
 	}
-	else {
+	else 
+        {
 	    int max = [keystr length];
 	    NSData *data;
 
@@ -531,7 +524,6 @@ static NSString *PWD_ENVVALUE = @"~";
 			data = [TERMINAL keypadData: unicode keystr: keystr];
 			break;
 		}
-
 	    }
 
 	    // Check if we want to remap the delete key to backspace
@@ -562,7 +554,8 @@ static NSString *PWD_ENVVALUE = @"~";
 	// Make sure we scroll down to the end
 	[TEXTVIEW scrollEnd];
 
-	if (EXIT == NO ) {
+	if (EXIT == NO ) 
+        {
 	    if (send_pchr >= 0) {
 		char c = send_pchr;
 
@@ -584,14 +577,12 @@ static NSString *PWD_ENVVALUE = @"~";
             [TEXTVIEW scrollEnd];
 	    //[SCREEN updateScreen];
 #endif
-    
 	}
     }
 }
 
 - (BOOL)willHandleEvent: (NSEvent *) theEvent
 {
-
     // Handle the option-click event
     return (([theEvent type] == NSLeftMouseDown) &&
 	    ([theEvent modifierFlags] & NSAlternateKeyMask));       
@@ -652,9 +643,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
     // trigger an update of the display.
     [SCREEN updateScreen];
-    
 }
-
 
 - (void)insertText:(NSString *)string
 {
@@ -781,8 +770,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) pasteString: (NSString *) aString
 {
-
-    if ([aString length] > 0) {
+    if ([aString length] > 0)
+    {
         NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
                                     dataUsingEncoding:[TERMINAL encoding]
                                 allowLossyConversion:YES];
@@ -794,7 +783,6 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     else
 	NSBeep();
-    
 }
 
 - (void)deleteBackward:(id)sender
@@ -829,7 +817,6 @@ static NSString *PWD_ENVVALUE = @"~";
 
     if([[PreferencePanel sharedInstance] copySelection])
 	[TEXTVIEW copy: self];
-    
 }
 
 - (void) textViewResized: (PTYTextView *) textView;
@@ -850,15 +837,16 @@ static NSString *PWD_ENVVALUE = @"~";
     iIdleCount++; oIdleCount++; blink++;
     if (++output>1000) output=1000;
     
-    if (antiIdle) {
-        if (iIdleCount>=6000) {
+    if (antiIdle) 
+    {
+        if (iIdleCount>=6000)
+        {
             [SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
             iIdleCount=0;
         }
     }
-    if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
+    if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
         [self setLabelAttribute];
-    }
 
 #if USE_CUSTOM_DRAWING
     if (output>10&&dirty) {
@@ -892,15 +880,14 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
 
     [pool release];
-
 }
 
 - (void) setLabelAttribute
 {
-    if ([self exited]) {
+    if ([self exited])
         [tabViewItem setLabelAttributes: deadStateAttribute];
-    }
-    else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
+    else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
+    {
         if (oIdleCount>200&&!waiting) {
             waiting=YES;
             if (REFRESHED)
@@ -984,7 +971,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setAutoClose:[[aePrefs objectForKey:@"AutoClose"] boolValue]];
     [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
     [self setRemapDeleteKey: [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue]];
-    
 }
 
 // Contextual menu
@@ -1024,22 +1010,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem
 {
-
-    //tabViewItem = theTabViewItem;
-
-#if 1
-    if(tabViewItem)
-    {
-        [tabViewItem release];
-        tabViewItem = nil;
-    }
-    if(theTabViewItem)
-    {
-        [theTabViewItem retain];
-        tabViewItem = theTabViewItem;
-    }
-#endif
-
+    [tabViewItem autorelease];
+    tabViewItem = [theTabViewItem retain];
 }
 
 - (NSString *) uniqueID
@@ -1070,8 +1042,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     if(theName)
     {
-        [theName retain];
-        name = theName;
+        name = [theName retain];
 	// sync the window title if it is not set to something else
 	if([self windowTitle] == nil)
 	    [self setWindowTitle: theName];
@@ -1091,10 +1062,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
     // get the session submenu to be rebuilt
     if([[iTermController sharedInstance] frontPseudoTerminal] == [self parent])
-    {
-	[[iTermController sharedInstance] buildSessionSubmenu];
-    }
-    
+	[[iTermController sharedInstance] buildSessionSubmenu];    
 }
 
 - (NSString *) windowTitle
@@ -1104,111 +1072,82 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setWindowTitle: (NSString *) theTitle
 {
-    if(windowTitle != nil)
-    {
-	[windowTitle release];
-	windowTitle = nil;
-    }
+    [windowTitle autorelease];
+    windowTitle = nil;
+    
     if(theTitle != nil)
     {
-	[theTitle retain];
-	windowTitle = theTitle;
+	windowTitle = [theTitle retain];
 	if([[self parent] currentSession] == self)
 	    [[[self parent] window] setTitle: windowTitle];
     }
 }
 
-
 - (PTYTask *) SHELL
 {
     return (SHELL);
 }
+
 - (void) setSHELL: (PTYTask *) theSHELL
 {
-    if(SHELL != nil)
-        [SHELL release];
-    if(theSHELL != nil)
-    {
-        [theSHELL retain];
-        SHELL = theSHELL;
-    }
+    [SHELL autorelease];
+    SHELL = [theSHELL retain];
 }
 
 - (VT100Terminal *) TERMINAL
 {
     return (TERMINAL);
 }
+
 - (void) setTERMINAL: (VT100Terminal *) theTERMINAL
 {
-    if(TERMINAL != nil)
-        [TERMINAL release];
-    if(theTERMINAL != nil)
-    {
-        [theTERMINAL retain];
-        TERMINAL = theTERMINAL;
-    }
+    [TERMINAL autorelease];
+    TERMINAL = [theTERMINAL retain];
 }
 
 - (NSString *) TERM_VALUE
 {
     return (TERM_VALUE);
 }
+
 - (void) setTERM_VALUE: (NSString *) theTERM_VALUE
 {
-    if(TERM_VALUE != nil)
-        [TERM_VALUE release];
-    if(theTERM_VALUE != nil)
-    {
-        [theTERM_VALUE retain];
-        TERM_VALUE = theTERM_VALUE;
-    }
+    [TERM_VALUE autorelease];
+    TERM_VALUE = [theTERM_VALUE retain];
 }
 
 - (VT100Screen *) SCREEN
 {
     return (SCREEN);
 }
+
 - (void) setSCREEN: (VT100Screen *) theSCREEN
 {
-    if(SCREEN != nil)
-        [SCREEN release];
-    if(theSCREEN != nil)
-    {
-        [theSCREEN retain];
-        SCREEN = theSCREEN;
-    }
+    [SCREEN autorelease];
+    SCREEN = [theSCREEN retain];
 }
 
 - (PTYTextView *) TEXTVIEW
 {
     return (TEXTVIEW);
 }
+
 - (void) setTEXTVIEW: (PTYTextView *) theTEXTVIEW
 {
-    if(TEXTVIEW != nil)
-        [TEXTVIEW release];
-    if(theTEXTVIEW != nil)
-    {
-        [theTEXTVIEW retain];
-        TEXTVIEW = theTEXTVIEW;
-    }
+    [TEXTVIEW autorelease];
+    TEXTVIEW = [theTEXTVIEW retain];
 }
 
 - (PTYScrollView *) SCROLLVIEW
 {
     return (SCROLLVIEW);
 }
+
 - (void) setSCROLLVIEW: (PTYScrollView *) theSCROLLVIEW
 {
-    if(SCROLLVIEW != nil)
-        [SCROLLVIEW release];
-    if(theSCROLLVIEW != nil)
-    {
-        [theSCROLLVIEW retain];
-        SCROLLVIEW = theSCROLLVIEW;
-    }
+    [SCROLLVIEW autorelease];
+    SCROLLVIEW = [theSCROLLVIEW retain];
 }
-
 
 - (void)setEncoding:(NSStringEncoding)encoding
 {
@@ -1250,7 +1189,6 @@ static NSString *PWD_ENVVALUE = @"~";
         // Change the fg color for future stuff
         [TERMINAL setFGColor: color];
     }
-
 }
 
 - (NSColor *) backgroundColor
@@ -1271,8 +1209,8 @@ static NSString *PWD_ENVVALUE = @"~";
         // Change the bg color for future stuff
         [TERMINAL setBGColor: color];
     }
+    
     [[self SCROLLVIEW] setBackgroundColor: color];
-
 }
 
 - (NSColor *) boldColor
@@ -1295,7 +1233,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setSelectionColor: color];
 }
 
-
 // Changes transparency
 
 - (float) transparency
@@ -1308,9 +1245,8 @@ static NSString *PWD_ENVVALUE = @"~";
     NSColor *newcolor;
     
     newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency/100)];
-    if (newcolor != nil && newcolor != [TERMINAL defaultBGColor]) {
+    if (newcolor != nil && newcolor != [TERMINAL defaultBGColor])
         [self setBackgroundColor: newcolor];
-    }
 }
 
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
@@ -1331,7 +1267,8 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setAntiIdle:(BOOL)set
 {
     antiIdle=set;
-    if (antiIdle) iIdleCount=0;
+    if (antiIdle) 
+        iIdleCount=0;
 }
 
 - (void) setAntiCode:(int)code
@@ -1368,7 +1305,6 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession logStart:%@]",
           __FILE__, __LINE__);
 #endif
-
     panel = [NSSavePanel savePanel];
     sts = [panel runModalForDirectory:NSHomeDirectory() file:@""];
     if (sts == NSOKButton) {
@@ -1386,7 +1322,6 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
     [SHELL loggingStop];
 }
-
 
 - (void)clearBuffer
 {
@@ -1413,7 +1348,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) resetStatus;
 {
-    waiting=REFRESHED=NO;
+    waiting = REFRESHED = NO;
 }
 
 - (BOOL)exited
@@ -1423,19 +1358,11 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setAddressBookEntry:(NSDictionary*) entry
 {
-    if (addressBookEntry != nil)
-    {
-	[addressBookEntry release];
-	addressBookEntry = nil;
-    }
-    if(entry != nil)
-    {
-	[entry retain];
-	addressBookEntry=entry;
-    }
+    [addressBookEntry autorelease];
+    addressBookEntry = [entry retain];
 }
 
-- (NSDictionary *) addressBookEntry
+- (NSDictionary *)addressBookEntry
 {
     return addressBookEntry;
 }
@@ -1454,7 +1381,6 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     return ([TEXTVIEW textStorage]);
 }
-
 
 @end
 
@@ -1490,7 +1416,6 @@ static NSString *PWD_ENVVALUE = @"~";
 // Handlers for supported commands:
 -(void)handleExecScriptCommand: (NSScriptCommand *)aCommand
 {
-
     // if we are already doing something, get out.
     if([SHELL pid] > 0)
     {
@@ -1509,7 +1434,6 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [self startProgram:cmd arguments:arg environment:[NSDictionary dictionary]];
     
-
     return;
 }
 
@@ -1531,18 +1455,14 @@ static NSString *PWD_ENVVALUE = @"~";
 
     if(text != nil)
     {
-
 	aString = [NSString stringWithFormat:@"%@\n", text];
 	data = [aString dataUsingEncoding: [TERMINAL encoding]];
-	
     }
 
     if(contentsOfFile != nil)
     {
-
 	aString = [NSString stringWithContentsOfFile: contentsOfFile];
 	data = [aString dataUsingEncoding: [TERMINAL encoding]];
-	
     }
 
     if(data != nil && [SHELL pid] > 0)
@@ -1558,8 +1478,6 @@ static NSString *PWD_ENVVALUE = @"~";
 	// do this in a new thread so that we don't get stuck.
 	[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:data];
     }
-    
-
 }
 
 -(void)handleTerminateScriptCommand: (NSScriptCommand *)command

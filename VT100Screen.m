@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.121 2003-08-11 16:37:05 sgehrman Exp $
+// $Id: VT100Screen.m,v 1.122 2003-08-12 06:29:02 sgehrman Exp $
 //
 /*
  **  VT100Screen.m
@@ -1344,12 +1344,11 @@ static BOOL PLAYBELL = YES;
 	int idx;
         idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];
         //NSLog(@"showCursor: %d(%d)(%d+%d)(%d)",idx,[[STORAGE string] length],[self getIndexAtX:CURSOR_X y:CURSOR_Y], updateIndex,[BUFFER length]);
-        if (idx>=[[STORAGE string] length]) {
+        if (idx>=[[STORAGE string] length])
             [STORAGE appendAttributedString:[self defaultAttrString:@" "]];
-        }
-        else if ([[STORAGE string] characterAtIndex:idx]=='\n') {
+        else if ([[STORAGE string] characterAtIndex:idx]=='\n') 
             [STORAGE insertAttributedString:[self defaultAttrString:@" "] atIndex:idx];
-        }
+
         // reverse the video on the position where the cursor is supposed to be shown.
         dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
 	if([[[SESSION parent] window] isKeyWindow] == YES)

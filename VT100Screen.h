@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.20 2003-03-10 22:38:13 yfabian Exp $
+// $Id: VT100Screen.h,v 1.21 2003-03-11 00:11:21 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -57,6 +57,7 @@
     int charset[4], saveCharset[4];
     NSMutableAttributedString *BUFFER;
     int updateIndex, minIndex;
+    BOOL blinkShow;
 
     NSMutableArray *screenLines;
     int screenTop;

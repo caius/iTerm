@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.67 2003-03-10 23:38:09 yfabian Exp $
+// $Id: VT100Screen.m,v 1.68 2003-03-11 00:11:21 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -460,6 +460,7 @@ static BOOL PLAYBELL = YES;
     
     screenTop = 0;
     screenBottom = HEIGHT - 1;
+    blinkShow=YES;
 }
     
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
@@ -2136,7 +2137,6 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
 #endif
     
-    static BOOL show=YES;
     NSColor *fg, *bg,*blink;
     NSDictionary *dic;
     NSRange range;
@@ -2164,7 +2164,7 @@ static BOOL PLAYBELL = YES;
                 }
                 dic=[NSDictionary dictionaryWithObjectsAndKeys:
                     bg,NSBackgroundColorAttributeName,
-                    (show?blink:bg),NSForegroundColorAttributeName,
+                    (blinkShow?blink:bg),NSForegroundColorAttributeName,
                     blink,NSBlinkColorAttributeName,
                     [NSNumber numberWithInt:1],NSBlinkAttributeName,
                     nil];
@@ -2175,7 +2175,7 @@ static BOOL PLAYBELL = YES;
         else idx+=range.length;
     }
     [STORAGE endEditing];
-    show=!(show);
+    blinkShow=!blinkShow;
 }
 
 - (int) cursorX

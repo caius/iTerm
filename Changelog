@@ -11,6 +11,7 @@
       Transparency.
     * Implemented ANSI code VPA and VPR, to fix one user's
       problem with Debian programs.
+    * Fixed a blinking bug
       
 2003-03-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

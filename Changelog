@@ -6,6 +6,7 @@
 
 	* Made config panel a floating window. Changes are applied immediately 
 	  to the active session.
+	* Added back in support for bookmark shortcuts.
 
 2004-04-10  ujwal
 

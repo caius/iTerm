@@ -34,6 +34,7 @@
 #define KEY_TERMINAL_PROFILE			@"Terminal Profile"
 #define KEY_KEYBOARD_PROFILE			@"Keyboard Profile"
 #define KEY_DISPLAY_PROFILE				@"Display Profile"
+#define KEY_SHORTCUT					@"Shortcut"
 #define KEY_DEFAULT_BOOKMARK			@"Default Bookmark"
 #define KEY_RENDEZVOUS_GROUP			@"Rendezvous Group"
 #define KEY_RENDEZVOUS_SERVICE			@"Rendezvous Service"

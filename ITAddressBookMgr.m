@@ -202,7 +202,7 @@ static TreeNode *defaultBookmark = nil;
 }
 
 - (id) objectForKey: (id) key inItem: (id) item
-{
+{	
 	NSDictionary *data = [SAFENODE(item) nodeData];
 	
 	return ([data objectForKey: key]);
@@ -313,6 +313,7 @@ static TreeNode *defaultBookmark = nil;
 	int i;
 	NSFileManager *fileManager;
 	TreeNode *childNode;
+	NSString *shortcut;
 	
 	for (i = 0; i < [_addressBookArray count]; i++)
 	{
@@ -329,6 +330,10 @@ static TreeNode *defaultBookmark = nil;
 			[aBookmarkData setObject: [[iTermTerminalProfileMgr singleInstance] defaultProfileName] forKey: KEY_TERMINAL_PROFILE];
 			[aBookmarkData setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
 			[aBookmarkData setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
+			
+			shortcut=([[_adEntry objectForKey:@"Shortcut"] intValue]? [NSString stringWithFormat:@"%c",[[_adEntry objectForKey:@"Shortcut"] intValue]]:@"");
+			shortcut = [shortcut lowercaseString];
+			[aBookmarkData setObject: shortcut forKey: KEY_SHORTCUT];
 			
 			childNode = [[TreeNode alloc] initWithData: aBookmarkData parent: nil children: [NSArray array]];
 			[childNode setIsLeaf: YES];

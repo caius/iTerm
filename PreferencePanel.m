@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.112 2004-04-11 02:05:43 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.113 2004-04-12 08:27:33 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -398,7 +398,7 @@ static BOOL editingBookmark = NO;
 - (IBAction) editBookmark: (id) sender
 {
 	id selectedItem;
-	NSString *terminalProfile, *keyboardProfile, *displayProfile;
+	NSString *terminalProfile, *keyboardProfile, *displayProfile, *shortcut;
 	
 	editingBookmark = YES;
 	
@@ -425,6 +425,11 @@ static BOOL editingBookmark = NO;
 	if([bookmarkDisplayProfile indexOfItemWithTitle: displayProfile] < 0)
 		displayProfile = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]], @"Display Profiles");
 	[bookmarkDisplayProfile selectItemWithTitle: displayProfile];
+	
+	shortcut = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_SHORTCUT inItem: selectedItem];
+	if([shortcut length] < 0)
+		shortcut = @"";
+	[bookmarkShortcut selectItemWithTitle: shortcut];
 
 	
 	[NSApp beginSheet: editBookmarkPanel
@@ -588,6 +593,7 @@ static BOOL editingBookmark = NO;
 		[aDict setObject: [bookmarkTerminalProfile titleOfSelectedItem] forKey: KEY_TERMINAL_PROFILE];
 		[aDict setObject: [bookmarkKeyboardProfile titleOfSelectedItem] forKey: KEY_KEYBOARD_PROFILE];
 		[aDict setObject: [bookmarkDisplayProfile titleOfSelectedItem] forKey: KEY_DISPLAY_PROFILE];
+		[aDict setObject: [bookmarkShortcut titleOfSelectedItem] forKey: KEY_SHORTCUT];
 		
 		selectedRow = [bookmarksView selectedRow];
 		
@@ -634,6 +640,7 @@ static BOOL editingBookmark = NO;
 	[bookmarkDisplayProfile addItemsWithTitles: profileArray];
 	[bookmarkDisplayProfile selectItemWithTitle: [[iTermDisplayProfileMgr singleInstance] defaultProfileName]];
 	
+	[bookmarkShortcut selectItemWithTitle: @""];
 }
 
 - (NSArray *) _selectedNodes 

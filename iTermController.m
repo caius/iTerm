@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.41 2004-04-12 04:49:32 ujwal Exp $
+// $Id: iTermController.m,v 1.42 2004-04-12 08:27:34 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -537,7 +537,7 @@ NSString *terminalsKey = @"terminals";
 	TreeNode *childNode;
 	NSString *shortcut;
 	unsigned int modifierMask;
-	
+		
 	aMenu = [[NSMenu alloc] init];
 	
 	entryEnumerator = [[theNode children] objectEnumerator];
@@ -557,6 +557,7 @@ NSString *terminalsKey = @"terminals";
 		{
 			if(withShortcuts)
 			{
+				
 				if([[ITAddressBookMgr sharedInstance] defaultBookmarkData] == dataDict)
 				{
 					if(aTarget == nil)
@@ -565,6 +566,18 @@ NSString *terminalsKey = @"terminals";
 						shortcut = @"t";
 					modifierMask = NSCommandKeyMask;
 					
+					[aMenuItem setKeyEquivalent: shortcut];
+					[aMenuItem setKeyEquivalentModifierMask: modifierMask];
+				}
+				else if ([dataDict objectForKey: KEY_SHORTCUT] != nil)
+				{
+					modifierMask = NSCommandKeyMask | NSControlKeyMask;
+					if(aTarget == nil)
+						modifierMask |= NSShiftKeyMask;
+					
+					shortcut=[dataDict objectForKey: KEY_SHORTCUT];
+					shortcut = [shortcut lowercaseString];
+
 					[aMenuItem setKeyEquivalent: shortcut];
 					[aMenuItem setKeyEquivalentModifierMask: modifierMask];
 				}

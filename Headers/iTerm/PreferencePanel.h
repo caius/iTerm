@@ -57,6 +57,7 @@
 	IBOutlet NSPopUpButton *bookmarkTerminalProfile;
 	IBOutlet NSPopUpButton *bookmarkKeyboardProfile;
 	IBOutlet NSPopUpButton *bookmarkDisplayProfile;
+	IBOutlet NSPopUpButton *bookmarkShortcut;
 	NSArray	 		*draggedNodes;
 
     

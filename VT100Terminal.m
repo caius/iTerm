@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.78 2003-09-11 23:51:47 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.79 2003-09-13 04:08:04 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1194,7 +1194,7 @@ static VT100TCC decode_string(unsigned char *datap,
     TRACE = NO;
 
     strictAnsiMode = NO;
-    allowColumnMode = NO;
+    allowColumnMode = YES;
     printToAnsi = NO;
     pipeFile = NULL;
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.84 2003-09-05 00:10:42 yfabian Exp $
+// $Id: PTYTextView.m,v 1.85 2003-09-05 15:13:15 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -28,7 +28,7 @@
  */
 
 #define DEBUG_ALLOC           0
-#define DEBUG_METHOD_TRACE    1
+#define DEBUG_METHOD_TRACE    0
 #define GREED_KEYDOWN         1
 
 #import <iTerm/iTerm.h>

@@ -1,6 +1,8 @@
 2003-04-29	ujwal
 
     * Fixed bug in storing and reading for scrollback lines preference.
+    
+    * default scrollback value is 1000.
 
 2003-04-29	fabian
     * Fixed a bug in VT100Screen's removeOverLine

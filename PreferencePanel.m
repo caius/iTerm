@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.42 2003-04-30 00:26:43 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.43 2003-04-30 01:36:52 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -47,7 +47,7 @@ static NSFont* FONT;
 
 static int   COL   = 80;
 static int   ROW   = 25;
-static unsigned int  SCROLLBACK = 100000;
+static unsigned int  SCROLLBACK = 1000;
 
 static NSString* TERM    =@"xterm";
 static NSString* SHELL   =@"/bin/bash --login";

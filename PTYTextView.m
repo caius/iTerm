@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.175 2004-03-19 20:19:04 ujwal Exp $
+// $Id: PTYTextView.m,v 1.176 2004-03-19 21:23:17 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -959,6 +959,7 @@
 
 - (void)mouseDown:(NSEvent *)event
 {
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView mouseDown:%@]",
           __FILE__, __LINE__, event );
@@ -975,15 +976,26 @@
     x = (locationInTextView.x-MARGIN)/charWidth;
 	if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
+	
 	if(locationInTextView.x < MARGIN)
 	{
 		// complete selection of previous line
 		x = [dataSource width] - 1;
 		y--;
 	}		
-    if (x>=[dataSource width]) x=[dataSource width];
-    endX = startX = x;
-    endY = startY = y;
+    if (x>=[dataSource width]) x=[dataSource width] - 1;
+	
+	// if we are holding the shift key down, we are extending selection
+	if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
+	{
+		endX = x;
+		endY = y;
+	}
+	else
+	{
+		endX = startX = x;
+		endY = startY = y;
+	}	
 	    
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
@@ -992,13 +1004,17 @@
 
 - (void)mouseUp:(NSEvent *)event
 {
+	NSString *lineContents, *blankLine;
+	char blankString[1024];
+	NSPoint locationInWindow, locationInTextView;
+    int x, y, tmpX, tmpY;
+	NSString *aString, *wordChars;
+	
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView mouseUp:%@]",
           __FILE__, __LINE__, event );
 #endif
-    NSPoint locationInWindow, locationInTextView;
-    int x, y, tmpX, tmpY;
-	NSString *aString, *wordChars;
     
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
@@ -1022,6 +1038,17 @@
         y=startX; startX=endX; endX=y;
     }
     else if (startY==endY&&startX==endX&&!mouseDragged) startX=-1;
+	
+	// if we are on an empty line, we select the current line to the end
+	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y];
+	memset(blankString, ' ', 100);
+	blankString[100] = 0;
+	blankLine = [NSString stringWithUTF8String: (const char*)blankString];
+	if([lineContents isEqualToString: blankLine] && y >= 0)
+	{
+		endX = [dataSource width] - 1;
+	}
+	
 	
 	// Handle double and triple click
 	if([event clickCount] == 2)
@@ -1134,6 +1161,8 @@
     NSPoint locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     NSRect  rectInTextView = [self visibleRect];
     int x, y;
+	NSString *lineContents, *blankLine;
+	char blankString[1024];
 	
 	mouseDragged = YES;
     
@@ -1150,8 +1179,20 @@
     x = (locationInTextView.x - MARGIN) / charWidth;
 	if (x < 0) x = 0;
 	if (x>=[dataSource width]) x=[dataSource width] - 1;
+	
     
 	y = locationInTextView.y/lineHeight;
+	
+	// if we are on an empty line, we select the current line to the end
+	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y];
+	memset(blankString, ' ', 100);
+	blankString[100] = 0;
+	blankLine = [NSString stringWithUTF8String: (const char*)blankString];
+	if([lineContents isEqualToString: blankLine] && y >= 0)
+	{
+		x = [dataSource width] - 1;
+	}	
+	
 	if(locationInTextView.x < MARGIN)
 	{
 		// complete selection of previous line

@@ -189,7 +189,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Enhanced Terminal Emulator</string>
+	<string>0.6.0</string>
 	<key>CFBundleIconFile</key>
 	<string>iTerm.icns</string>
 	<key>CFBundleIdentifier</key>

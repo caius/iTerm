@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.167 2003-05-02 17:37:08 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.168 2003-05-07 15:44:56 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -671,8 +671,7 @@ static int windowCount = 0;
     [thisWindow setContentSize:winSize];
 
     [thisWindow setFrameTopLeftPoint: topLeft];
-    
-    
+
 }
 
 
@@ -935,7 +934,9 @@ static int windowCount = 0;
 
     //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 
-
+    
+    resizeInProgress = NO;
+    
 }
 
 

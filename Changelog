@@ -1,6 +1,8 @@
 2003-05-07	ujwal
 
     * Fixed a bug in switching font from Osaka-Mono to FreeMono.
+    
+    * Fixed bug in window resize.
 
 2003-05-06	fabian/ujwal
 

@@ -1,7 +1,11 @@
 2003-01-01	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added support for bold character attributes.
-      Only works with fonts that support bold typeface.
+      Only works with fonts that support bold typeface
+      such as Courier.
+      
+    * Fixed bug where a blink attribute would cause bold 
+      attributes to be lost.
       
 
 2002-12-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>

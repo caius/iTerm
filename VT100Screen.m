@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.9 2003-01-01 09:07:49 ujwal Exp $
+// $Id: VT100Screen.m,v 1.10 2003-01-01 20:56:56 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -1400,7 +1400,7 @@ static BOOL PLAYBELL = YES;
                     fg,NSBlinkColorAttributeName,
                     [NSNumber numberWithInt:1],NSBlinkAttributeName,
                     nil];
-                [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
+                [STORAGE addAttributes:dic range:NSMakeRange(idx,1)];
             }
 //            NSLog(@"true blink end!!");
         }

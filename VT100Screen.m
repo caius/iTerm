@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.179 2004-02-14 00:58:34 ujwal Exp $
+// $Id: VT100Screen.m,v 1.180 2004-02-15 06:34:03 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -747,48 +747,69 @@ static BOOL PLAYBELL = YES;
           __FILE__, __LINE__, string, CURSOR_X);
 #endif
 
-	if ([string length]<1||!string||[string length]>300) return;
+	if ([string length] < 1 || !string || [string length] > 300) 
+	{
+		NSLog(@"%s: invalid string '%@'", __PRETTY_FUNCTION__, string);
+		return;		
+	}
+	
 	padString(string,buffer,[SESSION doubleWidth], &len);
-	if (charset[[TERMINAL charset]]) translate(buffer,len);
+	
+	// check for graphical characters
+	if (charset[[TERMINAL charset]]) 
+		translate(buffer,len);
 	//    NSLog(@"%d(%d):%@",[TERMINAL charset],charset[[TERMINAL charset]],string);
 	//NSLog(@"string:%s",s);
 	
-    if (len<1) return;
+    if (len < 1) 
+		return;
 
-    for(idx=0;idx<len;) {
-        if (CURSOR_X>=WIDTH) {
-            if ([TERMINAL wraparoundMode]) {
+    for(idx = 0; idx < len;) 
+	{
+        if (CURSOR_X >= WIDTH) 
+		{
+            if ([TERMINAL wraparoundMode]) 
+			{
                 CURSOR_X=0;    
 				[self setNewLine];
+				//break;
             }
-            else {
+            else 
+			{
                 CURSOR_X=WIDTH-1;
                 idx=len-1;
             }
         }
-		if(WIDTH-CURSOR_X<=len-idx) newx=WIDTH;
-		else newx=CURSOR_X+len-idx;
-		j=newx-CURSOR_X;
-		if (j<=0) {
+		if(WIDTH - CURSOR_X <= len - idx) 
+			newx = WIDTH;
+		else 
+			newx = CURSOR_X + len - idx;
+		j = newx - CURSOR_X;
+
+		if (j <= 0) {
 			//NSLog(@"setASCIIString: output length=0?(%d+%d)%d+%d",CURSOR_X,j,idx2,len);
 			break;
 		}
-		screenIdx=CURSOR_Y*WIDTH;
-        if ([TERMINAL insertMode]) {
-			if (CURSOR_X+j<WIDTH) {
-			memmove(screenLines+screenIdx+CURSOR_X+j,screenLines+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(unichar));
-			memmove(screenFGColor+screenIdx+CURSOR_X+j,screenFGColor+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(char));
-			memmove(screenBGColor+screenIdx+CURSOR_X+j,screenBGColor+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(char));
-			memset(dirty+screenIdx+CURSOR_X,1,WIDTH-CURSOR_X);
+		
+		screenIdx = CURSOR_Y * WIDTH;
+		
+        if ([TERMINAL insertMode]) 
+		{
+			if (CURSOR_X + j < WIDTH) 
+			{
+				memmove(screenLines+screenIdx+CURSOR_X+j,screenLines+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(unichar));
+				memmove(screenFGColor+screenIdx+CURSOR_X+j,screenFGColor+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(char));
+				memmove(screenBGColor+screenIdx+CURSOR_X+j,screenBGColor+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(char));
+				memset(dirty+screenIdx+CURSOR_X,1,WIDTH-CURSOR_X);
 			}
 		}
-		memcpy(screenLines+screenIdx+CURSOR_X,buffer,j*sizeof(unichar));
+		memcpy(screenLines+screenIdx+CURSOR_X,buffer+idx,j*sizeof(unichar));
 		memset(screenFGColor+screenIdx+CURSOR_X,[TERMINAL foregroundColorCode],j);
 		memset(screenBGColor+screenIdx+CURSOR_X,[TERMINAL backgroundColorCode],j);
 		memset(dirty+screenIdx+CURSOR_X,1,j);
 		
-		CURSOR_X=newx;
-		idx+=j;
+		CURSOR_X = newx;
+		idx += j;
     }
 #if DEBUG_METHOD_TRACE
     NSLog(@"setString done at %d", CURSOR_X);

@@ -1,3 +1,7 @@
+2004-02-14  ujwal
+
+	* Fixed bug in VT100Screen: setString when text wraps.
+
 2004-02-13  ujwal
 
 	* Fixed "Kill Buffer" crash.

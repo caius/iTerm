@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.100 2003-02-09 22:38:02 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.101 2003-02-09 22:45:12 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1536,10 +1536,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [term addSession: aSession];
 
     // remove from our window
-    [ptyListLock lock];
     [TABVIEW removeTabViewItem: aTabViewItem];
-    [ptyList removeObject: aSession];
-    [ptyListLock unlock];
 
     if ([TABVIEW numberOfTabViewItems] == 1)
     {

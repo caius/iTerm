@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.12 2003-01-10 18:30:01 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.13 2003-01-14 16:48:41 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -11,6 +11,7 @@
 #import "VT100Terminal.h"
 #import "VT100Screen.h"
 #import "NSStringITerm.h"
+
 
 /*
   Traditional Chinese (Big5)
@@ -649,27 +650,6 @@ static VT100TCC decode_control(unsigned char *datap,
     return result;
 }
 
-static VT100TCC decode_ascii(unsigned char *datap,
-			     size_t datalen,
-			     size_t *rmlen)
-{
-    unsigned char *last = datap;
-    size_t len = datalen;
-    VT100TCC result;
-
-    while (len > 0 && *last >= 0x20 && *last < 0x7f) {
-	++last;
-	--len;
-    }
-
-    *rmlen = datalen - len;
-    result.type = VT100_STRING;
-    result.u.string = [NSString stringWithCString:datap length:*rmlen];
-    
-    return result;
-}
-
-
 static int utf8_reqbyte(unsigned char f)
 {
     int result;
@@ -702,7 +682,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
     int reqbyte;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<0x7f) {
+        if (*p>=0x20&&*p<=0x7f) {
             p++;
             len--;
         }
@@ -741,7 +721,7 @@ static VT100TCC decode_euccn(unsigned char *datap,
 
 
     while (len > 0) {
-        if (*p>=0x20&&*p<0x7f) {
+        if (*p>=0x20&&*p<=0x7f) {
             p++;
             len--;
         }
@@ -779,7 +759,7 @@ static VT100TCC decode_big5(unsigned char *datap,
     size_t len = datalen;
     
     while (len > 0) {
-        if (*p>=0x20&&*p<0x7f) {
+        if (*p>=0x20&&*p<=0x7f) {
             p++;
             len--;
         }
@@ -817,7 +797,7 @@ static VT100TCC decode_euc_jp(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<0x7f) {
+        if (*p>=0x20&&*p<=0x7f) {
             p++;
             len--;
         }
@@ -857,7 +837,7 @@ static VT100TCC decode_sjis(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<0x7f) {
+        if (*p>=0x20&&*p<=0x7f) {
             p++;
             len--;
         }
@@ -894,7 +874,7 @@ static VT100TCC decode_euckr(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<0x7f) {
+        if (*p>=0x20&&*p<=0x7f) {
             p++;
             len--;
         }
@@ -925,7 +905,11 @@ static VT100TCC decode_other_enc(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20) {
+        if (*p>=0x20&&*p<=0x7f) {
+            p++;
+            len--;
+        }
+        else if (*p>0x7f) {
             p++;
             len--;
         }
@@ -944,8 +928,8 @@ static VT100TCC decode_other_enc(unsigned char *datap,
 }
 
 static VT100TCC decode_string(unsigned char *datap,
-			     size_t datalen,
-			     size_t *rmlen,
+                              size_t datalen,
+                              size_t *rmlen,
 			     NSStringEncoding encoding)
 {
     VT100TCC result;
@@ -1119,7 +1103,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	    result = decode_control(datap, datalen, &rmlen, ENCODING, SCREEN);
 	}
 	else {
-	    if (isString(datap,ENCODING)) {
+            if (isString(datap,ENCODING)) {
 		result = decode_string(datap, datalen, &rmlen, ENCODING);
                 if(rmlen == 0) {
                     result.type = VT100_UNKNOWNCHAR;
@@ -1431,10 +1415,10 @@ static VT100TCC decode_string(unsigned char *datap,
 	    forKey:NSUnderlineStyleAttributeName];
     [dic setObject:[NSNumber numberWithInt:blink]
                    forKey:NSBlinkAttributeName];
-    if(bold && [[NSFontManager  sharedFontManager] fontNamed: [[SCREEN font] fontName] hasTraits: NSBoldFontMask])
-    {
+    if(bold)    {
         aFont = [[NSFontManager sharedFontManager] convertFont: [SCREEN font] toHaveTrait: NSBoldFontMask];
-        NSLog(@"%@->%@",[SCREEN font], aFont);
+//        NSLog(@"%@->%@(%f, %f)",[SCREEN font], aFont, [VT100Screen fontSize:[SCREEN font]].height, [VT100Screen fontSize:aFont].height);
+        if ([VT100Screen fontSize:aFont].height!=[VT100Screen fontSize:[SCREEN font]].height) aFont=[SCREEN font];
     }
     else
     {

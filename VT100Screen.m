@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.18 2003-01-10 18:30:01 yfabian Exp $
+// $Id: VT100Screen.m,v 1.19 2003-01-14 16:48:39 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -698,7 +698,7 @@ static BOOL PLAYBELL = YES;
     int sx, sy;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen setStringToX:%d Y:%d string:%@]",
+    NSLog(@"%s(%d):-[VT100Screen setString:%d Y:%d string:%@]",
           __FILE__, __LINE__, x, y, string);
 #endif
 
@@ -1170,7 +1170,7 @@ static BOOL PLAYBELL = YES;
     idx=[self getIndex:0 y:y];
     for(x=0;x<WIDTH&&idx<[store length]&&[store characterAtIndex:idx]!='\n';idx++,x++)
         if (ISDOUBLEWIDTHCHARACTER([store characterAtIndex:idx])) x++;
-    for(i=idx;idx<[store length]&&[store characterAtIndex:i]!='\n';i++);
+    for(i=idx;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
     if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
 }    
     
@@ -1376,8 +1376,8 @@ static BOOL PLAYBELL = YES;
     
     len=[str length];
     for (i=0;i<len;i++) {
-        ASCII=([str characterAtIndex:i]<0x7f);
-        for(j=i;j<len&&ASCII==([str characterAtIndex:j]<0x7f);j++);
+        ASCII=([str characterAtIndex:i]<=0x7f);
+        for(j=i;j<len&&ASCII==([str characterAtIndex:j]<=0x7f);j++);
         if (!ASCII) {
             [attr addAttribute:NSFontAttributeName
                          value:NAFONT
@@ -1453,5 +1453,6 @@ static BOOL PLAYBELL = YES;
     for(i=0;i<300;i++) tabStop[i]=NO;
 }
 
+          
 @end
 

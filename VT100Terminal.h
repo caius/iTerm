@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.3 2003-01-10 18:30:01 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.4 2003-01-14 16:48:40 yfabian Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -34,8 +34,9 @@
 #define VT100_WAIT        	1000
 #define VT100_NOTSUPPORT  	1001
 #define VT100_SKIP        	1002
-#define VT100_STRING      	1003       // ascii string
+#define VT100_STRING      	1003       // string
 #define VT100_UNKNOWNCHAR 	1004
+
 #define VT100CSI_DECSET		1005
 #define VT100CSI_DECRST		1006
 

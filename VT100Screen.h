@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.6 2003-01-07 16:39:46 yfabian Exp $
+// $Id: VT100Screen.h,v 1.7 2003-01-14 16:48:39 yfabian Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -85,7 +85,7 @@
 - (void)setString:(NSString *)s;
 - (void)setStringToX:(int)x
                    Y:(int)y
-                     string:(NSString *)string;
+              string:(NSString *)string;
 - (void)setStringSpaceToX:(int)x Y:(int)y length:(int)len;
 - (void)setNewLine;
 - (void)deleteCharacters:(int)n;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.7 2002-12-11 17:18:25 yfabian Exp $
+// $Id: MainMenu.m,v 1.8 2002-12-12 15:54:36 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -531,9 +531,57 @@ static BOOL newWindow=YES;
 
 - (IBAction)showAbout:(id)sender
 {
+    NSURL *author1URL, *author2URL, *webURL;
+    NSAttributedString *author1, *author2, *webSite;
+    NSMutableAttributedString *tmpAttrString;
+    NSDictionary *linkAttributes;
 //    [NSApp orderFrontStandardAboutPanel:nil];
+
+    // First Author
+    author1URL = [NSURL URLWithString: @"mailto:fabian@macvillage.net"];
+    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: author1URL, NSLinkAttributeName,
+                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
+					    [NSColor blueColor], NSForegroundColorAttributeName,
+					    NULL];
+    author1 = [[NSAttributedString alloc] initWithString: @"fabian" attributes: linkAttributes];
+    
+    // Spacer...
+    tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
+    
+    // Second Author
+    author2URL = [NSURL URLWithString: @"mailto:ujwal@setlurgroup.com"];
+    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: author2URL, NSLinkAttributeName,
+                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
+					    [NSColor blueColor], NSForegroundColorAttributeName,
+					    NULL];
+    author2 = [[NSAttributedString alloc] initWithString: @"Ujwal S. Sathyam" attributes: linkAttributes];
+    
+    // Web URL
+    webURL = [NSURL URLWithString: @"http://iterm.sourceforge.net"];
+    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: webURL, NSLinkAttributeName,
+                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
+					    [NSColor blueColor], NSForegroundColorAttributeName,
+					    NULL];
+    webSite = [[NSAttributedString alloc] initWithString: @"http://iterm.sourceforge.net" attributes: linkAttributes];
+
+
+    
+    
+    [[AUTHORS textStorage] appendAttributedString: author1];
+    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
+    [[AUTHORS textStorage] appendAttributedString: author2];
+    [tmpAttrString initWithString: @"\n"];
+    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
+    [[AUTHORS textStorage] appendAttributedString: webSite];
+    [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];
+
+    
     [NSApp runModalForWindow:ABOUT];
     [ABOUT close];
+    [author1 release];
+    [author2 release];
+    [webSite release];
+    [tmpAttrString release];
 }
 
 - (IBAction)aboutOK:(id)sender

@@ -1,5 +1,11 @@
 2002-12-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
+    * Made links to authors and web site in the About
+      panel of the English NIB.
+
+
+2002-12-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
     * Removed keyDown code from PsudoTerminal. 
       First responder is TEXTVIEW.
 

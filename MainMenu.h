@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.3 2002-12-11 17:18:25 yfabian Exp $
+// $Id: MainMenu.h,v 1.4 2002-12-12 15:54:36 ujwal Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -49,6 +49,7 @@
 
     // about window
     IBOutlet id ABOUT;
+    IBOutlet NSTextView *AUTHORS;
     // address book data
     NSMutableArray *addressBook;
 

@@ -45,6 +45,7 @@
                 ABOUT = id; 
                 "AB_PANEL" = id; 
                 "AE_PANEL" = id; 
+                AUTHORS = NSTextView; 
                 FRONT = id; 
                 "PREF_PANEL" = id; 
                 "QO_COMMAND" = id; 

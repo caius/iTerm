@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.7 2003-08-11 09:58:24 sgehrman Exp $
+// $Id: iTermController.m,v 1.8 2003-08-11 13:03:57 sgehrman Exp $
 /*
  **  iTermController.m
  **
@@ -55,41 +55,17 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
 @implementation iTermController
 
-// NSApplication delegate methods
-- (void)applicationWillFinishLaunching:(NSNotification *)aNotification
++ (iTermController*)sharedInstance;
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController applicationWillFinishLaunching]",
-          __FILE__, __LINE__);
-#endif
-
-    // Check the system version for minimum requirements.
-    SInt32 gSystemVersion;    
-    Gestalt(gestaltSystemVersion, &gSystemVersion);
-    if(gSystemVersion < 0x1020)
-    {
-	NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Sorry",@"iTerm", [NSBundle bundleForClass: [self class]], @"Sorry"),
-		 NSLocalizedStringFromTableInBundle(@"Minimum_OS", @"iTerm", [NSBundle bundleForClass: [self class]], @"OS Version"),
-		NSLocalizedStringFromTableInBundle(@"Quit",@"iTerm", [NSBundle bundleForClass: [self class]], @"Quit"),
-		 nil, nil);
-	[NSApp terminate: self];
-    }
-
-
-    // set the TERM_PROGRAM environment variable
-    putenv("TERM_PROGRAM=iTerm.app");
-}
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[iTermController applicationDidFinishLaunching]",
-          __FILE__, __LINE__);
-#endif
+    static iTermController* shared = nil;
     
+    if (!shared)
+        shared = [[iTermController alloc] init];
+    
+    return shared;
 }
 
-- (BOOL) applicationShouldTerminate: (NSNotification *) theNotification
+- (BOOL)applicationShouldTerminate: (NSNotification *) theNotification
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[iTermController applicationShouldTerminate]",
@@ -106,7 +82,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     
     return (YES);
 }
-
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app
 {
@@ -148,7 +123,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     // Make sure that the first responder stuff is set up OK.
     [FRONT selectSessionAtIndex: [FRONT currentSessionIndex]];
 }
-
 
 // Creates the dock menu
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
@@ -318,92 +292,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     
 }
 
-
-/// About window
-
-- (IBAction)showAbout:(id)sender
-{
-    NSURL *author1URL, *author2URL, *webURL, *bugURL;
-    NSAttributedString *author1, *author2, *webSite, *bugReport;
-    NSMutableAttributedString *tmpAttrString;
-    NSDictionary *linkAttributes;
-//    [NSApp orderFrontStandardAboutPanel:nil];
-
-    // First Author
-    author1URL = [NSURL URLWithString: @"mailto:fabian@macvillage.net"];
-    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: author1URL, NSLinkAttributeName,
-                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
-					    [NSColor blueColor], NSForegroundColorAttributeName,
-					    NULL];
-    author1 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"fabian",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
-    
-    // Spacer...
-    tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
-    
-    // Second Author
-    author2URL = [NSURL URLWithString: @"mailto:ujwal@setlurgroup.com"];
-    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: author2URL, NSLinkAttributeName,
-                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
-					    [NSColor blueColor], NSForegroundColorAttributeName,
-					    NULL];
-    author2 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Ujwal S. Sathyam",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
-    
-    // Web URL
-    webURL = [NSURL URLWithString: @"http://iterm.sourceforge.net"];
-    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: webURL, NSLinkAttributeName,
-                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
-					    [NSColor blueColor], NSForegroundColorAttributeName,
-					    NULL];
-    webSite = [[NSAttributedString alloc] initWithString: @"http://iterm.sourceforge.net" attributes: linkAttributes];
-
-    // Bug report
-    bugURL = [NSURL URLWithString: @"https://sourceforge.net/tracker/?func=add&group_id=67789&atid=518973"];
-    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: webURL, NSLinkAttributeName,
-        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
-        [NSColor blueColor], NSForegroundColorAttributeName,
-        NULL];
-    bugReport = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Report A Bug", @"iTerm", [NSBundle bundleForClass: [self class]], @"About") attributes: linkAttributes];
-
-    // version number and mode
-    NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
-    NSMutableString *versionString = [[NSMutableString alloc] initWithString: (NSString *)[myDict objectForKey:@"CFBundleVersion"]];
-#if USE_CUSTOM_DRAWING
-    [versionString appendString: @" (A)"];
-#else
-    [versionString appendString: @" (B)"];
-#endif
-    
-    [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
-    [tmpAttrString initWithString: versionString];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [tmpAttrString initWithString: @"\n"];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [[AUTHORS textStorage] appendAttributedString: author1];
-    tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [[AUTHORS textStorage] appendAttributedString: author2];
-    [tmpAttrString initWithString: @"\n"];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [[AUTHORS textStorage] appendAttributedString: webSite];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [[AUTHORS textStorage] appendAttributedString: bugReport];
-    [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];
-
-    
-    [NSApp runModalForWindow:ABOUT];
-    [ABOUT close];
-    [author1 release];
-    [author2 release];
-    [webSite release];
-    [tmpAttrString release];
-    [versionString release];
-}
-
-- (IBAction)aboutOK:(id)sender
-{
-    [NSApp stopModal];
-}
-
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender
 {
@@ -420,7 +308,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 - (void) initPreferences
 {
     PREF_PANEL = [[PreferencePanel alloc] init];
-    [PREF_PANEL setITermController: self];
 }
 
 // Utility
@@ -684,7 +571,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     //    NSLog(@"showABWindow: %d\n%@",[[self addressBook] count], [self addressBook]);
 
     abWindowController = [AddressBookWindowController singleInstance];
-    [abWindowController setITermController: self];
     [abWindowController setAddressBook: [self addressBook]];
     [abWindowController setPreferences: PREF_PANEL];
     [abWindowController run];
@@ -908,7 +794,6 @@ NSString *terminalsKey = @"terminals";
 {
     if([terminalWindows containsObject: object] == YES)
 	return;
-    [object setITermController: self];
     [object setPreference:PREF_PANEL];
     [terminalWindows insertObject: object atIndex: index];
 }
@@ -921,7 +806,7 @@ NSString *terminalsKey = @"terminals";
 
 
 // a class method to provide the keys for KVC:
-+(NSArray*)kvcKeys
+- (NSArray*)kvcKeys
 {
     static NSArray *_kvcKeys = nil;
     if( nil == _kvcKeys ){

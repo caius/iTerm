@@ -298,18 +298,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     preferences = thePreferences;
 }
 
-- (iTermController *) iTerm
-{
-    return (iTerm);
-}
-
-- (void) setITermController: (iTermController *) theController
-{
-    iTerm = theController;
-}
-
-
-
 // Action methods
 
 - (IBAction)adbDuplicateEntry:(id)sender
@@ -347,7 +335,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     }
 
     // Save the bookmarks.
-    [[self iTerm] saveAddressBook];
+    [[iTermController sharedInstance] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
     [[NSNotificationCenter defaultCenter]
@@ -549,7 +537,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
  //              __FILE__, __LINE__, ae );
 
 	// Save the bookmarks.
-	[[self iTerm] saveAddressBook];
+	[[iTermController sharedInstance] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
@@ -607,7 +595,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
 	// Save the bookmarks.
-	[[self iTerm] saveAddressBook];
+	[[iTermController sharedInstance] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
@@ -695,9 +683,9 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     while((selectedRow = [selectedRowEnumerator nextObject]) != nil)
     {
 	if(sender == openInWindow)
-	    [[self iTerm] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
+	    [[iTermController sharedInstance] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
 	else
-	    [[self iTerm] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[self iTerm] frontPseudoTerminal]];
+	    [[iTermController sharedInstance] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[iTermController sharedInstance] frontPseudoTerminal]];
     }
 
     // close the bookmarks window

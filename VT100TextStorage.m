@@ -81,7 +81,7 @@
     // get the original length before edit
     int origLen = [self length];
 
-#if 0
+#if 1
     // if the length did not change, check what really changed
     if(range.length == [str length])
     {

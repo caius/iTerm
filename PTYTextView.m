@@ -1,11 +1,11 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.169 2004-03-11 22:40:26 yfabian Exp $
+// $Id: PTYTextView.m,v 1.170 2004-03-14 06:05:36 ujwal Exp $
 /*
  **  PTYTextView.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

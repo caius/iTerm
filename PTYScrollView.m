@@ -1,11 +1,11 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.16 2004-02-18 06:56:58 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.17 2004-03-14 06:05:36 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

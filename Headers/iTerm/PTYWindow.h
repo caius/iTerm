@@ -1,12 +1,12 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.h,v 1.2 2003-11-06 02:07:36 ujwal Exp $ */
-/* Incorporated into iTerm.app by Ujwal S. Sathyam */
+/* $Id: PTYWindow.h,v 1.3 2004-03-14 06:05:38 ujwal Exp $ */
+/* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.h
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

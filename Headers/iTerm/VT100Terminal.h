@@ -1,11 +1,11 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.6 2004-03-03 23:14:11 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.7 2004-03-14 06:05:38 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

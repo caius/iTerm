@@ -1,11 +1,11 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.15 2004-02-24 21:54:04 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.16 2004-03-14 06:05:38 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

@@ -1,12 +1,12 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.88 2004-03-03 16:07:20 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.89 2004-03-14 06:05:37 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

@@ -1,11 +1,11 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.9 2004-03-03 23:14:11 yfabian Exp $
+// $Id: VT100Screen.h,v 1.10 2004-03-14 06:05:38 ujwal Exp $
 /*
  **  VT100Screen.h
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

@@ -1,11 +1,11 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.15 2004-02-28 10:46:04 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.16 2004-03-14 06:05:37 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm
@@ -234,7 +234,7 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
                         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
 					    [NSColor blueColor], NSForegroundColorAttributeName,
 					    NULL];
-    author2 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Ujwal S. Sathyam",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
+    author2 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Ujwal S. Setlur",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
     
     // Web URL
     webURL = [NSURL URLWithString: @"http://iterm.sourceforge.net"];

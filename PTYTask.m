@@ -1,12 +1,12 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.19 2004-03-07 02:24:05 yfabian Exp $
+// $Id: PTYTask.m,v 1.20 2004-03-14 06:05:36 ujwal Exp $
 //
 /*
  **  PTYTask.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

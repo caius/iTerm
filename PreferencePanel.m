@@ -1,10 +1,10 @@
-// $Id: PreferencePanel.m,v 1.86 2004-03-14 00:43:58 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.87 2004-03-14 06:05:37 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **
  **  Project: iTerm
  **

@@ -1,11 +1,11 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.29 2004-02-13 21:36:16 ujwal Exp $
+// $Id: iTermController.m,v 1.30 2004-03-14 06:05:37 ujwal Exp $
 /*
  **  iTermController.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

@@ -1,12 +1,12 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.269 2004-03-11 22:40:26 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.270 2004-03-14 06:05:37 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
+ **  Author: Fabian, Ujwal S. Setlur
  **	     Initial code by Kiichi Kusama
  **
  **  Project: iTerm

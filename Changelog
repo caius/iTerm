@@ -1166,7 +1166,7 @@
       mode. Text input works properly. 
     * Working selection and copy/paste 
         
-2003-03-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-22	Ujwal S. Setlur <ujwal@setlurgroup.com>
     
     * Added option-click support to position cursor.
     
@@ -1194,7 +1194,7 @@
     * Added Korean localization provided by TaeYoung Oh
     * Updated Chinese nib files for new option.
 
-2003-03-18	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-18	Ujwal S. Setlur <ujwal@setlurgroup.com>
     * Added explicit preference to warn on quitting 
       or closing a window/tab.
       
@@ -1247,12 +1247,12 @@
     * Fixed a blinking bug
     * Implemented ANSI code ECH
       
-2003-03-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-10	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added some missing semi-colons in Chinese strings files.
 
 
-2003-03-08	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-08	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed an issue where '=', '/', and '*' could not be 
       typed from numeric keypad. This was because those 
@@ -1269,26 +1269,26 @@
 2003-03-04	fabian
     * Fixed a bug in screen update
     
-2003-03-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-04	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed a bug in changing forground and background color 
       in a session.
       
 
-2003-03-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-03	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Incorporated Max Horn's patches for a variety of 
       enhancements and fixes for some bugs and memory leaks.
       
 
-2003-03-02	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-02	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed a screen update bug. Sometimes screen HAS to be 
       updated even if minIndex == [BUFFER length], e.g. when 
       doing ^u on the last line.
       
 
-2003-03-01	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-01	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed a warning bell orientation bug.
     
@@ -1317,7 +1317,7 @@
       less portion of screen
     * Fixed a showCursor bug
       
-2003-02-24	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-24	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added highly experimental code to do custom drawing 
       for high speed. Still very buggy. To enable the 
@@ -1330,7 +1330,7 @@
       change.
       
 
-2003-02-24	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-24	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed and simplified screen updating code.
 
@@ -1343,7 +1343,7 @@
     * Added an icon in Tab when a bell is received.
     * Now iTerm removes the warning icon when switching tabs.
     
-2003-02-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-22	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed a bug in resizing tabs and window when closing 
       a session.
@@ -1359,7 +1359,7 @@
       the stream only when we reach the end.
       
 
-2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-21	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Manually firing screen update timer after a keyDown 
       to make user input more responsive.
@@ -1382,7 +1382,7 @@
       displaying the text. Significantly improve the
       overall speed. Need more test.
       
-2003-02-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-20	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added and implemented tabViewWillPerformDragOperation 
       tabViewDidPerformDragOperation delegate methods. This 
@@ -1390,7 +1390,7 @@
       within a window with only two tabs.
       
 
-2003-02-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-19	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added support for a few xterm character attributes.
     
@@ -1398,14 +1398,14 @@
       accidental dragging.
     
 
-2003-02-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-16	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Changed implementation of cursorToX: Y: and 
       cursorToX: in VT100Screen. Was interfering 
       with resize command.
       
 
-2003-02-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-14	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed encoding bug in PTYsession: -keyDown:
     
@@ -1419,12 +1419,12 @@
     * Enhanced text input
     * Incorporated Japanese patch from OHKAWA
     
-2003-02-12	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-12	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added preference to remap DELETE key to BACKSPACE.
     
 
-2003-02-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-11	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Moved dead key code from PTYSession: -keyDown to 
       PTYTextView: -keyDown since that implements the 
@@ -1440,7 +1440,7 @@
     * Added GPL notice to all files.
       
 
-2003-02-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-10	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added support for alternate keypad mode and 
       PF1, PF2, PF3, PF4 keys.
@@ -1461,13 +1461,13 @@
     * Incorparated Japanese nib files from OHKAWA
     * Fixed a bug in scrollUp
     
-2003-02-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-09	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added drag-and-drop support to the PTYTabView class. 
       Tabs can now be moved within and between windows.
       
 
-2003-02-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-07	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Workaround for a problem in Bookmarks where the 
       scrollbar was not being activated when it should have 
@@ -1482,7 +1482,7 @@
       value.
 	
 
-2003-02-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-06	Ujwal S. Setlur <ujwal@setlurgroup.com>
     
     * Now displaying tab number in label to make it easier 
       to switch between tabs using function keys.
@@ -1497,7 +1497,7 @@
     * Localized new interface additions for zh_CN and zh_TW.
     * 0.6.3!
       
-2003-02-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-04	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added menu item in tabview contextual menu to move 
       tab to new window.
@@ -1515,14 +1515,14 @@
       feed is inserted and removing it in the copy operation.
       
 
-2003-02-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-03	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added submenus to tabview contextual menu. Tabview 
       contextual menu is now built and controlled by 
       the tabview delegate.
       
 
-2003-02-02	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-02-02	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added basic Applescript support. One can now write 
       Applescripts to open one or more default or addressbook 
@@ -1553,13 +1553,13 @@
       drag-and-drop.
       
 
-2003-01-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-31	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed bug in showing cursor when going up in command 
       history
       
 
-2003-01-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-30	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Removed terminal size constraints from Preferences, 
       Configuration panel, and Bookmarks entries. 
@@ -1570,7 +1570,7 @@
       command line will trigger an autoscroll again.
       
 
-2003-01-29	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-29	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Incorporated patch by Aaron Gerber to add a "Cancel" 
       button in the preferences panel.
@@ -1579,14 +1579,14 @@
       top, left, bottom, right
       
 
-2003-01-27	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-27	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Refactored a lot of the addressbook menu building code.
     
     * Added addressbook menu to dock menu.
     
 
-2003-01-25	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-25	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Bookmarks window now has Autosave name.
     
@@ -1597,7 +1597,7 @@
     * Fixed bug in PseudoTerminal that makes choosing
       non-ASCII font not working
       
-2003-01-23	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-23	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed mapping of function keys in VT100Terminal.
     
@@ -1608,7 +1608,7 @@
     * Fixed bug in DECRC/DECSC
     * Fixed bug in character set settings
     
-2003-01-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-21	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Refactored toolbar item popup menu to enable it in 
       text only mode.
@@ -1630,25 +1630,25 @@
     * Cleaned up code in VT100Screen.m
     * bug fixes in SetDoubleString
       
-2003-01-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-20	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Enabling WRAPAROUND_MODE in VT100Terminal by default 
       for long command lines.
       
     * Added support for ANSI "Cursor Horizontal Absolute".
       
-2003-01-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-17	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added support to specify text highlight/selection color 
       in preferences, session settings, and bookmarks.
       
 
-2003-01-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-16	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed common bugs in insertLines, scrollDown in 
       VT100Screen.
 
-2003-01-15	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-15	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Removed adjustScroll override in PTYTextView.
       Not needed anymore and was conflicting with 
@@ -1661,7 +1661,7 @@
     * Fixed wrap around mode
     * Failed attempt to set up mouse cursor
     
-2003-01-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-14	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed bug where adding a second tab would cause 
       the scroll position of the first tab to be reset.
@@ -1680,7 +1680,7 @@
     * bug fixes in VT100Screen
     
       
-2003-01-13	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-13	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added an option to copy selected text to emulate 
       X copy/paste. This requires a multi-button mouse 
@@ -1688,7 +1688,7 @@
       "paste".
       
 
-2003-01-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-10	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added some keyboard shortcuts to addressbook.
     
@@ -1698,7 +1698,7 @@
     * When you edit or add an entry to the bookmarks,
       it will be sorted.
       
-2003-01-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-10	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed bugs in syncing transparency value and control 
       in the Preference panel.
@@ -1709,7 +1709,7 @@
     * Tab title changes when an icon title change
       request is received
     
-2003-01-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-09	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed some scrolling/sizing issues by overriding 
       adjustScroll: in PTYTextView. Reactivated the 
@@ -1725,7 +1725,7 @@
     * Added new option in bookmarks entries that allow
       user to set "close session automatically" individually
       
-2003-01-08	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-08	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Save menu item in contextual menu is always validated. 
       Saves selection if there is one, save everything if not.
@@ -1736,7 +1736,7 @@
     * When copying text, trimming white spaces and new lines.
       
     
-2003-01-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-07	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Adjusted some visual sizing glitches when going from 
       no tabs to tabs and vice versa.
@@ -1750,7 +1750,7 @@
     * new VT100Screen code, should be faster
     * Japanese localization files updated
     
-2003-01-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-06	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Remove fatal recursive loop by not calling 
       [self setWindowSize] from PseudoTerminal: -windowDidResize.
@@ -1767,7 +1767,7 @@
     * Incorporated the patch sent by kuri@makino.ecei.tohoku.ac.jp
       
     
-2003-01-05	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-05	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added Bookmarks into contextual menu. Entries 
       can be executed in a new tab or in a new window. 
@@ -1781,7 +1781,7 @@
     * Fixed AutoResizingMask of buttons in Bookmarks.
 
 
-2003-01-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-04	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Can't reproduce the emacs editing bug anymore.
     
@@ -1789,7 +1789,7 @@
       CSI_IND tokens. This fixes the vi editing problem.
       
 
-2003-01-01	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-01-01	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added support for bold character attributes.
       Only works with fonts that support bold typeface
@@ -1805,7 +1805,7 @@
       and using original method.
       
 
-2002-12-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-31	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed some resizing issues by implementing 
       windowWillResize: toSize: window delegate method.
@@ -1814,7 +1814,7 @@
       a login shell.
       
 
-2002-12-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-30	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Setting TERM_PROGRAM environment variable to iTerm.app.
     
@@ -1822,7 +1822,7 @@
       to be updated.
     
 
-2002-12-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-21	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added Save/Print functionality.
       Chinese NIBs and localized strings file need to be 
@@ -1835,7 +1835,7 @@
       to the next tab if we are already on one.
 
 
-2002-12-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-20	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed a bug that cause the tabview item label 
       attributes to be released when any session was 
@@ -1849,7 +1849,7 @@
 2002-12-20	fabian
     * Fixed the session status display problem
     
-2002-12-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-20	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed all compiler warnings.
     
@@ -1862,7 +1862,7 @@
       based on content size just like NSScrollView.
     
 
-2002-12-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-19	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Re-implemented UI from button based to real-tab based 
       using NSTabView based on user feedback. Major code 
@@ -1889,7 +1889,7 @@
     * change the shortcut key to close terminal to command-w
       and close window to shift-command-w, a la mozilla
       
-2002-12-18	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-18	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Page up/down scrolling keys now need Shift key down 
       a la xterm since some programs like vi need to 
@@ -1908,7 +1908,7 @@
     * Version number is now 0.5.7
     * Fixed a bug related to setting default shell
     
-2002-12-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-17	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Using user's default shell in setting initial preferences.
     
@@ -1921,7 +1921,7 @@
     * Page Up and Page Down keys now scroll the text view.
     
 
-2002-12-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-16	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Removed ugly hack of spinning off a new thread when 
       switching sessions using popup menu. Calling selectSession: 
@@ -1932,7 +1932,7 @@
     * Got the addressbook popup button icon to work
     * Updated strings files for Chinese
     
-2002-12-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-16	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Removed addressbook toolbar item since the 
       addressbook popup menu gives similar functionality.
@@ -1954,7 +1954,7 @@
       some screen text alignment problems.
     * Added anti-idle settings to AddressBook
       
-2002-12-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-14	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added popup button in toolbar for quick access to 
       addressbook entries.
@@ -1966,13 +1966,13 @@
       "executeABCommand:" method in iTermController.
       
 
-2002-12-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-11	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Made links to authors and web site in the About
       panel of the English NIB.
 
 
-2002-12-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-11	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Removed keyDown code from PsudoTerminal. 
       First responder is TEXTVIEW.
@@ -2006,7 +2006,7 @@
       which makes row/col smaller than it should be
       (this one need more test)
       
-2002-12-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-07	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Re-implemented transparency code to affect only text 
      instead of the whole window. Had to subclass NSWindow 
@@ -2031,7 +2031,7 @@
       will open a new window first.
     * Cleaned up nib files
     
-2002-12-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-12-04	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added a pulldown menu at the bottom right corner 
       when window cannot draw all the session buttons.
@@ -2041,13 +2041,13 @@
     * Refactored some code.
     
 
-2002-11-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-11-30	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed bug in PreferencePanel where transparency was
       not being stored.
       
 
-2002-11-28	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-11-28	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Fixed crash when closing window when a session program 
       had exited.
@@ -2056,7 +2056,7 @@
 2002-11-28      fabian
     * Added Japanese (EUC-JP/SJIS) and Korean (EUC-KR) support
 
-2002-11-27	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2002-11-27	Ujwal S. Setlur <ujwal@setlurgroup.com>
 
     * Added menu item and keyboard shortcut to close the current 
       terminal session.

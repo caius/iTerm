@@ -3,7 +3,7 @@
  **
  **  Copyright (c) 2002, 2003, 2004
  **
- **  Author: Ujwal S. Sathyam
+ **  Author: Ujwal S. Setlur
  **
  **  Project: iTerm
  **

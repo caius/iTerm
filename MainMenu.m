@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.8 2002-12-12 15:54:36 ujwal Exp $
+// $Id: MainMenu.m,v 1.9 2002-12-12 16:00:17 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -566,7 +566,7 @@ static BOOL newWindow=YES;
 
 
     
-    
+    [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
     [[AUTHORS textStorage] appendAttributedString: author1];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: author2];

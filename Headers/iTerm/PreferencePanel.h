@@ -41,6 +41,7 @@
     IBOutlet id promptOnClose;
     IBOutlet NSButton *focusFollowsMouse;
 	IBOutlet NSTextField *wordChars;
+	IBOutlet NSWindow *profilesWindow;
 	    
     NSUserDefaults *prefs;
 

@@ -10,6 +10,9 @@
       and "write contents of file <file>" to a session.
 
     * A little more code consolidation in PseudoTerminal.
+    
+    * Added Applescript support to select session by name:
+      select session named "aName"
 
 2003-04-28	fabian
     * Dynamically change the tab size based on the number of tabs

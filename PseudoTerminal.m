@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.165 2003-04-29 17:11:04 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.166 2003-04-29 22:54:31 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1725,6 +1725,27 @@ static int windowCount = 0;
     // NSLog(@"PseudoTerminal: -valueInSessionsAtIndex: %d", index);
     return ([ptyList objectAtIndex: index]);
 }
+
+-(id)valueWithName: (NSString *)uniqueName inPropertyWithKey: (NSString*)propertyKey
+{
+    id result = nil;
+    int i;
+
+    if([propertyKey isEqualToString: sessionsKey] == YES)
+    {
+	PTYSession *aSession;
+	
+	for (i= 0; i < [ptyList count]; i++)
+	{
+	    aSession = [ptyList objectAtIndex: i];
+	    if([[aSession name] isEqualToString: uniqueName] == YES)
+		return (aSession);
+	}
+    }
+
+    return result;
+}
+
 
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index
 {

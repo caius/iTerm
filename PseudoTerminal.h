@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.48 2003-04-29 00:24:07 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.49 2003-04-29 22:54:37 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -205,6 +205,7 @@
 // accessors for to-many relationships:
 // (See NSScriptKeyValueCoding.h)
 -(id)valueInSessionsAtIndex:(unsigned)index;
+-(id)valueWithName: (NSString *)uniqueName inPropertyWithKey: (NSString*)propertyKey;
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index;
 -(void)addInSessions:(PTYSession *)object;
 -(void)insertInSessions:(PTYSession *)object;

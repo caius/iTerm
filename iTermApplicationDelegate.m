@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.20 2004-03-23 03:19:56 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.21 2004-03-31 04:29:17 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -461,7 +461,7 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
 @implementation iTermApplicationDelegate (Find_Actions)
 
-- (IBAction) showFindPanel: (id) sender;
+- (IBAction) showFindPanel: (id) sender
 {
     [[FindPanelWindowController sharedInstance] showWindow:self];
 }

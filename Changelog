@@ -1,3 +1,7 @@
+2004-03-30  ujwal
+
+	* Reimplemented "find" to work across lines.
+
 2004-03-29  fabian
 
 	* Updated Japanese localization, provided by OHKAWA Yuichi.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.38 2004-03-29 00:51:26 ujwal Exp $
+// $Id: PTYTextView.h,v 1.39 2004-03-31 04:29:17 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -136,7 +136,7 @@ typedef struct
 - (void)mouseUp:(NSEvent *)event;
 - (void)mouseDragged:(NSEvent *)event;
 - (void) otherMouseDown: (NSEvent *) event;
-- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy;
+- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines;
 - (NSString *) selectedText;
 - (NSString *) content;
 - (void)copy: (id) sender;
@@ -147,7 +147,6 @@ typedef struct
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent;
 - (void) browse:(id)sender;
 - (void) mail:(id)sender;
-- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck;
 
 //get/set methods
 - (NSFont *)font;
@@ -233,7 +232,8 @@ typedef struct
 - (void) print:(id)sender;
 
 // Find method
-- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck;
+- (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase;
+- (void) resetSearchResult;
 
 // NSTextInput
 - (void)insertText:(id)aString;

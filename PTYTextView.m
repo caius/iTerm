@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.190 2004-03-29 00:51:26 ujwal Exp $
+// $Id: PTYTextView.m,v 1.191 2004-03-31 04:29:17 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1150,7 +1150,7 @@ static SInt32 systemVersion;
     //    NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }
 
-- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy
+- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines
 {
 	unichar *temp;
 	int j, line, scline;
@@ -1192,7 +1192,7 @@ static SInt32 systemVersion;
 						if(buf[i] != 0)
 							endOfLine = NO;
 					}
-					if(endOfLine && y < endy)
+					if(breakLines && endOfLine && y < endy)
 					{
 						temp[j] = '\n'; // hard break
 						j++;
@@ -1320,7 +1320,7 @@ static SInt32 systemVersion;
     NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
 #endif
     	
-	return [self contentFromX:0 Y:0 ToX:[dataSource width]-1 Y:[dataSource numberOfLines]-1];
+	return [self contentFromX:0 Y:0 ToX:[dataSource width]-1 Y:[dataSource numberOfLines]-1 breakLines: YES];
 }
 
 - (void) copy: (id) sender
@@ -1869,97 +1869,124 @@ static SInt32 systemVersion;
 
 - (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase
 {
-	int j, line, scline;
-	int startx, starty, endx, endy;
-	int width, y, x1, x2;
-	int first_match;
-	int start, bound;
-	int inc = direction ? 1: -1;
-	unichar *buf;
-		
-	if ([aString length] <= 0)
+	int x1, y1, x2, y2;
+	NSString *searchBody;
+	NSRange foundRange;
+	int anIndex;
+	unsigned searchMask = 0;
+	
+	if([aString length] <= 0)
 	{
 		NSBeep();
 		return;
 	}
-
-	width = [dataSource width];
-	scline = [dataSource numberOfLines]-[dataSource height];
-	if (lastFindX==-1) {		// no previous match, starting from the beginning
-		if (direction) {
-			startx=0;
-			starty=0;
-			endx=[dataSource width];
-			endy=[dataSource numberOfLines];
-		}
-		else {
-			endx=0;
-			endy=-1;
-			startx=[dataSource width];
-			starty=[dataSource numberOfLines]-1;
-		}			
-	}
-	else if (direction) {		// starting from previous match, forwards search
-		startx=lastFindX+1;
-		starty=lastFindY;
-		endx=[dataSource width];
-		endy=[dataSource numberOfLines];
-	}
-	else {						// backwards search
-		endx=0;
-		endy=-1;
-		startx=lastFindX-1;
-		starty=lastFindY;
-	}
 	
-	start = direction ? 0 : [aString length] - 1;
-	bound = direction ? [aString length] : -1;
-	for (y=starty;y!=endy;y+=inc) {
-		if (y<scline) {
-			line=[dataSource lastBufferLineIndex]-scline+y;
-			if (line<0) line+=[dataSource scrollbackLines];
-			buf=[dataSource bufferLines]+line*width;
-		} else {
-			line=y-scline;
-			buf=[dataSource screenLines]+line*width;
-		}
-		/* by default, we search the whole line */
-		if (direction ) { x1=0; x2=width; }
-		else { x2=-1; x1=width-1; }
-		/* not if when we are in the first/last line */
-		if (y==starty) x1=startx;
-		if (y==endy) x2=endx + direction ? 0 : -1;
-		j=start;
-		first_match=-1;
-		for(;x1!=x2;x1+=inc) {
-			if (buf[x1]!=0xffff) {
-				if (buf[x1]==[aString characterAtIndex:j] ||
-					(ignoreCase && toupper(buf[x1])==toupper([aString characterAtIndex:j]))) {
-					j+=inc;
-					if (first_match==-1) { first_match=x1; }
-					if (j == bound) break;
+	// check if we had a previous search result
+	if(lastFindX > -1)
+	{
+		if(direction)
+		{
+			x1 = lastFindX + 1;
+			y1 = lastFindY;
+			if(x1 >= [dataSource width])
+			{
+				if(y1 < [dataSource numberOfLines] - 1)
+				{
+					// advance search beginning to next line
+					x2 = 0;
+					y1++;
 				}
-				else {
-					if (j!=start) {
-						j=start;
-						x1=first_match;
-						first_match=-1;
-					}
+				else
+				{
+					// wrap around to beginning
+					x1 = y1 = 0;
 				}
 			}
-		}		
-		if (j == bound ) { // Found!
-			lastFindX=startX=first_match;
-			lastFindY=startY=y;
-			endX=x1;
-			endY=y;
-			[self _selectFromX:startX Y:startY toX:endX Y:endY];
-			[self setNeedsDisplay:YES];
-			[self _scrollToLine:y];
-			return;
+			x2 = [dataSource width] - 1;
+			y2 = [dataSource numberOfLines] - 1;
+		}
+		else
+		{
+			x1 = y1 = 0;
+			x2 = lastFindX - 1;
+			y2 = lastFindY;
+			if(x2 <= 0)
+			{
+				if(y2 > 0)
+				{
+					// stop search at end of previous line
+					x2 = [dataSource width] - 1;
+					y2--;
+				}
+				else
+				{
+					// wrap around to the end
+					x2 = [dataSource width] - 1;
+					y2 = [dataSource numberOfLines] - 1;
+				}
+			}
 		}
 	}
-	NSBeep();
+	else
+	{
+		// no previous search results, search from beginning
+		x1 = y1 = 0;
+		x2 = [dataSource width] - 1;
+		y2 = [dataSource numberOfLines] - 1;
+	}
+	
+	// ok, now get the search body
+	searchBody = [self contentFromX: x1 Y: y1 ToX: x2 Y: y2 breakLines: NO];
+	
+	if([searchBody length] <= 0)
+	{
+		NSBeep();
+		return;
+	}
+	
+	// do the search
+	if(ignoreCase)
+		searchMask |= NSCaseInsensitiveSearch;
+	if(!direction)
+		searchMask |= NSBackwardsSearch;	
+	foundRange = [searchBody rangeOfString: aString options: searchMask];
+	if(foundRange.location != NSNotFound)
+	{
+		// convert index to coordinates
+		// get index of start of search body
+		if(y1 > 0)
+		{
+			anIndex = y1*[dataSource width] + x1;
+		}
+		else
+		{
+			anIndex = x1;
+		}
+		
+		// calculate index of start of found range
+		anIndex += foundRange.location;
+		startX = lastFindX = anIndex % [dataSource width];
+		startY = lastFindY = anIndex/[dataSource width];
+		
+		// end of found range
+		anIndex += foundRange.length - 1;
+		endX = anIndex % [dataSource width];
+		endY = anIndex/[dataSource width];
+		
+		
+		[self _selectFromX:startX Y:startY toX:endX Y:endY];
+		[self setNeedsDisplay:YES];
+		[self _scrollToLine:endY];
+		
+		return;
+	}
+	
+	NSBeep(); // not found
+}
+
+- (void) resetSearchResult
+{
+	lastFindX = -1;
 }
 
 // transparency
@@ -2181,7 +2208,7 @@ static SInt32 systemVersion;
 	tmpY = y;
 	while(tmpX >= 0)
 	{
-		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
+		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY breakLines: NO];
 		if(([aString length] == 0 || 
 			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
 		   [wordChars rangeOfString: aString].length == 0)
@@ -2220,7 +2247,7 @@ static SInt32 systemVersion;
 	tmpY = y;
 	while(tmpX < [dataSource width])
 	{
-		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
+		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY breakLines: NO];
 		if(([aString length] == 0 || 
 			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
 		   [wordChars rangeOfString: aString].length == 0)
@@ -2254,7 +2281,7 @@ static SInt32 systemVersion;
 	x2 = tmpX;
 	y2 = tmpY;
 
-	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2]);
+	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2 breakLines: NO]);
 	
 }
 
@@ -2297,7 +2324,7 @@ static SInt32 systemVersion;
 	char blankString[1024];	
 	
 	
-	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y];
+	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y breakLines: NO];
 	memset(blankString, ' ', 1024);
 	blankString[[dataSource width]] = 0;
 	blankLine = [NSString stringWithUTF8String: (const char*)blankString];

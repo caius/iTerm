@@ -68,6 +68,7 @@
     int defaultTabViewType;
     BOOL defaultPromptOnClose;
     BOOL defaultFocusFollowsMouse;
+	NSString *defaultWordChars;
 }
 
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.210 2004-04-20 15:42:59 ujwal Exp $
+// $Id: PTYTextView.m,v 1.211 2004-04-20 15:55:51 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1966,7 +1966,10 @@ static SInt32 systemVersion;
 		
 		// check if conversion was successful, else use our own methods to convert to bold
 		if([[NSFontManager sharedFontManager] fontNamed: [theFont fontName] hasTraits: NSBoldFontMask] == YES)
+		{
 			strokeWidth = 0;
+			renderBold = NO;
+		}
 		else
 		{
 			strokeWidth = antiAlias?(float)bold*(-0.1):0;

@@ -7,10 +7,11 @@
     * Preferences shortcut is not cmd-, in line with new Apple guidelines.
     * Overrode PTYTextView: -mouseEntered method to avoid activation of 
       I-beam cursor.
+    * Added menu item to toggle toolbar visibility.
 
 2004-01-01	ujwal
 
-	* Cursor blinks only in active window.
+    * Cursor blinks only in active window.
 
 2003-12-18	fabian
     

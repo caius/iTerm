@@ -33,7 +33,7 @@ static int TRANSPARENCY  =10;
 
 - (id)init
 {
-    char *userShell;
+    char *userShell, *thisUser;
 #if DEBUG_OBJALLOC
     NSLog(@"%s(%d):-[PreferencePanel init]", __FILE__, __LINE__);
 #endif
@@ -41,7 +41,9 @@ static int TRANSPARENCY  =10;
         return nil;
         
     // Get the user's default shell
-    if((userShell = getenv("SHELL")) != NULL)
+    if((thisUser = getenv("USER")) != NULL)
+        SHELL = [[NSString stringWithFormat: @"login -fp %s", thisUser] retain];
+    else if((userShell = getenv("SHELL")) != NULL)
         SHELL = [[NSString stringWithCString: userShell] retain];
 
     prefs = [NSUserDefaults standardUserDefaults];

@@ -1,6 +1,7 @@
 2003-03-28	ujwal
     * Made addressbook non-modal.
     * Fixed a crash in showing preferences window.
+    * Fixed bug in changing font for addressbook entries.
 
 2003-03-28	fabian
     * Fixed bugs in selection

@@ -347,7 +347,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (IBAction)adEditFont:(id)sender
 {
     changingNA=NO;
-    [[adTextExample window] makeFirstResponder:[adTextExample window]];
+    [[adTextExample window] makeFirstResponder:self];
     [[NSFontManager sharedFontManager] setSelectedFont:aeFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
@@ -355,7 +355,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (IBAction)adEditNAFont:(id)sender
 {
     changingNA=YES;
-    [[adNATextExample window] makeFirstResponder:[adNATextExample window]];
+    [[adNATextExample window] makeFirstResponder:self];
     [[NSFontManager sharedFontManager] setSelectedFont:aeNAFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
@@ -385,7 +385,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 {
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu executeABCommand:%@]",
+    NSLog(@"%s(%d):-[AddressBookWindowController executeABCommand:%@]",
           __FILE__, __LINE__, sender);
 #endif
 
@@ -418,6 +418,23 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     //[[self window] close];
     [self showWindow: self];
 }
+
+- (void)changeFont:(id)fontManager
+{
+    if (changingNA) {
+        [aeNAFont autorelease];
+        aeNAFont=[fontManager convertFont:[adNATextExample font]];
+        [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
+        [adNATextExample setFont:aeNAFont];
+    }
+    else {
+        [aeFont autorelease];
+        aeFont=[fontManager convertFont:[adTextExample font]];
+        [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
+        [adTextExample setFont:aeFont];
+    }
+}
+
 
 
 @end

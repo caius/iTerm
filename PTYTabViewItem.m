@@ -98,6 +98,9 @@
     NSLog(@"PTYTabViewItem: -setLabelAttributes");
 #endif
 
+    // Do this only if there is a change
+    // Should probably use isEqualToDictionary, but that will eat CPU cycles 
+    // since this gets called a lot.
     if(labelAttributes == theLabelAttributes)
         return;
     
@@ -113,7 +116,9 @@
     }
     
     // redraw the label
-    [self setLabel: [self label]];
+    NSString *theLabel = [[self label] copy];
+    [self setLabel: theLabel];
+    [theLabel release];
     
 }
 

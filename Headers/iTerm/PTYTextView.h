@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.39 2004-03-31 04:29:17 ujwal Exp $
+// $Id: PTYTextView.h,v 1.40 2004-03-31 06:02:42 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -233,7 +233,6 @@ typedef struct
 
 // Find method
 - (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase;
-- (void) resetSearchResult;
 
 // NSTextInput
 - (void)insertText:(id)aString;
@@ -276,6 +275,7 @@ typedef struct
 - (BOOL) _isBlankLine: (int) y;
 - (void) _openURL: (NSString *) aURLString;
 - (void) _clearCacheForColor:(int)colorIndex;
+- (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase;
 
 @end
 

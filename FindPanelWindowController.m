@@ -217,7 +217,6 @@ static FindPanelWindowController *sharedInstance = nil;
             return;
         }
         [self setSearchString: contentString];
-        _lastSearchLocation = 0;
         [self findNext];
     }
     else
@@ -257,14 +256,7 @@ static FindPanelWindowController *sharedInstance = nil;
 
 - (void) setSearchString: (NSString *) aString
 {
-	PTYTextView* textView = [self currentTextView];
-	
-    if (_searchString != nil)
-    {
-        if([aString isEqualToString: _searchString] == NO)
-           [textView resetSearchResult];
-    }
-    
+	    
     [_searchString release];
     _searchString = [aString retain];
 }

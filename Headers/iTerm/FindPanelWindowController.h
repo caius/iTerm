@@ -61,8 +61,6 @@
     NSString* _searchString;
     BOOL _ignoresCase;
     
-    // last search location
-    unsigned int _lastSearchLocation;
 }
 
 + (id)sharedInstance;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.191 2004-03-31 04:29:17 ujwal Exp $
+// $Id: PTYTextView.m,v 1.192 2004-03-31 06:02:42 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1869,124 +1869,24 @@ static SInt32 systemVersion;
 
 - (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase
 {
-	int x1, y1, x2, y2;
-	NSString *searchBody;
-	NSRange foundRange;
-	int anIndex;
-	unsigned searchMask = 0;
+	BOOL foundString;
+	int tmpX, tmpY;
 	
-	if([aString length] <= 0)
+	foundString = [self _findString: aString forwardDirection: direction ignoringCase: ignoreCase];
+	if(foundString == NO)
 	{
-		NSBeep();
-		return;
-	}
-	
-	// check if we had a previous search result
-	if(lastFindX > -1)
-	{
-		if(direction)
+		// start from beginning or end depending on search direction
+		tmpX = lastFindX;
+		tmpY = lastFindY;
+		lastFindX = lastFindY = -1;
+		foundString = [self _findString: aString forwardDirection: direction ignoringCase: ignoreCase];
+		if(foundString == NO)
 		{
-			x1 = lastFindX + 1;
-			y1 = lastFindY;
-			if(x1 >= [dataSource width])
-			{
-				if(y1 < [dataSource numberOfLines] - 1)
-				{
-					// advance search beginning to next line
-					x2 = 0;
-					y1++;
-				}
-				else
-				{
-					// wrap around to beginning
-					x1 = y1 = 0;
-				}
-			}
-			x2 = [dataSource width] - 1;
-			y2 = [dataSource numberOfLines] - 1;
-		}
-		else
-		{
-			x1 = y1 = 0;
-			x2 = lastFindX - 1;
-			y2 = lastFindY;
-			if(x2 <= 0)
-			{
-				if(y2 > 0)
-				{
-					// stop search at end of previous line
-					x2 = [dataSource width] - 1;
-					y2--;
-				}
-				else
-				{
-					// wrap around to the end
-					x2 = [dataSource width] - 1;
-					y2 = [dataSource numberOfLines] - 1;
-				}
-			}
+			lastFindX = tmpX;
+			lastFindY = tmpY;
 		}
 	}
-	else
-	{
-		// no previous search results, search from beginning
-		x1 = y1 = 0;
-		x2 = [dataSource width] - 1;
-		y2 = [dataSource numberOfLines] - 1;
-	}
 	
-	// ok, now get the search body
-	searchBody = [self contentFromX: x1 Y: y1 ToX: x2 Y: y2 breakLines: NO];
-	
-	if([searchBody length] <= 0)
-	{
-		NSBeep();
-		return;
-	}
-	
-	// do the search
-	if(ignoreCase)
-		searchMask |= NSCaseInsensitiveSearch;
-	if(!direction)
-		searchMask |= NSBackwardsSearch;	
-	foundRange = [searchBody rangeOfString: aString options: searchMask];
-	if(foundRange.location != NSNotFound)
-	{
-		// convert index to coordinates
-		// get index of start of search body
-		if(y1 > 0)
-		{
-			anIndex = y1*[dataSource width] + x1;
-		}
-		else
-		{
-			anIndex = x1;
-		}
-		
-		// calculate index of start of found range
-		anIndex += foundRange.location;
-		startX = lastFindX = anIndex % [dataSource width];
-		startY = lastFindY = anIndex/[dataSource width];
-		
-		// end of found range
-		anIndex += foundRange.length - 1;
-		endX = anIndex % [dataSource width];
-		endY = anIndex/[dataSource width];
-		
-		
-		[self _selectFromX:startX Y:startY toX:endX Y:endY];
-		[self setNeedsDisplay:YES];
-		[self _scrollToLine:endY];
-		
-		return;
-	}
-	
-	NSBeep(); // not found
-}
-
-- (void) resetSearchResult
-{
-	lastFindX = -1;
 }
 
 // transparency
@@ -2376,5 +2276,123 @@ static SInt32 systemVersion;
 		}
 	}
 }
+
+- (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase
+{
+	int x1, y1, x2, y2;
+	NSString *searchBody;
+	NSRange foundRange;
+	int anIndex;
+	unsigned searchMask = 0;
+	
+	if([aString length] <= 0)
+	{
+		NSBeep();
+		return (NO);
+	}
+	
+	// check if we had a previous search result
+	if(lastFindX > -1)
+	{
+		if(direction)
+		{
+			x1 = lastFindX + 1;
+			y1 = lastFindY;
+			if(x1 >= [dataSource width])
+			{
+				if(y1 < [dataSource numberOfLines] - 1)
+				{
+					// advance search beginning to next line
+					x2 = 0;
+					y1++;
+				}
+				else
+				{
+					// wrap around to beginning
+					x1 = y1 = 0;
+				}
+			}
+			x2 = [dataSource width] - 1;
+			y2 = [dataSource numberOfLines] - 1;
+		}
+		else
+		{
+			x1 = y1 = 0;
+			x2 = lastFindX - 1;
+			y2 = lastFindY;
+			if(x2 <= 0)
+			{
+				if(y2 > 0)
+				{
+					// stop search at end of previous line
+					x2 = [dataSource width] - 1;
+					y2--;
+				}
+				else
+				{
+					// wrap around to the end
+					x2 = [dataSource width] - 1;
+					y2 = [dataSource numberOfLines] - 1;
+				}
+			}
+		}
+	}
+	else
+	{
+		// no previous search results, search from beginning
+		x1 = y1 = 0;
+		x2 = [dataSource width] - 1;
+		y2 = [dataSource numberOfLines] - 1;
+	}
+	
+	// ok, now get the search body
+	searchBody = [self contentFromX: x1 Y: y1 ToX: x2 Y: y2 breakLines: NO];
+	
+	if([searchBody length] <= 0)
+	{
+		NSBeep();
+		return (NO);
+	}
+	
+	// do the search
+	if(ignoreCase)
+		searchMask |= NSCaseInsensitiveSearch;
+	if(!direction)
+		searchMask |= NSBackwardsSearch;	
+	foundRange = [searchBody rangeOfString: aString options: searchMask];
+	if(foundRange.location != NSNotFound)
+	{
+		// convert index to coordinates
+		// get index of start of search body
+		if(y1 > 0)
+		{
+			anIndex = y1*[dataSource width] + x1;
+		}
+		else
+		{
+			anIndex = x1;
+		}
+		
+		// calculate index of start of found range
+		anIndex += foundRange.location;
+		startX = lastFindX = anIndex % [dataSource width];
+		startY = lastFindY = anIndex/[dataSource width];
+		
+		// end of found range
+		anIndex += foundRange.length - 1;
+		endX = anIndex % [dataSource width];
+		endY = anIndex/[dataSource width];
+		
+		
+		[self _selectFromX:startX Y:startY toX:endX Y:endY];
+		[self setNeedsDisplay:YES];
+		[self _scrollToLine:endY];
+		
+		return (YES);
+	}
+	
+	return (NO);
+}
+
 
 @end

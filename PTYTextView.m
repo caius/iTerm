@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.139 2004-02-24 07:27:19 ujwal Exp $
+// $Id: PTYTextView.m,v 1.140 2004-02-24 08:10:36 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -532,10 +532,10 @@
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias:antiAlias];
 	[crap drawAtPoint:NSMakePoint(0,0)];
-	// for bold, redraw offset by a pixel
+	// for bold, redraw the character
 	if (bold)
 	{
-		[crap drawAtPoint:NSMakePoint(1,0)];
+		[crap drawAtPoint:NSMakePoint(0,0)];
 	}
 	[image unlockFocus];
 } // renderChar

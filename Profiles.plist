@@ -905,6 +905,49 @@
 		<dict>
 			<key>Global Profile</key>
 			<string>Yes</string>
+			<key>Key Mappings</key>
+			<dict>
+				<key>0xf700-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>7</integer>
+				</dict>
+				<key>0xf701-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>6</integer>
+				</dict>
+				<key>0xf702-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>2</integer>
+				</dict>
+				<key>0xf703-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>0</integer>
+				</dict>
+				<key>0xf729-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>5</integer>
+				</dict>
+				<key>0xf72b-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>4</integer>
+				</dict>
+				<key>0xf72c-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>9</integer>
+				</dict>
+				<key>0xf72d-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>8</integer>
+				</dict>
+			</dict>
 		</dict>
 		<key>ansi</key>
 		<dict>
@@ -1561,7 +1604,7 @@
 			<key>Auto Close</key>
 			<true/>
 			<key>Blink</key>
-			<true/>
+			<false/>
 			<key>Default Profile</key>
 			<string>Yes</string>
 			<key>Double Width</key>
@@ -1575,7 +1618,7 @@
 			<key>Send Idle Char</key>
 			<false/>
 			<key>Silence Bell</key>
-			<false/>
+			<true/>
 			<key>Term Type</key>
 			<string>vt100</string>
 		</dict>

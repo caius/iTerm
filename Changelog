@@ -1,3 +1,10 @@
+2003-06-09	fabian
+    * Let VT100Typesetter layout every glyph. Glyph alignment
+      problem solved. But, 
+        1. speed is much slower (~2x), 
+        2. change font with a large scrollback buffer takes for
+           ever (due to re-layout, I think).
+           
 2003-06-09	ujwal
 
     * Caching new line string in VT100Screen for big speed boost.

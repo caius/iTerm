@@ -51,7 +51,8 @@
     int i, j, length;
     BOOL atEnd, isValidIndex, lineEndCharExists;
     NSString *theString;
-    NSRange characterRange, glyphRange;
+    NSRange characterRange, glyphRange, gr;
+    float x;
 
 
     // grab the text container; we should have only one
@@ -163,7 +164,13 @@
 	    usedRect.size.width = lineRect.size.width;
 	[layoutMgr setTextContainer: textContainer forGlyphRange: glyphRange];
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
-	[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
+        gr=NSMakeRange(glyphRange.location,1);
+        x=0;
+        for(j=0;j<=lineEndIndex-lineStartIndex;j++,x+=charWidth) {
+            [layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: gr];
+            gr.location++;
+        }
+        
 	if(lineEndCharExists == YES)
 	{
 	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];

@@ -85,6 +85,16 @@
 				<key>exec</key>
 				<string>handleExecScriptCommand:</string>
 			</dict>
+			<key>ToOneRelationships</key>
+			<dict>
+				<key>number</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Snum</string>
+					<key>Type</key>
+					<string>NSNumber&lt;Int&gt;</string>
+				</dict>
+			</dict>
 		</dict>
 		<key>PseudoTerminal</key>
 		<dict>

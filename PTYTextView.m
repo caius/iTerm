@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.189 2004-03-29 00:42:44 ujwal Exp $
+// $Id: PTYTextView.m,v 1.190 2004-03-29 00:51:26 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -996,6 +996,7 @@ static SInt32 systemVersion;
     int x, y;
 	
 	mouseDragged = NO;
+	mouseDown = YES;
     
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
@@ -1033,6 +1034,10 @@ static SInt32 systemVersion;
     NSLog(@"%s(%d):-[PTYTextView mouseUp:%@]",
           __FILE__, __LINE__, event );
 #endif
+	
+	if(mouseDown == NO)
+		return;
+	mouseDown = NO;
     
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.37 2004-03-27 22:35:16 ujwal Exp $
+// $Id: PTYTextView.h,v 1.38 2004-03-29 00:51:26 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -103,6 +103,7 @@ typedef struct
 	
     //selection
     int startX, startY, endX, endY;
+	BOOL mouseDown;
 	BOOL mouseDragged;
 	
 	//find support

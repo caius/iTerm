@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.68 2003-01-08 17:20:19 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.69 2003-01-08 20:56:57 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1475,6 +1475,8 @@ static NSString *ConfigToolbarItem = @"Config";
 #endif    
     
     anEntry = [MAINMENU addressBookEntry: commandIndex];
+    if(anEntry == nil)
+	return;
 
     if (theFlag) {
 	term = [PseudoTerminal newTerminalWindow: MAINMENU];
@@ -1498,6 +1500,10 @@ static NSString *ConfigToolbarItem = @"Config";
     [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
     [term startProgram:cmd arguments:arg environment:env];
     [term setCurrentSessionName:[anEntry objectForKey:@"Name"]];
+    [[term currentSession] setEncoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]];
+    [[term currentSession] setAntiCode:[[anEntry objectForKey:@"AICode"] intValue]];
+    [[term currentSession] setAntiIdle:[[anEntry objectForKey:@"AntiIdle"] boolValue]];
+    [[term currentSession] setAutoClose:[[anEntry objectForKey:@"AutoClose"] intValue]];
     
 }
 

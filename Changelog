@@ -1,3 +1,9 @@
+2003-08-013	ujwal
+
+    * Fixed an obscure bug that prevented textview from being first responder when 
+      "hide tab" option was disabled. Now not allowing tabview to accept first responder.
+
+
 2003-08-013	sgehrman & ujwal
 
     * Moved config panel sheet and code into separate nib file and controller.

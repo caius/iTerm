@@ -128,6 +128,12 @@
     [super dealloc];
 }
 
+// we don't want this to be the first responder in the chain
+- (BOOL)acceptsFirstResponder
+{
+    return (NO);
+}
+
 // build a conextual menu displaying the current tabs
 - (NSMenu *) menuForEvent: (NSEvent *) theEvent
 {

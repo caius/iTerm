@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.19 2003-01-08 20:56:21 ujwal Exp $
+// $Id: MainMenu.m,v 1.20 2003-01-08 21:10:23 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -313,9 +313,9 @@ static BOOL newWindow=YES;
     [adNATextExample setTextColor:[entry objectForKey:@"Foreground"]];
     [adNATextExample setBackgroundColor:[entry objectForKey:@"Background"]];
     [adNATextExample setFont:aeNAFont];
-    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[PREF_PANEL ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
-    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[PREF_PANEL aiCode]:[[entry objectForKey:@"AICode"] intValue]];
-    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?[PREF_PANEL autoclose]:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
+    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?NSOffState:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
+    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?0:[[entry objectForKey:@"AICode"] intValue]];
+    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?NSOffState:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
 
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];

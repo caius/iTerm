@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.91 2004-03-18 08:48:33 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.92 2004-03-18 08:54:40 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -273,6 +273,7 @@ static float versionNumber;
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
 	// make sure buttons are properly enabled/disabled
+	[bookmarksView reloadData];
 	[self outlineViewSelectionDidChange: nil];
     // Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        

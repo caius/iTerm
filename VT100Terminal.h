@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.28 2003-04-29 00:22:39 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.29 2003-05-09 10:08:20 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -212,7 +212,6 @@ typedef enum {
     
     int FG_COLORCODE;
     int BG_COLORCODE;
-    float alpha;
     NSColor* colorTable[2][8];
     NSColor* defaultFGColor;
     NSColor* defaultBGColor;

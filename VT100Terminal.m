@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.61 2003-05-07 17:53:31 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.62 2003-05-09 10:08:19 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1178,7 +1178,6 @@ static VT100TCC decode_string(unsigned char *datap,
     saveBold=saveBlink=saveReversed=saveUnder = 0;
     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
-    alpha=1.0f;
     
     TRACE = NO;
 
@@ -1865,9 +1864,12 @@ static VT100TCC decode_string(unsigned char *datap,
     NSMutableDictionary *dic;
     NSColor *fg, *bg;
     int i;
+    float alpha;
 
     fg = [self colorFromTable:FG_COLORCODE bold:bold];
     bg = [self colorFromTable:BG_COLORCODE bold:NO];
+
+    alpha = [defaultBGColor alphaComponent];
     if (alpha<0.99) bg=[bg colorWithAlphaComponent:alpha];
 
     for(i=0;i<2;i++) {

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.231 2003-09-13 20:48:20 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.232 2003-09-14 06:35:34 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -187,18 +187,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     defaultParameters = [[ITAddressBookMgr sharedInstance] addressBookEntry: 0];
     [aSession setAddressBookEntry:defaultParameters];
     [aSession setPreferencesFromAddressBookEntry: defaultParameters];
-
-    // set the font
-#if USE_CUSTOM_DRAWING    
-    [[aSession TEXTVIEW]  setFont:FONT nafont:NAFONT];
-#else
-    [[aSession TEXTVIEW]  setFont:FONT];
-#endif
-    [[aSession SCREEN]  setFont:FONT nafont:NAFONT];
-    
-    // set the srolling
-    [[aSession SCROLLVIEW] setVerticalLineScroll: [[aSession SCREEN] characterSize].height];
-    [[aSession SCROLLVIEW] setVerticalPageScroll: [[aSession TEXTVIEW] frame].size.height];
     
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![[PreferencePanel sharedInstance] silenceBell]];
@@ -211,6 +199,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession TEXTVIEW] setLineHeight: [[aSession SCREEN] characterSize].height];
     [[aSession TEXTVIEW] setLineWidth: WIDTH * [VT100Screen fontSize: FONT].width];
 #endif
+    [[aSession SCREEN] setFont: FONT nafont: NAFONT];
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
     
@@ -598,8 +587,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
 #endif
     vsize = [VT100Screen requireSizeWithFont:[[[_sessionMgr currentSession] SCREEN] tallerFont]
-				      width:WIDTH
-				     height:HEIGHT];
+				      width:[[[_sessionMgr currentSession] SCREEN] width]
+				     height:[[[_sessionMgr currentSession] SCREEN] height]];
 
     
     size = [PTYScrollView frameSizeForContentSize:vsize
@@ -1083,6 +1072,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
         [_sessionMgr insertSession: aSession atIndex: index];
     }
+
+    if([TABVIEW numberOfTabViewItems] == 1)
+    {
+	[TABVIEW setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
+	[self setWindowSize: NO];
+    }    
 }
 
 - (void)tabViewWillPerformDragOperation:(NSTabView *)tabView
@@ -1136,11 +1131,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 
     }
-    else if([TABVIEW numberOfTabViewItems] == 2)
-    {
-	[TABVIEW setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
-	[self setWindowSize: NO];
-    }
+    
 }
 
 - (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu

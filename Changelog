@@ -1,3 +1,9 @@
+2003-09-13	ujwal
+
+    * Moved more session-specific code to from PseudoTerminal to PTYSession. 
+      Potential for each tab to have its own font. Screen sizing issues need 
+      to be worked out.
+
 2003-09-12	ujwal
 
     * Changed preview of background image to a real NSImageView.

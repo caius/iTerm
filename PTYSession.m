@@ -245,7 +245,20 @@ static NSString *PWD_ENVVALUE = @"~";
     NSString *path = program;
     NSMutableArray *argv = [NSMutableArray arrayWithArray:prog_argv];
     NSMutableDictionary *env = [NSMutableDictionary dictionaryWithDictionary:prog_env];
+    NSSize screenSize, textViewSize, scrollViewSize;
 
+    // set screen size
+    screenSize = [VT100Screen screenSizeInFrame: [[self TEXTVIEW] frame] font: [[self SCREEN] font]];
+    [[self SCREEN] setWidth: (int) screenSize.width height: (int) screenSize.height];
+    textViewSize = [VT100Screen requireSizeWithFont:[[self SCREEN] tallerFont] width:(int) screenSize.width height:(int) screenSize.height];
+    //[[self TEXTVIEW] setFrame: NSMakeRect(0, 0, textViewSize.width, textViewSize.height)];
+    scrollViewSize = [PTYScrollView frameSizeForContentSize:textViewSize
+						 hasHorizontalScroller:NO
+						   hasVerticalScroller:YES
+								borderType:NSNoBorder];
+    //[[self SCROLLVIEW] setFrame: NSMakeRect(0, 0, scrollViewSize.width, scrollViewSize.height)];
+    
+        
     // initialize the screen
     [[self SCREEN] initScreen];
 
@@ -972,7 +985,7 @@ static NSString *PWD_ENVVALUE = @"~";
     int i;
     NSString *backgroundImagePath;
     BOOL useBackgroundImage;
-    
+
     [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
     [self setBackgroundColor: [[aePrefs objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[aePrefs objectForKey: @"Transparency"] intValue]/100.0)]];
     if([aePrefs objectForKey: @"SelectionColor"] != nil)
@@ -1014,6 +1027,12 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setColorTable:i highLight:NO color:colorTable[0][i]];
         [self setColorTable:i highLight:YES color:colorTable[1][i]];
     }
+
+    // set the font
+    //[[self SCREEN] setFont: [aePrefs objectForKey:@"Font"] nafont: [aePrefs objectForKey:@"NAFont"]];
+    // set the scrolling
+    [[self SCROLLVIEW] setVerticalLineScroll: [[self SCREEN] characterSize].height];
+    [[self SCROLLVIEW] setVerticalPageScroll: [[self TEXTVIEW] frame].size.height];    
 
     // set up the rest of the preferences
     [self setEncoding: [[aePrefs objectForKey:@"Encoding"] unsignedIntValue]];

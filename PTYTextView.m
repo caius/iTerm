@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.140 2004-02-24 08:10:36 ujwal Exp $
+// $Id: PTYTextView.m,v 1.141 2004-02-24 16:01:54 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -171,6 +171,7 @@
     [defaultFGColor release];
     [color retain];
     defaultFGColor=color;
+	[self resetCharCache];
 	[self setNeedsDisplay: YES];
 	// reset our default character attributes    
 }
@@ -190,6 +191,7 @@
     [defaultBoldColor release];
     [color retain];
     defaultBoldColor=color;
+	[self resetCharCache];
 	[self setNeedsDisplay: YES];
 }
 

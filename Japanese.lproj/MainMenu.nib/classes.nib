@@ -18,6 +18,7 @@
                 saveSession = id; 
                 showConfigWindow = id; 
                 showFindPanel = id; 
+                toggleInputToAllSessions = id; 
             }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
@@ -128,6 +129,7 @@
                 nextTerminal = NSMenuItem; 
                 previousTerminal = NSMenuItem; 
                 selectTab = NSMenuItem; 
+                sendInputToAllSessions = NSMenuItem; 
             }; 
             SUPERCLASS = NSObject; 
         }

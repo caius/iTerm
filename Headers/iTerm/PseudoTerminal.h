@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.10 2004-01-20 07:34:33 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.11 2004-01-23 00:45:01 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -48,6 +48,7 @@
     BOOL tabViewDragOperationInProgress;
     BOOL resizeInProgress;
     BOOL windowInited;
+    BOOL sendInputToAllSessions;
 }
 
 - (id)init;
@@ -91,6 +92,12 @@
 - (int)height;
 
 - (ITSessionMgr*)sessionMgr;
+
+// controls which sessions see key events
+- (BOOL) sendInputToAllSessions;
+- (void) setSendInputToAllSessions: (BOOL) flag;
+- (IBAction) toggleInputToAllSessions: (id) sender;
+- (void) sendInputToAllSessions: (NSData *) data;
 
 // iTermController
 - (void)clearBuffer:(id)sender;

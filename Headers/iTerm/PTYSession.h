@@ -105,6 +105,7 @@
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs;
 
 // PTYTask
+- (void)writeTask:(NSData *)data;
 - (void)readTask:(NSData *)data;
 - (void)brokenPipe;
 

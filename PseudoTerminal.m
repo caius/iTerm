@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.252 2004-01-22 00:11:09 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.253 2004-01-23 00:42:53 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -267,6 +267,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[_sessionMgr currentSession] setLabelAttribute];
     [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
     [[TABVIEW window] setNextResponder:self];
+    //[[TABVIEW window] makeFirstResponder: self];
 
     // send a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: aSession];
@@ -883,6 +884,42 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     return result;
 }
 
+- (void) sendInputToAllSessions: (NSData *) data
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal sendDataToAllSessions:]",
+	  __FILE__, __LINE__);
+#endif
+    
+    NSArray *sessionList = [_sessionMgr sessionList];
+    NSEnumerator *sessionEnumerator = [sessionList objectEnumerator];
+    PTYSession *aSession;
+    
+    while ((aSession = [sessionEnumerator nextObject]) != nil)
+    {
+	[[aSession SHELL] writeTask:data];
+    }    
+}
+
+- (BOOL) sendInputToAllSessions
+{
+    return (sendInputToAllSessions);
+}
+
+- (void) setSendInputToAllSessions: (BOOL) flag
+{
+    sendInputToAllSessions = flag;
+}
+
+- (IBAction) toggleInputToAllSessions: (id) sender
+{
+    sendInputToAllSessions = !sendInputToAllSessions;
+    
+    // cause reloading of menus
+    [[iTermController sharedInstance] setCurrentTerminal: self];
+}
+
+
 
 // NSWindow delegate methods
 - (void)windowDidDeminiaturize:(NSNotification *)aNotification
@@ -933,6 +970,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
     }
 
+    // resign first responder status
+    //[[TABVIEW window] makeFirstResponder: nil];
+    
+    // tell our controller
     [[iTermController sharedInstance] terminalWillClose: self];
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.11 2004-01-20 07:34:32 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.12 2004-01-23 00:43:22 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -308,6 +308,12 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
     [closeTab setKeyEquivalent: @"w"];
     [closeWindow setKeyEquivalent: @"W"];
     [closeWindow setKeyEquivalentModifierMask: NSCommandKeyMask];
+    
+    // set some menu item states
+    if([frontTerminal sendInputToAllSessions] == YES)
+	[sendInputToAllSessions setState: NSOnState];
+    else
+	[sendInputToAllSessions setState: NSOffState];
     
 }
 

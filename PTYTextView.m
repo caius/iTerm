@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.95 2004-01-20 20:45:34 ujwal Exp $
+// $Id: PTYTextView.m,v 1.96 2004-01-23 00:42:33 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1541,6 +1541,7 @@
     
 }
 
+
 - (void)keyDown:(NSEvent *)event
 {
     NSInputManager *imana = [NSInputManager currentInputManager];
@@ -1604,6 +1605,7 @@
         else
             [super keyDown:event];
     }
+    
 }
 
 - (void)doCommandBySelector:(SEL)aSelector

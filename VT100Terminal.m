@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.81 2003-11-12 08:13:31 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.82 2004-01-23 00:43:02 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -617,7 +617,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
 
     if (unrecognized||!(*rmlen)) {
         result.type = VT100_WAIT;
-        NSLog(@"invalid: %d",*rmlen);
+        NSLog(@"invalid rmlen: %d",*rmlen);
     }
     else {
         data = [NSData dataWithBytes:s length:c-s];

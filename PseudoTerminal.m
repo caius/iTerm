@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.87 2003-01-29 22:34:07 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.88 2003-01-29 23:06:47 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -265,7 +265,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [self setCurrentSessionName: nil];
 
     if ([TABVIEW numberOfTabViewItems]>1||![pref hideTab]) {
-        [TABVIEW setTabViewType: NSLeftTabsBezelBorder];
+        [TABVIEW setTabViewType: NSTopTabsBezelBorder];
     }
     else [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 

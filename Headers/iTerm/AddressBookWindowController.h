@@ -61,6 +61,7 @@
     IBOutlet NSColorWell *adBackground;
     IBOutlet NSColorWell *adSelection;
     IBOutlet NSColorWell *adBold;
+	IBOutlet NSColorWell *adCursor;
     IBOutlet NSColorWell *ansiBlack;
     IBOutlet NSColorWell *ansiRed;
     IBOutlet NSColorWell *ansiGreen;
@@ -107,7 +108,9 @@
 + (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili;
 + (NSColor *) defaultSelectionColor;
 + (NSColor *) defaultBoldColor;
++ (NSColor *) defaultCursorColor;
 + (NSColor *) highlightColor:(NSColor *)color;
+
 
 // NSWindow delegate methods
 - (void)windowWillClose:(NSNotification *)aNotification;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.136 2004-02-23 22:10:08 yfabian Exp $
+// $Id: PTYTextView.m,v 1.137 2004-02-24 00:14:20 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -99,6 +99,7 @@
     [defaultBGColor release];
     [defaultBoldColor release];
     [selectionColor release];
+	[defaultCursorColor release];
 	
     [dataSource release];
     [_delegate release];
@@ -192,6 +193,14 @@
 	[self setNeedsDisplay: YES];
 }
 
+- (void) setCursorColor: (NSColor*)color
+{
+    [defaultCursorColor release];
+    [color retain];
+    defaultCursorColor=color;
+	[self setNeedsDisplay: YES];
+}
+
 - (NSColor *) defaultFGColor
 {
     return defaultFGColor;
@@ -205,6 +214,11 @@
 - (NSColor *) defaultBoldColor
 {
     return defaultBoldColor;
+}
+
+- (NSColor *) defaultCursorColor
+{
+    return defaultCursorColor;
 }
 
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
@@ -801,7 +815,7 @@
 	//draw cursor
 	if (CURSOR) {
 		i = y1*[dataSource width]+x1;
-		[[NSColor grayColor] set];
+		[[self defaultCursorColor] set];
 		NSRectFill(NSMakeRect(x1*charWidth,
 							  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
 							  charWidth,lineHeight));

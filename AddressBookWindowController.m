@@ -39,11 +39,13 @@ static NSColor *iTermBackground;
 static NSColor *iTermForeground;
 static NSColor *iTermSelection;
 static NSColor *iTermBold;
+static NSColor *iTermCursor;
 static NSColor* iTermColorTable[2][8];
 static NSColor *xtermBackground;
 static NSColor *xtermForeground;
 static NSColor *xtermSelection;
 static NSColor *xtermBold;
+static NSColor *xtermCursor;
 static NSColor* xtermColorTable[2][8];
 
 @implementation AddressBookWindowController
@@ -81,11 +83,13 @@ static NSColor* xtermColorTable[2][8];
         retain];
 	
     iTermBold = [[NSColor redColor] retain];
+	iTermCursor = [[NSColor whiteColor] retain];
 	
     xtermBackground = [[NSColor whiteColor] retain];
     xtermForeground = [[NSColor blackColor] retain];
     xtermSelection = [NSColor selectedTextBackgroundColor];
     xtermBold = [[NSColor redColor] retain];
+	xtermCursor = [[NSColor grayColor] retain];
 	
     xtermColorTable[0][0]  = [[NSColor blackColor] retain];
     xtermColorTable[0][1]  = [[NSColor redColor] retain];
@@ -229,6 +233,13 @@ static NSColor* xtermColorTable[2][8];
     if(iTermBold == nil)
 		[self initialize];
     return (iTermBold);
+}
+
++ (NSColor *) defaultCursorColor
+{
+    if(xtermCursor == nil)
+		[self initialize];
+    return (xtermCursor);
 }
 
 // NSWindow delegate methods
@@ -378,6 +389,10 @@ static NSColor* xtermColorTable[2][8];
         [adBold setColor:[entry objectForKey:@"BoldColor"]];
     else
         [adBold setColor: iTermBold];
+	if([entry objectForKey:@"CursorColor"])
+        [adCursor setColor:[entry objectForKey:@"CursorColor"]];
+    else
+        [adCursor setColor: xtermCursor];	
     if([entry objectForKey:@"AnsiBlackColor"])
         [ansiBlack setColor:[entry objectForKey:@"AnsiBlackColor"]];
     else
@@ -702,6 +717,7 @@ static NSColor* xtermColorTable[2][8];
 			[adForeground setColor:iTermForeground];
 			[adSelection setColor: iTermSelection];
 			[adBold setColor: iTermBold];
+			[adCursor setColor: iTermCursor];
 			[ansiBlack setColor:iTermColorTable[0][0]];
 			[ansiRed setColor:iTermColorTable[0][1]];
 			[ansiGreen setColor:iTermColorTable[0][2]];
@@ -724,6 +740,7 @@ static NSColor* xtermColorTable[2][8];
 			[adForeground setColor:xtermForeground];
 			[adSelection setColor: xtermSelection];
 			[adBold setColor: xtermBold];
+			[adCursor setColor: xtermCursor];
 			[ansiBlack setColor:xtermColorTable[0][0]];
 			[ansiRed setColor:xtermColorTable[0][1]];
 			[ansiGreen setColor:xtermColorTable[0][2]];
@@ -952,6 +969,7 @@ static NSColor* xtermColorTable[2][8];
 		[adBackground color],@"Background",
 		[adSelection color],@"SelectionColor",
 		[adBold color],@"BoldColor",
+		[adCursor color],@"CursorColor",
 		[ansiBlack color], @"AnsiBlackColor",
 		[ansiRed color], @"AnsiRedColor",
 		[ansiGreen color], @"AnsiGreenColor",

@@ -947,6 +947,10 @@ static NSString *PWD_ENVVALUE = @"~";
 		[self setBoldColor: [aePrefs objectForKey: @"BoldColor"]];
     else
 		[self setBoldColor: [AddressBookWindowController defaultBoldColor]];
+	if([aePrefs objectForKey: @"CursorColor"] != nil)
+		[self setCursorColor: [aePrefs objectForKey: @"CursorColor"]];
+    else
+		[self setCursorColor: [AddressBookWindowController defaultCursorColor]];	
     if([aePrefs objectForKey: @"AnsiBlackColor"] == nil)
     {
 		for(i = 0; i < 8; i++)
@@ -1313,6 +1317,16 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)setBoldColor:(NSColor*) color
 {
     [[self TEXTVIEW] setBoldColor: color];
+}
+
+- (NSColor *) cursorColor
+{
+    return ([TEXTVIEW defaultCursorColor]);
+}
+
+- (void)setCursorColor:(NSColor*) color
+{
+    [[self TEXTVIEW] setCursorColor: color];
 }
 
 - (NSColor *) selectionColor

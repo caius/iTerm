@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.16 2004-02-20 08:07:03 ujwal Exp $
+// $Id: PTYTextView.h,v 1.17 2004-02-24 00:14:23 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -86,6 +86,7 @@ typedef struct
     NSColor* defaultFGColor;
     NSColor* defaultBGColor;
     NSColor* defaultBoldColor;
+	NSColor* defaultCursorColor;
 	NSColor* selectionColor;
 	
     // data source
@@ -140,11 +141,14 @@ typedef struct
 - (NSColor *) defaultBoldColor;
 - (NSColor *) colorForCode:(int) index;
 - (NSColor *) selectionColor;
+- (NSColor *) defaultCursorColor;
 - (void) setFGColor:(NSColor*)color;
 - (void) setBGColor:(NSColor*)color;
 - (void) setBoldColor:(NSColor*)color;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
 - (void) setSelectionColor: (NSColor *) aColor;
+- (void)setCursorColor:(NSColor*) color;
+
 
 - (NSDictionary*) markedTextAttributes;
 - (void) setMarkedTextAttributes: (NSDictionary *) attr;

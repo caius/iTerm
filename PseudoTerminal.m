@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.260 2004-02-19 19:42:59 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.261 2004-02-24 00:14:21 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1333,6 +1333,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[currentABEntry setObject: [[_sessionMgr currentSession] foregroundColor] forKey: @"Foreground"];
 		[currentABEntry setObject: [[_sessionMgr currentSession] backgroundColor] forKey: @"Background"];
 		[currentABEntry setObject: [[_sessionMgr currentSession] boldColor] forKey: @"BoldColor"];
+		[currentABEntry setObject: [[_sessionMgr currentSession] cursorColor] forKey: @"CursorColor"];
 		[currentABEntry setObject: [[_sessionMgr currentSession] selectionColor] forKey: @"SelectionColor"];
 		[currentABEntry setObject: [NSString stringWithInt:WIDTH] forKey: @"Col"];
 		[currentABEntry setObject: [NSString stringWithInt:HEIGHT] forKey: @"Row"];
@@ -1364,6 +1365,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			[[_sessionMgr currentSession] foregroundColor],@"Foreground",
 			[[_sessionMgr currentSession] backgroundColor],@"Background",
 			[[_sessionMgr currentSession] boldColor],@"BoldColor",
+			[[_sessionMgr currentSession] cursorColor],@"CursorColor",
 			[[_sessionMgr currentSession] selectionColor],@"SelectionColor",
 			[NSString stringWithInt:WIDTH],@"Col",
 			[NSString stringWithInt:HEIGHT],@"Row",

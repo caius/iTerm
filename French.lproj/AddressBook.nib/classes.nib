@@ -30,6 +30,7 @@
                 adClose = id; 
                 adCol = id; 
                 adCommand = NSTextField; 
+                adCursor = NSColorWell; 
                 adDir = id; 
                 adDoubleWidth = id; 
                 adEncoding = NSPopUpButton; 

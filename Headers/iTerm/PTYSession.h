@@ -190,6 +190,8 @@
 - (void) setSelectionColor: (NSColor *) color;
 - (NSColor *) boldColor;
 - (void)setBoldColor:(NSColor*) color;
+- (NSColor *) cursorColor;
+- (void)setCursorColor:(NSColor*) color;
 - (float) transparency;
 - (void)setTransparency:(float)transparency;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;

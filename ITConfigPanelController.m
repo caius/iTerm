@@ -136,6 +136,11 @@
         // set the bold color if it has changed
         if([[currentSession boldColor] isEqual: [CONFIG_BOLD color]] == NO)
             [currentSession setBoldColor: [CONFIG_BOLD color]];
+		
+        // set the cursor color if it has changed
+		if([[currentSession cursorColor] isEqual: [CONFIG_CURSOR color]] == NO)
+            [currentSession setCursorColor: [CONFIG_CURSOR color]];
+
 
 	// change foreground color if it has changed
 	if(([[currentSession foregroundColor] isEqual:[CONFIG_FOREGROUND color]] == NO))
@@ -333,6 +338,8 @@
     [CONFIG_BACKGROUND setEnabled: ([currentSession image] == nil)?YES:NO];
     [CONFIG_SELECTION setColor:[[currentSession TEXTVIEW] selectionColor]];
     [CONFIG_BOLD setColor: [[currentSession TEXTVIEW] defaultBoldColor]];
+	[CONFIG_CURSOR setColor: [[currentSession TEXTVIEW] defaultCursorColor]];
+
     configFont=[_pseudoTerminal font];
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
     [CONFIG_EXAMPLE setTextColor:[[currentSession TEXTVIEW] defaultFGColor]];

@@ -2,15 +2,7 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {
-                useBackgroundImage = id; 
-                windowConfiCancel = id; 
-                windowConfigBackground = id; 
-                windowConfigFont = id; 
-                windowConfigForeground = id; 
-                windowConfigNAFont = id; 
-                windowConfigOk = id; 
-            }; 
+            ACTIONS = {windowConfigCancel = id; windowConfigOk = id; }; 
             CLASS = ITConfigPanelController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
@@ -20,6 +12,7 @@
                 "CONFIG_BACKGROUND" = id; 
                 "CONFIG_BOLD" = id; 
                 "CONFIG_COL" = id; 
+                "CONFIG_CURSOR" = NSColorWell; 
                 "CONFIG_ENCODING" = NSPopUpButton; 
                 "CONFIG_EXAMPLE" = id; 
                 "CONFIG_FOREGROUND" = id; 

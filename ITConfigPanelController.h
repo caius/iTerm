@@ -46,6 +46,7 @@
     IBOutlet id CONFIG_ANTIALIAS;
     IBOutlet id CONFIG_SELECTION;
     IBOutlet id CONFIG_BOLD;
+	IBOutlet NSColorWell *CONFIG_CURSOR;
     
     // anti-idle
     IBOutlet id AI_CODE;

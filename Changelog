@@ -1,3 +1,7 @@
+2004-02-23  ujwal
+
+	* Added support for setting cursor color.
+
 2004-02-23  fabian
 
 	* Fixed bug in [PTYTextView getCharImage].

@@ -55,6 +55,7 @@
     IBOutlet id tabViewType;
     IBOutlet id remapDeleteKey;
     IBOutlet id openAddressBook;
+    IBOutlet id promptOnClose;
     
     NSUserDefaults *prefs;
 
@@ -84,6 +85,7 @@
     int defaultTabViewType;
     BOOL defaultRemapDeleteKey;
     BOOL defaultOpenAddressBook;
+    BOOL defaultPromptOnClose;
 
 }
 
@@ -128,5 +130,6 @@
 - (NSTabViewType) tabViewType;
 - (BOOL)remapDeleteKey;
 - (BOOL)openAddressBook;
+- (BOOL) promptOnClose;
 
 @end

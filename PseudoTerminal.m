@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.129 2003-03-14 22:53:02 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.130 2003-03-18 08:36:15 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -395,7 +395,7 @@ static NSString *ConfigToolbarItem = @"Config";
         return;
 
     if ([currentPtySession exited]==NO) {
-       if (![pref autoclose] && 
+       if ([pref promptOnClose] && 
             NSRunAlertPanel(NSLocalizedStringFromTable(@"The current session will be closed",@"iTerm",@"Close Session"),
                          NSLocalizedStringFromTable(@"All unsaved data will be lost",@"iTerm",@"Close window"),
                          NSLocalizedStringFromTable(@"Cancel",@"iTerm",@"Cancel"),

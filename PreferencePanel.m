@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.28 2003-03-13 18:50:18 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.29 2003-03-18 08:36:15 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -162,6 +162,7 @@ static int TRANSPARENCY  =10;
     defaultDoubleWidth=[[prefs objectForKey:@"DoubleWidth"] boolValue];
     defaultRemapDeleteKey = [prefs objectForKey:@"RemapDeleteKey"]?[[prefs objectForKey:@"RemapDeleteKey"] boolValue]: YES;
     defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
+    defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: NO;
     changingNA=NO;
 
 }
@@ -212,6 +213,7 @@ static int TRANSPARENCY  =10;
     [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
     [remapDeleteKey setState:defaultRemapDeleteKey?NSOnState:NSOffState];
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
+    [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -305,6 +307,7 @@ static int TRANSPARENCY  =10;
     defaultDoubleWidth=([doubleWidth state]==NSOnState);
     defaultRemapDeleteKey = ([remapDeleteKey state] == NSOnState);
     defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
+    defaultPromptOnClose = ([promptOnClose state] == NSOnState);
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
@@ -333,6 +336,7 @@ static int TRANSPARENCY  =10;
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultRemapDeleteKey forKey:@"RemapDeleteKey"];
     [prefs setBool:defaultOpenAddressBook forKey:@"OpenAddressBook"];
+    [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -403,6 +407,7 @@ static int TRANSPARENCY  =10;
     [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
     [remapDeleteKey setState:defaultRemapDeleteKey?NSOnState:NSOffState];
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
+    [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [tabViewType selectCellWithTag: defaultTabViewType];
 
     
@@ -522,5 +527,11 @@ static int TRANSPARENCY  =10;
 {
     return (defaultOpenAddressBook);
 }
+
+- (BOOL)promptOnClose
+{
+    return (defaultPromptOnClose);
+}
+
 
 @end

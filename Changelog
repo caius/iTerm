@@ -1,3 +1,9 @@
+2003-03-18	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added explicit preference to warn on quitting 
+      or closing a window/tab.
+      
+
 2003-03-14	fabian
     * Decrease the brightness of default color to give it
       more contrast to the highlight

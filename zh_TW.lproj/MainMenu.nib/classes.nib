@@ -97,6 +97,7 @@
                 openAddressBook = id; 
                 optionKey = id; 
                 prefPanel = id; 
+                promptOnClose = id; 
                 remapDeleteKey = id; 
                 row = id; 
                 selectionColor = id; 

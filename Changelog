@@ -1,3 +1,7 @@
+2003-08-06	ujwal
+    
+    * Removed all references to [NSApp delegate].
+
 2003-08-03	ujwal
 
     * Using an autorelease pool in screen update thread.

@@ -298,6 +298,17 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     preferences = thePreferences;
 }
 
+- (MainMenu *) iTermController
+{
+    return (iTermController);
+}
+
+- (void) setITermController: (MainMenu *) theController
+{
+    iTermController = theController;
+}
+
+
 
 // Action methods
 
@@ -336,7 +347,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     }
 
     // Save the bookmarks.
-    [[NSApp delegate] saveAddressBook];
+    [[self iTermController] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
     [[NSNotificationCenter defaultCenter]
@@ -538,7 +549,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
  //              __FILE__, __LINE__, ae );
 
 	// Save the bookmarks.
-	[[NSApp delegate] saveAddressBook];
+	[[self iTermController] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
@@ -596,7 +607,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
 	// Save the bookmarks.
-	[[NSApp delegate] saveAddressBook];
+	[[self iTermController] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
 	[[NSNotificationCenter defaultCenter]
@@ -684,9 +695,9 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     while((selectedRow = [selectedRowEnumerator nextObject]) != nil)
     {
 	if(sender == openInWindow)
-	    [[NSApp delegate] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
+	    [[self iTermController] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
 	else
-	    [[NSApp delegate] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[NSApp delegate] frontPseudoTerminal]];
+	    [[self iTermController] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[self iTermController] frontPseudoTerminal]];
     }
 
     // close the bookmarks window

@@ -28,6 +28,7 @@
 #import <AppKit/AppKit.h>
 
 @class PreferencePanel;
+@class MainMenu;
 
 @interface AddressBookWindowController : NSWindowController {
 
@@ -95,6 +96,7 @@
     // default values from preference
     PreferencePanel *preferences;
 
+    MainMenu *iTermController;
 
 }
 
@@ -117,6 +119,8 @@
 - (void) setAddressBook: (NSMutableArray *) anAddressBook;
 - (PreferencePanel *) preferences;
 - (void) setPreferences: (PreferencePanel *) thePreferences;
+- (MainMenu *) iTermController;
+- (void) setITermController: (MainMenu *) theController;
 
 // Address book window
 - (IBAction)adbDuplicateEntry:(id)sender;

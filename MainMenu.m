@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.83 2003-06-27 15:16:54 ujwal Exp $
+// $Id: MainMenu.m,v 1.84 2003-08-06 15:23:34 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -684,6 +684,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     //    NSLog(@"showABWindow: %d\n%@",[[self addressBook] count], [self addressBook]);
 
     abWindowController = [AddressBookWindowController singleInstance];
+    [abWindowController setITermController: self];
     [abWindowController setAddressBook: [self addressBook]];
     [abWindowController setPreferences: PREF_PANEL];
     [abWindowController run];

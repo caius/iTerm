@@ -1,3 +1,7 @@
+2004-02-18  ujwal
+
+	* Fixed scrollUp crash in PTYTextView: drawRect.
+
 2004-02-18  fabian
 
 	* Enhanced the [PTYTextView drawRect] to use dirty array more efficiently.

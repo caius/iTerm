@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.116 2004-02-18 22:57:41 yfabian Exp $
+// $Id: PTYTextView.m,v 1.117 2004-02-19 01:49:29 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -592,7 +592,7 @@
 	NSRect bgRect;
 	NSColor *aColor;
 	char  *fg, *bg, *dirty;
-	BOOL need_draw;
+	BOOL need_draw, charDirty;
 	int bgstart, ulstart;
     float curX, curY;
 	char bgcode, sel, fgcode;
@@ -637,7 +637,7 @@
         line = i + lineOffset;
 		
 		// Check if we are drawing a line in buffer
-		if (line<startScreenLineIndex) { 
+		if (line<startScreenLineIndex) {
 			lineIndex=startScreenLineIndex-line;
 			lineIndex=[dataSource lastBufferLineIndex]-lineIndex;
 			if (lineIndex<0) lineIndex+=[dataSource scrollbackLines];
@@ -658,7 +658,8 @@
 		for(j=0;j<WIDTH;j++) {
 			if (buf[j]==0xffff) continue;
 			// Check if we need to redraw next char
-			need_draw = line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK);
+			charDirty = (line < startScreenLineIndex)?NO:dirty[j];
+			need_draw = line < startScreenLineIndex || forceUpdate || charDirty || (fg[j]&BLINK_MASK);
 			// find out if the current char is being selected
 			sel=(x1!=-1&&((line>y1&&line<y2)||(line==y1&&y1==y2&&j>=x1&&j<x2)||(line==y1&&y1!=y2&&j>=x1)||(line==y2&&y1!=y2&&j<x2)))?-1:bg[j];
 			
@@ -729,7 +730,8 @@
 		
 		//draw all char
 		for(j=0;j<WIDTH;j++) {
-			need_draw = (buf[j] && buf[j]!=0xffff) && line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK);
+			charDirty = (line < startScreenLineIndex)?NO:dirty[j];
+			need_draw = (buf[j] && buf[j]!=0xffff) && line < startScreenLineIndex || forceUpdate || charDirty || (fg[j]&BLINK_MASK);
 			if (need_draw) { 	
 				[self drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY];
 				if (fg[j]&BLINK_MASK) { //if blink is set, switch the fg/bg color
@@ -737,7 +739,8 @@
 					fg[j]=(fg[j]&0xe0)+bg[j];
 					bg[j]=t;
 				}
-				else dirty[j]=0;
+				else if(line>=startScreenLineIndex) 
+					dirty[j]=0;
 			}
 			curX+=charWidth;
 		}
@@ -780,7 +783,6 @@
 	}
 
 	forceUpdate=NO;
-	//    NSLog(@"enddraw");
 }
 
 - (void)keyDown:(NSEvent *)event

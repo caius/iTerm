@@ -69,7 +69,7 @@
     theString = [[layoutMgr textStorage] string];
 
     // grab the font; there should be only one
-    if(font == nil)
+    if(font != [textView font])
     {
 	font = [textView font];
 	if(font != nil)
@@ -168,8 +168,6 @@
 	{
 	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
 	}
-
-
 
 	// set the glyphIndex for the next run
 	glyphIndex = glyphRange.location + glyphRange.length;

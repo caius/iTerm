@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.192 2004-02-26 08:18:26 yfabian Exp $
+// $Id: VT100Screen.m,v 1.193 2004-02-26 15:53:45 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1045,17 +1045,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen selectGraphicRendition:...]",
 	  __FILE__, __LINE__);
 #endif
-	
-	// apply the graphic attributes to the rest of the line
-	int startIndex = CURSOR_Y * WIDTH + CURSOR_X;
-	if(CURSOR_X < WIDTH)
-	{
-		memset(screenFGColor + startIndex, [TERMINAL foregroundColorCode], WIDTH - CURSOR_X);
-		memset(screenBGColor + startIndex, [TERMINAL backgroundColorCode], WIDTH - CURSOR_X);
-		memset(dirty+startIndex,1, WIDTH - CURSOR_X);
-	}
-	
-	
+		
 }
 
 - (void)cursorLeft:(int)n
@@ -1263,8 +1253,8 @@ static BOOL PLAYBELL = YES;
 		memmove(screenBGColor+SCROLL_TOP*WIDTH, screenBGColor+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
 	}
 	memset(screenLines+SCROLL_BOTTOM*WIDTH,0,WIDTH*sizeof(unichar));
-	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
+	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
+	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
 //    else if(CURSOR_Y <= SCROLL_BOTTOM) {
 }

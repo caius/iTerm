@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.238 2003-09-16 06:34:25 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.239 2003-09-16 06:56:11 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -192,7 +192,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 	// get the default entry
 	addressBookPreferences = [NSMutableDictionary dictionaryWithDictionary: [[ITAddressBookMgr sharedInstance] addressBookEntry: 0]];
-	[addressBookPreferences removeObjectForKey: @"UseBackgroundImage"];
 	[addressBookPreferences removeObjectForKey: @"BackgroundImagePath"];
 	[aSession setAddressBookEntry:addressBookPreferences];
 	[aSession setPreferencesFromAddressBookEntry: addressBookPreferences];

@@ -984,7 +984,6 @@ static NSString *PWD_ENVVALUE = @"~";
     
     NSColor *colorTable[2][8];
     int i;
-    BOOL useBackgroundImage;
     NSString *imageFilePath;
 
     // colors
@@ -1037,9 +1036,8 @@ static NSString *PWD_ENVVALUE = @"~";
     [[self SCROLLVIEW] setVerticalPageScroll: [[self TEXTVIEW] frame].size.height];
 
     // background image
-    useBackgroundImage = [[aePrefs objectForKey:@"UseBackgroundImage"] boolValue];
     imageFilePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
-    if(useBackgroundImage && [imageFilePath length] > 0)
+    if([imageFilePath length] > 0)
 	[self setBackgroundImagePath: imageFilePath];
 
     // transparency
@@ -1288,11 +1286,18 @@ static NSString *PWD_ENVVALUE = @"~";
 	    [imageView setImageScaling: NSScaleToFit];
 	    [anImage release];
 	}
+	else
+	{
+	    [backgroundImagePath release];
+	    backgroundImagePath = nil;
+	}
     }
     else
     {
 	[imageView setImage: nil];
 	[SCROLLVIEW setDrawsBackground: YES];
+	[backgroundImagePath release];
+	backgroundImagePath = nil;
     }
 }
 

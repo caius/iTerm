@@ -480,16 +480,20 @@ static NSColor* xtermColorTable[2][8];
     [adRemapDeleteKey setState:([entry objectForKey:@"RemapDeleteKey"]==nil?NO:[[entry objectForKey:@"RemapDeleteKey"] boolValue])?NSOnState:NSOffState];
 
     // background image
-    [useBackgroundImage setState:([entry objectForKey:@"UseBackgroundImage"]==nil?NO:[[entry objectForKey:@"UseBackgroundImage"] boolValue])?NSOnState:NSOffState];
     backgroundImagePath = [(NSString *)[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
     [backgroundImage setEditable: NO];
-    if([[entry objectForKey:@"UseBackgroundImage"] boolValue] && [backgroundImagePath length] > 0)
+    if([backgroundImagePath length] > 0)
     {
 	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
 	[backgroundImage setImage: anImage];
 	[anImage release];
 	[adBackground setEnabled: (anImage == nil)?YES:NO];
-    }    
+	[useBackgroundImage setState: (anImage == nil)?NSOffState:NSOnState];
+    }
+    else
+    {
+	[useBackgroundImage setState: NSOffState];
+    }
 
 
     r= [NSApp runModalForWindow:AE_PANEL];
@@ -941,7 +945,6 @@ static NSColor* xtermColorTable[2][8];
 	[NSNumber numberWithBool:([adRemapDeleteKey state]==NSOnState)],@"RemapDeleteKey",
 	[NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
         [NSNumber numberWithInt:[adScrollback intValue]], @"Scrollback",
-	[NSNumber numberWithBool:([useBackgroundImage state]==NSOnState)],@"UseBackgroundImage",
 	[NSString stringWithString: backgroundImagePath],@"BackgroundImagePath",
 	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
 	NULL];

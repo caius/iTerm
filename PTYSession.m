@@ -226,7 +226,11 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     [SCREEN endEditing];
 
-    [self moveLastLine];
+    // If the user has not scrolled up, move to the end
+    if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+	[[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+       ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
+	[self moveLastLine];
     [SCREEN showCursor];
 }
 
@@ -413,6 +417,9 @@ static NSString *PWD_ENVVALUE = @"~";
                 send_strlen = 1;
             }
         }
+
+	// Make sure we scroll down to the end
+	[self moveLastLine];
 
         if (EXIT == NO ) {
             if (send_pchr >= 0) {

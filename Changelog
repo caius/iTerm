@@ -4,6 +4,10 @@
       Configuration panel, and Address Book entries. 
       Minimum size is 1x1.
       
+    * We don't autoscroll to the bottom on shell output if 
+      the user has scrolled up. Typing something on the 
+      command line will trigger an autoscroll again.
+      
 
 2003-01-29	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

@@ -1,3 +1,8 @@
+2004-11-20  ujwal
+
+	* Re-organized some of the sizing code to make it work better when iTerm is embedded 
+	  in other applications.
+
 2004-11-14  ujwal
 
 	* Re-organized some code.

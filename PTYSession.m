@@ -120,6 +120,8 @@ static NSString *PWD_ENVVALUE = @"~";
     [newOutputStateAttribute release];
     newOutputStateAttribute = nil;
 	
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
+	
     [super dealloc];    
 }
 
@@ -140,14 +142,13 @@ static NSString *PWD_ENVVALUE = @"~";
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
 	
     [SCREEN setSession:self];
-	[SCREEN setWidth:width height:height];
-    [self setName:@"Shell"];
 		
     // Allocate a scrollview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
     [SCROLLVIEW setHasVerticalScroller:YES];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+	
 		
     // assign the main view
     view = SCROLLVIEW;
@@ -165,6 +166,8 @@ static NSString *PWD_ENVVALUE = @"~";
 	
     // initialize the screen
     [SCREEN initScreenWithWidth:width Height:height];
+	[self setName:@"Shell"];
+
 	
     [TEXTVIEW setDataSource: SCREEN];
     [TEXTVIEW setDelegate: self];
@@ -176,12 +179,16 @@ static NSString *PWD_ENVVALUE = @"~";
     antiIdle = NO;
     REFRESHED = NO;
 	
-	// register for notifications
+	// register for some notifications	
 	[[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(tabViewWillRedraw:)
                                                  name:@"iTermTabViewWillRedraw"
                                                object:nil];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(textViewResized:)
+                                                 name:NSViewFrameDidChangeNotification
+                                               object:SCROLLVIEW];		
 	
     [tabViewItem setLabelAttributes: chosenStateAttribute];
 }
@@ -874,15 +881,20 @@ static NSString *PWD_ENVVALUE = @"~";
 		[TEXTVIEW copy: self];
 }
 
-- (void) textViewResized: (PTYTextView *) textView;
+- (void) textViewResized: (NSNotification *) aNotification;
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession textViewResized: 0x%x]",
-		  __FILE__, __LINE__, textView);
+    NSLog(@"%s: textView = 0x%x", __PRETTY_FUNCTION__, TEXTVIEW);
 #endif
+	int w, h;
+		
+	w = (int)(([[SCROLLVIEW contentView] frame].size.width - MARGIN * 2)/[parent charWidth]);
+	h = (int)([[SCROLLVIEW contentView] frame].size.height/[parent charHeight]);
+	//NSLog(@"%s: w = %d; h = %d; old w = %d; old h = %d", __PRETTY_FUNCTION__, w, h, [SCREEN width], [SCREEN height]);
 	
-    [[self parent] windowDidResize: nil];
-    [textView scrollEnd];
+	[SCREEN resizeWidth:w height:h];
+	[SHELL setWidth:w  height:h];
+	
 }
 
 - (void) setLabelAttribute
@@ -1041,7 +1053,6 @@ static NSString *PWD_ENVVALUE = @"~";
 	if([aNotification object] == [[self tabViewItem] tabView])
 		[TEXTVIEW setForceUpdate: YES];
 }
-
 
 - (NSString *) uniqueID
 {

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.27 2004-10-10 07:04:17 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.28 2004-11-20 23:52:58 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -54,9 +54,12 @@
     BOOL windowInited;
 	BOOL sendInputToAllSessions;
 	BOOL fontSizeFollowWindowResize;
+	BOOL suppressContextualMenu;
 	
 	BOOL EXIT;
 }
+
++ (NSSize) viewSizeForColumns: (int) columns andRows: (int) rows withFont: (NSFont *) aFont;
 
 - (id)init;
 - (id) initWithWindowNibName: (NSString *) windowNibName;
@@ -139,6 +142,8 @@
 
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;
+- (BOOL) suppressContextualMenu;
+- (void) setSuppressContextualMenu: (BOOL) aBool;
 
 // Close Window
 - (BOOL)showCloseWindow;

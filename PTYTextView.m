@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.225 2004-10-28 00:39:10 ujwal Exp $
+// $Id: PTYTextView.m,v 1.226 2004-11-20 23:52:52 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -73,13 +73,7 @@ static SInt32 systemVersion;
 	lastFindX = startX = -1;
     markedText=nil;
 	[[self window] useOptimizedDrawing:YES];
-    
-	// register for some notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(frameChanged:)
-                                                 name:NSWindowDidResizeNotification
-                                               object:nil];
-	
+	    	
 	// register for drag and drop
 	[self registerForDraggedTypes: [NSArray arrayWithObjects:
         NSFilenamesPboardType,
@@ -1977,15 +1971,6 @@ static SInt32 systemVersion;
     //NSLog(@"(%f,%f)",rect.origin.x,rect.origin.y);
     
     return rect;
-}
-
-- (void)frameChanged:(NSNotification*)notification
-{
-	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
-	//NSLogRect([self frame]);
-    //if([notification object] == [self window] && [[self delegate] respondsToSelector: @selector(textViewResized:)])
-    //    [[self delegate] textViewResized: self];
-	//[self refresh];
 }
 
 - (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase

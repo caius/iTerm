@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.210 2004-11-10 07:50:03 ujwal Exp $
+// $Id: VT100Screen.m,v 1.211 2004-11-20 23:52:52 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -205,9 +205,12 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	  __FILE__, __LINE__, width, height);
 #endif
 	
+	if(WIDTH == 0 || HEIGHT == 0)
+		return;
+		
 	if (width==WIDTH&&height==HEIGHT) return;
 		
-	if (width!=WIDTH&&bufferLines) {
+	if (width != WIDTH && bufferLines) {
 		//copy the buffer over
 		bl=(unichar*)malloc(scrollbackLines*width*sizeof(unichar));
 		bfg=(char*)malloc(scrollbackLines*width*sizeof(char));
@@ -254,7 +257,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 			memcpy(sfg+width*(i-HEIGHT+height), screenFGColor+WIDTH*i, sw*sizeof(char));
 			memcpy(sbg+width*(i-HEIGHT+height), screenBGColor+WIDTH*i, sw*sizeof(char));
 		}
-		if (bufferLines) { //the top part goes into buffer if we have one
+		if (bufferLines && [SHELL pid] > 0) { //the top part goes into buffer if we have one
 			for(i=0;i<HEIGHT-height;i++) {
 				memcpy(bufferLines+lastBufferLineIndex*width, screenLines+WIDTH*i, sw*sizeof(unichar));
 				memcpy(bufferFGColor+lastBufferLineIndex*width, screenFGColor+WIDTH*i, sw*sizeof(char));
@@ -494,6 +497,11 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 	WIDTH=width;
 	HEIGHT=height;
+	CURSOR_X = CURSOR_Y = 0;
+	SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
+	SCROLL_TOP = 0;
+	SCROLL_BOTTOM = HEIGHT - 1;	
+	
 	screenLines=(unichar*)malloc(HEIGHT*WIDTH*sizeof(unichar));
 	screenFGColor=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
 	screenBGColor=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
@@ -1525,6 +1533,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen numberOfLines]",  __FILE__, __LINE__ );
 #endif
+	//NSLog(@"%s: lastBufferLineIndex = %d; HEIGHT = %d", __PRETTY_FUNCTION__, lastBufferLineIndex, HEIGHT);
     return ((bufferWrapped?scrollbackLines:lastBufferLineIndex)+HEIGHT);
 }
 

@@ -1,4 +1,8 @@
-2003-09-15	ujwal
+2003-09-15	fabian
+
+    * Fixed a bug that causes wrong color of new line character (introduced in 0.7.7).
+    
+\2003-09-15	ujwal
 
     * Removed "Choose" button for background images in the session 
       preferenced UI.

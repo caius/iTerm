@@ -53,6 +53,7 @@
                 promptOnClose = id; 
                 remapDeleteKey = id; 
                 row = id; 
+                scrollbackLines = id; 
                 selectionColor = id; 
                 shell = id; 
                 silenceBell = id; 

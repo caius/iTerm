@@ -83,6 +83,7 @@
 - (BOOL) hideTab;
 - (BOOL) silenceBell;
 - (NSTabViewType) tabViewType;
+- (void) setTabViewType: (NSTabViewType) type;
 - (BOOL) promptOnClose;
 - (BOOL) openAddressBook;
 - (BOOL) blinkingCursor;

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.62 2003-09-02 05:53:04 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.63 2003-11-28 06:49:56 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -212,6 +212,11 @@ static float versionNumber;
 - (BOOL) silenceBell
 {
     return (defaultSilenceBell);
+}
+
+- (void) setTabViewType: (NSTabViewType) type
+{
+    defaultTabViewType = type;
 }
 
 - (NSTabViewType) tabViewType

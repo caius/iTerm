@@ -676,13 +676,17 @@ static NSString *PWD_ENVVALUE = @"~";
 	  __FILE__, __LINE__, mstring);
 #endif
 
-    if([TERMINAL encoding] != NSUTF8StringEncoding) {
-        data = [mstring dataUsingEncoding:[TERMINAL encoding]
-                    allowLossyConversion:YES];
-    } else {
-        char *fs_str = (char *)[mstring fileSystemRepresentation];
-        data = [NSData dataWithBytes:fs_str length:strlen(fs_str)];
-    }
+    //if([TERMINAL encoding] != NSUTF8StringEncoding) {
+    //    data = [mstring dataUsingEncoding:[TERMINAL encoding]
+    //                allowLossyConversion:YES];
+    //} else {
+    //    char *fs_str = (char *)[mstring fileSystemRepresentation];
+    //    data = [NSData dataWithBytes:fs_str length:strlen(fs_str)];
+    //}
+    
+    data = [mstring dataUsingEncoding:[TERMINAL encoding]
+		 allowLossyConversion:YES];
+
     if (data != nil) 
 	[SHELL writeTask:data];
 }

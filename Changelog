@@ -1,3 +1,7 @@
+2003-07-09	ujwal
+
+    * Made a change in PTYSession: insertText to always use dataUsingEncoding.
+
 2003-06-27	ujwal
 
     * Version number is 0.7.6

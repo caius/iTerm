@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.97 2004-01-23 01:19:32 ujwal Exp $
+// $Id: PTYTextView.m,v 1.98 2004-02-03 01:11:05 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2240,7 +2240,7 @@
     
     // check for focus follows mouse
     if([[PreferencePanel sharedInstance] focusFollowsMouse] == YES)
-	[[self window] makeKeyAndOrderFront: self];
+	[[self window] makeKeyWindow];
 }
 
 - (void) setCursorIndex:(int) idx

@@ -30,7 +30,9 @@
 
 #define DEBUG_METHOD_TRACE    0
 
-#define ISDOUBLEWIDTHCHARACTER(idx) ([[[layoutMgr textStorage] attribute:@"NSCharWidthAttributeName" atIndex:(idx) effectiveRange:nil] intValue]==2)
+#define ISDOUBLEWIDTHCHARACTER(idx) ([[textStorage attribute:@"NSCharWidthAttributeName" atIndex:(idx) effectiveRange:nil] intValue]==2)
+#define ISGRAPHICALCHARACTER(idx) ([[textStorage attribute:@"VT100GraphicalCharacter" atIndex:(idx) effectiveRange:nil] boolValue])
+
 
 @implementation VT100Typesetter
 
@@ -54,7 +56,9 @@
     BOOL atEnd, isValidIndex, lineEndCharExists;
     NSString *theString;
     NSRange characterRange, glyphRange;
-    float x, y, w;
+    BOOL hasGraphicalCharacters;
+    NSTextStorage *textStorage;
+
 
 
     // grab the text container; we should have only one
@@ -68,8 +72,11 @@
     if(textView == nil)
 	textView = [layoutMgr firstTextView];
 
+    textStorage = [layoutMgr textStorage];
+
+
     // grab the string; there should be only one
-    theString = [[layoutMgr textStorage] string];
+    theString = [textStorage string];
 
     // grab the font; there should be only one
     if(font != [textView font])
@@ -96,6 +103,7 @@
     {
 	atEnd = NO;
 	lineEndCharExists = NO;
+	hasGraphicalCharacters = NO;
 
 	// sanity check
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
@@ -110,36 +118,31 @@
 
 	// get the corresponding character index
 	charIndex = [layoutMgr characterIndexForGlyphAtIndex: glyphIndex];
-        if (charIndex==0) {
-            x=0;
-            y=0;
-        }
-        else {
-            NSRect lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: charIndex-1 effectiveRange: nil];
-            if ([theString characterAtIndex: charIndex-1] == '\n') {
-                x=0;
-                y=lastGlyphRect.origin.y + [font defaultLineHeightForFont];
-            }
-            else {
-                x = lastGlyphRect.origin.x + ISDOUBLEWIDTHCHARACTER(charIndex-1)?charWidth*2:charWidth;
-                y = lastGlyphRect.origin.y;
-            }
-        }
-        
-	lineStartIndex = charIndex;
+	
+	// go to the beginning of the line
+	j = charIndex;
+	while (j >= 0)
+	{
+	    
+	    if([theString characterAtIndex: j] == '\n')
+		break;
+	    j--;
+	}
+	lineStartIndex = j + 1;
+	if(lineStartIndex  > charIndex)
+	    lineStartIndex = charIndex;
 	
 
 	// go to the end of the line
 	j = charIndex;
-        w=0;
 	while (j < length)
 	{
+	    
 	    if([theString characterAtIndex: j] == '\n')
 	    {
 		lineEndCharExists = YES;
 		break;
 	    }
-            w+=ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 	    j++;
 	}
 	// Check if we reached the end of the text
@@ -151,33 +154,63 @@
 	}
 	lineEndIndex = j;
 
+
 	// build the line
 	characterRange = NSMakeRange(lineStartIndex, lineEndIndex-lineStartIndex+1);
-        lineRect = NSMakeRect(x, y, [textContainer containerSize].width - x, [font defaultLineHeightForFont]);	
 	glyphRange = [layoutMgr glyphRangeForCharacterRange: characterRange actualCharacterRange: nil];
+	
+	// did we encounter a graphical character?
+	NSRange graphicalCharacterRange;
+	id graphicalCharacterAttribute;
+	graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex longestEffectiveRange:&graphicalCharacterRange inRange:characterRange];
+	if(graphicalCharacterAttribute != nil || graphicalCharacterRange.length != characterRange.length)
+	{
+	    hasGraphicalCharacters = YES;
+	}
 
 
+
+	// calculate the line fragment rectangle
+	if(lineStartIndex == 0)
+	{
+	    lineRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
+	}
+	else
+	{
+	    NSRect lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
+	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont], [textContainer containerSize].width, [font defaultLineHeightForFont]);
+	}
+	
 	// Now fill the line
 	NSRect usedRect = lineRect;
-	usedRect.size.width = w;
+	usedRect.size.width = (glyphRange.length) * charWidth + 2*lineFragmentPadding;
 	if(usedRect.size.width > lineRect.size.width)
 	    usedRect.size.width = lineRect.size.width;
 	[layoutMgr setTextContainer: textContainer forGlyphRange: glyphRange];
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
-        glyphRange=NSMakeRange(glyphRange.location,1);
-        for(j=lineStartIndex;j<=lineEndIndex;j++) {
-            [layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
-            glyphRange.location++;
-            x+=ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
-        }
-        
+	[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
 	if(lineEndCharExists == YES)
 	{
-	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location  - 1];
+	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
+	}
+
+	// If we encountered graphical characters, we need to lay out each glyph; EXPENSIVE
+	if(hasGraphicalCharacters == YES)
+	{
+	    NSRange singleGlyphRange;
+	    float x = 0;
+
+	    for (j = lineStartIndex; j < lineEndIndex; j++)
+	    {
+		singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];
+		[layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: singleGlyphRange];
+		x+=ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
+	    }
+	    
 	}
 
 	// set the glyphIndex for the next run
-	glyphIndex = glyphRange.location;
+	glyphIndex = glyphRange.location + glyphRange.length;
 	
 	// if we are at the end of the text, get out
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.99 2003-06-09 15:21:03 ujwal Exp $
+// $Id: VT100Screen.m,v 1.100 2003-06-10 20:55:44 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2218,7 +2218,7 @@ static BOOL PLAYBELL = YES;
     if(charset[[TERMINAL charset]])
     {
 	//[attr addAttribute: NSFontAttributeName value: [NSFont fontWithName:@"FreeMonoBold" size:[[self font] pointSize]] range: NSMakeRange(0, [attr length])];
-	[attr addAttribute: @"VT100GraphicalCharacter" value: @"YES" range: NSMakeRange(0, [attr length])];
+	[attr addAttribute: @"VT100GraphicalCharacter" value: [NSNumber numberWithInt:1] range: NSMakeRange(0, [attr length])];
     }
     
     [attr autorelease];

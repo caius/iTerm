@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.15 2003-01-14 18:17:37 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.16 2003-01-20 20:33:29 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -1020,7 +1020,7 @@ static VT100TCC decode_string(unsigned char *datap,
     SCROLL_MODE = NO;
     SCREEN_MODE = NO;
     ORIGIN_MODE = NO;
-    WRAPAROUND_MODE = NO;
+    WRAPAROUND_MODE = YES;
     AUTOREPEAT_MODE = NO;
     INTERLACE_MODE = NO;
     KEYPAD_MODE = NO;

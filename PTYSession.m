@@ -524,6 +524,73 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 }
 
+- (BOOL)willHandleEvent: (NSEvent *) theEvent
+{
+
+    // Handle the option-click event
+    return (([theEvent type] == NSLeftMouseDown) &&
+	    ([theEvent modifierFlags] & NSAlternateKeyMask));       
+}
+
+- (void)handleEvent: (NSEvent *) theEvent
+{
+    // We handle option-click to position the cursor...
+    if(([theEvent type] == NSLeftMouseDown) &&
+       ([theEvent modifierFlags] & NSAlternateKeyMask))
+	[self handleOptionClick: theEvent];
+}
+
+- (void) handleOptionClick: (NSEvent *) theEvent
+{
+    // Here we will attempt to position the cursor to the mouse-click
+
+    NSPoint locationInWindow, locationInTextView, locationInScrollView;
+    NSSize fontSize;
+    int x, y;
+
+    locationInWindow = [theEvent locationInWindow];
+    locationInTextView = [TEXTVIEW convertPoint: locationInWindow fromView: nil];
+    locationInScrollView = [SCROLLVIEW convertPoint: locationInWindow fromView: nil];
+
+    fontSize = [VT100Screen fontSize: [SCREEN font]];
+    x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
+    y = locationInScrollView.y/fontSize.height + 1;
+
+    // NSLog(@"loc_x = %f; loc_y = %f", locationInTextView.x, locationInScrollView.y);
+    // NSLog(@"font width = %f, font height = %f", fontSize.width, fontSize.height);
+    // NSLog(@"x = %d; y = %d", x, y);
+
+
+    if(x == [SCREEN cursorX] && y == [SCREEN cursorY])
+	return;
+
+    NSData *data;
+    int i;
+    // now move the cursor up or down
+    for(i = 0; i < abs(y - [SCREEN cursorY]); i++)
+    {
+	if(y < [SCREEN cursorY])
+	    data = [TERMINAL keyArrowUp];
+	else
+	    data = [TERMINAL keyArrowDown];
+	[SHELL writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
+    }
+    // now move the cursor left or right    
+    for(i = 0; i < abs(x - [SCREEN cursorX]); i++)
+    {
+	if(x < [SCREEN cursorX])
+	    data = [TERMINAL keyArrowLeft];
+	else
+	    data = [TERMINAL keyArrowRight];
+	[SHELL writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
+    }
+    
+    // trigger an update of the display.
+    [SCREEN updateScreen];
+    
+}
+
+
 - (void)insertText:(NSString *)string
 {
     NSData *data;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.39 2003-03-15 00:01:33 yfabian Exp $
+// $Id: PTYTextView.m,v 1.40 2003-03-22 08:55:40 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -842,10 +842,15 @@
     
 }
 
-- (void)otherMouseDown:(NSEvent *)theEvent
+- (void)mouseDown:(NSEvent *)theEvent
 {
-    NSLog(@"otherMouseDown");
-    //[self paste];
+    // Check if the delegate will handle the event
+    id delegate = [self delegate];
+    if([delegate respondsToSelector: @selector(willHandleEvent:)] &&
+       [delegate willHandleEvent: theEvent])
+	[delegate handleEvent: theEvent];
+    else
+	[super mouseDown: theEvent];
 }
 
 - (void)resetCursorRects

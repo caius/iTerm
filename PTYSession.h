@@ -104,6 +104,8 @@
 
 // PTYTextView
 - (void)keyDown:(NSEvent *)event;
+- (BOOL)willHandleEvent: (NSEvent *) theEvent;
+- (void)handleEvent: (NSEvent *) theEvent;
 - (void)insertText:(NSString *)string;
 - (void)insertNewline:(id)sender;
 - (void)insertTab:(id)sender;
@@ -119,6 +121,9 @@
 - (void)deleteForward:(id)sender;
 - (void) textViewDidChangeSelection: (NSNotification *) aNotification;
 
+
+// misc
+- (void) handleOptionClick: (NSEvent *) theEvent;
 
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;

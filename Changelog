@@ -1,3 +1,7 @@
+2003-03-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+    
+    * Added option-click support to position cursor.
+
 2003-03-20	fabian
     * Japanese localization patch from Yuichi OHKAWA
     * Imported all the website files into the project

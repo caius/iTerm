@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.8 2003-10-09 22:58:00 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.9 2003-11-06 02:07:36 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -29,10 +29,11 @@
 
 #import <Cocoa/Cocoa.h>
 #import <iTerm/PTYTabView.h>
+#import <iTerm/PTYWindow.h>
 
 @class ITSessionMgr, PTYSession, iTermController, PTToolbarController;
 
-@interface PseudoTerminal : NSWindowController <PTYTabViewDelegateProtocol>
+@interface PseudoTerminal : NSWindowController <PTYTabViewDelegateProtocol, PTYWindowDelegateProtocol>
 {
     /// tab view
     PTYTabView *TABVIEW;

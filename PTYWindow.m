@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.4 2003-08-08 20:12:57 ujwal Exp $ */
+/* $Id: PTYWindow.m,v 1.5 2003-11-06 02:07:29 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Sathyam */
 /*
  **  PTYWindow.m
@@ -32,16 +32,28 @@
 #import <iTerm/PTYWindow.h>
 
 #define DEBUG_METHOD_TRACE	0
+#define DEBUG_METHOD_ALLOC	0
 
 @implementation PTYWindow
+
+- (void) dealloc
+{
+#if DEBUG_METHOD_ALLOC
+    NSLog(@"%s(%d):+[PTYWindow dealloc]",
+          __FILE__, __LINE__);
+#endif
+
+    [super dealloc];
+    
+}
 
 - initWithContentRect:(NSRect)contentRect
 	    styleMask:(unsigned int)aStyle
 	      backing:(NSBackingStoreType)bufferingType 
 		defer:(BOOL)flag
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):+[PTYWindow initWithContentRect]",
+#if DEBUG_METHOD_ALLOC
+    NSLog(@"%s(%d):-[PTYWindow initWithContentRect]",
           __FILE__, __LINE__);
 #endif
 
@@ -54,6 +66,26 @@
 		[self setAlphaValue:0.9999];
     }
     return self;
+}
+
+- (void)toggleToolbarShown:(id)sender
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYWindow toggleToolbarShown]",
+          __FILE__, __LINE__);
+#endif
+    id delegate = [self delegate];
+
+    // Let our delegate know
+    if([delegate conformsToProtocol: @protocol(PTYWindowDelegateProtocol)])
+	[delegate windowWillToggleToolbarVisibility: self];
+    
+    [super toggleToolbarShown: sender];
+
+    // Let our delegate know
+    if([delegate conformsToProtocol: @protocol(PTYWindowDelegateProtocol)])
+	[delegate windowDidToggleToolbarVisibility: self];    
+    
 }
 
 @end

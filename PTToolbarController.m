@@ -194,6 +194,11 @@ NSString *ConfigToolbarItem = @"Config";
     [_toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:6];
     
     [[_pseudoTerminal window] setToolbar:_toolbar];
+
+    // set the action of the toolbar widget so that we can control it
+    NSButton *toolbarButton = [[_pseudoTerminal window] standardWindowButton: NSWindowToolbarButton];
+    [toolbarButton setAction: @selector(toggleToolbarShown:)];
+    
 }
 
 - (void)buildToolbarItemPopUpMenu:(NSToolbarItem *)toolbarItem forToolbar:(NSToolbar *)toolbar

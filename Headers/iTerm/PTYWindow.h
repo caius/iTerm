@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $ */
+/* $Id: PTYWindow.h,v 1.2 2003-11-06 02:07:36 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Sathyam */
 /*
  **  PTYWindow.h
@@ -31,6 +31,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+@protocol PTYWindowDelegateProtocol
+- (void) windowWillToggleToolbarVisibility: (id) sender;
+- (void) windowDidToggleToolbarVisibility: (id) sender;
+@end
+
+
 @interface PTYWindow : NSWindow 
 
 - initWithContentRect:(NSRect)contentRect 
@@ -38,4 +44,5 @@
 	      backing:(NSBackingStoreType)bufferingType 
 		defer:(BOOL)flag;
 
+- (void)toggleToolbarShown:(id)sender;
 @end

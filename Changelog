@@ -2,7 +2,9 @@
 
     * Remove fatal recursive loop by not calling 
       [self setWindowSize] from PseudoTerminal: -windowDidResize.
-      The window sizing part needs some real attention.
+      The window sizing part needs some real attention. 
+      Temporarily re-activating new resizing code with 
+      windowWillresize: toSize: method.
        
 
 2003-01-06	fabian

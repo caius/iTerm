@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.62 2003-01-07 02:29:44 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.63 2003-01-07 08:12:04 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -737,7 +737,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
 
-#if 1
+#if 0
 
     return (proposedFrameSize);
 
@@ -766,7 +766,7 @@ static NSString *ConfigToolbarItem = @"Config";
     //NSLog(@"textview size: width = %f; height = %f", textviewSize.width, textviewSize.height);
 
                                        
-    // Now calculate an appriate terminal height for this in integers.
+    // Now calculate an appropriate terminal height for this in integers.
     h = ceil(textviewSize.height/[VT100Screen requireSizeWithFont: [SCREEN font]].height);
     //NSLog(@"h = %d", h);
     

@@ -1,3 +1,7 @@
+2003-02-13	fabian
+    * Enhanced text input
+    * Incorporated Japanese patch from OHKAWA
+    
 2003-02-12	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added preference to remap DELETE key to BACKSPACE.

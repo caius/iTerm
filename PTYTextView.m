@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.28 2003-02-12 07:52:47 ujwal Exp $
+// $Id: PTYTextView.m,v 1.29 2003-02-13 16:29:41 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -248,7 +248,7 @@
 	repRange = [self markedRange];
     }
     else {
-	repRange = NSMakeRange([storage length], 0);
+	repRange = NSMakeRange(cursorIndex, 0);
     }
     [storage beginEditing];
     if ([aString isKindOfClass:[NSAttributedString class]]) {
@@ -305,10 +305,10 @@
 	int toploc;
 
 	toploc = len - IM_INPUT_MARKEDRANGE.length;
-	return NSMakeRange(toploc, IM_INPUT_MARKEDRANGE.length);
+	return NSMakeRange(cursorIndex, IM_INPUT_MARKEDRANGE.length);
     }
     else
-	return NSMakeRange(0, 0);
+	return NSMakeRange(cursorIndex, 0);
 }
 
 
@@ -720,6 +720,10 @@
     [cursor setOnMouseEntered:YES];
 }
 
+- (void) setCursorIndex:(int)idx
+{
+    cursorIndex=idx;
+}
 
 @end
 

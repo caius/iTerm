@@ -157,7 +157,8 @@ static NSString *PWD_ENVVALUE = @"~";
                                             repeats:YES] retain];
     antiIdle = NO;
     REFRESHED = NO;
-    
+
+    [TEXTVIEW setCursorIndex:[SCREEN getIndex:0 y:0]];
     [tabViewItem setLabelAttributes: chosenStateAttribute];
         
 }
@@ -248,7 +249,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
     [SCREEN beginEditing];
     [SCREEN showCursor:NO];
-
+    
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 	   token.type != VT100CC_NULL &&
 	   token.type != VT100_WAIT))
@@ -261,6 +262,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     [SCREEN showCursor:YES];
     [SCREEN endEditing];
+    [TEXTVIEW setCursorIndex:[SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
 
     // If the user has not scrolled up, move to the end
     if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
@@ -478,6 +480,13 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_str[0] == 0x03)
 	    {
 		send_str = "\012";  // NumericPad Entry -> 0x0a
+		send_strlen = 1;
+	    }
+	    if (modflag & NSControlKeyMask &&
+		send_strlen == 1 &&
+		send_str[0] == '|')
+	    {
+		send_str = "\034"; // ^\
 		send_strlen = 1;
 	    }
 	}

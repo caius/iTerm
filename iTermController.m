@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.36 2004-03-28 04:11:05 ujwal Exp $
+// $Id: iTermController.m,v 1.37 2004-03-28 09:39:46 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -178,7 +178,7 @@ static BOOL usingAutoLaunchScript = NO;
     terminalWindows = [[NSMutableArray alloc] init];
 	
 	// read preferences
-	[[PreferencePanel sharedInstance] readPreferences];
+	[PreferencePanel sharedInstance];
     
     return (self);
 }

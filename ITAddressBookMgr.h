@@ -35,12 +35,16 @@
 #define KEY_KEYBOARD_PROFILE	@"Keyboard Profile"
 #define KEY_DISPLAY_PROFILE		@"Display Profile"
 #define KEY_DEFAULT_BOOKMARK	@"Default Bookmark"
+#define KEY_RENDEZVOUS_GROUP	@"Rendezvous Group"
+#define KEY_RENDEZVOUS_SERVICE  @"Rendezvous Service"
 
 @class TreeNode;
 
 @interface ITAddressBookMgr : NSObject 
 {
 	TreeNode *bookmarks;
+	NSNetServiceBrowser *rendezvousBrowser;
+	TreeNode *rendezvousGroup;
 }
 
 + (id)sharedInstance;
@@ -70,5 +74,6 @@
 
 - (BOOL) _checkForDefaultBookmark: (TreeNode *) rootNode defaultBookmark: (TreeNode **)defaultBookmark;
 - (NSDictionary *) _getBookmarkNodeWithName: (NSString *) aName searchFromNode: (TreeNode *) aNode;
+- (TreeNode *) _getRendezvousServiceTypeNode: (NSString *) aType;
 
 @end

@@ -32,6 +32,7 @@
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermKeyBindingMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
+#include <netinet/in.h>
 
 
 #define SAFENODE(n) 		((TreeNode*)((n)?(n):(bookmarks)))
@@ -54,13 +55,16 @@ static TreeNode *defaultBookmark = nil;
 - (id)init;
 {
     self = [super init];
-            
+    
+	rendezvousBrowser = [[NSNetServiceBrowser alloc] init];
+	
     return self;
 }
 
 - (void)dealloc;
 {
 	[bookmarks release];
+	[rendezvousBrowser release];
     [super dealloc];
 }
 
@@ -111,19 +115,40 @@ static TreeNode *defaultBookmark = nil;
 		defaultBookmark = childNode;
 		
 	}
+	
+	[rendezvousBrowser setDelegate: self];
+	[rendezvousBrowser searchForServicesOfType: @"_ssh._tcp." inDomain: @""];
 		
 }
 
 - (NSDictionary *) bookmarks
 {
+	NSDictionary *aDict;
+	
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	
-	return ([bookmarks dictionary]);
+	// remove rendezvous group since we do not want to save that
+	[rendezvousGroup retain];
+	[bookmarks  removeChild: rendezvousGroup];	
+	aDict = [bookmarks dictionary];
+	if(rendezvousGroup != nil)
+		[bookmarks insertChild: rendezvousGroup atIndex: [bookmarks numberOfChildren]];	
+	[rendezvousGroup release];
+	
+	return (aDict);
 }
 
 - (BOOL) mayDeleteBookmarkNode: (TreeNode *) aNode
 {
-	return (![defaultBookmark isDescendantOfNode: aNode]);
+	BOOL mayDeleteNode = YES;
+	
+	if([defaultBookmark isDescendantOfNode: aNode])
+		mayDeleteNode = NO;
+	
+	if([aNode isDescendantOfNode: rendezvousGroup])
+		mayDeleteNode = NO;
+	
+	return (mayDeleteNode);
 }
 
 // Model for NSOutlineView tree structure
@@ -236,6 +261,105 @@ static TreeNode *defaultBookmark = nil;
 	return ([self _getBookmarkNodeWithName: bookmarkName searchFromNode: bookmarks]);
 }
 
+// NSNetServiceBrowser delegate methods
+- (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didFindService:(NSNetService *)aNetService moreComing:(BOOL)moreComing 
+{
+	NSMutableDictionary *aDict;
+
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
+	
+	if(rendezvousGroup == nil)
+	{
+		aDict = [[NSMutableDictionary alloc] init];
+		[aDict setObject: @"Rendezvous" forKey: KEY_NAME];
+		[aDict setObject: @"" forKey: KEY_DESCRIPTION];
+		[aDict setObject: @"Yes" forKey: KEY_RENDEZVOUS_GROUP];
+						
+		rendezvousGroup = [[TreeNode alloc] initWithData: aDict parent: nil children: [NSArray array]];
+		[rendezvousGroup setIsLeaf: NO];
+		[aDict release];
+	}
+	
+	// add a subgroup for this service if it does not already exist
+	[self _getRendezvousServiceTypeNode: [aNetService type]];
+	
+	// resolve the service
+	[aNetService retain];
+	[aNetService setDelegate: self];
+	[aNetService resolve];
+	
+
+	// add the rendezvous group after all the services have been added
+	if(moreComing == NO)
+	{
+		[bookmarks insertChild: rendezvousGroup atIndex: [bookmarks numberOfChildren]];
+		[rendezvousGroup release];		
+	}
+}
+
+
+- (void)netServiceBrowser:(NSNetServiceBrowser *)aNetServiceBrowser didRemoveService:(NSNetService *)aNetService moreComing:(BOOL)moreComing 
+{
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
+}
+
+// NSNetService delegate
+- (void)netServiceDidResolveAddress:(NSNetService *)sender
+{
+	NSMutableDictionary *aDict;
+	int firstOctet, secondOctet, thirdOctet, fourthOctet;
+	NSData  *address = nil;
+	struct sockaddr_in  *socketAddress;
+	NSString	*ipAddressString = nil;
+	TreeNode *serviceNode;
+	
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, sender);
+	
+	// grab the address
+	address = [[sender addresses] objectAtIndex: 0];
+	socketAddress = (struct sockaddr_in *)[address bytes];
+	firstOctet = (socketAddress->sin_addr.s_addr & 0xFF000000) >> 24;
+	secondOctet = (socketAddress->sin_addr.s_addr & 0x00FF0000) >> 16;
+	thirdOctet = (socketAddress->sin_addr.s_addr & 0x0000FF00) >> 8;
+	fourthOctet = (socketAddress->sin_addr.s_addr & 0x000000FF) >> 0;
+	ipAddressString = [NSString stringWithFormat:@"%d.%d.%d.%d", firstOctet, secondOctet, thirdOctet, fourthOctet];
+	
+	
+	aDict = [[NSMutableDictionary alloc] init];
+
+	serviceNode = [self _getRendezvousServiceTypeNode: [sender type]];
+	
+	[aDict setObject: [NSString stringWithFormat: @"%@", [sender name]] forKey: KEY_NAME];
+	[aDict setObject: [NSString stringWithFormat: @"%@", [sender name]] forKey: KEY_DESCRIPTION];
+	[aDict setObject: [NSString stringWithFormat: @"%@ %@", 
+		[[serviceNode nodeData] objectForKey: KEY_RENDEZVOUS_SERVICE], ipAddressString] forKey: KEY_COMMAND];
+	[aDict setObject: @"" forKey: KEY_WORKING_DIRECTORY];
+	[aDict setObject: [[iTermTerminalProfileMgr singleInstance] defaultProfileName] forKey: KEY_TERMINAL_PROFILE];
+	[aDict setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
+	[aDict setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
+	
+	
+	[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: serviceNode];
+	[aDict release];
+	
+	[sender release];
+}
+
+- (void)netService:(NSNetService *)aNetService didNotResolve:(NSDictionary *)errorDict
+{
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
+}
+
+- (void)netServiceWillResolve:(NSNetService *)aNetService
+{
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
+}
+
+- (void)netServiceDidStop:(NSNetService *)aNetService
+{
+	NSLog(@"%s: %@", __PRETTY_FUNCTION__, aNetService);
+}
+
 @end
 
 @implementation ITAddressBookMgr (Private);
@@ -299,6 +423,53 @@ static TreeNode *defaultBookmark = nil;
 		return (dataDict);
 	else
 		return (nil);
+}
+
+- (TreeNode *) _getRendezvousServiceTypeNode: (NSString *) aType
+{
+	NSEnumerator *keyEnumerator;
+	BOOL aBool;
+	TreeNode *childNode;
+	NSRange aRange;
+	NSString *serviceType = aType;
+	NSMutableDictionary *aDict;
+	
+	if([aType length] <= 0)
+		return (nil);
+	
+	aRange = [serviceType rangeOfString: @"."];
+	if(aRange.location != NSNotFound)
+	{
+		serviceType = [serviceType substringWithRange: NSMakeRange(1, aRange.location - 1)];
+	}	
+	
+	aBool = NO;
+	keyEnumerator = [[rendezvousGroup children] objectEnumerator];
+	while ((childNode = [keyEnumerator nextObject]))
+	{
+		if([[[childNode nodeData] objectForKey: KEY_NAME] isEqualToString: serviceType])
+		{
+			aBool = YES;
+			break;
+		}
+	}
+	if(aBool == NO)
+	{
+		aDict = [[NSMutableDictionary alloc] init];
+		[aDict setObject: serviceType forKey: KEY_NAME];
+		[aDict setObject: @"" forKey: KEY_DESCRIPTION];
+		[aDict setObject: serviceType forKey: KEY_RENDEZVOUS_SERVICE];
+		
+		childNode = [[TreeNode alloc] initWithData: aDict parent: nil children: [NSArray array]];
+		[childNode setIsLeaf: NO];
+		[aDict release];
+		
+		[rendezvousGroup insertChild: childNode atIndex: [rendezvousGroup numberOfChildren]];
+		[childNode release];		
+
+	}
+	
+	return (childNode);
 }
 
 @end

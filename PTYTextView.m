@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.179 2004-03-20 00:21:11 ujwal Exp $
+// $Id: PTYTextView.m,v 1.180 2004-03-20 05:04:42 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -732,7 +732,7 @@
 				// find out if the current char is being selected
 				if (bgstart<0) {
 					bgstart = j; 
-					bgcode = bg[j]; 
+					bgcode = bg[j] & 0xff; 
 				}
 				else if (bg[j]!=bgcode || (ulstart>=0 && (fg[j]!=fgcode || !buf[j]))) { //background or underline property change?
 					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
@@ -746,17 +746,17 @@
 						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
 					bgstart = j; 
-					bgcode = bg[j]; 
+					bgcode = bg[j] & 0xff; 
 				}
 				
 				if (ulstart<0 && (fg[j]&UNDER_MASK) && buf[j]) { 
 					ulstart = j;
-					fgcode = fg[j]; 
+					fgcode = fg[j] & 0xff; 
 				}
 				else if ( ulstart>=0 && (fg[j]!=fgcode || !buf[j])) { //underline or fg color property change?
 					[[self colorForCode:fgcode] set];
 					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
-					fgcode=fg[j];
+					fgcode=fg[j] & 0xff;
 					ulstart=(fg[j]&UNDER_MASK && buf[j])?j:-1;
 				}
 			}
@@ -787,9 +787,9 @@
 			double_width = (buf[j+1] == 0xffff);
 			// switch colors if text is selected
 			if(bg[j] & SELECTION_MASK)
-				fgcode = SELECTED_TEXT | (fg[j] & BOLD_MASK); // check for bold
+				fgcode = SELECTED_TEXT | ((fg[j] & BOLD_MASK) & 0xff); // check for bold
 			else
-				fgcode = fg[j];
+				fgcode = fg[j] & 0xff;
 			if (need_draw) { 
 				if (fg[j]&BLINK_MASK) {
 					if (blinkShow) {				

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.104 2004-03-24 03:16:01 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.105 2004-03-24 21:11:52 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -429,6 +429,7 @@ static BOOL editingBookmark = NO;
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+	[self savePreferences];
 	[profilesWindow performClose: self];
 }
 
@@ -527,27 +528,29 @@ static BOOL editingBookmark = NO;
 	NSMutableDictionary *aDict;
 	TreeNode *targetNode;
 	int selectedRow;
-		
+	NSString *aName, *aCmd, *aPwd;
 	
 	if(returnCode == NSOKButton)
 	{
-		if([[bookmarkName stringValue] length] <= 0)
+		aName = [bookmarkName stringValue];
+		aCmd = [bookmarkCommand stringValue];
+		aPwd = [bookmarkWorkingDirectory stringValue];
+		
+		if([aName length] <= 0)
 		{
 			NSBeep();
 			[editBookmarkPanel close];
 			return;
 		}
-		if([[bookmarkCommand stringValue] length] <= 0)
+		if([aCmd length] <= 0)
 		{
 			NSBeep();
 			[editBookmarkPanel close];
 			return;
 		}
-		if([[bookmarkWorkingDirectory stringValue] length] <= 0)
+		if([aPwd length] <= 0)
 		{
-			NSBeep();
-			[editBookmarkPanel close];
-			return;
+			aPwd = @"";
 		}
 		
 		aDict = [[NSMutableDictionary alloc] init];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PTYScrollView.h,v 1.2 2003-09-06 20:17:34 yfabian Exp $
 /*
  **  PTYScrollView.h
  **
@@ -28,6 +28,19 @@
  */
 
 #import <Cocoa/Cocoa.h>
+
+@interface PTYScroller : NSScroller
+{
+    BOOL userScroll;
+}
+
+- (id)init;
+- (void)trackScrollButtons:(NSEvent *)theEvent;
+- (void)trackKnob:(NSEvent *)theEvent;
+- (BOOL)userScroll;
+- (void)resetUserScroll;
+
+@end
 
 @interface PTYScrollView : NSScrollView
 {

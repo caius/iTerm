@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.8 2003-08-13 05:03:54 sgehrman Exp $
+// $Id: PTYScrollView.m,v 1.9 2003-09-06 20:17:32 yfabian Exp $
 /*
  **  PTYScrollView.m
  **
@@ -34,6 +34,40 @@
 #import <iTerm/PTYScrollView.h>
 #import <iTerm/PTYTextView.h>
 
+@implementation PTYScroller
+
+- (id)init
+{
+    userScroll=NO;
+    return [super init];
+}
+
+- (void)trackScrollButtons:(NSEvent *)theEvent
+{
+//    NSLog(@"scrollbutton");
+    userScroll=YES;
+    [super trackScrollButtons:theEvent];
+}
+
+- (void)trackKnob:(NSEvent *)theEvent
+{
+//    NSLog(@"trackKnob");
+    userScroll=YES;
+    [super trackKnob:theEvent];
+}
+
+- (BOOL)userScroll
+{
+    return userScroll;
+}
+
+- (void)resetUserScroll
+{
+    userScroll=NO;
+}
+
+@end
+
 @implementation PTYScrollView
 
 - (void) dealloc
@@ -58,6 +92,10 @@
 
     NSParameterAssert([self contentView] != nil);
 
+    PTYScroller *aScroller;
+
+    aScroller=[[PTYScroller alloc] init];
+    [self setVerticalScroller: aScroller];
     return self;
 }
 

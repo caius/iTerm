@@ -1,3 +1,7 @@
+2003-09-06	fabian
+    
+    * Added PTYScroller to completely fix the scrolling problem.
+    
 2003-09-06	ujwal
 
     * Fixed check whether user has scrolled up in PTYSession: timerTick.

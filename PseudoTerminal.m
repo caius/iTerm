@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.220 2003-09-06 17:17:45 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.221 2003-09-06 20:17:32 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -934,17 +934,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] TEXTVIEW] setFrameSize:vsize];
-//        [[[_sessionMgr sessionAtIndex:i] TEXTVIEW] scrollEnd];
-//        NSLog(@"scroll to end");
     }
     WIDTH=w;
     HEIGHT=h;
 
     [self setWindowSize: YES];
-/*    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
-        [[[_sessionMgr sessionAtIndex:i] TEXTVIEW] scrollEnd];
-        NSLog(@"scroll to end");
-    } */
 }
 
 // Contextual menu

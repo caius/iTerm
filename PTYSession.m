@@ -578,7 +578,9 @@ static NSString *PWD_ENVVALUE = @"~";
             [TEXTVIEW scrollEnd];
 #else
 	    // scroll to the end
-            [TEXTVIEW scrollEnd];
+            //[TEXTVIEW scrollEnd];
+            PTYScroller *ptys=[SCROLLVIEW verticalScroller];
+            [ptys resetUserScroll];
 	    //[SCREEN updateScreen];
 #endif
 	}
@@ -860,8 +862,9 @@ static NSString *PWD_ENVVALUE = @"~";
 #if USE_CUSTOM_DRAWING
     if (output>10&&dirty) {
 	// If the user has not scrolled up, move to the end
-	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
-    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
+//	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
+//    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
+        if (~[[SCROLLVIEW verticalScroller] userScroll])
 	    [TEXTVIEW scrollEnd];
         output=0;
         dirty=NO;

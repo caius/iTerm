@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.38 2004-03-29 00:27:19 ujwal Exp $
+// $Id: iTermController.m,v 1.39 2004-04-11 00:30:51 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -148,21 +148,6 @@ static BOOL usingAutoLaunchScript = NO;
 #endif
     self = [super init];
 
-    // activate our fonts
-    // Get the main bundle object
-    NSBundle *appBundle = [NSBundle bundleForClass: [self class]];
-    // Ask for the path to the resources
-    NSString *fontsPath = [appBundle pathForResource: @"Fonts" ofType: nil inDirectory: nil];
-
-    // Using the Carbon APIs:  get a file reference and spec for the path
-    FSRef fsRef;
-    FSSpec fsSpec;
-    int osstatus = FSPathMakeRef( [fontsPath UTF8String], &fsRef, NULL);
-    if ( osstatus == noErr)
-        osstatus = FSGetCatalogInfo( &fsRef, kFSCatInfoNone, NULL, NULL, &fsSpec, NULL);
-    
-    //activate the font file using the file spec
-    osstatus = FMActivateFonts( &fsSpec, NULL, NULL, kFMLocalActivationContext);
     
     // create the iTerm directory if it does not exist
     NSFileManager *fileManager = [NSFileManager defaultManager];

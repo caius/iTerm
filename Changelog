@@ -1,3 +1,6 @@
+2002-12-17	fabian
+    * Fixed a bug related to setting default shell
+    
 2002-12-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Using user's default shell in setting initial preferences.

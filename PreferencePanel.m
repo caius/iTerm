@@ -42,7 +42,7 @@ static int TRANSPARENCY  =10;
         
     // Get the user's default shell
     if((userShell = getenv("SHELL")) != NULL)
-        SHELL = [NSString stringWithCString: userShell];
+        SHELL = [[NSString stringWithCString: userShell] retain];
 
     prefs = [NSUserDefaults standardUserDefaults];
     encodingList=[NSString availableStringEncodings];
@@ -54,7 +54,7 @@ static int TRANSPARENCY  =10;
     defaultTerminal=[[([prefs objectForKey:@"Terminal"]?[prefs objectForKey:@"Terminal"]:TERM)
                     copy] retain];
 
-    // This is for compatibility with out pref
+    // This is for compatibility with old pref
     if ([[prefs objectForKey:@"Encoding"] isKindOfClass:[NSString class]]) {
         NSRunAlertPanel(NSLocalizedStringFromTable(@"Upgrade Warning: New language encodings available",@"iTerm",@"Upgrade"),
                         NSLocalizedStringFromTable(@"Please reset all the encoding settings in your preference and address book",@"iTerm",@"Upgrade"),
@@ -238,7 +238,7 @@ static int TRANSPARENCY  =10;
     defaultCol=COL;
     defaultRow=ROW;
     
-    defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
+        defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     defaultShell=[[SHELL copy] retain];
     defaultTerminal=[[TERM copy] retain];
     

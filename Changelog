@@ -1,3 +1,8 @@
+2003-03-26	fabian
+    * Bug fixes in ARRAY mode
+    * No long uses periodic update
+    * Refresh now only updates the necessary part of screen
+    
 2003-03-26	ujwal
 
     * Created a new target "iTerm Framework" in the 

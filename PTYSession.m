@@ -242,7 +242,8 @@ static NSString *PWD_ENVVALUE = @"~";
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
         }
     }
-    
+
+    [TEXTVIEW hideCursor];
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 	   token.type != VT100CC_NULL &&
 	   token.type != VT100_WAIT))
@@ -255,6 +256,12 @@ static NSString *PWD_ENVVALUE = @"~";
     if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
+    
+#if USE_CUSTOM_DRAWING
+    [TEXTVIEW showCursor];
+    [TEXTVIEW refresh];
+    [TEXTVIEW moveLastLine];
+#endif
 }
 
 - (void)brokenPipe
@@ -519,8 +526,11 @@ static NSString *PWD_ENVVALUE = @"~";
 		[SHELL writeTask:[NSData dataWithBytes:send_str length:send_strlen]];
 	    }
 
+#if USE_CUSTOM_DRAWING
+#else
 	    // trigger an update of the display.
 	    [SCREEN updateScreen];
+#endif
     
 	}
     }
@@ -776,6 +786,8 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
     }
 
+#if USE_CUSTOM_DRAWING
+#else
     if (blink>50) { [SCREEN blink]; blink=0; }
     if (oIdleCount<2||dirty) {
         if (output>3) {
@@ -790,6 +802,7 @@ static NSString *PWD_ENVVALUE = @"~";
         }
         else dirty=YES;
     }
+#endif
 
 }
 

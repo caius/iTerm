@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.26 2003-03-26 00:03:34 yfabian Exp $
+// $Id: VT100Screen.h,v 1.27 2003-03-27 02:14:29 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -156,6 +156,7 @@
 - (void) forceUpdateScreen;
 - (void) renewBuffer;
 - (int) numberOfLines;
+
 - (void) setScreenAttributes;
 - (void) setScreenLock;
 - (void) removeScreenLock;
@@ -170,7 +171,6 @@
 - (void) clearTabStop;
 
 - (NSString *)translate: (NSString *)s;
-
 #if USE_CUSTOM_DRAWING
 - (NSMutableAttributedString *)stringAtLine: (int) n;
 - (NSArray *) screenLines;

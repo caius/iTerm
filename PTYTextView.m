@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.43 2003-03-26 17:59:49 ujwal Exp $
+// $Id: PTYTextView.m,v 1.44 2003-03-27 02:14:29 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -45,6 +45,7 @@
     NSLog(@"PTYTextView: -init");
 #endif
     NSDictionary *dic;
+    int i;
 
     self = [super init];
 //    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
@@ -56,7 +57,8 @@
     [self setMarkedTextAttributes:dic];
     deadkey = NO;
     startIndex=-1;
-
+    for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
+         
     return (self);
 }
 
@@ -66,6 +68,8 @@
     NSLog(@"PTYTextView: -init");
 #endif
     NSDictionary *dic;
+    int i;
+    
     self = [super initWithFrame: aRect];
 //    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
     dataSource=_delegate=markedTextAttributes=NULL;
@@ -77,6 +81,7 @@
     [self setMarkedTextAttributes:dic];
     deadkey = NO;
     startIndex=-1;
+    for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
 
     return (self);
 
@@ -258,27 +263,31 @@
     lineWidth = aLineWidth;
 }
 
+- (void) setDirtyLine: (int) y
+{
+    [self setNeedsDisplayInRect:NSMakeRect(0,y*lineHeight,[self frame].size.width,(y+1)*lineHeight)];
+}
+
 - (void) refresh
 {
     NSSize aSize;
+    int height;
 
     if([self dataSource] != nil)
     {
         numberOfLines = [dataSource numberOfLines];
         aSize = [self frame].size;
-        aSize.height = numberOfLines * lineHeight;
-        if(aSize.height > [[self enclosingScrollView] documentVisibleRect].size.height)
+        height = numberOfLines * lineHeight;
+        if(height > [self frame].size.height)
         {
             NSRect aFrame;
 
             aFrame = [self frame];
-            aFrame.size.height = aSize.height;
+            aFrame.size.height = height;
             [self setFrame: aFrame];
+            [self setNeedsDisplayInRect:NSMakeRect(0,aSize.height,aSize.width,height)];
         }
-        [self setNeedsDisplay: YES];
     }
-
-
 }
 
 -(void) scrollLineUp:(id) receiver
@@ -305,6 +314,18 @@
 
 -(void) scrollPageDown:(id) receiver;
 {
+}
+
+-(void) hideCursor
+{
+    CURSOR=NO;
+    [self setDirtyLine: [dataSource cursorY]+[dataSource topLines]-1];
+}
+
+-(void) showCursor
+{
+    CURSOR=YES;
+    [self setDirtyLine: [dataSource cursorY]+[dataSource topLines]-1];
 }
 
 
@@ -338,12 +359,12 @@
 #endif
 
     // set the antialias flag
-    [[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
+   [[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 
     [super drawRect: rect];
 
     int numLines, i, lineOffset;
-    int lstartY,lendY,lstartIndex,lendIndex;
+    int lstartY=0,lendY=0,lstartIndex=0,lendIndex=0;
     int y=[dataSource cursorY]-1+[dataSource topLines];
     NSAttributedString *aLine;
     NSRect aRect;
@@ -351,7 +372,6 @@
 
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
-
 
     lineOffset = rect.origin.y/lineHeight;
     halfLine=rect.origin.y-lineOffset*lineHeight;
@@ -374,10 +394,12 @@
             
     for(i = 0; i <numLines/*&&aRect.origin.y<rect.orgin.y+rect.size.height*/; i++)
     {
+        //if (displayLines[row+i]==i+lineOffset) continue;
+        //displayLines[row+i]=i+lineOffset
         aLine = [[self dataSource] stringAtLine: i + lineOffset];
         if(aLine == nil)
         {
-            //NSLog(@"Got a nil line...");
+            NSLog(@"Got a nil line...");
             ;
         }else {
             if (startIndex!=-1&&lstartY<=i+lineOffset&&i+lineOffset<=lendY) {
@@ -397,7 +419,7 @@
                 [s drawInRect: aRect];
                 [s release];
             }
-            else if (i+lineOffset==y&&![self hasMarkedText]) {
+            else if (CURSOR&&i+lineOffset==y&&![self hasMarkedText]) {
                 // show the cursor in the line array
                 NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
                 NSMutableDictionary *dic;
@@ -424,6 +446,7 @@
         //NSLog(@"line %d[%@]: %f",i + lineOffset, [aLine string], aRect.origin.y);
         aRect.origin.y += lineHeight;
     }
+//    NSLog(@"enddraw");
 }
 
 
@@ -487,19 +510,18 @@
           __FILE__, __LINE__, event );
 #endif
 
-    NSPoint locationInWindow, locationInTextView, locationInScrollView;
+    NSPoint locationInWindow, locationInTextView;
     NSSize fontSize;
     int x, y;
 
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
-    locationInScrollView = [[self enclosingScrollView] convertPoint: locationInWindow fromView: nil];
 
     fontSize = [dataSource characterSize];
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
-    y = locationInScrollView.y/fontSize.height;
-    startIndex=[dataSource getIndexAtX:x Y:y withPadding:NO];
-    startY=y+[dataSource topLines];
+    y = locationInTextView.y/fontSize.height;
+    startIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
+    startY=y;
 }
 
 - (void)mouseUp:(NSEvent *)event
@@ -508,19 +530,18 @@
     NSLog(@"%s(%d):-[PTYTextView mouseUp:%@]",
           __FILE__, __LINE__, event );
 #endif
-    NSPoint locationInWindow, locationInTextView, locationInScrollView;
+    NSPoint locationInWindow, locationInTextView;
     NSSize fontSize;
     int x, y;
 
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
-    locationInScrollView = [[self enclosingScrollView] convertPoint: locationInWindow fromView: nil];
 
     fontSize = [dataSource characterSize];
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
-    y = locationInScrollView.y/fontSize.height;
-    endIndex=[dataSource getIndexAtX:x Y:y withPadding:NO];
-    endY=y+[dataSource topLines];
+    y = locationInTextView.y/fontSize.height;
+    endIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
+    endY=y;
     if (startY>endY||(startY==endY&&startIndex>endIndex)) {
         y=startY; startY=endY; endY=y;
         y=startIndex; startIndex=endIndex; endIndex=y;
@@ -531,7 +552,7 @@
         if([[[_delegate parent] preference] copySelection])
             [self copy: self];
     }
-    [self setNeedsDisplay:YES];
+    [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(y+1)*fontSize.height)];
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -540,25 +561,25 @@
     NSLog(@"%s(%d):-[PTYTextView mouseDragged:%@]",
           __FILE__, __LINE__, event );
 #endif
-    NSPoint locationInWindow, locationInTextView, locationInScrollView;
+    NSPoint locationInWindow, locationInTextView;
     NSSize fontSize;
     int x, y;
 
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
-    locationInScrollView = [[self enclosingScrollView] convertPoint: locationInWindow fromView: nil];
-
+ /*   NSLog(@"(%f,%f)->(%f,%f)->(%f,%f)",locationInWindow.x,locationInWindow.y,
+          locationInTextView.x,locationInTextView.y,
+          locationInScrollView.x,locationInScrollView.y); */
     fontSize = [dataSource characterSize];
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
-    y = locationInScrollView.y/fontSize.height;
-    endIndex=[dataSource getIndexAtX:x Y:y withPadding:NO];
-    endY=y+[dataSource topLines];
+    y = locationInTextView.y/fontSize.height;
+    endIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
+    endY=y;
 //    NSLog(@"(%d,%d)-(%d,%d)",startIndex,startY,endIndex,endY);
-    [self setNeedsDisplay:YES];
+    [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(y+1)*fontSize.height)];
 }
 
 
-// Override copy and paste to do our stuff
 - (void) copy: (id) sender
 {
     NSPasteboard *pboard = [NSPasteboard generalPasteboard];
@@ -586,8 +607,6 @@
         else {
             aString=[[NSMutableString alloc] initWithString:[aLine string]];
         }
-        if ([aLine attribute: @"VT100LineWrap" atIndex:[aString length]-1 effectiveRange: nil])
-            [aString deleteCharactersInRange: NSMakeRange([aString length]-1, 1)];
 /*        if([aString length] > 1) {// Cocoa bug?
             [aString autorelease];
             aString = [[NSMutableString alloc] initWithString:[aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]]];

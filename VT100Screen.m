@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.76 2003-03-26 00:03:34 yfabian Exp $
+// $Id: VT100Screen.m,v 1.77 2003-03-27 02:14:30 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -60,9 +60,12 @@
 
 #define ISDOUBLEWIDTHCHARACTERINLINE(idx, line) ([SESSION doubleWidth]&&[[line attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue]==2)
 
-
+#if USE_CUSTOM_DRAWING
+#else
 static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 static NSString *NSBlinkColorAttributeName=@"NSBlinkColorAttributeName";
+#endif
+
 static NSString *NSCharWidthAttributeName=@"NSCharWidthAttributeName";
 
 static unichar spaces[300]={0};
@@ -201,23 +204,12 @@ static BOOL PLAYBELL = YES;
 
     [FONT release];
 
-    if(display != nil)
-    {
-	[display release];
-	display = nil;
-    }    
+    [display release];
+    [BUFFER release];
 
-    if(BUFFER != nil)
-	[BUFFER release];
+    [screenLines autorelease];
 
-    if(screenLines != nil)
-	[screenLines autorelease];
-
-    if(STORAGE != nil)
-    {
-	[STORAGE release];
-	STORAGE = nil;
-    }
+    [STORAGE release];
     
 
     [super dealloc];
@@ -445,7 +437,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
-        aLine = [[NSMutableAttributedString alloc] initWithString:@"\n"];
+        aLine = [[NSMutableAttributedString alloc] init];
 	[screenLines addObject: aLine];
 	[aLine release];
 #endif
@@ -532,6 +524,7 @@ static BOOL PLAYBELL = YES;
     static unichar s[300]={0};
     int i;
     NSString *str;
+    NSMutableAttributedString *aLine;
     
     switch (token.type) {
     // our special code
@@ -552,7 +545,12 @@ static BOOL PLAYBELL = YES;
     case VT100CC_HT:  [self setTab]; break;
     case VT100CC_LF:
     case VT100CC_VT:
-    case VT100CC_FF:  [self setNewLine]; break;
+    case VT100CC_FF:
+        aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
+        if ([aLine length]<=0||[[aLine string] characterAtIndex:[aLine length]-1]!='\n') {
+            [aLine appendAttributedString:[self attrString:@"\n"  ascii:YES]];
+        }
+        [self setNewLine]; break;
     case VT100CC_CR:  CURSOR_X = 0; break;
     case VT100CC_SO:  break;
     case VT100CC_SI:  break;
@@ -772,6 +770,11 @@ static BOOL PLAYBELL = YES;
     
 #else
 
+    if (x>=WIDTH||y>=HEIGHT||x<0||y+TOP_LINE<0) {
+        NSLog(@"getIndexAtX: out of bound: x = %d; y = %d, WIDTH = %d; HEIGHT = %d, TOP_LINE=%d", x, y, WIDTH, HEIGHT, TOP_LINE);
+        return -1;
+    }
+    
     NSMutableAttributedString *aLine= [screenLines objectAtIndex: TOP_LINE + y];
     NSString *s=[aLine string];
     int len=[s length];
@@ -801,6 +804,7 @@ static BOOL PLAYBELL = YES;
     if (idx<0) {
         NSLog(@"getIndexAtX Error! x:%d, y:%d",x,y);
     }
+    [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
 #endif
 
 //    NSLog(@"index:%d[%d] (CURSOR_IN_MIDDLE:%d)",idx,[s length],CURSOR_IN_MIDDLE);
@@ -848,7 +852,8 @@ static BOOL PLAYBELL = YES;
             if ([TERMINAL wraparoundMode]) {
 #if USE_CUSTOM_DRAWING
                 aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
-                [aLine addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([aLine length]-1,1)];
+                if ([[aLine string] characterAtIndex:[aLine length]-1]=='\n')
+                    [aLine deleteCharactersInRange:NSMakeRange([aLine length]-1,1)];
 #else
 		[BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([self getIndexAtX:WIDTH-1 Y:CURSOR_Y withPadding:NO],1)];
 #endif
@@ -1012,7 +1017,8 @@ static BOOL PLAYBELL = YES;
             if ([TERMINAL wraparoundMode]) {
 #if USE_CUSTOM_DRAWING
                 aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
-                [aLine addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([aLine length]-1,1)];
+                if ([[aLine string] characterAtIndex:[aLine length]-1]=='\n')
+                    [aLine deleteCharactersInRange:NSMakeRange([aLine length]-1,1)];
 #else
                 [BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange([self getIndexAtX:WIDTH-1 Y:CURSOR_Y withPadding:NO],1)];
 #endif
@@ -1175,14 +1181,6 @@ static BOOL PLAYBELL = YES;
 #endif
 
     if (CURSOR_Y  < SCROLL_BOTTOM) {
-#if USE_CUSTOM_DRAWING
-        NSMutableAttributedString *aLine;
-
-        aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
-        [aLine removeAttribute: @"VT100LineWrap" range: NSMakeRange([aLine length]-1,1)];
-#else
-        [BUFFER removeAttribute: @"VT100LineWrap" range: NSMakeRange([self getIndexAtX:WIDTH-1 Y:CURSOR_Y withPadding:NO],1)];
-#endif
         CURSOR_Y++;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
@@ -1193,7 +1191,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY
 	// add a line to our array
 	NSMutableAttributedString *aLine;
-        aLine = [[NSMutableAttributedString alloc] initWithString:@"\n"];
+        aLine = [[NSMutableAttributedString alloc] init];
 	[screenLines addObject: aLine];
 	[aLine release];
 #endif
@@ -1278,7 +1276,7 @@ static BOOL PLAYBELL = YES;
 	    // delete from line
 	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
             width = [[aLine attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
-            if(idx < [aLine length]) {
+            if(idx < [aLine length]&&[[aLine string] characterAtIndex:idx]!='\n') {
                 [aLine deleteCharactersInRange:NSMakeRange(idx, 1)];
                 if(width == 2)
                     [aLine insertAttributedString:[self attrString:@"?" ascii:YES] atIndex:idx];
@@ -1751,6 +1749,10 @@ static BOOL PLAYBELL = YES;
 
 - (void) trimLine: (int) y
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen trimLine; %d]", __FILE__, __LINE__, y);
+#endif
+
     int idx,x;
 #if DEBUG_USE_BUFFER
     int i;
@@ -1773,7 +1775,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY   
     // delete from line
     aLine = [screenLines objectAtIndex: TOP_LINE + y];
-    for(x=0, idx=0;x<WIDTH&&idx<[aLine length];idx++,x++)
+    for(x=0, idx=0;x<WIDTH&&idx<[aLine length]&&[[aLine string] characterAtIndex:idx]!='\n';idx++,x++)
         if (ISDOUBLEWIDTHCHARACTERINLINE(idx, aLine)) x++;
     if (idx < [aLine length])
 	[aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length] - idx)];
@@ -1785,6 +1787,9 @@ static BOOL PLAYBELL = YES;
 
 - (void) insertBlank: (int)n
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen insertBlank; %d]", __FILE__, __LINE__, n);
+#endif
     int idx;
 
 #if DEBUG_USE_ARRAY
@@ -1834,14 +1839,17 @@ static BOOL PLAYBELL = YES;
 
 - (void) insertLines: (int)n
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen insertLines; %d]", __FILE__, __LINE__, n);
+#endif
+    
 #if DEBUG_USE_BUFFER
     int idx, idx2;
     NSRange aRange;
 #endif
 
 #if DEBUG_USE_ARRAY
-    NSMutableAttributedString *aLine;
-    int i;
+    NSMutableAttributedString *aLine=[[NSMutableAttributedString alloc] init];
 #endif
     
 //    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
@@ -1852,9 +1860,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_ARRAY
-	aLine = [[NSMutableAttributedString alloc] init];
 	[screenLines insertObject: aLine atIndex: TOP_LINE + CURSOR_Y];
-	[aLine release];
 #endif
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
 #if DEBUG_USE_BUFFER
@@ -1866,8 +1872,7 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_ARRAY
 	    // delete from our line array
-	    for(i = [screenLines count] - 1; i >= TOP_LINE + SCROLL_BOTTOM; i--)
-		[screenLines removeObjectAtIndex: i];
+            [screenLines removeObjectAtIndex: [screenLines count] - 1];
 #endif
 	    
         }
@@ -1892,10 +1897,17 @@ static BOOL PLAYBELL = YES;
 #endif
 	
     }
+#if DEBUG_USE_ARRAY
+    [aLine release];
+#endif
 }
 
 - (void) deleteLines: (int)n
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen deleteLines; %d]", __FILE__, __LINE__, n);
+#endif
+
 #if DEBUG_USE_BUFFER
     int idx, idx2;
     NSRange aRange;
@@ -2104,7 +2116,9 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
 #endif
-    
+
+#ifdef USE_CUSTOM_DRAWING
+#else
     NSColor *fg, *bg,*blink;
     NSDictionary *dic;
     NSRange range;
@@ -2141,6 +2155,7 @@ static BOOL PLAYBELL = YES;
     [STORAGE endEditing];
     blinkShow=!blinkShow;
     [self removeScreenLock];
+#endif
 }
 
 - (int) cursorX
@@ -2340,7 +2355,7 @@ static BOOL PLAYBELL = YES;
 - (NSMutableAttributedString *)stringAtLine: (int) n
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen lineAtIndex: %d]",  __FILE__, __LINE__, n );
+    NSLog(@"%s(%d):-[VT100Screen stringAtLine: %d]",  __FILE__, __LINE__, n );
 #endif
 
     if(n>=0&&n < [screenLines count])
@@ -2349,6 +2364,7 @@ static BOOL PLAYBELL = YES;
         return (nil);
     
 }
+
 
 #else
 #endif

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.20 2003-03-26 00:03:31 yfabian Exp $
+// $Id: PTYTextView.h,v 1.21 2003-03-27 02:14:29 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -33,6 +33,8 @@
 #import "VT100Screen.h"
 #import "PTYSession.h"
 
+#define MAX_HEIGHT 300
+
 #if USE_CUSTOM_DRAWING
 @interface PTYTextView : NSView <NSTextInput>
 {
@@ -58,6 +60,7 @@
 
     // dead key support
     BOOL deadkey;
+    BOOL CURSOR;
     int	cursorIndex;
 
     float lineHeight;
@@ -76,7 +79,7 @@
 
     //selection
     int startIndex, startY, endIndex, endY;
-    
+    int displayLines[MAX_HEIGHT];
 }
 
 - (id)init;
@@ -119,7 +122,10 @@
 - (void) setLineWidth: (float) aLineWidth;
 
 - (void) refresh;
-- (void)moveLastLine;
+- (void) setDirtyLine: (int) y;
+- (void) moveLastLine;
+-(void) showCursor;
+-(void) hideCursor;
 
     //
     // Drag and Drop methods for our text view

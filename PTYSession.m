@@ -654,7 +654,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void)setBGColor:(NSColor*) color
 {
-    //    [TEXTVIEW setBackgroundColor: color];
+    //[TEXTVIEW setBackgroundColor: color];
     // Change the bg color for future stuff
     [TERMINAL setBGColor: color];
     // Change the attributes for the current stuff in the text storage
@@ -663,6 +663,17 @@ static NSString *PWD_ENVVALUE = @"~";
     [[SCREEN textStorage] addAttribute:  NSBackgroundColorAttributeName 
                             value: color
                             range: NSMakeRange(0, [[SCREEN textStorage] length])];
+}
+
+// Changes transparency
+- (void)setBackgroundAlpha:(float)bgAlpha
+{
+    NSColor *newcolor;
+    
+    newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:bgAlpha];
+    if (newcolor != nil && newcolor != [TERMINAL defaultBGColor]) {
+        [self setBGColor: newcolor];
+    }
 }
 
 - (BOOL) antiIdle

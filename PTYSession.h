@@ -42,7 +42,6 @@
     BOOL REFRESHED;
     BOOL antiIdle;
     BOOL waiting;
-    float alpha;
     NSFont *configFont;
     PreferencePanel *pref;
 
@@ -116,6 +115,7 @@
 - (void)logStop;
 - (void)setFGColor:(NSColor*) color;
 - (void)setBGColor:(NSColor*) color;
+- (void)setBackgroundAlpha:(float)bgAlpha;
 
 // Session status
 

@@ -640,7 +640,23 @@ static iTermKeyBindingMgr *singleInstance = nil;
 
 - (NSString *) globalProfileName
 {
-	return (NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles"));
+	NSDictionary *aProfile;
+	NSEnumerator *keyEnumerator;
+	NSString *aKey, *aProfileName;
+	
+	keyEnumerator = [profiles keyEnumerator];
+	aProfileName = nil;
+	while ((aKey = [keyEnumerator nextObject]))
+	{
+		aProfile = [profiles objectForKey: aKey];
+		if([[aProfile objectForKey: @"Global Profile"] isEqualToString: @"Yes"])
+		{
+			aProfileName = aKey;
+			break;
+		}
+	}
+	
+	return (aProfileName);
 }
 
 

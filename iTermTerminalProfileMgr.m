@@ -103,8 +103,23 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 
 - (NSString *) defaultProfileName
 {
-	return (NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]],
-											   @"Terminal Profiles"));
+	NSDictionary *aProfile;
+	NSEnumerator *keyEnumerator;
+	NSString *aKey, *aProfileName;
+	
+	keyEnumerator = [profiles keyEnumerator];
+	aProfileName = nil;
+	while ((aKey = [keyEnumerator nextObject]))
+	{
+		aProfile = [profiles objectForKey: aKey];
+		if([[aProfile objectForKey: @"Default Profile"] isEqualToString: @"Yes"])
+		{
+			aProfileName = aKey;
+			break;
+		}
+	}
+	
+	return (aProfileName);
 }
 
 - (void) addProfileWithName: (NSString *) newProfile copyProfile: (NSString *) sourceProfile

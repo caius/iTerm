@@ -1,6 +1,9 @@
 2004-02-23  ujwal
 
 	* Added support for setting cursor color.
+	* Changed bold behavior by redrawing character offset by one pixel. 
+	  Bold now works for all fonts.
+	* Fixed config panel nibs.
 
 2004-02-23  fabian
 

@@ -64,4 +64,14 @@
 
 + (void)show:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
 
+- (void)showConfigWindow:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
+- (IBAction) chooseBackgroundImage: (id) sender;
+- (IBAction)windowConfigOk:(id)sender;
+- (IBAction)windowConfigCancel:(id)sender;
+- (IBAction)windowConfigFont:(id)sender;
+- (IBAction)windowConfigNAFont:(id)sender;
+- (IBAction)windowConfigForeground:(id)sender;
+- (IBAction)windowConfigBackground:(id)sender;
+- (IBAction) useBackgroundImage: (id) sender;
+
 @end

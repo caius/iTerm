@@ -36,10 +36,6 @@
 #import "PTYScrollView.h"
 #import "ITSessionMgr.h"
 
-@interface ITConfigPanelController (Private)
-- (void)showConfigWindow:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
-- (IBAction) chooseBackgroundImage: (id) sender;
-@end
 
 @implementation ITConfigPanelController
 
@@ -75,9 +71,6 @@
     [ITViewLocalizer localizeWindow:[self window] table:@"configPanel" bundle:[NSBundle bundleForClass: [self class]]];
 }
 
-@end
-
-@implementation ITConfigPanelController (Private)
 
 - (IBAction)windowConfigOk:(id)sender
 {

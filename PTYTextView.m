@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.138 2004-02-24 06:16:11 yfabian Exp $
+// $Id: PTYTextView.m,v 1.139 2004-02-24 07:27:19 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -523,7 +523,7 @@
 	attrib=[NSDictionary dictionaryWithObjectsAndKeys:
         aFont, NSFontAttributeName,
         color, NSForegroundColorAttributeName,
-		[NSNumber numberWithFloat: (float)bold*0.2], NSStrokeWidthAttributeName,
+		//[NSNumber numberWithFloat: (float)bold*0.2], NSStrokeWidthAttributeName,
         nil];
 	
 	
@@ -532,6 +532,11 @@
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias:antiAlias];
 	[crap drawAtPoint:NSMakePoint(0,0)];
+	// for bold, redraw offset by a pixel
+	if (bold)
+	{
+		[crap drawAtPoint:NSMakePoint(1,0)];
+	}
 	[image unlockFocus];
 } // renderChar
 

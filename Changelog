@@ -1,3 +1,8 @@
+2003-07-17	ujwal
+
+    * Disabled code in eraseDisplay where contents were saved in the scrollback buffer 
+      since it was not right. Needs more thought and work.
+
 2003-07-16	ujwal
 
     * Added support for ANSI 16 color sequences.

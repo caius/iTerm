@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.109 2003-07-17 15:29:36 ujwal Exp $
+// $Id: VT100Screen.m,v 1.110 2003-07-17 15:43:30 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1485,6 +1485,7 @@ static BOOL PLAYBELL = YES;
         x2 = WIDTH - 1;
         y2 = HEIGHT - 1;
 
+#if 0
 	// move the current screen into the scrollback buffer
 	if(clearingBuffer == NO)
 	{
@@ -1498,6 +1499,7 @@ static BOOL PLAYBELL = YES;
 	}
 	else
 	    clearingBuffer = NO;
+#endif
 	
         break;
 
@@ -1818,7 +1820,9 @@ static BOOL PLAYBELL = YES;
 
     if (SCROLL_BOTTOM>=HEIGHT-1) {
 #if DEBUG_USE_BUFFER
-        [BUFFER appendAttributedString:[self defaultAttrString:@"\n"]];
+	if(newLineString == nil)
+	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
+        [BUFFER appendAttributedString:newLineString];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -1831,7 +1835,9 @@ static BOOL PLAYBELL = YES;
     else if(CURSOR_Y <= SCROLL_BOTTOM) {
 #if DEBUG_USE_BUFFER
         idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM+1 withPadding:YES];
-        [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+	if(newLineString == nil)
+	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
+        [BUFFER insertAttributedString:newLineString atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY

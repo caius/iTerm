@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.114 2004-04-12 08:45:39 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.115 2004-04-12 08:54:57 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -183,8 +183,8 @@ static BOOL editingBookmark = NO;
 
 - (IBAction)cancel:(id)sender
 {
-    [self readPreferences];
 	[[self window] performClose: self];
+	[self readPreferences];
 }
 
 - (IBAction)ok:(id)sender

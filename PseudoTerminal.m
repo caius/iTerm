@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.299 2004-11-15 02:09:47 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.300 2004-11-20 06:08:11 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1601,7 +1601,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[displayProfileMgr setColor: [current cursorTextColor] forType: TYPE_CURSOR_TEXT_COLOR forProfile: displayProfile];
 		
 	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Display Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), displayProfile],
-								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are effected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
+								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are affected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
 								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
 }
 
@@ -1624,7 +1624,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[terminalProfileMgr setIdleChar: [current antiCode] forProfile: terminalProfile];
 	
 	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Terminal Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), terminalProfile],
-								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are effected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
+								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are affected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
 								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
 }
 

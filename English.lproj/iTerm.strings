@@ -169,7 +169,7 @@
 /* Save Confirmation */
 "Display Profile Saved To: %@"="Display Profile Saved To: %@";
 "Terminal Profile Saved To: %@"="Terminal Profile Saved To: %@";
-"All bookmarks associated with this profile are effected"="All bookmarks associated with this profile are effected";
+"All bookmarks associated with this profile are affected"="All bookmarks associated with this profile are affected";
 
 /* Bookmarks */
 "Show Bookmarks" = "Show Bookmarks";

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.143 2004-02-24 22:49:50 yfabian Exp $
+// $Id: PTYTextView.m,v 1.144 2004-02-24 23:34:28 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -514,17 +514,6 @@
     }
 }
 
-- (void)scrollToLine:(int)line
-{
-	NSRect aFrame;
-	aFrame.origin.x = 0;
-	aFrame.origin.y = line * lineHeight;
-	aFrame.size.width = [self frame].size.width;
-	aFrame.size.height = lineHeight;
-	//forceUpdate = YES;
-	[self scrollRectToVisible: aFrame];
-}
-
 - (void)scrollToSelection
 {
 	NSRect aFrame;
@@ -545,108 +534,6 @@
 {
     CURSOR=YES;
 }
-
-- (void)renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold
-{
-	NSAttributedString  *crap;
-	NSDictionary *attrib;
-	
-	//aFont=bold?[[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask]:aFont;
-	attrib=[NSDictionary dictionaryWithObjectsAndKeys:
-        aFont, NSFontAttributeName,
-        color, NSForegroundColorAttributeName,
-		//[NSNumber numberWithFloat: (float)bold*0.2], NSStrokeWidthAttributeName,
-        nil];
-	
-	
-	crap = [[[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
-										  attributes:attrib] autorelease];
-	[image lockFocus];
-	[[NSGraphicsContext currentContext] setShouldAntialias:antiAlias];
-	[crap drawAtPoint:NSMakePoint(0,0)];
-	// for bold, redraw the character
-	if (bold)
-	{
-		[crap drawAtPoint:NSMakePoint(0,0)];
-	}
-	[image unlockFocus];
-} // renderChar
-
-#define  CELLSIZE (CACHESIZE/256)
-- (NSImage *) getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw
-{
-	int i;
-	int j;
-	NSImage *image;
-	int width;
-	unsigned char c;
-	int seed;
-	
-	c= fg&(BOLD_MASK|0x1f);
-	if (!code) return nil;
-	width=dw?2:1;
-	seed=code;
-	seed<<=6;
-	srand( seed + c );
-	i=rand()%(CACHESIZE-CELLSIZE);
-	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
-	if (!charImages[i].image) {
-		//  NSLog(@"add into cache");
-		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
-		charImages[i].code=code;
-		charImages[i].color=c;
-		charImages[i].count=1;
-		[self renderChar: image 
-				withChar: code
-			   withColor: [self colorForCode:fg] 
-				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
-					bold: c&BOLD_MASK];
-		
-		return image;
-	}
-	else if (j>=CELLSIZE) {
-		NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
-		int t;
-		t=1;
-		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
-			if (charImages[i-j].count<charImages[i-t].count) t=j;
-		}
-		[charImages[i-t].image release];
-		image=charImages[i-t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
-		charImages[i-t].code=code;
-		charImages[i-t].color=c;
-		for(j=1; j<=CELLSIZE; j++) {	//reset the cache
-			charImages[i-j].count-=charImages[i-t].count;
-		}
-		charImages[i-t].count=1;
-
-		[self renderChar: image 
-				withChar: code
-			   withColor: [self colorForCode:fg] 
-				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
-					bold: c&BOLD_MASK];
-		return image;
-	}
-	else {
-		//		NSLog(@"already in cache");
-		charImages[i].count++;
-		return charImages[i].image;
-	}
-	
-}
-
-- (void) drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
-{
-	NSImage *image;
-	
-	if (c) {
-		//NSLog(@"%c(%d)",c,c);
-		image=[self getCharImage:c 
-						   color:fg
-					 doubleWidth:dw];
-		[image compositeToPoint:NSMakePoint(X,Y) operation:NSCompositeSourceOver];
-	}
-}	
 
 - (void)drawRect:(NSRect)rect
 {
@@ -1930,5 +1817,126 @@
     // release our hold on the data
     [(NSData *)theContextInfo release];
 }
+
+- (void)renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold
+{
+	NSAttributedString  *crap;
+	NSDictionary *attrib;
+	
+	//aFont=bold?[[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask]:aFont;
+	attrib=[NSDictionary dictionaryWithObjectsAndKeys:
+        aFont, NSFontAttributeName,
+        color, NSForegroundColorAttributeName,
+		//[NSNumber numberWithFloat: (float)bold*0.2], NSStrokeWidthAttributeName,
+        nil];
+	
+	
+	crap = [[[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
+										   attributes:attrib] autorelease];
+	[image lockFocus];
+	[[NSGraphicsContext currentContext] setShouldAntialias:antiAlias];
+	[crap drawAtPoint:NSMakePoint(0,0)];
+	// for bold, redraw the character
+	if (bold)
+	{
+		[crap drawAtPoint:NSMakePoint(0,0)];
+	}
+	[image unlockFocus];
+} // renderChar
+
+#define  CELLSIZE (CACHESIZE/256)
+- (NSImage *) getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw
+{
+	int i;
+	int j;
+	NSImage *image;
+	int width;
+	unsigned char c;
+	int seed;
+	
+	c= fg&(BOLD_MASK|0x1f);
+	if (!code) return nil;
+	width=dw?2:1;
+	seed=code;
+	seed<<=6;
+	srand( seed + c );
+	i=rand()%(CACHESIZE-CELLSIZE);
+	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
+	if (!charImages[i].image) {
+		//  NSLog(@"add into cache");
+		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
+		charImages[i].code=code;
+		charImages[i].color=c;
+		charImages[i].count=1;
+		[self renderChar: image 
+				withChar: code
+			   withColor: [self colorForCode:fg] 
+				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
+					bold: c&BOLD_MASK];
+		
+		return image;
+	}
+	else if (j>=CELLSIZE) {
+		// NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
+		int t;
+		t=1;
+		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
+			if (charImages[i-j].count<charImages[i-t].count) t=j;
+		}
+		[charImages[i-t].image release];
+		image=charImages[i-t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
+		charImages[i-t].code=code;
+		charImages[i-t].color=c;
+		/*for(j=1; j<=CELLSIZE; j++) {	//reset the cache
+			charImages[i-j].count-=charImages[i-t].count;
+		}
+		charImages[i-t].count=1;*/
+		
+		[self renderChar: image 
+				withChar: code
+			   withColor: [self colorForCode:fg] 
+				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
+					bold: c&BOLD_MASK];
+		return image;
+	}
+	else {
+		//		NSLog(@"already in cache");
+		charImages[i].count++;
+		if (charImages[i].count<=0) { //overflow
+			for(i=0;i<CACHESIZE;i++) {
+				charImages[i].count -= 30000; //arbitrary number
+				if (charImages[i].count<=0) charImages[i].count=1;
+			}
+		}
+		return charImages[i].image;
+	}
+	
+}
+
+- (void) drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
+{
+	NSImage *image;
+	
+	if (c) {
+		//NSLog(@"%c(%d)",c,c);
+		image=[self getCharImage:c 
+						   color:fg
+					 doubleWidth:dw];
+		[image compositeToPoint:NSMakePoint(X,Y) operation:NSCompositeSourceOver];
+	}
+}	
+
+- (void)scrollToLine:(int)line
+{
+	NSRect aFrame;
+	aFrame.origin.x = 0;
+	aFrame.origin.y = line * lineHeight;
+	aFrame.size.width = [self frame].size.width;
+	aFrame.size.height = lineHeight;
+	//forceUpdate = YES;
+	[self scrollRectToVisible: aFrame];
+}
+
+
 
 @end

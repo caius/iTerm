@@ -1,0 +1,147 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                clearBuffer = id; 
+                logStart = id; 
+                logStop = id; 
+                nextSession = id; 
+                previousSession = id; 
+                setEncodingBIG5 = id; 
+                setEncodingEUCCN = id; 
+                setEncodingUTF8 = id; 
+                showConfigWindow = id; 
+                showTriggerWindow = id; 
+            }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                aboutOK = id; 
+                adEditBackground = id; 
+                adEditCancel = id; 
+                adEditFont = id; 
+                adEditForeground = id; 
+                adEditOK = id; 
+                adbAddEntry = id; 
+                adbCancel = id; 
+                adbEditEntry = id; 
+                adbGotoQuickOpen = id; 
+                adbOk = id; 
+                adbRemoveEntry = id; 
+                newSession = id; 
+                newWindow = id; 
+                showABWindow = id; 
+                showAbout = id; 
+                showPrefWindow = id; 
+                showQOWindow = id; 
+                windowQOAddressBook = id; 
+                windowQOCancel = id; 
+                windowQOOk = id; 
+                windowQOType = id; 
+            }; 
+            CLASS = MainMenu; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                ABOUT = id; 
+                "AB_PANEL" = id; 
+                "AE_PANEL" = id; 
+                FRONT = id; 
+                "PREF_PANEL" = id; 
+                "QO_COMMAND" = id; 
+                "QO_DIR" = id; 
+                "QO_NewTab" = id; 
+                "QO_NewWindow" = id; 
+                "QO_PANEL" = id; 
+                "QO_TYPE" = id; 
+                adBackground = NSColorWell; 
+                adCol = id; 
+                adCommand = NSTextField; 
+                adDir = id; 
+                adEncoding = NSComboBox; 
+                adForeground = NSColorWell; 
+                adName = NSTextField; 
+                adNewWindow = id; 
+                adRow = id; 
+                adTable = NSTableView; 
+                adTermType = id; 
+                adTextExample = NSTextField; 
+                adTransparency = id; 
+                adTransparency2 = id; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
+        {
+            ACTIONS = {
+                changeBackground = id; 
+                changeFontButton = id; 
+                changeForeground = id; 
+                ok = id; 
+                restore = id; 
+            }; 
+            CLASS = PreferencePanel; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                background = id; 
+                col = id; 
+                encoding = id; 
+                fontExample = id; 
+                foreground = id; 
+                prefPanel = id; 
+                row = id; 
+                shell = id; 
+                terminal = id; 
+                transparency = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }, 
+        {
+            ACTIONS = {
+                clearBuffer = id; 
+                logStart = id; 
+                logStop = id; 
+                newSession = id; 
+                nextSession = id; 
+                previousSession = id; 
+                setEncodingBIG5 = id; 
+                setEncodingEUCCN = id; 
+                setEncodingUTF8 = id; 
+                setMainMenu = id; 
+                showTriggerWindow = id; 
+                switchSession = id; 
+                windowAIOk = id; 
+                windowConfigBackground = id; 
+                windowConfigCancel = id; 
+                windowConfigFont = id; 
+                windowConfigForeground = id; 
+                windowConfigOk = id; 
+            }; 
+            CLASS = PseudoTerminal; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "AI_CODE" = id; 
+                "AI_ON" = id; 
+                "AI_PANEL" = id; 
+                "CONFIG_BACKGROUND" = id; 
+                "CONFIG_COL" = id; 
+                "CONFIG_ENCODING" = id; 
+                "CONFIG_EXAMPLE" = id; 
+                "CONFIG_FOREGROUND" = id; 
+                "CONFIG_PANEL" = id; 
+                "CONFIG_ROW" = id; 
+                "CONFIG_TRANS2" = id; 
+                "CONFIG_TRANSPARENCY" = id; 
+                "OA_ON" = id; 
+                SCROLLVIEW = id; 
+                "WA_ON" = id; 
+                WINDOW = id; 
+                cMenu = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }
+    ); 
+    IBVersion = 1; 
+}

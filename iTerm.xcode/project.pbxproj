@@ -57,6 +57,7 @@
 				DD46BAC405FD689F00027283,
 				DDDB7ABD05D7736600E197C2,
 				8787B0D805FD160F00901149,
+				F658C86C06054425000A13D5,
 				20E74F4904E9089700000106,
 				20B8891A04E924CD00000106,
 				20B88B6104E948FA00000106,
@@ -91,6 +92,7 @@
 				DD46BB5405FD6B9B00027283,
 				DDDB7AD605D773B400E197C2,
 				8787B13F05FD191400901149,
+				F658C86B06054425000A13D5,
 				20E74F4804E9089700000106,
 				20B8891904E924CD00000106,
 				20B88B6004E948FA00000106,
@@ -236,6 +238,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OPTIMIZATION_CFLAGS = "-O3";
 				ZERO_LINK = NO;
 			};
 			isa = PBXBuildStyle;
@@ -732,6 +735,7 @@
 				DDDB7AD705D773B400E197C2,
 				8787B14005FD191400901149,
 				DD46BB5505FD6B9B00027283,
+				F658C86D06054425000A13D5,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1092,6 +1096,7 @@
 				DDDB7ABF05D7736600E197C2,
 				8787B0DA05FD160F00901149,
 				DD46BAC605FD689F00027283,
+				F658C86E06054425000A13D5,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2139,6 +2144,34 @@
 			path = website/footer.html;
 			refType = 4;
 			sourceTree = "<group>";
+		};
+		F658C86B06054425000A13D5 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = iTermTerminalProfileMgr.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F658C86C06054425000A13D5 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = iTermTerminalProfileMgr.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F658C86D06054425000A13D5 = {
+			fileRef = F658C86B06054425000A13D5;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F658C86E06054425000A13D5 = {
+			fileRef = F658C86C06054425000A13D5;
+			isa = PBXBuildFile;
+			settings = {
+			};
 		};
 		F65CCFA005F7DE6C00F04CFF = {
 			fileEncoding = 4;

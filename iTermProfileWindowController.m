@@ -26,8 +26,10 @@
 
 #import <iTerm/iTermKeyBindingMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
+#import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermProfileWindowController.h>
 
+static NSStringEncoding const *encodingList = nil;
 
 @implementation iTermProfileWindowController
 
@@ -52,6 +54,22 @@
 		[displayProfileSelector addItemWithTitle: aString];
 	
 	[self displayProfileChanged: nil];
+	
+	// load up the terminal profiles
+	[terminalProfileSelector removeAllItems];
+	profileEnumerator = [[[iTermTerminalProfileMgr singleInstance] profiles] keyEnumerator];
+	while((aString = [profileEnumerator nextObject]) != nil)
+		[terminalProfileSelector addItemWithTitle: aString];
+
+	encodingList = [NSString availableStringEncodings];
+	NSStringEncoding const *p = encodingList;
+	[terminalEncoding removeAllItems];
+    while (*p) {
+	    [terminalEncoding addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
+        p++;
+    }	
+	
+	[self terminalProfileChanged: nil];
 	
 	[self showWindow: self];
 }
@@ -503,24 +521,93 @@
 {
 	int iVal;
 	float fVal;
-	NSString *theProfile;
+	NSString *theDsiplayProfile;
+	NSString *theTerminalProfile;
 	id sender;
 
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, [aNotification object]);
 
-	theProfile = [displayProfileSelector titleOfSelectedItem];
+	theDsiplayProfile = [displayProfileSelector titleOfSelectedItem];
+	theTerminalProfile = [terminalProfileSelector titleOfSelectedItem];
 	sender = [aNotification object];
 
 	iVal = [sender intValue];
 	fVal = [sender floatValue];
 	if(sender == displayColTextField)
-		[[iTermDisplayProfileMgr singleInstance] setWindowColumns: iVal forProfile: theProfile];
-	if(sender == displayRowTextField)
-		[[iTermDisplayProfileMgr singleInstance] setWindowRows: iVal forProfile: theProfile];
-	if(sender == displayTransparency)
-		[[iTermDisplayProfileMgr singleInstance] setTransparency: fVal/100 forProfile: theProfile];
-
+		[[iTermDisplayProfileMgr singleInstance] setWindowColumns: iVal forProfile: theDsiplayProfile];
+	else if(sender == displayRowTextField)
+		[[iTermDisplayProfileMgr singleInstance] setWindowRows: iVal forProfile: theDsiplayProfile];
+	else if(sender == displayTransparency)
+		[[iTermDisplayProfileMgr singleInstance] setTransparency: fVal/100 forProfile: theDsiplayProfile];
+	else if(sender == terminalScrollback)
+		[[iTermTerminalProfileMgr singleInstance] setScrollbackLines: iVal forProfile: theTerminalProfile];
+	else if(sender == terminalIdleChar)
+		[[iTermTerminalProfileMgr singleInstance] setIdleChar: iVal forProfile: theTerminalProfile];
 }
+
+// Terminal profile UI
+- (IBAction) terminalProfileChanged: (id) sender
+{
+	NSString *theProfile;
+	
+	theProfile = [terminalProfileSelector titleOfSelectedItem];
+
+	[terminalType setTitle: [[iTermTerminalProfileMgr singleInstance] typeForProfile: theProfile]];
+	[terminalEncoding setTitle: [NSString localizedNameOfStringEncoding:
+		[[iTermTerminalProfileMgr singleInstance] encodingForProfile: theProfile]]];
+	[terminalScrollback setStringValue: [NSString stringWithFormat: @"%d",
+		[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: theProfile]]];
+	[terminalSilenceBell setState: [[iTermTerminalProfileMgr singleInstance] silenceBellForProfile: theProfile]];
+	[terminalBlink setState: [[iTermTerminalProfileMgr singleInstance] blinkCursorForProfile: theProfile]];
+	[terminalCloseOnSessionEnd setState: [[iTermTerminalProfileMgr singleInstance] closeOnSessionEndForProfile: theProfile]];
+	[terminalDoubleWidth setState: [[iTermTerminalProfileMgr singleInstance] doubleWidthForProfile: theProfile]];
+	[terminalSendIdleChar setState: [[iTermTerminalProfileMgr singleInstance] sendIdleCharForProfile: theProfile]];
+	[terminalIdleChar setStringValue: [NSString stringWithFormat: @"%d",  
+		[[iTermTerminalProfileMgr singleInstance] idleCharForProfile: theProfile]]];
+}
+
+- (IBAction) terminalSetType: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setType: [sender titleOfSelectedItem] 
+										   forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}
+
+- (IBAction) terminalSetEncoding: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setEncoding: encodingList[[sender indexOfSelectedItem] - 1] 
+											   forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}
+
+- (IBAction) terminalSetSilenceBell: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setSilenceBell: [sender state] 
+												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}	
+
+- (IBAction) terminalSetBlink: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setBlinkCursor: [sender state] 
+												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}	
+
+- (IBAction) terminalSetCloseOnSessionEnd: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setCloseOnSessionEnd: [sender state] 
+														forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}	
+
+- (IBAction) terminalSetDoubleWidth: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setDoubleWidth: [sender state] 
+												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}	
+
+- (IBAction) terminalSetSendIdleChar: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setSendIdleChar: [sender state] 
+												   forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}	
+
 
 @end
 
@@ -584,6 +671,12 @@
 		aSelector = @selector(kbProfileChanged:);
 		aProfileSelector = kbProfileSelector;
 	}
+	else if(selectedTabViewItem == TERMINAL_PROFILE_TAB)
+	{
+		profileMgr = [iTermTerminalProfileMgr singleInstance];
+		aSelector = @selector(terminalProfileChanged:);
+		aProfileSelector = terminalProfileSelector;
+	}
 	else if(selectedTabViewItem == DISPLAY_PROFILE_TAB)
 	{
 		profileMgr = [iTermDisplayProfileMgr singleInstance];
@@ -626,6 +719,12 @@
 		profileMgr = [iTermKeyBindingMgr singleInstance];
 		aSelector = @selector(kbProfileChanged:);
 		aProfileSelector = kbProfileSelector;
+	}
+	else if(selectedTabViewItem == TERMINAL_PROFILE_TAB)
+	{
+		profileMgr = [iTermTerminalProfileMgr singleInstance];
+		aSelector = @selector(terminalProfileChanged:);
+		aProfileSelector = terminalProfileSelector;
 	}
 	else if(selectedTabViewItem == DISPLAY_PROFILE_TAB)
 	{

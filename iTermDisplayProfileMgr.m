@@ -31,7 +31,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 
 @implementation iTermDisplayProfileMgr
 
-+ (id) singleInstance;
++ (id) singleInstance
 {
 	if(singleInstance == nil)
 	{
@@ -68,10 +68,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 {
 	
 	// recursively copy the dictionary to ensure mutability
-	if(aDict != nil)
-	{
-		[profiles setDictionary: aDict];
-	}	
+	[profiles setDictionary: aDict];
 	
 	// if we don't have any profile, create a default profile
 	if([profiles count] == 0)

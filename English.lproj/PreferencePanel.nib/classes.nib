@@ -40,6 +40,14 @@
                 profileDeleteCancel = id; 
                 profileDeleteConfirm = id; 
                 showProfilesWindow = id; 
+                terminalProfileChanged = id; 
+                terminalSetBlink = id; 
+                terminalSetCloseOnSessionEnd = id; 
+                terminalSetDoubleWidth = id; 
+                terminalSetEncoding = id; 
+                terminalSetSendIdleChar = id; 
+                terminalSetSilenceBell = id; 
+                terminalSetType = id; 
             }; 
             CLASS = iTermProfileWindowController; 
             LANGUAGE = ObjC; 
@@ -98,6 +106,16 @@
                 kbProfileSelector = NSPopUpButton; 
                 profileName = NSTextField; 
                 profileTabView = NSTabView; 
+                terminalBlink = NSButton; 
+                terminalCloseOnSessionEnd = NSButton; 
+                terminalDoubleWidth = NSButton; 
+                terminalEncoding = NSPopUpButton; 
+                terminalIdleChar = NSTextField; 
+                terminalProfileSelector = NSPopUpButton; 
+                terminalScrollback = NSTextField; 
+                terminalSendIdleChar = NSButton; 
+                terminalSilenceBell = NSButton; 
+                terminalType = NSPopUpButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

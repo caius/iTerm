@@ -95,6 +95,18 @@
 	IBOutlet NSButton *displayAntiAlias;
 	
 	BOOL changingNAFont;
+	
+	// Terminal Profile UI
+	IBOutlet NSPopUpButton *terminalProfileSelector;
+	IBOutlet NSPopUpButton *terminalType;
+	IBOutlet NSPopUpButton *terminalEncoding;
+	IBOutlet NSTextField *terminalScrollback;
+	IBOutlet NSButton *terminalSilenceBell;
+	IBOutlet NSButton *terminalBlink;
+	IBOutlet NSButton *terminalCloseOnSessionEnd;
+	IBOutlet NSButton *terminalDoubleWidth;
+	IBOutlet NSButton *terminalSendIdleChar;
+	IBOutlet NSTextField *terminalIdleChar;
 }
 
 - (IBAction) showProfilesWindow: (id) sender;
@@ -127,6 +139,16 @@
 - (IBAction) displaySetFontSpacing: (id) sender;
 // NSTextField delegate
 - (void)controlTextDidChange:(NSNotification *)aNotification;
+
+// Terminal profile UI
+- (IBAction) terminalProfileChanged: (id) sender;
+- (IBAction) terminalSetType: (id) sender;
+- (IBAction) terminalSetEncoding: (id) sender;
+- (IBAction) terminalSetSilenceBell: (id) sender;
+- (IBAction) terminalSetBlink: (id) sender;
+- (IBAction) terminalSetCloseOnSessionEnd: (id) sender;
+- (IBAction) terminalSetDoubleWidth: (id) sender;
+- (IBAction) terminalSetSendIdleChar: (id) sender;
 
 
 @end

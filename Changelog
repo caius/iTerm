@@ -1,7 +1,15 @@
+2004-03-14  fabian
+
+	* Completed new UI for terminal profile editor.
+	
 2004-03-13  ujwal
 	
 	* Completed new UI for display profile editor.
 
+2004-03-11  fabian
+
+	* Fixes of several margin related bugs (bg image, size calculation...)
+	
 2004-03-10  fabian
 
 	* Fixed bug in scrolling

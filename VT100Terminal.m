@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.73 2003-07-18 15:21:13 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.74 2003-07-20 18:55:40 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1930,6 +1930,24 @@ static VT100TCC decode_string(unsigned char *datap,
                 forKey:NSUnderlineStyleAttributeName];
         [dic setObject:[NSNumber numberWithInt:blink]
                 forKey:NSBlinkAttributeName];
+
+	NSFont *theFont = (i==0)?[SCREEN font]:[SCREEN nafont];
+	if(bold == 1)
+	{
+	    // convert font to bold face
+	    NSFont *boldFont;
+	    
+	    boldFont = [[NSFontManager sharedFontManager] convertFont: theFont toHaveTrait: NSBoldFontMask];
+	    // make sure the conversion was successful
+	    if([boldFont isFixedPitch])
+		[dic setObject: boldFont forKey: NSFontAttributeName];
+	    else
+		[dic setObject: theFont forKey: NSFontAttributeName];
+	}
+	else
+	{
+	    [dic setObject: theFont forKey: NSFontAttributeName];
+	}
     }
 
 }

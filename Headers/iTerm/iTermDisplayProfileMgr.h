@@ -68,6 +68,7 @@
 - (void) addProfileWithName: (NSString *) newProfile copyProfile: (NSString *) sourceProfile;
 - (void) deleteProfileWithName: (NSString *) profileName;
 - (BOOL) isDefaultProfile: (NSString *) profileName;
+- (NSString *) defaultProfileName;
 
 
 - (NSColor *) color: (int) type forProfile: (NSString *) profileName;

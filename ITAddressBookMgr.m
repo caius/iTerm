@@ -26,14 +26,21 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import <iTerm/Tree.h>
 #import "ITAddressBookMgr.h"
 #import "AddressBookWindowController.h"
+
+#import <iTerm/Tree.h>
+#import <iTerm/iTermTerminalProfileMgr.h>
+#import <iTerm/iTermKeyBindingMgr.h>
+#import <iTerm/iTermDisplayProfileMgr.h>
+
 
 #define SAFENODE(n) 		((TreeNode*)((n)?(n):(bookmarks)))
 
 static NSString* OLD_ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
 static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/AddressBook";
+
+static TreeNode *defaultBookmark = nil;
 
 @implementation ITAddressBookMgr
 
@@ -69,6 +76,48 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 	bookmarks = [TreeNode treeFromDictionary: aDict];
 	[bookmarks setIsLeaf: NO];
 	[bookmarks retain];
+	
+	// make sure we have a default bookmark
+	if([self _checkForDefaultBookmark: bookmarks defaultBookmark: &defaultBookmark] == NO)
+	{
+		NSMutableDictionary *aDict;
+		char *userShell, *thisUser;
+		NSString *shell;
+		NSString *aName;
+		TreeNode *childNode;
+				
+		aDict = [[NSMutableDictionary alloc] init];
+		
+		// Get the user's default shell
+		if((thisUser = getenv("USER")) != NULL) {
+			shell = [NSString stringWithFormat: @"login -fp %s", thisUser];
+		} else if((userShell = getenv("SHELL")) != NULL) {
+			shell = [NSString stringWithCString: userShell];
+		} else {
+			shell = @"/bin/bash --login";
+		}
+		
+		aName = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]],
+												   @"Terminal Profiles");
+		[aDict setObject: aName forKey: KEY_NAME];
+		[aDict setObject: shell forKey: KEY_COMMAND];
+		[aDict setObject: shell forKey: KEY_DESCRIPTION];
+		[aDict setObject: NSHomeDirectory() forKey: KEY_WORKING_DIRECTORY];
+		[aDict setObject: [[iTermTerminalProfileMgr singleInstance] defaultProfileName] forKey: KEY_TERMINAL_PROFILE];
+		[aDict setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
+		[aDict setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
+		[aDict setObject: @"Yes" forKey: KEY_DEFAULT_BOOKMARK];
+
+		childNode = [[TreeNode alloc] initWithData: aDict parent: nil children: [NSArray array]];
+		[childNode setIsLeaf: YES];
+		[bookmarks insertChild: childNode atIndex: [bookmarks numberOfChildren]];
+		[aDict release];
+		[childNode release];
+		
+		defaultBookmark = childNode;
+		
+	}
+		
 }
 
 - (NSDictionary *) bookmarks
@@ -76,6 +125,11 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	
 	return ([bookmarks dictionary]);
+}
+
+- (BOOL) mayDeleteBookmarkNode: (TreeNode *) aNode
+{
+	return (![defaultBookmark isDescendantOfNode: aNode]);
 }
 
 - (NSArray *) addressBook
@@ -234,7 +288,12 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 
 - (void) setBookmarkWithData: (NSDictionary *) data forNode: (TreeNode *) aNode
 {
-	[aNode setNodeData: data];
+	NSMutableDictionary *aDict;
+	
+	aDict = [[NSMutableDictionary alloc] initWithDictionary: [SAFENODE(aNode) nodeData]];
+	[aDict addEntriesFromDictionary: data];
+	[SAFENODE(aNode) setNodeData: aDict];
+	[aDict release];
 }
 
 - (void) deleteBookmarkNode: (TreeNode *) aNode
@@ -337,9 +396,35 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
     return ae;
 }
 
-- (void)_addBookmarkFolderSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+- (BOOL) _checkForDefaultBookmark: (TreeNode *) rootNode defaultBookmark: (TreeNode **) aNode
 {
+	BOOL haveDefaultBookmark = NO;
+	NSEnumerator *entryEnumerator;
+	NSDictionary *dataDict;
+	TreeNode *entry;
 	
+	dataDict = [rootNode nodeData];
+
+	entryEnumerator = [[rootNode children] objectEnumerator];
+	while ((entry = [entryEnumerator nextObject]))
+	{
+		if([entry isGroup])
+			haveDefaultBookmark = [self _checkForDefaultBookmark: entry defaultBookmark: aNode];
+		else
+		{
+			dataDict = [entry nodeData];
+			if([[dataDict objectForKey: KEY_DEFAULT_BOOKMARK] isEqualToString: @"Yes"])
+			{
+				if(aNode)
+					*aNode = entry;
+				haveDefaultBookmark = YES;
+			}			
+		}
+		if(haveDefaultBookmark)
+			break;
+	}
+
+	return (haveDefaultBookmark);
 }
 
 @end

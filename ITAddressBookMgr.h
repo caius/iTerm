@@ -34,6 +34,7 @@
 #define KEY_TERMINAL_PROFILE	@"Terminal Profile"
 #define KEY_KEYBOARD_PROFILE	@"Keyboard Profile"
 #define KEY_DISPLAY_PROFILE		@"Display Profile"
+#define KEY_DEFAULT_BOOKMARK	@"Default Bookmark"
 
 
 extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
@@ -70,6 +71,7 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 - (void) addBookmarkWithData: (NSDictionary *) data toNode: (TreeNode *) aNode;
 - (void) setBookmarkWithData: (NSDictionary *) data forNode: (TreeNode *) aNode;
 - (void) deleteBookmarkNode: (TreeNode *) aNode;
+- (BOOL) mayDeleteBookmarkNode: (TreeNode *) aNode;
 - (TreeNode *) rootNode;
 
 
@@ -79,5 +81,7 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 
 - (void)initAddressBook;
 - (NSDictionary *)newDefaultAddressBookEntry;
+
+- (BOOL) _checkForDefaultBookmark: (TreeNode *) rootNode defaultBookmark: (TreeNode **)defaultBookmark;
 
 @end

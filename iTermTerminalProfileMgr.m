@@ -101,6 +101,12 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	}
 }
 
+- (NSString *) defaultProfileName
+{
+	return (NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]],
+											   @"Terminal Profiles"));
+}
+
 - (void) addProfileWithName: (NSString *) newProfile copyProfile: (NSString *) sourceProfile
 {
 	NSMutableDictionary *aMutableDict, *aProfile;

@@ -109,6 +109,7 @@
 
 - (NSDictionary *) globalProfile;
 - (BOOL) isGlobalProfile: (NSString *)profileName;
+- (NSString *) globalProfileName;
 - (void) addProfileWithName: (NSString *) aString copyProfile: (NSString *) profileName;
 - (void) deleteProfileWithName: (NSString *) aString;
 - (int) numberOfEntriesInProfile: (NSString *) profileName;

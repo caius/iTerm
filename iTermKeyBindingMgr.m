@@ -638,6 +638,12 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	return ([profiles objectForKey: globalProfile]);
 }
 
+- (NSString *) globalProfileName
+{
+	return (NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles"));
+}
+
+
 - (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
 {
 	int retCode = -1;

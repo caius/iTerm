@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.16 2004-03-14 06:05:37 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.17 2004-03-18 22:29:59 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -389,7 +389,6 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
     [logStart setEnabled: ![aSession logging]];
     [logStop setEnabled: [aSession logging]];
-	[remapDeleteKey setState: [aSession remapDeleteKey]];
 }
 
 @end

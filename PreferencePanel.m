@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.95 2004-03-18 20:36:03 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.96 2004-03-18 22:29:59 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -171,8 +171,13 @@ static BOOL editingBookmark = NO;
 	}
 	else
 	{
-		[bookmarkDeleteButton setEnabled: YES];
 		selectedItem = [bookmarksView itemAtRow: selectedRow];
+		
+		if([[ITAddressBookMgr sharedInstance] mayDeleteBookmarkNode: selectedItem])
+			[bookmarkDeleteButton setEnabled: YES];
+		else
+			[bookmarkDeleteButton setEnabled: NO];
+		
 		if([[ITAddressBookMgr sharedInstance] isExpandable: selectedItem])
 			[bookmarkEditButton setEnabled: NO];
 		else

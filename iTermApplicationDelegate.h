@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.10 2004-03-14 06:05:37 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.11 2004-03-18 22:29:59 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -48,7 +48,6 @@
     IBOutlet NSMenuItem *closeTab;
     IBOutlet NSMenuItem *closeWindow;
     IBOutlet NSMenuItem *sendInputToAllSessions;
-	IBOutlet NSMenuItem *remapDeleteKey;
 }
 
 // NSApplication Delegate methods

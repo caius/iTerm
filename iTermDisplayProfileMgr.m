@@ -128,6 +128,13 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	}
 }
 
+- (NSString *) defaultProfileName
+{
+	return (NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]],
+											   @"Display Profiles"));
+}
+
+
 - (void) addProfileWithName: (NSString *) newProfile copyProfile: (NSString *) sourceProfile
 {
 	NSMutableDictionary *aMutableDict, *aProfile;

@@ -976,8 +976,6 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabel: theName];
         [self setBell: NO];
     }
-    if((PTYTabViewItem *)tabViewItem == (PTYTabViewItem *)[[tabViewItem tabView] selectedTabViewItem])
-	[[self window] setTitle: name];
 }
 
 - (PTYTask *) SHELL

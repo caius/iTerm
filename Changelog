@@ -1,3 +1,9 @@
+2003-01-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed bugs in syncing transparency value and control 
+      in the Preference panel.
+
+
 2003-01-10	fabian
     * Better resize behavior
     * Tab title changes when an icon title change

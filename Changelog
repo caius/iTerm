@@ -3,6 +3,7 @@
     * Added Applescript support for "write text <text>" 
       and "write contents of file <file>" to a session.
 
+    * A little more code consolidation in PseudoTerminal.
 
 2003-04-28	fabian
     * Dynamically change the tab size based on the number of tabs

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.163 2003-04-29 00:24:05 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.164 2003-04-29 15:18:17 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -68,7 +68,6 @@ static int windowCount = 0;
 {
     NSString *cmd;
     NSArray *arg;
-    int i;
     PTYSession *aSession;
 
     [MainMenu breakDown:[pref shell] cmdPath:&cmd cmdArgs:&arg];
@@ -77,24 +76,9 @@ static int windowCount = 0;
     // Add this session to our list and make it current
     [self addInSessions: aSession];
     [aSession release];
-    
-    [aSession setForegroundColor: [pref foreground]];
-    [aSession setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
-    [aSession setSelectionColor: [pref selectionColor]];
-    [aSession setBoldColor: [pref boldColor]];
-    // set the encoding
-    [aSession setEncoding:[pref encoding]];
-    // term value
-    [aSession setTERM_VALUE: [pref terminalType]];
-    
+        
     [self startProgram:cmd arguments:arg];
     [self setCurrentSessionName:nil];
-    [currentPtySession setAutoClose: [pref autoclose]];
-    [currentPtySession setDoubleWidth:[pref doubleWidth]];
-    for(i=0;i<8;i++) {
-        [currentPtySession setColorTable:i highLight:NO color:[pref colorFromTable:i highLight:NO]];
-        [currentPtySession setColorTable:i highLight:YES color:[pref colorFromTable:i highLight:YES]];
-    }
     
 }
 
@@ -183,6 +167,7 @@ static int windowCount = 0;
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
 {
+    int i;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -202,6 +187,10 @@ static int windowCount = 0;
     [aSession setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
     [aSession setSelectionColor: [pref selectionColor]];
     [aSession setBoldColor: [pref boldColor]];
+    for(i=0;i<8;i++) {
+        [aSession setColorTable:i highLight:NO color:[pref colorFromTable:i highLight:NO]];
+        [aSession setColorTable:i highLight:YES color:[pref colorFromTable:i highLight:YES]];
+    }    
 
     // set the font
 #if USE_CUSTOM_DRAWING    
@@ -245,6 +234,11 @@ static int windowCount = 0;
 
     // tell the shell about our size
     [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
+    
+    // Set up misc prefs 
+    [aSession setAutoClose: [pref autoclose]];
+    [aSession setDoubleWidth:[pref doubleWidth]];
+    
 
     pending = NO;
     

@@ -209,7 +209,10 @@ static NSString *PWD_ENVVALUE = @"~";
         [timer release];
         timer=nil;
     }
-    [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
+    if ([pref autoclose]) {
+        [parent closeSession:self];
+    }
+    else [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
 }
 
 // PTYTextView

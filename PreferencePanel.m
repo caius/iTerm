@@ -81,6 +81,7 @@ static int TRANSPARENCY  =10;
     defaultNAFont=[[([prefs objectForKey:@"NAFont"]?
                    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"NAFont"]]:FONT)
         copy] retain];
+    defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
     
     changingNA=NO;
                  
@@ -125,6 +126,7 @@ static int TRANSPARENCY  =10;
     [nafontExample setBackgroundColor:defaultBackground];
     [nafontExample setFont:defaultNAFont];
     [nafontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultNAFont fontName], [defaultNAFont pointSize]]];
+    [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
     
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -215,6 +217,7 @@ static int TRANSPARENCY  =10;
               forKey:@"Font"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultNAFont]
               forKey:@"NAFont"];
+    defaultAutoclose=([autoclose state]==NSOnState);
 
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -243,6 +246,7 @@ static int TRANSPARENCY  =10;
     defaultTerminal=[[TERM copy] retain];
     
     defaultTransparency=TRANSPARENCY;
+    defaultAutoclose=YES;
 
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
@@ -267,8 +271,7 @@ static int TRANSPARENCY  =10;
     [fontExample setBackgroundColor:defaultBackground];
     [fontExample setFont:defaultFont];
     [fontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultFont fontName], [defaultFont pointSize]]];
-
-
+    defaultAutoclose=([autoclose state]==NSOnState);
 }
 
 - (NSColor*) background
@@ -329,6 +332,11 @@ static int TRANSPARENCY  =10;
 - (int) aiCode
 {
     return 0;
+}
+
+- (BOOL) autoclose
+{
+    return defaultAutoclose;
 }
 
 @end

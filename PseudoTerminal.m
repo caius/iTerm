@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.36 2002-12-18 02:28:31 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.37 2002-12-18 04:56:51 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -287,6 +287,35 @@ static NSDictionary *deadStateAttribute;
 
 }
 
+- (void) closeSession: (PTYSession*) aSession
+{
+    int i;
+    int n=[ptyList count];
+    
+    if(n == 1)
+    {
+        [WINDOW close];
+        return;
+    }
+
+    for(i=0;i<n;i++) if ([ptyList objectAtIndex:i]==aSession) break;
+    [ptyListLock lock];
+    [[ptyList objectAtIndex: i] terminate];
+    [ptyList removeObjectAtIndex: i];
+    [ptyListLock unlock];
+    if (i==currentSessionIndex) {
+        if (currentSessionIndex >= [ptyList count])
+            currentSessionIndex = [ptyList count] - 1;
+
+        currentPtySession = nil;
+        [self selectSession: currentSessionIndex];
+    }
+    else if (i<currentSessionIndex) currentSessionIndex--;
+
+    [self _drawSessionButtons];
+
+}
+
 - (IBAction) closeCurrentSession: (id) sender
 {
 #if DEBUG_METHOD_TRACE
@@ -297,7 +326,7 @@ static NSDictionary *deadStateAttribute;
     if(ptyList == nil)
         return;
 
-    if ([currentPtySession exited]==NO) {
+    if ([currentPtySession exited]==NO&&![pref autoclose]) {
        if (NSRunAlertPanel(NSLocalizedStringFromTable(@"The current session will be closed",@"iTerm",@"Close Session"),
                          NSLocalizedStringFromTable(@"All unsaved data will be lost",@"iTerm",@"Close window"),
                          NSLocalizedStringFromTable(@"Cancel",@"iTerm",@"Cancel"),
@@ -315,7 +344,6 @@ static NSDictionary *deadStateAttribute;
     [[ptyList objectAtIndex: currentSessionIndex] terminate];
     [ptyList removeObjectAtIndex: currentSessionIndex];
     [ptyListLock unlock];
-    currentSessionIndex++;
     if (currentSessionIndex >= [ptyList count])
         currentSessionIndex = [ptyList count] - 1;
 
@@ -1021,8 +1049,8 @@ static NSDictionary *deadStateAttribute;
         
         [toolbarItem setMinSize:[aPopUpButton bounds].size];
         [toolbarItem setMaxSize:[aPopUpButton bounds].size];
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:Address Book")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open a new session",@"iTerm",@"Toolbar Item:Address Book")];
+        [toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open a new session",@"iTerm",@"Toolbar Item:New")];
     }
     else { 
         toolbarItem=nil;
@@ -1222,32 +1250,36 @@ static NSDictionary *deadStateAttribute;
     
     if(commandIndex < 0)
         return;
-    
-    anEntry = [MAINMENU addressBookEntry: commandIndex];
-
-    if (newwin) {
-        term = [PseudoTerminal newTerminalWindow: MAINMENU];
-        [term setPreference:pref];
-        [term initWindow:[[anEntry objectForKey:@"Col"]intValue]
-                  height:[[anEntry objectForKey:@"Row"] intValue]
-                    font:[anEntry objectForKey:@"Font"]
-                  nafont:[anEntry objectForKey:@"NAFont"]];
+    if (commandIndex==0) {
+        if (newwin) [MAINMENU newWindow:nil];
+        else [MAINMENU newSession:nil];
     }
-    else term=self;
+    else {
+        anEntry = [MAINMENU addressBookEntry: commandIndex-2];
 
-    // Init a new session and run the command
-    [term initSession:[anEntry objectForKey:@"Name"]
-        foregroundColor:[anEntry objectForKey:@"Foreground"]
-        backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
-                encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
-                    term:[anEntry objectForKey:@"Term Type"]];
-                    
-    NSDictionary *env=[NSDictionary dictionaryWithObject:([anEntry objectForKey:@"Directory"]?[anEntry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
-    
-    [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
-    [term startProgram:cmd arguments:arg environment:env];
-    [term setCurrentSessionName:[anEntry objectForKey:@"Name"]];
+        if (newwin) {
+            term = [PseudoTerminal newTerminalWindow: MAINMENU];
+            [term setPreference:pref];
+            [term initWindow:[[anEntry objectForKey:@"Col"]intValue]
+                      height:[[anEntry objectForKey:@"Row"] intValue]
+                        font:[anEntry objectForKey:@"Font"]
+                      nafont:[anEntry objectForKey:@"NAFont"]];
+        }
+        else term=self;
 
+        // Init a new session and run the command
+        [term initSession:[anEntry objectForKey:@"Name"]
+          foregroundColor:[anEntry objectForKey:@"Foreground"]
+          backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
+                 encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
+                     term:[anEntry objectForKey:@"Term Type"]];
+
+        NSDictionary *env=[NSDictionary dictionaryWithObject:([anEntry objectForKey:@"Directory"]?[anEntry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
+
+        [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
+        [term startProgram:cmd arguments:arg environment:env];
+        [term setCurrentSessionName:[anEntry objectForKey:@"Name"]];
+    }
 }
 
 // Build the address book menu
@@ -1259,6 +1291,8 @@ static NSDictionary *deadStateAttribute;
     // build the menu
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
+    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")];
+    [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
     [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
     [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
     [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New")];

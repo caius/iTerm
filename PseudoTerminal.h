@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.15 2002-12-18 02:28:31 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.16 2002-12-18 04:56:51 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -93,6 +93,7 @@
 
 - (void) switchSession: (id) sender;
 - (void) selectSession: (int) sessionIndex;
+- (void) closeSession: (PTYSession*) aSession;
 - (IBAction) closeCurrentSession: (id) sender;
 - (IBAction) previousSession:(id)sender;
 - (IBAction) nextSession:(id)sender;

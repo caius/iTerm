@@ -1,12 +1,13 @@
 2002-12-17	fabian
-    * re-arrange the toolbar items
-    * got rid of the quick-run panel
-    * del key now sends the correct escape sequence instead of 
+    * Added an AutoClose option in preference
+    * Re-arranged preference panel
+    * Re-arranged the toolbar items
+    * Got rid of the quick-run panel
+    * Del key now sends the correct escape sequence instead of 
       0x7f
-    * set default term type to xterm, which is consitent with
+    * Set default term type to xterm, which is consitent with
       the rest of the code
-      
-2002-12-17	fabian
+    * Version number is now 0.5.7
     * Fixed a bug related to setting default shell
     
 2002-12-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>

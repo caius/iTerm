@@ -15,6 +15,7 @@
     IBOutlet id shell;
     IBOutlet id terminal;
     IBOutlet id transparency;
+    IBOutlet id autoclose;
     
     NSUserDefaults *prefs;
 
@@ -31,6 +32,8 @@
     NSFont* defaultFont;
     NSFont* defaultNAFont;
     float defaultTransparency;
+
+    BOOL defaultAutoclose;
 
     BOOL changingNA;
 
@@ -63,6 +66,7 @@
 - (NSFont*) nafont;
 - (BOOL) ai;
 - (int) aiCode;
+- (BOOL) autoclose;
 
 
 @end

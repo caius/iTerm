@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.20 2004-02-24 22:49:51 yfabian Exp $
+// $Id: PTYTextView.h,v 1.21 2004-02-25 00:39:17 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -113,6 +113,8 @@ typedef struct
 
 - (id)initWithFrame: (NSRect) aRect;
 - (void)dealloc;
+- (BOOL) becomeFirstResponder;
+- (BOOL) resignFirstResponder;
 - (BOOL)isFlipped;
 - (BOOL)isOpaque;
 - (BOOL)shouldDrawInsertionPoint;
@@ -237,11 +239,11 @@ typedef struct
 - (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender;
 - (void) _savePanelDidEnd: (NSSavePanel *) theSavePanel returnCode: (int) theReturnCode contextInfo: (void *) theContextInfo;
 
-- (void)scrollToLine:(int)line;
+- (void) _scrollToLine:(int)line;
 
-- (void)renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold;
-- (NSImage *) getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw;
-- (void) drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
+- (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold;
+- (NSImage *) _getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw;
+- (void) _drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
 
 @end
 

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.54 2003-06-26 15:14:30 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.55 2003-07-21 15:13:51 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -291,7 +291,7 @@ static float versionNumber;
 	[abWindowController setAddressBook: [iTerm addressBook]];
 	[abWindowController setPreferences: self];
     }
-    [abWindowController adbEditEntry: nil];
+    [abWindowController adbEditEntryAtIndex: 0 newEntry: NO];
     
 }
 

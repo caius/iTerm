@@ -122,6 +122,7 @@
 - (IBAction)adbDuplicateEntry:(id)sender;
 - (IBAction)adbRemoveEntry:(id)sender;
 - (IBAction)adbEditEntry:(id)sender;
+- (void)adbEditEntryAtIndex:(int)index newEntry: (BOOL) newEntry;
 - (IBAction)adbAddEntry:(id)sender;
 - (IBAction) executeABCommand: (id) sender;
 

@@ -349,9 +349,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
 - (IBAction)adbEditEntry:(id)sender
 {
-    int r;
-    NSStringEncoding const *p=encodingList;
-    id entry = nil;
 
     if(sender == nil)
     {
@@ -359,19 +356,32 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	int i;
 	for(i = 0; i < [[self addressBook] count]; i++)
 	{
-	    entry = [[self addressBook] objectAtIndex: i];
-
-	    if([entry objectForKey: @"DefaultEntry"] != nil)
+	    if(isDefaultEntry([[self addressBook] objectAtIndex: i]))
 		break;
 	}
 	if (i == [[self addressBook] count])
-	    entry = nil;
-	
+	{
+	    [self adbEditEntryAtIndex: i newEntry: NO];
+	}
+
     }
     else if ([adTable selectedRow]>= 0)
     {
-	entry=[[self addressBook] objectAtIndex:[adTable selectedRow]];
+	[self adbEditEntryAtIndex: [adTable selectedRow] newEntry: NO];
     }
+}
+
+- (void)adbEditEntryAtIndex:(int)index newEntry: (BOOL) newEntry
+{
+    int r;
+    NSStringEncoding const *p=encodingList;
+    id entry = nil;
+
+    if(index < 0 || index >= [[self addressBook] count])
+	return;
+
+    entry=[[self addressBook] objectAtIndex: index];
+
 
     if(entry == nil)
 	return;
@@ -538,6 +548,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [adTable reloadData];
         [ae release];
     }
+    else if (newEntry)
+    {
+	[self adbRemoveEntry: nil];
+    }
 }
 
 - (IBAction)adbAddEntry:(id)sender
@@ -545,8 +559,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adTable selectRow: 0 byExtendingSelection: NO];
     [self adbDuplicateEntry: nil];
 
-    
-    [self adbEditEntry: self];
+
+    [self adbEditEntryAtIndex: [adTable selectedRow] newEntry: YES];
 
 }
 
@@ -556,7 +570,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     if ([adTable selectedRow]<0) return;
     
     if ( isDefaultEntry( [[self addressBook] objectAtIndex:[adTable selectedRow]] ) ) {
-        // Post Alert or better yet, disable the remote button
+        // Post Alert or better yet, disable the remove button
     } else {
         NSBeginAlertSheet(
                         NSLocalizedStringFromTableInBundle(@"Do you really want to remove this item?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),

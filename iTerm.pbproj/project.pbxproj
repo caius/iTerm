@@ -10,6 +10,7 @@
 				05A162CE006CD5FC7F000001,
 				05A162CF006CD5FC7F000001,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -235,7 +236,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -335,6 +335,7 @@
 				876DBBC304327CC90073D10E,
 				876DBBC5043281250073D10E,
 				876DBBC7043284990073D10E,
+				87898DDF0444F93C0073D10E,
 			);
 			isa = PBXVariantGroup;
 			name = PreferencePanel.nib;
@@ -401,6 +402,30 @@
 			path = Korean.lproj/AddressBook.nib;
 			refType = 4;
 		};
+		87898DDD0444F9070073D10E = {
+			isa = PBXFileReference;
+			name = French;
+			path = French.lproj/MainMenu.nib;
+			refType = 4;
+		};
+		87898DDE0444F92A0073D10E = {
+			isa = PBXFileReference;
+			name = French;
+			path = French.lproj/AddressBook.nib;
+			refType = 4;
+		};
+		87898DDF0444F93C0073D10E = {
+			isa = PBXFileReference;
+			name = French;
+			path = French.lproj/PreferencePanel.nib;
+			refType = 4;
+		};
+		87898DE00444F94E0073D10E = {
+			isa = PBXFileReference;
+			name = French;
+			path = French.lproj/PseudoTerminal.nib;
+			refType = 4;
+		};
 		87D5C471043227820073D10E = {
 			children = (
 				87D5C472043227820073D10E,
@@ -408,6 +433,7 @@
 				876DBBC404327E9D0073D10E,
 				876DBBC6043282C80073D10E,
 				876DBBC80432860A0073D10E,
+				87898DDE0444F92A0073D10E,
 			);
 			isa = PBXVariantGroup;
 			name = AddressBook.nib;
@@ -605,7 +631,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		DD1E48A104314F1D00A8A065 = {
 			isa = PBXFrameworkReference;
@@ -1093,6 +1118,7 @@
 				FBBB8B4A039D9E6D01F955DB,
 				FB80352E03CA060201F955DB,
 				FBDF6A55042795CE01F955DB,
+				87898DDD0444F9070073D10E,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -1118,6 +1144,7 @@
 				FBBB8B4C039D9E8501F955DB,
 				FB80352F03CA060A01F955DB,
 				FBDF6A56042795EB01F955DB,
+				87898DE00444F94E0073D10E,
 			);
 			isa = PBXVariantGroup;
 			name = PseudoTerminal.nib;

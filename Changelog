@@ -1,6 +1,8 @@
 2003-04-09	ujwal
 
     * Preliminary support for print-to-ansi.
+    
+    * Incorporated French nib files into project.
 
 2003-04-08	fabian
     * Added French localization provided by Matt Anton

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.48 2003-03-28 22:45:46 yfabian Exp $
+// $Id: PTYTextView.m,v 1.49 2003-03-28 23:22:39 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -270,6 +270,7 @@
 {
 //    NSLog(@"setDirtyline:%d",y);
     [self setNeedsDisplayInRect:NSMakeRect(0,y*lineHeight,[self frame].size.width,(y+1)*lineHeight)];
+    if (startIndex!=-1&&y>=startY && y<=endY) startIndex=-1;
 }
 
 - (void) refresh

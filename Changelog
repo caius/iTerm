@@ -10,6 +10,7 @@
     * "Save as" now is working, we need a new print function
     * Fixed a crashing bug in "Save Config"
     * Fixed browse and mail in PTYTextView
+    * Made selection invalid if text is changed
     
 2003-03-27	ujwal
 

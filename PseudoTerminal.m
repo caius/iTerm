@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.277 2004-03-24 03:16:01 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.278 2004-03-24 15:47:14 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1447,9 +1447,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[displayProfileMgr setColor: [current selectedTextColor] forType: TYPE_SELECTED_TEXT_COLOR forProfile: displayProfile];
 	[displayProfileMgr setColor: [current cursorColor] forType: TYPE_CURSOR_COLOR forProfile: displayProfile];
 	[displayProfileMgr setColor: [current cursorTextColor] forType: TYPE_CURSOR_TEXT_COLOR forProfile: displayProfile];
-	
-	[[PreferencePanel sharedInstance] savePreferences];
-	
+		
 	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Display Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), displayProfile],
 								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are effected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
 								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
@@ -1473,8 +1471,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[terminalProfileMgr setSendIdleChar: [current antiIdle] forProfile: terminalProfile];
 	[terminalProfileMgr setIdleChar: [current antiCode] forProfile: terminalProfile];
 	
-	[[PreferencePanel sharedInstance] savePreferences];
-
 	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Terminal Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), terminalProfile],
 								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are effected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
 								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.64 2003-01-07 21:28:46 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.65 2003-01-08 01:21:21 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -751,7 +751,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
 
-#if 0
+#if 1
 
     return (proposedFrameSize);
 

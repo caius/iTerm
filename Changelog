@@ -1,6 +1,8 @@
 2003-03-22	Ujwal S. Sathyam <ujwal@setlurgroup.com>
     
     * Added option-click support to position cursor.
+    
+    * Added keyboard shortcut to "Clear Buffer"
 
 2003-03-20	fabian
     * Japanese localization patch from Yuichi OHKAWA

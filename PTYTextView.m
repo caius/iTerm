@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.170 2004-03-14 06:05:36 ujwal Exp $
+// $Id: PTYTextView.m,v 1.171 2004-03-19 06:50:31 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -228,6 +228,32 @@
 	[self setNeedsDisplay: YES];
 }
 
+- (void) setSelectedTextColor: (NSColor *) aColor
+{
+	[selectedTextColor release];
+	[aColor retain];
+	selectedTextColor = aColor;
+	[self setNeedsDisplay: YES];
+}
+
+- (void) setCursorTextColor:(NSColor*) aColor
+{
+	[cursorTextColor release];
+	[aColor retain];
+	cursorTextColor = aColor;
+	[self setNeedsDisplay: YES];
+}
+
+- (NSColor *) cursorTextColor
+{
+	return (cursorTextColor);
+}
+
+- (NSColor *) selectedTextColor
+{
+	return (selectedTextColor);
+}
+
 - (NSColor *) defaultFGColor
 {
     return defaultFGColor;
@@ -262,6 +288,12 @@
 {
     NSColor *color;
 	int reversed;
+	
+	if(index == SELECTED_TEXT)
+		return (selectedTextColor);
+	
+	if(index == CURSOR_TEXT)
+		return (cursorTextColor);
 	
 	reversed = [[dataSource terminal] screenMode];
 	
@@ -578,7 +610,7 @@
 	NSColor *aColor;
 	char  *fg, *bg, *dirty;
 	BOOL need_draw;
-	int bgstart, ulstart;
+	int bgstart, ulstart, colorCode;
     float curX, curY;
 	char bgcode, fgcode;
 	int y1, x1;
@@ -728,14 +760,19 @@
 		for(j=0;j<WIDTH;j++) {
 			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
 			double_width = (buf[j+1] == 0xffff);
+			// switch colors if text is selected
+			if(bg[j] & SELECTION_MASK)
+				colorCode = SELECTED_TEXT;
+			else
+				colorCode = fg[j];
 			if (need_draw) { 	
 				if (fg[j]&BLINK_MASK) {
 					if (blinkShow) {				
-						[self _drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY doubleWidth: double_width];
+						[self _drawCharacter:buf[j] fgColor:colorCode AtX:curX Y:curY doubleWidth: double_width];
 					}
 				}
 				else {
-					[self _drawCharacter:buf[j] fgColor:fg[j] AtX:curX Y:curY doubleWidth: double_width];
+					[self _drawCharacter:buf[j] fgColor:colorCode AtX:curX Y:curY doubleWidth: double_width];
 					if(line>=startScreenLineIndex) 
 						dirty[j]=0;
 				}
@@ -788,7 +825,7 @@
 				}
 				double_width = ([dataSource screenLines][i+1] == 0xffff);
 				[self _drawCharacter: aChar 
-							fgColor: [dataSource screenFGColor][i] 
+							fgColor: CURSOR_TEXT 
 								AtX: x1 * charWidth + MARGIN 
 								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
 						doubleWidth: double_width];

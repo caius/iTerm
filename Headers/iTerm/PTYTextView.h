@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.30 2004-03-14 06:05:38 ujwal Exp $
+// $Id: PTYTextView.h,v 1.31 2004-03-19 06:50:34 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -32,7 +32,6 @@
 #import <iTerm/iTerm.h>
 
 #define MARGIN  5
-
 
 @class VT100Screen;
 
@@ -91,6 +90,8 @@ typedef struct
     NSColor* defaultBoldColor;
 	NSColor* defaultCursorColor;
 	NSColor* selectionColor;
+	NSColor* selectedTextColor;
+	NSColor* cursorTextColor;
 	
 	// transparency
 	float transparency;
@@ -159,12 +160,16 @@ typedef struct
 - (NSColor *) colorForCode:(int) index;
 - (NSColor *) selectionColor;
 - (NSColor *) defaultCursorColor;
+- (NSColor *) selectedTextColor;
+- (NSColor *) cursorTextColor;
 - (void) setFGColor:(NSColor*)color;
 - (void) setBGColor:(NSColor*)color;
 - (void) setBoldColor:(NSColor*)color;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
 - (void) setSelectionColor: (NSColor *) aColor;
 - (void)setCursorColor:(NSColor*) color;
+- (void) setSelectedTextColor: (NSColor *) aColor;
+- (void) setCursorTextColor:(NSColor*) color;
 - (void) forceUpdate;
 
 

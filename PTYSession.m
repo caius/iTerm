@@ -974,8 +974,10 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setForegroundColor: [displayProfileMgr color: TYPE_FOREGROUND_COLOR forProfile: displayProfile]];
     [self setBackgroundColor: [displayProfileMgr color: TYPE_BACKGROUND_COLOR forProfile: displayProfile]];
 	[self setSelectionColor: [displayProfileMgr color: TYPE_SELECTION_COLOR forProfile: displayProfile]];
+	[self setSelectedTextColor: [displayProfileMgr color: TYPE_SELECTED_TEXT_COLOR forProfile: displayProfile]];	
 	[self setBoldColor: [displayProfileMgr color: TYPE_BOLD_COLOR forProfile: displayProfile]];
 	[self setCursorColor: [displayProfileMgr color: TYPE_CURSOR_COLOR forProfile: displayProfile]];	
+	[self setCursorTextColor: [displayProfileMgr color: TYPE_CURSOR_TEXT_COLOR forProfile: displayProfile]];	
 	for(i = TYPE_ANSI_0_COLOR; i < TYPE_ANSI_8_COLOR; i++)
 	{
 		colorTable[0][i] = [displayProfileMgr color: i forProfile: displayProfile];
@@ -1333,6 +1335,26 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setSelectionColor: (NSColor *) color
 {
     [TEXTVIEW setSelectionColor: color];
+}
+
+- (NSColor *) selectedTextColor
+{
+	return ([TEXTVIEW selectedTextColor]);
+}
+
+- (void) setSelectedTextColor: (NSColor *) aColor
+{
+	[TEXTVIEW setSelectedTextColor: aColor];
+}
+
+- (NSColor *) cursorTextColor
+{
+	return ([TEXTVIEW cursorTextColor]);
+}
+
+- (void) setCursorTextColor: (NSColor *) aColor
+{
+	[TEXTVIEW setCursorTextColor: aColor];
 }
 
 // Changes transparency

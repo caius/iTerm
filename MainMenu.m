@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.82 2003-06-27 05:35:24 ujwal Exp $
+// $Id: MainMenu.m,v 1.83 2003-06-27 15:16:54 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -39,7 +39,7 @@
 #import "NSStringITerm.h"
 #import "AddressBookWindowController.h"
 
-
+static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString* OLD_ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
 static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/AddressBook";
 static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
@@ -204,9 +204,14 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     }
     //activate the font file using the file spec
     osstatus = FMActivateFonts( &fsSpec, NULL, NULL, kFMLocalActivationContext);
-
+    
     // create the iTerm directory if it does not exist
     NSFileManager *fileManager = [NSFileManager defaultManager];
+    // create the "~/Library/Application Support" directory if it does not exist
+    if([fileManager fileExistsAtPath: [APPLICATION_SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
+    {
+	[fileManager createDirectoryAtPath: [APPLICATION_SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
+    }    
     if([fileManager fileExistsAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
     {
 	[fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];

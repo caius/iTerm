@@ -65,10 +65,10 @@
 - (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)str
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"VT100TextStorage: replaceCharactersInRange: (%d,%d) withString: '%@'",
-	  range.location, range.length, str);
-    NSLog(@"old str = '%@'", [[contents attributedSubstringFromRange: range] string]);
-    NSLog(@"new str = '%@'", str);
+    NSLog(@"VT100TextStorage: replaceCharactersInRange: (%d,%d) withString:",
+	  range.location, range.length);
+    NSLog(@"old str = \n'%@'", [[contents attributedSubstringFromRange: range] string]);
+    NSLog(@"new str = \n'%@'", str);
 #endif
     //if([str isEqualToString: [[contents attributedSubstringFromRange: range] string]] == NO)
     {
@@ -87,7 +87,7 @@
 - (void) beginEditing
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"VT100TextStorage: beginEditing");
+    //NSLog(@"VT100TextStorage: beginEditing");
 #endif
     [super beginEditing];
 }
@@ -95,7 +95,7 @@
 - (void) endEditing
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"VT100TextStorage: endEditing");
+    //NSLog(@"VT100TextStorage: endEditing");
 #endif
     [super endEditing];
 }

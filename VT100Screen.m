@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.27 2003-01-21 19:28:05 yfabian Exp $
+// $Id: VT100Screen.m,v 1.28 2003-01-21 20:21:14 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -151,7 +151,7 @@ static BOOL PLAYBELL = YES;
         tabStop[i] = YES;
 
     for(i=0;i<300;i++) spaces[i]=' ';
-    for(i=0;i<4;i++) saveCharset[i]=charset[i]=i;
+    for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
     
     return self;
 }
@@ -505,16 +505,10 @@ static BOOL PLAYBELL = YES;
 	break;
     case VT100CSI_RIS: break;
     case VT100CSI_RM: break;
-    case VT100CSI_SCS0:
-    case VT100CSI_SCS1:
-    case VT100CSI_SCS2:
-    case VT100CSI_SCS3:
-        if (token.u.code!='0')
-            charset[[TERMINAL charset]]=0;
-        else 
-            charset[[TERMINAL charset]]=1;
-//        NSLog(@"%d%c->%d",[TERMINAL charset],token.u.code,charset[[TERMINAL charset]]);
-        break;
+    case VT100CSI_SCS0: charset[0]=(token.u.code=='0'); break;
+    case VT100CSI_SCS1: charset[1]=(token.u.code=='0'); break;
+    case VT100CSI_SCS2: charset[2]=(token.u.code=='0'); break;
+    case VT100CSI_SCS3: charset[3]=(token.u.code=='0'); break;
     case VT100CSI_SGR:  [self selectGraphicRendition:token]; break;
     case VT100CSI_SM: break;
     case VT100CSI_TBC:

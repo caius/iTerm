@@ -1,3 +1,11 @@
+2003-01-13	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added an option to copy selected text to emulate 
+      X copy/paste. This requires a multi-button mouse 
+      with one of the buttons programmed to be "Cmd-V" or 
+      "paste".
+      
+
 2003-01-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added some keyboard shortcuts to addressbook.

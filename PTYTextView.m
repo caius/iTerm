@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.14 2003-01-10 16:08:12 ujwal Exp $
+// $Id: PTYTextView.m,v 1.15 2003-01-13 16:04:26 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -269,7 +269,7 @@
 
     // Get selected string and trim it.
     aString = [[self string] substringWithRange: [self selectedRange]];
-    if(aString == nil)
+    if((aString == nil) || ([aString length] == 0))
 	return;
     aString = [aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 

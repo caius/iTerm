@@ -23,6 +23,7 @@
     IBOutlet id autoclose;
     IBOutlet id optionKey;
     IBOutlet id antiAlias;
+    IBOutlet id copySelection;
     
     NSUserDefaults *prefs;
 
@@ -43,6 +44,7 @@
     BOOL defaultAutoclose;
     int defaultOption;
     BOOL defaultAntiAlias;
+    BOOL defaultCopySelection;
 
     BOOL changingNA;
 
@@ -77,7 +79,8 @@
 - (BOOL) ai;
 - (int) aiCode;
 - (BOOL) autoclose;
-- (int) option;	
+- (int) option;
+- (BOOL) copySelection;
 
 
 @end

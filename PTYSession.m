@@ -585,6 +585,17 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL writeTask:[NSData dataWithBytes:&p length:1]];
 }
 
+- (void) textViewDidChangeSelection: (NSNotification *) aNotification
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYSession textViewDidChangeSelection]",
+	  __FILE__, __LINE__);
+#endif
+
+    if([[parent preference] copySelection])
+	[TEXTVIEW copy: self];
+    
+}
 
 // Misc
 - (void)moveLastLine

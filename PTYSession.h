@@ -94,6 +94,7 @@
 - (void) pasteString: (NSString *) aString;
 - (void)deleteBackward:(id)sender;
 - (void)deleteForward:(id)sender;
+- (void) textViewDidChangeSelection: (NSNotification *) aNotification;
 
 
 // Misc

@@ -86,6 +86,7 @@ static int TRANSPARENCY  =10;
         copy] retain];
     defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
+    defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     changingNA=NO;
                  
     return self;
@@ -133,6 +134,7 @@ static int TRANSPARENCY  =10;
     [nafontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultNAFont fontName], [defaultNAFont pointSize]]];
     [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
+    [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
     
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -211,6 +213,7 @@ static int TRANSPARENCY  =10;
 
     defaultAutoclose=([autoclose state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
+    defaultCopySelection=([copySelection state]==NSOnState);
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
@@ -230,6 +233,7 @@ static int TRANSPARENCY  =10;
     [prefs setBool:defaultAutoclose forKey:@"AutoClose"];
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
     [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
+    [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -362,6 +366,11 @@ static int TRANSPARENCY  =10;
 - (int) option
 {
     return defaultOption;
+}
+
+- (BOOL) copySelection
+{
+    return (defaultCopySelection);
 }
 
 @end

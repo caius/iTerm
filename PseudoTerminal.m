@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.71 2003-01-10 16:39:28 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.72 2003-01-13 16:04:27 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -546,7 +546,7 @@ static NSString *ConfigToolbarItem = @"Config";
     NSRect tabviewRect;
 
     // Resize the tabview first if necessary
-    if([TABVIEW numberOfTabViewItems] > 1)
+    if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
     {
 	tabviewRect = [[WINDOW contentView] frame];
 	tabviewRect.origin.x -= 10;
@@ -587,7 +587,10 @@ static NSString *ConfigToolbarItem = @"Config";
 
     thisWindow = [SCROLLVIEW window];
     winSize = size;
-    winSize.height = size.height + ([TABVIEW numberOfTabViewItems]>1?29:4); // account for tabview
+    if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
+	winSize.height = size.height + 29;
+    else
+	winSize.height = size.height + 4;
     [thisWindow setContentSize:winSize];
 }
 
@@ -789,7 +792,10 @@ static NSString *ConfigToolbarItem = @"Config";
     
     // Calculate scrollview size
     scrollviewSize = contentSize;
-    scrollviewSize.height = contentSize.height - ([TABVIEW numberOfTabViewItems]>1?29:4); // account for tabview
+    if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
+	scrollviewSize.height = contentSize.height - 29;
+    else
+	scrollviewSize.height = contentSize.height - 4;    
     //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
 
     
@@ -820,7 +826,10 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Calculate the window content size
     contentSize = scrollviewSize;
-    contentSize.height = scrollviewSize.height + ([TABVIEW numberOfTabViewItems]>1?29:4); // account for tabview
+    if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
+	contentSize.height = scrollviewSize.height + 29;
+    else
+	contentSize.height = scrollviewSize.height + 4;    
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
     
     // Finally calculate the window frame size
@@ -1342,6 +1351,11 @@ static NSString *ConfigToolbarItem = @"Config";
 - (void)setPreference:(id)preference;
 {
     pref=preference;
+}
+
+- (id) preference
+{
+    return (pref);
 }
 
 

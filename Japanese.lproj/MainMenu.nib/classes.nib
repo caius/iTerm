@@ -82,6 +82,7 @@
                 autoclose = id; 
                 background = id; 
                 col = id; 
+                copySelection = id; 
                 encoding = id; 
                 fontExample = id; 
                 foreground = id; 

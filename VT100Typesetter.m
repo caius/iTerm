@@ -181,11 +181,15 @@
 	    // pad with empty lines if we need to
 	    float displayHeight = [textView frame].size.height;
 
+	    NSLogRect(lineRect);
+	    NSLog(@"display height = %f", displayHeight);
 	    if (lineRect.origin.y + lineRect.size.height < displayHeight)
 	    {
+		NSLog(@"adding padding...");
 		lineRect.origin.y += [font defaultLineHeightForFont];
-		lineRect.size.height += displayHeight - lineRect.origin.y;
-		//[layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
+		lineRect.size.height = displayHeight - lineRect.origin.y;
+		NSLogRect(lineRect);
+		[layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
 	    }
 	    break;
 	}

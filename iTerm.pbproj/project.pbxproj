@@ -223,7 +223,7 @@
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
 	<key>CFBundleVersion</key>
-	<string>0.7.0</string>
+	<string>0.70</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
 	<key>NSExtensions</key>
@@ -656,7 +656,7 @@
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
 	<key>CFBundleVersion</key>
-	<string>0.7.0</string>
+	<string>0.70</string>
 </dict>
 </plist>
 ";

@@ -1,6 +1,10 @@
 2003-05-05	ujwal
 
-    * Bundling FreeMono font with the application.
+    * Bundling FreeMono font with the application. If Osaka-Mono is 
+      seen as the preferred font, we switch to FreeMono.
+      
+    * Changed version number from 0.7.0 to 0.70 since it is easier to 
+      parse into a number.
 
 
 2003-05-02	ujwal

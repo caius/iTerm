@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.45 2003-05-05 22:53:34 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.46 2003-05-06 06:39:54 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -54,6 +54,8 @@ static NSString* SHELL   =@"/bin/bash --login";
 static NSStringEncoding const *encodingList=nil;
 
 static int TRANSPARENCY  =10;
+
+static float versionNumber;
 
 @implementation PreferencePanel
 
@@ -181,6 +183,7 @@ static int TRANSPARENCY  =10;
 - (id)init
 {
     char *userShell, *thisUser;
+    float storedVersionNumber;
 #if DEBUG_OBJALLOC
     NSLog(@"%s(%d):-[PreferencePanel init]", __FILE__, __LINE__);
 #endif
@@ -193,8 +196,25 @@ static int TRANSPARENCY  =10;
     else if((userShell = getenv("SHELL")) != NULL)
         SHELL = [[NSString stringWithCString: userShell] retain];
 
-    
+    // get the version
+    NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
+    versionNumber = [(NSNumber *)[myDict objectForKey:@"CFBundleVersion"] floatValue];
+    if([prefs objectForKey: @"iTerm Version"])
+	storedVersionNumber = [prefs floatForKey: @"iTerm Version"];
+    else
+	storedVersionNumber = 0.0;
+        
     [self readPreferences];
+
+    // If we are pre 0.70 and are still using the old default font Osaka-Mono, switch to the new FreeMono
+    if(storedVersionNumber < 0.7 && [[defaultFont fontName] isEqualToString: @"Osaka-Mono"])
+    {
+	[defaultFont release];
+	defaultFont = [FONT copy];
+    }
+
+    // sync the version number
+    [prefs setObject: [myDict objectForKey:@"CFBundleVersion"] forKey: @"iTerm Version"];
                  
     return self;
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.177 2004-02-13 21:36:16 ujwal Exp $
+// $Id: VT100Screen.m,v 1.178 2004-02-13 22:13:14 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -717,6 +717,7 @@ static BOOL PLAYBELL = YES;
 	}
 	
 	bufferWrapped = lastBufferLineIndex = 0;
+	[(PTYTextView *) display refresh];
 }
 
 - (void) saveBuffer

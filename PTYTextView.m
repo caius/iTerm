@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.99 2004-02-13 21:36:16 ujwal Exp $
+// $Id: PTYTextView.m,v 1.100 2004-02-13 22:13:14 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -386,7 +386,7 @@
         numberOfLines = [dataSource numberOfLines];
         aSize = [self frame].size;
         height = numberOfLines * lineHeight;
-        if(height > [self frame].size.height)
+        if(height != [self frame].size.height)
         {
             NSRect aFrame;
             

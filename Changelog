@@ -1,3 +1,7 @@
+2004-02-13  ujwal
+
+	* Fixed "Kill Buffer" crash.
+
 2004-02-13  fabian
 
 	* Massive rewrite of drawing code. Some lost functionality needs to be recovered.

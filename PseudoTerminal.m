@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.61 2003-01-06 18:54:15 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.62 2003-01-07 02:29:44 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -836,7 +836,7 @@ static NSString *ConfigToolbarItem = @"Config";
     WIDTH = w;
     HEIGHT = h;
     
-    [self setWindowSize];
+    //[self setWindowSize];
     //NSLog(@"w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 
 
@@ -1087,6 +1087,10 @@ static NSString *ConfigToolbarItem = @"Config";
 {
     NSMutableArray* itemIdentifiers = [[[NSMutableArray alloc]init] autorelease];
 
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal toolbarAllowedItemIdentifiers]", __FILE__, __LINE__);
+#endif    
+
     [itemIdentifiers addObject: NewToolbarItem];
     [itemIdentifiers addObject: ABToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
@@ -1102,6 +1106,10 @@ static NSString *ConfigToolbarItem = @"Config";
 - (NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *) itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted
 {
     NSToolbarItem *toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal itemForItemIdentifier]", __FILE__, __LINE__);
+#endif    
 
     if ([itemIdent isEqual: ABToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
@@ -1160,6 +1168,10 @@ static NSString *ConfigToolbarItem = @"Config";
 - (NSToolbar *) setupToolbar;
 {
     NSToolbar* toolbar;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal setupToolbar]", __FILE__, __LINE__);
+#endif    
 
     toolbar = [[NSToolbar alloc] initWithIdentifier: @"Terminal Toolbar"];
     [toolbar setVisible:true];

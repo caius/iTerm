@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.h,v 1.1.1.1 2002-11-26 04:56:47 ujwal Exp $
+// $Id: NSStringITerm.h,v 1.2 2002-11-27 17:26:44 yfabian Exp $
 //
 //  NSStringJTerminal.h
 //
@@ -17,6 +17,7 @@
 
 EXTERN NSStringEncoding  NSStringEUCCNEncoding;
 EXTERN NSStringEncoding  NSStringBig5Encoding;
+EXTERN NSStringEncoding  NSEUCKRStringEncoding;
 
 @interface NSString (iTerm)
 

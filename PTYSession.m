@@ -639,36 +639,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [TERMINAL setEncoding:encoding];
 }
 
-- (void)setEncodingUTF8:(id)sender
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal setEncodingUTF8:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-    [self setEncoding:NSUTF8StringEncoding];
-    [parent setWindowTitle];
-}
-
-- (void)setEncodingEUCCN:(id)sender
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal setEncodingEUCCN:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-    [self setEncoding:NSStringEUCCNEncoding];
-    [parent setWindowTitle];
-}
-
-- (void)setEncodingBIG5:(id)sender
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal setEncodingBIG5:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-    [self setEncoding:NSStringBig5Encoding];
-    [parent setWindowTitle];
-}
-
 - (void)setFGColor:(NSColor*) color
 {
     [TEXTVIEW setTextColor: color];

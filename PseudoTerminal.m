@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.3 2002-11-27 16:17:51 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.4 2002-11-27 17:26:44 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -38,7 +38,6 @@ static NSDictionary *newOutputStateAttribute;
 + (PseudoTerminal *)newTerminalWindow: (id) sender
 {
     PseudoTerminal *term;
-    //static NSWindow *lastwindow=nil;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal newTerminal]", __FILE__, __LINE__);
@@ -746,13 +745,22 @@ static NSDictionary *newOutputStateAttribute;
         if ([TERMINAL defaultBGColor]!=[CONFIG_BACKGROUND color]) [[self currentSession] setBGColor:[CONFIG_BACKGROUND color]];
         switch ([CONFIG_ENCODING indexOfSelectedItem]) {
             case 0:
-                [[self currentSession] setEncodingUTF8:nil];
+                [[self currentSession] setEncoding:NSUTF8StringEncoding];
                 break;
             case 1:
-                [[self currentSession] setEncodingEUCCN:nil];
+                [[self currentSession] setEncoding:NSStringEUCCNEncoding];
                 break;
             case 2:
-                [[self currentSession] setEncodingBIG5:nil];
+                [[self currentSession] setEncoding:NSStringBig5Encoding];
+                break;
+            case 3:
+                [[self currentSession] setEncoding:NSJapaneseEUCStringEncoding];
+                break;
+            case 4:
+                [[self currentSession] setEncoding:NSShiftJISStringEncoding];
+                break;
+            case 5:
+                [[self currentSession] setEncoding:NSEUCKRStringEncoding];
                 break;
         }
         if (configFont != nil&&[SCREEN font]!=configFont) {

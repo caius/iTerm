@@ -113,9 +113,6 @@
 
 // MainMenu
 - (void)clearBuffer:(id)sender;
-- (void)setEncodingUTF8:(id)sender;
-- (void)setEncodingEUCCN:(id)sender;
-- (void)setEncodingBIG5:(id)sender;
 - (void)logStart:(id)sender;
 - (void)logStop:(id)sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;

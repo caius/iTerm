@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.m,v 1.1.1.1 2002-11-26 04:56:47 ujwal Exp $
+// $Id: NSStringITerm.m,v 1.2 2002-11-27 17:26:44 yfabian Exp $
 //
 //  NSStringJTerminal.m
 //
@@ -18,11 +18,15 @@
 {
     NSStringEUCCNEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingEUC_CN);
     NSStringBig5Encoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingBig5);
+    NSEUCKRStringEncoding = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingEUC_KR);
 
+    
     if (NSStringEUCCNEncoding == kCFStringEncodingInvalidId)
 	NSLog(@"Not Supported: NSStringEUCCNEncoding");
     if (NSStringBig5Encoding == kCFStringEncodingInvalidId)
 	NSLog(@"Not Supported: NSStringBig5Encoding");
+    if (NSEUCKRStringEncoding == kCFStringEncodingInvalidId)
+        NSLog(@"Not Support: NSEUCKRStringEncoding");
 	
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.1.1.1 2002-11-26 04:56:53 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.2 2002-11-27 17:26:44 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -29,6 +29,9 @@ static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 
 #define iseuccn(c)   ((c) >= 0x81 && (c) <= 0xfe)
 #define isbig5(c)    ((c) >= 0xa1 && (c) <= 0xfe)
+#define issjiskanji(c)  (((c) >= 0x81 && (c) <= 0x9f) ||  \
+                         ((c) >= 0xe0 && (c) <= 0xef))
+#define iseuckr(c)   ((c) >= 0xa1 && (c) <= 0xfe)
 
 #define ESC  0x1b
 #define DEL  0x7f
@@ -111,6 +114,7 @@ static BOOL isString(unsigned char *code,
 {
     BOOL result = NO;
 
+//    NSLog(@"%@",[NSString localizedNameOfStringEncoding:encoding]);
     if (isascii(*code)) {
         result = YES;
     }
@@ -124,11 +128,22 @@ static BOOL isString(unsigned char *code,
     }
     else if (encoding == NSStringBig5Encoding) {
         if (isbig5(*code))
-        {
             result = YES;
-        }
+    }
+    else if (encoding == NSJapaneseEUCStringEncoding) {
+        if (*code ==0x8e || *code==0x8f|| (*code>=0xa1&&*code<=0xfe))
+            result = YES;
+    }
+    else if (encoding == NSShiftJISStringEncoding) {
+        if (*code >= 0x80)
+            result = YES;
+    }
+    else if (encoding == NSEUCKRStringEncoding) {
+        if (iseuckr(*code))
+            result = YES;
     }
     
+
     return result;
 }
 
@@ -776,6 +791,118 @@ static VT100TCC decode_big5(unsigned char *datap,
     return result;
 }
 
+static VT100TCC decode_euc_jp(unsigned char *datap,
+                                   size_t datalen ,
+                                   size_t *rmlen)
+{
+    VT100TCC result;
+    unsigned char *p = datap;
+    size_t len = datalen;
+
+    while (len > 0) {
+        if (*p>=0x20&&*p<0x7f) {
+            p++;
+            len--;
+        }
+        else if  (len > 1 && *p == 0x8e) {
+                p += 2;
+                len -= 2;
+        }
+        else if (len > 2  && *p == 0x8f ) {
+            p += 3;
+            len -= 3;
+        }
+        else if (len > 1 && *p >= 0xa1 && *p <= 0xfe ) {
+            p += 2;
+            len -= 2;
+        }
+        else break;
+    }
+    while (len > 1 && *p == 0x8e) {
+        p += 2;
+        len -= 2;
+    }
+    if (len == datalen) {
+        *rmlen = 0;
+        result.type = VT100TCC_WAIT;
+    }
+    else {
+        *rmlen = datalen - len;
+        result.type = VT100TCC_STRING;
+    }
+
+    return result;
+}
+
+
+static VT100TCC decode_sjis(unsigned char *datap,
+                                  size_t datalen ,
+                                  size_t *rmlen)
+{
+    VT100TCC result;
+    unsigned char *p = datap;
+    size_t len = datalen;
+
+    while (len > 0) {
+        if (*p>=0x20&&*p<0x7f) {
+            p++;
+            len--;
+        }
+        else if (issjiskanji(*p)&&len>1) {
+            p += 2;
+            len -= 2;
+        }
+        else if (*p>=0x80) {
+            p++;
+            len--;
+        }
+        else break;
+    }
+
+    if (len == datalen) {
+        *rmlen = 0;
+        result.type = VT100TCC_WAIT;
+    }
+    else {
+        *rmlen = datalen - len;
+        result.type = VT100TCC_STRING;
+    }
+
+    return result;
+}
+
+
+static VT100TCC decode_euckr(unsigned char *datap,
+                             size_t datalen,
+                             size_t *rmlen)
+{
+    VT100TCC result;
+    unsigned char *p = datap;
+    size_t len = datalen;
+
+    while (len > 0) {
+        if (*p>=0x20&&*p<0x7f) {
+            p++;
+            len--;
+        }
+        else if (iseuckr(*p)&&len>1) {
+                p += 2;
+                len -= 2;
+        }
+        else break;
+    }
+    if (len == datalen) {
+        *rmlen = 0;
+        result.type = VT100TCC_WAIT;
+    }
+    else {
+        *rmlen = datalen - len;
+        result.type = VT100TCC_STRING;
+    }
+
+    return result;
+}
+
 static VT100TCC decode_string(unsigned char *datap,
 			     size_t datalen,
 			     size_t *rmlen,
@@ -816,6 +943,41 @@ static VT100TCC decode_string(unsigned char *datap,
             result.u.string = [[[NSString alloc]
                                    initWithData:data
                                        encoding:NSStringBig5Encoding]
+                autorelease];
+        }
+    }
+    else if (encoding==NSJapaneseEUCStringEncoding) {
+//        NSLog(@"decoding euc-jp");
+        result = decode_euc_jp(datap, datalen, rmlen);
+
+        if (result.type != VT100TCC_WAIT) {
+            data = [NSData dataWithBytes:datap length:*rmlen];
+            result.u.string = [[[NSString alloc]
+                                   initWithData:data
+                                       encoding:NSJapaneseEUCStringEncoding]
+                autorelease];
+        }
+    }
+    else if (encoding==NSShiftJISStringEncoding) {
+//        NSLog(@"decoding j-jis");
+        result = decode_sjis(datap, datalen, rmlen);
+
+        if (result.type != VT100TCC_WAIT) {
+            data = [NSData dataWithBytes:datap length:*rmlen];
+            result.u.string = [[[NSString alloc]
+                                   initWithData:data
+                                       encoding:NSShiftJISStringEncoding]
+                autorelease];
+        }
+    }
+    else if (encoding==NSEUCKRStringEncoding) {
+//        NSLog(@"decoding korean");
+        result = decode_euckr(datap, datalen, rmlen);
+        if (result.type != VT100TCC_WAIT) {
+            data = [NSData dataWithBytes:datap length:*rmlen];
+            result.u.string = [[[NSString alloc]
+                                   initWithData:data
+                                       encoding:NSEUCKRStringEncoding]
                 autorelease];
         }
     }

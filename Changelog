@@ -1,3 +1,6 @@
+2002-11-28      fabian
+    * Added Japanese (EUC-JP/SJIS) and Korean (EUC-KR) support
+
 2002-11-27	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added menu item and keyboard shortcut to close the current 

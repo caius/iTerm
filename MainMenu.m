@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.81 2003-06-26 21:07:32 ujwal Exp $
+// $Id: MainMenu.m,v 1.82 2003-06-27 05:35:24 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -781,7 +781,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 
     NSDictionary *ae;
     ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-        @"Default session",@"Name",
+        NSLocalizedStringFromTableInBundle(@"Default Session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Default Session"),@"Name",
         shell,@"Command",
         [NSNumber numberWithUnsignedInt:1],@"Encoding",
         [NSColor colorWithCalibratedRed:0.8f

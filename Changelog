@@ -2,6 +2,8 @@
     * Dynamically change the tab size based on the number of tabs
     * Version number updated to 0.7.0
     * Implemented "clear scrollback buffer"
+    * Implemented "Save as a new entry" in Edit AddressEntry dialog
+      to allow copy of existing entries.
     
 2003-04-28	ujwal
 

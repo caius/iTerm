@@ -56,6 +56,7 @@
     IBOutlet id adClose;
     IBOutlet id adDoubleWidth;
     IBOutlet id adShortcut;
+    IBOutlet id adNewEntry;
     IBOutlet NSTextField *adNATextExample;
     IBOutlet NSColorWell *adSelection;
     IBOutlet NSColorWell *adBold;

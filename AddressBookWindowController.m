@@ -164,10 +164,10 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             [adDir stringValue],@"Directory",
             aeFont,@"Font",
             aeNAFont,@"NAFont",
-            [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
+            [NSNumber numberWithBool:([adAI state]==NSOnState)],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
-            [NSNumber numberWithBool:[adClose state]],@"AutoClose",
-            [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
+            [NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
+            [NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
             [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
             NULL];
         [[self addressBook] addObject:ae];
@@ -281,13 +281,14 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             [adDir stringValue],@"Directory",
             aeFont,@"Font",
             aeNAFont,@"NAFont",
-            [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
+            [NSNumber numberWithBool:([adAI state]==NSOnState)],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
-            [NSNumber numberWithBool:[adClose state]],@"AutoClose",
-            [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
+            [NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
+            [NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
             [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
             NULL];
-        [[self addressBook] replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
+        if ([adNewEntry state]==NSOnState) [[self addressBook] insertObject:ae atIndex:[adTable selectedRow]];
+        else [[self addressBook] replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
 	//        NSLog(@"%s(%d):-[Address entry replaced:%@]",
  //              __FILE__, __LINE__, ae );

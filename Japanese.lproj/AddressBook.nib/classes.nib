@@ -33,6 +33,7 @@
                 adForeground = NSColorWell; 
                 adNATextExample = NSTextField; 
                 adName = NSTextField; 
+                adNewEntry = id; 
                 adNewWindow = id; 
                 adRow = id; 
                 adSelection = NSColorWell; 

@@ -102,6 +102,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setDrawsBackground:NO];
     [TEXTVIEW setEditable:YES];
     [TEXTVIEW setSelectable:YES];
+    [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     
     // Allocate screen, shell, and terminal objects
     SHELL = [[PTYTask alloc] init];

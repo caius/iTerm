@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.96 2003-02-04 22:59:54 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.97 2003-02-05 01:11:35 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -170,7 +170,7 @@ static NSString *ConfigToolbarItem = @"Config";
     aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: aSession];
     NSParameterAssert(aTabViewItem != nil);
     [TABVIEW addTabViewItem: aTabViewItem];
-
+    [aTabViewItem release];
     
     // Allocate a scrollview and add to the tabview
     aScrollView = [[PTYScrollView alloc] initWithFrame: [TABVIEW contentRect]];
@@ -179,6 +179,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [aScrollView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [aScrollView setLineScroll: ([VT100Screen fontSize: FONT].height)];
     [aScrollView setVerticalLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [aSession setSCROLLVIEW: aScrollView];
     [aScrollView release];
 
     // Init the rest of the session
@@ -192,6 +193,12 @@ static NSString *ConfigToolbarItem = @"Config";
     [aScrollView setDocumentView:[aSession TEXTVIEW]];
     [aTabViewItem setLabel: @""];
 
+    if([ptyList count] == 0)
+    {
+        // Tell us whenever something happens with the tab view
+        [TABVIEW setDelegate: self];
+    }
+    
     // Add this session to our list and make it current
     [ptyList addObject: aSession];
     [aSession release];
@@ -200,8 +207,6 @@ static NSString *ConfigToolbarItem = @"Config";
     currentPtySession = aSession;
     [TABVIEW selectTabViewItem: aTabViewItem];
     [self setCurrentSessionName: nil];    
-
-    SCROLLVIEW = (PTYScrollView *)[aTabViewItem view];
 
    
     [[currentPtySession TEXTVIEW] setDelegate: aSession];
@@ -219,7 +224,7 @@ static NSString *ConfigToolbarItem = @"Config";
         [[aSession TEXTVIEW] setSelectionColor: sc];
     else
         [[aSession TEXTVIEW] setSelectionColor: [pref selectionColor]];
-    [SCROLLVIEW setBackgroundColor: bg];
+    [[currentPtySession SCROLLVIEW] setBackgroundColor: bg];
 
     [self setFont:FONT nafont:NAFONT];
     if (term) 
@@ -243,12 +248,6 @@ static NSString *ConfigToolbarItem = @"Config";
     [[currentPtySession TERMINAL] setEncoding:encoding];
     [[currentPtySession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
     
-    if([ptyList count] == 0)
-    {
-        // Tell us whenever something happens with the tab view
-        [TABVIEW setDelegate: self];
-    }
-
     [[currentPtySession SHELL] setWidth:WIDTH  height:HEIGHT];
 
     [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
@@ -276,7 +275,6 @@ static NSString *ConfigToolbarItem = @"Config";
 	[self setWindowSize: NO];
     }
 
-    [aTabViewItem release];
     
     [WINDOW makeKeyAndOrderFront:self];
         
@@ -300,7 +298,6 @@ static NSString *ConfigToolbarItem = @"Config";
 
     aSession = [ptyList objectAtIndex: sessionIndex];
     [TABVIEW selectTabViewItemWithIdentifier: aSession];
-    SCROLLVIEW = (PTYScrollView *)[[TABVIEW selectedTabViewItem] view];
     if (currentPtySession) [currentPtySession resetStatus];
     currentSessionIndex = sessionIndex;
     currentPtySession = aSession;
@@ -309,6 +306,60 @@ static NSString *ConfigToolbarItem = @"Config";
     [WINDOW makeFirstResponder:[currentPtySession TEXTVIEW]];
     [WINDOW setNextResponder:self];
 
+}
+
+- (void) addSession: (PTYSession *) aSession
+{
+    PTYTabViewItem *aTabViewItem;
+
+    if(aSession == nil)
+	return;
+
+    if([ptyList containsObject: aSession] == NO)
+    {
+	[ptyListLock lock];
+	
+	// add to list
+	[ptyList addObject: aSession];
+	[aSession setParent: self];
+	currentSessionIndex = [ptyList count] - 1;
+	currentPtySession = aSession;
+
+	// create a new tab
+	aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: aSession];
+	NSParameterAssert(aTabViewItem != nil);
+	[aTabViewItem setLabel: [aSession name]];
+	[aTabViewItem setView: [aSession SCROLLVIEW]];
+	[TABVIEW addTabViewItem: aTabViewItem];
+	[aTabViewItem release];
+	[aSession setTabViewItem: aTabViewItem];
+	[self selectSession: currentSessionIndex];
+
+	[ptyListLock unlock];
+
+	if ([TABVIEW numberOfTabViewItems] == 1)
+	{
+	    if(![pref hideTab])
+		[TABVIEW setTabViewType: [pref tabViewType]];
+	    else
+		[TABVIEW setTabViewType: NSNoTabsBezelBorder];
+	    [self setWindowSize: YES];
+	}
+	else if([TABVIEW numberOfTabViewItems] == 2)
+	{
+	    [TABVIEW setTabViewType: [pref tabViewType]];
+	    [self setWindowSize: NO];
+	}
+
+	if([ptyList count] == 1)
+	{
+	    // Tell us whenever something happens with the tab view
+	    [TABVIEW setDelegate: self];
+	}
+
+	[WINDOW makeKeyAndOrderFront: self];
+	
+    }
 }
 
 - (void) closeSession: (PTYSession*) aSession
@@ -630,7 +681,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	}
     }
 
-    thisWindow = [SCROLLVIEW window];
+    thisWindow = [[currentPtySession SCROLLVIEW] window];
     winSize = size;
     if([TABVIEW tabViewType] == NSTopTabsBezelBorder)
 	winSize.height = size.height + 29;
@@ -916,7 +967,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, [WINDOW frame].size.width, [WINDOW frame].size.height);
 #endif
 
-    frame = [[SCROLLVIEW contentView] frame];
+    frame = [[[currentPtySession SCROLLVIEW] contentView] frame];
 #if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 	  frame.origin.x, frame.origin.y,
@@ -1102,7 +1153,7 @@ static NSString *ConfigToolbarItem = @"Config";
                 
             // set the background color for the scrollview with the appropriate transparency
             bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
-            [SCROLLVIEW setBackgroundColor: bgColor];
+            [[currentPtySession SCROLLVIEW] setBackgroundColor: bgColor];
             [currentPtySession setFGColor:  [CONFIG_FOREGROUND color]];
             [currentPtySession setBGColor:  bgColor]; 
             
@@ -1115,7 +1166,7 @@ static NSString *ConfigToolbarItem = @"Config";
                     [aSession setBackgroundAlpha: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
                 }
             } */
-            [SCROLLVIEW setNeedsDisplay: YES];
+            [[currentPtySession SCROLLVIEW] setNeedsDisplay: YES];
             
         }
         [[currentPtySession SCREEN] showCursor];
@@ -1364,7 +1415,6 @@ static NSString *ConfigToolbarItem = @"Config";
     
     aSession = [tabViewItem identifier];
     
-    SCROLLVIEW = (PTYScrollView *)[tabViewItem view];
     if (currentPtySession) [currentPtySession resetStatus];
     currentSessionIndex = [TABVIEW indexOfTabViewItem: tabViewItem];
     currentPtySession = aSession;
@@ -1382,6 +1432,9 @@ static NSString *ConfigToolbarItem = @"Config";
 {
     NSMenuItem *aMenuItem;
     NSPoint windowPoint, localPoint;
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PseudoTerminal tabViewContextualMenu]", __FILE__, __LINE__);
+#endif    
 
     if((theEvent == nil) || (theMenu == nil))
 	return;
@@ -1392,17 +1445,77 @@ static NSString *ConfigToolbarItem = @"Config";
     localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
 
     // add tasks
-    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Close",@"iTerm",@"Close Session") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
     [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
-    
+    if([ptyList count] > 1)
+    {
+	aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Move to new window",@"iTerm",@"Move session to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
+	[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
+	[theMenu addItem: aMenuItem];
+	[aMenuItem release];
+	
+    }
 }
 
 // closes a tab
 - (void) closeTabContextualMenuAction: (id) sender
 {
     [self closeSession: [sender representedObject]];
+}
+
+// moves a tab with its session to a new window
+- (void) moveTabToNewWindowContextualMenuAction: (id) sender
+{
+    PseudoTerminal *term;
+    PTYSession *aSession;
+    PTYTabViewItem *aTabViewItem;
+
+    // grab the referenced session
+    aSession = [sender representedObject];
+    if(aSession == nil)
+	return;
+
+    // create a new terminal window
+    term = [PseudoTerminal newTerminalWindow: MAINMENU];
+
+    if(term == nil)
+	return;
+
+    [term setPreference:pref];
+    [term initWindow: WIDTH
+              height: HEIGHT
+                font: FONT
+              nafont: NAFONT];
+
+    // If this is the current session, make previous one active.
+    if(aSession == currentPtySession)
+    {
+	[self selectSession: (currentSessionIndex - 1)];
+    }
+
+    // add the session to the new terminal
+    aTabViewItem = [aSession tabViewItem];
+    [term addSession: aSession];
+
+    // remove from our window
+    [TABVIEW removeTabViewItem: aTabViewItem];
+    [ptyList removeObject: aSession];
+
+    if ([TABVIEW numberOfTabViewItems] == 1)
+    {
+	if(![pref hideTab])
+	    [TABVIEW setTabViewType: [pref tabViewType]];
+	else
+	{
+	    [TABVIEW setTabViewType: NSNoTabsBezelBorder];
+	    [self setWindowSize: NO];
+	    [[currentPtySession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[currentPtySession TEXTVIEW] string] length] - 1, 1)];
+	}
+    }
+    
+
 }
 
 

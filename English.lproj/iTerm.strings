@@ -70,7 +70,10 @@
 "Save" = "Save";
 
 /* Context menu */
-"Select" = "Select"
+"Select" = "Select";
+
+/* Context menu */
+"Move to new window" = "Move to new window";
 
 /* Anti-Idle: wrong input */
 "Please enter a valid code (0~255)" = "Please enter a valid code (0~255)";

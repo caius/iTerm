@@ -9,6 +9,7 @@
 #import "PTYSession.h"
 #import "PTYTask.h"
 #import "PTYTextView.h"
+#import "PTYScrollView.h";
 #import "VT100Screen.h"
 #import "VT100Terminal.h"
 #import "PreferencePanel.h"
@@ -838,6 +839,16 @@ static NSString *PWD_ENVVALUE = @"~";
         TEXTVIEW = theTEXTVIEW;
     }
 }
+
+- (PTYScrollView *) SCROLLVIEW
+{
+    return (SCROLLVIEW);
+}
+- (void) setSCROLLVIEW: (PTYScrollView *) theSCROLLVIEW
+{
+    SCROLLVIEW = theSCROLLVIEW;
+}
+
 
 - (void)setEncoding:(NSStringEncoding)encoding
 {

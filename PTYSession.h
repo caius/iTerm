@@ -11,6 +11,7 @@
 
 @class PTYTask;
 @class PTYTextView;
+@class PTYScrollView;
 @class VT100Screen;
 @class VT100Terminal;
 @class PreferencePanel;
@@ -48,6 +49,7 @@
     NSString *TERM_VALUE;
     VT100Screen   *SCREEN;
     BOOL EXIT;
+    PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
     NSTimer *timer;
     int	iIdleCount,oIdleCount;
@@ -124,6 +126,8 @@
 - (void) setSCREEN: (VT100Screen *) theSCREEN;
 - (PTYTextView *) TEXTVIEW;
 - (void) setTEXTVIEW: (PTYTextView *) theTEXTVIEW;
+- (PTYScrollView *) SCROLLVIEW;
+- (void) setSCROLLVIEW: (PTYScrollView *) theSCROLLVIEW;
 - (void)setEncoding:(NSStringEncoding)encoding;
 - (BOOL) antiIdle;
 - (int) antiCode;

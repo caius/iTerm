@@ -1,3 +1,14 @@
+2003-02-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added menu item in tabview contextual menu to move 
+      tab to new window.
+      
+    * Simplified PseudoTerminal code by removing direct 
+      references to SCREEN, SCROLLVIEW, TEXTVIEW, TERMINAL, 
+      TERM_VALUE. All these operate only on the PTYSession 
+      object.
+      
+
 2003-02-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added submenus to tabview contextual menu. Tabview 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.2 2002-12-07 01:53:36 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.3 2003-02-05 01:11:36 ujwal Exp $
 //
 //  PTYScrollView.m
 //  JTerminal
@@ -21,7 +21,7 @@
 {
 
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView dealloc");
+    NSLog(@"%s(%d):-[PTYScrollView dealloc", __FILE__, __LINE__);
 #endif
     
     [super dealloc];

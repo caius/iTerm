@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.85 2003-09-05 15:13:15 ujwal Exp $
+// $Id: PTYTextView.m,v 1.86 2003-09-05 15:20:48 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1795,6 +1795,7 @@
         [delegate paste:sender];
     else
         [super paste:sender];
+    [self scrollEnd];
 }
 
 - (void)pasteSelection:(id)sender;
@@ -1807,6 +1808,7 @@
     
     if ([delegate respondsToSelector:@selector(pasteString:)])
         [delegate pasteString:aString];
+    [self scrollEnd];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item

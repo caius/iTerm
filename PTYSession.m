@@ -774,7 +774,6 @@ static NSString *PWD_ENVVALUE = @"~";
     board = [NSPasteboard generalPasteboard];
     NSParameterAssert(board != nil );
     str = [board stringForType:NSStringPboardType];
-    [TEXTVIEW scrollEnd];
     [self pasteString: str];
 }
 

@@ -7,6 +7,9 @@
       VT100Screen: -dealloc. Also no need to retain 
       BUFFER after alloc and init.
       
+    * Fixed bug in accessing characters in buffer while 
+      marking autowrap position.
+      
 
 2003-02-21	fabian
     * Fixed a bug in function key mapping: F1~F12

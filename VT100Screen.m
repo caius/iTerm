@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.46 2003-02-22 00:00:31 ujwal Exp $
+// $Id: VT100Screen.m,v 1.47 2003-02-22 02:05:42 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -600,7 +600,7 @@ static BOOL PLAYBELL = YES;
     int idx=len-1;
 
     if (x>=WIDTH||y>=HEIGHT||x<0||y<0) {
-        NSLog(@"getIndex: out of bound: x = %d; y = %d", x, y);
+        NSLog(@"getIndex: out of bound: x = %d; y = %d, WIDTH = %d; HEIGHT = %d", x, y, WIDTH, HEIGHT);
         return -1;
     }
     for(;y<HEIGHT&&idx>=0;idx--) {
@@ -746,12 +746,23 @@ static BOOL PLAYBELL = YES;
     // if we did a wrapAround, mark the position so that we can strip them out when copying
     if(didWrap)
     {
-	int anIndex = [self getIndex: CURSOR_X y: CURSOR_Y] - 2;
+	NSRange searchRange, aRange;
 
-	if(anIndex < [[BUFFER string] length] && anIndex>=0)
+	if(CURSOR_X >= WIDTH || CURSOR_Y >= HEIGHT)
 	{
-	    if([[BUFFER string] characterAtIndex: anIndex] == VT100CC_LF)
-		[BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: NSMakeRange(([self getIndex: CURSOR_X y: CURSOR_Y] - 2), 1)];
+	    searchRange.location = [[BUFFER string] length] - 10;
+	}
+	else
+	{
+	    searchRange.location = [self getIndex: CURSOR_X y: CURSOR_Y] - 10;
+	}
+	searchRange.length = 10;
+
+	aRange = [[BUFFER string] rangeOfString: @"\n" options: NSBackwardsSearch range: searchRange];
+
+	if(aRange.length > 0)
+	{
+	    [BUFFER addAttribute: @"VT100LineWrap" value: @"YES" range: aRange];
 	}
     }
 }

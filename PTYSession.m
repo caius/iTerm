@@ -155,7 +155,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) startTimer
 {
-    timer =[[NSTimer scheduledTimerWithTimeInterval:0.075
+    timer =[[NSTimer scheduledTimerWithTimeInterval:0.01
                                              target:self
                                            selector:@selector(timerTick:)
                                            userInfo:nil
@@ -390,7 +390,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		case NSPauseFunctionKey:
 		    break;
 		case NSClearLineFunctionKey:
-		    if(![TERMINAL numLock])
+		    if(![TERMINAL numLock] || [TERMINAL keypadMode])
 			data = [TERMINAL keyPFn: 1];
 		    break;
 	    }
@@ -436,7 +436,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    data = [mstr dataUsingEncoding:[TERMINAL encoding]];
 
 	    // Check if we are in keypad mode
-	    if((modflag & NSNumericPadKeyMask) && ![TERMINAL numLock])
+	    if((modflag & NSNumericPadKeyMask) && (![TERMINAL numLock] || [TERMINAL keypadMode]))
 	    {
 		switch (unicode)
 		{

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.6 2002-12-10 18:26:28 yfabian Exp $
+// $Id: MainMenu.m,v 1.7 2002-12-11 17:18:25 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -23,7 +23,7 @@
 #define DEFAULT_FONTSIZE  12
 
 static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
-static NSStringEncoding *encodingList=nil;
+static NSStringEncoding const *encodingList=nil;
 static BOOL newWindow=YES;
 
 @implementation MainMenu
@@ -252,7 +252,7 @@ static BOOL newWindow=YES;
 - (IBAction)adbAddEntry:(id)sender
 {
     int r;
-    NSStringEncoding *p=encodingList;
+    NSStringEncoding const *p=encodingList;
     
     [AE_PANEL center];
     [adName setStringValue:@""];
@@ -318,7 +318,7 @@ static BOOL newWindow=YES;
 - (IBAction)adbEditEntry:(id)sender
 {
     int r;
-    NSStringEncoding *p=encodingList;
+    NSStringEncoding const *p=encodingList;
     id entry;
 
     if ([adTable selectedRow]<0) return
@@ -650,7 +650,7 @@ static BOOL newWindow=YES;
     }
 }
 
-- (NSStringEncoding*) encodingList
+- (NSStringEncoding const*) encodingList
 {
     return encodingList;
 }

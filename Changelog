@@ -1,3 +1,8 @@
+2002-12-11	fabian
+    * Changed/Added several shortcut keys:
+      command-left and right arrow: pre/next session
+      command-Fn: switch to n-th session
+      
 2002-12-10	fabian
     * Rewritten all the encoding related code. Now all 
       the encodings that are available on the system will 

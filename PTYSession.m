@@ -239,9 +239,9 @@ static NSString *PWD_ENVVALUE = @"~";
     iIdleCount=0;
     
     // Check if we are navigating through sessions
-    if ((modflag & NSFunctionKeyMask) && (modflag & NSShiftKeyMask)) 
+    if ((modflag & NSFunctionKeyMask) && (modflag & NSCommandKeyMask)) 
     {
-        // function key's
+        // command + function key's
         switch (unicode) 
         {
             case NSLeftArrowFunctionKey: // cursor left
@@ -253,86 +253,92 @@ static NSString *PWD_ENVVALUE = @"~";
                 [parent nextSession: nil];
                 return;  
             default:
+                if (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey) {
+                    [parent selectSession:unicode-NSF1FunctionKey];
+                }
                 break;      
         }
     }
-    
-    if (modflag & NSFunctionKeyMask) {
-	NSData *data = nil;
-	int f = -1;
-
-	switch(unicode) {
-	case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp]; break;
-	case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown]; break;
-	case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft]; break;
-	case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight]; break;
-
-	case NSF1FunctionKey: f = 1; break;
-	case NSF2FunctionKey: f = 2; break;
-	case NSF3FunctionKey: f = 3; break;
-	case NSF4FunctionKey: f = 4; break;
-	case NSF5FunctionKey: f = 5; break;
-	case NSF6FunctionKey: f = 6; break;
-	case NSF7FunctionKey: f = 7; break;
-	case NSF8FunctionKey: f = 8; break;
-	case NSF9FunctionKey: f = 9; break;
-	case NSF10FunctionKey: f = 10; break;
-	case NSF11FunctionKey: f = 11; break;
-	case NSF12FunctionKey: f = 12; break;
-	    break;
-
-	case NSInsertFunctionKey: data = [TERMINAL keyInsert]; break;
-#if DEBUG_SCREENDUMP
-	case NSDeleteFunctionKey: 
-	    NSLog(@"### DEBUG ###\n%@", SCREEN);
-	    break;
-#else
-	case NSDeleteFunctionKey: data = [TERMINAL keyDelete]; break;
-#endif
-	case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
-	case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
-	case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
-	case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
-
-	case NSPrintScreenFunctionKey:
-	    break;
-	case NSScrollLockFunctionKey:
-	case NSPauseFunctionKey:
-	    break;
-	}
-
-	if (f >= 0)
-	    data = [TERMINAL keyFunction:f];
-
-	if (data != nil) {
-	    send_str = (char *)[data bytes];
-	    send_strlen = [data length];
-	}
-    }
     else {
-	NSData *data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
-	
-	if (data != nil ) {
-	    send_str = (char *)[data bytes];
-	    send_strlen = [data length];
-	}
-    }
 
-    if (EXIT == NO ) {
-	if (send_pchr >= 0) {
-	    char c = send_pchr;
-	    
-	    [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
-	}
-	if (send_chr >= 0) {
-	    char c = send_chr;
-	    
-	    [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
-	}
-	if (send_str != NULL) {
-	    [SHELL writeTask:[NSData dataWithBytes:send_str
-					    length:send_strlen]];
-	}
+        if (modflag & NSFunctionKeyMask) {
+            NSData *data = nil;
+            int f = -1;
+
+            switch(unicode) {
+                case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp]; break;
+                case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown]; break;
+                case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft]; break;
+                case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight]; break;
+
+                case NSF1FunctionKey: f = 1; break;
+                case NSF2FunctionKey: f = 2; break;
+                case NSF3FunctionKey: f = 3; break;
+                case NSF4FunctionKey: f = 4; break;
+                case NSF5FunctionKey: f = 5; break;
+                case NSF6FunctionKey: f = 6; break;
+                case NSF7FunctionKey: f = 7; break;
+                case NSF8FunctionKey: f = 8; break;
+                case NSF9FunctionKey: f = 9; break;
+                case NSF10FunctionKey: f = 10; break;
+                case NSF11FunctionKey: f = 11; break;
+                case NSF12FunctionKey: f = 12; break;
+                    break;
+
+                case NSInsertFunctionKey:
+//                case NSHelpFunctionKey:
+                    data = [TERMINAL keyInsert]; break;
+                case NSDeleteFunctionKey:
+                    if (modflag&NSCommandKeyMask)
+                        NSLog(@"### DEBUG ###\n%@", SCREEN);
+                    else
+                         data = [TERMINAL keyDelete]; break;
+                    break;
+                case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
+                case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
+                case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
+                case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
+
+                case NSPrintScreenFunctionKey:
+                    break;
+                case NSScrollLockFunctionKey:
+                case NSPauseFunctionKey:
+                    break;
+            }
+
+//            if ((modflag&NSShiftKeyMask)&&f>=0) f+=12;
+            if (f >= 0)
+                data = [TERMINAL keyFunction:f];
+
+            if (data != nil) {
+                send_str = (char *)[data bytes];
+                send_strlen = [data length];
+            }
+        }
+        else {
+            NSData *data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
+
+            if (data != nil ) {
+                send_str = (char *)[data bytes];
+                send_strlen = [data length];
+            }
+        }
+
+        if (EXIT == NO ) {
+            if (send_pchr >= 0) {
+                char c = send_pchr;
+
+                [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
+            }
+            if (send_chr >= 0) {
+                char c = send_chr;
+
+                [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
+            }
+            if (send_str != NULL) {
+                [SHELL writeTask:[NSData dataWithBytes:send_str length:send_strlen]];
+            }
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.2 2002-12-10 18:26:28 yfabian Exp $
+// $Id: MainMenu.h,v 1.3 2002-12-11 17:18:25 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -101,7 +101,7 @@
 - (PseudoTerminal *) frontPseudoTerminal;
 - (void) addTerminalWindow: (PseudoTerminal *) theTerminalWindow;
 - (void) removeTerminalWindow: (PseudoTerminal *) theTerminalWindow;
-- (NSStringEncoding*) encodingList;
+- (NSStringEncoding const*) encodingList;
 
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender;

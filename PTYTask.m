@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.1.1.1 2002-11-26 04:56:49 ujwal Exp $
+// $Id: PTYTask.m,v 1.2 2002-12-11 17:18:25 yfabian Exp $
 //
 //  PTYTask.m
 //  JTerminal
@@ -275,7 +275,7 @@ static int writep(int fds, char *buf, size_t len)
 	    }
 	}
         chdir([[[env objectForKey:@"PWD"] stringByExpandingTildeInPath] cString]);
-	sts = execvp(path, argv);
+	sts = execvp(path, (char * const *) argv);
 
 	/*
 	  exec error

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.22 2002-12-10 18:26:29 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.23 2002-12-11 17:18:25 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -11,7 +11,6 @@
 // Debug option
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
-#define DEBUG_SCREENDUMP      0
 #define DEBUG_KEYDOWNDUMP     0
 
 #import "PseudoTerminal.h"
@@ -282,10 +281,11 @@ static NSDictionary *deadStateAttribute;
           __FILE__, __LINE__, sessionIndex);
 #endif
     
-    if(sessionIndex < 0)
+/*    if(sessionIndex < 0)
         sessionIndex = 0;
     if(sessionIndex >= [ptyList count])
-        sessionIndex = [ptyList count] - 1;
+        sessionIndex = [ptyList count] - 1; */
+    if (sessionIndex<0||sessionIndex >= [ptyList count]) return;
 
     aSession = [ptyList objectAtIndex: sessionIndex];
     if(([SCROLLVIEW backgroundColor] != [[aSession TERMINAL] defaultBGColor]) || 
@@ -814,7 +814,7 @@ static NSDictionary *deadStateAttribute;
 - (IBAction)showConfigWindow:(id)sender
 {
     int r;
-    NSStringEncoding *p=[MAINMENU encodingList];
+    NSStringEncoding const *p=[MAINMENU encodingList];
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal showConfigWindow:%@]",

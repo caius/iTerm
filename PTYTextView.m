@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.105 2004-02-16 18:59:54 ujwal Exp $
+// $Id: PTYTextView.m,v 1.106 2004-02-17 00:06:54 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -940,6 +940,17 @@
         else
             [super keyDown:event];
     }
+}
+
+- (void) otherMouseDown: (NSEvent *) event
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s: %@]", __PRETTY_FUNCTION__, sender );
+#endif
+    
+    if ([[self selectedText] length] > 0 && [_delegate respondsToSelector:@selector(pasteString:)])
+        [_delegate pasteString:[self selectedText]];
+	
 }
 
 - (void)mouseDown:(NSEvent *)event

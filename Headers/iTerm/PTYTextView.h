@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.8 2004-02-15 09:44:48 ujwal Exp $
+// $Id: PTYTextView.h,v 1.9 2004-02-17 00:07:01 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -110,6 +110,7 @@ typedef struct
 - (void)mouseDown:(NSEvent *)event;
 - (void)mouseUp:(NSEvent *)event;
 - (void)mouseDragged:(NSEvent *)event;
+- (void) otherMouseDown: (NSEvent *) event;
 - (NSString *) selectedText;
 - (void)copy: (id) sender;
 - (void)paste:(id)sender;

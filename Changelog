@@ -5,6 +5,10 @@
     * Fixed annoying glitch that would sometimes resize 
       window when the config session window was closed 
       even though the window sizes were not changed.
+      
+    * Fixed a window sizing problem that was evident in vi.
+      I wish NSTaView would offer to calculate its frame 
+      based on content size just like NSScrollView.
     
 
 2002-12-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>

@@ -59,6 +59,8 @@
 
 - (void)dealloc;
 {
+    [backgroundImagePath release];
+    backgroundImagePath = nil;
     [super dealloc];
 }
 
@@ -249,7 +251,9 @@
     [CONFIG_BACKGROUND setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
     if([useBackgroundImage state]==NSOffState)
     {
-	backgroundImagePath = [NSString stringWithString:@""];
+	[backgroundImagePath release];
+	backgroundImagePath = nil;
+	backgroundImagePath = [[NSString alloc] initWithString:@""];
 	[backgroundImage setImage: nil];
     }
     else
@@ -285,12 +289,14 @@
 	filename = [backgroundImagePath lastPathComponent];
     }    
 
+    [backgroundImagePath release];
+    backgroundImagePath = nil;
     sts = [panel runModalForDirectory: directory file:filename types: [NSImage imageFileTypes]];
     if (sts == NSOKButton) {
 	if([[panel filenames] count] > 0)
-	    backgroundImagePath = [NSString stringWithString: [[panel filenames] objectAtIndex: 0]];
-	else
-	    backgroundImagePath = nil;
+	{
+	    backgroundImagePath = [[NSString alloc] initWithString: [[panel filenames] objectAtIndex: 0]];
+	}
 
 	if(backgroundImagePath != nil)
 	{
@@ -307,7 +313,6 @@
     else
     {
 	[useBackgroundImage setState: NSOffState];
-	backgroundImagePath = nil;
     }
 
 }
@@ -360,7 +365,7 @@
     [CONFIG_ANTIALIAS setState: [[currentSession TEXTVIEW] antiAlias]];
 
     // background image
-    backgroundImagePath = [currentSession backgroundImagePath];
+    backgroundImagePath = [[currentSession backgroundImagePath] copy];
     if([backgroundImagePath length] > 0)
     {
 	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
@@ -373,12 +378,14 @@
 	else
 	{
 	    [useBackgroundImage setState: NSOffState];
+	    [backgroundImagePath release];
 	    backgroundImagePath = nil;
 	}
     }
     else
     {
 	[useBackgroundImage setState: NSOffState];
+	[backgroundImagePath release];
 	backgroundImagePath = nil;
     }    
     

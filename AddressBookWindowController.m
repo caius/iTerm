@@ -202,6 +202,8 @@ static NSColor* xtermColorTable[2][8];
 #endif
 
     singleInstance = nil;
+    [backgroundImagePath release];
+    backgroundImagePath = nil;
     [super dealloc];
 }
 
@@ -480,7 +482,7 @@ static NSColor* xtermColorTable[2][8];
     [adRemapDeleteKey setState:([entry objectForKey:@"RemapDeleteKey"]==nil?NO:[[entry objectForKey:@"RemapDeleteKey"] boolValue])?NSOnState:NSOffState];
 
     // background image
-    backgroundImagePath = [(NSString *)[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
+    backgroundImagePath = [[NSString alloc] initWithString: [(NSString *)[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath]];
     [backgroundImage setEditable: NO];
     if([backgroundImagePath length] > 0)
     {
@@ -528,6 +530,7 @@ static NSColor* xtermColorTable[2][8];
 	[self adbRemoveEntry: nil];
     }
 
+    [backgroundImagePath release];
     backgroundImagePath = nil;
 }
 
@@ -770,7 +773,7 @@ static NSColor* xtermColorTable[2][8];
     [adBackground setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
     if([useBackgroundImage state]==NSOffState)
     {
-	backgroundImagePath = [NSString stringWithString:@""];
+	backgroundImagePath = [[NSString alloc] initWithString:@""];
 	[backgroundImage setImage: nil];
     }
     else
@@ -801,10 +804,13 @@ static NSColor* xtermColorTable[2][8];
     directory = NSHomeDirectory();
     filename = [NSString stringWithString: @""];
 
+    [backgroundImagePath release];
+    backgroundImagePath = nil;
+
     if(indexOfSelectedEntry > -1)
     {
 	entry=[[self addressBook] objectAtIndex: indexOfSelectedEntry];
-	backgroundImagePath = [[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
+	backgroundImagePath = [[NSString alloc] initWithString: [[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath]];
 
 	if(entry != nil && [backgroundImagePath length] > 0)
 	{
@@ -813,12 +819,12 @@ static NSColor* xtermColorTable[2][8];
 	}
     }
 
+    [backgroundImagePath release];
+    backgroundImagePath = nil;
     sts = [panel runModalForDirectory: directory file:filename types: [NSImage imageFileTypes]];
     if (sts == NSOKButton) {
 	if([[panel filenames] count] > 0)
-	    backgroundImagePath = [NSString stringWithString: [[panel filenames] objectAtIndex: 0]];
-	else
-	    backgroundImagePath = nil;
+	    backgroundImagePath = [[NSString alloc] initWithString: [[panel filenames] objectAtIndex: 0]];
 
 	if(backgroundImagePath != nil)
 	{
@@ -837,7 +843,6 @@ static NSColor* xtermColorTable[2][8];
     else
     {
 	[useBackgroundImage setState: NSOffState];
-	backgroundImagePath = nil;
     }
 
 }
@@ -916,7 +921,7 @@ static NSColor* xtermColorTable[2][8];
     NSDictionary *ae;
 
     if(backgroundImagePath == nil)
-	backgroundImagePath = [NSString stringWithString: @""];
+	backgroundImagePath = [[NSString alloc] initWithString: @""];
 
     ae = [[NSDictionary alloc] initWithObjectsAndKeys:
 	[adName stringValue],@"Name",

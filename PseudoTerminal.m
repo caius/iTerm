@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.113 2003-02-22 17:25:43 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.114 2003-02-22 21:45:49 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -691,18 +691,6 @@ static NSString *ConfigToolbarItem = @"Config";
     FONT=[[font copy] retain];
     if (NAFONT) [NAFONT autorelease];
     NAFONT=[[nafont copy] retain];
-}
-
-- (void)setFont:(NSFont *)font nafont:(NSFont *) nafont
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal setFont:%@]",
-          __FILE__, __LINE__, font);
-#endif
-    [[currentPtySession TEXTVIEW]  setFont:font];
-    [[currentPtySession SCREEN]  setFont:font nafont:nafont];
-/*    if (FONT) [FONT autorelease];
-    FONT=[[font copy] retain]; */
 }
 
 - (void)changeFont:(id)sender

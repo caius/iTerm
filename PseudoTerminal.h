@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.38 2003-02-20 18:15:36 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.39 2003-02-22 21:45:49 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -129,7 +129,6 @@
 - (void)setWindowTitle;
 - (void)setWindowTitle: (NSString *)title;
 - (void)setAllFont:(NSFont *)font nafont:(NSFont *)nafont;
-- (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 
 
 // MainMenu
@@ -196,7 +195,7 @@
 
 @interface PseudoTerminal (Private)
 
-- (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem;
+- (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem forToolbar: (NSToolbar *)toolbar;
 - (void) _reloadAddressBookMenu: (NSNotification *) aNotification;
 - (void) _toggleNewWindowState: (id) sender;
 

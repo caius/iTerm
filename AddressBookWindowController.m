@@ -30,6 +30,7 @@
 #import "MainMenu.h"
 
 static NSStringEncoding const *encodingList=nil;
+static AddressBookWindowController *singleInstance = nil;
 
 // comaparator function for addressbook entries
 static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
@@ -38,6 +39,19 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 }
 
 @implementation AddressBookWindowController
+
+//
+// class methods
+//
++ (id) singleInstance
+{
+    if ( !singleInstance )
+    {
+	singleInstance = [[self alloc] initWithWindowNibName: @"AddressBook"];
+    }
+
+    return singleInstance;
+}
 
 - (id) initWithWindowNibName: (NSString *) windowNibName
 {
@@ -168,7 +182,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
 - (IBAction)adbCancel:(id)sender
 {
-    [NSApp abortModal];
+    [[self window] close];
 }
 
 - (IBAction)adbEditEntry:(id)sender
@@ -287,7 +301,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 		  object: nil
 		userInfo: nil];
 
-    [NSApp stopModal];
+    [[self window] close];
 
 }
 
@@ -400,8 +414,9 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 	[[self window] makeFirstResponder: adTable];
     }
     [adTable setDoubleAction: @selector(executeABCommand:)];
-    r= [NSApp runModalForWindow:[self window]];
-    [[self window] close];
+    //r= [NSApp runModalForWindow:[self window]];
+    //[[self window] close];
+    [self showWindow: self];
 }
 
 

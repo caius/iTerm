@@ -1,3 +1,7 @@
+2003-03-28	ujwal
+
+    * Made addressbook non-modal.
+
 2003-03-28	fabian
     * Fixed bugs in selection
     * Fixed context menu

@@ -70,6 +70,10 @@
 
 }
 
+// init
++ (id) singleInstance;
+- (id) initWithWindowNibName: (NSString *)windowNibName;
+
 // get/set methods
 - (NSMutableArray *) addressBook;
 - (void) setAddressBook: (NSMutableArray *) anAddressBook;

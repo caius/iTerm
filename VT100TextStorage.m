@@ -27,7 +27,7 @@
 #import "iTerm.h"
 #import "VT100TextStorage.h"
 
-#define DEBUG_METHOD_TRACE    1
+#define DEBUG_METHOD_TRACE    0
 
 
 @implementation VT100TextStorage

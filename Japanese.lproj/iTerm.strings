@@ -48,7 +48,7 @@
 "Do you really want to remove this item?" = "このアイテムを本当に消去しますか？";
 
 /* Toolbar Item:New */
-"Default session"="通常セッション";
+"Default Session"="通常セッション";
 "New" = "新規セッション";
 "Open in a new window"="新しいウインドウに開く";
 "Open a new session"="新しいセッションを開く";

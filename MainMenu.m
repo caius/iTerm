@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.73 2003-05-25 07:45:53 ujwal Exp $
+// $Id: MainMenu.m,v 1.74 2003-05-27 06:35:11 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -49,26 +49,9 @@ static NSStringEncoding const *encodingList=nil;
 static BOOL usingAutoLaunchScript = NO;
 
 // comaparator function for addressbook entries
-static BOOL isDefaultEntry( NSDictionary *entry )
-{
-    return [entry objectForKey: @"DefaultEntry"] && [[entry objectForKey: @"DefaultEntry"] boolValue];
-}
-
-static NSString *entryVisibleName( NSDictionary *entry )
-{
-    if ( isDefaultEntry( entry ) ) {
-        return @"Default session";
-    } else {
-        return [entry objectForKey:@"Name"];
-    }
-}
-
-static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
-{
-    if ( isDefaultEntry( entry1 ) ) return -1;
-    if ( isDefaultEntry( entry2 ) ) return 1;
-    return ([(NSString *)[entry1 objectForKey: @"Name"] caseInsensitiveCompare: (NSString *)[entry2 objectForKey: @"Name"]]);
-}
+extern BOOL isDefaultEntry( NSDictionary *entry );
+extern NSString *entryVisibleName( NSDictionary *entry, id sender );
+extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context);
 
 @implementation MainMenu
 
@@ -798,7 +781,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     for(i = 0; i < [[self addressBook] count]; i++)
     {
         anEntry = [[self addressBook] objectAtIndex: i];
-        [anArray addObject: entryVisibleName( anEntry )];
+        [anArray addObject: entryVisibleName( anEntry, self )];
     }
 
     return ([anArray autorelease]);

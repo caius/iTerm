@@ -46,24 +46,26 @@ static NSColor* xtermColorTable[2][8];
 
 
 // comaparator function for addressbook entries
-static BOOL isDefaultEntry( NSDictionary *entry )
+BOOL isDefaultEntry( NSDictionary *entry )
 {
     return [entry objectForKey: @"DefaultEntry"] && [[entry objectForKey: @"DefaultEntry"] boolValue];
 }
 
-static NSString *entryVisibleName( NSDictionary *entry )
+NSString *entryVisibleName( NSDictionary *entry, id sender )
 {
     if ( isDefaultEntry( entry ) ) {
-        return @"Default session";
+        return NSLocalizedStringFromTableInBundle(@"Default Session",@"iTerm", [NSBundle bundleForClass: [sender class]], @"Default Session");
     } else {
         return [entry objectForKey:@"Name"];
     }
 }
 
-static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
+NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
 {
+    // Default entry is always first
     if ( isDefaultEntry( entry1 ) ) return -1;
     if ( isDefaultEntry( entry2 ) ) return 1;
+    
     return ([(NSString *)[entry1 objectForKey: @"Name"] caseInsensitiveCompare: (NSString *)[entry2 objectForKey: @"Name"]]);
 }
 
@@ -731,7 +733,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     theRecord = [addressBook objectAtIndex:rowIndex];
     switch ([[col identifier] intValue]) {
         case 0:
-            s=entryVisibleName( theRecord );
+            s=entryVisibleName( theRecord, self );
             break;
         case 1:
             s=[theRecord objectForKey:@"Command"];

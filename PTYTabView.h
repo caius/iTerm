@@ -34,6 +34,10 @@
     BOOL dragSessionInProgress;
 }
 
+// Class methods that Apple should have provided
++ (NSSize) contentSizeForFrameSize: (NSSize) frameSize tabViewType: (NSTabViewType) type controlSize: (NSControlSize) controlSize;
++ (NSSize) frameSizeForContentSize: (NSSize) contentSize tabViewType: (NSTabViewType) type controlSize: (NSControlSize) controlSize;
+
 - (id)initWithFrame: (NSRect) aFrame;
 - (void) dealloc;
 

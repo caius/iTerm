@@ -197,6 +197,9 @@
 // Object specifier
 - (NSScriptObjectSpecifier *)objectSpecifier;
 -(void)handleExecScriptCommand: (NSScriptCommand *)aCommand;
+-(void)handleTerminateScriptCommand: (NSScriptCommand *)command;
+-(void)handleSelectScriptCommand: (NSScriptCommand *)command;
+-(void)handleWriteScriptCommand: (NSScriptCommand *)command;
 
 @end
 

@@ -1413,6 +1413,11 @@ static NSString *PWD_ENVVALUE = @"~";
 
 }
 
+-(void)handleTerminateScriptCommand: (NSScriptCommand *)command
+{
+    [[self parent] closeSession: self];
+}
+
 @end
 
 @implementation PTYSession (Private)

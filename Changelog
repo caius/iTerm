@@ -9,6 +9,8 @@
       before a terminal view can be created.
 
     * Moved all the header files into Headers/iTerm. Easier to build a framework.
+    
+    * Made images loadable from bundle.
 
 2003-08-06	ujwal
     

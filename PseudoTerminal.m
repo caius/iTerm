@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.205 2003-08-09 05:02:12 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.206 2003-08-09 06:52:20 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -89,9 +89,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // set our delegate
     //[self setITermController: [NSApp delegate]];
     
-    // setup our toolbar
-    [[self window] setToolbar:[self setupToolbar]];
-
     // Look for an available window position
     for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
     {
@@ -155,7 +152,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 
     NSRect tabviewRect;
-    
+
+    // setup our toolbar
+    [[self window] setToolbar:[self setupToolbar]];
     
     // Create the tabview
     tabviewRect = [[[self window] contentView] frame];
@@ -1261,32 +1260,47 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *) itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted
 {
     NSToolbarItem *toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
+    NSBundle *thisBundle = [NSBundle bundleForClass: [self class]];
+    NSString *imagePath;
+    NSImage *anImage;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal itemForItemIdentifier]", __FILE__, __LINE__);
 #endif    
 
     if ([itemIdent isEqual: ABToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Bookmarks")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Bookmarks")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip:Bookmarks")];
-        [toolbarItem setImage: [NSImage imageNamed: @"addressbook"]];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item:Bookmarks")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item:Bookmarks")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the bookmarks",@"iTerm", thisBundle, @"Toolbar Item Tip:Bookmarks")];
+	imagePath = [thisBundle pathForResource:@"addressbook"
+				    ofType:@"png"];
+	anImage = [[NSImage alloc] initByReferencingFile: imagePath];
+        [toolbarItem setImage: anImage];
+	[anImage release];
         [toolbarItem setTarget: iTerm];
         [toolbarItem setAction: @selector(showABWindow:)];
     }
     else if ([itemIdent isEqual: CloseToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: Close Session")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: Close Session")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Close the current session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip: Close")];
-        [toolbarItem setImage: [NSImage imageNamed: @"close"]];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", thisBundle, @"Toolbar Item: Close Session")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", thisBundle, @"Toolbar Item: Close Session")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Close the current session",@"iTerm", thisBundle, @"Toolbar Item Tip: Close")];
+	imagePath = [thisBundle pathForResource:@"close"
+							      ofType:@"png"];
+	anImage = [[NSImage alloc] initByReferencingFile: imagePath];
+        [toolbarItem setImage: anImage];
+	[anImage release];
         [toolbarItem setTarget: self];
         [toolbarItem setAction: @selector(closeCurrentSession:)];
     }
    else if ([itemIdent isEqual: ConfigToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Configure") ];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Configure") ];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Configure current window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip:Configure")];
-        [toolbarItem setImage: [NSImage imageNamed: @"config"]];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", thisBundle, @"Toolbar Item:Configure") ];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", thisBundle, @"Toolbar Item:Configure") ];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Configure current window",@"iTerm", thisBundle, @"Toolbar Item Tip:Configure")];
+	imagePath = [thisBundle pathForResource:@"config"
+							      ofType:@"png"];
+	anImage = [[NSImage alloc] initByReferencingFile: imagePath];
+        [toolbarItem setImage: anImage];
+	[anImage release];
         [toolbarItem setTarget: self];
         [toolbarItem setAction: @selector(showConfigWindow:)];
     } 
@@ -1314,9 +1328,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 	[toolbarItem setMinSize:[aPopUpButton bounds].size];
 	[toolbarItem setMaxSize:[aPopUpButton bounds].size];
-	[toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New")];
-	[toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New")];
-	[toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open a new session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New")];
+	[toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", thisBundle, @"Toolbar Item:New")];
+	[toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", thisBundle, @"Toolbar Item:New")];
+	[toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open a new session",@"iTerm", thisBundle, @"Toolbar Item:New")];
 
     }
     else { 
@@ -1637,6 +1651,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(term == nil)
 	return;
 
+    [iTerm addInTerminals: term];
+
     if([term windowInited] == NO)
     {
 	[term setWidth: WIDTH height: HEIGHT];
@@ -1645,7 +1661,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 
 
-    [iTerm addInTerminals: term];
     [term release];
     
     [term setPreference:pref];
@@ -2006,9 +2021,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     NSPopUpButton *aPopUpButton;
     NSMenuItem *item;
-    NSImage *image;
     NSMenu *aMenu;
     id newwinItem;
+    NSString *imagePath;
+    NSImage *anImage;
+    NSBundle *thisBundle = [NSBundle bundleForClass: [self class]];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal _buildToolbarItemPopUpMenu]",
@@ -2034,17 +2051,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     // Now set the icon
     item = [[aPopUpButton cell] menuItem];
-    image=[NSImage imageNamed:@"newwin"];
-    [image setScalesWhenResized:YES];
+    imagePath = [thisBundle pathForResource:@"newwin"
+								 ofType:@"png"];
+    anImage = [[NSImage alloc] initByReferencingFile: imagePath];
+    [toolbarItem setImage: anImage];
+    [anImage release];
+    [anImage setScalesWhenResized:YES];
     if([toolbar sizeMode] == NSToolbarSizeModeSmall)
     {
-	[image setSize:NSMakeSize(24.0, 24.0)];
+	[anImage setSize:NSMakeSize(24.0, 24.0)];
     }
     else
     {
-	[image setSize:NSMakeSize(30.0, 30.0)];
+	[anImage setSize:NSMakeSize(30.0, 30.0)];
     }
-    [item setImage:image];
+    [item setImage:anImage];
     [item setOnStateImage:nil];
     [item setMixedStateImage:nil];
     [aPopUpButton setPreferredEdge:NSMinXEdge];

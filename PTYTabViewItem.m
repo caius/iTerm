@@ -50,6 +50,8 @@
     NSLog(@"PTYTabViewItem: -dealloc");
 #endif
 
+    [warningImage release];
+
     if(labelAttributes != nil)
     {
         [labelAttributes release];
@@ -62,6 +64,9 @@
 // Override this to be able to customize the label attributes
 - (void)drawLabel:(BOOL)shouldTruncateLabel inRect:(NSRect)tabRect
 {
+    NSString *imagePath;
+    NSBundle *thisBundle = [NSBundle bundleForClass: [self class]];
+    
 #if DEBUG_METHOD_TRACE
     NSLog(@"PTYTabViewItem: -drawLabel(bell=%@)",bell?@"YES":@"NO");
 #endif
@@ -89,7 +94,12 @@
 	    if(tabViewType == NSTopTabsBezelBorder || tabViewType == NSBottomTabsBezelBorder)
 	    {
 		if(warningImage == nil)
-		    warningImage=[NSImage imageNamed:@"important"];
+		{
+		    imagePath = [thisBundle pathForResource:@"important"
+								   ofType:@"png"];
+		    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
+		    
+		}
 		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x,tabRect.origin.y+16)
 		       operation:NSCompositeSourceOver];
                 tabRect.origin.x+=18;
@@ -98,7 +108,12 @@
 	    else if(tabViewType == NSRightTabsBezelBorder)
 	    {
 		if(warningImage == nil)
-		    warningImage=[NSImage imageNamed:@"important_r"];
+		{
+		    imagePath = [thisBundle pathForResource:@"important_r"
+											       ofType:@"png"];
+		    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
+
+		}
 		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x + 12,tabRect.origin.y + 15)
 		       operation:NSCompositeSourceOver];
                 tabRect.origin.x+=14;
@@ -107,7 +122,12 @@
 	    else if(tabViewType == NSLeftTabsBezelBorder)
 	    {
 		if(warningImage == nil)
-		    warningImage=[NSImage imageNamed:@"important_l"];
+		{
+		    imagePath = [thisBundle pathForResource:@"important_l"
+											       ofType:@"png"];
+		    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
+
+		}
 		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x - 3,tabRect.origin.y)
 				     operation:NSCompositeSourceOver];
                 tabRect.origin.x+=15;

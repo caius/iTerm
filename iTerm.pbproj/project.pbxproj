@@ -261,16 +261,6 @@
 				E813FB7F0297522703A80106,
 				DD8CF2EE03CDD34C00A8A065,
 				DD1E48DC0431521800A8A065,
-				DD1E48ED043208E700A8A065,
-				DD1E48EE043208E800A8A065,
-				DD1E48EF043208E900A8A065,
-				DD1E48F0043208E900A8A065,
-				DD1E48F1043208EB00A8A065,
-				DD1E48F2043208EB00A8A065,
-				DD1E48F3043208EC00A8A065,
-				DD1E48F4043208ED00A8A065,
-				DD1E48F5043208ED00A8A065,
-				DD1E48F6043208EE00A8A065,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1338,66 +1328,6 @@
 		};
 		DD1E48E9043207EF00A8A065 = {
 			fileRef = DD1E48A104314F1D00A8A065;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48ED043208E700A8A065 = {
-			fileRef = FBBB8B60039FC04E01F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48EE043208E800A8A065 = {
-			fileRef = FB094A14033D58AE01F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48EF043208E900A8A065 = {
-			fileRef = FB094A16033D58B601F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F0043208E900A8A065 = {
-			fileRef = FB754C5F036EFC5301F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F1043208EB00A8A065 = {
-			fileRef = FB47BCC403686CAC01F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F2043208EB00A8A065 = {
-			fileRef = FBB2EBCD040AC7C201F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F3043208EC00A8A065 = {
-			fileRef = DD6ACB0204112FB700A8A065;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F4043208ED00A8A065 = {
-			fileRef = DD6ACB0304112FB700A8A065;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F5043208ED00A8A065 = {
-			fileRef = FB094A18033D58BD01F955DB;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		DD1E48F6043208EE00A8A065 = {
-			fileRef = FB896717038D935801F955DB;
 			isa = PBXBuildFile;
 			settings = {
 			};

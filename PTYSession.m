@@ -495,6 +495,10 @@ static NSString *PWD_ENVVALUE = @"~";
 	    if (send_str != NULL) {
 		[SHELL writeTask:[NSData dataWithBytes:send_str length:send_strlen]];
 	    }
+
+	    // trigger an update of the display.
+	    [timer fire];
+	    
 	}
     }
 }

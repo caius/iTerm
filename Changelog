@@ -1,3 +1,9 @@
+2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Manually firing screen update timer after a keyDown 
+      to make user input more responsive.
+      
+
 2003-02-21	fabian
     * Fixed a bug in function key mapping: F1~F12
     * Fixed a bug in showCursor. Cleaned overall cursor

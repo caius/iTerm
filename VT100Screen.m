@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.189 2004-02-20 16:27:09 ujwal Exp $
+// $Id: VT100Screen.m,v 1.190 2004-02-25 23:40:11 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1227,17 +1227,20 @@ static BOOL PLAYBELL = YES;
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
 
+
     if ((SCROLL_BOTTOM >= HEIGHT-1 || SCROLL_TOP == 0) && bufferLines) {
 		// move a line to buffer
 		memcpy(bufferLines+lastBufferLineIndex*WIDTH,screenLines+SCROLL_TOP*WIDTH,WIDTH*sizeof(unichar));
 		memcpy(bufferFGColor+lastBufferLineIndex*WIDTH,screenFGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
 		memcpy(bufferBGColor+lastBufferLineIndex*WIDTH,screenBGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
+		// this causes a scroll in the view, so we have force a refresh
+		memset(dirty,1,HEIGHT*WIDTH*sizeof(char));
 		if (++lastBufferLineIndex>scrollbackLines) {
 			lastBufferLineIndex=0;
 			bufferWrapped=1;
 		}
 	}
-	
+
 	if (SCROLL_TOP<SCROLL_BOTTOM) {
 		memmove(screenLines+SCROLL_TOP*WIDTH, screenLines+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(unichar));
 		memmove(screenFGColor+SCROLL_TOP*WIDTH, screenFGColor+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));

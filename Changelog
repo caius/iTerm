@@ -2,6 +2,10 @@
 
     * Fixed all compiler warnings.
     
+    * Fixed annoying glitch that would sometimes resize 
+      window when the config session window was closed 
+      even though the window sizes were not changed.
+    
 
 2002-12-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

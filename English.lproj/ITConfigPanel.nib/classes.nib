@@ -4,13 +4,25 @@
         {
             ACTIONS = {
                 chooseBackgroundImage = id; 
+                setAntiIdle = id; 
+                setAntiIdleCode = id; 
+                setBackgroundColor = id; 
+                setBackgroundImage = id; 
+                setBoldColor = id; 
+                setCharacterSpacing = id; 
+                setCursorColor = id; 
+                setCursorTextColor = id; 
+                setForegroundColor = id; 
+                setSelectedTextColor = id; 
+                setSelectionColor = id; 
+                setSessionEncoding = id; 
+                setSessionName = id; 
+                setTransparency = id; 
+                setWindowSize = id; 
+                toggleAntiAlias = id; 
                 useBackgroundImage = id; 
-                windowConfigBackground = id; 
-                windowConfigCancel = id; 
                 windowConfigFont = id; 
-                windowConfigForeground = id; 
                 windowConfigNAFont = id; 
-                windowConfigOk = id; 
             }; 
             CLASS = ITConfigPanelController; 
             LANGUAGE = ObjC; 
@@ -33,7 +45,7 @@
                 "CONFIG_SELECTIONTEXT" = NSColorWell; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
-                backgroundImage = NSImageView; 
+                backgroundImageView = NSImageView; 
                 charHorizontalSpacing = NSSlider; 
                 charVerticalSpacing = NSSlider; 
                 useBackgroundImage = NSButton; 

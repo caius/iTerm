@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.284 2004-04-03 01:24:12 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.285 2004-04-12 04:24:36 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -580,13 +580,22 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void)setCharSizeUsingFont: (NSFont *)font
 {
+	int i;
 	NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     NSSize sz;
     [dic setObject:font forKey:NSFontAttributeName];
     sz = [@"W" sizeWithAttributes:dic];
 	
-	charWidth=sz.width * charHorizontalSpacingMultiplier;
-	charHeight=[font defaultLineHeightForFont] * charVerticalSpacingMultiplier;
+	charWidth = (sz.width * charHorizontalSpacingMultiplier);
+	charHeight = ([font defaultLineHeightForFont] * charVerticalSpacingMultiplier);
+
+	for(i=0;i<[_sessionMgr numberOfSessions]; i++) 
+    {
+        PTYSession* session = [_sessionMgr sessionAtIndex:i];
+		[[session TEXTVIEW] setCharWidth: charWidth];
+		[[session TEXTVIEW] setLineHeight: charHeight];
+    }
+	
 	
 	[[self window] setResizeIncrements: NSMakeSize(charWidth, charHeight)];
 	
@@ -821,7 +830,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 	charHorizontalSpacingMultiplier = horizontal;
 	charVerticalSpacingMultiplier = vertical;
-	//NSLog(@"horizontal = %f; vertical = %f", horizontal, vertical);
 	[self setCharSizeUsingFont: FONT];
 }
 
@@ -850,6 +858,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
 {
 	int i;
+	
     [FONT autorelease];
     [font retain];
     FONT=font;
@@ -861,9 +870,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
         PTYSession* session = [_sessionMgr sessionAtIndex:i];
         [[session TEXTVIEW]  setFont:FONT nafont:NAFONT];
-		[[session TEXTVIEW] setCharWidth: charWidth];
-		[[session TEXTVIEW] setLineHeight: charHeight];
-		[[self window] setResizeIncrements: NSMakeSize(charWidth, charHeight)];
     }
 }
 
@@ -1094,6 +1100,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// Reset the scrollbar to the bottom
     [[[_sessionMgr currentSession] TEXTVIEW] scrollEnd];
 	
+	// Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
+	
 }
 
 // PTYWindowDelegateProtocol
@@ -1122,7 +1131,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)showConfigWindow:(id)sender;
 {
-    [ITConfigPanelController show:self parentWindow:[TABVIEW window]];
+    [ITConfigPanelController show];
 }
 
 - (void) resizeWindow:(int) w height:(int)h
@@ -1258,6 +1267,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
 	// do this to set up mouse tracking rects again
 	[[[_sessionMgr currentSession] TEXTVIEW] becomeFirstResponder];
+	
+	// Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: self userInfo: nil];    
 }
 
 - (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.39 2004-04-11 00:30:51 ujwal Exp $
+// $Id: iTermController.m,v 1.40 2004-04-12 04:24:36 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -467,6 +467,9 @@ NSString *terminalsKey = @"terminals";
 - (void) setCurrentTerminal: (PseudoTerminal *) thePseudoTerminal
 {
     FRONT = thePseudoTerminal;
+	
+	if(thePseudoTerminal == nil)
+		return;
 
     // make sure this window is the key window
     if([[thePseudoTerminal window] isKeyWindow] == NO)

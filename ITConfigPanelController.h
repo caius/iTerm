@@ -63,20 +63,34 @@
 
     // background image
     IBOutlet NSButton *useBackgroundImage;
-    IBOutlet NSImageView *backgroundImage;
+    IBOutlet NSImageView *backgroundImageView;
     NSString *backgroundImagePath;
 }
 
-+ (void)show:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
++ (void)show;
 
-- (void)showConfigWindow:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
+- (void)loadConfigWindow: (NSNotification *) aNotification;
 - (IBAction) chooseBackgroundImage: (id) sender;
-- (IBAction)windowConfigOk:(id)sender;
-- (IBAction)windowConfigCancel:(id)sender;
 - (IBAction)windowConfigFont:(id)sender;
 - (IBAction)windowConfigNAFont:(id)sender;
-- (IBAction)windowConfigForeground:(id)sender;
-- (IBAction)windowConfigBackground:(id)sender;
 - (IBAction) useBackgroundImage: (id) sender;
+
+// actions
+- (IBAction) setWindowSize: (id) sender;
+- (IBAction) setCharacterSpacing: (id) sender;
+- (IBAction) toggleAntiAlias: (id) sender;
+- (IBAction) setTransparency: (id) sender;
+- (IBAction) setForegroundColor: (id) sender;
+- (IBAction) setBackgroundColor: (id) sender;
+- (IBAction) setBoldColor: (id) sender;
+- (IBAction) setSelectionColor: (id) sender;
+- (IBAction) setSelectedTextColor: (id) sender;
+- (IBAction) setCursorColor: (id) sender;
+- (IBAction) setCursorTextColor: (id) sender;
+- (IBAction) setBackgroundImage: (id) sender;
+- (IBAction) setSessionName: (id) sender;
+- (IBAction) setSessionEncoding: (id) sender;
+- (IBAction) setAntiIdle: (id) sender;
+- (IBAction) setAntiIdleCode: (id) sender;
 
 @end

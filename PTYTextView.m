@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.196 2004-04-07 19:51:28 ujwal Exp $
+// $Id: PTYTextView.m,v 1.197 2004-04-12 04:24:36 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -181,6 +181,7 @@ static SInt32 systemVersion;
           __FILE__, __LINE__, antiAliasFlag);
 #endif
     antiAlias = antiAliasFlag;
+	forceUpdate = YES;
 	[self resetCharCache];
 }
 
@@ -221,6 +222,7 @@ static SInt32 systemVersion;
     [color retain];
     defaultFGColor=color;
 	[self resetCharCache];
+	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 	// reset our default character attributes    
 }
@@ -232,6 +234,7 @@ static SInt32 systemVersion;
     defaultBGColor=color;
 	//    bg = [bg colorWithAlphaComponent: [[SESSION backgroundColor] alphaComponent]];
 	//    fg = [fg colorWithAlphaComponent: [[SESSION foregroundColor] alphaComponent]];
+	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 }
 
@@ -241,6 +244,7 @@ static SInt32 systemVersion;
     [color retain];
     defaultBoldColor=color;
 	[self resetCharCache];
+	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 }
 
@@ -249,6 +253,7 @@ static SInt32 systemVersion;
     [defaultCursorColor release];
     [color retain];
     defaultCursorColor=color;
+	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 }
 
@@ -259,7 +264,8 @@ static SInt32 systemVersion;
 	selectedTextColor = aColor;
 	[self _clearCacheForColor: SELECT_CODE];
 	[self _clearCacheForColor: SELECT_CODE | BOLD_MASK];
-	
+	forceUpdate = YES;
+
 	[self setNeedsDisplay: YES];
 }
 
@@ -271,6 +277,7 @@ static SInt32 systemVersion;
 	[self _clearCacheForColor: CURSOR_CODE];
 	[self _clearCacheForColor: CURSOR_CODE | BOLD_MASK];
 	
+	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 }
 
@@ -371,6 +378,7 @@ static SInt32 systemVersion;
     [selectionColor release];
     [aColor retain];
     selectionColor=aColor;
+	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 }
 

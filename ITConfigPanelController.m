@@ -36,14 +36,35 @@
 #import "PTYScrollView.h"
 #import "ITSessionMgr.h"
 
+static ITConfigPanelController *singleInstance = nil;
 
 @implementation ITConfigPanelController
 
-+ (void)show:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
++ (void)show
 {
     // controller will be deleted when closed
-    ITConfigPanelController* controller = [[ITConfigPanelController alloc] initWithWindowNibName:@"ITConfigPanel"];
-    [controller showConfigWindow:pseudoTerminal parentWindow:parentWindow];
+	if(singleInstance == nil)
+	{
+		singleInstance = [[ITConfigPanelController alloc] initWithWindowNibName:@"ITConfigPanel"];
+		// Add ourselves as an observer for notifications.
+		[[NSNotificationCenter defaultCenter] addObserver:singleInstance
+												 selector:@selector(loadConfigWindow:)
+													 name:@"iTermWindowBecameKey"
+												   object:nil];		
+		[[NSNotificationCenter defaultCenter] addObserver:singleInstance
+												 selector:@selector(loadConfigWindow:)
+													 name:@"iTermSessionBecameKey"
+												   object:nil];		
+		[[NSNotificationCenter defaultCenter] addObserver:singleInstance
+												 selector:@selector(loadConfigWindow:)
+													 name:@"iTermWindowDidResize"
+												   object:nil];				
+	}
+	
+    [singleInstance loadConfigWindow: nil];
+	
+	[[singleInstance window] orderFront: self];
+	[[singleInstance window] makeKeyWindow];
 }
 
 - (id)init;
@@ -57,11 +78,16 @@
 {
     [backgroundImagePath release];
     backgroundImagePath = nil;
+	[[NSNotificationCenter defaultCenter] removeObserver: self];
+	singleInstance = nil;
     [super dealloc];
 }
 
 - (void)windowWillClose:(NSNotification *)notification
 {
+	[[NSColorPanel sharedColorPanel] close];
+	[[NSFontPanel sharedFontPanel] close];
+	
     // since this NSWindowController doesn't have a document, the releasing is not automatic when the window closes
     [self autorelease];
 }
@@ -70,6 +96,116 @@
 {
     [ITViewLocalizer localizeWindow:[self window] table:@"configPanel" bundle:[NSBundle bundleForClass: [self class]]];
 }
+
+
+// actions
+- (IBAction) setWindowSize: (id) sender
+{
+    if ([CONFIG_COL intValue] < 1 || [CONFIG_ROW intValue] < 1)
+    {
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
+                        nil,nil);
+		
+		return;
+    }
+	
+	// resize the window if asked for
+	if(([_pseudoTerminal width] != [CONFIG_COL intValue]) || ([_pseudoTerminal height] != [CONFIG_ROW intValue]))
+		[_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
+	
+}
+
+- (IBAction) setCharacterSpacing: (id) sender
+{
+	[_pseudoTerminal setCharacterSpacingHorizontal: [charHorizontalSpacing floatValue] 
+										  vertical: [charVerticalSpacing floatValue]];
+	//[_pseudoTerminal setFont:configFont nafont:configNAFont];
+	[_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
+}
+
+- (IBAction) toggleAntiAlias: (id) sender
+{
+	[_pseudoTerminal setAntiAlias: ([CONFIG_ANTIALIAS state] == NSOnState)];
+}
+
+- (IBAction) setTransparency: (id) sender
+{
+	[[_pseudoTerminal currentSession] setTransparency:  [CONFIG_TRANSPARENCY floatValue]/100.0];
+}
+
+- (IBAction) setForegroundColor: (id) sender
+{
+	[CONFIG_EXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
+    [CONFIG_NAEXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
+	[[_pseudoTerminal currentSession] setForegroundColor:  [CONFIG_FOREGROUND color]];
+}
+
+- (IBAction) setBackgroundColor: (id) sender
+{
+	NSColor *bgColor;
+	
+	// set the background color for the scrollview with the appropriate transparency
+	bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY floatValue]/100.0)];
+	[[[_pseudoTerminal currentSession] SCROLLVIEW] setBackgroundColor: bgColor];
+	[[_pseudoTerminal currentSession] setBackgroundColor:  bgColor];
+	[[[_pseudoTerminal currentSession] TEXTVIEW] setNeedsDisplay:YES];
+	
+	[CONFIG_EXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
+    [CONFIG_NAEXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
+}
+
+- (IBAction) setBoldColor: (id) sender
+{
+	[[_pseudoTerminal currentSession] setBoldColor: [CONFIG_BOLD color]];
+}
+
+- (IBAction) setSelectionColor: (id) sender
+{
+	[[[_pseudoTerminal currentSession] TEXTVIEW] setSelectionColor: [CONFIG_SELECTION color]];
+}
+
+- (IBAction) setSelectedTextColor: (id) sender
+{
+	[[[_pseudoTerminal currentSession] TEXTVIEW] setSelectedTextColor: [CONFIG_SELECTIONTEXT color]];
+}
+
+- (IBAction) setCursorColor: (id) sender
+{
+	[[_pseudoTerminal currentSession] setCursorColor: [CONFIG_CURSOR color]];
+}
+
+- (IBAction) setCursorTextColor: (id) sender
+{
+	[[[_pseudoTerminal currentSession] TEXTVIEW] setCursorTextColor: [CONFIG_CURSORTEXT color]];
+}
+
+- (IBAction) setBackgroundImage: (id) sender
+{
+	
+}
+
+- (IBAction) setSessionName: (id) sender
+{
+	[_pseudoTerminal setCurrentSessionName: [CONFIG_NAME stringValue]]; 
+}
+
+- (IBAction) setSessionEncoding: (id) sender
+{
+	[[_pseudoTerminal currentSession] setEncoding:[[iTermController sharedInstance] encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
+}
+
+- (IBAction) setAntiIdle: (id) sender
+{
+	[[_pseudoTerminal currentSession] setAntiIdle:([AI_ON state]==NSOnState)];
+}
+
+- (IBAction) setAntiIdleCode: (id) sender
+{
+	[[_pseudoTerminal currentSession] setAntiCode:[AI_CODE intValue]];
+}
+
 
 
 - (IBAction)windowConfigOk:(id)sender
@@ -124,7 +260,7 @@
         // set the selection color if it has changed
         if([[[currentSession TEXTVIEW] selectionColor] isEqual: [CONFIG_SELECTION color]] == NO)
             [[currentSession TEXTVIEW] setSelectionColor: [CONFIG_SELECTION color]];
- 
+		
 		// set the selection color if it has changed
         if([[[currentSession TEXTVIEW] selectedTextColor] isEqual: [CONFIG_SELECTIONTEXT color]] == NO)
             [[currentSession TEXTVIEW] setSelectedTextColor: [CONFIG_SELECTIONTEXT color]];
@@ -136,54 +272,53 @@
         // set the cursor color if it has changed
 		if([[currentSession cursorColor] isEqual: [CONFIG_CURSOR color]] == NO)
             [currentSession setCursorColor: [CONFIG_CURSOR color]];
-
+		
         // set the selection color if it has changed
         if([[[currentSession TEXTVIEW] cursorTextColor] isEqual: [CONFIG_CURSORTEXT color]] == NO)
             [[currentSession TEXTVIEW] setCursorTextColor: [CONFIG_CURSORTEXT color]];
 		
-
-	// change foreground color if it has changed
-	if(([[currentSession foregroundColor] isEqual:[CONFIG_FOREGROUND color]] == NO))
+		
+		// change foreground color if it has changed
+		if(([[currentSession foregroundColor] isEqual:[CONFIG_FOREGROUND color]] == NO))
         {
             [currentSession setForegroundColor:  [CONFIG_FOREGROUND color]];
         }
-
-	// change the background color if it is enabled and has changed
+		
+		// change the background color if it is enabled and has changed
         if([CONFIG_BACKGROUND isEnabled] &&
            ([[currentSession backgroundColor] isEqual: [CONFIG_BACKGROUND color]] == NO))
         {
             NSColor *bgColor;
-
+			
             // set the background color for the scrollview with the appropriate transparency
             bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
             [[currentSession SCROLLVIEW] setBackgroundColor: bgColor];
             [currentSession setBackgroundColor:  bgColor];
             [[currentSession TEXTVIEW] setNeedsDisplay:YES];
         }
-
-	// set the background image if it has changed
-	if([[currentSession backgroundImagePath] isEqualToString: backgroundImagePath] == NO)
-	{
-	    [currentSession setBackgroundImagePath: backgroundImagePath];
-	}
-
-	// change transparency if it has changed
-	if([currentSession transparency] * 100.0 != [CONFIG_TRANSPARENCY intValue])
-	{
+		
+		// set the background image if it has changed
+		if([[currentSession backgroundImagePath] isEqualToString: backgroundImagePath] == NO)
+		{
+			[currentSession setBackgroundImagePath: backgroundImagePath];
+		}
+		
+		// change transparency if it has changed
+		if([currentSession transparency] * 100.0 != [CONFIG_TRANSPARENCY intValue])
+		{
             [currentSession setTransparency:  [CONFIG_TRANSPARENCY floatValue]/100.0];
-	}	
-
+		}	
+		
         [[currentSession SCREEN] updateScreen];
         
         [[currentSession TEXTVIEW] scrollEnd];
         [_pseudoTerminal setCurrentSessionName: [CONFIG_NAME stringValue]]; 
-                
+		
         [currentSession setAntiCode:[AI_CODE intValue]];
         [currentSession setAntiIdle:([AI_ON state]==NSOnState)];
         
-        [[self window] orderOut:self];
-        [NSApp endSheet:[self window] returnCode:NSCancelButton];
-
+		[[self window] close];
+		
         [[NSColorPanel sharedColorPanel] close];
         [[NSFontPanel sharedFontPanel] close];
     }
@@ -191,9 +326,8 @@
 
 - (IBAction)windowConfigCancel:(id)sender
 {
-    [[self window] orderOut:self];
-    [NSApp endSheet:[self window] returnCode:NSCancelButton];
-
+    [[self window] close];
+	
     [[NSColorPanel sharedColorPanel] close];
     [[NSFontPanel sharedFontPanel] close];
 }
@@ -216,17 +350,6 @@
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 
-- (IBAction)windowConfigForeground:(id)sender
-{
-    [CONFIG_EXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
-    [CONFIG_NAEXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
-}
-
-- (IBAction)windowConfigBackground:(id)sender
-{
-    [CONFIG_EXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
-    [CONFIG_NAEXAMPLE setBackgroundColor:[CONFIG_BACKGROUND color]];
-}
 
 - (void)changeFont:(id)sender
 {
@@ -248,6 +371,14 @@
             [CONFIG_EXAMPLE setFont:configFont];
         }
     }
+	
+	if ((configFont != nil && [_pseudoTerminal font] != configFont) ||
+		(configNAFont != nil && [_pseudoTerminal nafont] != configNAFont)) 
+	{
+		[_pseudoTerminal setFont:configFont nafont:configNAFont];
+		[_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
+	}
+	
 }
 
 // background image stuff
@@ -256,12 +387,13 @@
     [CONFIG_BACKGROUND setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
     if([useBackgroundImage state]==NSOffState)
     {
-	[backgroundImagePath release];
-	backgroundImagePath = nil;
-	[backgroundImage setImage: nil];
+		[backgroundImagePath release];
+		backgroundImagePath = nil;
+		[backgroundImageView setImage: nil];
+		[[_pseudoTerminal currentSession] setBackgroundImagePath: @""];
     }
     else
-	[self chooseBackgroundImage: sender];
+		[self chooseBackgroundImage: sender];
 }
 
 - (IBAction) chooseBackgroundImage: (id) sender
@@ -269,70 +401,76 @@
     NSOpenPanel *panel;
     int sts;
     NSString *directory, *filename;
-
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[AddressBookWindowController chooseBackgroundImage:%@]",
           __FILE__, __LINE__);
 #endif
-
+	
     if([useBackgroundImage state]==NSOffState)
     {
-	NSBeep();
-	return;
+		NSBeep();
+		return;
     }
-
+	
     panel = [NSOpenPanel openPanel];
     [panel setAllowsMultipleSelection: NO];
-
+	
     directory = NSHomeDirectory();
     filename = [NSString stringWithString: @""];
-
+	
     if([backgroundImagePath length] > 0)
     {
-	directory = [backgroundImagePath stringByDeletingLastPathComponent];
-	filename = [backgroundImagePath lastPathComponent];
+		directory = [backgroundImagePath stringByDeletingLastPathComponent];
+		filename = [backgroundImagePath lastPathComponent];
     }    
-
+	
     [backgroundImagePath release];
     backgroundImagePath = nil;
     sts = [panel runModalForDirectory: directory file:filename types: [NSImage imageFileTypes]];
     if (sts == NSOKButton) {
-	if([[panel filenames] count] > 0)
-	{
-	    backgroundImagePath = [[NSString alloc] initWithString: [[panel filenames] objectAtIndex: 0]];
-	}
-
-	if(backgroundImagePath != nil)
-	{
-	    NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
-	    if(anImage != nil)
-	    {
-		[backgroundImage setImage: anImage];
-		[anImage release];
-	    }
-	}
-	else
-	    [useBackgroundImage setState: NSOffState];
+		if([[panel filenames] count] > 0)
+		{
+			backgroundImagePath = [[NSString alloc] initWithString: [[panel filenames] objectAtIndex: 0]];
+		}
+		
+		if(backgroundImagePath != nil)
+		{
+			NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+			if(anImage != nil)
+			{
+				[backgroundImageView setImage: anImage];
+				[anImage release];
+				[[_pseudoTerminal currentSession] setBackgroundImagePath: backgroundImagePath];
+			}
+			else
+				NSLog(@"%s: image %@ is nil!", __PRETTY_FUNCTION__, backgroundImagePath);
+		}
+		else
+			[useBackgroundImage setState: NSOffState];
     }
     else
     {
-	[useBackgroundImage setState: NSOffState];
+		[useBackgroundImage setState: NSOffState];
     }
-
+	
 }
 
 
 // config panel sheet
-- (void)showConfigWindow:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
+- (void)loadConfigWindow: (NSNotification *) aNotification
 {
-    [self window]; // force window to load
     int r;
     NSStringEncoding const *p=[[iTermController sharedInstance] encodingList];
-    
-    _pseudoTerminal = pseudoTerminal; // don't retain
-  
+	
+	[self window]; // force window to load
+	
+    _pseudoTerminal = [[iTermController sharedInstance] currentTerminal]; // don't retain
+	if(_pseudoTerminal == nil)
+		return;
+	
     PTYSession* currentSession = [_pseudoTerminal currentSession];
-
+	
     [CONFIG_FOREGROUND setColor:[[currentSession TEXTVIEW] defaultFGColor]];
     [CONFIG_BACKGROUND setColor:[[currentSession TEXTVIEW] defaultBGColor]];
     [CONFIG_BACKGROUND setEnabled: ([currentSession image] == nil)?YES:NO];
@@ -341,7 +479,7 @@
     [CONFIG_BOLD setColor: [[currentSession TEXTVIEW] defaultBoldColor]];
 	[CONFIG_CURSOR setColor: [[currentSession TEXTVIEW] defaultCursorColor]];
 	[CONFIG_CURSORTEXT setColor: [[currentSession TEXTVIEW] cursorTextColor]];
-
+	
     configFont=[_pseudoTerminal font];
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
     [CONFIG_EXAMPLE setTextColor:[[currentSession TEXTVIEW] defaultFGColor]];
@@ -373,37 +511,37 @@
     [AI_CODE setIntValue:[currentSession antiCode]];
     
     [CONFIG_ANTIALIAS setState: [[currentSession TEXTVIEW] antiAlias]];
-
+	
     // background image
     backgroundImagePath = [[currentSession backgroundImagePath] copy];
     if([backgroundImagePath length] > 0)
     {
-	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
-	if(anImage != nil)
-	{
-	    [backgroundImage setImage: anImage];
-	    [anImage release];
-	    [useBackgroundImage setState: NSOnState];
-	}
-	else
-	{
-	    [useBackgroundImage setState: NSOffState];
-	    [backgroundImagePath release];
-	    backgroundImagePath = nil;
-	}
+		NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+		if(anImage != nil)
+		{
+			[backgroundImageView setImage: anImage];
+			[anImage release];
+			[useBackgroundImage setState: NSOnState];
+		}
+		else
+		{
+			[backgroundImageView setImage: nil];
+			[useBackgroundImage setState: NSOffState];
+			[backgroundImagePath release];
+			backgroundImagePath = nil;
+		}
     }
     else
     {
-	[useBackgroundImage setState: NSOffState];
-	[backgroundImagePath release];
-	backgroundImagePath = nil;
+		[backgroundImageView setImage: nil];
+		[useBackgroundImage setState: NSOffState];
+		[backgroundImagePath release];
+		backgroundImagePath = nil;
     }    
+	
+	[[self window] setLevel: NSFloatingWindowLevel];
+	[[self window] setDelegate: self];
     
-    [NSApp beginSheet: [self window]
-       modalForWindow: parentWindow
-        modalDelegate: self
-       didEndSelector: @selector(sheetDidEnd:returnCode:contextInfo:)
-          contextInfo: nil];        
 }
 
 - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo

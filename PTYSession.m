@@ -1302,6 +1302,9 @@ static NSString *PWD_ENVVALUE = @"~";
 		[backgroundImagePath release];
 		backgroundImagePath = nil;
     }
+	
+	[TEXTVIEW setForceUpdate: YES];
+	[TEXTVIEW setNeedsDisplay: YES];
 }
 
 

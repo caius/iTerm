@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.18 2004-02-24 06:16:12 yfabian Exp $
+// $Id: PTYTextView.h,v 1.19 2004-02-24 19:49:18 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -103,6 +103,12 @@ typedef struct
 	
 	//cache
 	CharCache	charImages[CACHESIZE];
+	
+	// blinking cursor
+	BOOL showCursor;
+	
+	// trackingRect tab
+	NSTrackingRectTag trackingRectTag;
 }
 
 - (id)initWithFrame: (NSRect) aRect;
@@ -112,6 +118,8 @@ typedef struct
 - (BOOL)shouldDrawInsertionPoint;
 - (void)drawRect:(NSRect)rect;
 - (void)keyDown:(NSEvent *)event;
+- (void)mouseExited:(NSEvent *)event;
+- (void)mouseEntered:(NSEvent *)event;
 - (void)mouseDown:(NSEvent *)event;
 - (void)mouseUp:(NSEvent *)event;
 - (void)mouseDragged:(NSEvent *)event;

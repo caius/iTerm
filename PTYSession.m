@@ -875,7 +875,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
         [self setLabelAttribute];
 	
-    if (blink>15) {
+    if (blink>30) {
 		[SCREEN blink];
 		blink=0;
     }

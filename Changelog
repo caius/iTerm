@@ -1,4 +1,12 @@
 2002-12-17	fabian
+    * re-arrange the toolbar items
+    * got rid of the quick-run panel
+    * del key now sends the correct escape sequence instead of 
+      0x7f
+    * set default term type to xterm, which is consitent with
+      the rest of the code
+      
+2002-12-17	fabian
     * Fixed a bug related to setting default shell
     
 2002-12-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>
@@ -36,14 +44,14 @@
       
 
 2002-12-16	fabian
-    * Change version number to 0.5.6
-    * Make author name localized strings in About panel.
-    * Add a "Report a Bug" link in About panel.
-    * Turn on the GREED_KEYDOWN flag in PTYTextView.m to 
+    * Changed version number to 0.5.6
+    * Made author name localized strings in About panel.
+    * Added a "Report a Bug" link in About panel.
+    * Turned on the GREED_KEYDOWN flag in PTYTextView.m to 
       allow special key to work when IM is turned on.
-    * Add a 2nd font option to display CJK font to address
+    * Added a 2nd font option to display CJK font to address
       some screen text alignment problems.
-    * Add anti-idle settings to AddressBook
+    * Added anti-idle settings to AddressBook
       
 2002-12-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

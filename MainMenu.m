@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.14 2002-12-16 23:10:52 yfabian Exp $
+// $Id: MainMenu.m,v 1.15 2002-12-18 02:28:31 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -104,95 +104,6 @@ static BOOL newWindow=YES;
         [FRONT newSession: self];
 }
 
-
-//Quick open window
-- (IBAction)showQOWindow:(id)sender
-{
-    int r;
-    PseudoTerminal *term;
-    NSString *cmd;
-    NSArray *arg;
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[MainMenu showQOWindow:%@]",
-          __FILE__, __LINE__, sender);
-#endif
-    [QO_PANEL center];
-    [QO_DIR setStringValue:[@"~"  stringByExpandingTildeInPath]];
-    r= [NSApp runModalForWindow:QO_PANEL];
-    [QO_PANEL close];
-    if (r == 50) {
-        [self showABWindow: self];
-    }
-    else if (r == NSRunStoppedResponse) {
-        NSDictionary *env=[NSDictionary dictionaryWithObject:[QO_DIR stringValue] forKey:@"PWD"];
-        if (newWindow||FRONT==nil) {
-            NSLog(@"new window!");
-            term = [PseudoTerminal newTerminalWindow: self];
-            [term setPreference:PREF_PANEL];
-            [term initWindow:[PREF_PANEL col]
-                      height:[PREF_PANEL row]
-                        font:[PREF_PANEL font]
-                      nafont:[PREF_PANEL nafont]];
-        }
-        else term=FRONT;
-//        NSLog(@"%@",term);
-        
-        [MainMenu breakDown:[QO_COMMAND stringValue] cmdPath:&cmd cmdArgs:&arg];
-//        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-        [term initSession:nil
-         foregroundColor:[PREF_PANEL foreground]
-         backgroundColor:[[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
-                encoding:[PREF_PANEL encoding]
-                    term:[PREF_PANEL terminalType]];
-        [term startProgram:cmd arguments:arg environment:env];
-        [term startProgram:cmd arguments:arg];
-
-//        if (newWindow) {
-//            [term setWindowSize];
-//        };
-        [term setCurrentSessionName:nil];
-        
-    }
-}
-
-- (IBAction)windowQOOk:(id)sender
-{
-    newWindow=(sender==QO_NewWindow);
-    [NSApp stopModal];
-}
-
-- (IBAction)windowQOCancel:(id)sender
-{
-    [NSApp abortModal];
-}
-
-- (IBAction)windowQOType:(id)sender
-{
-    int n;
-
-    n = [QO_TYPE selectedColumn];
-    switch (n) {
-        case 0:
-            [QO_COMMAND setStringValue:[PREF_PANEL shell]];
-            break;
-        case 1:
-            [QO_COMMAND setStringValue:@"/usr/bin/telnet"];
-            break;
-        case 2:
-            [QO_COMMAND setStringValue:@"/usr/bin/ssh"];
-            break;
-        case 3:
-            [QO_COMMAND setStringValue:@"/usr/bin/ftp"];
-            break;
-    }
-}
-
-- (IBAction)windowQOAddressBook:(id)sender
-{
-    [NSApp stopModalWithCode: 50];
-    
-}
-
 // Address book window
 - (IBAction)showABWindow:(id)sender
 {
@@ -209,9 +120,6 @@ static BOOL newWindow=YES;
     [AB_PANEL center];
     r= [NSApp runModalForWindow:AB_PANEL];
     [AB_PANEL close];
-    if (r == 50) {
-        [self showQOWindow: self];
-    }
 }
 
 - (IBAction) executeABCommand: (id) sender
@@ -427,11 +335,6 @@ static BOOL newWindow=YES;
         [adTable reloadData];
         [ae release];
     }
-}
-
-- (IBAction)adbGotoQuickOpen:(id)sender
-{
-    [NSApp stopModalWithCode: 50];
 }
 
 - (IBAction)adbOk:(id)sender

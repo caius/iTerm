@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.14 2002-12-17 23:12:32 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.15 2002-12-18 02:28:31 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -69,6 +69,8 @@
     float alpha;
     NSFont *configFont, *configNAFont;
     BOOL changingNA;
+    BOOL newwin;
+    id newwinItem;
     PreferencePanel *pref;
 }
 

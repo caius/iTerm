@@ -237,6 +237,9 @@ static NSString *PWD_ENVVALUE = @"~";
     unmodkeystr = [event charactersIgnoringModifiers];
     unicode = [keystr characterAtIndex:0];
     iIdleCount=0;
+
+//    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
+//          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
     
     // Check if we are navigating through sessions
     if ((modflag & NSFunctionKeyMask) && (modflag & NSCommandKeyMask)) 
@@ -251,7 +254,10 @@ static NSString *PWD_ENVVALUE = @"~";
             case NSRightArrowFunctionKey: // cursor left
                 // Check if we want to just move to the next session
                 [parent nextSession: nil];
-                return;  
+                return;
+            case NSDeleteFunctionKey:
+                if (modflag&NSFunctionKeyMask)
+                    NSLog(@"### DEBUG ###\n%@", SCREEN);
             default:
                 if (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey) {
                     [parent selectSession:unicode-NSF1FunctionKey];
@@ -289,11 +295,7 @@ static NSString *PWD_ENVVALUE = @"~";
 //                case NSHelpFunctionKey:
                     data = [TERMINAL keyInsert]; break;
                 case NSDeleteFunctionKey:
-                    if (modflag&NSCommandKeyMask)
-                        NSLog(@"### DEBUG ###\n%@", SCREEN);
-                    else
-                         data = [TERMINAL keyDelete]; break;
-                    break;
+                    data = [TERMINAL keyDelete]; break;
                 case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
                 case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
                 case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.6 2002-12-16 23:10:52 yfabian Exp $
+// $Id: MainMenu.h,v 1.7 2002-12-18 02:28:31 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -14,14 +14,7 @@
 
 @interface MainMenu : NSObject
 {
-    /// quick open window
-    IBOutlet id QO_PANEL;
-    IBOutlet id QO_COMMAND;
-    IBOutlet id QO_TYPE;
-    IBOutlet id QO_DIR;
-    IBOutlet id QO_NewWindow;
-    IBOutlet id QO_NewTab;
-    
+   
     // address book window
     IBOutlet id AB_PANEL;
     IBOutlet NSTableView *adTable;
@@ -71,18 +64,11 @@
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newSession:(id)sender;
 
-// Quick Open Window
-- (IBAction)showQOWindow:(id)sender;
-- (IBAction)windowQOOk:(id)sender;
-- (IBAction)windowQOCancel:(id)sender;
-- (IBAction)windowQOType:(id)sender;
-
 // Address book window
 - (IBAction)showABWindow:(id)sender;
 - (IBAction)adbAddEntry:(id)sender;
 - (IBAction)adbCancel:(id)sender;
 - (IBAction)adbEditEntry:(id)sender;
-- (IBAction)adbGotoQuickOpen:(id)sender;
 - (IBAction)adbOk:(id)sender;
 - (IBAction) executeABCommand: (id) sender;
 

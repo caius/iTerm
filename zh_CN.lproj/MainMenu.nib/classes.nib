@@ -26,7 +26,6 @@
                 adbAddEntry = id; 
                 adbCancel = id; 
                 adbEditEntry = id; 
-                adbGotoQuickOpen = id; 
                 adbOk = id; 
                 adbRemoveEntry = id; 
                 executeABCommand = id; 
@@ -35,11 +34,6 @@
                 showABWindow = id; 
                 showAbout = id; 
                 showPrefWindow = id; 
-                showQOWindow = id; 
-                windowQOAddressBook = id; 
-                windowQOCancel = id; 
-                windowQOOk = id; 
-                windowQOType = id; 
             }; 
             CLASS = MainMenu; 
             LANGUAGE = ObjC; 
@@ -50,12 +44,6 @@
                 AUTHORS = NSTextView; 
                 FRONT = id; 
                 "PREF_PANEL" = id; 
-                "QO_COMMAND" = id; 
-                "QO_DIR" = id; 
-                "QO_NewTab" = id; 
-                "QO_NewWindow" = id; 
-                "QO_PANEL" = id; 
-                "QO_TYPE" = id; 
                 adAI = id; 
                 adAICode = id; 
                 adBackground = NSColorWell; 

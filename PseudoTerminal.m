@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.35 2002-12-17 23:12:31 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.36 2002-12-18 02:28:31 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -23,9 +23,7 @@
 
 #define NIB_PATH  @"PseudoTerminal"
 
-static NSString *NewWToolbarItem = @"New Window";
-static NSString *NewSToolbarItem = @"New Session";
-static NSString *QRToolbarItem = @"Open";
+static NSString *NewToolbarItem = @"New";
 static NSString *ABToolbarItem = @"Address";
 static NSString *CloseToolbarItem = @"Close";
 static NSString *ConfigToolbarItem = @"Config";
@@ -952,15 +950,13 @@ static NSDictionary *deadStateAttribute;
 {
     NSMutableArray* itemIdentifiers= [[[NSMutableArray alloc]init] autorelease];
 
-    [itemIdentifiers addObject: NewWToolbarItem];
-    [itemIdentifiers addObject: NewSToolbarItem];
-    [itemIdentifiers addObject: QRToolbarItem];
+    [itemIdentifiers addObject: NewToolbarItem];
+    [itemIdentifiers addObject: ABToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
     [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
-    [itemIdentifiers addObject: ABToolbarItem];
 
     return itemIdentifiers;
 }
@@ -969,9 +965,7 @@ static NSDictionary *deadStateAttribute;
 {
     NSMutableArray* itemIdentifiers = [[[NSMutableArray alloc]init] autorelease];
 
-    [itemIdentifiers addObject: NewWToolbarItem];
-    [itemIdentifiers addObject: NewSToolbarItem];
-    [itemIdentifiers addObject: QRToolbarItem];
+    [itemIdentifiers addObject: NewToolbarItem];
     [itemIdentifiers addObject: ABToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
@@ -987,26 +981,12 @@ static NSDictionary *deadStateAttribute;
 {
     NSToolbarItem *toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
 
-    if ([itemIdent isEqual: NewWToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"New Window",@"iTerm",@"Toolbar Item:New Window")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open session in a new window",@"iTerm",@"Toolbar Item Tip:New Window")];
-        [toolbarItem setImage: [NSImage imageNamed: @"newwin"]];
+    if ([itemIdent isEqual: ABToolbarItem]) {
+        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open the address book",@"iTerm",@"Toolbar Item Tip:Address Book")];
+        [toolbarItem setImage: [NSImage imageNamed: @"addressbook"]];
         [toolbarItem setTarget: MAINMENU];
-        [toolbarItem setAction: @selector(newWindow:)];
-    }
-    else if ([itemIdent isEqual: NewSToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"New Session",@"iTerm",@"Toolbar Item:New Session")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open session in current window",@"iTerm",@"Toolbar Item Tip:New Session")];
-        [toolbarItem setImage: [NSImage imageNamed: @"new"]];
-        [toolbarItem setTarget: self];
-        [toolbarItem setAction: @selector(newSession:)];
-    }
-    else if ([itemIdent isEqual: QRToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Quick Run",@"iTerm",@"Toolbar Item:New")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Run a command in a new session",@"iTerm",@"Toolbar Item Tip:Quick Run")];
-        [toolbarItem setImage: [NSImage imageNamed: @"exec"]];
-        [toolbarItem setTarget: MAINMENU];
-        [toolbarItem setAction: @selector(showQOWindow:)];
+        [toolbarItem setAction: @selector(showABWindow:)];
     }
     else if ([itemIdent isEqual: CloseToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")];
@@ -1022,7 +1002,7 @@ static NSDictionary *deadStateAttribute;
         [toolbarItem setTarget: self];
         [toolbarItem setAction: @selector(showConfigWindow:)];
     } 
-    else if ([itemIdent isEqual: ABToolbarItem])
+    else if ([itemIdent isEqual: NewToolbarItem])
     {
         NSPopUpButton *aPopUpButton;
         
@@ -1041,10 +1021,10 @@ static NSDictionary *deadStateAttribute;
         
         [toolbarItem setMinSize:[aPopUpButton bounds].size];
         [toolbarItem setMaxSize:[aPopUpButton bounds].size];
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Shortcut to address book commands",@"iTerm",@"Toolbar Item:Address Book")];
+        [toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:Address Book")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open a new session",@"iTerm",@"Toolbar Item:Address Book")];
     }
-    else {
+    else { 
         toolbarItem=nil;
     }
 
@@ -1061,15 +1041,13 @@ static NSDictionary *deadStateAttribute;
     [toolbar setAllowsUserCustomization:YES];
     [toolbar setAutosavesConfiguration:YES];
     [toolbar setDisplayMode:NSToolbarDisplayModeDefault];
-    [toolbar insertItemWithItemIdentifier: NewWToolbarItem atIndex:0];
-    [toolbar insertItemWithItemIdentifier: NewSToolbarItem atIndex:1];
-    [toolbar insertItemWithItemIdentifier: QRToolbarItem atIndex:2];
-    [toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:3];
-    [toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:4];
-    [toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:5];
-    [toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:6];
-    [toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:7];
-    [toolbar insertItemWithItemIdentifier: ABToolbarItem atIndex:8];
+    [toolbar insertItemWithItemIdentifier: NewToolbarItem atIndex:0];
+    [toolbar insertItemWithItemIdentifier: ABToolbarItem atIndex:1];
+    [toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:2];
+    [toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:3];
+    [toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:4];
+    [toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:5];
+    [toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:6];
 
 
 //    NSLog(@"Toolbar created");
@@ -1224,6 +1202,7 @@ static NSDictionary *deadStateAttribute;
     NSDictionary *anEntry;
     NSString *cmd;
     NSArray *arg;
+    PseudoTerminal *term;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal _addressbookPopupSelectionDidChange]",
@@ -1233,7 +1212,9 @@ static NSDictionary *deadStateAttribute;
     // If we selected tha last item, show the address book.
     if([sender indexOfSelectedItem] == [sender indexOfItem: [sender lastItem]])
     {
-        [MAINMENU showABWindow: self];
+//        [MAINMENU showABWindow: self];
+        newwin=newwin?NO:YES;
+        [newwinItem setState:(newwin ? NSOnState : NSOffState)];
         return;
     }
     
@@ -1241,11 +1222,21 @@ static NSDictionary *deadStateAttribute;
     
     if(commandIndex < 0)
         return;
-        
-    anEntry = [MAINMENU addressBookEntry: commandIndex];
     
+    anEntry = [MAINMENU addressBookEntry: commandIndex];
+
+    if (newwin) {
+        term = [PseudoTerminal newTerminalWindow: MAINMENU];
+        [term setPreference:pref];
+        [term initWindow:[[anEntry objectForKey:@"Col"]intValue]
+                  height:[[anEntry objectForKey:@"Row"] intValue]
+                    font:[anEntry objectForKey:@"Font"]
+                  nafont:[anEntry objectForKey:@"NAFont"]];
+    }
+    else term=self;
+
     // Init a new session and run the command
-    [self initSession:[anEntry objectForKey:@"Name"]
+    [term initSession:[anEntry objectForKey:@"Name"]
         foregroundColor:[anEntry objectForKey:@"Foreground"]
         backgroundColor:[[anEntry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[anEntry objectForKey:@"Transparency"] intValue]/100.0)]
                 encoding:[[anEntry objectForKey:@"Encoding"] unsignedIntValue]
@@ -1254,8 +1245,8 @@ static NSDictionary *deadStateAttribute;
     NSDictionary *env=[NSDictionary dictionaryWithObject:([anEntry objectForKey:@"Directory"]?[anEntry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
     
     [MainMenu breakDown:[anEntry objectForKey:@"Command"] cmdPath:&cmd cmdArgs:&arg];
-    [self startProgram:cmd arguments:arg environment:env];
-    [self setCurrentSessionName:[anEntry objectForKey:@"Name"]];
+    [term startProgram:cmd arguments:arg environment:env];
+    [term setCurrentSessionName:[anEntry objectForKey:@"Name"]];
 
 }
 
@@ -1270,11 +1261,15 @@ static NSDictionary *deadStateAttribute;
     [aPopUpButton addItemWithTitle: @""];
     [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
     [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
+    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New")];
+    newwinItem=[aPopUpButton lastItem];
+    [newwinItem setState:(newwin ? NSOnState : NSOffState)];
+    
+//    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
     
     // Now set the icon
     item = [[aPopUpButton cell] menuItem];
-    image=[NSImage imageNamed:@"addressbook"];
+    image=[NSImage imageNamed:@"newwin"];
     [image setScalesWhenResized:YES];
     [image setSize:NSMakeSize(30.0,30.0)];
     [item setImage:image];

@@ -13,7 +13,7 @@ static NSFont* FONT;
 static int   COL   = 80;
 static int   ROW   = 25;
 
-static NSString* TERM    =@"vt100";
+static NSString* TERM    =@"xterm";
 static NSString* SHELL   =@"/bin/bash --login";
 static NSStringEncoding const *encodingList=nil;
 

@@ -304,6 +304,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 - (IBAction)adbDuplicateEntry:(id)sender
 {
     NSMutableDictionary *entry, *ae;
+    int i;
 
     entry=[[self addressBook] objectAtIndex:[adTable selectedRow]];
 
@@ -324,12 +325,32 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     //        NSLog(@"%s(%d):-[Address entry added:%@]",
     //              __FILE__, __LINE__, ae );
     [adTable reloadData];
+
+    for(i = 0; i < [[self addressBook] count]; i++)
+    {
+	if([[self addressBook] objectAtIndex: i] == ae)
+	{
+	    [adTable selectRow: i byExtendingSelection: NO];
+	    break;
+	}
+    }
     
 }
 
 - (IBAction)adbCancel:(id)sender
 {
+
     [[self window] close];
+    
+    // Re-init the address book.
+    [[NSApp delegate] initAddressBook];
+
+    // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
+    [[NSNotificationCenter defaultCenter]
+    postNotificationName: @"Reload AddressBook"
+				object: nil
+			      userInfo: nil];
+    
 }
 
 - (IBAction)adbEditEntry:(id)sender
@@ -490,6 +511,13 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [adTable reloadData];
         [ae release];
     }
+}
+
+- (IBAction)adbAddEntry:(id)sender
+{
+    [adTable selectRow: 0 byExtendingSelection: NO];
+    [self adbDuplicateEntry: nil];
+    [self adbEditEntry: nil];
 }
 
 - (IBAction)adbOk:(id)sender

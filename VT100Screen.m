@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.170 2004-01-09 23:53:07 ujwal Exp $
+// $Id: VT100Screen.m,v 1.171 2004-01-21 21:51:17 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -511,6 +511,60 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setFont:%@]", __FILE__, __LINE__, font );
 #endif
+	int index, length;
+	NSFontManager *fontManager = [NSFontManager sharedFontManager];
+	
+	
+#if DEBUG_USE_BUFFER
+	// try to retain some font attributes
+	length = [BUFFER length];
+	for (index = 0; index < length;)
+	{
+		NSRange coverageRange;
+		NSFont *oldFont = [BUFFER attribute: NSFontAttributeName atIndex: index effectiveRange: &coverageRange];
+		NSFont *newFont;
+				
+		index = index + coverageRange.length;
+		
+		newFont = font;
+		
+		// check if we encountered bold fonts
+		if([fontManager fontNamed: [oldFont fontName] hasTraits: NSBoldFontMask] == YES)
+		{
+			NSFont *aFont;
+			
+			// use the appropriate new font
+			if(oldFont == NAFONT)
+				aFont = nafont;
+			else
+				aFont = font;
+			
+			newFont = [fontManager convertFont: aFont toHaveTrait: NSBoldFontMask];
+			if([newFont isFixedPitch] == NO)
+			{
+				newFont = aFont;
+			}
+			
+		}
+		
+		// check if we encountered graphical characters, for which we use FreeMonoBold
+		if([[oldFont fontName] isEqualToString: @"FreeMonoBold"] == YES)
+		{
+			newFont = [NSFont fontWithName: @"FreeMonoBold" size: [font pointSize]];
+			if(newFont == nil)
+				newFont = oldFont;
+		}
+		
+		[BUFFER removeAttribute: NSFontAttributeName range: coverageRange];
+		[BUFFER addAttribute:NSFontAttributeName
+					   value:newFont
+					   range:coverageRange];			
+		
+		
+	}	    
+	
+#endif
+	
     [FONT release];
     [font retain];
     FONT = font;
@@ -518,13 +572,7 @@ static BOOL PLAYBELL = YES;
     [nafont retain];
     NAFONT = nafont;
     FONT_SIZE = [VT100Screen fontSize:FONT];
-
-#if DEBUG_USE_BUFFER
-    [BUFFER addAttribute:NSFontAttributeName
-                   value:FONT
-                   range:NSMakeRange(0, [BUFFER length])];
-#endif
-
+	
     [TERMINAL initDefaultCharacterAttributeDictionary];
 
 

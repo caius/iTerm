@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.250 2004-01-20 07:34:32 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.251 2004-01-21 21:51:17 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -718,7 +718,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[session TEXTVIEW]  setFont:font];
 #endif
         [[session SCREEN]  setFont:font nafont:nafont];
-	[[session SCREEN] forceUpdateScreen];
+		[[session SCREEN] forceUpdateScreen];
 	
     }
     [FONT autorelease];
@@ -738,34 +738,35 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         
     for(i=0;i<[_sessionMgr numberOfSessions]; i++) 
     {
-	PTYSession* session = [_sessionMgr sessionAtIndex:i];
-	
-	length = [[session textStorage] length];
-	for (index = 0; index < length; index++)
-	{
-	    NSRange coverageRange;
-	    NSFont *font = [[session textStorage] attribute: NSFontAttributeName atIndex: index effectiveRange: &coverageRange];
-	    
-	    if (!font) 
-	    {
-		NSLog(@"changeFontSize: Couldn't get font information!");
-		continue;
-	    }
-	    
-	    index = index + coverageRange.length;
-	    
-	    float currentFontSize = [font pointSize];
-	    if(increase == YES)
-		newFontSize = [self largerSizeForSize: currentFontSize];
-	    else
-		newFontSize = [self smallerSizeForSize: currentFontSize];		
-	    
-	    NSFont *newFont = [NSFont fontWithName: [font fontName] size: newFontSize];
-	    
-	    
-	    [[session textStorage] removeAttribute: NSFontAttributeName range: coverageRange];
-	    [[session textStorage] addAttribute: NSFontAttributeName value: newFont range: coverageRange];
-	}	    
+		PTYSession* session = [_sessionMgr sessionAtIndex:i];
+		
+		length = [[session textStorage] length];
+		for (index = 0; index < length;)
+		{
+			NSRange coverageRange;
+			NSFont *font = [[session textStorage] attribute: NSFontAttributeName atIndex: index effectiveRange: &coverageRange];
+			
+			index = index + coverageRange.length;
+
+			if (!font) 
+			{
+				NSLog(@"changeFontSize: Couldn't get font information!");
+				continue;
+			}
+			
+			
+			float currentFontSize = [font pointSize];
+			if(increase == YES)
+				newFontSize = [self largerSizeForSize: currentFontSize];
+			else
+				newFontSize = [self smallerSizeForSize: currentFontSize];		
+			
+			NSFont *newFont = [NSFont fontWithName: [font fontName] size: newFontSize];
+			
+			
+			[[session textStorage] removeAttribute: NSFontAttributeName range: coverageRange];
+			[[session textStorage] addAttribute: NSFontAttributeName value: newFont range: coverageRange];
+		}	    
     }
     
     float asciiFontSize = [[[[self currentSession] SCREEN] font] pointSize];

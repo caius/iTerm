@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.16 2003-02-24 19:45:02 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.17 2003-03-07 20:24:54 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -214,6 +214,7 @@ typedef struct {
     BOOL INSERT_MODE;		// YES=Insert, NO=Replace
     int  CHARSET;		// G0...G3
     BOOL XON;			// YES=XON, NO=XOFF
+    BOOL numLock;		// YES=ON, NO=OFF, default=YES;
     
     unsigned int CHARATTR;
     int FG_COLORCODE;
@@ -250,6 +251,9 @@ typedef struct {
 - (void)cleanStream;
 - (void)putStreamData:(NSData *)data;
 - (VT100TCC)getNextToken;
+
+- (void) toggleNumLock;
+- (BOOL) numLock;
 
 - (NSData *)keyArrowUp;
 - (NSData *)keyArrowDown;

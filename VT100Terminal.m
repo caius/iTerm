@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.37 2003-03-04 16:35:30 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.38 2003-03-07 20:24:55 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1182,6 +1182,8 @@ static VT100TCC decode_string(unsigned char *datap,
     defaultCharacterAttributeDictionary[1] = [[NSMutableDictionary alloc] init];
     streamOffset = 0;
 
+    numLock = YES;
+
     return self;
 }
 
@@ -1421,6 +1423,16 @@ static VT100TCC decode_string(unsigned char *datap,
     }
 
     return (theData);
+}
+
+- (void) toggleNumLock
+{
+    numLock = !numLock;
+}
+
+- (BOOL) numLock
+{
+    return (numLock);
 }
 
 - (NSData *) keypadData: (unichar) unicode keystr: (NSString *) keystr

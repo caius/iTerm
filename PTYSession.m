@@ -337,6 +337,10 @@ static NSString *PWD_ENVVALUE = @"~";
 		if(modflag & NSShiftKeyMask)
 		    [TEXTVIEW scrollPageDown: self];
 		break;
+	    case NSClearLineFunctionKey:
+		if(modflag & NSCommandKeyMask)
+		    [TERMINAL toggleNumLock];
+		break;		
 	    default:
 		if ((modflag & NSCommandKeyMask) && (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey)) {
 		    [parent selectSession:unicode-NSF1FunctionKey];
@@ -386,7 +390,8 @@ static NSString *PWD_ENVVALUE = @"~";
 		case NSPauseFunctionKey:
 		    break;
 		case NSClearLineFunctionKey:
-		    data = [TERMINAL keyPFn: 1];
+		    if(![TERMINAL numLock])
+			data = [TERMINAL keyPFn: 1];
 		    break;
 	    }
 
@@ -431,7 +436,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    data = [mstr dataUsingEncoding:[TERMINAL encoding]];
 
 	    // Check if we are in keypad mode
-	    if(modflag & NSNumericPadKeyMask)
+	    if((modflag & NSNumericPadKeyMask) && ![TERMINAL numLock])
 	    {
 		switch (unicode)
 		{

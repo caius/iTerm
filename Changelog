@@ -1,7 +1,21 @@
+2003-03-08	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed an issue where '=', '/', and '*' could not be 
+      typed from numeric keypad. This was because those 
+      keys were mapped to the PF2, PF3, PF4 keys. Now we 
+      have a numLock state that is on by default. When 
+      state is enabled, numeric keypad has the default 
+      operation. When it is disabled, the keys 
+      'numlock', '=', '/', and '*' send PF1, PF2, PF3, 
+      and PF4 sequences. The state can be toggled by using 
+      Cmd-numLock. This behavior is basically the same as 
+      that implemented in GLTerm.
+      
+
 2003-03-04	fabian
     * Fixed a bug in screen update
     
-2003-03-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+2003-03-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed a bug in changing forground and background color 
       in a session.

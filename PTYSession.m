@@ -245,6 +245,9 @@ static NSString *PWD_ENVVALUE = @"~";
     NSMutableArray *argv = [NSMutableArray arrayWithArray:prog_argv];
     NSMutableDictionary *env = [NSMutableDictionary dictionaryWithDictionary:prog_env];
 
+    // initialize the screen
+    [[self SCREEN] initScreen];
+
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession startProgram:%@ arguments:%@ environment:%@]",
 	  __FILE__, __LINE__, program, prog_argv, prog_env );
@@ -1028,19 +1031,16 @@ static NSString *PWD_ENVVALUE = @"~";
 	if(anImage != nil)
 	{
 	    [SCROLLVIEW setDrawsBackground: NO];
-	    [self setBackgroundColor: [[NSColor whiteColor]  colorWithAlphaComponent: 1.0]];
 	    [imageView setImage: anImage];
 	    [anImage setScalesWhenResized: YES];
 	    [imageView setImageScaling: NSScaleToFit];
 	    [imageView setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];
 	    [anImage release];
-	    //[SCREEN initScreen];
 	}
     }
     else
     {
 	[SCROLLVIEW setDrawsBackground: YES];
-	[self setBackgroundColor: [[aePrefs objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[aePrefs objectForKey: @"Transparency"] intValue]/100.0)]];
     }
     
 }

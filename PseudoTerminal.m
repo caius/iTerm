@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.230 2003-09-13 04:04:55 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.231 2003-09-13 20:48:20 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -214,9 +214,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
     
-    // initialize the screen
-    [[aSession SCREEN] initScreen];
-
     [aSession startTimer];
 
     [[aSession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode

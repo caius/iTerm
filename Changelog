@@ -1,3 +1,8 @@
+2003-04-25	fabian
+    * Changed the look of preference panel.
+    * Added custom ANSI color support. 
+      (need to update non english nib files)
+      
 2003-04-24	ujwal
 
     * Re-implemented window resizing.

@@ -32,37 +32,57 @@
 
 @interface PreferencePanel : NSResponder
 {
+    IBOutlet id ansiBlack;
+    IBOutlet id ansiBlue;
+    IBOutlet id ansiCyan;
+    IBOutlet id ansiGreen;
+    IBOutlet id ansiHiBlack;
+    IBOutlet id ansiHiBlue;
+    IBOutlet id ansiHiCyan;
+    IBOutlet id ansiHiGreen;
+    IBOutlet id ansiHiMagenta;
+    IBOutlet id ansiHiRed;
+    IBOutlet id ansiHiWhite;
+    IBOutlet id ansiHiYellow;
+    IBOutlet id ansiMagenta;
+    IBOutlet id ansiRed;
+    IBOutlet id ansiWhite;
+    IBOutlet id ansiYellow;
+    IBOutlet id antiAlias;
+    IBOutlet id autoclose;
     IBOutlet id background;
     IBOutlet id col;
+    IBOutlet id colorScheme;
+    IBOutlet id copySelection;
+    IBOutlet id doubleWidth;
     IBOutlet id encoding;
     IBOutlet id fontExample;
-    IBOutlet id nafontExample;
     IBOutlet id foreground;
+    IBOutlet id hideTab;
+    IBOutlet id nafontExample;
+    IBOutlet id openAddressBook;
+    IBOutlet id optionKey;
     IBOutlet id prefPanel;
+    IBOutlet id prefTab;
+    IBOutlet id promptOnClose;
+    IBOutlet id remapDeleteKey;
     IBOutlet id row;
+    IBOutlet id selectionColor;
     IBOutlet id shell;
+    IBOutlet id silenceBell;
+    IBOutlet id tabSelector;
+    IBOutlet id tabViewType;
     IBOutlet id terminal;
     IBOutlet id transparency;
     IBOutlet id transparency_control;
-    IBOutlet id autoclose;
-    IBOutlet id optionKey;
-    IBOutlet id antiAlias;
-    IBOutlet id copySelection;
-    IBOutlet id hideTab;
-    IBOutlet id silenceBell;
-    IBOutlet id doubleWidth;
-    IBOutlet id selectionColor;
-    IBOutlet id tabViewType;
-    IBOutlet id remapDeleteKey;
-    IBOutlet id openAddressBook;
-    IBOutlet id promptOnClose;
     
     NSUserDefaults *prefs;
 
     NSColor* defaultBackground;
     NSColor* defaultForeground;
     NSColor* defaultSelectionColor;
-
+    NSColor* defaultColorTable[2][8];
+    
     int defaultCol;
     int defaultRow;
     
@@ -90,6 +110,7 @@
 }
 
 + (void)initialize;
++ (NSColor *) highlightColor:(NSColor *)color;
 
 - (id)init;
 - (void)dealloc;
@@ -97,11 +118,12 @@
 - (void) readPreferences;
 
 - (IBAction)changeBackground:(id)sender;
+- (IBAction)changeColorScheme:(id)sender;
 - (IBAction)changeFontButton:(id)sender;
-- (IBAction)changeNAFontButton:(id)sender;
 - (IBAction)changeForeground:(id)sender;
+- (IBAction)changeNAFontButton:(id)sender;
+- (IBAction)changeTab:(id)sender;
 - (IBAction)ok:(id)sender;
-- (IBAction)cancel:(id)sender;
 - (IBAction)restore:(id)sender;
 - (void)changeFont:(id)fontManager;
 
@@ -127,6 +149,7 @@
 - (BOOL) silenceBell;
 - (BOOL) doubleWidth;
 - (NSColor *) selectionColor;
+- (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili;
 - (NSTabViewType) tabViewType;
 - (BOOL)remapDeleteKey;
 - (BOOL)openAddressBook;

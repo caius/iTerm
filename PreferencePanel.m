@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.35 2003-04-21 01:11:26 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.36 2003-04-26 00:05:37 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -30,9 +30,14 @@
 
 #define NIB_PATH  @"MainMenu"
 
-static NSColor *BACKGROUND;
-static NSColor *FOREGROUND;
-static NSColor *SELECTION;
+static NSColor *iTermBackground;
+static NSColor *iTermForeground;
+static NSColor *iTermSelection;
+static NSColor* iTermColorTable[2][8];
+static NSColor *xtermBackground;
+static NSColor *xtermForeground;
+static NSColor *xtermSelection;
+static NSColor* xtermColorTable[2][8];
 
 static NSString *DEFAULT_FONTNAME = @"Osaka-Mono";
 static float     DEFAULT_FONTSIZE = 14;
@@ -51,15 +56,120 @@ static int TRANSPARENCY  =10;
 
 + (void)initialize
 {
-    BACKGROUND = [NSColor blackColor];
-    FOREGROUND = [[NSColor colorWithCalibratedRed:0.8f
+    int i;
+    
+    iTermBackground = [[NSColor blackColor] retain];
+    iTermForeground = [[NSColor colorWithCalibratedRed:0.8f
                                             green:0.8f
                                              blue:0.8f
                                             alpha:1.0f]
         retain];
-    SELECTION = [NSColor selectedTextBackgroundColor];
+    iTermSelection = [[NSColor colorWithCalibratedRed:0.45f
+                                               green:0.5f
+                                                blue:0.55f
+                                               alpha:1.0f]
+        retain];
+
+    xtermBackground = [[NSColor whiteColor] retain];
+    xtermForeground = [[NSColor blackColor] retain];
+    xtermSelection = [NSColor selectedTextBackgroundColor];
+    
+    xtermColorTable[0][0]  = [[NSColor blackColor] retain];
+    xtermColorTable[0][1]  = [[NSColor redColor] retain];
+    xtermColorTable[0][2]  = [[NSColor greenColor] retain];
+    xtermColorTable[0][3] = [[NSColor yellowColor] retain];
+    xtermColorTable[0][4] = [[NSColor blueColor] retain];
+    xtermColorTable[0][5] = [[NSColor magentaColor] retain];
+    xtermColorTable[0][6]  = [[NSColor cyanColor] retain];
+    xtermColorTable[0][7]  = [[NSColor whiteColor] retain];
+    iTermColorTable[0][0]  = [[NSColor colorWithCalibratedRed:0.0f
+                                                                 green:0.0f
+                                                                  blue:0.0f
+                                                                 alpha:1.0f]
+        retain];
+    iTermColorTable[0][1]  = [[NSColor colorWithCalibratedRed:0.7f
+                                                        green:0.0f
+                                                         blue:0.0f
+                                                        alpha:1.0f]
+        retain];
+    iTermColorTable[0][2]  = [[NSColor colorWithCalibratedRed:0.0f
+                                                        green:0.7f
+                                                         blue:0.0f
+                                                        alpha:1.0f]
+        retain];
+    iTermColorTable[0][3] = [[NSColor colorWithCalibratedRed:0.7f
+                                                       green:0.7f
+                                                        blue:0.0f
+                                                       alpha:1.0f]
+        retain];
+    iTermColorTable[0][4] = [[NSColor colorWithCalibratedRed:0.0f
+                                                       green:0.0f
+                                                        blue:0.7f
+                                                       alpha:1.0f]
+        retain];
+    iTermColorTable[0][5] = [[NSColor colorWithCalibratedRed:0.7f
+                                                       green:0.0f
+                                                        blue:0.7f
+                                                       alpha:1.0f]
+        retain];
+    iTermColorTable[0][6]  = [[NSColor colorWithCalibratedRed:0.45f
+                                                        green:0.45f
+                                                         blue:0.7f
+                                                        alpha:1.0f]
+        retain];
+    iTermColorTable[0][7]  = [[NSColor colorWithCalibratedRed:0.7f
+                                                        green:0.7f
+                                                         blue:0.7f
+                                                        alpha:1.0f]
+        retain];
+    
+    for (i=0;i<8;i++) {
+        xtermColorTable[1][i]=[[PreferencePanel highlightColor:xtermColorTable[0][i]] retain];
+        iTermColorTable[1][i]=[[PreferencePanel highlightColor:iTermColorTable[0][i]] retain];
+    }
+    
     FONT = [[NSFont fontWithName:DEFAULT_FONTNAME
 			    size:DEFAULT_FONTSIZE] retain];
+}
+
++ (NSColor *) highlightColor:(NSColor *)color
+{
+
+    color=[color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    if ([color brightnessComponent]>0.5) {
+        if ([color brightnessComponent]>0.81) {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]-0.3
+                                            alpha:[color alphaComponent]];
+            //                color=[color shadowWithLevel:0.2];
+        }
+        else {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]+0.3
+                                            alpha:[color alphaComponent]];
+        }
+        //            color=[color highlightWithLevel:0.2];
+    }
+    else {
+        if ([color brightnessComponent]>0.19) {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]-0.3
+                                            alpha:[color alphaComponent]];
+            //                color=[color shadowWithLevel:0.2];
+        }
+        else {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]+0.3
+                                            alpha:[color alphaComponent]];
+            //                color=[color highlightWithLevel:0.2];
+        }
+    }
+
+    return color;
 }
 
 - (id)init
@@ -76,7 +186,8 @@ static int TRANSPARENCY  =10;
         SHELL = [[NSString stringWithFormat: @"login -fp %s", thisUser] retain];
     else if((userShell = getenv("SHELL")) != NULL)
         SHELL = [[NSString stringWithCString: userShell] retain];
-        
+
+    
     [self readPreferences];
                  
     return self;
@@ -84,26 +195,26 @@ static int TRANSPARENCY  =10;
 
 - (void)dealloc
 {
-    if(defaultTerminal != nil)
-        [defaultTerminal release];
-    if(defaultShell != nil)
-        [defaultShell release];    
-    if(defaultForeground != nil)
-        [defaultForeground release];                        
-    if(defaultBackground != nil)
-        [defaultBackground release];                        
-    if(defaultSelectionColor != nil)
-        [defaultSelectionColor release];                        
-    if(defaultFont != nil)
-        [defaultFont release];                        
-    if(defaultNAFont != nil)
-        [defaultNAFont release];            
-        
+    int i;
+    
+    [defaultTerminal release];
+    [defaultShell release];
+    [defaultForeground release];
+    [defaultBackground release];
+    [defaultSelectionColor release];
+    [defaultFont release];
+    [defaultNAFont release];
+    for(i=0;i<8;i++) {
+        [defaultColorTable[0][i] release];
+        [defaultColorTable[1][i] release];
+    }
     [super dealloc];
 }
 
 - (void) readPreferences
 {
+    int i;
+    
     prefs = [NSUserDefaults standardUserDefaults];
     encodingList=[NSString availableStringEncodings];
 
@@ -134,15 +245,15 @@ static int TRANSPARENCY  =10;
 
     [defaultForeground release];                        
     defaultForeground=[([prefs objectForKey:@"Foreground"]?
-    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Foreground"]]:FOREGROUND) copy];
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Foreground"]]:iTermForeground) copy];
                       
     [defaultBackground release];                        
     defaultBackground=[([prefs objectForKey:@"Background"]?
-    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Background"]]:BACKGROUND) copy];
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Background"]]:iTermBackground) copy];
                       
     [defaultSelectionColor release];                        
     defaultSelectionColor=[([prefs objectForKey:@"SelectionColor"]?
-    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"SelectionColor"]]:SELECTION) copy];
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"SelectionColor"]]:iTermSelection) copy];
                       
     [defaultFont release];                        
     defaultFont=[([prefs objectForKey:@"Font"]?
@@ -167,7 +278,30 @@ static int TRANSPARENCY  =10;
     defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     changingNA=NO;
-
+    if ([prefs objectForKey:@"AnsiBlack"]) {
+        defaultColorTable[0][0]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiBlack"]] copy];
+        defaultColorTable[0][1]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiRed"]] copy];
+        defaultColorTable[0][2]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiGreen"]] copy];
+        defaultColorTable[0][3]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiYellow"]] copy];
+        defaultColorTable[0][4]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiBlue"]] copy];
+        defaultColorTable[0][5]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiMagenta"]] copy];
+        defaultColorTable[0][6]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiCyan"]] copy];
+        defaultColorTable[0][7]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiWhite"]] copy];
+        defaultColorTable[1][0]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiBlack"]] copy];
+        defaultColorTable[1][1]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiRed"]] copy];
+        defaultColorTable[1][2]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiGreen"]] copy];
+        defaultColorTable[1][3]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiYellow"]] copy];
+        defaultColorTable[1][4]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiBlue"]] copy];
+        defaultColorTable[1][5]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiMagenta"]] copy];
+        defaultColorTable[1][6]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiCyan"]] copy];
+        defaultColorTable[1][7]=[[NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"AnsiHiWhite"]] copy];
+    }
+    else {
+        for(i=0;i<8;i++) {
+            defaultColorTable[0][i]=[iTermColorTable[0][i] copy];
+            defaultColorTable[1][i]=[iTermColorTable[1][i] copy];
+        }
+    }
 }
 
 - (void)run
@@ -185,6 +319,14 @@ static int TRANSPARENCY  =10;
     if(defaultTerminal != nil)
 	[terminal setStringValue:defaultTerminal];
     [encoding removeAllItems];
+    [tabSelector removeAllItems];
+    [tabSelector addItemWithTitle:@"Display"];
+    [tabSelector addItemWithTitle:@"Shell"];
+    [tabSelector addItemWithTitle:@"Emulation"];
+    [tabSelector addItemWithTitle:@"Color"];
+    [tabSelector selectItemAtIndex:0];
+    [prefTab selectTabViewItemAtIndex:0];
+    
     r=0;
     while (*p) {
         //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
@@ -197,6 +339,22 @@ static int TRANSPARENCY  =10;
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
     [selectionColor setColor: defaultSelectionColor];
+    [ansiBlack setColor:defaultColorTable[0][0]];
+    [ansiRed setColor:defaultColorTable[0][1]];
+    [ansiGreen setColor:defaultColorTable[0][2]];
+    [ansiYellow setColor:defaultColorTable[0][3]];
+    [ansiBlue setColor:defaultColorTable[0][4]];
+    [ansiMagenta setColor:defaultColorTable[0][5]];
+    [ansiCyan setColor:defaultColorTable[0][6]];
+    [ansiWhite setColor:defaultColorTable[0][7]];
+    [ansiHiBlack setColor:defaultColorTable[1][0]];
+    [ansiHiRed setColor:defaultColorTable[1][1]];
+    [ansiHiGreen setColor:defaultColorTable[1][2]];
+    [ansiHiYellow setColor:defaultColorTable[1][3]];
+    [ansiHiBlue setColor:defaultColorTable[1][4]];
+    [ansiHiMagenta setColor:defaultColorTable[1][5]];
+    [ansiHiCyan setColor:defaultColorTable[1][6]];
+    [ansiHiWhite setColor:defaultColorTable[1][7]];
     
     [row setIntValue:defaultRow];
     [col setIntValue:defaultCol];
@@ -237,6 +395,7 @@ static int TRANSPARENCY  =10;
 - (IBAction)changeBackground:(id)sender
 {
     [fontExample setBackgroundColor:[sender color]];
+    [nafontExample setBackgroundColor:[sender color]];
 }
 
 - (IBAction)changeFontButton:(id)sender
@@ -261,6 +420,7 @@ static int TRANSPARENCY  =10;
 - (IBAction)changeForeground:(id)sender
 {
     [fontExample setTextColor:[sender color]];
+    [nafontExample setTextColor:[sender color]];
 }
 
 - (void)changeFont:(id)fontManager
@@ -281,6 +441,8 @@ static int TRANSPARENCY  =10;
 
 - (IBAction)ok:(id)sender
 {
+    int i;
+    
     if ([col intValue]<1||[row intValue]<1) {
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
                         NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
@@ -294,11 +456,31 @@ static int TRANSPARENCY  =10;
     [defaultSelectionColor autorelease];
     [defaultShell autorelease];
     [defaultTerminal autorelease];
+    for(i=0;i<8;i++) {
+        [defaultColorTable[0][i] autorelease];
+        [defaultColorTable[1][i] autorelease];
+    }
     
     defaultBackground=[[background color] copy];
     defaultForeground=[[foreground color] copy];
     defaultSelectionColor = [[selectionColor color] copy];
-
+    defaultColorTable[0][0] = [[ansiBlack color] copy];
+    defaultColorTable[0][1] = [[ansiRed color] copy];
+    defaultColorTable[0][2] = [[ansiGreen color] copy];
+    defaultColorTable[0][3] = [[ansiYellow color] copy];
+    defaultColorTable[0][4] = [[ansiBlue color] copy];
+    defaultColorTable[0][5] = [[ansiMagenta color] copy];
+    defaultColorTable[0][6] = [[ansiCyan color] copy];
+    defaultColorTable[0][7] = [[ansiWhite color] copy];
+    defaultColorTable[1][0] = [[ansiHiBlack color] copy];
+    defaultColorTable[1][1] = [[ansiHiRed color] copy];
+    defaultColorTable[1][2] = [[ansiHiGreen color] copy];
+    defaultColorTable[1][3] = [[ansiHiYellow color] copy];
+    defaultColorTable[1][4] = [[ansiHiBlue color] copy];
+    defaultColorTable[1][5] = [[ansiHiMagenta color] copy];
+    defaultColorTable[1][6] = [[ansiHiCyan color] copy];
+    defaultColorTable[1][7] = [[ansiHiWhite color] copy];
+    
     defaultCol=[col intValue];
     defaultRow=[row intValue];
     
@@ -333,6 +515,40 @@ static int TRANSPARENCY  =10;
               forKey:@"Background"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultSelectionColor]
               forKey:@"SelectionColor"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][0]]
+              forKey:@"AnsiBlack"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][1]]
+              forKey:@"AnsiRed"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][2]]
+              forKey:@"AnsiGreen"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][3]]
+              forKey:@"AnsiYellow"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][4]]
+              forKey:@"AnsiBlue"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][5]]
+              forKey:@"AnsiMagenta"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][6]]
+              forKey:@"AnsiCyan"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[0][7]]
+              forKey:@"AnsiWhite"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][0]]
+              forKey:@"AnsiHiBlack"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][1]]
+              forKey:@"AnsiHiRed"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][2]]
+              forKey:@"AnsiHiGreen"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][3]]
+              forKey:@"AnsiHiYellow"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][4]]
+              forKey:@"AnsiHiBlue"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][5]]
+              forKey:@"AnsiHiMagenta"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][6]]
+              forKey:@"AnsiHiCyan"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultColorTable[1][7]]
+              forKey:@"AnsiHiWhite"];
+    
+
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultFont]
               forKey:@"Font"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultNAFont]
@@ -357,17 +573,27 @@ static int TRANSPARENCY  =10;
 
 - (IBAction)restore:(id)sender
 {
-    int r;
+    int r,i;
     NSStringEncoding const *p=encodingList;
     
-    if (defaultBackground) [defaultBackground autorelease];
-    if (defaultForeground) [defaultForeground autorelease];
-    if (defaultFont) [defaultFont autorelease];
+    [defaultBackground autorelease];
+    [defaultForeground autorelease];
+    [defaultSelectionColor autorelease];
+    [defaultFont autorelease];
+    for(i=0;i<8;i++) {
+        [defaultColorTable[0][i] autorelease];
+        [defaultColorTable[1][i] autorelease];
+    }
     
-    defaultBackground=[BACKGROUND copy];
-    defaultForeground=[FOREGROUND copy];
+    defaultBackground=[iTermBackground copy];
+    defaultForeground=[iTermForeground copy];
+    defaultSelectionColor=[iTermSelection copy];
     defaultFont=[FONT copy];
-
+    for(i=0;i<8;i++) {
+        defaultColorTable[0][i]=[iTermColorTable[0][i] copy];
+        defaultColorTable[1][i]=[iTermColorTable[1][i] copy];
+    }
+    
     defaultCol=COL;
     defaultRow=ROW;
     
@@ -400,6 +626,23 @@ static int TRANSPARENCY  =10;
     
     [background setColor:defaultBackground];
     [foreground setColor:defaultForeground];
+    [selectionColor setColor: defaultSelectionColor];
+    [ansiBlack setColor:defaultColorTable[0][0]];
+    [ansiRed setColor:defaultColorTable[0][1]];
+    [ansiGreen setColor:defaultColorTable[0][2]];
+    [ansiYellow setColor:defaultColorTable[0][3]];
+    [ansiBlue setColor:defaultColorTable[0][4]];
+    [ansiMagenta setColor:defaultColorTable[0][5]];
+    [ansiCyan setColor:defaultColorTable[0][6]];
+    [ansiWhite setColor:defaultColorTable[0][7]];
+    [ansiHiBlack setColor:defaultColorTable[1][0]];
+    [ansiHiRed setColor:defaultColorTable[1][1]];
+    [ansiHiGreen setColor:defaultColorTable[1][2]];
+    [ansiHiYellow setColor:defaultColorTable[1][3]];
+    [ansiHiBlue setColor:defaultColorTable[1][4]];
+    [ansiHiMagenta setColor:defaultColorTable[1][5]];
+    [ansiHiCyan setColor:defaultColorTable[1][6]];
+    [ansiHiWhite setColor:defaultColorTable[1][7]];
     
     [row setIntValue:defaultRow];
     [col setIntValue:defaultCol];
@@ -542,6 +785,83 @@ static int TRANSPARENCY  =10;
 - (BOOL)promptOnClose
 {
     return (defaultPromptOnClose);
+}
+
+- (IBAction)changeColorScheme:(id)sender
+{
+    int i;
+    
+    switch ([sender indexOfSelectedItem]) {
+        case 0:
+            break;
+        case 1:
+            [defaultBackground autorelease];
+            [defaultForeground autorelease];
+            [defaultSelectionColor autorelease];
+            defaultForeground=[iTermForeground copy];
+            defaultBackground=[iTermBackground copy];
+            defaultSelectionColor=[iTermSelection copy];
+            [fontExample setBackgroundColor:defaultBackground];
+            [nafontExample setBackgroundColor:defaultBackground];
+            [fontExample setTextColor:defaultForeground];
+            [nafontExample setTextColor:defaultForeground];
+            
+            for(i=0;i<8;i++) {
+                defaultColorTable[0][i]=[iTermColorTable[0][i] copy];
+                defaultColorTable[1][i]=[iTermColorTable[1][i] copy];
+            }
+            break;
+        case 2:
+            [defaultBackground autorelease];
+            [defaultForeground autorelease];
+            [defaultSelectionColor autorelease];
+            defaultForeground=[xtermForeground copy];
+            defaultBackground=[xtermBackground copy];
+            defaultSelectionColor=[xtermSelection copy];
+            [fontExample setBackgroundColor:defaultBackground];
+            [nafontExample setBackgroundColor:defaultBackground];
+            [fontExample setTextColor:defaultForeground];
+            [nafontExample setTextColor:defaultForeground];
+
+            for(i=0;i<8;i++) {
+                defaultColorTable[0][i]=[xtermColorTable[0][i] copy];
+                defaultColorTable[1][i]=[xtermColorTable[1][i] copy];
+            }
+            break;
+    }
+   if ([sender indexOfSelectedItem]) {
+       [background setColor:defaultBackground];
+       [foreground setColor:defaultForeground];
+       [selectionColor setColor: defaultSelectionColor];
+       [ansiBlack setColor:defaultColorTable[0][0]];
+       [ansiRed setColor:defaultColorTable[0][1]];
+       [ansiGreen setColor:defaultColorTable[0][2]];
+       [ansiYellow setColor:defaultColorTable[0][3]];
+       [ansiBlue setColor:defaultColorTable[0][4]];
+       [ansiMagenta setColor:defaultColorTable[0][5]];
+       [ansiCyan setColor:defaultColorTable[0][6]];
+       [ansiWhite setColor:defaultColorTable[0][7]];
+       [ansiHiBlack setColor:defaultColorTable[1][0]];
+       [ansiHiRed setColor:defaultColorTable[1][1]];
+       [ansiHiGreen setColor:defaultColorTable[1][2]];
+       [ansiHiYellow setColor:defaultColorTable[1][3]];
+       [ansiHiBlue setColor:defaultColorTable[1][4]];
+       [ansiHiMagenta setColor:defaultColorTable[1][5]];
+       [ansiHiCyan setColor:defaultColorTable[1][6]];
+       [ansiHiWhite setColor:defaultColorTable[1][7]];
+   }        
+}
+
+- (IBAction)changeTab:(id)sender
+{
+    [prefTab selectTabViewItemAtIndex:[sender indexOfSelectedItem]];
+}
+
+- (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili
+{
+    if (index<8)
+        return defaultColorTable[hili?1:0][index];
+    else return nil;
 }
 
 

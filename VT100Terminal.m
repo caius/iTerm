@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.54 2003-04-18 22:21:29 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.55 2003-04-26 00:05:37 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1152,15 +1152,7 @@ static VT100TCC decode_string(unsigned char *datap,
     ENCODING = NSASCIIStringEncoding;
     STREAM   = [[NSMutableData alloc] init];
     
-    colorTable[0]  = [[NSColor blackColor] retain];
-    colorTable[1]  = [[NSColor redColor] retain];
-    colorTable[2]  = [[NSColor greenColor] retain];
-    colorTable[3] = [[NSColor yellowColor] retain];
-    colorTable[4] = [[NSColor blueColor] retain];
-    colorTable[5] = [[NSColor magentaColor] retain];
-    colorTable[6]  = [[NSColor cyanColor] retain];
-    colorTable[7]  = [[NSColor whiteColor] retain]; 
-    
+  
 
     LINE_MODE = NO;
     CURSOR_MODE = NO;
@@ -1207,7 +1199,8 @@ static VT100TCC decode_string(unsigned char *datap,
 	[STREAM release];
 
     for(i=0;i<8;i++) {
-        [colorTable[i] release];
+        [colorTable[0][i] release];
+        [colorTable[1][i] release];
     }
     [characterAttributeDictionary[0] release];
     [characterAttributeDictionary[1] release];
@@ -1947,6 +1940,12 @@ static VT100TCC decode_string(unsigned char *datap,
      return defaultBGColor;
 }
 
+- (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
+{
+    [colorTable[hili?1:0][index] release];
+    colorTable[hili?1:0][index]=[c copy];
+}
+
 - (void) setScreen:(VT100Screen*) sc
 {
     SCREEN=sc;
@@ -1961,44 +1960,8 @@ static VT100TCC decode_string(unsigned char *datap,
     else if (index==DEFAULT_BG_COLOR_CODE)
         color=(SCREEN_MODE?defaultFGColor:defaultBGColor);
     else
-        color=colorTable[index];
+        color=colorTable[b?1:0][index];
 
-    if (b) {
-        color=[color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-        if ([color brightnessComponent]>0.5) {
-            if ([color brightnessComponent]>0.81) {
-                color=[NSColor colorWithCalibratedHue:[color hueComponent]
-                                           saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]-0.3
-                                                alpha:[color alphaComponent]]; 
-//                color=[color shadowWithLevel:0.2];
-            }
-            else {
-                color=[NSColor colorWithCalibratedHue:[color hueComponent]
-                                           saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]+0.3
-                                                alpha:[color alphaComponent]];
-            }
-//            color=[color highlightWithLevel:0.2];
-        }
-        else {
-            if ([color brightnessComponent]>0.19) {
-                color=[NSColor colorWithCalibratedHue:[color hueComponent]
-                                           saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]-0.3
-                                                alpha:[color alphaComponent]];
-//                color=[color shadowWithLevel:0.2];
-            }
-            else {
-                color=[NSColor colorWithCalibratedHue:[color hueComponent]
-                                           saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]+0.3
-                                                alpha:[color alphaComponent]];
-//                color=[color highlightWithLevel:0.2];
-            }
-        }
-    }    
-    
     return color;
 }
 

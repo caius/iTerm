@@ -1118,6 +1118,11 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 }
 
+- (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
+{
+    [TERMINAL setColorTable:index highLight:hili color:c];
+}
+
 - (BOOL) antiIdle
 {
     return antiIdle;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.46 2003-04-15 15:12:23 ujwal Exp $
+// $Id: MainMenu.m,v 1.47 2003-04-26 00:05:36 yfabian Exp $
 /*
  **  MainMenu.m
  **
@@ -168,6 +168,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     PseudoTerminal *term;
     NSString *cmd;
     NSArray *arg;
+    int i;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[MainMenu newWindow]",
@@ -192,7 +193,11 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [term setCurrentSessionName:nil];
     [[term currentSession] setAutoClose:[PREF_PANEL autoclose]];
     [[term currentSession] setDoubleWidth:[PREF_PANEL doubleWidth]];
-
+    for(i=0;i<8;i++) {
+        [[term currentSession] setColorTable:i highLight:NO color:[PREF_PANEL colorFromTable:i highLight:NO]];
+        [[term currentSession] setColorTable:i highLight:YES color:[PREF_PANEL colorFromTable:i highLight:YES]];
+    }
+    
 }
 
 - (IBAction)newSession:(id)sender
@@ -550,6 +555,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSArray *arg;
     NSDictionary *entry;
     NSStringEncoding encoding;
+    int i;
 
     // Grab the addressbook command
     entry = [addressBook objectAtIndex:theIndex];
@@ -595,7 +601,31 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
     [[term currentSession] setAddressBookEntry:entry];
     [[term currentSession] setDoubleWidth:[[entry objectForKey:@"DoubleWidth"] boolValue]];
-
+    if ([entry objectForKey:@"ansiBlack"]) {
+    [[term currentSession] setColorTable:0 highLight:NO color:[entry objectForKey:@"ansiBlack"]];
+    [[term currentSession] setColorTable:1 highLight:NO color:[entry objectForKey:@"ansiRed"]];
+    [[term currentSession] setColorTable:2 highLight:NO color:[entry objectForKey:@"ansiGreen"]];
+    [[term currentSession] setColorTable:3 highLight:NO color:[entry objectForKey:@"ansiYellow"]];
+    [[term currentSession] setColorTable:4 highLight:NO color:[entry objectForKey:@"ansiBlue"]];
+    [[term currentSession] setColorTable:5 highLight:NO color:[entry objectForKey:@"ansiMagenta"]];
+    [[term currentSession] setColorTable:6 highLight:NO color:[entry objectForKey:@"ansiCyan"]];
+    [[term currentSession] setColorTable:7 highLight:NO color:[entry objectForKey:@"ansiWhite"]];
+    [[term currentSession] setColorTable:0 highLight:YES color:[entry objectForKey:@"ansiHiBlack"]];
+    [[term currentSession] setColorTable:1 highLight:YES color:[entry objectForKey:@"ansiHiRed"]];
+    [[term currentSession] setColorTable:2 highLight:YES color:[entry objectForKey:@"ansiHiGreen"]];
+    [[term currentSession] setColorTable:3 highLight:YES color:[entry objectForKey:@"ansiHiYellow"]];
+    [[term currentSession] setColorTable:4 highLight:YES color:[entry objectForKey:@"ansiHiBlue"]];
+    [[term currentSession] setColorTable:5 highLight:YES color:[entry objectForKey:@"ansiHiMagenta"]];
+    [[term currentSession] setColorTable:6 highLight:YES color:[entry objectForKey:@"ansiHiCyan"]];
+    [[term currentSession] setColorTable:7 highLight:YES color:[entry objectForKey:@"ansiHiWhite"]];
+    }
+    else {
+        for(i=0;i<8;i++) {
+            [[term currentSession] setColorTable:i highLight:NO color:[PREF_PANEL colorFromTable:i highLight:NO]];
+            [[term currentSession] setColorTable:i highLight:YES color:[PREF_PANEL colorFromTable:i highLight:YES]];
+        }
+    }
+    
 }
 
 // Returns an entry from the addressbook

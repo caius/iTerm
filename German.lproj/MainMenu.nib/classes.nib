@@ -14,7 +14,8 @@
                 nextSession = id; 
                 pasteSelection = id; 
                 previousSession = id; 
-                saveSession = id; 
+                saveDisplayProfile = id; 
+                saveTerminalProfile = id; 
                 showConfigWindow = id; 
                 showFindPanel = id; 
                 toggleInputToAllSessions = id; 
@@ -74,6 +75,8 @@
                 newSession = id; 
                 nextSession = id; 
                 previousSession = id; 
+                saveDisplayProfile = id; 
+                saveTerminalProfile = id; 
                 setMainMenu = id; 
                 switchSession = id; 
                 windowConfigBackground = id; 

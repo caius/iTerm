@@ -42,12 +42,10 @@
                 nextSession = id; 
                 previousSession = id; 
                 saveSession = id; 
-                setMainMenu = id; 
                 switchSession = id; 
             }; 
             CLASS = PseudoTerminal; 
             LANGUAGE = ObjC; 
-            OUTLETS = {}; 
             SUPERCLASS = NSWindowController; 
         }
     ); 

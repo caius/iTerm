@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.5 2002-12-19 21:02:22 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.6 2002-12-20 15:55:48 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -9,6 +9,7 @@
 //
 
 #import "VT100Terminal.h"
+#import "VT100Screen.h"
 #import "NSStringITerm.h"
 
 /*

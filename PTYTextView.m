@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.5 2002-12-17 09:02:31 ujwal Exp $
+// $Id: PTYTextView.m,v 1.6 2002-12-20 15:55:47 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -104,7 +104,6 @@
 
 - (void)doCommandBySelector:(SEL)aSelector
 {
-    id delegate = [self delegate];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView doCommandBySelector:...]",
@@ -112,6 +111,8 @@
 #endif
 
 #if GREED_KEYDOWN == 0
+    id delegate = [self delegate];
+
     if ([delegate respondsToSelector:aSelector]) {
 	[delegate performSelector:aSelector withObject:nil];
     }

@@ -1,7 +1,13 @@
+2002-12-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed all compiler warnings.
+    
+
 2002-12-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
-    * changed UI from button based to real-tab based 
-      using NSTabView based on user feedback.
+    * Re-implemented UI from button based to real-tab based 
+      using NSTabView based on user feedback. Major code 
+      changes and simplifications.
       
     * Fixed bug causing a crash when a session was closed 
       without the shell exiting with the "autoclose" 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.5 2002-12-19 21:02:22 yfabian Exp $
+// $Id: VT100Screen.m,v 1.6 2002-12-20 15:55:47 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -14,6 +14,7 @@
 
 #import "VT100Screen.h"
 #import "NSStringITerm.h"
+#import "PseudoTerminal.h"
 
 @implementation VT100Screen
 
@@ -802,7 +803,6 @@ static BOOL PLAYBELL = YES;
 
 - (void)setTab
 {
-    int dif = TABSIZE - CURSOR_X % TABSIZE;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setTab]", __FILE__, __LINE__);
@@ -811,6 +811,8 @@ static BOOL PLAYBELL = YES;
 #if 0
     {
 	int i;
+        int dif = TABSIZE - CURSOR_X % TABSIZE;
+
 	NSMutableString *str = [NSMutableString string];
 	for (i = 0; i < dif; ++i)
 	    [str appendString:@" "];

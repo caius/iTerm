@@ -108,3 +108,12 @@
 /* Config */
 "Configuration saved as a new entry in Address Book"="Configuration saved as a new entry in Address Book";
 "Configuration saved"="Configuration saved";
+
+/* OS Version */
+"Minimum_OS"="iTerm requires OS X version 10.2 or higher to run. This application will now terminate.";
+
+/* Sorry */
+"Sorry"="Sorry";
+
+/* Quit */
+"Quit"="Quit";

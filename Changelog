@@ -2,6 +2,8 @@
 
     * When changing colors, setting color scheme 
       popup button value to "Custom".
+      
+    * Now checking for minimum OS version on startup.
 
 2003-04-25	ujwal
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.47 2003-04-26 00:05:36 yfabian Exp $
+// $Id: MainMenu.m,v 1.48 2003-04-27 00:46:36 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -60,6 +60,19 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSLog(@"%s(%d):-[MainMenu applicationWillFinishLaunching]",
           __FILE__, __LINE__);
 #endif
+
+    // Check the system version for minimum requirements.
+    SInt32 gSystemVersion;    
+    Gestalt(gestaltSystemVersion, &gSystemVersion);
+    if(gSystemVersion < 0x1020)
+    {
+	NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Sorry",@"iTerm", [NSBundle bundleForClass: [self class]], @"Sorry"),
+		 NSLocalizedStringFromTableInBundle(@"Minimum_OS", @"iTerm", [NSBundle bundleForClass: [self class]], @"OS Version"),
+		NSLocalizedStringFromTableInBundle(@"Quit",@"iTerm", [NSBundle bundleForClass: [self class]], @"Quit"),
+		 nil, nil);
+	[NSApp terminate: self];
+    }
+
 
     // set the TERM_PROGRAM environment variable
     putenv("TERM_PROGRAM=iTerm.app");

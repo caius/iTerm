@@ -324,6 +324,9 @@ static NSString *PWD_ENVVALUE = @"~";
 //    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
 //          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
 
+    // Clear the bell
+    [self setBell: NO];
+
     // Check if we are navigating through sessions or scrolling
     if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
     {
@@ -845,13 +848,19 @@ static NSString *PWD_ENVVALUE = @"~";
     else {
         [tabViewItem setLabelAttributes: chosenStateAttribute];
     }
-    [tabViewItem setBell:NO];
+    [self setBell:NO];
 }
 
 - (void) setBell
 {
-    [tabViewItem setBell:YES];
+    [self setBell:YES];
 }
+
+- (void) setBell: (BOOL) flag
+{
+    [tabViewItem setBell:flag];
+}
+
 
 // Preferences
 - (void)setPreference:(id)preference;
@@ -955,12 +964,12 @@ static NSString *PWD_ENVVALUE = @"~";
         aMutableString = [[NSMutableString alloc] initWithString: [theName substringWithRange: NSMakeRange(0, 17)]];
         [aMutableString appendString: @"..."];
         [tabViewItem setLabel: aMutableString];
-        [tabViewItem setBell: NO];
+        [self setBell: NO];
         [aMutableString release];
     }
     else {
         [tabViewItem setLabel: theName];
-        [tabViewItem setBell: NO];
+        [self setBell: NO];
     }
 }
 

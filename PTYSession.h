@@ -175,5 +175,6 @@
 - (BOOL)exited;
 - (void)setLabelAttribute;
 - (void)setBell;
+- (void) setBell: (BOOL) flag;
 
 @end

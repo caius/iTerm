@@ -2,6 +2,8 @@
 
     * Using real bell icon instead of warning sign.
 
+    * Clearing bell on user input.
+    
 2003-04-21	ujwal
     
     * Set document cursor of scrollview to arrow cursor so that 

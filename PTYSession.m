@@ -681,7 +681,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (++output>1000) output=1000;
     
     if (antiIdle) {
-        if (iIdleCount>=600) {
+        if (iIdleCount>=6000) {
             [SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
             iIdleCount=0;
         }
@@ -690,7 +690,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setLabelAttribute];
     }
 
-    if (blink>8) { [SCREEN blink]; blink=0; }
+    if (blink>50) { [SCREEN blink]; blink=0; }
     if (oIdleCount<2||dirty) {
         if (output>3) {
             // sometimes showCursor will change buffer too
@@ -717,14 +717,14 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabelAttributes: deadStateAttribute];
     }
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
-        if (oIdleCount>30&&!waiting) {
+        if (oIdleCount>200&&!waiting) {
             waiting=YES;
             if (REFRESHED)
                 [tabViewItem setLabelAttributes: idleStateAttribute];
             else
                 [tabViewItem setLabelAttributes: normalStateAttribute];
         }
-        else if (waiting&&oIdleCount<=30) {
+        else if (waiting&&oIdleCount<=200) {
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
         }

@@ -2,6 +2,7 @@
     * Fixed a bug that causes incorrect process of color.
     * Cleaned up the color code
     * Fixed a bug related to reversed video mode.
+    * Changed default black color to pure black.
     
 2003-03-11	fabian
     * Changed the color code. Now we no longer have fixed

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.71 2003-03-12 20:30:36 yfabian Exp $
+// $Id: VT100Screen.m,v 1.72 2003-03-12 22:08:19 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -187,7 +187,6 @@ static BOOL PLAYBELL = YES;
     screenLines = [[NSMutableArray alloc] init];
 
     minIndex=0;
-    
     return self;
 }
 

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.26 2003-03-04 01:20:38 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.27 2003-03-11 22:54:49 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -51,10 +51,12 @@ static int TRANSPARENCY  =10;
 
 + (void)initialize
 {
-//    BACKGROUND  = [[NSColor textBackgroundColor] retain];
-//    FOREGROUND  = [[NSColor textColor] retain];
     BACKGROUND = [NSColor blackColor];
-    FOREGROUND = [NSColor whiteColor];
+    FOREGROUND = [[NSColor colorWithCalibratedRed:0.8f
+                                            green:0.8f
+                                             blue:0.8f
+                                            alpha:1.0f]
+        retain];
     SELECTION = [NSColor selectedTextBackgroundColor];
     FONT = [[NSFont fontWithName:DEFAULT_FONTNAME
 			    size:DEFAULT_FONTSIZE] retain];

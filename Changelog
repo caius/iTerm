@@ -1,3 +1,9 @@
+2003-03-11	fabian
+    * Changed the color code. Now we no longer have fixed
+      bold text color. Instead, it's calculated from the
+      base color. So we can choose whatever color we want
+      again.
+      
 2003-03-10	fabian
     * Rewrite the color stuff in emulation code. Now we
       use seperate color table for normal and bold text.

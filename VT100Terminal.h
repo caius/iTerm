@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.20 2003-03-11 01:27:52 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.21 2003-03-11 22:54:49 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -153,13 +153,13 @@ typedef struct {
 
 typedef enum {
     COLORCODE_BLACK=0,
-    COLORCODE_RED,
-    COLORCODE_GREEN,
-    COLORCODE_YELLOW,
-    COLORCODE_BLUE,
-    COLORCODE_PURPLE,
-    COLORCODE_WATER,
-    COLORCODE_WHITE,
+    COLORCODE_RED=1,
+    COLORCODE_GREEN=2,
+    COLORCODE_YELLOW=3,
+    COLORCODE_BLUE=4,
+    COLORCODE_PURPLE=5,
+    COLORCODE_WATER=6,
+    COLORCODE_WHITE=7,
     COLORS
 } colorCode;
 
@@ -186,7 +186,8 @@ typedef enum {
 #define VT100CHARATTR_BG_WHITE     (VT100CHARATTR_BG_BASE + COLORCODE_WHITE)
 #define VT100CHARATTR_BG_DEFAULT   (VT100CHARATTR_BG_BASE + 9)
 
-
+#define DEFAULT_FG_COLOR_CODE	-1
+#define DEFAULT_BG_COLOR_CODE	-2
 
 @interface VT100Terminal : NSObject
 {
@@ -211,10 +212,12 @@ typedef enum {
     BOOL numLock;		// YES=ON, NO=OFF, default=YES;
     
     unsigned int CHARATTR;
-    int FG_COLORCODE, defaultFGColorCode;
-    int BG_COLORCODE, defaultBGColorCode;
+    int FG_COLORCODE;
+    int BG_COLORCODE;
     float alpha;
-    NSColor* colorTable[2][COLORS];
+    NSColor* colorTable[COLORS];
+    NSColor* defaultFGColor;
+    NSColor* defaultBGColor;
 
     unsigned int saveCHARATTR;
     int saveCHARSET;
@@ -283,7 +286,6 @@ typedef enum {
 - (void) setBGColor:(NSColor*)color;
 - (NSColor *) defaultFGColor;
 - (NSColor *) defaultBGColor;
-- (int) closestColorCode: (NSColor *) color;
 - (NSColor *) colorFromTable:(int) index bold:(BOOL) b;
 
 - (NSData *)reportActivePositionWithX:(int)x Y:(int)y;

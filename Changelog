@@ -1,3 +1,10 @@
+2003-02-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added submenus to tabview contextual menu. Tabview 
+      contextual menu is not built and controlled by 
+      the tabview delegate.
+      
+
 2003-02-02	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added basic Applescript support. One can now write 

@@ -36,6 +36,7 @@
 // build a conextual menu displaying the current tabs
 - (NSMenu *) menuForEvent: (NSEvent *) theEvent
 {
+#if 0
     int i;
     NSMenuItem *aMenuItem;
     NSMenu *cMenu;
@@ -51,6 +52,13 @@
         [aMenuItem release];
     }
     return (cMenu);
+#endif
+
+    // Ask our delegate to handle our contextual menu
+    if([[self delegate] respondsToSelector: @selector(tabViewContextualMenu:)])
+	return ([[self delegate] tabViewContextualMenu: theEvent]);
+    else
+	return (nil);
 }
 
 // selects a tab from the contextual menu

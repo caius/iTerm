@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.15 2003-01-07 21:50:44 yfabian Exp $
+// $Id: VT100Screen.m,v 1.16 2003-01-09 20:26:03 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -475,7 +475,7 @@ static BOOL PLAYBELL = YES;
     case VT100CSI_IND:
 	if(CURSOR_Y == SCROLL_BOTTOM)
 	{
-	    [self scrollDown];
+	    [self scrollUp];
 	}
 	else
 	{
@@ -1153,7 +1153,7 @@ static BOOL PLAYBELL = YES;
     [STORAGE insertAttributedString:[self attrString:@"\n"] atIndex:idx];
     if (SCROLL_BOTTOM>=HEIGHT-1) {
         idx=[self getIndex:0 y:SCROLL_BOTTOM];
-        [STORAGE deleteCharactersInRange:NSMakeRange(idx,[STORAGE length]-idx)];
+        [STORAGE deleteCharactersInRange:NSMakeRange(idx-1,[STORAGE length]-idx)];
     }
     else {
         idx=[self getIndex:0 y:SCROLL_BOTTOM];

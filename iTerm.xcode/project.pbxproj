@@ -54,6 +54,7 @@
 				DD4BAB7C0470C44C00A8A065,
 				20D5CC6404E7AA0500000106,
 				E8A66F030272453F03A80106,
+				DD46BAC405FD689F00027283,
 				DDDB7ABD05D7736600E197C2,
 				8787B0D805FD160F00901149,
 				20E74F4904E9089700000106,
@@ -87,6 +88,7 @@
 				872EBC6A04E42E320073D10E,
 				20D5CC6304E7AA0500000106,
 				872EBC6204E42E320073D10E,
+				DD46BB5405FD6B9B00027283,
 				DDDB7AD605D773B400E197C2,
 				8787B13F05FD191400901149,
 				20E74F4804E9089700000106,
@@ -729,6 +731,7 @@
 				874206090564168A00CFC3F1,
 				DDDB7AD705D773B400E197C2,
 				8787B14005FD191400901149,
+				DD46BB5505FD6B9B00027283,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1088,6 +1091,7 @@
 				874206360564168A00CFC3F1,
 				DDDB7ABF05D7736600E197C2,
 				8787B0DA05FD160F00901149,
+				DD46BAC605FD689F00027283,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1681,6 +1685,35 @@
 //DD2
 //DD3
 //DD4
+		DD46BAC405FD689F00027283 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = iTermDisplayProfileMgr.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DD46BAC605FD689F00027283 = {
+			fileRef = DD46BAC405FD689F00027283;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DD46BB5405FD6B9B00027283 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = iTermDisplayProfileMgr.h;
+			path = Headers/iTerm/iTermDisplayProfileMgr.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		DD46BB5505FD6B9B00027283 = {
+			fileRef = DD46BB5405FD6B9B00027283;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		DD48F1C703EBB1C400A8A065 = {
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.xml;

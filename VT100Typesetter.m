@@ -37,7 +37,6 @@ static unsigned int invocationId = 0;
 #define ISDOUBLEWIDTHCHARACTER(idx) ([[textStorage attribute:@"NSCharWidthAttributeName" atIndex:(idx) effectiveRange:nil] intValue]==2)
 #define ISGRAPHICALCHARACTER(idx) ([[textStorage attribute:@"VT100GraphicalCharacter" atIndex:(idx) effectiveRange:nil] boolValue])
 
-
 @implementation VT100Typesetter
 
 // we should really be asking the NSTextContainer, butit may not exist yet, and there is no class method.
@@ -46,7 +45,7 @@ static unsigned int invocationId = 0;
     return (5);
 }
 
-- (id) init
+- (id)init
 {
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[VT100Typesetter init]", __FILE__, __LINE__);
@@ -65,7 +64,6 @@ static unsigned int invocationId = 0;
     [super dealloc];
 }
 
-
 - (float)baselineOffsetInLayoutManager:(NSLayoutManager *)layoutMgr glyphIndex:(unsigned)glyphIndex
 {
     return (BASELINE_OFFSET);    
@@ -73,7 +71,6 @@ static unsigned int invocationId = 0;
 
 - (void)layoutGlyphsInLayoutManager:(NSLayoutManager *)layoutMgr startingAtGlyphIndex:(unsigned)startGlyphIndex maxNumberOfLineFragments:(unsigned)maxNumLines nextGlyphIndex:(unsigned *)nextGlyph
 {
-
 #if DEBUG_METHOD_TRACE
     unsigned int callId = invocationId++;
     
@@ -90,7 +87,6 @@ static unsigned int invocationId = 0;
     NSTextStorage *textStorage;
     NSRect previousRect;
 
-
     // grab the text container; we should have only one
     if(textContainer == nil)
     {
@@ -103,7 +99,6 @@ static unsigned int invocationId = 0;
 	textView = [layoutMgr firstTextView];
 
     textStorage = [layoutMgr textStorage];
-
 
     // grab the string; there should be only one
     theString = [textStorage string];
@@ -136,11 +131,8 @@ static unsigned int invocationId = 0;
 	// sanity check
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
 	if(isValidIndex == NO)
-	{
 	    return;
-	}
 	
-
 	// get the corresponding character index
 	charIndex = [layoutMgr characterIndexForGlyphAtIndex: glyphIndex];
 	
@@ -155,7 +147,6 @@ static unsigned int invocationId = 0;
 	lineStartIndex = j + 1;
 	if(lineStartIndex  > charIndex)
 	    lineStartIndex = charIndex;
-	
 
 	// go to the end of the line
 	j = charIndex;
@@ -198,9 +189,7 @@ static unsigned int invocationId = 0;
 
 	// calculate the line fragment rectangle
 	if(lineStartIndex == 0)
-	{
 	    lineRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
-	}
 	else
 	{
 	    NSRect lastGlyphRect;
@@ -218,7 +207,6 @@ static unsigned int invocationId = 0;
 #endif
 	// cache the rect for the next run, if any.
 	previousRect = lineRect;
-	
 	
 	// Now fill the line
 	NSRect usedRect = lineRect;
@@ -255,7 +243,6 @@ static unsigned int invocationId = 0;
 	{
 	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
 	}
-	
 
 	// set the glyphIndex for the next run
 	glyphIndex = glyphRange.location + glyphRange.length;
@@ -268,12 +255,10 @@ static unsigned int invocationId = 0;
 	    [layoutMgr setExtraLineFragmentRect:lineRect usedRect:lineRect textContainer: textContainer];
 	}
 	
-	
 	// if we are at the end of the text, pad any unused space and get out.
 	[layoutMgr glyphAtIndex: glyphIndex isValidIndex: &isValidIndex];
 	if(atEnd == YES || isValidIndex == NO)
 	{
-	    
 	    // pad with empty lines if we need to
 	    float displayHeight = [textView frame].size.height;
 
@@ -290,14 +275,11 @@ static unsigned int invocationId = 0;
 	    {
 		originGlyphIndex = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(originCharIndex, 1) actualCharacterRange: nil].location;
 		if(originGlyphIndex == 0)
-		{
 		    originLineFragmentRect = NSMakeRect(0, 0, [textContainer containerSize].width, [font defaultLineHeightForFont]);
-		}
 		else
-		{
 		    originLineFragmentRect = [layoutMgr lineFragmentRectForGlyphAtIndex: originGlyphIndex effectiveRange: nil];
-		}
-		usedScreenLines = floor((lineRect.origin.y + lineRect.size.height - originLineFragmentRect.origin.y)/[font defaultLineHeightForFont]);
+
+                usedScreenLines = floor((lineRect.origin.y + lineRect.size.height - originLineFragmentRect.origin.y)/[font defaultLineHeightForFont]);
 		if(usedScreenLines < [screen height])
 		{
 		    lineRect.origin.y += [font defaultLineHeightForFont];
@@ -316,7 +298,6 @@ static unsigned int invocationId = 0;
 	    }
 	    break;
 	}
-	
     }
 
     // cache the current for the next run
@@ -325,9 +306,7 @@ static unsigned int invocationId = 0;
     // set the next glyph to be laid out
     if(nextGlyph)
 	*nextGlyph = glyphIndex;
-
 }
-
 
 - (VT100Screen *) screen
 {

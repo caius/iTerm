@@ -30,7 +30,6 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-
 @implementation PTYTabViewItem
 
 - (id) initWithIdentifier: (id) anIdentifier
@@ -38,9 +37,9 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTabViewItem: -initWithIdentifier");
 #endif
-
+    
     dragTarget = NO;
-
+    
     return([super initWithIdentifier: anIdentifier]);
 }
 
@@ -49,15 +48,12 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTabViewItem: -dealloc");
 #endif
-
+    
     [warningImage release];
-
-    if(labelAttributes != nil)
-    {
-        [labelAttributes release];
-        labelAttributes = nil;
-    }
-
+    
+    [labelAttributes release];
+    labelAttributes = nil;
+    
     [super dealloc];
 }
 
@@ -70,116 +66,102 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"PTYTabViewItem: -drawLabel(bell=%@)",bell?@"YES":@"NO");
 #endif
-
+    
     if(labelAttributes != nil)
     {
-        NSMutableAttributedString *attributedLabel;
-        NSMutableParagraphStyle *pstyle=[[NSMutableParagraphStyle alloc] init];
+        NSMutableParagraphStyle *pstyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
         [pstyle setLineBreakMode:NSLineBreakByTruncatingMiddle];
-        attributedLabel = [[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
-	    [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes];
-
+        NSMutableAttributedString * attributedLabel = [[[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@", [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes] autorelease];
+        
         // If we are a current drag target, add foreground and background colors
-	if(dragTarget)
-	{
-	    [attributedLabel addAttribute: NSForegroundColorAttributeName value: [NSColor greenColor]
-								    range: NSMakeRange(0, [attributedLabel length])];
-	    [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor]
-								    range: NSMakeRange(0, [attributedLabel length])];
+        if(dragTarget)
+        {
+            [attributedLabel addAttribute: NSForegroundColorAttributeName value: [NSColor greenColor] range: NSMakeRange(0, [attributedLabel length])];
+            [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor] range: NSMakeRange(0, [attributedLabel length])];
         }
+        
         [attributedLabel addAttribute:NSParagraphStyleAttributeName value:pstyle range:NSMakeRange(0, [attributedLabel length])];
         
-        if (bell) {
-	    int tabViewType = [[self tabView] tabViewType];
-	    if(tabViewType == NSTopTabsBezelBorder || tabViewType == NSBottomTabsBezelBorder)
-	    {
-		if(warningImage == nil)
-		{
-		    imagePath = [thisBundle pathForResource:@"important"
-								   ofType:@"png"];
-		    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
-		    
-		}
-		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x,tabRect.origin.y+16)
-		       operation:NSCompositeSourceOver];
+        if (bell) 
+        {
+            int tabViewType = [[self tabView] tabViewType];
+            
+            if(tabViewType == NSTopTabsBezelBorder || tabViewType == NSBottomTabsBezelBorder)
+            {
+                if(warningImage == nil)
+                {
+                    imagePath = [thisBundle pathForResource:@"important" ofType:@"png"];
+                    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
+                }
+                
+                [warningImage compositeToPoint:NSMakePoint(tabRect.origin.x,tabRect.origin.y+16) operation:NSCompositeSourceOver];
                 tabRect.origin.x+=18;
                 tabRect.size.width-=18;
-	    }
-	    else if(tabViewType == NSRightTabsBezelBorder)
-	    {
-		if(warningImage == nil)
-		{
-		    imagePath = [thisBundle pathForResource:@"important_r"
-											       ofType:@"png"];
-		    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
-
-		}
-		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x + 12,tabRect.origin.y + 15)
-		       operation:NSCompositeSourceOver];
+            }
+            else if(tabViewType == NSRightTabsBezelBorder)
+            {
+                if(warningImage == nil)
+                {
+                    imagePath = [thisBundle pathForResource:@"important_r" ofType:@"png"];
+                    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
+                }
+                
+                [warningImage compositeToPoint:NSMakePoint(tabRect.origin.x + 12,tabRect.origin.y + 15)
+                                                   operation:NSCompositeSourceOver];
                 tabRect.origin.x+=14;
                 tabRect.size.width-=14;
-	    }
-	    else if(tabViewType == NSLeftTabsBezelBorder)
-	    {
-		if(warningImage == nil)
-		{
-		    imagePath = [thisBundle pathForResource:@"important_l"
-											       ofType:@"png"];
-		    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
-
-		}
-		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x - 3,tabRect.origin.y)
-				     operation:NSCompositeSourceOver];
+            }
+            else if(tabViewType == NSLeftTabsBezelBorder)
+            {
+                if(warningImage == nil)
+                {
+                    imagePath = [thisBundle pathForResource:@"important_l" ofType:@"png"];
+                    warningImage = [[NSImage alloc] initByReferencingFile: imagePath];
+                }
+                
+                [warningImage compositeToPoint:NSMakePoint(tabRect.origin.x - 3,tabRect.origin.y)
+                                                                 operation:NSCompositeSourceOver];
                 tabRect.origin.x+=15;
                 tabRect.size.width-=15;
-	    }
+            }
             [attributedLabel drawInRect: tabRect];
         }
-        else [attributedLabel drawInRect: tabRect]; 
-        [attributedLabel release];
-        
+        else 
+            [attributedLabel drawInRect: tabRect]; 
     }
     else
     {
         // No attributed label, so just call the parent method.
         [super drawLabel: shouldTruncateLabel inRect: tabRect];
     }
-    
 }
 
 - (NSSize) sizeOfLabel:(BOOL)shouldTruncateLabel
 {
     NSSize aSize;
     NSMutableAttributedString *attributedLabel;
-
+    
 #if DEBUG_METHOD_TRACE
     NSLog(@"PTYTabViewItem: -sizeOfLabel");
 #endif
-
+    
     if(labelAttributes != nil)
     {
-        attributedLabel = [[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
-	    [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes];
-	// If we are a current drag target, add foreground and background colors
-	if(dragTarget)
-	{
-	    [attributedLabel addAttribute: NSForegroundColorAttributeName value: [NSColor greenColor]
-								range: NSMakeRange(0, [attributedLabel length])];
-	    [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor]
-								    range: NSMakeRange(0, [attributedLabel length])];
-
-	}
-        aSize = [attributedLabel size];
-        if (bell) {
-            aSize.width+=18;
+        attributedLabel = [[[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@", [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes] autorelease];
+        // If we are a current drag target, add foreground and background colors
+        if(dragTarget)
+        {
+            [attributedLabel addAttribute: NSForegroundColorAttributeName value: [NSColor greenColor] range: NSMakeRange(0, [attributedLabel length])];
+            [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor] range: NSMakeRange(0, [attributedLabel length])];
         }
-        [attributedLabel release];
+        aSize = [attributedLabel size];
+        
+        if (bell)
+            aSize.width+=18;
     }
     else
-    {
         aSize = [super sizeOfLabel: shouldTruncateLabel];
-    }
-
+    
     if (aSize.width > [((PTYTabView*)[self tabView]) maxLabelSize]) 
         aSize.width = [((PTYTabView*)[self tabView]) maxLabelSize];
     
@@ -197,40 +179,27 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"PTYTabViewItem: -setLabelAttributes");
 #endif
-
+    
     // Do this only if there is a change
     if([labelAttributes isEqualToDictionary: theLabelAttributes])
         return;
     
-    if(labelAttributes != nil)
-    {
-        [labelAttributes release];
-        labelAttributes = nil;
-    }
-    if(theLabelAttributes != nil)
-    {
-        [theLabelAttributes retain];
-        labelAttributes = theLabelAttributes;
-    }
+    [labelAttributes release];
+    labelAttributes = [theLabelAttributes retain];
+    
+    bell=NO;
     
     // redraw the label
-    NSString *theLabel = [[self label] copy];
-    bell=NO;
-    [self setLabel: theLabel];
-    [theLabel release];
-    
+    [self setLabel: [[[self label] copy] autorelease]];
 }
 
 // Called when when another tab is being dragged over this one
 - (void) becomeDragTarget
 {
     dragTarget = YES;
-
-    // redraw the label
-    NSString *theLabel = [[self label] copy];
-    [self setLabel: theLabel];
-    [theLabel release];
     
+    // redraw the label
+    [self setLabel: [[[self label] copy] autorelease]];
 }
 
 // Called when another tab is moved away from this one
@@ -239,22 +208,19 @@
     dragTarget = NO;
     
     // redraw the label
-    NSString *theLabel = [[self label] copy];
-    [self setLabel: theLabel];
-    [theLabel release];    
+    [self setLabel: [[[self label] copy] autorelease]];
 }
 
 - (void) setBell:(BOOL)b
 {
     // do this only if there is a change
     if(bell == b)
-	return;
-
-    // redraw the label
-    NSString *theLabel = [[self label] copy];
+        return;
+    
     bell=b;
-    [self setLabel: theLabel];
-    [theLabel release];
+    
+    // redraw the label
+    [self setLabel: [[[self label] copy] autorelease]];
 }
 
 @end

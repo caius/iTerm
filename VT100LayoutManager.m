@@ -31,7 +31,6 @@
 
 #define DEBUG_METHOD_TRACE    0
 
-
 @implementation VT100LayoutManager
 
 // we don't want to re-layout the text when the window size changes.
@@ -49,7 +48,6 @@
     NSLog(@"VT100LayoutManager: aTextStorage: edited: (0x%x) range: (%d,%d) changeInLength: (%d) invalidatedRange: (%d,%d)", mask, range.location, range.length, lengthChange, invalidatedCharRange.location, invalidatedCharRange.length);
 #endif
     
-
 #if 0
     // don't do anything if we just had attribute changes
     if(mask == NSTextStorageEditedAttributes)
@@ -90,9 +88,7 @@
     }
 #endif
 
-
     [super textStorage: aTextStorage edited: mask range: range changeInLength: lengthChange invalidatedRange: invalidatedCharRange];
-    
 }
 
 #if 0

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.79 2003-08-12 06:28:45 sgehrman Exp $
+// $Id: PTYTextView.m,v 1.80 2003-08-12 08:36:49 sgehrman Exp $
 /*
  **  PTYTextView.m
  **
@@ -79,6 +79,7 @@
         NSBackgroundColorAttributeName,
         [NSColor blackColor],NSForegroundColorAttributeName,
         [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,NULL];
+    
     [self setMarkedTextAttributes:dic];
     deadkey = NO;
     startIndex=-1;
@@ -90,9 +91,7 @@
                                                  name:NSWindowDidResizeNotification
                                                object:nil];
     
-    
     return (self);
-    
 }
 
 - (BOOL)isFlipped
@@ -106,6 +105,8 @@
     NSLog(@"PTYTextView: -dealloc 0x%x", self);
 #endif
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self];    
+    
     [dataSource release];
     [_delegate release];
     [font release];
@@ -113,10 +114,6 @@
     [markedTextAttributes release];
     
     dataSource = nil;
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                                                              name:NSWindowDidResizeNotification
-                                                                                            object:nil];    
     
     [super dealloc];
 }
@@ -182,7 +179,6 @@
 #endif
     
     return [selectionTextAttributes objectForKey:NSBackgroundColorAttributeName];
-    
 }
 
 - (void) setSelectionColor: (NSColor *) aColor
@@ -389,7 +385,6 @@
 
 - (void)drawRect:(NSRect)rect
 {
-    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView drawRect:(%f,%f,%f,%f)]",
           __FILE__, __LINE__,
@@ -437,7 +432,9 @@
         {
             NSLog(@"Got a nil line...");
             ;
-        }else {
+        }
+        else 
+        {
             //NSLog(@"Line %d at %f:[%@]",i+lineOffset,rect.origin.y,[aLine string]);
             if (startIndex!=-1&&lstartY<=i+lineOffset&&i+lineOffset<=lendY) {
                 if ([aLine length]<=0) continue;
@@ -594,8 +591,7 @@
     endIndex=startIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
     endY=startY=y;
     
-    if([_delegate respondsToSelector: @selector(willHandleEvent:)] &&
-       [_delegate willHandleEvent: event])
+    if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
 }
 
@@ -688,7 +684,8 @@
     NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
 #endif
     
-    if (startIndex<0) return nil;
+    if (startIndex<0) 
+        return nil;
     
     copyString=[[[NSMutableString alloc] init] autorelease];
     
@@ -833,7 +830,8 @@
     NSString *s=[self selectedText];
     NSURL *url;
     
-    if (s&&[s length]>0) {
+    if (s && ([s length] > 0))
+    {
         if (![s hasPrefix:@"mailto:"])
             url = [NSURL URLWithString:[@"mailto:" stringByAppendingString:s]];
         else
@@ -900,9 +898,7 @@
     
     // If parent class does not know how to deal with this drag type, check if we do.
     if (iResult == NSDragOperationNone) // Parent NSTextView does not support this drag type.
-    {
         return [self _checkForSupportedDragTypes: sender];
-    }
     
     return iResult;
 }
@@ -937,11 +933,8 @@
     bResult = [super prepareForDragOperation: sender];
     
     // If parent class does not know how to deal with this drag type, check if we do.
-    if ( bResult != YES &&
-         [self _checkForSupportedDragTypes: sender] != NSDragOperationNone )
-    {
+    if ( bResult != YES && [self _checkForSupportedDragTypes: sender] != NSDragOperationNone )
         bResult = YES;
-    }
     
     return bResult;
 }
@@ -958,7 +951,6 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView performDragOperation:%@]", __FILE__, __LINE__, sender );
 #endif
-    
     
     // If parent class does not know how to deal with this drag type, check if we do.
     if (bExtendedDragNDrop)
@@ -1011,8 +1003,6 @@
     [aMutableString replaceOccurrencesOfString: @"&" withString: @"\\&" options: 0 range: NSMakeRange(0, [aMutableString length])];
     [aMutableString replaceOccurrencesOfString: @"'" withString: @"\\'" options: 0 range: NSMakeRange(0, [aMutableString length])];
 
-
-
     [delegate pasteString: aMutableString];
     [delegate pasteString: @" "];
     [aMutableString release];
@@ -1028,7 +1018,6 @@
     return bResult;
 }
 
-
 //
 //
 //
@@ -1041,9 +1030,7 @@
     // If we did no handle the drag'n'drop, ask our parent to clean up
     // I really wish the concludeDragOperation would have a useful exit value.
     if (!bExtendedDragNDrop)
-    {
         [super concludeDragOperation: sender];
-    }
     
     bExtendedDragNDrop = NO;
 }
@@ -1130,7 +1117,6 @@
 /// NSTextInput stuff
 - (void)doCommandBySelector:(SEL)aSelector
 {
-    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView doCommandBySelector:...]",
           __FILE__, __LINE__);
@@ -1309,9 +1295,7 @@
         nil]];
     
     if (sourceType)
-    {
         iResult = NSDragOperationCopy;
-    }
     
     return iResult;
 }
@@ -1323,17 +1307,12 @@
     // If successful, save file under designated name
     if (theReturnCode == NSOKButton)
     {
-        if ( ![(NSData *)theContextInfo writeToFile: [theSavePanel filename]
-                                         atomically: YES] )
-        {
+        if ( ![(NSData *)theContextInfo writeToFile: [theSavePanel filename] atomically: YES] )
             NSBeep();
-        }
     }
     // release our hold on the data
     [(NSData *)theContextInfo release];
-    
 }
-
 
 @end
 
@@ -1355,6 +1334,17 @@
     return (self);
 }
 
+- (void)commonInit;
+{
+    deadkey = NO;
+    printingSelection = NO;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(frameChanged:)
+                                                 name:NSWindowDidResizeNotification
+                                               object:nil];
+}
+
 - (id)initWithFrame: (NSRect) aRect
 {
 #if DEBUG_ALLOC
@@ -1363,15 +1353,9 @@
     
     self = [super initWithFrame: aRect];
     
-    deadkey = NO;
-    printingSelection = NO;
+    [self commonInit];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(frameChanged:)
-                                                 name:NSWindowDidResizeNotification
-                                               object:nil];    
-    
-    return (self);
+    return self;
 }
 
 - (id)initWithFrame: (NSRect) aRect textContainer: (NSTextContainer *) textContainer
@@ -1382,15 +1366,9 @@
     
     self = [super initWithFrame: aRect textContainer: textContainer];
     
-    deadkey = NO;
-    printingSelection = NO;
+    [self commonInit];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(frameChanged:)
-                                                 name:NSWindowDidResizeNotification
-                                               object: nil];
-    
-    return (self);
+    return self;
 }
 
 - (void) dealloc
@@ -1399,18 +1377,13 @@
     NSLog(@"PTYTextView: -dealloc 0x%x", self);
 #endif
     
-    if(dataSource != nil)
-    {
-        [dataSource release];
-        dataSource = nil;
-    }
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [dataSource release];
+    dataSource = nil;
     
     [font release];
     font = nil;
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:NSWindowDidResizeNotification
-                                                  object: nil];
     
     [super dealloc];
 }
@@ -1424,12 +1397,12 @@
     return NO;
 }
 
-- (BOOL) antiAlias
+- (BOOL)antiAlias
 {
-    return (antiAlias);
+    return antiAlias;
 }
 
-- (void) setAntiAlias: (BOOL) antiAliasFlag
+- (void)setAntiAlias: (BOOL) antiAliasFlag
 {
 #if 0 // DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView setAntiAlias: %d]",
@@ -1463,23 +1436,15 @@
     return (dataSource);
 }
 
-- (void) setDataSource: (id) aDataSource
+- (void)setDataSource: (id) aDataSource
 {
-    if(dataSource != nil)
-    {
-        [dataSource release];
-        dataSource = nil;
-    }
-    if(aDataSource != nil)
-    {
-        [aDataSource retain];
-        dataSource = aDataSource;
-    }
+    [dataSource autorelease];
+    dataSource = [aDataSource retain];
 }
 
 - (float) lineHeight
 {
-    return (lineHeight);
+    return lineHeight;
 }
 
 - (void) setLineHeight: (float) aLineHeight
@@ -1489,7 +1454,7 @@
 
 - (float) lineWidth
 {
-    return (lineWidth);
+    return lineWidth;
 }
 
 - (void) setLineWidth: (float) aLineWidth
@@ -1501,22 +1466,14 @@
 {
     if(font == nil)
         return ([super font]);
+    
     return (font);
 }
 
 - (void) setFont: (NSFont *)aFont
 {
-    if(font != nil)
-    {
-        [font release];
-        font = nil;
-    }
-    
-    if(aFont != nil)
-    {
-        [aFont retain];
-        font = aFont;
-    }
+    [font autorelease];
+    font = [aFont retain];
 }
 
 - (void) refresh
@@ -1528,6 +1485,7 @@
         numberOfLines = [dataSource numberOfLines];
         aSize = [self frame].size;
         aSize.height = numberOfLines * lineHeight;
+        
         if(aSize.height > [[self enclosingScrollView] documentVisibleRect].size.height)
         {
             NSRect aFrame;
@@ -1536,6 +1494,7 @@
             aFrame.size.height = aSize.height;
             [self setFrame: aFrame];
         }
+        
         [self setNeedsDisplay: YES];
     }
 }
@@ -1642,21 +1601,26 @@
     [NSCursor setHiddenUntilMouseMoves: YES];    
     
     // Check for dead keys if OPTION key is used as normal
-    if ([[PreferencePanel sharedInstance] option]==0) {
-        if (deadkey) {
+    if ([[PreferencePanel sharedInstance] option] == 0)
+    {
+        if (deadkey) 
+        {
             [self interpretKeyEvents:[NSArray arrayWithObject:event]];
             deadkey=[self hasMarkedText];
             return;
         }
-        else if ([[event characters] length]<1) {
+        else if ([[event characters] length] < 1)
+        {
             deadkey=YES;
             [self interpretKeyEvents:[NSArray arrayWithObject:event]];
             return;
         }
     }
-    else deadkey=NO;
+    else
+        deadkey=NO;
     
-    if (IMEnable) {
+    if (IMEnable) 
+    {
         BOOL prev = [self hasMarkedText];
         IM_INPUT_INSERT = NO;
         [self interpretKeyEvents:[NSArray arrayWithObject:event]];
@@ -1677,7 +1641,8 @@
     else
         put = YES;
     
-    if (put == YES) {
+    if (put == YES)
+    {
         if ([delegate respondsToSelector:@selector(keyDown:)])
             [delegate keyDown:event];
         else
@@ -1687,7 +1652,6 @@
 
 - (void)doCommandBySelector:(SEL)aSelector
 {
-    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView doCommandBySelector:...]",
           __FILE__, __LINE__);
@@ -1735,22 +1699,22 @@
           __FILE__, __LINE__, aString, selRange.location, selRange.length);
 #endif
     
-    if ([self hasMarkedText]) {
+    if ([self hasMarkedText])
         repRange = [self markedRange];
-    }
-    else {
+    else
         repRange = NSMakeRange(cursorIndex, 0);
-    }
+
     [storage beginEditing];
-    if ([aString isKindOfClass:[NSAttributedString class]]) {
+    if ([aString isKindOfClass:[NSAttributedString class]])
+    {
         [storage replaceCharactersInRange:repRange 
-                                   withAttributedString:aString];
-        IM_INPUT_MARKEDRANGE = NSMakeRange(0, 
-                                           [(NSAttributedString *)aString length]);
+                     withAttributedString:aString];
+        IM_INPUT_MARKEDRANGE = NSMakeRange(0, [(NSAttributedString *)aString length]);
     }
-    else {
+    else 
+    {
         [storage replaceCharactersInRange:repRange
-                                                    withString:aString];
+                               withString:aString];
         IM_INPUT_MARKEDRANGE = NSMakeRange(0,
                                            [(NSString *)aString length]);
     }
@@ -1790,7 +1754,8 @@
 #endif
     
     //return IM_INPUT_MARKEDRANGE;
-    if (IM_INPUT_MARKEDRANGE.length > 0) {
+    if (IM_INPUT_MARKEDRANGE.length > 0) 
+    {
         NSTextStorage *storage = [self textStorage];
         int len = [storage length];
         int toploc;
@@ -1935,36 +1900,36 @@
     
     // Menu items for acting on text selections
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Browser",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                          action:@selector(browse:) keyEquivalent:@""];
+                     action:@selector(browse:) keyEquivalent:@""];
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Mail",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                          action:@selector(mail:) keyEquivalent:@""];
+                     action:@selector(mail:) keyEquivalent:@""];
     
     // Separator
     [cMenu addItem:[NSMenuItem separatorItem]];
     
     // Copy,  paste, and save
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Copy",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                          action:@selector(copy:) keyEquivalent:@""];
+                     action:@selector(copy:) keyEquivalent:@""];
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Paste",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                          action:@selector(paste:) keyEquivalent:@""];
+                     action:@selector(paste:) keyEquivalent:@""];
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Save",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                          action:@selector(saveDocumentAs:) keyEquivalent:@""];
+                     action:@selector(saveDocumentAs:) keyEquivalent:@""];
     
     // Separator
     [cMenu addItem:[NSMenuItem separatorItem]];
     
     // Print
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Print...",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                                        action:@selector(print:) keyEquivalent:@""];
+                     action:@selector(print:) keyEquivalent:@""];
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Print Selection...",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                                                      action:@selector(printSelection:) keyEquivalent:@""];
-        
+                     action:@selector(printSelection:) keyEquivalent:@""];
+    
     // Separator
     [cMenu addItem:[NSMenuItem separatorItem]];
     
     // Select all
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Select All",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
-                                          action:@selector(selectAll:) keyEquivalent:@""];
+                     action:@selector(selectAll:) keyEquivalent:@""];
     
     // Ask the delegae if there is anything to be added
     if ([[self delegate] respondsToSelector:@selector(menuForEvent: menu:)])
@@ -2022,7 +1987,6 @@
         }
     }
 }
-
 
 //
 // Drag and Drop methods for our text view
@@ -2190,9 +2154,7 @@
     // If we did no handle the drag'n'drop, ask our parent to clean up
     // I really wish the concludeDragOperation would have a useful exit value.
     if (!bExtendedDragNDrop)
-    {
         [super concludeDragOperation: sender];
-    }
     
     bExtendedDragNDrop = NO;
 }
@@ -2240,9 +2202,7 @@
         aString = [[self string] substringWithRange: [self selectedRange]];
     else
         aString = [self string];
-    aData = [aString 
-            dataUsingEncoding: NSASCIIStringEncoding
-         allowLossyConversion: YES];
+    aData = [aString dataUsingEncoding: NSASCIIStringEncoding allowLossyConversion: YES];
     // retain here so that is does not go away...        
     [aData retain];
     
@@ -2297,29 +2257,23 @@
         nil]];
     
     if (sourceType)
-    {
         iResult = NSDragOperationCopy;
-    }
     
     return iResult;
 }
 
 - (void) _savePanelDidEnd: (NSSavePanel *) theSavePanel
-                      returnCode: (int) theReturnCode
-                     contextInfo: (void *) theContextInfo
+               returnCode: (int) theReturnCode
+              contextInfo: (void *) theContextInfo
 {
     // If successful, save file under designated name
     if (theReturnCode == NSOKButton)
     {
-        if ( ![(NSData *)theContextInfo writeToFile: [theSavePanel filename]
-                                         atomically: YES] )
-        {
+        if ( ![(NSData *)theContextInfo writeToFile: [theSavePanel filename] atomically: YES] )
             NSBeep();
-        }
     }
     // release our hold on the data
     [(NSData *)theContextInfo release];
-    
 }
 
 

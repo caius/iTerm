@@ -30,7 +30,6 @@
 #define DEBUG_METHOD_TRACE		0
 #define DEBUG_ALLOC		    	0
 
-
 @implementation VT100TextStorage
 
 - (id)initWithAttributedString:(NSAttributedString *)attrStr
@@ -93,7 +92,6 @@
 
 	if([commonString length] > 0)
 	{
-
 	    NSString *origDiffString, *newDiffString;
 
 	    if([commonString isEqualToString: origSubstring])
@@ -119,16 +117,13 @@
 		[self edited:NSTextStorageEditedCharacters range:aRange changeInLength:[self length] - origLen];
 		return;
 	    }
-
 	}
-	
     }
 #endif
     
     // else do the usual stuff.
     [contents replaceCharactersInRange:range withString:str];
     [self edited:NSTextStorageEditedCharacters range:range changeInLength:[self length] - origLen];
-    
 }
 
 - (void)setAttributes:(NSDictionary *)attrs range:(NSRange)range
@@ -139,9 +134,7 @@
 
     currentAttributes = [contents attributesAtIndex: range.location longestEffectiveRange: &longestEffectiveRange inRange: range];
     if([currentAttributes isEqualToDictionary: attrs] && longestEffectiveRange.length == range.length)
-    {
 	return;
-    }
     
     [contents setAttributes:attrs range:range];
     [self edited:NSTextStorageEditedAttributes range:range changeInLength:0];
@@ -162,6 +155,5 @@
 #endif
     [super endEditing];
 }
-
 
 @end 

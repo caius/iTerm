@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.6 2003-09-30 16:00:45 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.7 2003-10-02 23:14:57 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -60,7 +60,6 @@
 - (void)setupSession: (PTYSession *) aSession title: (NSString *)title;
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index;
 - (void) switchSession: (id) sender;
-- (void) selectSession: (PTYSession *) aSession;
 - (void) selectSessionAtIndex: (int) sessionIndex;
 - (void) closeSession: (PTYSession*) aSession;
 - (IBAction) closeCurrentSession: (id) sender;
@@ -68,6 +67,7 @@
 - (IBAction) nextSession:(id)sender;
 - (IBAction) saveSession:(id)sender;
 - (PTYSession *) currentSession;
+- (void) setCurrentSession: (PTYSession *) aSession;
 - (int) currentSessionIndex;
 - (NSString *) currentSessionName;
 - (void) setCurrentSessionName: (NSString *) theSessionName;
@@ -153,6 +153,8 @@
 
 // Object specifier
 - (NSScriptObjectSpecifier *)objectSpecifier;
+
+-(void)handleSelectScriptCommand: (NSScriptCommand *)command;
 
 -(void)handleLaunchScriptCommand: (NSScriptCommand *)command;
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.7 2003-09-08 19:39:38 ujwal Exp $
+// $Id: iTermController.h,v 1.8 2003-10-02 23:14:57 ujwal Exp $
 /*
  **  iTermController.h
  **
@@ -58,8 +58,8 @@
 
 // Utility methods
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
-- (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal;
-- (PseudoTerminal *) frontPseudoTerminal;
+- (void) setCurrentTerminal: (PseudoTerminal *) thePseudoTerminal;
+- (PseudoTerminal *) currentTerminal;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
 - (void) buildAddressBookMenu:(NSMenu *)abMenu target:(id)target withShortcuts: (BOOL) withShortcuts;

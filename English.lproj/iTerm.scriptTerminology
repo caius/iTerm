@@ -12,6 +12,16 @@
 			<string>application</string>
 			<key>PluralName</key>
 			<string>applications</string>
+			<key>ToOneRelationships</key>
+			<dict>
+				<key>currentTerminal</key>
+				<dict>
+					<key>Description</key>
+					<string>currently active terminal</string>
+					<key>Name</key>
+					<string>current terminal</string>
+				</dict>
+			</dict>
 		</dict>
 		<key>PTYSession</key>
 		<dict>

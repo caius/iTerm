@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.5 2003-09-27 21:34:37 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.6 2003-10-02 23:14:56 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -243,7 +243,7 @@
 // Notifications
 - (void) reloadMenus: (NSNotification *) aNotification
 {
-    PseudoTerminal *frontTerminal = [[iTermController sharedInstance] frontPseudoTerminal];
+    PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
     
     [previousTerminal setAction: (frontTerminal?@selector(previousTerminal:):nil)];
     [nextTerminal setAction: (frontTerminal?@selector(nextTerminal:):nil)];
@@ -263,7 +263,7 @@
     // clear whatever menu we already have
     [selectTab setSubmenu: nil];
 
-    anEnumerator = [[[[iTermController sharedInstance] frontPseudoTerminal] sessions] objectEnumerator];
+    anEnumerator = [[[[iTermController sharedInstance] currentTerminal] sessions] objectEnumerator];
 
     i = 0;
     while((aSession = [anEnumerator nextObject]) != nil)
@@ -290,7 +290,7 @@
 - (void) buildAddressBookMenu : (NSNotification *) aNotification
 {
     NSMenu *newMenu;
-    PseudoTerminal *frontTerminal = [[iTermController sharedInstance] frontPseudoTerminal];
+    PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
 
     
     // clear whatever menus we already have
@@ -329,8 +329,23 @@
 
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key
 {
+    //NSLog(@"iTermApplicationDelegate: delegateHandlesKey: '%@'", key);
     return [[iTermController sharedInstance] application:sender delegateHandlesKey:key];
 }
+
+// accessors for to-one relationships:
+- (PseudoTerminal *)currentTerminal
+{
+    //NSLog(@"iTermApplicationDelegate: currentTerminal");
+    return [[iTermController sharedInstance] currentTerminal];
+}
+
+- (void) setCurrentTerminal: (PseudoTerminal *) aTerminal
+{
+    //NSLog(@"iTermApplicationDelegate: setCurrentTerminal '0x%x'", aTerminal);
+    return [[iTermController sharedInstance] setCurrentTerminal: aTerminal];
+}
+
 
 // accessors for to-many relationships:
 - (NSArray*)terminals

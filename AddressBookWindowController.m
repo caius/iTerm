@@ -673,7 +673,7 @@ static NSColor* xtermColorTable[2][8];
 	if(sender == openInWindow)
 	    [[iTermController sharedInstance] executeABCommandAtIndex: [selectedRow intValue] inTerminal: nil];
 	else
-	    [[iTermController sharedInstance] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[iTermController sharedInstance] frontPseudoTerminal]];
+	    [[iTermController sharedInstance] executeABCommandAtIndex: [selectedRow intValue] inTerminal: [[iTermController sharedInstance] currentTerminal]];
     }
 
     // close the bookmarks window

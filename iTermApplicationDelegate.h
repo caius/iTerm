@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.3 2003-09-27 21:34:37 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.4 2003-10-02 23:14:56 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -80,6 +80,8 @@
 @interface iTermApplicationDelegate (KeyValueCoding)
 
 - (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key;
+
+- (PseudoTerminal *)currentTerminal;
 
 // accessors for to-many relationships:
 -(NSArray*)terminals;

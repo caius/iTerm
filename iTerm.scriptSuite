@@ -24,6 +24,16 @@
 					<string>PseudoTerminal</string>
 				</dict>
 			</dict>
+			<key>ToOneRelationships</key>
+			<dict>
+				<key>currentTerminal</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Ctrm</string>
+					<key>Type</key>
+					<string>PseudoTerminal</string>
+				</dict>
+			</dict>
 		</dict>
 		<key>PTYSession</key>
 		<dict>
@@ -159,6 +169,8 @@
 			<dict>
 				<key>launch</key>
 				<string>handleLaunchScriptCommand:</string>
+				<key>select</key>
+				<string>handleSelectScriptCommand:</string>
 			</dict>
 			<key>ToManyRelationships</key>
 			<dict>

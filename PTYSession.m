@@ -352,6 +352,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #if USE_CUSTOM_DRAWING
     [TEXTVIEW hideCursor];
 #endif
+
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 	   token.type != VT100CC_NULL &&
 	   token.type != VT100_WAIT))
@@ -1154,7 +1155,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     // get the session submenu to be rebuilt
-    if([[iTermController sharedInstance] frontPseudoTerminal] == [self parent])
+    if([[iTermController sharedInstance] currentTerminal] == [self parent])
     {
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNameOfSessionDidChange" object: self userInfo: nil];
     }
@@ -1601,7 +1602,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 -(void)handleSelectScriptCommand: (NSScriptCommand *)command
 {
-    [parent selectSession: self];
+    [parent setCurrentSession: self];
 }
 
 -(void)handleWriteScriptCommand: (NSScriptCommand *)command

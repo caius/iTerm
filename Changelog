@@ -1,3 +1,8 @@
+2003-10-02	ujwal
+
+    * Added some more scripting support to get and set the current 
+      terminal.
+
 2003-10-01	ujwal
 
     * Default font is now chosen with [NSFont userFixedPitchFontOfSize:0].

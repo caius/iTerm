@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.157 2003-09-24 18:11:44 ujwal Exp $
+// $Id: VT100Screen.m,v 1.158 2003-09-24 18:17:36 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2446,10 +2446,10 @@ static BOOL PLAYBELL = YES;
                 if (fgBlink==nil) {
                     fgBlink=fg;
                 }
-		
+
 		dic=[NSDictionary dictionaryWithObjectsAndKeys:
 		    bg,NSBackgroundColorAttributeName,
-		    (fgBlink?fgBlink:bg),NSForegroundColorAttributeName,
+		    (blinkShow?fgBlink:bg),NSForegroundColorAttributeName,
 		    fgBlink,NSBlinkForegroundColorAttributeName,
 		    [NSNumber numberWithInt:1],NSBlinkAttributeName,
 		    nil];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.34 2002-12-17 05:35:33 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.35 2002-12-17 23:12:31 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1025,34 +1025,20 @@ static NSDictionary *deadStateAttribute;
     else if ([itemIdent isEqual: ABToolbarItem])
     {
         NSPopUpButton *aPopUpButton;
-        NSMenuItem *item;
-        NSImage *image;
         
         aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 48.0, 32.0) pullsDown: YES];
         [aPopUpButton setTarget: self];
         [aPopUpButton setBordered: NO];
         [[aPopUpButton cell] setArrowPosition:NSPopUpArrowAtBottom];
-        [[aPopUpButton cell] setUsesItemFromMenu:NO];
 
         [aPopUpButton setAction: @selector(_addressbookPopupSelectionDidChange:)];
-        [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-        [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
-        [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-        [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-        item = [[NSMenuItem allocWithZone:[self zone]] initWithTitle:@"" action:NULL keyEquivalent:@""];
-        image=[NSImage imageNamed:@"addressbook"];
-        [image setScalesWhenResized:YES];
-        [image setSize:NSMakeSize(30.0,30.0)];
-        [item setImage:image];
-        [item setOnStateImage:nil];
-        [item setMixedStateImage:nil];
-        [[aPopUpButton cell] setMenuItem:item];
-        [item release];
-        [aPopUpButton setPreferredEdge:NSMinXEdge];
-        [[[aPopUpButton menu] menuRepresentation] setHorizontalEdgePadding:0.0];
+        
+        [self _buildAddressBookMenu: aPopUpButton];        
+        
         [toolbarItem setView: aPopUpButton];
         // Release the popup button since it is retained by the toolbar item.
         [aPopUpButton release];
+        
         [toolbarItem setMinSize:[aPopUpButton bounds].size];
         [toolbarItem setMaxSize:[aPopUpButton bounds].size];
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
@@ -1273,12 +1259,38 @@ static NSDictionary *deadStateAttribute;
 
 }
 
+// Build the address book menu
+- (void) _buildAddressBookMenu: (NSPopUpButton *) aPopUpButton
+{
+    NSMenuItem *item;
+    NSImage *image;
+    
+    // build the menu
+    [aPopUpButton removeAllItems];
+    [aPopUpButton addItemWithTitle: @""];
+    [aPopUpButton addItemsWithTitles: [MAINMENU addressBookNames]];
+    [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
+    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
+    
+    // Now set the icon
+    item = [[aPopUpButton cell] menuItem];
+    image=[NSImage imageNamed:@"addressbook"];
+    [image setScalesWhenResized:YES];
+    [image setSize:NSMakeSize(30.0,30.0)];
+    [item setImage:image];
+    [item setOnStateImage:nil];
+    [item setMixedStateImage:nil];
+    [aPopUpButton setPreferredEdge:NSMinXEdge];
+    [[[aPopUpButton menu] menuRepresentation] setHorizontalEdgePadding:0.0];
+
+}
+
 // Reloads the addressbook entries into the popup toolbar item
 - (void) _reloadAddressBookMenu: (NSNotification *) aNotification
 {
     NSArray *toolbarItemArray;
     NSToolbarItem *aToolbarItem;
-    NSPopUpButton *addressbookPopup;
+    NSPopUpButton *aPopUpButton;
     int i;
     
 #if DEBUG_METHOD_TRACE
@@ -1295,14 +1307,9 @@ static NSDictionary *deadStateAttribute;
         
         if([[aToolbarItem itemIdentifier] isEqual: ABToolbarItem])
         {
-            addressbookPopup = (NSPopUpButton *)[aToolbarItem view];
-            [addressbookPopup selectItemAtIndex: -1];
-            [addressbookPopup removeAllItems];
-            [addressbookPopup addItemWithTitle: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-            [addressbookPopup addItemsWithTitles: [MAINMENU addressBookNames]];
-            [[addressbookPopup menu] addItem: [NSMenuItem separatorItem]];
-            [addressbookPopup addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-            
+            aPopUpButton = (NSPopUpButton *)[aToolbarItem view];
+            [self _buildAddressBookMenu: aPopUpButton];
+                        
             break;
         }
         

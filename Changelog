@@ -8,6 +8,8 @@
     * Added drag-n-drop support for the text view. Text and file 
       names get pasted into the shell when dragged and dropped 
       onto the text view.
+      
+    * Fixed crash when customizing toolbar.
     
 
 2002-12-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>

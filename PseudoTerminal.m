@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.70 2003-01-10 16:08:12 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.71 2003-01-10 16:39:28 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -772,7 +772,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
 
-#if 1
+#if 0
 
     return (proposedFrameSize);
 
@@ -789,7 +789,7 @@ static NSString *ConfigToolbarItem = @"Config";
     
     // Calculate scrollview size
     scrollviewSize = contentSize;
-    scrollviewSize.height = contentSize.height - [TABVIEW numberOfTabViewItems]>1?29:4; // account for tabview
+    scrollviewSize.height = contentSize.height - ([TABVIEW numberOfTabViewItems]>1?29:4); // account for tabview
     //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
 
     
@@ -802,7 +802,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
                                        
     // Now calculate an appropriate terminal height for this in integers.
-    h = ceil(textviewSize.height/[VT100Screen requireSizeWithFont: [SCREEN font]].height);
+    h = floor(textviewSize.height/[VT100Screen requireSizeWithFont: [SCREEN font]].height);
     //NSLog(@"h = %d", h);
     
     // Now do the reverse calculation
@@ -820,7 +820,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Calculate the window content size
     contentSize = scrollviewSize;
-    contentSize.height = scrollviewSize.height + [TABVIEW numberOfTabViewItems]>1?29:4; // account for tabview
+    contentSize.height = scrollviewSize.height + ([TABVIEW numberOfTabViewItems]>1?29:4); // account for tabview
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
     
     // Finally calculate the window frame size

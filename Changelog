@@ -1,7 +1,8 @@
 2003-01-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed some scrolling/sizing issues by overriding 
-      adjustScroll: in PTYTextView.
+      adjustScroll: in PTYTextView. Reactivated the 
+      windowWillResize: toSize: code.
       
 
 2003-01-09 	fabian

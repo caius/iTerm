@@ -1,3 +1,7 @@
+2004-09-07  ujwal
+
+	* setHidden method is invoked only if target view supports it (>= 10.3)
+
 2004-08-04  ujwal
 
 	* Cmd-click on selection is activated only if mouseDown and mouseUp are 

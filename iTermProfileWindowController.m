@@ -168,8 +168,11 @@ static NSStringEncoding const *encodingList = nil;
 	[kbEntryKeyModifierControl setEnabled: YES];
 	[kbEntryKeyModifierShift setEnabled: YES];
 	[kbEntryKeyModifierCommand setEnabled: YES];
-	[kbEntryKeyCode setHidden: YES];
-	[kbEntryText setHidden: YES];
+	if ([kbEntryKeyCode respondsToSelector: @selector(setHidden:)] == YES)
+	{
+		[kbEntryKeyCode setHidden: YES];
+		[kbEntryText setHidden: YES];
+	}
 				
 	[kbEntryKey selectItemAtIndex: 0];
 	[kbEntryKey setTarget: self];
@@ -238,27 +241,30 @@ static NSStringEncoding const *encodingList = nil;
 {
 	if(sender == kbEntryKey)
 	{
-		if([kbEntryKey indexOfSelectedItem] == KEY_HEX_CODE)
+		if([kbEntryKey indexOfSelectedItem] == KEY_HEX_CODE && [kbEntryKeyCode respondsToSelector: @selector(setHidden:)] == YES)
 		{			
 			[kbEntryKeyCode setHidden: NO];
 		}
 		else
 		{			
 			[kbEntryKeyCode setStringValue: @""];
-			[kbEntryKeyCode setHidden: YES];
+			if ([kbEntryKeyCode respondsToSelector: @selector(setHidden:)] == YES)
+				[kbEntryKeyCode setHidden: YES];
 		}
 	}
 	else if(sender == kbEntryAction)
 	{
 		if([kbEntryAction indexOfSelectedItem] == KEY_ACTION_HEX_CODE ||
 		   [kbEntryAction indexOfSelectedItem] == KEY_ACTION_ESCAPE_SEQUENCE)
-		{			
-			[kbEntryText setHidden: NO];
+		{		
+			if ([kbEntryText respondsToSelector: @selector(setHidden:)] == YES)
+				[kbEntryText setHidden: NO];
 		}
 		else
 		{
 			[kbEntryText setStringValue: @""];
-			[kbEntryText setHidden: YES];
+			if([kbEntryText respondsToSelector: @selector(setHidden:)] == YES)
+				[kbEntryText setHidden: YES];
 		}
 	}	
 }

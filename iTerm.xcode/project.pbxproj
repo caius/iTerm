@@ -180,8 +180,7 @@
 			sourceTree = "<group>";
 		};
 		0464AB2F006CD2EC7F000001 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = AppKit.framework;
 			path = /System/Library/Frameworks/AppKit.framework;
@@ -189,8 +188,7 @@
 			sourceTree = "<absolute>";
 		};
 		0464AB30006CD2EC7F000001 = {
-			fallbackIsa = PBXFileReference;
-			isa = PBXFrameworkReference;
+			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
@@ -218,8 +216,6 @@
 //053
 //054
 		05A162CE006CD5FC7F000001 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
@@ -235,8 +231,6 @@
 			name = Development;
 		};
 		05A162CF006CD5FC7F000001 = {
-			buildRules = (
-			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -1558,7 +1552,7 @@
 		};
 		DD48F1C703EBB1C400A8A065 = {
 			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
+			lastKnownFileType = text.xml;
 			path = iTerm.scriptSuite;
 			refType = 4;
 			sourceTree = "<group>";
@@ -1575,7 +1569,7 @@
 		};
 		DD48F1CD03EBB20500A8A065 = {
 			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
+			lastKnownFileType = text.xml;
 			name = English;
 			path = English.lproj/iTerm.scriptTerminology;
 			refType = 4;
@@ -1644,9 +1638,8 @@
 			sourceTree = "<group>";
 		};
 		DD8CF2DE03CDD34C00A8A065 = {
-			fallbackIsa = PBXFileReference;
 			includeInIndex = 1;
-			isa = PBXFolderReference;
+			isa = PBXFileReference;
 			lastKnownFileType = folder;
 			name = "iTerm Help";
 			path = "English.lproj/iTerm Help";
@@ -1693,7 +1686,7 @@
 		DDB79A9A0612BBBF00EAE159 = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
-			lastKnownFileType = text.plist.xml;
+			lastKnownFileType = text.xml;
 			path = Profiles.plist;
 			refType = 4;
 			sourceTree = "<group>";
@@ -2553,9 +2546,8 @@
 			sourceTree = "<group>";
 		};
 		FBDF6B9D042A6BD801F955DB = {
-			fallbackIsa = PBXFileReference;
 			fileEncoding = 30;
-			isa = PBXExecutableFileReference;
+			isa = PBXFileReference;
 			lastKnownFileType = text.script.sh;
 			name = upload.sh;
 			path = website/upload.sh;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.200 2004-04-12 23:07:27 ujwal Exp $
+// $Id: PTYTextView.m,v 1.201 2004-04-14 00:25:25 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -755,7 +755,7 @@ static SInt32 systemVersion;
 					aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 					[aColor set];
 					
-					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
+					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
 					NSRectFill(bgRect);
 					// if we have a background image and we are using the background image, redraw image
 					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
@@ -766,7 +766,7 @@ static SInt32 systemVersion;
 				}						
 				if (ulstart>=0) {
 					[[self colorForCode:(fgcode & 0x3f)] set];
-					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
+					NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
 				}
 				bgstart=ulstart=-1;
 			}
@@ -783,7 +783,7 @@ static SInt32 systemVersion;
 					aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 					[aColor set];
 					
-					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
+					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
 					NSRectFill(bgRect);
 					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
 					{
@@ -799,7 +799,7 @@ static SInt32 systemVersion;
 				}
 				else if ( ulstart>=0 && (fg[j]!=fgcode || !buf[j])) { //underline or fg color property change?
 					[[self colorForCode:(fgcode & 0x3f)] set];
-					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
+					NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
 					fgcode=fg[j] & 0xff;
 					ulstart=(fg[j]&UNDER_MASK && buf[j])?j:-1;
 				}
@@ -814,7 +814,7 @@ static SInt32 systemVersion;
 			aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 			[aColor set];
 			
-			bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
+			bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
 			NSRectFill(bgRect);
 			if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
 			{
@@ -824,7 +824,7 @@ static SInt32 systemVersion;
 		
 		if (ulstart>=0) {
 			[[self colorForCode:fgcode] set];
-			NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
+			NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
 		}
 		
 		//draw all char
@@ -890,15 +890,15 @@ static SInt32 systemVersion;
 			
 			if([[self window] isKeyWindow])
 			{
-				NSRectFill(NSMakeRect(x1 * charWidth + MARGIN,
+				NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
 									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-									  cursorWidth, cursorHeight));
+									  ceil(cursorWidth), cursorHeight));
 			}
 			else
 			{
-				NSFrameRect(NSMakeRect(x1 * charWidth + MARGIN,
+				NSFrameRect(NSMakeRect(floor(x1 * charWidth + MARGIN),
 									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-									  cursorWidth, cursorHeight));
+									  ceil(cursorWidth), cursorHeight));
 				
 			}
 			// draw any character on cursor if we need to

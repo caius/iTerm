@@ -9,6 +9,7 @@
                 kbEntryAddCancel = id; 
                 kbEntryAddConfirm = id; 
                 kbEntryDelete = id; 
+                kbEntrySelectorChanged = id; 
                 kbProfileAdd = id; 
                 kbProfileAddCancel = id; 
                 kbProfileAddConfirm = id; 
@@ -38,6 +39,7 @@
                 kbEntryKeyModifierShift = NSButton; 
                 kbEntryTableView = NSTableView; 
                 kbEntryText = NSTextField; 
+                kbProfileDeleteButton = NSButton; 
                 kbProfileName = NSTextField; 
                 kbProfileSelector = NSPopUpButton; 
                 macnavkeys = id; 

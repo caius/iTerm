@@ -82,17 +82,18 @@
 #define KEY_ACTION_NEXT_WINDOW			1
 #define KEY_ACTION_PREVIOUS_SESSION		2
 #define KEY_ACTION_PREVIOUS_WINDOW		3
-#define KEY_ACTION_SCROLL_LINE_DOWN		4
-#define KEY_ACTION_SCROLL_LINE_UP		5
-#define KEY_ACTION_SCROLL_PAGE_DOWN		6
-#define KEY_ACTION_SCROLL_PAGE_UP		7
-#define KEY_ACTION_ESCAPE_SEQUENCE		8
-#define KEY_ACTION_HEX_CODE				9
+#define KEY_ACTION_SCROLL_END			4
+#define KEY_ACTION_SCROLL_HOME			5
+#define KEY_ACTION_SCROLL_LINE_DOWN		6
+#define KEY_ACTION_SCROLL_LINE_UP		7
+#define KEY_ACTION_SCROLL_PAGE_DOWN		8
+#define KEY_ACTION_SCROLL_PAGE_UP		9
+#define KEY_ACTION_ESCAPE_SEQUENCE		10
+#define KEY_ACTION_HEX_CODE				11
 
 
 @interface iTermKeyBindingMgr : NSObject {
 	NSMutableDictionary *profiles;
-	NSMutableDictionary *currentProfile;
 }
 
 // Class methods
@@ -104,8 +105,6 @@
 
 - (NSDictionary *) profiles;
 - (void) setProfiles: (NSMutableDictionary *) aDict;
-- (NSDictionary *) currentProfile;
-- (void) setCurrentProfile: (NSMutableDictionary *) aDict;
 
 - (void) addProfileWithName: (NSString *) aString;
 - (void) deleteProfileWithName: (NSString *) aString;
@@ -125,7 +124,10 @@
 
 - (NSString *) keyCombinationAtIndex: (int) index inProfile: (NSString *) profile;
 - (NSString *) actionForKeyCombinationAtIndex: (int) index inProfile: (NSString *) profile;
-- (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode;
-- (int) entryAtIndex: (int) index key: (NSString *) unmodkeystr modifiers: (int *) modifiers;
+- (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile;
 
+@end
+
+@interface iTermKeyBindingMgr (Private)
+- (int) _actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile;
 @end

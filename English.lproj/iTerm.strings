@@ -129,6 +129,9 @@
 /* Script */
 "Script" = "Script";
 
+/* Key Binding Profiles */
+"Common"="Common";
+
 /* Key Binding Actions */
 "next tab"="next tab";
 "next window"="next window";

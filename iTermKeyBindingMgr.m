@@ -66,43 +66,48 @@ static iTermKeyBindingMgr *singleInstance = nil;
 - (void) setProfiles: (NSMutableDictionary *) aDict
 {
 	NSEnumerator *keyEnumerator;
+	NSMutableDictionary *mappingDict;
+	NSString *profileName;
+	NSDictionary *sourceDict;
 	
+	// recursively copy the dictionary to ensure mutability
 	if(aDict != nil)
-		[profiles setDictionary: aDict];
-	keyEnumerator = [profiles keyEnumerator];
-	currentProfile = [profiles objectForKey: [keyEnumerator nextObject]];
-	if(currentProfile == nil)
 	{
-		currentProfile = [[NSMutableDictionary alloc] init];
-		[profiles setObject: currentProfile forKey: [NSString stringWithFormat: @"Profile %d", [profiles count]]];
-		[currentProfile release];
+		keyEnumerator = [aDict keyEnumerator];
+		while((profileName = [keyEnumerator nextObject]) != nil)
+		{
+			sourceDict = [aDict objectForKey: profileName];
+			mappingDict = [[NSMutableDictionary alloc] initWithDictionary: sourceDict];
+			[profiles setObject: mappingDict forKey: profileName];
+			[mappingDict release];
+		}
+	}
+	else
+	{
+		mappingDict = [[NSMutableDictionary alloc] init];
+		[profiles setObject: mappingDict forKey: NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", 
+																					[NSBundle bundleForClass: [self class]], 
+																					@"Key Binding Profiles")];
+		[mappingDict release];
 	}
 }
 
-- (NSDictionary *) currentProfile
-{
-	return (currentProfile);
-}
-
-- (void) setCurrentProfile: (NSMutableDictionary *) aDict
-{
-	currentProfile = aDict;
-}
 
 - (void) addProfileWithName: (NSString *) aString
 {
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aString);
-	if([aString length] > 0)
+	if([aString length] > 0 && [profiles objectForKey: aString] == nil)
 	{
 		NSEnumerator *keyEnumerator;
-		NSDictionary *firstProfile, *newProfile;
+		NSMutableDictionary *newProfile;
 		
 		keyEnumerator = [profiles keyEnumerator];
-		firstProfile = [profiles objectForKey: [keyEnumerator nextObject]];
-		newProfile = [[NSMutableDictionary alloc] initWithDictionary: firstProfile];
+		newProfile = [[NSMutableDictionary alloc] init];
 		[profiles setObject: newProfile forKey: aString];
 		[newProfile release];		
 	}
+	else
+		NSBeep();
 }
 
 - (void) deleteProfileWithName: (NSString *) aString
@@ -135,6 +140,8 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	NSString *theKeyCombination, *aString;
 	NSMutableString *theKeyString;
 	unsigned int keyCode, keyModifiers;
+	
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
 	aProfile = [profiles objectForKey: profile];
 	allKeys = [aProfile allKeys];
@@ -303,6 +310,8 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	NSString *actionString;
 	NSString *auxText;
 	
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
+	
 	aProfile = [profiles objectForKey: profile];
 	allKeys = [aProfile allKeys];
 	
@@ -394,6 +403,9 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	NSMutableDictionary *aProfile, *keyBinding;
 	NSString *keyString;
 	
+	if([profile length] <= 0)
+		return;
+	
 	aProfile = [profiles objectForKey: profile];
 	
 	keyString = [NSString stringWithFormat: @"0x%x-0x%x", hexCode, modifiers];
@@ -419,7 +431,12 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	
 	keyModifiers = modifiers;
 	
+	// this is how we distinguish between regular numbers and those on the numeric keypad
 	if(key >= KEY_NUMERIC_0 && key <= KEY_NUMERIC_PERIOD)
+		keyModifiers |= NSNumericPadKeyMask;
+	
+	// on some keyboards, arrow keys have NSNumericPadKeyMask bit set; manually set it for keyboards that don't
+	if(key >= KEY_CURSOR_DOWN && key <= KEY_CURSOR_UP)
 		keyModifiers |= NSNumericPadKeyMask;
 	
 	switch (key)
@@ -534,15 +551,78 @@ static iTermKeyBindingMgr *singleInstance = nil;
 }
 
 
-- (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode
+- (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
 {
-	return (0);
+	int retCode = -1;
+	NSString *commonProfile;
+	
+	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+
+	
+	// search the common profile first
+	if([commonProfile length] > 0)
+		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: commonProfile];
+	
+	// If we found something in the common profile, return that
+	if(retCode >= 0)
+		return (retCode);
+	
+	// otherwise search in the specified profile
+	if([profile length] > 0)
+		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: profile];
+	
+	return (retCode);
 }
 
-- (int) entryAtIndex: (int) index key: (NSString *) unmodkeystr modifiers: (int *) modifiers
+@end
+
+@implementation iTermKeyBindingMgr (Private)
+- (int) _actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
 {
-	return (0);
+	NSDictionary *aProfile;
+	NSString *keyString;
+	NSDictionary *keyMapping;
+	int retCode = -1;
+	unsigned int theModifiers;
+	
+	if(profile == nil)
+	{
+		if(text)
+			*text = nil;
+		return (-1);
+	}
+	
+	aProfile = [profiles objectForKey: profile];
+	
+	if(aProfile == nil)
+	{
+		if(text)
+			*text = nil;
+		return (-1);
+	}
+	
+	// turn off all the other modifier bits we don't care about
+	theModifiers = keyModifiers & (NSAlternateKeyMask | NSControlKeyMask | NSShiftKeyMask | NSCommandKeyMask | NSNumericPadKeyMask);
+	
+	// on some keyboards, arrow keys have NSNumericPadKeyMask bit set; manually set it for keyboards that don't
+	if(keyCode >= NSUpArrowFunctionKey && keyCode <= NSRightArrowFunctionKey)
+		theModifiers |= NSNumericPadKeyMask;
+	
+	keyString = [NSString stringWithFormat: @"0x%x-0x%x", keyCode, theModifiers];
+	keyMapping = [aProfile objectForKey: keyString];
+	if(keyMapping == nil)
+	{
+		if(text)
+			*text = nil;
+		return (-1);
+	}
+	
+	// parse the mapping
+	retCode = [[keyMapping objectForKey: @"Action"] intValue];
+	if(text != nil)
+		*text = [keyMapping objectForKey: @"Text"];
+	
+	return (retCode);
+	
 }
-
-
 @end

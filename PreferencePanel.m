@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.75 2004-03-02 16:59:09 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.76 2004-03-03 00:27:09 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -129,6 +129,8 @@ static float versionNumber;
 	kbProfileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
 	while((aString = [kbProfileEnumerator nextObject]) != nil)
 		[kbProfileSelector addItemWithTitle: aString];
+	
+	[self kbProfileChanged: nil];
     
 	[[self window] setDelegate: self];
 	[self showWindow: self];
@@ -213,6 +215,15 @@ static float versionNumber;
 - (IBAction) kbProfileChanged: (id) sender
 {
 	//NSLog(@"%s; %@", __PRETTY_FUNCTION__, sender);
+	
+	NSString *commonProfile;
+	
+	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+	
+	if([[kbProfileSelector titleOfSelectedItem] isEqualToString: commonProfile])
+		[kbProfileDeleteButton setEnabled: NO];
+	else
+		[kbProfileDeleteButton setEnabled: YES];
 	[kbEntryTableView reloadData];
 }
 
@@ -260,8 +271,54 @@ static float versionNumber;
 
 - (IBAction) kbEntryAdd: (id) sender
 {
+	NSString *commonProfile;
+	int i;
+
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	[kbEntryKeyCode setStringValue: @""];
+	[kbEntryText setStringValue: @""];
+	[kbEntryKeyModifierOption setState: NSOffState];
+	[kbEntryKeyModifierControl setState: NSOffState];
+	[kbEntryKeyModifierShift setState: NSOffState];
+	[kbEntryKeyModifierCommand setState: NSOffState];
+	[kbEntryKeyModifierOption setEnabled: YES];
+	[kbEntryKeyModifierControl setEnabled: YES];
+	[kbEntryKeyModifierShift setEnabled: YES];
+	[kbEntryKeyModifierCommand setEnabled: YES];
+	[kbEntryKeyCode setHidden: YES];
+	[kbEntryText setHidden: YES];
+				
+	[kbEntryKey selectItemAtIndex: 0];
+	[kbEntryKey setTarget: self];
+	[kbEntryKey setAction: @selector(kbEntrySelectorChanged:)];
+	[kbEntryAction selectItemAtIndex: 0];
+	[kbEntryAction setTarget: self];
+	[kbEntryAction setAction: @selector(kbEntrySelectorChanged:)];
+	
+	
+	commonProfile = NSLocalizedStringFromTableInBundle(@"Common",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+	
+	if([[kbProfileSelector titleOfSelectedItem] isEqualToString: commonProfile])
+	{
+		for (i = KEY_ACTION_NEXT_SESSION; i < KEY_ACTION_ESCAPE_SEQUENCE; i++)
+		{
+			[[kbEntryAction itemAtIndex: i] setEnabled: YES];
+			[[kbEntryAction itemAtIndex: i] setAction: @selector(kbEntrySelectorChanged:)];
+			[[kbEntryAction itemAtIndex: i] setTarget: self];
+		}
+	}
+	else
+	{
+		for (i = KEY_ACTION_NEXT_SESSION; i < KEY_ACTION_ESCAPE_SEQUENCE; i++)
+		{
+			[[kbEntryAction itemAtIndex: i] setEnabled: NO];
+			[[kbEntryAction itemAtIndex: i] setAction: nil];
+		}
+		[kbEntryAction selectItemAtIndex: KEY_ACTION_ESCAPE_SEQUENCE];
+	}
+	
+	
+	
 	[NSApp beginSheet: addKBEntry
        modalForWindow: [self window]
         modalDelegate: self
@@ -294,12 +351,54 @@ static float versionNumber;
 		NSBeep();
 }
 
+- (IBAction) kbEntrySelectorChanged: (id) sender
+{
+	if(sender == kbEntryKey)
+	{
+		if([kbEntryKey indexOfSelectedItem] == KEY_HEX_CODE)
+		{
+			[kbEntryKeyModifierOption setState: NSOffState];
+			[kbEntryKeyModifierControl setState: NSOffState];
+			[kbEntryKeyModifierShift setState: NSOffState];
+			[kbEntryKeyModifierCommand setState: NSOffState];
+			
+			[kbEntryKeyModifierOption setEnabled: NO];
+			[kbEntryKeyModifierControl setEnabled: NO];
+			[kbEntryKeyModifierShift setEnabled: NO];
+			[kbEntryKeyModifierCommand setEnabled: NO];	
+			[kbEntryKeyCode setHidden: NO];
+		}
+		else
+		{			
+			[kbEntryKeyModifierOption setEnabled: YES];
+			[kbEntryKeyModifierControl setEnabled: YES];
+			[kbEntryKeyModifierShift setEnabled: YES];
+			[kbEntryKeyModifierCommand setEnabled: YES];
+			[kbEntryKeyCode setStringValue: @""];
+			[kbEntryKeyCode setHidden: YES];
+		}
+	}
+	else if(sender == kbEntryAction)
+	{
+		if([kbEntryAction indexOfSelectedItem] == KEY_ACTION_HEX_CODE ||
+		   [kbEntryAction indexOfSelectedItem] == KEY_ACTION_ESCAPE_SEQUENCE)
+		{			
+			[kbEntryText setHidden: NO];
+		}
+		else
+		{
+			[kbEntryText setStringValue: @""];
+			[kbEntryText setHidden: YES];
+		}
+	}	
+}
+
 // NSTableView data source
 - (int) numberOfRowsInTableView: (NSTableView *)aTableView
 {
 	if([kbProfileSelector numberOfItems] == 0)
 		return (0);
-	
+		
 	return ([[iTermKeyBindingMgr singleInstance] numberOfEntriesInProfile: [kbProfileSelector titleOfSelectedItem]]);
 }
 
@@ -440,7 +539,7 @@ static float versionNumber;
 														   text: [kbEntryText stringValue]
 														profile: [kbProfileSelector titleOfSelectedItem]];			
 		}
-		[kbEntryTableView reloadData];
+		[self kbProfileChanged: nil];
 	}
 	
 	[addKBEntry close];
@@ -460,7 +559,7 @@ static float versionNumber;
 		while((aString = [kbProfileEnumerator nextObject]) != nil)
 			[kbProfileSelector addItemWithTitle: aString];	
 		[kbProfileSelector selectItemWithTitle: [kbProfileName stringValue]];
-		[kbEntryTableView reloadData];
+		[self kbProfileChanged: nil];
 	}
 	
 	[addKBProfile close];
@@ -481,7 +580,7 @@ static float versionNumber;
 			[kbProfileSelector addItemWithTitle: aString];
 		if([kbProfileSelector numberOfItems] > 0)
 			[kbProfileSelector selectItemAtIndex: 0];
-		[kbEntryTableView reloadData];
+		[self kbProfileChanged: nil];
 	}
 		
 	[deleteKBProfile close];

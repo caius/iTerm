@@ -1,6 +1,8 @@
 2004-03-02  ujwal
 
-	* Added more code for keybinding manager. Still incomplete, but getting there.
+	* Initial pass at keybinding manager complete. Some more work left, 
+	  particularly with the meta key and associating bookmarks with 
+	  keyboard profiles.
 
 2004-02-29  ujwal
 

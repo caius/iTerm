@@ -37,6 +37,7 @@
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/PTYTabViewitem.h>
 #import <iTerm/AddressBookWindowController.h>
+#import <iTerm/iTermKeyBindingMgr.h>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -356,6 +357,8 @@ static NSString *PWD_ENVVALUE = @"~";
     size_t send_strlen = 0;
     int send_chr = -1;
     int send_pchr = -1;
+	int keyBindingAction;
+	NSString *keyBindingText;
     
     unsigned int modflag;
     unsigned short keycode;
@@ -380,67 +383,72 @@ static NSString *PWD_ENVVALUE = @"~";
     
     // Clear the bell
     [self setBell: NO];
-    
-    if ( (modflag & NSFunctionKeyMask) && [[PreferencePanel sharedInstance] macnavkeys] && ((unicode == NSPageUpFunctionKey) || (unicode == NSPageDownFunctionKey) || (unicode == NSHomeFunctionKey) || (unicode == NSEndFunctionKey)) ) {
-        modflag ^= NSShiftKeyMask; // Toggle meaning of shift key for
-    }
-    
-    // Check if we are navigating through sessions or scrolling
-    if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
-    {
-		// command/shift + function key's
-		switch (unicode)
+	
+	// Check if we have a custom key mapping for this event
+	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unicode 
+																   modifiers: modflag 
+																		 text: &keyBindingText 
+																	 profile: nil];
+	if(keyBindingAction >= 0)
+	{
+		NSString *aString;
+		int hexCode;
+		
+		switch (keyBindingAction)
 		{
-			case NSLeftArrowFunctionKey: // cursor left
-										 // Check if we want to just move to the previous session
-				[parent previousSession: nil];
-				return;
-			case NSRightArrowFunctionKey: // cursor left
-										  // Check if we want to just move to the next session
+			case KEY_ACTION_NEXT_SESSION:
 				[parent nextSession: nil];
-				return;
-			case NSDeleteFunctionKey:
-                // NSLog(@"### DEBUG ###\n%@", SCREEN);
 				break;
-			case NSPageUpFunctionKey:
-				[TEXTVIEW scrollPageUp: self];
+			case KEY_ACTION_NEXT_WINDOW:
+				[[iTermController sharedInstance] nextTerminal: nil];
+				break;
+			case KEY_ACTION_PREVIOUS_SESSION:
+				[parent previousSession: nil];
+				break;
+			case KEY_ACTION_PREVIOUS_WINDOW:
+				[[iTermController sharedInstance] previousTerminal: nil];
+				break;	
+			case KEY_ACTION_SCROLL_END:
+				[TEXTVIEW scrollEnd];
+				break;
+			case KEY_ACTION_SCROLL_HOME:
+				[TEXTVIEW scrollHome];
+				break;
+			case KEY_ACTION_SCROLL_LINE_DOWN:
+				[TEXTVIEW scrollLineDown: self];
 				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
 				break;
-			case NSPageDownFunctionKey:
+			case KEY_ACTION_SCROLL_LINE_UP:
+				[TEXTVIEW scrollLineUp: self];
+				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
+				break;	
+			case KEY_ACTION_SCROLL_PAGE_DOWN:
 				[TEXTVIEW scrollPageDown: self];
 				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
 				break;
-			case NSHomeFunctionKey:
-                [TEXTVIEW scrollHome];
-				break;
-			case NSEndFunctionKey:
-                [TEXTVIEW scrollEnd];
-				break;
-			case NSClearLineFunctionKey:
-				if(modflag & NSCommandKeyMask)
-					[TERMINAL toggleNumLock];
-				break;
-            case NSUpArrowFunctionKey:
-                if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
-					[TEXTVIEW scrollPageUp: self];
-                else
-                    [TEXTVIEW scrollLineUp: self];
+			case KEY_ACTION_SCROLL_PAGE_UP:
+				[TEXTVIEW scrollPageUp: self];
 				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
-                break;
-            case NSDownArrowFunctionKey:
-                if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
-                    [TEXTVIEW scrollPageDown: self];
-                else
-                    [TEXTVIEW scrollLineDown: self];
-				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
-                break;
-                
+				break;	
+			case KEY_ACTION_ESCAPE_SEQUENCE:
+				if([keyBindingText length] > 0)
+				{
+					aString = [NSString stringWithFormat:@"\e%@", keyBindingText];
+					[self writeTask: [aString dataUsingEncoding: NSUTF8StringEncoding]];
+				}
+				break;
+			case KEY_ACTION_HEX_CODE:
+				if([keyBindingText length] > 0 && sscanf([keyBindingText UTF8String], "%x", &hexCode) == 1)
+				{
+					[self writeTask:[NSData dataWithBytes:&hexCode length: sizeof(int)]];
+				}
+				break;
 			default:
-				if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
-					[parent selectSessionAtIndex:unicode-NSF1FunctionKey];                    
+				NSLog(@"Unknown key action %d", keyBindingAction);
 				break;
 		}
-    }
+	}
+    // else do standard handling of event
     else 
     {
 		if (modflag & NSFunctionKeyMask)

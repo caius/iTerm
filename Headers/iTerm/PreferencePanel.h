@@ -61,6 +61,7 @@
 	IBOutlet NSTextField *kbEntryText;
 	IBOutlet NSTextField *kbEntryKeyCode;
 	IBOutlet NSTableView *kbEntryTableView;
+	IBOutlet NSButton *kbProfileDeleteButton;
     
     NSUserDefaults *prefs;
 
@@ -102,6 +103,7 @@
 - (IBAction) kbEntryAddConfirm: (id) sender;
 - (IBAction) kbEntryAddCancel: (id) sender;
 - (IBAction) kbEntryDelete: (id) sender;
+- (IBAction) kbEntrySelectorChanged: (id) sender;
 
 - (void)run;
 

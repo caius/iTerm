@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.32 2004-03-19 08:12:01 ujwal Exp $
+// $Id: PTYTextView.h,v 1.33 2004-03-19 20:19:04 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -38,7 +38,7 @@
 typedef struct 
 {
 	unichar code;
-	unsigned char color;
+	unsigned int color;
 	NSImage *image;
 	int count;
 } CharCache;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.174 2004-03-19 16:38:24 ujwal Exp $
+// $Id: PTYTextView.m,v 1.175 2004-03-19 20:19:04 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -300,10 +300,10 @@
     NSColor *color;
 	int reversed;
 	
-	if(index == SELECTED_TEXT)
+	if(index & SELECTED_TEXT)
 		return (selectedTextColor);
 	
-	if(index == CURSOR_TEXT)
+	if(index & CURSOR_TEXT)
 		return (cursorTextColor);
 	
 	reversed = [[dataSource terminal] screenMode];
@@ -621,9 +621,9 @@
 	NSColor *aColor;
 	char  *fg, *bg, *dirty;
 	BOOL need_draw;
-	int bgstart, ulstart, colorCode;
+	int bgstart, ulstart;
     float curX, curY;
-	char bgcode, fgcode;
+	unsigned int bgcode, fgcode;
 	int y1, x1;
 	BOOL double_width;
 	
@@ -786,17 +786,17 @@
 			double_width = (buf[j+1] == 0xffff);
 			// switch colors if text is selected
 			if(bg[j] & SELECTION_MASK)
-				colorCode = SELECTED_TEXT;
+				fgcode = SELECTED_TEXT | (fg[j] & BOLD_MASK); // check for bold
 			else
-				colorCode = fg[j];
-			if (need_draw) { 	
+				fgcode = fg[j];
+			if (need_draw) { 
 				if (fg[j]&BLINK_MASK) {
 					if (blinkShow) {				
-						[self _drawCharacter:buf[j] fgColor:colorCode AtX:curX Y:curY doubleWidth: double_width];
+						[self _drawCharacter:buf[j] fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
 					}
 				}
 				else {
-					[self _drawCharacter:buf[j] fgColor:colorCode AtX:curX Y:curY doubleWidth: double_width];
+					[self _drawCharacter:buf[j] fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
 					if(line>=startScreenLineIndex) 
 						dirty[j]=0;
 				}
@@ -2059,12 +2059,15 @@
 	int j;
 	NSImage *image;
 	int width;
-	unsigned char c = fg;
+	unsigned int c = fg;
 	int seed;
 	
-	if ([[dataSource terminal] screenMode] && (fg&DEFAULT_FG_COLOR_CODE)) // reversed screen mode?
-		c = fg | DEFAULT_BG_COLOR_CODE;
-	c= c & (BOLD_MASK|0x1f);
+	if(!(fg & SELECTED_TEXT || fg & CURSOR_TEXT))
+	{
+		if ([[dataSource terminal] screenMode] && (fg&DEFAULT_FG_COLOR_CODE)) // reversed screen mode?
+			c = fg | DEFAULT_BG_COLOR_CODE;
+		c= c & (BOLD_MASK|0x1f); // turn of all masks except for bold and default fg color
+	}
 	if (!code) return nil;
 	width=dw?2:1;
 	seed=code;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.182 2004-03-21 02:25:17 ujwal Exp $
+// $Id: PTYTextView.m,v 1.183 2004-03-21 07:00:58 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1003,11 +1003,8 @@
 
 - (void)mouseUp:(NSEvent *)event
 {
-	NSString *lineContents, *blankLine;
-	char blankString[1024];
 	NSPoint locationInWindow, locationInTextView;
-    int x, y, tmpX, tmpY;
-	NSString *aString, *wordChars;
+    int x, y, tmpX1, tmpY1, tmpX2, tmpY2;
 	
 	
 #if DEBUG_METHOD_TRACE
@@ -1039,99 +1036,25 @@
     else if (startY==endY&&startX==endX&&!mouseDragged) startX=-1;
 	
 	// if we are on an empty line, we select the current line to the end
-	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y];
-	memset(blankString, ' ', 100);
-	blankString[100] = 0;
-	blankLine = [NSString stringWithUTF8String: (const char*)blankString];
-	if([lineContents isEqualToString: blankLine] && y >= 0)
-	{
-		endX = [dataSource width] - 1;
-	}
+	if([self _isBlankLine: y] && y >= 0)
+	  endX = [dataSource width] - 1;
 	
+	// handle command click on URL
+	if([event modifierFlags] & NSCommandKeyMask)
+	{
+		NSString *aURL = [self _getWordForX: x y: y startX: NULL startY: NULL endX: NULL endY: NULL];
+		[self _openURL: aURL];
+	}
 	
 	// Handle double and triple click
 	if([event clickCount] == 2)
 	{
 		// double-click; select word
-		
-		// grab our preference for extra characters to be included in a word
-		wordChars = [[PreferencePanel sharedInstance] wordChars];
-		if(wordChars == nil)
-			wordChars = @"";		
-		// find the beginning of the word
-		tmpX = x;
-		tmpY = y;
-		while(tmpX >= 0)
-		{
-			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
-			if(([aString length] == 0 || 
-				[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
-			   [wordChars rangeOfString: aString].length == 0)
-				break;
-			tmpX--;
-			if(tmpX < 0 && tmpY > 0)
-			{
-				tmpY--;
-				tmpX = [dataSource width] - 1;
-			}
-		}
-		if(tmpX != x)
-			tmpX++;
-		
-		if(tmpX < 0)
-			tmpX = 0;
-		if(tmpY < 0)
-			tmpY = 0;
-		if(tmpX >= [dataSource width])
-		{
-			tmpX = 0;
-			tmpY++;
-		}
-		if(tmpY >= [dataSource numberOfLines])
-			tmpY = [dataSource numberOfLines] - 1;		
-		startX = tmpX;
-		startY = tmpY;
-		// if we are on a non-word char, deselect.
-		aString = [self contentFromX:startX Y:startY ToX:startX Y:startY];
-		if(([aString length] == 0 || 
-			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
-		   [wordChars rangeOfString: aString].length == 0)
-			startX = -1;
-		
-		
-		// find the end of the word
-		tmpX = x;
-		tmpY = y;
-		while(tmpX < [dataSource width])
-		{
-			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
-			if(([aString length] == 0 || 
-				[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
-			   [wordChars rangeOfString: aString].length == 0)
-				break;
-			tmpX++;
-			if(tmpX >= [dataSource width] && tmpY < [dataSource numberOfLines])
-			{
-				tmpY++;
-				tmpX = 0;
-			}
-		}
-		if(tmpX != x)
-			tmpX--;
-		
-		if(tmpX < 0)
-		{
-			tmpX = [dataSource width] - 1;
-			tmpY--;
-		}
-		if(tmpY < 0)
-			tmpY = 0;		
-		if(tmpX >= [dataSource width])
-			tmpX = [dataSource width] - 1;
-		if(tmpY >= [dataSource numberOfLines])
-			tmpY = [dataSource numberOfLines] - 1;
-		endX = tmpX;
-		endY = tmpY;
+		[self _getWordForX: x y: y startX: &tmpX1 startY: &tmpY1 endX: &tmpX2 endY: &tmpY2];
+		startX = tmpX1;
+		startY = tmpY1;
+		endX = tmpX2;
+		endY = tmpY2;		
 	}
 	else if ([event clickCount] >= 3)
 	{
@@ -1160,8 +1083,6 @@
     NSPoint locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     NSRect  rectInTextView = [self visibleRect];
     int x, y;
-	NSString *lineContents, *blankLine;
-	char blankString[1024];
 	
 	mouseDragged = YES;
     
@@ -1183,14 +1104,8 @@
 	y = locationInTextView.y/lineHeight;
 	
 	// if we are on an empty line, we select the current line to the end
-	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y];
-	memset(blankString, ' ', 100);
-	blankString[100] = 0;
-	blankLine = [NSString stringWithUTF8String: (const char*)blankString];
-	if([lineContents isEqualToString: blankLine] && y >= 0)
-	{
+	if([self _isBlankLine: y] && y >= 0)
 		x = [dataSource width] - 1;
-	}	
 	
 	if(locationInTextView.x < MARGIN)
 	{
@@ -1503,41 +1418,12 @@
 
 - (void) mail:(id)sender
 {
-    NSString *s=[self selectedText];
-    NSURL *url;
-    
-    if (s && ([s length] > 0))
-    {
-        if (![s hasPrefix:@"mailto:"])
-            url = [NSURL URLWithString:[@"mailto:" stringByAppendingString:s]];
-        else
-            url = [NSURL URLWithString:s];
-        
-        [[NSWorkspace sharedWorkspace] openURL:url];
-    }
+	[self _openURL: [self selectedText]];
 }
 
 - (void) browse:(id)sender
 {
-    NSString *s=[self selectedText];
-    NSURL *url;
-    
-    // Check for common types of URLs
-    if ([s hasPrefix:@"file://"])
-        url = [NSURL URLWithString:s];
-    else if ([s hasPrefix:@"ftp"])
-    {
-        if (![s hasPrefix:@"ftp://"])
-            url = [NSURL URLWithString:[@"ftp://" stringByAppendingString:s]];
-        else
-            url = [NSURL URLWithString:s];
-    }
-    else if (![s hasPrefix:@"http"])
-        url = [NSURL URLWithString:[@"http://" stringByAppendingString:s]];
-    else
-        url = [NSURL URLWithString:s];
-    
-    [[NSWorkspace sharedWorkspace] openURL:url];
+	[self _openURL: [self selectedText]];
 }
 
 //
@@ -2234,6 +2120,102 @@
 	}
 }
 
+- (NSString *) _getWordForX: (int) x 
+					y: (int) y 
+			   startX: (int *) startx 
+			   startY: (int *) starty 
+				 endX: (int *) endx 
+				 endY: (int *) endy
+{
+	NSString *aString,*wordChars;
+	int tmpX, tmpY, x1, y1, x2, y2;
+
+	// grab our preference for extra characters to be included in a word
+	wordChars = [[PreferencePanel sharedInstance] wordChars];
+	if(wordChars == nil)
+		wordChars = @"";		
+	// find the beginning of the word
+	tmpX = x;
+	tmpY = y;
+	while(tmpX >= 0)
+	{
+		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
+		if(([aString length] == 0 || 
+			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
+		   [wordChars rangeOfString: aString].length == 0)
+			break;
+		tmpX--;
+		if(tmpX < 0 && tmpY > 0)
+		{
+			tmpY--;
+			tmpX = [dataSource width] - 1;
+		}
+	}
+	if(tmpX != x)
+		tmpX++;
+	
+	if(tmpX < 0)
+		tmpX = 0;
+	if(tmpY < 0)
+		tmpY = 0;
+	if(tmpX >= [dataSource width])
+	{
+		tmpX = 0;
+		tmpY++;
+	}
+	if(tmpY >= [dataSource numberOfLines])
+		tmpY = [dataSource numberOfLines] - 1;	
+	if(startx)
+		*startx = tmpX;
+	if(starty)
+		*starty = tmpY;
+	x1 = tmpX;
+	y1 = tmpY;
+	
+	
+	// find the end of the word
+	tmpX = x;
+	tmpY = y;
+	while(tmpX < [dataSource width])
+	{
+		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
+		if(([aString length] == 0 || 
+			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
+		   [wordChars rangeOfString: aString].length == 0)
+			break;
+		tmpX++;
+		if(tmpX >= [dataSource width] && tmpY < [dataSource numberOfLines])
+		{
+			tmpY++;
+			tmpX = 0;
+		}
+	}
+	if(tmpX != x)
+		tmpX--;
+	
+	if(tmpX < 0)
+	{
+		tmpX = [dataSource width] - 1;
+		tmpY--;
+	}
+	if(tmpY < 0)
+		tmpY = 0;		
+	if(tmpX >= [dataSource width])
+		tmpX = [dataSource width] - 1;
+	if(tmpY >= [dataSource numberOfLines])
+		tmpY = [dataSource numberOfLines] - 1;
+	if(endx)
+		*endx = tmpX;
+	if(endy)
+		*endy = tmpY;
+	
+	x2 = tmpX;
+	y2 = tmpY;
+
+	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2]);
+	
+}
+
 - (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender
 {
     NSString *sourceType;
@@ -2265,6 +2247,52 @@
     }
     // release our hold on the data
     [(NSData *)theContextInfo release];
+}
+
+- (BOOL) _isBlankLine: (int) y
+{
+	NSString *lineContents, *blankLine;
+	char blankString[1024];	
+	
+	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y];
+	memset(blankString, ' ', 100);
+	blankString[100] = 0;
+	blankLine = [NSString stringWithUTF8String: (const char*)blankString];
+	
+	return ([lineContents isEqualToString: blankLine]);
+	
+}
+
+- (void) _openURL: (NSString *) aURLString
+{
+    NSURL *url;
+	
+	if([aURLString length] <= 0)
+		return;
+	    
+    // Check for common types of URLs
+    if ([aURLString hasPrefix:@"file://"])
+        url = [NSURL URLWithString:aURLString];
+    else if ([aURLString hasPrefix:@"ftp"])
+    {
+        if (![aURLString hasPrefix:@"ftp://"])
+            url = [NSURL URLWithString:[@"ftp://" stringByAppendingString:aURLString]];
+        else
+            url = [NSURL URLWithString:aURLString];
+    }
+	else if ([aURLString hasPrefix:@"mailto:"])
+        url = [NSURL URLWithString:aURLString];
+	else if([aURLString rangeOfString: @"@"].location != NSNotFound)
+		url = [NSURL URLWithString:[@"mailto:" stringByAppendingString:aURLString]];
+	else if ([aURLString hasPrefix:@"https://"])
+        url = [NSURL URLWithString:aURLString];
+    else if (![aURLString hasPrefix:@"http"])
+        url = [NSURL URLWithString:[@"http://" stringByAppendingString:aURLString]];
+    else
+        url = [NSURL URLWithString:aURLString];
+    
+    [[NSWorkspace sharedWorkspace] openURL:url];
+	
 }
 
 @end

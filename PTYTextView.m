@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.12 2003-01-08 16:52:19 ujwal Exp $
+// $Id: PTYTextView.m,v 1.13 2003-01-08 20:57:27 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -230,6 +230,28 @@
     }
     else
 	return NSMakeRange(0, 0);
+}
+
+// Override copy and paste to do our stuff
+- (void) copy: (id) sender
+{
+    NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+    NSString *aString;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
+#endif
+
+    // Get selected string and trim it.
+    aString = [[self string] substringWithRange: [self selectedRange]];
+    if(aString == nil)
+	return;
+    aString = [aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+    // Put the trimmed string on the pasteboard
+    [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];
+    [pboard setString: aString forType: NSStringPboardType];
+    
 }
 
 - (void)paste:(id)sender

@@ -10,6 +10,8 @@
     * Added "Close" menu item to contextual menu to close 
       current session.
       
+    * When copying text, trimming white spaces and new lines.
+      
     
 2003-01-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

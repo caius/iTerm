@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.5 2003-01-05 08:34:17 ujwal Exp $
+// $Id: PTYTextView.h,v 1.6 2003-01-08 20:57:26 ujwal Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -46,6 +46,7 @@
 - (void)unmarkText;
 - (BOOL)hasMarkedText;
 - (NSRange)markedRange;
+- (void) copy: (id) sender;
 - (void)paste:(id)sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;
 - (void)changeFont:(id)sender;

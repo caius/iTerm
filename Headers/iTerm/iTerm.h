@@ -41,43 +41,6 @@
 #define DEBUG_USE_BUFFER	1
 #endif
 
-#ifndef	RETAIN
-#define	RETAIN(object)		((id)object)
-#endif
-#ifndef	RELEASE
-#define	RELEASE(object)
-#endif
-#ifndef	AUTORELEASE
-#define	AUTORELEASE(object)	((id)object)
-#endif
-
-#ifndef	TEST_RETAIN
-#define	TEST_RETAIN(object)	((id)object)
-#endif
-#ifndef	TEST_RELEASE
-#define	TEST_RELEASE(object)
-#endif
-#ifndef	TEST_AUTORELEASE
-#define	TEST_AUTORELEASE(object)	((id)object)
-#endif
-
-#ifndef	ASSIGN
-#define	ASSIGN(object,value)	(object = value)
-#endif
-#ifndef	ASSIGNCOPY
-#define	ASSIGNCOPY(object,value)	(object = [value copy])
-#endif
-#ifndef	DESTROY
-#define	DESTROY(object) 	(object = nil)
-#endif
-
-#ifndef	CREATE_AUTORELEASE_POOL
-#define	CREATE_AUTORELEASE_POOL(X)
-#endif
-
-#ifndef RECREATE_AUTORELEASE_POOL
-#define RECREATE_AUTORELEASE_POOL(X)
-#endif
 
 #define NSLogRect(aRect)	NSLog(@"Rect = %f,%f,%f,%f", (aRect).origin.x, (aRect).origin.y, (aRect).size.width, (aRect).size.height)
 

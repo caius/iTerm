@@ -1,0 +1,26 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {cancel = id; editDefaultSession = id; ok = id; restore = id; }; 
+            CLASS = PreferencePanel; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                antiAlias = id; 
+                blinkingCursor = id; 
+                copySelection = id; 
+                enforceCharacterAlignment = NSButton; 
+                hideTab = id; 
+                macnavkeys = id; 
+                openAddressBook = id; 
+                optionKey = id; 
+                prefPanel = id; 
+                promptOnClose = id; 
+                silenceBell = id; 
+                tabViewType = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }
+    ); 
+    IBVersion = 1; 
+}

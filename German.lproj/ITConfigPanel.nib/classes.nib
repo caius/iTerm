@@ -1,0 +1,39 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                useBackgroundImage = id; 
+                windowConfigBackground = id; 
+                windowConfigCancel = id; 
+                windowConfigFont = id; 
+                windowConfigForeground = id; 
+                windowConfigNAFont = id; 
+                windowConfigOk = id; 
+            }; 
+            CLASS = ITConfigPanelController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "AI_CODE" = id; 
+                "AI_ON" = id; 
+                "CONFIG_ANTIALIAS" = id; 
+                "CONFIG_BACKGROUND" = id; 
+                "CONFIG_BOLD" = id; 
+                "CONFIG_COL" = id; 
+                "CONFIG_ENCODING" = NSPopUpButton; 
+                "CONFIG_EXAMPLE" = id; 
+                "CONFIG_FOREGROUND" = id; 
+                "CONFIG_NAEXAMPLE" = id; 
+                "CONFIG_NAME" = id; 
+                "CONFIG_ROW" = id; 
+                "CONFIG_SELECTION" = id; 
+                "CONFIG_TRANS2" = id; 
+                "CONFIG_TRANSPARENCY" = id; 
+                backgroundImage = NSImageView; 
+                useBackgroundImage = NSButton; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}

@@ -1,3 +1,9 @@
+2004-02-17  fabian
+
+	* Fixed a bug in [VT100Screen eraseInDisplay].
+	* Fixed a bug in [PTYTextView drawRect] when drawing underlines.
+	* A slightly better hash algorithm for char image cache.
+	
 2004-02-17  ujwal
 
 	* Added back support for background images. 

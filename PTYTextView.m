@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.113 2004-02-18 02:01:15 ujwal Exp $
+// $Id: PTYTextView.m,v 1.114 2004-02-18 08:31:03 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -547,9 +547,10 @@
 	[image unlockFocus];
 } // renderChar
 
+#define  CELLSIZE (CACHESIZE/256)
 - (NSImage *) getCharImage:(unichar) code color:(int)fg
 {
-	int i = code % 256 * (CACHESIZE/256);
+	int i = code % 256 * CELLSIZE + code/256 % CELLSIZE;
 	int j;
 	NSImage *image;
 	int width;
@@ -558,7 +559,7 @@
 	c= fg&(BOLD_MASK|31);
 	if (!code) return nil;
 	width=ISDOUBLEWIDTHCHARACTER(code)?2:1;
-	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CACHESIZE; i++,j++);
+	for(j=0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++,j++);
 	if (!charImages[i].image) {
 		//		NSLog(@"add into cache");
 		image=charImages[i].image=[[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)] retain];
@@ -573,9 +574,20 @@
 		
 		return image;
 	}
-	else if (j>=CACHESIZE) {
+	else if (j>=CELLSIZE) {
 		//		NSLog(@"new char, but cache full");
-		image=[[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)] autorelease];
+		c=1;
+		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
+			if (charImages[i-j].count<charImages[i-c].count) c=j;
+		}
+		image=charImages[c].image=[[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)] autorelease];
+		charImages[c].code=code;
+		charImages[c].color=fg;
+		for(j=1; j<=CELLSIZE; j++) {	//reset the cache
+			charImages[i-j].count-=charImages[i-c].count;
+		}
+		charImages[i].count=1;
+
 		[self renderChar: image 
 				withChar: code
 			   withColor: [self colorForCode:fg] 
@@ -752,7 +764,7 @@
 				[[self colorForCode:fgcode] set];
 				NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
 				fgcode=fg[j];
-				ulstart=(fg[j]&UNDER_MASK||buf[j])?j:-1;
+				ulstart=( (fg[j]&UNDER_MASK) && buf[j])?j:-1;
 			}
 			
 		}

@@ -1,3 +1,9 @@
+2003-01-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Really fixed the bold font issue. Querying the font 
+      manager for traits was always returning false.
+      
+
 2003-01-09 	fabian
     * help docs updated. Removed unnecessary links and pics
     

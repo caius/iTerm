@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.30 2003-03-18 15:55:49 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.31 2003-03-26 17:59:49 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -120,9 +120,9 @@ static int TRANSPARENCY  =10;
 
     // This is for compatibility with old pref
     if ([[prefs objectForKey:@"Encoding"] isKindOfClass:[NSString class]]) {
-        NSRunAlertPanel(NSLocalizedStringFromTable(@"Upgrade Warning: New language encodings available",@"iTerm",@"Upgrade"),
-                        NSLocalizedStringFromTable(@"Please reset all the encoding settings in your preference and address book",@"iTerm",@"Upgrade"),
-                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Upgrade Warning: New language encodings available",@"iTerm", [NSBundle bundleForClass: [self class]], @"Upgrade"),
+                        NSLocalizedStringFromTableInBundle(@"Please reset all the encoding settings in your preference and address book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Upgrade"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
         defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     }
@@ -273,9 +273,9 @@ static int TRANSPARENCY  =10;
 - (IBAction)ok:(id)sender
 {
     if ([col intValue]<1||[row intValue]<1) {
-        NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
-                        NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
-                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
         return;
     }

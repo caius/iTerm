@@ -836,7 +836,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
 
     // Clear buffer
-    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Clear Buffer",@"iTerm",@"Context menu")
+    [theMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Clear Buffer",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 		     action:@selector(clearBuffer:) keyEquivalent:@""];
 
     // Ask the parent if it has anything to add

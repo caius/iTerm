@@ -6,9 +6,7 @@
       entry point source file and images. It then 
       links against the iTerm framework. This enables 
       other applications to link against iTerm framework 
-      to embed iTerm functionality. Localizations need 
-      to be fixed.
-
+      to embed iTerm functionality. 
 
 2003-03-25	fabian
     * PTYTextView is now a subclass of NSView under ARRAY 

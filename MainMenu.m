@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.39 2003-03-21 00:16:21 yfabian Exp $
+// $Id: MainMenu.m,v 1.40 2003-03-26 17:59:49 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -104,8 +104,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     NSMenuItem *newTabMenuItem, *newWindowMenuItem;
     
     aMenu = [[NSMenu alloc] initWithTitle: @"Dock Menu"];
-    newTabMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTable(@"New Tab",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" ]; 
-    newWindowMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTable(@"New Window",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" ]; 
+    newTabMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
+    newWindowMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
     [aMenu addItem: newTabMenuItem];
     [aMenu addItem: newWindowMenuItem];
     [newTabMenuItem release];
@@ -424,16 +424,16 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 - (IBAction)adbRemoveEntry:(id)sender
 {
     NSBeginAlertSheet(
-                      NSLocalizedStringFromTable(@"Do you really want to remove this item?",@"iTerm",@"Removal Alert"),
-                      NSLocalizedStringFromTable(@"Cancel",@"iTerm",@"Cancel"),
-                      NSLocalizedStringFromTable(@"Remove",@"iTerm",@"Remove"),
+                      NSLocalizedStringFromTableInBundle(@"Do you really want to remove this item?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
+                      NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"),
+                      NSLocalizedStringFromTableInBundle(@"Remove",@"iTerm", [NSBundle bundleForClass: [self class]], @"Remove"),
                       nil,
                       AB_PANEL,               // window sheet is attached to
                       self,                   // we'll be our own delegate
                       @selector(sheetDidEnd:returnCode:contextInfo:),     // did-end selector
                       NULL,                   // no need for did-dismiss selector
                       sender,                 // context info
-                      NSLocalizedStringFromTable(@"There is no undo for this operation.",@"iTerm",@"Removal Alert"),
+                      NSLocalizedStringFromTableInBundle(@"There is no undo for this operation.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
                       nil);                   // no parameters in message
 }
 
@@ -485,9 +485,9 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 - (IBAction)adEditOK:(id)sender
 {
     if ([adCol intValue]<1||[adRow intValue]<1) {
-        NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
-                        NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
-                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
     }
     else {
@@ -582,7 +582,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
                         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
 					    [NSColor blueColor], NSForegroundColorAttributeName,
 					    NULL];
-    author1 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTable(@"fabian",@"iTerm",@"Author") attributes: linkAttributes];
+    author1 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"fabian",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
     
     // Spacer...
     tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
@@ -593,7 +593,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
                         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
 					    [NSColor blueColor], NSForegroundColorAttributeName,
 					    NULL];
-    author2 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTable(@"Ujwal S. Sathyam",@"iTerm",@"Author") attributes: linkAttributes];
+    author2 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Ujwal S. Sathyam",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
     
     // Web URL
     webURL = [NSURL URLWithString: @"http://iterm.sourceforge.net"];
@@ -609,7 +609,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
         [NSColor blueColor], NSForegroundColorAttributeName,
         NULL];
-    bugReport = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTable(@"Report A Bug", @"iTerm", @"About") attributes: linkAttributes];
+    bugReport = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Report A Bug", @"iTerm", [NSBundle bundleForClass: [self class]], @"About") attributes: linkAttributes];
     
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
@@ -801,7 +801,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
     }
 
-    [abMenu addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")
+    [abMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Default session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New")
 					   action: shellSelector keyEquivalent:@""];
     [abMenu addItem: [NSMenuItem separatorItem]];
     abEnumerator = [[self addressBookNames] objectEnumerator];

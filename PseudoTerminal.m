@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.134 2003-03-26 00:03:32 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.135 2003-03-26 17:59:48 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -402,11 +402,11 @@ static NSString *ConfigToolbarItem = @"Config";
         return;
 
     if ([currentPtySession exited]==NO) {
-       if ([pref promptOnClose] && 
-            NSRunAlertPanel(NSLocalizedStringFromTable(@"The current session will be closed",@"iTerm",@"Close Session"),
-                         NSLocalizedStringFromTable(@"All unsaved data will be lost",@"iTerm",@"Close window"),
-                         NSLocalizedStringFromTable(@"Cancel",@"iTerm",@"Cancel"),
-                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK")
+       if ([pref promptOnClose] &&
+	   NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"The current session will be closed",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
+                         NSLocalizedStringFromTableInBundle(@"All unsaved data will be lost",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
+                         NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"),
+                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK")
                          ,nil)) return;
                          
     }
@@ -973,10 +973,10 @@ static NSString *ConfigToolbarItem = @"Config";
     NSLog(@"%s(%d):-[PseudoTerminal showCloseWindow]", __FILE__, __LINE__);
 #endif
 
-    return (NSRunAlertPanel(NSLocalizedStringFromTable(@"Close Window?",@"iTerm",@"Close window"),
-                            NSLocalizedStringFromTable(@"All sessions will be closed",@"iTerm",@"Close window"),
-                            NSLocalizedStringFromTable(@"Cancel",@"iTerm",@"Cancel"),
-                            NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK")
+    return (NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Close Window?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
+                            NSLocalizedStringFromTableInBundle(@"All sessions will be closed",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
+                            NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"),
+                            NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK")
                             ,nil)==0);
 }
 
@@ -1065,15 +1065,15 @@ static NSString *ConfigToolbarItem = @"Config";
 - (IBAction)windowConfigOk:(id)sender
 {
     if ([CONFIG_COL intValue]<1||[CONFIG_ROW intValue]<1) {
-        NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
-                        NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
-                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
     }else
     if ([AI_CODE intValue]>255||[AI_CODE intValue]<0) {
-        NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
-                        NSLocalizedStringFromTable(@"Please enter a valid code (0~255)",@"iTerm",@"Anti-Idle: wrong input"),
-                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"Please enter a valid code (0~255)",@"iTerm", [NSBundle bundleForClass: [self class]], @"Anti-Idle: wrong input"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
     }else {
         [[self currentSession] setEncoding:[MAINMENU encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
@@ -1224,25 +1224,25 @@ static NSString *ConfigToolbarItem = @"Config";
 #endif    
 
     if ([itemIdent isEqual: ABToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open the address book",@"iTerm",@"Toolbar Item Tip:Address Book")];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Address Book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Address Book")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Address Book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Address Book")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the address book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip:Address Book")];
         [toolbarItem setImage: [NSImage imageNamed: @"addressbook"]];
         [toolbarItem setTarget: MAINMENU];
         [toolbarItem setAction: @selector(showABWindow:)];
     }
     else if ([itemIdent isEqual: CloseToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Close the current session",@"iTerm",@"Toolbar Item Tip: Close")];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: Close Session")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: Close Session")];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Close the current session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip: Close")];
         [toolbarItem setImage: [NSImage imageNamed: @"close"]];
         [toolbarItem setTarget: self];
         [toolbarItem setAction: @selector(closeCurrentSession:)];
     }
    else if ([itemIdent isEqual: ConfigToolbarItem]) {
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"Configure",@"iTerm",@"Toolbar Item:Configure") ];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"Configure",@"iTerm",@"Toolbar Item:Configure") ];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Configure current window",@"iTerm",@"Toolbar Item Tip:Configure")];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Configure") ];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Configure") ];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Configure current window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip:Configure")];
         [toolbarItem setImage: [NSImage imageNamed: @"config"]];
         [toolbarItem setTarget: self];
         [toolbarItem setAction: @selector(showConfigWindow:)];
@@ -1271,9 +1271,9 @@ static NSString *ConfigToolbarItem = @"Config";
 
 	[toolbarItem setMinSize:[aPopUpButton bounds].size];
 	[toolbarItem setMaxSize:[aPopUpButton bounds].size];
-	[toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
-	[toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
-	[toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open a new session",@"iTerm",@"Toolbar Item:New")];
+	[toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New")];
+	[toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New")];
+	[toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open a new session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New")];
 
     }
     else { 
@@ -1330,12 +1330,12 @@ static NSString *ConfigToolbarItem = @"Config";
     // Figure out whether the command shall be executed in a new window or tab
     if (modflag & NSCommandKeyMask)
     {
-	[theMenu insertItemWithTitle: NSLocalizedStringFromTable(@"New Window",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
+	[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
 	newWin = YES;
     }
     else
     {
-	[theMenu insertItemWithTitle: NSLocalizedStringFromTable(@"New Tab",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
+	[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"New Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
 	newWin = NO;
     }
     
@@ -1353,12 +1353,12 @@ static NSString *ConfigToolbarItem = @"Config";
     [theMenu addItem:[NSMenuItem separatorItem]];
 
     // Close current session
-    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")
+    [theMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: Close Session")
 						   action:@selector(closeCurrentSession:) keyEquivalent:@""];
 
 
     // Configure
-    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Configure...",@"iTerm",@"Context menu")
+    [theMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Configure...",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 				     action:@selector(showConfigWindow:) keyEquivalent:@""];
     
 }
@@ -1532,13 +1532,13 @@ static NSString *ConfigToolbarItem = @"Config";
     localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
 
     // add tasks
-    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Close",@"iTerm",@"Close Session") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
     [aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
     if([ptyList count] > 1)
     {
-	aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTable(@"Move to new window",@"iTerm",@"Move session to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
+	aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move session to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
 	[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtPoint:localPoint] identifier]];
 	[theMenu addItem: aMenuItem];
 	[aMenuItem release];
@@ -1652,9 +1652,9 @@ static NSString *ConfigToolbarItem = @"Config";
             NULL];
         //    NSLog(@"new entry:%@",ae);
         [MAINMENU replaceAddressBookEntry:old with:new];
-        NSRunAlertPanel(NSLocalizedStringFromTable(@"Configuration saved",@"iTerm",@"Config"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
                         [old objectForKey:@"Name"],
-                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
         
         
@@ -1680,9 +1680,9 @@ static NSString *ConfigToolbarItem = @"Config";
             NULL];
         //    NSLog(@"new entry:%@",ae);
         [MAINMENU addAddressBookEntry: new];
-        NSRunAlertPanel(NSLocalizedStringFromTable(@"Configuration saved as a new entry in Address Book",@"iTerm",@"Config"),
+        NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Address Book",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
                         [new objectForKey:@"Name"],
-                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
     }
     [MAINMENU saveAddressBook];
@@ -1714,7 +1714,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [MAINMENU buildAddressBookMenu: [aPopUpButton menu] forTerminal: (newwin?nil:self)];
 
     [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-    [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
+    [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
     newwinItem=[aPopUpButton lastItem];
     [newwinItem setState:(newwin ? NSOnState : NSOffState)];    
     
@@ -1737,11 +1737,11 @@ static NSString *ConfigToolbarItem = @"Config";
     [[[aPopUpButton menu] menuRepresentation] setHorizontalEdgePadding:0.0];
 
     // build a menu representation for text only.
-    item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New") action: nil keyEquivalent: @""];
+    item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New") action: nil keyEquivalent: @""];
     aMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
     [MAINMENU buildAddressBookMenu: aMenu forTerminal: (newwin?nil:self)];
     [aMenu addItem: [NSMenuItem separatorItem]];
-    [aMenu addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
+    [aMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
     newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];
     [newwinItem setState:(newwin ? NSOnState : NSOffState)];
     

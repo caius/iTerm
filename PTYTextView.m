@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.42 2003-03-26 00:03:31 yfabian Exp $
+// $Id: PTYTextView.m,v 1.43 2003-03-26 17:59:49 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -662,27 +662,27 @@
     cMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
 
     // Menu items for acting on text selections
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Browser",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Browser",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                                           action:@selector(browse:) keyEquivalent:@""];
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Mail",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Mail",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                                           action:@selector(mail:) keyEquivalent:@""];
 
     // Separator
     [cMenu addItem:[NSMenuItem separatorItem]];
 
     // Copy,  paste, and save
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Copy",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Copy",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                                           action:@selector(copy:) keyEquivalent:@""];
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Paste",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Paste",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                                           action:@selector(paste:) keyEquivalent:@""];
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Save",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Save",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                                           action:@selector(saveDocumentAs:) keyEquivalent:@""];
 
     // Separator
     [cMenu addItem:[NSMenuItem separatorItem]];
 
     // Select all
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Select All",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Select All",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                                           action:@selector(selectAll:) keyEquivalent:@""];
 
 
@@ -1631,27 +1631,27 @@
     cMenu = [[NSMenu alloc] initWithTitle:@"Contextual Menu"];
 
     // Menu items for acting on text selections
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Browser",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Browser",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 			action:@selector(browse:) keyEquivalent:@""];
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"-> Mail",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Mail",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 			action:@selector(mail:) keyEquivalent:@""];
 
     // Separator
     [cMenu addItem:[NSMenuItem separatorItem]];
 
     // Copy,  paste, and save
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Copy",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Copy",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 			action:@selector(copy:) keyEquivalent:@""];
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Paste",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Paste",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 			action:@selector(paste:) keyEquivalent:@""];
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Save",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Save",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 			action:@selector(saveDocumentAs:) keyEquivalent:@""];
 
     // Separator
     [cMenu addItem:[NSMenuItem separatorItem]];
 
     // Select all
-    [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Select All",@"iTerm",@"Context menu")
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Select All",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
 			action:@selector(selectAll:) keyEquivalent:@""];
 
     

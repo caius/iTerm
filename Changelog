@@ -1,3 +1,8 @@
+2003-02-19	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Added support for a new xterm character attribute.
+    
+
 2003-02-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Changed implementation of cursorToX: Y: and 

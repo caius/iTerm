@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.28 2003-02-13 07:43:42 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.29 2003-02-19 16:36:06 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1774,6 +1774,9 @@ static VT100TCC decode_string(unsigned char *datap,
                 case VT100CHARATTR_REVERSE:
                     CHARATTR |= VT100CHARATTR_REVERSEMASK;
                     break;
+		case VT100CHARATTR_POSITIVE:
+		    CHARATTR &= ~VT100CHARATTR_REVERSEMASK;
+		    break;
 
 		case VT100CHARATTR_FG_BLACK:
                     FG_COLORCODE = COLORCODE_BLACK;

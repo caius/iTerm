@@ -69,6 +69,7 @@ static unsigned int invocationId = 0;
     NSRange characterRange, glyphRange;
     BOOL hasGraphicalCharacters;
     NSTextStorage *textStorage;
+    NSRect previousRect;
 
 
     // grab the text container; we should have only one
@@ -105,7 +106,8 @@ static unsigned int invocationId = 0;
 
     // process lines
     glyphIndex = startGlyphIndex;
-    
+
+    previousRect = NSZeroRect;
     for(numLines = 0; numLines < maxNumLines; numLines++)
     {
 	atEnd = NO;
@@ -195,13 +197,21 @@ static unsigned int invocationId = 0;
 	}
 	else
 	{
-	    NSRect lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
+	    NSRect lastGlyphRect;
+	    // check if we just processed the previous line, otherwise ask the layout manager.
+	    if(previousRect.size.width > 0)
+		lastGlyphRect = previousRect;
+	    else
+		lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
+	    // calculate next line based on previous line rectangle
 	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont], [textContainer containerSize].width, [font defaultLineHeightForFont]);
 	}
 #if DEBUG_METHOD_TRACE
 	NSLog(@"(%d) Laying out line %f; numLines = %d", callId, lineRect.origin.y/[font defaultLineHeightForFont] + 1, numLines);
 	NSLog(@"(%d) Line = '%@'", callId, [theString substringWithRange: characterRange]);
 #endif
+	// cache the rect for the next run, if any.
+	previousRect = lineRect;
 	
 	
 	// Now fill the line

@@ -1,3 +1,7 @@
+2003-04-01	fabian
+    * Fixed a bug in text input
+    * Applied the URL parsing into ARRAY code
+    
 2003-04-01	ujwal
 
     * Now dynamically displaying window size as window is 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.52 2003-04-01 01:03:09 ujwal Exp $
+// $Id: PTYTextView.m,v 1.53 2003-04-01 20:43:51 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -830,14 +830,22 @@
     NSString *s=[self selectedText];
     NSURL *url;
 
-    if (s&&[s length]>0) {
-        if (![s hasPrefix:@"http://"])
-            url = [NSURL URLWithString:[@"http://" stringByAppendingString:s]];
+    // Check for common types of URLs
+    if ([s hasPrefix:@"file://"])
+        url = [NSURL URLWithString:s];
+    else if ([s hasPrefix:@"ftp"])
+    {
+        if (![s hasPrefix:@"ftp://"])
+            url = [NSURL URLWithString:[@"ftp://" stringByAppendingString:s]];
         else
             url = [NSURL URLWithString:s];
-
-        [[NSWorkspace sharedWorkspace] openURL:url];
     }
+    else if (![s hasPrefix:@"http"])
+        url = [NSURL URLWithString:[@"http://" stringByAppendingString:s]];
+    else
+        url = [NSURL URLWithString:s];
+
+    [[NSWorkspace sharedWorkspace] openURL:url];
 }
 
 
@@ -1162,7 +1170,7 @@
     NSRange repRange;
     int y=[dataSource cursorY]-1;
     int x=[dataSource cursorX]-1;
-    NSAttributedString *as=[[NSAttributedString alloc] initWithString:[aString string] attributes:[self markedTextAttributes]];
+    NSAttributedString *as;
     NSMutableAttributedString *aLine=[dataSource stringAtLine:y+[dataSource topLines]];
     
 #if DEBUG_METHOD_TRACE
@@ -1176,13 +1184,20 @@
     else {
         repRange = NSMakeRange([dataSource getIndexAtX:x Y:y withPadding:NO], 0);
     }
+    NSLog(@"marked range: (%d,%d):",repRange.location,repRange.length);
+
+    if ([aString isKindOfClass:[NSAttributedString class]]) {
+        as=[[NSAttributedString alloc] initWithString:[aString string] attributes:[self markedTextAttributes]];
+    }
+    else {
+        as=[[NSAttributedString alloc] initWithString:aString attributes:[self markedTextAttributes]];
+    }
     [aLine replaceCharactersInRange:repRange
                withAttributedString:as];
-    IM_INPUT_MARKEDRANGE = NSMakeRange(0,
-                                       [(NSAttributedString *)aString length]);
+    IM_INPUT_MARKEDRANGE = NSMakeRange(0,[as length]);
     IM_INPUT_SELRANGE = selRange;
 
-    [self setDirtyLine:y];
+    [self setDirtyLine:y+[dataSource topLines]];
 }
 
 - (void)unmarkText
@@ -1280,8 +1295,14 @@
     int x=[dataSource cursorX]-1;
     NSAttributedString *aLine=[dataSource stringAtLine:y+[dataSource topLines]];
     NSSize s=[[aLine attributedSubstringFromRange:theRange] size];
-
-    return NSMakeRect(x*[VT100Screen fontSize: [dataSource font]].width+[self frame].origin.x,y*lineHeight+[self frame].origin.y,s.width,s.height);
+    //NSSize s=[aLine size];
+    
+    NSRect rect=NSMakeRect(x*[VT100Screen fontSize: [dataSource font]].width,(y+[dataSource topLines])*lineHeight,s.width,s.height);
+    //NSLog(@"(%f,%f)",rect.origin.x,rect.origin.y);
+    rect.origin=[[self window] convertBaseToScreen:[self convertPoint:rect.origin toView:nil]];
+    //NSLog(@"(%f,%f)",rect.origin.x,rect.origin.y);
+    
+    return rect;
 }
 
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.16 2003-01-09 20:26:03 yfabian Exp $
+// $Id: VT100Screen.m,v 1.17 2003-01-10 16:08:14 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -99,7 +99,7 @@ static BOOL PLAYBELL = YES;
     sz = [VT100Screen fontSize:font];
 
     w = (int)(frame.size.width / sz.width + 0.5) - 2;
-    h = (int)(frame.size.height / sz.height + 0.5) ;
+    h = (int)(frame.size.height / sz.height) ;
 
     return NSMakeSize(w, h);
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.69 2003-01-08 20:56:57 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.70 2003-01-10 16:08:12 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -587,7 +587,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     thisWindow = [SCROLLVIEW window];
     winSize = size;
-    winSize.height = size.height + ([TABVIEW numberOfTabViewItems]>1?32:10); // account for tabview
+    winSize.height = size.height + ([TABVIEW numberOfTabViewItems]>1?29:4); // account for tabview
     [thisWindow setContentSize:winSize];
 }
 
@@ -789,7 +789,7 @@ static NSString *ConfigToolbarItem = @"Config";
     
     // Calculate scrollview size
     scrollviewSize = contentSize;
-    scrollviewSize.height = contentSize.height - [TABVIEW numberOfTabViewItems]>1?32:10; // account for tabview
+    scrollviewSize.height = contentSize.height - [TABVIEW numberOfTabViewItems]>1?29:4; // account for tabview
     //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
 
     
@@ -820,7 +820,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Calculate the window content size
     contentSize = scrollviewSize;
-    contentSize.height = scrollviewSize.height + [TABVIEW numberOfTabViewItems]>1?32:10; // account for tabview
+    contentSize.height = scrollviewSize.height + [TABVIEW numberOfTabViewItems]>1?29:4; // account for tabview
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
     
     // Finally calculate the window frame size

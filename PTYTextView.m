@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.13 2003-01-08 20:57:27 ujwal Exp $
+// $Id: PTYTextView.m,v 1.14 2003-01-10 16:08:12 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -230,6 +230,31 @@
     }
     else
 	return NSMakeRange(0, 0);
+}
+
+// NSView
+- (NSRect)adjustScroll:(NSRect)proposedVisibleRect
+{
+    float scrollHeight;
+    float y_max; 
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView proposedVisibleRect:%f, %f, %f, %f]", __FILE__, __LINE__,
+	  proposedVisibleRect.origin.x, proposedVisibleRect.origin.y,
+	  proposedVisibleRect.size.width, proposedVisibleRect.size.height);
+#endif
+
+    if(proposedVisibleRect.origin.y == 0)
+    {
+	return ([super adjustScroll: proposedVisibleRect]);
+    }
+
+    // make sure we don't clip the top line.
+    scrollHeight = [[self font] defaultLineHeightForFont];
+    y_max = ceil(proposedVisibleRect.origin.y/scrollHeight) * scrollHeight;
+
+    
+    return (NSMakeRect(proposedVisibleRect.origin.x, y_max, proposedVisibleRect.size.width, proposedVisibleRect.size.height));
 }
 
 // Override copy and paste to do our stuff

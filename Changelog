@@ -1,3 +1,9 @@
+2003-01-09	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed some scrolling/sizing issues by overriding 
+      adjustScroll: in PTYTextView.
+      
+
 2003-01-09 	fabian
     * help docs updated. Removed unnecessary links and pics
     

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.46 2003-03-13 21:21:05 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.47 2003-03-14 16:42:24 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1141,39 +1141,39 @@ static VT100TCC decode_string(unsigned char *datap,
                                                     blue:0.0f
                                                    alpha:1.0f]
         retain];
-    colorTable[1]  = [[NSColor colorWithCalibratedRed:0.8f
+    colorTable[1]  = [[NSColor colorWithCalibratedRed:0.7f
                                                    green:0.0f
                                                     blue:0.0f
                                                    alpha:1.0f]
         retain];
     colorTable[2]  = [[NSColor colorWithCalibratedRed:0.0f
-                                                   green:0.8f
+                                                   green:0.7f
                                                     blue:0.0f
                                                    alpha:1.0f]
         retain];
-    colorTable[3] = [[NSColor colorWithCalibratedRed:0.8f
-                                                  green:0.8f
+    colorTable[3] = [[NSColor colorWithCalibratedRed:0.7f
+                                                  green:0.7f
                                                    blue:0.0f
                                                   alpha:1.0f]
         retain];
     colorTable[4] = [[NSColor colorWithCalibratedRed:0.0f
                                                   green:0.0f
-                                                   blue:0.8f
+                                                   blue:0.7f
                                                   alpha:1.0f]
         retain];
-    colorTable[5] = [[NSColor colorWithCalibratedRed:0.8f
+    colorTable[5] = [[NSColor colorWithCalibratedRed:0.7f
                                                   green:0.0f
-                                                   blue:0.8f
+                                                   blue:0.7f
                                                   alpha:1.0f]
         retain];
-    colorTable[6]  = [[NSColor colorWithCalibratedRed:0.5f
-                                                   green:0.5f
-                                                    blue:0.8f
+    colorTable[6]  = [[NSColor colorWithCalibratedRed:0.45f
+                                                   green:0.45f
+                                                    blue:0.7f
                                                    alpha:1.0f]
         retain];
-    colorTable[7]  = [[NSColor colorWithCalibratedRed:0.8f
-                                                   green:0.8f
-                                                    blue:0.8f
+    colorTable[7]  = [[NSColor colorWithCalibratedRed:0.7f
+                                                   green:0.7f
+                                                    blue:0.7f
                                                    alpha:1.0f]
         retain]; 
     
@@ -1940,14 +1940,14 @@ static VT100TCC decode_string(unsigned char *datap,
             if ([color brightnessComponent]>0.81) {
                 color=[NSColor colorWithCalibratedHue:[color hueComponent]
                                            saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]-0.2
+                                           brightness:[color brightnessComponent]-0.3
                                                 alpha:[color alphaComponent]]; 
 //                color=[color shadowWithLevel:0.2];
             }
             else {
                 color=[NSColor colorWithCalibratedHue:[color hueComponent]
                                            saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]+0.2
+                                           brightness:[color brightnessComponent]+0.3
                                                 alpha:[color alphaComponent]];
             }
 //            color=[color highlightWithLevel:0.2];
@@ -1956,14 +1956,14 @@ static VT100TCC decode_string(unsigned char *datap,
             if ([color brightnessComponent]>0.19) {
                 color=[NSColor colorWithCalibratedHue:[color hueComponent]
                                            saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]-0.2
+                                           brightness:[color brightnessComponent]-0.3
                                                 alpha:[color alphaComponent]];
 //                color=[color shadowWithLevel:0.2];
             }
             else {
                 color=[NSColor colorWithCalibratedHue:[color hueComponent]
                                            saturation:[color saturationComponent]
-                                           brightness:[color brightnessComponent]+0.2
+                                           brightness:[color brightnessComponent]+0.3
                                                 alpha:[color alphaComponent]];
 //                color=[color highlightWithLevel:0.2];
             }

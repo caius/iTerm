@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.114 2003-07-19 16:51:17 ujwal Exp $
+// $Id: VT100Screen.m,v 1.115 2003-07-20 05:41:00 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1484,32 +1484,6 @@ static BOOL PLAYBELL = YES;
         y1 = 0;
         x2 = WIDTH - 1;
         y2 = HEIGHT - 1;
-
-	// move the current screen into the scrollback buffer
-	if(clearingBuffer == NO)
-	{
-	    [self setScreenLock];
-	    [STORAGE beginEditing];
-	    //NSLog(@"'%@'", [BUFFER string]);
-	    if(newLineString == nil)
-		newLineString = [[self attrString:@"\n" ascii:YES] retain];
-	    [STORAGE appendAttributedString:newLineString];
-	    updateIndex = [STORAGE length];
-	    // turn off the cursor
-	    if(cursorIndex < [STORAGE length])
-	    {
-		NSMutableDictionary *dic;
-		dic =  [NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:cursorIndex effectiveRange:nil]];
-		[dic setObject:[TERMINAL defaultBGColor] forKey:NSBackgroundColorAttributeName];
-		[dic setObject:[TERMINAL defaultFGColor] forKey:NSForegroundColorAttributeName];
-		[STORAGE setAttributes:dic range:NSMakeRange(cursorIndex,1)];
-	    }
-	    [STORAGE endEditing];
-	    [self removeScreenLock];
-	    [[SESSION TEXTVIEW] scrollEnd];
-	}
-	else
-	    clearingBuffer = NO;
 	
         break;
 
@@ -1521,6 +1495,34 @@ static BOOL PLAYBELL = YES;
         y2 = HEIGHT - 1;
         break;
     }
+
+#if DEBUG_USE_BUFFER    
+    // if we are clearing the entire screen, move the current screen into the scrollback buffer
+    if(x1 == 0 && y1 == 0 && x2 == (WIDTH -1 ) && y2 == (HEIGHT - 1) && clearingBuffer == NO)
+    {
+	[self setScreenLock];
+	[STORAGE beginEditing];
+	//NSLog(@"'%@'", [BUFFER string]);
+	if(newLineString == nil)
+	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
+	[STORAGE appendAttributedString:newLineString];
+	updateIndex = [STORAGE length];
+	// turn off the cursor
+	if(cursorIndex < [STORAGE length])
+	{
+	    NSMutableDictionary *dic;
+	    dic =  [NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:cursorIndex effectiveRange:nil]];
+	    [dic setObject:[TERMINAL defaultBGColor] forKey:NSBackgroundColorAttributeName];
+	    [dic setObject:[TERMINAL defaultFGColor] forKey:NSForegroundColorAttributeName];
+	    [STORAGE setAttributes:dic range:NSMakeRange(cursorIndex,1)];
+	}
+	[STORAGE endEditing];
+	[self removeScreenLock];
+	[[SESSION TEXTVIEW] scrollEnd];
+    }
+    else
+	clearingBuffer = NO;
+#endif
 
     for (y = y1; y <= y2; ++y ) {
         if (y == y1 && y == y2) {

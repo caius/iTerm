@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.17 2003-03-07 20:24:54 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.18 2003-03-10 22:38:17 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -149,16 +149,17 @@ typedef struct {
 #define VT100CHARATTR_BLINKMASK   (1<<2)
 #define VT100CHARATTR_REVERSEMASK (1<<3)
 
-#define COLORCODE_BLACK   0
-#define COLORCODE_RED     1
-#define COLORCODE_GREEN   2
-#define COLORCODE_YELLOW  3
-#define COLORCODE_BLUE    4
-#define COLORCODE_PURPLE  5
-#define COLORCODE_WATER   6
-#define COLORCODE_WHITE   7
-#define COLORCODE_FG_DEFAULT -2
-#define COLORCODE_BG_DEFAULT -1
+typedef enum {
+    COLORCODE_BLACK=0,
+    COLORCODE_RED,
+    COLORCODE_GREEN,
+    COLORCODE_YELLOW,
+    COLORCODE_BLUE,
+    COLORCODE_PURPLE,
+    COLORCODE_WATER,
+    COLORCODE_WHITE,
+    COLORS
+} colorCode;
 
 #define VT100CHARATTR_FG_BASE  30
 #define VT100CHARATTR_BG_BASE  40
@@ -191,15 +192,6 @@ typedef struct {
     NSMutableData     *STREAM;
     VT100Screen       *SCREEN;
 
-    NSColor *COLOR_BLACK;
-    NSColor *COLOR_RED;
-    NSColor *COLOR_GREEN;
-    NSColor *COLOR_YELLOW;
-    NSColor *COLOR_BLUE;
-    NSColor *COLOR_PURPLE;
-    NSColor *COLOR_WATER;
-    NSColor *COLOR_WHITE;
-    
     BOOL LINE_MODE;		// YES=Newline, NO=Line feed
     BOOL CURSOR_MODE;		// YES=Application, NO=Cursor
     BOOL ANSI_MODE;		// YES=ANSI, NO=VT52
@@ -217,11 +209,10 @@ typedef struct {
     BOOL numLock;		// YES=ON, NO=OFF, default=YES;
     
     unsigned int CHARATTR;
-    int FG_COLORCODE;
-    int BG_COLORCODE;
-
-    NSColor *DefaultFG;
-    NSColor *DefaultBG;
+    int FG_COLORCODE, defaultFGColorCode;
+    int BG_COLORCODE, defaultBGColorCode;
+    float alpha;
+    NSColor* colorTable[2][COLORS];
 
     unsigned int saveCHARATTR;
     int saveCHARSET;
@@ -286,19 +277,12 @@ typedef struct {
 
 - (int)foregroundColorCode;
 - (int)backgroundColorCode;
-- (NSColor *)blackColor;
-- (NSColor *)redColor;
-- (NSColor *)greenColor;
-- (NSColor *)yellowColor;
-- (NSColor *)blueColor;
-- (NSColor *)purpleColor;
-- (NSColor *)waterColor;
-- (NSColor *)whiteColor;
-- (NSColor *)colorWithCode:(int)code;
 - (void) setFGColor:(NSColor*)color;
 - (void) setBGColor:(NSColor*)color;
 - (NSColor *) defaultFGColor;
 - (NSColor *) defaultBGColor;
+- (int) closestColorCode: (NSColor *) color;
+- (NSColor *) colorFromTable:(int) index bold:(BOOL) b;
 
 - (NSData *)reportActivePositionWithX:(int)x Y:(int)y;
 - (NSData *)reportStatus;

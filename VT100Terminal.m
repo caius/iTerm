@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.38 2003-03-07 20:24:55 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.39 2003-03-10 22:38:18 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -122,15 +122,6 @@ typedef struct {
     int cmd;
     BOOL question;
 } CSIParam;
-
-static NSColor *DEFAULT_BLACK  = nil;
-static NSColor *DEFAULT_RED    = nil;
-static NSColor *DEFAULT_GREEN  = nil;
-static NSColor *DEFAULT_YELLOW = nil;
-static NSColor *DEFAULT_BLUE   = nil;
-static NSColor *DEFAULT_PURPLE = nil;
-static NSColor *DEFAULT_WATER  = nil;
-static NSColor *DEFAULT_WHITE  = nil;
 
 // functions
 static BOOL isCSI(unsigned char *, size_t);
@@ -1121,22 +1112,6 @@ static VT100TCC decode_string(unsigned char *datap,
 
 + (void)initialize
 {
-    DEFAULT_BLACK  = [[NSColor blackColor] retain];
-    DEFAULT_RED    = [[NSColor redColor] retain];
-    DEFAULT_GREEN  = [[NSColor colorWithCalibratedRed:0.0f
-						green:0.8f
-						 blue:0.0f 
-						alpha:1.0f] 
-			 retain];
-    DEFAULT_YELLOW = [[NSColor yellowColor] retain];
-    DEFAULT_BLUE   = [[NSColor blueColor] retain];
-    DEFAULT_PURPLE = [[NSColor purpleColor] retain];
-    DEFAULT_WATER  = [[NSColor colorWithCalibratedRed:0.5f
-						green:0.5f 
-						 blue:1.0f
-						alpha:1.0f]
-			 retain];
-    DEFAULT_WHITE  = [[NSColor whiteColor] retain];
 }
 
 - (id)init
@@ -1146,15 +1121,64 @@ static VT100TCC decode_string(unsigned char *datap,
 
     ENCODING = NSASCIIStringEncoding;
     STREAM   = [[NSMutableData alloc] init];
-    COLOR_BLACK  = DEFAULT_BLACK;
-    COLOR_RED    = DEFAULT_RED;
-    COLOR_GREEN  = DEFAULT_GREEN;
-    COLOR_YELLOW = DEFAULT_YELLOW;
-    COLOR_BLUE   = DEFAULT_BLUE;
-    COLOR_PURPLE = DEFAULT_PURPLE;
-    COLOR_WATER  = DEFAULT_WATER;
-    COLOR_WHITE  = DEFAULT_WHITE;
+    colorTable[0][0]  = [[NSColor colorWithCalibratedRed:0.2f
+                                                   green:0.2f
+                                                    blue:0.2f
+                                                   alpha:1.0f]
+        retain];
+    colorTable[0][1]  = [[NSColor colorWithCalibratedRed:0.8f
+                                                   green:0.0f
+                                                    blue:0.0f
+                                                   alpha:1.0f]
+        retain];
+    colorTable[0][2]  = [[NSColor colorWithCalibratedRed:0.0f
+                                                   green:0.8f
+                                                    blue:0.0f
+                                                   alpha:1.0f]
+        retain];
+    colorTable[0][3] = [[NSColor colorWithCalibratedRed:0.0f
+                                                  green:0.7f
+                                                   blue:0.7f
+                                                  alpha:1.0f]
+        retain];
+    colorTable[0][4] = [[NSColor colorWithCalibratedRed:0.0f
+                                                  green:0.0f
+                                                   blue:0.8f
+                                                  alpha:1.0f]
+        retain];
+    colorTable[0][5] = [[NSColor colorWithCalibratedRed:0.7f
+                                                  green:0.0f
+                                                   blue:0.7f
+                                                  alpha:1.0f]
+        retain];
+    colorTable[0][6]  = [[NSColor colorWithCalibratedRed:0.3f
+                                                   green:0.3f
+                                                    blue:0.8f
+                                                   alpha:1.0f]
+        retain];
+    colorTable[0][7]  = [[NSColor colorWithCalibratedRed:0.7f
+                                                   green:0.7f
+                                                    blue:0.7f
+                                                   alpha:1.0f]
+        retain];
 
+    colorTable[1][0]  = [[NSColor blackColor] retain];
+    colorTable[1][1]    = [[NSColor redColor] retain];
+    colorTable[1][2]  = [[NSColor colorWithCalibratedRed:0.0f
+                                                   green:0.8f
+                                                    blue:0.0f
+                                                   alpha:1.0f]
+        retain];
+    colorTable[1][3] = [[NSColor yellowColor] retain];
+    colorTable[1][4]   = [[NSColor blueColor] retain];
+    colorTable[1][5] = [[NSColor purpleColor] retain];
+    colorTable[1][6]  = [[NSColor colorWithCalibratedRed:0.6f
+                                                   green:0.6f
+                                                    blue:1.0f
+                                                   alpha:1.0f]
+        retain];
+    colorTable[1][7]  = [[NSColor whiteColor] retain];
+    
     LINE_MODE = NO;
     CURSOR_MODE = NO;
     COLUMN_MODE = NO;
@@ -1169,11 +1193,12 @@ static VT100TCC decode_string(unsigned char *datap,
     saveCHARSET=CHARSET = NO;
     XON = YES;
     saveCHARATTR=CHARATTR = 0;
-    FG_COLORCODE = COLORCODE_FG_DEFAULT;
-    BG_COLORCODE = COLORCODE_BG_DEFAULT;
-    DefaultFG = COLOR_WHITE;
-    DefaultBG = COLOR_BLACK;
-
+    defaultFGColorCode = 7;
+    defaultBGColorCode = 0;
+    FG_COLORCODE = defaultFGColorCode;
+    BG_COLORCODE = defaultBGColorCode;
+    alpha=1.0f;
+    
     TRACE = NO;
 
     strictAnsiMode = NO;
@@ -1183,7 +1208,7 @@ static VT100TCC decode_string(unsigned char *datap,
     streamOffset = 0;
 
     numLock = YES;
-
+    
     return self;
 }
 
@@ -1565,68 +1590,6 @@ static VT100TCC decode_string(unsigned char *datap,
     return BG_COLORCODE;
 }
 
-- (NSColor *)blackColor
-{
-    return COLOR_BLACK;
-}
-
-- (NSColor *)redColor
-{
-    return COLOR_RED;
-}
-
-- (NSColor *)greenColor
-{
-    return COLOR_GREEN;
-}
-
-- (NSColor *)yellowColor
-{
-    return COLOR_YELLOW;
-}
-
-- (NSColor *)blueColor
-{
-    return COLOR_BLUE;
-}
-
-- (NSColor *)purpleColor
-{
-    return COLOR_PURPLE;
-}
-
-- (NSColor *)waterColor
-{
-    return COLOR_WATER;
-}
-
-- (NSColor *)whiteColor
-{
-    return COLOR_WHITE;
-}
-
-- (NSColor *)colorWithCode:(int)code
-{
-    NSColor *result = nil;
-
-    switch (code) {
-    case COLORCODE_BLACK:   result = DEFAULT_BLACK; break;
-    case COLORCODE_RED:     result = DEFAULT_RED; break;
-    case COLORCODE_GREEN:   result = DEFAULT_GREEN; break;
-    case COLORCODE_YELLOW:  result = DEFAULT_YELLOW; break;
-    case COLORCODE_BLUE:    result = DEFAULT_BLUE; break;
-    case COLORCODE_PURPLE:  result = DEFAULT_PURPLE; break;
-    case COLORCODE_WATER:   result = DEFAULT_WATER; break;
-    case COLORCODE_WHITE:   result = DEFAULT_WHITE; break;
-    case COLORCODE_FG_DEFAULT: result = DefaultFG; break;
-    case COLORCODE_BG_DEFAULT: result = DefaultBG; break;
-    }
-
-    NSParameterAssert(result != nil);
-
-    return result;
-}
-
 - (NSData *)reportActivePositionWithX:(int)x Y:(int)y
 {
     char buf[64];
@@ -1655,32 +1618,39 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSMutableDictionary *)characterAttributeDictionary:(BOOL) asc
 {
-
+    NSColor *fg, *bg;
+    
     if(CHARATTR == 0)
         return(defaultCharacterAttributeDictionary[asc?0:1]);
 
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
     int under = 0,blink=0, bold = 0;
-    NSFont *aFont, *defaultFont;
+    NSFont *defaultFont;
     
     NSParameterAssert(dic != nil);
-
+    
     if (CHARATTR & VT100CHARATTR_BOLDMASK)
 	bold = 1;
     if (CHARATTR & VT100CHARATTR_UNDERMASK )
 	under = 1;
     if (CHARATTR & VT100CHARATTR_BLINKMASK )
 	blink = 1;
+
+    fg = colorTable[bold][FG_COLORCODE];
+    bg = colorTable[bold][BG_COLORCODE];
+    if (alpha<0.99) bg=[bg colorWithAlphaComponent:alpha];
+    //NSLog(@"%d(%d):%@",bold, FG_COLORCODE,fg);
+
     if (CHARATTR & VT100CHARATTR_REVERSEMASK ) {
-	[dic setObject:[self colorWithCode:BG_COLORCODE]
+        [dic setObject:bg
 		forKey:NSForegroundColorAttributeName];
-	[dic setObject:[self colorWithCode:FG_COLORCODE]
+	[dic setObject:fg
 		forKey:NSBackgroundColorAttributeName];
     }
     else {
-	[dic setObject:[self colorWithCode:FG_COLORCODE]
+	[dic setObject:fg
 		forKey:NSForegroundColorAttributeName];
-	[dic setObject:[self colorWithCode:BG_COLORCODE]
+	[dic setObject:bg
 		forKey:NSBackgroundColorAttributeName];
     }
 
@@ -1689,7 +1659,7 @@ static VT100TCC decode_string(unsigned char *datap,
     [dic setObject:[NSNumber numberWithInt:blink]
                    forKey:NSBlinkAttributeName];
     defaultFont=asc?[SCREEN font]:[SCREEN nafont];
-    if(bold)    {
+/*    if(bold)    {
         aFont = [[NSFontManager sharedFontManager] convertFont: defaultFont toHaveTrait: NSBoldFontMask];
 //        NSLog(@"%@->%@(%f, %f)",[SCREEN font], aFont, [VT100Screen fontSize:[SCREEN font]].height, [VT100Screen fontSize:aFont].height);
         if ([VT100Screen fontSize:aFont].height>[VT100Screen fontSize: [SCREEN tallerFont]].height) aFont=defaultFont;
@@ -1697,8 +1667,8 @@ static VT100TCC decode_string(unsigned char *datap,
     else
     {
 	aFont=defaultFont;
-    }
-    [dic setObject:aFont forKey:NSFontAttributeName];
+    }*/
+    [dic setObject:defaultFont forKey:NSFontAttributeName];
     [dic setObject:[NSNumber numberWithInt:(asc?1:2)] forKey:@"NSCharWidthAttributeName"];
     
     return dic;
@@ -1717,12 +1687,6 @@ static VT100TCC decode_string(unsigned char *datap,
     fg = [self defaultFGColor];
     bg = [self defaultBGColor];
 
-    if(fg == nil || (FG_COLORCODE != COLORCODE_FG_DEFAULT))
-	fg = [self colorWithCode: FG_COLORCODE];
-
-    if(fg == nil || (FG_COLORCODE != COLORCODE_FG_DEFAULT))
-	fg = [self colorWithCode: FG_COLORCODE];
-    
     [defaultCharacterAttributeDictionary[0] setObject:fg
 			  forKey:NSForegroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:bg
@@ -1731,14 +1695,12 @@ static VT100TCC decode_string(unsigned char *datap,
     [defaultCharacterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
                                                forKey:@"NSCharWidthAttributeName"];
     [defaultCharacterAttributeDictionary[1] setObject:fg
-                                                                    forKey:NSForegroundColorAttributeName];
+                                               forKey:NSForegroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:bg
-                                                                    forKey:NSBackgroundColorAttributeName];
+                                               forKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
                                                forKey:@"NSCharWidthAttributeName"];
-    
-
 }
 
 - (void)_setMode:(VT100TCC)token
@@ -1808,8 +1770,8 @@ static VT100TCC decode_string(unsigned char *datap,
         if (token.u.csi.count == 0) {
             // all attribute off
             CHARATTR = 0;       
-	    FG_COLORCODE = COLORCODE_FG_DEFAULT;
-	    BG_COLORCODE = COLORCODE_BG_DEFAULT; 
+	    FG_COLORCODE = defaultFGColorCode;
+	    BG_COLORCODE = defaultBGColorCode; 
         }
         else {
             int i;
@@ -1819,8 +1781,8 @@ static VT100TCC decode_string(unsigned char *datap,
                 case VT100CHARATTR_ALLOFF:
                     // all attribute off
                     CHARATTR = 0;
-		    FG_COLORCODE = COLORCODE_FG_DEFAULT;
-		    BG_COLORCODE = COLORCODE_BG_DEFAULT;
+		    FG_COLORCODE = defaultFGColorCode;
+		    BG_COLORCODE = defaultBGColorCode;
                     break;
 
                 case VT100CHARATTR_BOLD: 
@@ -1851,7 +1813,7 @@ static VT100TCC decode_string(unsigned char *datap,
                     FG_COLORCODE = COLORCODE_BLACK;
                     break;
 		case VT100CHARATTR_FG_DEFAULT:
-                    FG_COLORCODE = COLORCODE_FG_DEFAULT;
+                    FG_COLORCODE = defaultFGColorCode;
 		    break;
 		case VT100CHARATTR_FG_RED:
 		    FG_COLORCODE = COLORCODE_RED;
@@ -1897,7 +1859,7 @@ static VT100TCC decode_string(unsigned char *datap,
 		    BG_COLORCODE = COLORCODE_WATER;
 		    break;
 		case VT100CHARATTR_BG_DEFAULT:
-                    BG_COLORCODE = COLORCODE_BG_DEFAULT;
+                    BG_COLORCODE = defaultBGColorCode;
                     break;
                 case VT100CHARATTR_BG_WHITE:
 		    BG_COLORCODE = COLORCODE_WHITE;
@@ -1913,8 +1875,7 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void) setFGColor:(NSColor*)color
 {
-    [DefaultFG autorelease];
-    DefaultFG=[color copy];
+    defaultFGColorCode=[self closestColorCode:color];
     // reset our default character attributes
     [defaultCharacterAttributeDictionary[0] setObject:color forKey:NSForegroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:color forKey:NSForegroundColorAttributeName];
@@ -1923,9 +1884,10 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void) setBGColor:(NSColor*)color
 {
-    [DefaultBG autorelease];
-    DefaultBG=[color copy];
+    defaultBGColorCode=[self closestColorCode:color];
+    alpha=[color alphaComponent];
     // reset our default character attributes
+    
     [defaultCharacterAttributeDictionary[0] setObject:color forKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:color forKey:NSBackgroundColorAttributeName];
 
@@ -1933,17 +1895,51 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSColor *) defaultFGColor
 {
-    return DefaultFG;
+    return colorTable[0][defaultFGColorCode];
 }
 
 - (NSColor *) defaultBGColor
 {
-    return DefaultBG;
+    NSColor *bg=colorTable[1][defaultBGColorCode];
+    
+    if (alpha<0.99) bg=[bg colorWithAlphaComponent:alpha];
+    return bg;
 }
 
 - (void) setScreen:(VT100Screen*) sc
 {
     SCREEN=sc;
+}
+
+- (int) closestColorCode: (NSColor *) color
+{
+    NSColor *a, *b;
+    int i, minI=-1;
+    float min=10000.0f,t,s;
+
+    a=[color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    for(i=0;i<8;i++) {
+        b=[colorTable[1][i] colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+        t=[a redComponent] - [b redComponent];
+        s=t*t;
+        t=[a greenComponent] - [b greenComponent];
+        s+=t*t;
+        t=[a blueComponent] - [b blueComponent];
+        s+=t*t;
+        if (s<min) {
+            min=s;
+            minI=i;
+        }
+//        NSLog(@"%@-%@(%d)=%f",a,b,i,s);
+    }
+//    NSLog(@"%@-->%@-->%@(%d)",color,a,colorTable[0][minI],minI);
+    
+    return minI;
+}
+
+- (NSColor *) colorFromTable:(int) index bold:(BOOL) b
+{
+    return colorTable[b?1:0][index];
 }
 
 @end

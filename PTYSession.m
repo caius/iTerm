@@ -967,8 +967,9 @@ static NSString *PWD_ENVVALUE = @"~";
         [[SCREEN buffer] removeAttribute:  NSForegroundColorAttributeName 
                                 range: NSMakeRange(0, [[SCREEN buffer] length])];
         [[SCREEN buffer] addAttribute:  NSForegroundColorAttributeName 
-                                value: color
+                                value: [TERMINAL defaultFGColor]
                                 range: NSMakeRange(0, [[SCREEN buffer] length])];
+        [SCREEN forceUpdateScreen];
     }
 
 }
@@ -988,10 +989,10 @@ static NSString *PWD_ENVVALUE = @"~";
         // Change the attributes for the current stuff in the text storage
         [[SCREEN buffer] removeAttribute:  NSBackgroundColorAttributeName 
                                 range: NSMakeRange(0, [[SCREEN buffer] length])];
-        [[SCREEN buffer] addAttribute:  NSBackgroundColorAttributeName 
-                                value: color
+        [[SCREEN buffer] addAttribute:  NSBackgroundColorAttributeName
+                                value: [TERMINAL defaultBGColor]
                                 range: NSMakeRange(0, [[SCREEN buffer] length])];
-        [SCREEN updateScreen];
+        [SCREEN forceUpdateScreen];
     }
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.125 2003-03-04 01:20:37 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.126 2003-03-10 22:38:13 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1103,9 +1103,9 @@ static NSString *ConfigToolbarItem = @"Config";
                 
             // set the background color for the scrollview with the appropriate transparency
             bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
-            [[currentPtySession SCROLLVIEW] setBackgroundColor: bgColor];
             [currentPtySession setFGColor:  [CONFIG_FOREGROUND color]];
-            [currentPtySession setBGColor:  bgColor]; 
+            [currentPtySession setBGColor:  bgColor];
+            [[currentPtySession SCROLLVIEW] setBackgroundColor: [[currentPtySession TERMINAL] defaultBGColor]];
             
 /*            // Change the transparency for all the sessions.
             if([pref transparency] != (100-[[TERMINAL defaultBGColor] alphaComponent]*100))

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.65 2003-03-04 17:52:42 yfabian Exp $
+// $Id: VT100Screen.m,v 1.66 2003-03-10 22:38:14 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1210,7 +1210,7 @@ static BOOL PLAYBELL = YES;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
 #if DEBUG_USE_BUFFER
-        [BUFFER appendAttributedString:[self attrString:@"\n"  ascii:YES]];
+        [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
 #endif
         TOP_LINE++;
         [self removeOverLine];
@@ -2343,6 +2343,12 @@ static BOOL PLAYBELL = YES;
 #endif
 }
 
+- (void) forceUpdateScreen
+{
+    minIndex=0;
+    [self updateScreen];
+}
+
 - (void) updateScreen
 {
     
@@ -2356,8 +2362,6 @@ static BOOL PLAYBELL = YES;
                  withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
     [STORAGE endEditing];
     [self renewBuffer];
-    
-    
 #endif
 
 #if DEBUG_USE_ARRAY

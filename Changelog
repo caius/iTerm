@@ -1,3 +1,15 @@
+2003-03-10	fabian
+    * Rewrite the color stuff in emulation code. Now we
+      use seperate color table for normal and bold text.
+      We now will using high color to indicate bold. Also,
+      the color table will make the future implementation
+      of customized ANSI color easier.
+      Limitations: Any color you select for FG/BG will be
+      converted to the closest color in the colorTable.
+      Aslo, currently FG color will have no alpha.
+    * Fixed a display problem when change FG/BG colors or
+      Transparency.
+      
 2003-03-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added some missing semi-colons in Chinese strings files.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.19 2003-02-27 22:11:59 yfabian Exp $
+// $Id: VT100Screen.h,v 1.20 2003-03-10 22:38:13 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -154,6 +154,7 @@
 - (NSArray *) screenLines;
 - (int) screenTop;
 - (void) updateScreen;
+- (void) forceUpdateScreen;
 - (void) renewBuffer;
 - (int) numberOfLines;
 - (NSAttributedString *)stringAtLine: (int) n;

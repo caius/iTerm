@@ -132,10 +132,14 @@
         
         // set the bold color if it has changed
         if([[currentSession TERMINAL] defaultBoldColor] != [CONFIG_BOLD color])
-            [[currentSession TERMINAL] setBoldColor: [CONFIG_BOLD color]];	
+            [[currentSession TERMINAL] setBoldColor: [CONFIG_BOLD color]];
+
+	if((100-[[[currentSession TERMINAL] defaultBGColor] alphaComponent]*100 != [CONFIG_TRANSPARENCY intValue]))
+	{
+            [currentSession setTransparency:  [CONFIG_TRANSPARENCY floatValue]/100.0];
+	}
         
-        if((100-[[[currentSession TERMINAL] defaultBGColor] alphaComponent]*100 != [CONFIG_TRANSPARENCY intValue]) || 
-           ([[currentSession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 
+        if(([[currentSession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 
            ([[currentSession TERMINAL] defaultBGColor] != [CONFIG_BACKGROUND color]))
         {
             NSColor *bgColor;
@@ -262,8 +266,8 @@
         p++;
     }
     [CONFIG_ENCODING selectItemAtIndex:r];
-    [CONFIG_TRANSPARENCY setIntValue:100-[[[currentSession TERMINAL] defaultBGColor] alphaComponent]*100];
-    [CONFIG_TRANS2 setIntValue:100-[[[currentSession TERMINAL] defaultBGColor] alphaComponent]*100];
+    [CONFIG_TRANSPARENCY setIntValue:(int)([currentSession transparency]*100)];
+    [CONFIG_TRANS2 setIntValue:(int)([currentSession transparency]*100)];
     [AI_ON setState:[currentSession antiIdle]?NSOnState:NSOffState];
     [AI_CODE setIntValue:[currentSession antiCode]];
     

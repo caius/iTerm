@@ -1031,6 +1031,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    [self setBackgroundColor: [[NSColor whiteColor]  colorWithAlphaComponent: 1.0]];
 	    [SCROLLVIEW setDrawsBackground: NO];
 	    [imageView setImage: anImage];
+	    [imageView setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];
 	    [anImage release];
 	}
     }
@@ -1315,16 +1316,33 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (float) transparency
 {
-    return (100*(1 - [[TERMINAL defaultBGColor] alphaComponent]));
+    if([imageView image] != nil)
+    {
+	return ([imageView transparency]);
+    }
+    else
+    {
+	return (1 - [[TERMINAL defaultBGColor] alphaComponent]);
+    }
 }
 
 - (void)setTransparency:(float)transparency
 {
     NSColor *newcolor;
-    
-    newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency/100)];
-    if (newcolor != nil && newcolor != [TERMINAL defaultBGColor])
-        [self setBackgroundColor: newcolor];
+
+    if([imageView image] != nil)
+    {
+	[imageView setTransparency: transparency];
+    }
+    else
+    {
+	newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency/100)];
+	if (newcolor != nil && newcolor != [TERMINAL defaultBGColor])
+	{
+	    [self setBackgroundColor: newcolor];
+	    [TEXTVIEW setNeedsDisplay: YES];
+	}
+    }
 }
 
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c

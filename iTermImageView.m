@@ -47,6 +47,30 @@
     [super dealloc];
 }
 
+-(void)drawRect:(NSRect)rect
+{
+    [[NSColor clearColor] set];
+    NSRectFill([self bounds]);
+    [[self image] dissolveToPoint:NSZeroPoint fraction: (1.0 - [self transparency])];
+}
+
+
+- (float) transparency
+{
+    return (transparency);
+}
+
+- (void) setTransparency: (float) theTransparency
+{
+    if(theTransparency >= 0 && theTransparency <= 1)
+    {
+	transparency = theTransparency;
+	[self setNeedsDisplay: YES];
+    }
+}
+
+
+
 - (BOOL) isOpaque
 {
     return (YES);

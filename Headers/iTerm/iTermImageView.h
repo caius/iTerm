@@ -32,11 +32,16 @@
 
 @interface iTermImageView : NSImageView
 {
-
+    float transparency;
 }
 
 - (id) initWithFrame:(NSRect)frame;
 - (void) dealloc;
+
+- (void) drawRect: (NSRect) rect;
+
+- (float) transparency;
+- (void) setTransparency: (float) theTransparency;
 
 - (BOOL) isOpaque;
 - (BOOL) acceptsFirstResponder;

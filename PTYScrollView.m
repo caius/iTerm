@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.14 2004-02-18 06:04:14 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.15 2004-02-18 06:14:15 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -181,35 +181,13 @@
 
 - (void) setBackgroundImage: (NSImage *) anImage
 {
-	if(anImage != nil)
-	{
-		// rotate the image 180 degrees
-		NSImage *targetImage = [[NSImage alloc] initWithSize: [anImage size]];
-		NSAffineTransform *trans = [NSAffineTransform transform];
-		
-		[targetImage lockFocus];
-		[trans translateXBy:[anImage size].width/2 yBy:[anImage size].height/2];
-		//[trans rotateByDegrees: 180];
-		[trans translateXBy:-[anImage size].width/2 yBy:-[anImage size].height/2];
-		[trans set];
-		[anImage drawInRect:NSMakeRect(0,0,[anImage size].width,[anImage size].height) 
-				   fromRect:NSMakeRect(0,0,[anImage size].width,[anImage size].height) 
-				  operation:NSCompositeSourceOver
-				   fraction:1];
-		[targetImage unlockFocus];
-		[targetImage setScalesWhenResized: YES];
-		[targetImage setSize: [self documentVisibleRect].size];
-		//[targetImage setFlipped: YES];
-		// set the image
-		[backgroundImage release];
-		backgroundImage = targetImage;	
-	}
-	else
-	{
-		[backgroundImage release];
-		backgroundImage = nil;
-	}
 	
+	[backgroundImage release];
+	[anImage retain];
+	backgroundImage = anImage;
+	[backgroundImage setScalesWhenResized: YES];
+	[backgroundImage setSize: [self documentVisibleRect].size];
+
 }
 
 - (float) transparency

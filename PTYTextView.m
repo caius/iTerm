@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.106 2004-02-17 00:06:54 ujwal Exp $
+// $Id: PTYTextView.m,v 1.107 2004-02-17 00:42:36 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -655,6 +655,9 @@
     {
 		// current line we are processing
 		line = i + lineOffset;
+		
+		if(line >= [dataSource numberOfLines])
+			break;
 
 		// we start at the beginning of the line
 		curX=0;

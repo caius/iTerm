@@ -9,6 +9,9 @@
     * Refactored toolbar item popup menu to enable it in 
       text only mode.
       
+    * Fixed bug in PseudoTerminal: -saveSession where 
+      row and column values were swapped.
+      
 
 2003-01-20	fabian
     * New option in preference&address book entry
@@ -22,7 +25,7 @@
       
 2003-01-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
-    * Enabling AUTOWRAP_MODE in VT100Terminal by default 
+    * Enabling WRAPAROUND_MODE in VT100Terminal by default 
       for long command lines.
       
     * Added support for ANSI "Cursor Horizontal Absolute".

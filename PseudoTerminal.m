@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.82 2003-01-21 08:14:41 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.83 2003-01-21 22:01:44 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1376,8 +1376,8 @@ static NSString *ConfigToolbarItem = @"Config";
             [TERMINAL defaultFGColor],@"Foreground",
             [TERMINAL defaultBGColor],@"Background",
             [TEXTVIEW selectionColor],@"SelectionColor",
-            [NSString stringWithInt:WIDTH],@"Row",
-            [NSString stringWithInt:HEIGHT],@"Col",
+            [NSString stringWithInt:WIDTH],@"Col",
+            [NSString stringWithInt:HEIGHT],@"Row",
             [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
             [[self currentSession] TERM_VALUE],@"Term Type",
             [old objectForKey:@"Directory"],@"Directory",
@@ -1398,8 +1398,8 @@ static NSString *ConfigToolbarItem = @"Config";
             [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
             [TERMINAL defaultFGColor],@"Foreground",
             [TERMINAL defaultBGColor],@"Background",
-            [NSString stringWithInt:WIDTH],@"Row",
-            [NSString stringWithInt:HEIGHT],@"Col",
+            [NSString stringWithInt:WIDTH],@"Col",
+            [NSString stringWithInt:HEIGHT],@"Row",
             [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
             [[self currentSession] TERM_VALUE],@"Term Type",
             (old?[old objectForKey:@"Directory"]:@""),@"Directory",

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.50 2003-03-30 08:37:09 ujwal Exp $
+// $Id: PTYTextView.m,v 1.51 2003-03-30 17:06:42 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -967,7 +967,11 @@
                 {
 
 		    // Ignore text clippings
-		    if ([[(NSString*)[propertyList objectAtIndex: i] pathExtension] isEqualToString:@"textClipping"])
+		    NSString *filename = (NSString*)[propertyList objectAtIndex: i]; // this contains the POSIX path to a file
+		    NSDictionary *filenamesAttributes = [[NSFileManager defaultManager] fileAttributesAtPath:filename traverseLink:YES];
+		    if (([filenamesAttributes fileHFSTypeCode] == 'clpt' &&
+	   [filenamesAttributes fileHFSCreatorCode] == 'MACS') ||
+	  [[filename pathExtension] isEqualToString:@"textClipping"] == YES)
 		    {
 			continue;
 		    }
@@ -1987,11 +1991,15 @@
                 {
 
 		    // Ignore text clippings
-		    if ([[(NSString*)[propertyList objectAtIndex: i] pathExtension] isEqualToString:@"textClipping"])
+		    NSString *filename = (NSString*)[propertyList objectAtIndex: i]; // this contains the POSIX path to a file
+		    NSDictionary *filenamesAttributes = [[NSFileManager defaultManager] fileAttributesAtPath:filename traverseLink:YES];
+		    if (([filenamesAttributes fileHFSTypeCode] == 'clpt' &&
+	   [filenamesAttributes fileHFSCreatorCode] == 'MACS') ||
+	  [[filename pathExtension] isEqualToString:@"textClipping"] == YES)
 		    {
 			continue;
-		    }		    
-		    
+		    }
+			
                     // Just paste the file names into the shell after escaping special characters.
                     if ([delegate respondsToSelector:@selector(pasteString:)])
                     {

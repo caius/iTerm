@@ -28,6 +28,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+@class PreferencePanel;
 
 @interface AddressBookWindowController : NSWindowController {
 
@@ -64,11 +65,16 @@
     // address book data
     NSMutableArray *addressBook;
 
+    // default values from preference
+    PreferencePanel *preferences;
+
 }
 
 // get/set methods
 - (NSMutableArray *) addressBook;
 - (void) setAddressBook: (NSMutableArray *) anAddressBook;
+- (PreferencePanel *) preferences;
+- (void) setPreferences: (PreferencePanel *) thePreferences;
 
 // Address book window
 - (IBAction)adbAddEntry:(id)sender;

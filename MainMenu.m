@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.41 2003-03-27 01:36:22 ujwal Exp $
+// $Id: MainMenu.m,v 1.42 2003-03-27 01:50:56 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -191,6 +191,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     abWindowController = [[AddressBookWindowController alloc] initWithWindowNibName: @"AddressBook"];
     [abWindowController setAddressBook: addressBook];
+    [abWindowController setPreferences: PREF_PANEL];
     [abWindowController run];    
 }
 

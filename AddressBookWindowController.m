@@ -72,6 +72,17 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     addressBook = anAddressBook;
 }
 
+- (PreferencePanel *) preferences
+{
+    return (preferences);
+}
+
+- (void) setPreferences: (PreferencePanel *) thePreferences
+{
+    preferences = thePreferences;
+}
+
+
 // Action methods
 
 - (IBAction)adbAddEntry:(id)sender
@@ -81,43 +92,43 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     [AE_PANEL center];
     [adName setStringValue:@""];
-    [adCommand setStringValue:[[[NSApp delegate] preferencePanel] shell]];
+    [adCommand setStringValue:[[self preferences] shell]];
     [adEncoding removeAllItems];
     r=0;
     while (*p) {
 	//        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
         [adEncoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[[[NSApp delegate] preferencePanel] encoding]) r=p-encodingList;
+        if (*p==[[self preferences] encoding]) r=p-encodingList;
         p++;
     }
     [adEncoding selectItemAtIndex:r];
     [adTermType selectItemAtIndex:0];
     [adShortcut selectItemAtIndex:0];
-    [adRow setIntValue:[[[NSApp delegate] preferencePanel] row]];
-    [adCol setIntValue:[[[NSApp delegate] preferencePanel] col]];
-    [adForeground setColor:[[[NSApp delegate] preferencePanel] foreground]];
-    [adBackground setColor:[[[NSApp delegate] preferencePanel] background]];
-    [adSelection setColor:[[[NSApp delegate] preferencePanel] selectionColor]];
+    [adRow setIntValue:[[self preferences] row]];
+    [adCol setIntValue:[[self preferences] col]];
+    [adForeground setColor:[[self preferences] foreground]];
+    [adBackground setColor:[[self preferences] background]];
+    [adSelection setColor:[[self preferences] selectionColor]];
     [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
 
-    aeFont=[[[[NSApp delegate] preferencePanel] font] copy];
+    aeFont=[[[self preferences] font] copy];
     [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
     [adTextExample setFont:aeFont];
-    [adTextExample setTextColor:[[[NSApp delegate] preferencePanel] foreground]];
-    [adTextExample setBackgroundColor:[[[NSApp delegate] preferencePanel] background]];
+    [adTextExample setTextColor:[[self preferences] foreground]];
+    [adTextExample setBackgroundColor:[[self preferences] background]];
 
-    aeNAFont=[[[[NSApp delegate] preferencePanel] nafont] copy];
+    aeNAFont=[[[self preferences] nafont] copy];
     [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
-    [adNATextExample setTextColor:[[[NSApp delegate] preferencePanel] foreground]];
-    [adNATextExample setBackgroundColor:[[[NSApp delegate] preferencePanel] background]];
+    [adNATextExample setTextColor:[[self preferences] foreground]];
+    [adNATextExample setBackgroundColor:[[self preferences] background]];
     [adNATextExample setFont:aeNAFont];
-    [adAI setState:[[[NSApp delegate] preferencePanel] ai]?NSOnState:NSOffState];
-    [adAICode setIntValue:[[[NSApp delegate] preferencePanel] aiCode]];
-    [adClose setState:[[[NSApp delegate] preferencePanel] autoclose]?NSOnState:NSOffState];
-    [adDoubleWidth setState:[[[NSApp delegate] preferencePanel] doubleWidth]?NSOnState:NSOffState];
+    [adAI setState:[[self preferences] ai]?NSOnState:NSOffState];
+    [adAICode setIntValue:[[self preferences] aiCode]];
+    [adClose setState:[[self preferences] autoclose]?NSOnState:NSOffState];
+    [adDoubleWidth setState:[[self preferences] doubleWidth]?NSOnState:NSOffState];
 
-    [adTransparency setIntValue:[[[NSApp delegate] preferencePanel] transparency]];
-    [adTransparency2 setIntValue:[[[NSApp delegate] preferencePanel] transparency]];
+    [adTransparency setIntValue:[[self preferences] transparency]];
+    [adTransparency2 setIntValue:[[self preferences] transparency]];
 
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
@@ -195,7 +206,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     if([entry objectForKey:@"SelectionColor"])
         [adSelection setColor:[entry objectForKey:@"SelectionColor"]];
     else
-        [adSelection setColor: [[[NSApp delegate] preferencePanel] selectionColor]];
+        [adSelection setColor: [[self preferences] selectionColor]];
     [adRow setStringValue:[entry objectForKey:@"Row"]];
     [adCol setStringValue:[entry objectForKey:@"Col"]];
     if ([entry objectForKey:@"Transparency"]) {
@@ -203,8 +214,8 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         [adTransparency2 setIntValue:[[entry objectForKey:@"Transparency"] intValue]];
     }
     else {
-        [adTransparency setIntValue:[[[NSApp delegate] preferencePanel] transparency]];
-        [adTransparency2 setIntValue:[[[NSApp delegate] preferencePanel] transparency]];
+        [adTransparency setIntValue:[[self preferences] transparency]];
+        [adTransparency2 setIntValue:[[self preferences] transparency]];
     }
     if ([entry objectForKey:@"Directory"]) {
         [adDir setStringValue:[entry objectForKey:@"Directory"]];
@@ -225,10 +236,10 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [adNATextExample setTextColor:[entry objectForKey:@"Foreground"]];
     [adNATextExample setBackgroundColor:[entry objectForKey:@"Background"]];
     [adNATextExample setFont:aeNAFont];
-    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[[[NSApp delegate] preferencePanel] ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
-    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[[[NSApp delegate] preferencePanel] aiCode]:[[entry objectForKey:@"AICode"] intValue]];
-    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?[[[NSApp delegate] preferencePanel] autoclose]:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
-    [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?[[[NSApp delegate] preferencePanel] doubleWidth]:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
+    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[[self preferences] ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
+    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[[self preferences] aiCode]:[[entry objectForKey:@"AICode"] intValue]];
+    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?[[self preferences] autoclose]:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
+    [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?[[self preferences] doubleWidth]:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
 
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];

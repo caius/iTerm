@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.223 2004-09-25 10:01:12 ujwal Exp $
+// $Id: PTYTextView.m,v 1.224 2004-09-25 10:43:49 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1342,7 +1342,7 @@ static SInt32 systemVersion;
 		{
 			if (buf[x1]!=0xffff) {
 				temp[j]=buf[x1];
-				if(buf[x1] == 0)
+				if(buf[x1] == 0) // end of line?
 				{
 					// if there is no text after this, insert a hard line break
 					endOfLine = YES;
@@ -1351,7 +1351,7 @@ static SInt32 systemVersion;
 						if(buf[i] != 0)
 							endOfLine = NO;
 					}
-					if(breakLines && endOfLine && y < endy)
+					if(endOfLine && y < endy)
 					{
 						temp[j] = '\n'; // hard break
 						j++;
@@ -1359,6 +1359,12 @@ static SInt32 systemVersion;
 					}
 					else
 						temp[j] = ' '; // represent blank with space
+				}
+				else if (x1 == x2 && breakLines && y < endy) // definitely end of line
+				{
+					temp[j+1] = '\n'; // hard break
+					j += 2;
+					break; // continue to next line
 				}
 				j++;
 			}
@@ -1383,6 +1389,12 @@ static SInt32 systemVersion;
 
 - (NSString *) selectedText
 {
+	return [self selectedTextBreakingLines: NO];
+}
+
+
+- (NSString *) selectedTextBreakingLines: (BOOL) breakLines
+{
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s]", __PRETTY_FUNCTION__);
@@ -1390,86 +1402,8 @@ static SInt32 systemVersion;
 	
 	if (startX == -1) return nil;
 	
-	int line, bfHeight;
-	int width, height, x, y;
-	char *bg;
-	unichar *buf;
-	unichar *temp;
-	NSString *str;
-	int last = 0;
-	BOOL keep_going = YES;
-	BOOL endOfLine;
-	int i;
+	return ([self contentFromX: startX Y: startY ToX: endX Y: endY breakLines: breakLines]);
 	
-	width = [dataSource width];
-	height = [dataSource numberOfLines];
-	bfHeight = height - [dataSource height];
-	temp = (unichar *) malloc (height * (width+1) * sizeof(unichar));
-	
-	for (y=0; y<height && keep_going; y++) {
-		if (y < bfHeight) {
-			line = [dataSource lastBufferLineIndex] - bfHeight + y;
-			if (line<0) line += [dataSource scrollbackLines];
-			bg = [dataSource bufferBGColor] + line*width;
-			buf = [dataSource bufferLines] + line*width;
-		} 
-		else {
-			line = y - bfHeight;
-			bg = [dataSource screenBGColor] + line * width;
-			buf = [dataSource screenLines] + line*width;
-		}
-		for(x=0; x <width; x++) 
-		{
-			if (bg[x] & SELECTION_MASK) {
-				if (buf[x] != 0xffff) 
-				{
-					temp[last] = buf[x]; 
-					if(buf[x] == 0)
-					{
-						// if there is no text after this, insert a hard line break
-						endOfLine = YES;
-						for(i = x+1; i < width; i++)
-						{
-							if(buf[i] != 0)
-								endOfLine = NO;
-						}
-						if(endOfLine)
-						{
-							temp[last] = '\n'; // hard break
-							last++;
-							break; // continue to next line
-						}
-						else
-							temp[last] = ' '; // represent blank with space
-					}
-					last++;
-				}
-			}
-			else if (last) {
-				keep_going = NO;
-				break;
-			}
-		}		
-	}
-	
-	if (!last) {
-		startX = -1;
-		str = nil;
-	}
-	else
-	{
-		// strip trailing carriage return if there is one unless we selected the whole line
-		if(temp[last-1] == '\n' && endX != ([dataSource width] - 1))
-		{
-			temp[last-1] = 0;
-			last--;
-		}
-		str = [NSString stringWithCharacters:temp length:last];
-	}
-	
-	free(temp);
-	
-	return str;
 }
 
 - (NSString *) content
@@ -1848,7 +1782,7 @@ static SInt32 systemVersion;
 										breakLines: YES]];
 			break;
 		case 1: // text selection
-			[self printContent: [self selectedText]];
+			[self printContent: [self selectedTextBreakingLines: YES]];
 			break;
 		case 2: // entire buffer
 			[self printContent: [self content]];

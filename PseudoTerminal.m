@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.15 2002-12-07 23:49:26 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.16 2002-12-07 23:51:39 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -117,7 +117,6 @@ static NSDictionary *newOutputStateAttribute;
     NSColor *bgColor;
     NSRect scrollViewFrame, aRect;
     NSScrollView *aScrollView;
-    NSSize size, vsize, winSize;
 
     if (!font)
         font = [[[pref font] copy] retain];

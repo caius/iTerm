@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.267 2004-03-04 16:15:12 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.268 2004-03-09 21:33:30 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -647,7 +647,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     [TABVIEW setFrame: tabviewRect];
 	
-    vsize.width = charWidth * WIDTH;
+    vsize.width = charWidth * WIDTH + MARGIN * 2;
 	vsize.height = charHeight * HEIGHT;
    // NSLog(@"width=%d,height=%d",[[[_sessionMgr currentSession] SCREEN] width],[[[_sessionMgr currentSession] SCREEN] height]);
     size = [PTYScrollView frameSizeForContentSize:vsize

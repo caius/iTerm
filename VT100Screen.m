@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.198 2004-03-07 02:24:05 yfabian Exp $
+// $Id: VT100Screen.m,v 1.199 2004-03-09 21:33:30 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1495,6 +1495,7 @@ static BOOL PLAYBELL = YES;
 - (void)setDirty
 {
 	memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
+	[display forceUpdate];
 }
 
 @end

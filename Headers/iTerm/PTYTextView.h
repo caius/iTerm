@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.27 2004-03-08 08:56:38 ujwal Exp $
+// $Id: PTYTextView.h,v 1.28 2004-03-09 21:33:33 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -30,6 +30,9 @@
 
 #import <Cocoa/Cocoa.h>
 #import <iTerm/iTerm.h>
+
+#define MARGIN  6
+
 
 @class VT100Screen;
 
@@ -162,6 +165,7 @@ typedef struct
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
 - (void) setSelectionColor: (NSColor *) aColor;
 - (void)setCursorColor:(NSColor*) color;
+- (void) forceUpdate;
 
 
 - (NSDictionary*) markedTextAttributes;

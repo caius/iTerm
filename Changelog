@@ -1,3 +1,7 @@
+2004-03-09  fabian
+
+	* Added margins on the side.
+	
 2004-03-09  ujwal
 
 	* Fixed a copy/save bug triggered by some blank spaces NOT at end of line.
@@ -18,8 +22,8 @@
 
 2004-03-06  fabian
 
-	* Fixed a bug in VT100Screen that causes crashes
-	* Updated html files
+	* Fixed a bug in VT100Screen that causes crashes.
+	* Updated html files.
 		
 2004-03-05  ujwal
 	

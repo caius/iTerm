@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.163 2004-03-09 20:59:59 ujwal Exp $
+// $Id: PTYTextView.m,v 1.164 2004-03-09 21:33:30 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -557,6 +557,11 @@
     CURSOR=YES;
 }
 
+-(void) forceUpdate
+{
+	forceUpdate = YES;
+}
+
 - (void)drawRect:(NSRect)rect
 {
 #if DEBUG_METHOD_TRACE
@@ -582,6 +587,10 @@
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
     
+	if (forceUpdate) {
+		[[self colorForCode:DEFAULT_BG_COLOR_CODE] set];
+		NSRectFill(rect);
+	}
 	WIDTH=[dataSource width];
 
 	// Starting from which line?
@@ -599,7 +608,7 @@
 	
     for(i = 0; i < numLines; i++)
     {
-		curX=0;
+		curX = MARGIN;
         line = i + lineOffset;
 		
 		if(line >= [dataSource numberOfLines])
@@ -755,13 +764,13 @@
 			[[[self defaultCursorColor] colorWithAlphaComponent: (1 - transparency)] set];
 			if([[self window] isKeyWindow])
 			{
-				NSRectFill(NSMakeRect(x1*charWidth,
+				NSRectFill(NSMakeRect(x1 * charWidth + MARGIN,
 									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
 									  charWidth,lineHeight));
 			}
 			else
 			{
-				NSFrameRect(NSMakeRect(x1*charWidth,
+				NSFrameRect(NSMakeRect(x1 * charWidth + MARGIN,
 									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
 									  charWidth,lineHeight));
 				
@@ -778,7 +787,7 @@
 				double_width = ([dataSource screenLines][i+1] == 0xffff);
 				[self _drawCharacter: aChar 
 							fgColor: [dataSource screenFGColor][i] 
-								AtX: x1*charWidth 
+								AtX: x1 * charWidth + MARGIN 
 								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
 						doubleWidth: double_width];
 			}
@@ -793,7 +802,7 @@
 		
 		len=[markedText length];
 		if (len>[dataSource width]-x1) len=[dataSource width]-x1;
-		[markedText drawInRect:NSMakeRect(x1*charWidth,
+		[markedText drawInRect:NSMakeRect(x1 * charWidth + MARGIN,
 										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
 										  (WIDTH-x1)*charWidth,lineHeight)];
 		memset([dataSource dirty]+y1*[dataSource width]+x1, 1,len*2); //len*2 is an over-estimation, but safe
@@ -900,7 +909,8 @@
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     
-    x = locationInTextView.x/charWidth;
+    x = (locationInTextView.x-MARGIN)/charWidth;
+	if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
     if (x>=[dataSource width]) x=[dataSource width];
     endX = startX = x;
@@ -924,7 +934,8 @@
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     
-    x = locationInTextView.x/charWidth;
+    x = (locationInTextView.x-MARGIN)/charWidth;
+	if (x<0) x=0;
     if (x>=[dataSource width]) x=[dataSource width] - 1;
     y = locationInTextView.y/lineHeight;
 	if(locationInTextView.x < 0)
@@ -1065,9 +1076,11 @@
         [self scrollRectToVisible: rectInTextView];
     }
     
-    x = locationInTextView.x/charWidth;
-    if (x>=[dataSource width]) x=[dataSource width] - 1;
-    y = locationInTextView.y/lineHeight;
+    x = (locationInTextView.x - MARGIN) / charWidth;
+	if (x < 0) x = 0;
+	if (x>=[dataSource width]) x=[dataSource width] - 1;
+    
+	y = locationInTextView.y/lineHeight;
 	if(locationInTextView.x < 0)
 	{
 		// complete selection of previous line
@@ -1803,7 +1816,7 @@
     int y=[dataSource cursorY]-1;
     int x=[dataSource cursorX]-1;
     
-    NSRect rect=NSMakeRect(x*charWidth,(y+[dataSource numberOfLines] - [dataSource height]+1)*lineHeight,charWidth*theRange.length,lineHeight);
+    NSRect rect=NSMakeRect(x*charWidth+MARGIN,(y+[dataSource numberOfLines] - [dataSource height]+1)*lineHeight,charWidth*theRange.length,lineHeight);
     //NSLog(@"(%f,%f)",rect.origin.x,rect.origin.y);
     rect.origin=[[self window] convertBaseToScreen:[self convertPoint:rect.origin toView:nil]];
     //NSLog(@"(%f,%f)",rect.origin.x,rect.origin.y);

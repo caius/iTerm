@@ -69,7 +69,7 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>What's new</STRONG></FONT><BR>
-<STRONG>0.8.0 released</STRONG> 3/4/2004<BR>
+<STRONG>0.8.0 released</STRONG> 4/14/2004<BR>
 This is a major update of iTerm. New features include:<BR>
 <UL>
 <LI>Now supports custom key-mapping.</LI>
@@ -85,7 +85,7 @@ For more detail, see <A HREF="history.shtml">Version History</A><BR>
 <UL>Due a change of bookmark organizations introduced in 0.8.0, old bookmark settings are
 no longer completely recognized. Only names, commands, directories, and shortcuts are migrated. 
 Display and terminal settings are not migrated. You have to re-enter these manually into the new version.</UL>
-<UL>Version 0.8.0 comes with few keymapping/display/terminal profiles.
+<UL>Version 0.8.0 comes with a few keymapping/display/terminal profiles.
 If you do not see them, please delete your iTerm.plist file in ~/Library/Preferences and
 restart the program.</UL>
 

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.107 2004-03-24 21:27:49 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.108 2004-03-24 21:28:44 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -110,6 +110,7 @@ static BOOL editingBookmark = NO;
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
+	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
 	
 	[[iTermKeyBindingMgr singleInstance] setProfiles: [prefs objectForKey: @"KeyBindings"]];

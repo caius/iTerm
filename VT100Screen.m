@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.122 2003-08-12 06:29:02 sgehrman Exp $
+// $Id: VT100Screen.m,v 1.123 2003-08-29 15:15:25 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -144,11 +144,12 @@ static BOOL PLAYBELL = YES;
 #endif
     sz = [VT100Screen fontSize:font];
 #if USE_CUSTOM_LAYOUT
-    w = (int)(frame.size.width  - 2*[VT100Typesetter lineFragmentPadding])/sz.width;
+    w = (int)(frame.size.width  - 1*[VT100Typesetter lineFragmentPadding])/sz.width;
 #else
     w = (int)(frame.size.width / sz.width + 0.5) - 2;
 #endif
     h = (int)(frame.size.height / sz.height) ;
+    //NSLog(@"w = %d; h = %d", w, h);
 
     return NSMakeSize(w, h);
 }

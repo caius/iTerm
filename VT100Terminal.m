@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.74 2003-07-20 18:55:40 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.75 2003-08-08 20:12:57 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -28,9 +28,9 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "VT100Terminal.h"
-#import "VT100Screen.h"
-#import "NSStringITerm.h"
+#import <iTerm/VT100Terminal.h>
+#import <iTerm/VT100Screen.h>
+#import <iTerm/NSStringITerm.h>
 
 #define DEBUG_ALLOC	0
 

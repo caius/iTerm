@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.4 2003-02-12 07:52:46 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.5 2003-08-08 20:12:56 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -31,8 +31,8 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#import "PTYScrollView.h"
-#import "PTYTextView.h"
+#import <iTerm/PTYScrollView.h>
+#import <iTerm/PTYTextView.h>
 
 @implementation PTYScrollView
 

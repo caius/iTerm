@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.59 2003-08-08 15:50:53 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -29,15 +29,11 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "PreferencePanel.h"
-#import "iTermController.h"
-#import "PTYTask.h"
-#import "PTYTextView.h"
-#import "VT100Terminal.h"
-#import "VT100Screen.h"
-#import "PTYSession.h"
+@class PreferencePanel;
 
 @class PTYTabView;
+@class PTYSession;
+@class iTermController;
 
 @interface PseudoTerminal : NSWindowController
 {

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.57 2003-08-06 16:03:00 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.58 2003-08-08 20:12:57 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -25,10 +25,10 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "PreferencePanel.h"
-#import "NSStringITerm.h"
-#import "AddressBookWindowController.h"
-#import "iTermController.h"
+#import <iTerm/PreferencePanel.h>
+#import <iTerm/NSStringITerm.h>
+#import <iTerm/AddressBookWindowController.h>
+#import <iTerm/iTermController.h>
 
 #define NIB_PATH  @"iTermController"
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.32 2003-06-16 07:07:59 ujwal Exp $
+// $Id: PTYTextView.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -29,9 +29,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "iTerm.h"
-#import "VT100Screen.h"
-#import "PTYSession.h"
+#import <iTerm/iTerm.h>
 
 #if USE_CUSTOM_DRAWING
 @interface PTYTextView : NSView <NSTextInput>

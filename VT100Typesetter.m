@@ -24,9 +24,9 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "iTerm.h"
-#import "VT100Typesetter.h"
-#import "VT100Screen.h"
+#import <iTerm/iTerm.h>
+#import <iTerm/VT100Typesetter.h>
+#import <iTerm/VT100Screen.h>
 
 #define DEBUG_ALLOC	      0
 #define DEBUG_METHOD_TRACE    0

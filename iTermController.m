@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.4 2003-08-08 18:26:03 ujwal Exp $
+// $Id: iTermController.m,v 1.5 2003-08-08 20:12:57 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -32,12 +32,12 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#import "iTermController.h"
-#import "PreferencePanel.h"
-#import "PseudoTerminal.h"
-#import "PTYSession.h"
-#import "NSStringITerm.h"
-#import "AddressBookWindowController.h"
+#import <iTerm/iTermController.h>
+#import <iTerm/PreferencePanel.h>
+#import <iTerm/PseudoTerminal.h>
+#import <iTerm/PTYSession.h>
+#import <iTerm/NSStringITerm.h>
+#import <iTerm/AddressBookWindowController.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString* OLD_ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";

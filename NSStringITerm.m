@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.m,v 1.4 2003-02-12 07:52:46 ujwal Exp $
+// $Id: NSStringITerm.m,v 1.5 2003-08-08 20:12:56 ujwal Exp $
 /*
  **  NSStringIterm.m
  **
@@ -27,7 +27,7 @@
  */
 
 #define NSSTRINGJTERMINAL_CLASS_COMPILE
-#import "NSStringITerm.h"
+#import <iTerm/NSStringITerm.h>
 
 
 @implementation NSString (iTerm)

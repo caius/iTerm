@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.h,v 1.3 2003-03-04 01:20:42 ujwal Exp $ */
+/* $Id: PTYWindow.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Sathyam */
 /*
  **  PTYWindow.h

@@ -24,9 +24,9 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "iTermController.h"
-#import "PTYTextView.h"
-#import "FindPanelWindowController.h"
+#import <iTerm/iTermController.h>
+#import <iTerm/PTYTextView.h>
+#import <iTerm/FindPanelWindowController.h>
 
 #define DEBUG_ALLOC	0
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.200 2003-08-08 18:26:03 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.201 2003-08-08 20:12:57 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -33,15 +33,25 @@
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
-#import "iTerm.h"
-#import "PseudoTerminal.h"
-#import "PTYScrollView.h"
-#import "NSStringITerm.h"
-#import "PTYSession.h"
-#import "VT100Screen.h"
-#import "PTYTabView.h"
-#import "PTYTabViewItem.h"
-#import "AddressBookWindowController.h"
+
+
+#import <iTerm/iTerm.h>
+#import <iTerm/PseudoTerminal.h>
+#import <iTerm/PTYScrollView.h>
+#import <iTerm/NSStringITerm.h>
+#import <iTerm/PTYSession.h>
+#import <iTerm/VT100Screen.h>
+#import <iTerm/PTYTabView.h>
+#import <iTerm/PTYTabViewItem.h>
+#import <iTerm/AddressBookWindowController.h>
+#import <iTerm/PreferencePanel.h>
+#import <iTerm/iTermController.h>
+#import <iTerm/PTYTask.h>
+#import <iTerm/PTYTextView.h>
+#import <iTerm/VT100Terminal.h>
+#import <iTerm/VT100Screen.h>
+#import <iTerm/PTYSession.h>
+
 
 // keys for attributes:
 NSString *columnsKey = @"columns";

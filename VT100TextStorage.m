@@ -24,8 +24,8 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "iTerm.h"
-#import "VT100TextStorage.h"
+#import <iTerm/iTerm.h>
+#import <iTerm/VT100TextStorage.h>
 
 #define DEBUG_METHOD_TRACE		0
 #define DEBUG_ALLOC		    	0

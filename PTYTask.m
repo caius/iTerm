@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.11 2003-07-04 08:08:08 ujwal Exp $
+// $Id: PTYTask.m,v 1.12 2003-08-08 20:12:57 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -42,7 +42,7 @@
 #import <sys/wait.h>
 #import <sys/time.h>
 
-#import "PTYTask.h"
+#import <iTerm/PTYTask.h>
 
 @implementation PTYTask
 

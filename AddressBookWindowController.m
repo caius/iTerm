@@ -24,9 +24,9 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "AddressBookWindowController.h"
-#import "PreferencePanel.h"
-#import "iTermController.h"
+#import <iTerm/AddressBookWindowController.h>
+#import <iTerm/PreferencePanel.h>
+#import <iTerm/iTermController.h>
 
 #define DEBUG_ALLOC	0
 

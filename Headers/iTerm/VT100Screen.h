@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.38 2003-07-19 06:35:05 ujwal Exp $
+// $Id: VT100Screen.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -28,9 +28,10 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import "VT100Terminal.h"
-#import "PTYTask.h"
-#import "PTYSession.h"
+#import <iTerm/VT100Terminal.h>
+
+@class PTYTask;
+@class PTYSession;
 
 #define TABWINDOW	300
 

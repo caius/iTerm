@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.30 2003-07-16 06:57:49 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
 /*
  **  VT100Terminal.h
  **

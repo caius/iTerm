@@ -8,6 +8,8 @@
       code in the process so that an iTerm window does not have to be created 
       before a terminal view can be created.
 
+    * Moved all the header files into Headers/iTerm. Easier to build a framework.
+
 2003-08-06	ujwal
     
     * Removed all references to [NSApp delegate].

@@ -1,16 +1,13 @@
-// -*- mode:objc -*-
-// $Id: PTYScrollView.h,v 1.3 2003-02-12 07:52:46 ujwal Exp $
 /*
- **  PTYScrollView.h
+ **  PTYTabViewItem.h
  **
  **  Copyright (c) 2002, 2003
  **
- **  Author: Fabian, Ujwal S. Sathyam
- **	     Initial code by Kiichi Kusama
+ **  Author: Ujwal S. Sathyam
  **
  **  Project: iTerm
  **
- **  Description: NSScrollView subclass. Currently does not do anything special.
+ **  Description: NSTabViewItem subclass. Implements attributes for label.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -27,13 +24,32 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <AppKit/AppKit.h>
 
-@interface PTYScrollView : NSScrollView
-{
+@interface PTYTabViewItem : NSTabViewItem {
+
+    NSDictionary *labelAttributes;
+    BOOL dragTarget;
+    BOOL bell;
+    NSImage *warningImage;
+
 }
 
+- (id) initWithIdentifier: (id) anIdentifier;
 - (void) dealloc;
-- (id)initWithFrame:(NSRect)frame;
+
+// Override this to be able to customize the label attributes
+- (void)drawLabel:(BOOL)shouldTruncateLabel inRect:(NSRect)tabRect;
+- (NSSize) sizeOfLabel: (BOOL) shouldTruncateLabel;
+
+// set/get custom label
+- (NSDictionary *) labelAttributes;
+- (void) setLabelAttributes: (NSDictionary *) theLabelAttributes;
+- (void) setBell:(BOOL)b;
+
+// drag-n-drop utilities
+- (void) becomeDragTarget;
+- (void) resignDragTarget;
 
 @end

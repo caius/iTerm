@@ -24,23 +24,23 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#import "iTerm.h"
-#import "PTYSession.h"
-#import "PTYTask.h"
-#import "PTYTextView.h"
-#import "PTYScrollView.h";
-#import "VT100Screen.h"
-#import "VT100Terminal.h"
-#import "PreferencePanel.h"
-#import "PseudoTerminal.h"
-#import "iTermController.h"
-#import "NSStringITerm.h"
-#import "PTYTabViewitem.h"
-#import "AddressBookWindowController.h"
+#import <iTerm/iTerm.h>
+#import <iTerm/PTYSession.h>
+#import <iTerm/PTYTask.h>
+#import <iTerm/PTYTextView.h>
+#import <iTerm/PTYScrollView.h>;
+#import <iTerm/VT100Screen.h>
+#import <iTerm/VT100Terminal.h>
+#import <iTerm/PreferencePanel.h>
+#import <iTerm/PseudoTerminal.h>
+#import <iTerm/iTermController.h>
+#import <iTerm/NSStringITerm.h>
+#import <iTerm/PTYTabViewitem.h>
+#import <iTerm/AddressBookWindowController.h>
 
-#import "VT100TextStorage.h"
-#import "VT100LayoutManager.h"
-#import "VT100Typesetter.h"
+#import <iTerm/VT100TextStorage.h>
+#import <iTerm/VT100LayoutManager.h>
+#import <iTerm/VT100Typesetter.h>
 
 #include <unistd.h>
 

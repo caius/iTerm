@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.118 2003-07-22 23:03:40 ujwal Exp $
+// $Id: VT100Screen.m,v 1.119 2003-08-08 20:12:57 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -32,14 +32,17 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#import "iTerm.h"
-#import "VT100Screen.h"
-#import "VT100Typesetter.h"
-#import "NSStringITerm.h"
-#import "PseudoTerminal.h"
-#import "PTYTextView.h"
-#import "PTYScrollView.h"
-#import "charmaps.h"
+#import <iTerm/iTerm.h>
+#import <iTerm/VT100Screen.h>
+#import <iTerm/VT100Typesetter.h>
+#import <iTerm/NSStringITerm.h>
+#import <iTerm/PseudoTerminal.h>
+#import <iTerm/PTYTextView.h>
+#import <iTerm/PTYScrollView.h>
+#import <iTerm/charmaps.h>
+#import <iTerm/PTYSession.h>
+#import <iTerm/PTYTask.h>
+#import <iTerm/PreferencePanel.h>
 
 @implementation VT100Screen
 

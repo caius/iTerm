@@ -4,7 +4,8 @@
       display should be fully working now
     * We now use the taller one between font and nafont to
       decide the lineHeight.
-    * Fixed bugs in scrollUp and scrollDown
+    * Fixed bugs in scrollUp and scrollDown in ARRAY mode
+    * Added some #ifdef to make code compatible in BUFFER mode.
     
 2003-02-26	fabian
     * Fixed general double-width character processing in ARRAY mode

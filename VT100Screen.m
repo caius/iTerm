@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.59 2003-02-27 22:12:00 yfabian Exp $
+// $Id: VT100Screen.m,v 1.60 2003-02-27 22:29:35 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -503,10 +503,15 @@ static BOOL PLAYBELL = YES;
 
 - (NSFont *) tallerFont
 {
+#if DEBUG_USE_ARRAY
+
     float a=[VT100Screen fontSize:FONT].height;
     float b=[VT100Screen fontSize:NAFONT].height;
 
     return (a>b)?FONT:NAFONT;
+#else
+    return FONT;
+#endif
 }
 
 - (void)setLineLimit:(unsigned int)maxline

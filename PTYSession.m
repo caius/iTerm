@@ -851,7 +851,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (oIdleCount<2) dirty=YES;
     
 #else
-    if (blink>30) {
+    if (blink>15) {
 	[SCREEN blink];
 	blink=0;
     }

@@ -44,7 +44,7 @@
 
 #include <unistd.h>
 
-#define DEBUG_ALLOC           1
+#define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
 @implementation PTYSession

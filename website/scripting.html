@@ -47,31 +47,127 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Scripting support:</STRONG></FONT><BR>
 <UL>
-iTerm has basic Applescript support allowing one to write stand-alone scripts to launch the application and open multiple 
-sessions from the addressbook into either new tabs or new windows. The syntax is as follows:
+iTerm has sophisticated Applescript support allowing one to write stand-alone scripts to launch the application and open multiple sessions from the addressbook into either new tabs or new windows. You can also set some other parameters for a session such as foreground and background colors, and transparency. Here is a sample script:
 <br>
 <br>
-launch session <STRONG>"session_name"</STRONG> in tab
-<br>
-launch session <STRONG>"session_name"</STRONG> in terminal
+-- A sample iTerm Applescript
 <br>
 <br>
-The first command opens the session named <STRONG>"session_name"</STRONG> in a new tab, while the second opens it in a new window. A session with that name has to exist in the address book. If a default session is desired, use <STRONG>"default session"</STRONG> as the session name. New tabs will be placed in the top active window. Here is a sample Applescript:
+
+tell application "iTerm"
+<br>
+	activate
+<br>
+<br>	
+	-- close the first session
+<br>
+	terminate the first session of the first terminal
+<br>
+<br>	
+	-- make a new terminal
+<br>
+	set myterm to (make new terminal)
+<br>
+<br>	
+	-- talk to the new terminal
+<br>
+	tell myterm
+<br>
+<br>		
+		-- set size
+<br>
+		set number of columns to 100
+<br>
+		set number of rows to 50
+<br>		
+		-- make a new session
+<br>
+		set mysession to (make new session at the end of sessions)
+<br>
+<br>		
+		-- talk to the session
+<br>
+		tell mysession
+<br>
+<br>			
+			-- set some attributes
+<br>
+			set name to "tcsh"
+<br>
+			set foreground color to "red"
+<br>
+			set background color to "blue"
+<br>
+			set transparency to "60"
+<br>
+<br>			
+			-- execute a command
+<br>
+			exec command "/bin/tcsh"
+<br>
+<br>			
+		end tell -- we are done talking to the session
+<br>
+<br>		
+		-- we are back to talking to the terminal
+<br>
+<br>		
+		-- launch a default shell in a new tab in the same terminal
+<br>
+		launch session "Default Session"
+<br>
+<br>		
+		-- launch a saved session from the addressbook.
+<br>
+		launch session "Root Shell"
+<br>		
+		-- select the previous session
+<br>
+		select mysession
+<br>
+<br>		
+	end tell
+<br>
+<br>	
+	-- talk to the first terminal
+<br>
+	tell the first terminal
+<br>
+<br>		
+		-- launch a default shell in a new tab in the same terminal
+<br>
+		launch session "Default Session"
+<br>
+<br>		
+		tell the last session
+<br>
+<br>			
+			-- write some text
+<br>
+			write text "cd Projects/Cocoa/iTerm"
+<br>			
+			-- write the contents of a file
+<br>
+			write contents of file "/path/to/file/"
+<br>
+<br>			
+		end tell
+<br>
+<br>		
+	end tell
+<br>
+<br>	
+	-- reposition window and name it
+<br>
+	set the bounds of the first window to {100, 100, 700, 700}
+<br>
+	set the name of the first window to "A Window Title"
+<br>
 
 <br>
-<br>
-<STRONG>tell application iTerm</STRONG>
-<br>
-    <STRONG>activate</STRONG>
-<br>
-    launch session <STRONG>"Root Shell"</STRONG> in tab
-<br>
-    launch session <STRONG>"default session"</STRONG> in terminal
-<br>
-    launch session <STRONG>"Fink list"</STRONG> in tab
-<br>
-<STRONG>end tell</STRONG>
-
+<br>	
+	
+end tell
 <br><br>
 These scripts can then be saved as stand-alone executable applications.
 

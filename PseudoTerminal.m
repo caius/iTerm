@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.119 2003-02-26 17:57:48 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.120 2003-02-27 00:23:46 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -33,7 +33,7 @@
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
-#define USE_CUSTOM_DRAWING	0
+#define USE_CUSTOM_DRAWING	1
 
 #import "PseudoTerminal.h"
 #import "PTYScrollView.h"

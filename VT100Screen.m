@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.55 2003-02-26 17:57:50 yfabian Exp $
+// $Id: VT100Screen.m,v 1.56 2003-02-27 00:23:49 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -32,8 +32,8 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#define DEBUG_USE_BUFFER	1
-#define DEBUG_USE_ARRAY		0
+#define DEBUG_USE_BUFFER	0
+#define DEBUG_USE_ARRAY		1
 
 #import "VT100Screen.h"
 #import "NSStringITerm.h"

@@ -2,6 +2,7 @@
     * Fixed general double-width character processing in ARRAY mode
     * Fixed "last line missing" bug in ARRAY mode
     * Fixed "clearBuffer" bug in BUFFER mode
+    * Fixed scrolling bug that messes up display in ARRAY mode
     
 2003-02-25	fabian
     * Further optimization of BUFFER method by updating

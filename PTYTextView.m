@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.33 2003-02-26 17:30:33 yfabian Exp $
+// $Id: PTYTextView.m,v 1.34 2003-02-27 00:23:45 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -236,31 +236,33 @@
 	int numLines, i, lineOffset;
 	NSAttributedString *aLine;
 	NSRect aRect;
+        float halfLine;
 	
 	if(lineHeight <= 0 || lineWidth <= 0)
 	    return;
 
-	numLines = rect.size.height/lineHeight;
-	lineOffset = rect.origin.y/lineHeight+1;
 
-	for(i = 0; i <numLines; i++)
+	lineOffset = rect.origin.y/lineHeight;
+        halfLine=rect.origin.y-lineOffset*lineHeight;
+        numLines=(rect.size.height+halfLine+lineHeight-1)/lineHeight;
+        aRect.origin.x=rect.origin.x;
+        aRect.origin.y=lineOffset*lineHeight;
+        aRect.size.width = lineWidth;
+        aRect.size.height = lineHeight;
+        //NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
+        
+	for(i = 0; i <numLines/*&&aRect.origin.y<rect.orgin.y+rect.size.height*/; i++)
 	{
 	    aLine = [[self dataSource] stringAtLine: i + lineOffset];
 	    if(aLine == nil)
 	    {
 		//NSLog(@"Got a nil line...");
-		continue;
-	    }
-
-	    aRect.origin.x = rect.origin.x;
-	    aRect.origin.y = rect.origin.y + i*lineHeight;
-	    aRect.size.width = lineWidth;
-	    aRect.size.height = lineHeight;
-
-	    [aLine drawInRect: aRect];
-	    
+            }else {
+                [aLine drawInRect: aRect];
+            }
+            //NSLog(@"line %d[%@]: %f",i + lineOffset, [aLine string], aRect.origin.y);
+            aRect.origin.y += lineHeight;
 	}
-	
     }
 }
 

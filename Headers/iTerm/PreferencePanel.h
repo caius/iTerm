@@ -49,8 +49,8 @@
 	IBOutlet NSPanel *addBookmarkFolderPanel;
 	IBOutlet NSPanel *deleteBookmarkPanel;
 	IBOutlet NSPanel *editBookmarkPanel;
-	IBOutlet NSButton *bookmarkDeleteFolderButton;
 	IBOutlet NSButton *bookmarkDeleteButton;
+	IBOutlet NSButton *bookmarkEditButton;
 	IBOutlet NSTextField *bookmarkFolderName;
 	IBOutlet NSTextField *bookmarkName;
 	IBOutlet NSTextField *bookmarkCommand;

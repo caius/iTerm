@@ -232,6 +232,11 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 
 }
 
+- (void) setBookmarkWithData: (NSDictionary *) data forNode: (TreeNode *) aNode
+{
+	[aNode setNodeData: data];
+}
+
 - (void) deleteBookmarkNode: (TreeNode *) aNode
 {
 	[aNode removeFromParent];
@@ -241,6 +246,7 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 {
 	return (bookmarks);
 }
+
 
 @end
 

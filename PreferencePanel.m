@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.94 2004-03-18 19:50:40 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.95 2004-03-18 20:36:03 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -36,6 +36,8 @@
 #import <iTerm/Tree.h>
 
 static float versionNumber;
+
+static BOOL editingBookmark = NO;
 
 #define iTermOutlineViewPboardType 	@"iTermOutlineViewPboardType"
 
@@ -159,15 +161,22 @@ static float versionNumber;
 // NSOutlineView delegate methods
 - (void) outlineViewSelectionDidChange: (NSNotification *) aNotification
 {
-	if([bookmarksView selectedRow] == -1)
+	int selectedRow = [bookmarksView selectedRow];
+	id selectedItem;
+	
+	if(selectedRow == -1)
 	{
-		[bookmarkDeleteFolderButton setEnabled: NO];
 		[bookmarkDeleteButton setEnabled: NO];
+		[bookmarkEditButton setEnabled: NO];
 	}
 	else
 	{
-		[bookmarkDeleteFolderButton setEnabled: YES];
 		[bookmarkDeleteButton setEnabled: YES];
+		selectedItem = [bookmarksView itemAtRow: selectedRow];
+		if([[ITAddressBookMgr sharedInstance] isExpandable: selectedItem])
+			[bookmarkEditButton setEnabled: NO];
+		else
+			[bookmarkEditButton setEnabled: YES];
 	}
 }
 
@@ -306,7 +315,17 @@ static float versionNumber;
 
 - (IBAction) addBookmark: (id) sender
 {
-	[self editBookmark: self];
+	
+	editingBookmark = NO;
+	
+	// load our profiles
+	[self _loadProfiles];
+	
+	[NSApp beginSheet: editBookmarkPanel
+	   modalForWindow: [self window]
+		modalDelegate: self
+	   didEndSelector: @selector(_editBookmarkSheetDidEnd:returnCode:contextInfo:)
+		  contextInfo: nil];        
 }
 
 - (IBAction) addBookmarkConfirm: (id) sender
@@ -330,9 +349,35 @@ static float versionNumber;
 
 - (IBAction) editBookmark: (id) sender
 {
+	id selectedItem;
+	NSString *terminalProfile, *keyboardProfile, *displayProfile;
+	
+	editingBookmark = YES;
 	
 	// load our profiles
 	[self _loadProfiles];
+	
+	selectedItem = [bookmarksView itemAtRow: [bookmarksView selectedRow]];
+	[bookmarkName setStringValue: [[ITAddressBookMgr sharedInstance] objectForKey: KEY_NAME inItem: selectedItem]];
+	[bookmarkCommand setStringValue: [[ITAddressBookMgr sharedInstance] objectForKey: KEY_COMMAND inItem: selectedItem]];
+	[bookmarkWorkingDirectory setStringValue: [[ITAddressBookMgr sharedInstance] objectForKey: KEY_WORKING_DIRECTORY inItem: selectedItem]];
+	
+	terminalProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_TERMINAL_PROFILE inItem: selectedItem];
+	keyboardProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_KEYBOARD_PROFILE inItem: selectedItem];
+	displayProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_DISPLAY_PROFILE inItem: selectedItem];
+	
+	if([bookmarkTerminalProfile indexOfItemWithTitle: terminalProfile] < 0)
+		terminalProfile = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]], @"Terminal Profiles");
+	[bookmarkTerminalProfile selectItemWithTitle: terminalProfile];
+	
+	if([bookmarkKeyboardProfile indexOfItemWithTitle: keyboardProfile] < 0)
+		keyboardProfile = NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+	[bookmarkKeyboardProfile selectItemWithTitle: keyboardProfile];
+	
+	if([bookmarkDisplayProfile indexOfItemWithTitle: displayProfile] < 0)
+		displayProfile = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]], @"Display Profiles");
+	[bookmarkDisplayProfile selectItemWithTitle: displayProfile];
+
 	
 	[NSApp beginSheet: editBookmarkPanel
 	   modalForWindow: [self window]
@@ -493,7 +538,7 @@ static float versionNumber;
 - (void)_editBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
 	NSMutableDictionary *aDict;
-	TreeNode *parentNode;
+	TreeNode *targetNode;
 	int selectedRow;
 		
 	
@@ -529,15 +574,21 @@ static float versionNumber;
 		
 		// if no row is selected, new node is child of root
 		if(selectedRow == -1)
-			parentNode = nil;
+			targetNode = nil;
 		else
-			parentNode = [bookmarksView itemAtRow: selectedRow];
+			targetNode = [bookmarksView itemAtRow: selectedRow];
 		
 		// If a leaf node is selected, make new node its sibling
-		if([bookmarksView isExpandable: parentNode] == NO)
-			parentNode = [parentNode nodeParent];
+		if([bookmarksView isExpandable: targetNode] == NO && !editingBookmark)
+			targetNode = [targetNode nodeParent];
 		
-		[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: parentNode];
+		if(editingBookmark == NO)
+			[[ITAddressBookMgr sharedInstance] addBookmarkWithData: aDict toNode: targetNode];
+		else
+		{
+			[aDict setObject: [[ITAddressBookMgr sharedInstance] objectForKey: KEY_DESCRIPTION inItem: targetNode] forKey: KEY_DESCRIPTION];
+			[[ITAddressBookMgr sharedInstance] setBookmarkWithData: aDict forNode: targetNode];
+		}
 
 		[aDict release];
 	}

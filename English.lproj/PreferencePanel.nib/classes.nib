@@ -23,8 +23,8 @@
                 addBookmarkFolderPanel = NSPanel; 
                 bookmarkCommand = NSTextField; 
                 bookmarkDeleteButton = NSButton; 
-                bookmarkDeleteFolderButton = NSButton; 
                 bookmarkDisplayProfile = NSPopUpButton; 
+                bookmarkEditButton = NSButton; 
                 bookmarkFolderName = NSTextField; 
                 bookmarkKeyboardProfile = NSPopUpButton; 
                 bookmarkName = NSTextField; 

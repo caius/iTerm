@@ -68,8 +68,10 @@ extern NSString *entryVisibleName( NSDictionary *entry, id sender );
 - (void) setObjectValue: (id) object forKey: (id) key inItem: (id) item;
 - (void) addFolder: (NSString *) folderName toNode: (TreeNode *) aNode;
 - (void) addBookmarkWithData: (NSDictionary *) data toNode: (TreeNode *) aNode;
+- (void) setBookmarkWithData: (NSDictionary *) data forNode: (TreeNode *) aNode;
 - (void) deleteBookmarkNode: (TreeNode *) aNode;
 - (TreeNode *) rootNode;
+
 
 @end
 

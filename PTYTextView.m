@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.188 2004-03-28 04:11:05 ujwal Exp $
+// $Id: PTYTextView.m,v 1.189 2004-03-29 00:42:44 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1054,6 +1054,7 @@ static SInt32 systemVersion;
     if (startY>endY||(startY==endY&&startX>endX)) {
         y=startY; startY=endY; endY=y;
         y=startX; startX=endX; endX=y;
+		x = endX; y = endY;
     }
     else if (startY==endY&&startX==endX&&!mouseDragged) startX=-1;
 	
@@ -2290,9 +2291,10 @@ static SInt32 systemVersion;
 	NSString *lineContents, *blankLine;
 	char blankString[1024];	
 	
+	
 	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y];
-	memset(blankString, ' ', 100);
-	blankString[100] = 0;
+	memset(blankString, ' ', 1024);
+	blankString[[dataSource width]] = 0;
 	blankLine = [NSString stringWithUTF8String: (const char*)blankString];
 	
 	return ([lineContents isEqualToString: blankLine]);

@@ -1,6 +1,7 @@
 2004-03-28  ujwal
 
 	* Added Rendezvous support.
+	* Fixed bug in selection in reverse direction.
 
 2004-03-26  fabian
 

@@ -129,7 +129,6 @@
 	j = charIndex;
 	while (j >= 0)
 	{
-	    
 	    if([theString characterAtIndex: j] == '\n')
 		break;
 	    j--;
@@ -189,16 +188,12 @@
 	
 	// Now fill the line
 	NSRect usedRect = lineRect;
-	usedRect.size.width = (glyphRange.length) * charWidth + 2*lineFragmentPadding;
+	usedRect.size.width = (glyphRange.length * charWidth) + 2*lineFragmentPadding;
 	if(usedRect.size.width > lineRect.size.width)
 	    usedRect.size.width = lineRect.size.width;
 	[layoutMgr setTextContainer: textContainer forGlyphRange: glyphRange];
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
 	[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
-	if(lineEndCharExists == YES)
-	{
-	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
-	}
 
 	// If we encountered graphical characters, we need to lay out each glyph; EXPENSIVE
 	if(hasGraphicalCharacters == YES)
@@ -212,21 +207,18 @@
 		singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];
 		theWidth = ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 
-		NSRect glyphRect;
-		glyphRect.origin.x = x;
-		glyphRect.size.width = theWidth + 2*lineFragmentPadding;
-		glyphRect.origin.y = lineRect.origin.y;
-		glyphRect.size.height = [font defaultLineHeightForFont];
-		usedRect = glyphRect;
-		//usedRect.size.width = (singleGlyphRange.length) * theWidth;
-		//if(usedRect.size.width > glyphRect.size.width)
-		//    usedRect.size.width = glyphRect.size.width;
-		[layoutMgr setLineFragmentRect: glyphRect forGlyphRange: singleGlyphRange usedRect: usedRect];
-		[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: singleGlyphRange];
+		[layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: singleGlyphRange];
 		x+=theWidth;
 	    }
 	    
 	}
+
+	// hide new line glyphs
+	if(lineEndCharExists == YES)
+	{
+	    [layoutMgr setNotShownAttribute: YES forGlyphAtIndex: glyphRange.location + glyphRange.length - 1];
+	}
+	
 
 	// set the glyphIndex for the next run
 	glyphIndex = glyphRange.location + glyphRange.length;

@@ -1,3 +1,10 @@
+2003-02-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Changed implementation of cursorToX: Y: and 
+      cursorToX: in VT100Screen. Was interfering 
+      with resize command.
+      
+
 2003-02-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed encoding bug in PTYsession: -keyDown:

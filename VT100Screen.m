@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.39 2003-02-14 20:02:20 ujwal Exp $
+// $Id: VT100Screen.m,v 1.40 2003-02-16 08:27:24 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1179,10 +1179,12 @@ static BOOL PLAYBELL = YES;
 #endif
     x_pos = (x-1);
 
-    if (x >= 0 && x < WIDTH)
-	CURSOR_X = x_pos;
-    else
-	NSLog(@"cursorToX: out of bound:(%d)",x);
+    if(x_pos < 0)
+	x_pos = 0;
+    else if(x_pos >= WIDTH)
+	x_pos = WIDTH - 1;
+
+    CURSOR_X = x_pos;
 	
 }
 
@@ -1192,21 +1194,27 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen cursorToX:%d Y:%d]", 
 	  __FILE__, __LINE__, x, y);
 #endif
-    if ([TERMINAL originMode]) y+=SCROLL_TOP;
+    int x_pos, y_pos;
+
+
+    x_pos = x - 1;
+    y_pos = y - 1;
+
+    if ([TERMINAL originMode]) y_pos += SCROLL_TOP;
+
+    if(x_pos < 0)
+	x_pos = 0;
+    else if(x_pos >= WIDTH)
+	x_pos = WIDTH - 1;
+    if(y_pos < 0)
+	y_pos = 0;
+    else if(y_pos >= HEIGHT)
+	y_pos = HEIGHT - 1;
+
+    CURSOR_X = x_pos;
+    CURSOR_Y = y_pos;
+
     
-    x=(x-1)%WIDTH;
-    y=(y-1)%HEIGHT;
-    if (x >= 0 && x < WIDTH &&
-	y >= 0 && y < HEIGHT) 
-    {
-	CURSOR_X = x ;
-	CURSOR_Y = y ;
-//        [self getIndex:CURSOR_X y:CURSOR_Y];
-//        if (CURSOR_IN_MIDDLE) CURSOR_X--;
-    }
-    else {
-        NSLog(@"cursorToXY: out of bound:(%d,%d)",x,y);
-    }
 //    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
 
 }

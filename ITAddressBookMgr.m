@@ -231,6 +231,11 @@ static TreeNode *defaultBookmark = nil;
 	return ([defaultBookmark nodeData]);
 }
 
+- (NSDictionary *) dataForBookmarkWithName: (NSString *) bookmarkName
+{
+	return ([self _getBookmarkNodeWithName: bookmarkName searchFromNode: bookmarks]);
+}
+
 @end
 
 @implementation ITAddressBookMgr (Private);
@@ -242,8 +247,6 @@ static TreeNode *defaultBookmark = nil;
 	NSDictionary *dataDict;
 	TreeNode *entry;
 	
-	dataDict = [rootNode nodeData];
-
 	entryEnumerator = [[rootNode children] objectEnumerator];
 	while ((entry = [entryEnumerator nextObject]))
 	{
@@ -264,6 +267,38 @@ static TreeNode *defaultBookmark = nil;
 	}
 
 	return (haveDefaultBookmark);
+}
+
+- (NSDictionary *) _getBookmarkNodeWithName: (NSString *) aName searchFromNode: (TreeNode *) aNode
+{
+	NSEnumerator *entryEnumerator;
+	NSDictionary *dataDict;
+	TreeNode *entry;
+	BOOL foundNode = NO;
+	
+	dataDict = nil;
+	
+	entryEnumerator = [[aNode children] objectEnumerator];
+	while ((entry = [entryEnumerator nextObject]))
+	{
+		if([entry isGroup])
+			dataDict = [self _getBookmarkNodeWithName: aName searchFromNode: entry];
+		else
+		{
+			dataDict = [entry nodeData];
+			if([[dataDict objectForKey: KEY_NAME] isEqualToString: aName])
+			{
+				foundNode = YES;
+			}			
+		}
+		if(foundNode)
+			break;
+	}
+	
+	if(foundNode)
+		return (dataDict);
+	else
+		return (nil);
 }
 
 @end

@@ -62,11 +62,13 @@
 - (TreeNode *) rootNode;
 
 - (NSDictionary *) defaultBookmarkData;
+- (NSDictionary *) dataForBookmarkWithName: (NSString *) bookmarkName;
 
 @end
 
 @interface ITAddressBookMgr (Private)
 
 - (BOOL) _checkForDefaultBookmark: (TreeNode *) rootNode defaultBookmark: (TreeNode **)defaultBookmark;
+- (NSDictionary *) _getBookmarkNodeWithName: (NSString *) aName searchFromNode: (TreeNode *) aNode;
 
 @end

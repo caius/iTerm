@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.273 2004-03-19 08:11:54 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.274 2004-03-19 08:55:57 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1606,31 +1606,27 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSDictionary *args = [command evaluatedArguments];
     NSString *session = [args objectForKey:@"session"];
     NSDictionary *abEntry;
-	
-    NSArray *abArray;
-    int i;
-    
-    // search for the session in the addressbook
-    abArray = [[ITAddressBookMgr sharedInstance] addressBookNames];
-    for (i = 0; i < [abArray count]; i++)
-    {
-		if([[abArray objectAtIndex: i] caseInsensitiveCompare: session] == NSOrderedSame)
-			break;
-    }
-    if(i == [abArray count])
-		i = 0; // index of default session
-    abEntry = [[ITAddressBookMgr sharedInstance] addressBookEntry: i];
-	
+	NSString *displayProfile;
+	iTermDisplayProfileMgr *displayProfileMgr;
+
+	abEntry = [[ITAddressBookMgr sharedInstance] dataForBookmarkWithName: session];
+	if(abEntry == nil)
+		abEntry = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
+    	
+	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+	displayProfile = [abEntry objectForKey: KEY_DISPLAY_PROFILE];
     // If we have not set up a window, do it now
     if([self windowInited] == NO)
     {
-		[self setWidth: [[abEntry objectForKey: @"Col"] intValue] height: [[abEntry objectForKey: @"Row"] intValue]];
-		[self setFont: [abEntry objectForKey: @"Font"] nafont: [abEntry objectForKey: @"NAFont"]];
+		[self setWidth: [displayProfileMgr windowColumnsForProfile: displayProfile] 
+				height: [displayProfileMgr windowRowsForProfile: displayProfile]];
+		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
+			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
 		[self initWindow];
     }
 	
     // launch the session!
-    [[iTermController sharedInstance] executeABCommandAtIndex: i inTerminal: self];
+    [[iTermController sharedInstance] launchBookmark: abEntry inTerminal: self];
     
     return;
 }

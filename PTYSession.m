@@ -1596,7 +1596,7 @@ static NSString *PWD_ENVVALUE = @"~";
     {
 		int i = 0;
 		// wait here until we have had some output
-		while([SHELL firstOutput] == NO && i < 5000000)
+		while([SHELL firstOutput] == NO && i < 1000000)
 		{
 			usleep(50000);
 			i += 50000;

@@ -926,6 +926,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void)clearBuffer
 {
+    char formFeed = 0x0c; // ^L
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession clearBuffer:...]", __FILE__, __LINE__);
 #endif
@@ -935,6 +936,8 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCREEN clearBuffer];
     [SCREEN endEditing];
     [SCREEN showCursor];
+    // tell the shell to clear the screen
+    [SHELL writeTask:[NSData dataWithBytes:&formFeed length:1]];
 }
 
 - (BOOL)refreshed

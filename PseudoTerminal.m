@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.66 2003-01-08 02:08:19 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.67 2003-01-08 16:52:38 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1284,6 +1284,11 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Separator
     [theMenu addItem:[NSMenuItem separatorItem]];
+
+    // Close current session
+    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")
+						   action:@selector(closeCurrentSession:) keyEquivalent:@""];
+
 
     // Configure
     [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Configure...",@"iTerm",@"Context menu")

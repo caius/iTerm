@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.145 2003-04-16 14:34:05 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.146 2003-04-24 15:57:11 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -671,6 +671,8 @@ static NSString *ConfigToolbarItem = @"Config";
 	winSize.width = size.width + 25;
     else
         winSize.height = size.height + 0;
+    if([[thisWindow toolbar] isVisible] == YES)
+	winSize.height += 9;
     [thisWindow setContentSize:winSize];
 }
 
@@ -872,6 +874,10 @@ static NSString *ConfigToolbarItem = @"Config";
     // Calculate the content size
     contentSize = [NSWindow contentRectForFrameRect: NSMakeRect(0, 0, proposedFrameSize.width, proposedFrameSize.height) styleMask: [WINDOW styleMask]].size;
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
+
+    if([[[self window] toolbar] isVisible] == YES)
+	contentSize.height -= 9;
+
     
     // Calculate scrollview size
     scrollviewSize = contentSize;
@@ -926,6 +932,10 @@ static NSString *ConfigToolbarItem = @"Config";
     else
 	contentSize.height = scrollviewSize.height + 0;
     //NSLog(@"WillResize:content size: width = %f; height = %f", contentSize.width, contentSize.height);
+
+
+    if([[[self window] toolbar] isVisible] == YES)
+	contentSize.height += 9;    
     
     // Finally calculate the window frame size
     winSize = [NSWindow frameRectForContentRect: NSMakeRect(0, 0, contentSize.width, contentSize.height) styleMask: [WINDOW styleMask]].size;

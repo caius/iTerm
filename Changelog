@@ -1,3 +1,7 @@
+2003-04-24	ujwal
+
+    * Fixed some window sizing problems when toolbar is visible.
+
 2003-04-23	ujwal
 
     * Using real bell icon instead of warning sign.

@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>iTerm : Navigation</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" LINK="#696969" ALINK="#696969" VLINK="#696969">
+<LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
+<CENTER>
+<!--#include virtual="/header.html" -->
+<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<TR>
+<TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF">
+<!--#include virtual="/sidebar.html" -->
+</TD>
+
+
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<FONT SIZE="5"><STRONG>Navigation:</STRONG></FONT><BR>
+<UL>
+<STRONG>Tabs</STRONG>, the <STRONG>toolbar</STRONG>, <STRONG>contextual menus</STRONG> and the <STRONG>bookmarks</STRONG>, all help to aid navigation in iTerm.  If you don't use these features, give them a look, because they can be extremely helpful. The tabs support drag and drop enabling you to re-order them within and between windows.
+</UL>
+
+<FONT SIZE="5"><STRONG>Shortcut keys:</STRONG></FONT><BR>
+<UL>
+<LI>Command or Shift-left/right/Up/Down Arrow: Switch to the previous/next tab</LI>
+<LI>Command Fn: Switch to n-th session</LI><BR>
+<LI>Shift PageUp/PageDown or Shift-Command-Up/Down Arrow: Scroll Up/Down one page</LI>
+<LI>Command-Up/Down Arrow: Scroll Up/Down one line</LI><BR>
+<LI>Right-Click: Context menu</LI>
+<LI>Command Right-Click: Contextual menu with open in new window options</LI><BR>
+<LI>CTRL-Cmd-LetterKey: Open a new sesson in tab</LI>
+<LI>Shift-CTRL-Cmd-LetterKey: Open a new session in new window</LI>
+Note: The letter key is specified in Bookmarks. You can assign the same key to
+different entries. Using this key will load all these entries at once.
+</UL>
+
+<FONT SIZE="5"><STRONG>Contextual Menu:</STRONG></FONT><BR>
+<UL>
+<LI>Has access to your Bookmarks!!</LI>
+<LI>Has access to the Configure panel</LI>
+<LI>Has access to clear the buffer</LI>
+<LI>Selected text can sent to either your web browser, your email program, saved to file or copied.
+<UL>Text sent to your mail program should be an email address<BR>
+Text sent to your browser should be a URL</UL></LI>
+</UL>
+
+<FONT SIZE="5"><STRONG>Bookmarks:</STRONG></FONT><BR>
+<UL>
+<LI>The Bookmarks organizes preset terminal settings.</LI>
+<LI>Instead of modifying the configure panel or preference panel, you can save seperate settings for a session</LI>
+<LI>For the command you can specify an command, doesn't have to be a shell.</LI>
+<LI>The Bookmarks can be accessed from a contextual menu, the Tool Bar or from the menu: Window -> Bookmarks (Command + Shift + A)</LI>
+</UL>
+
+<FONT SIZE="5"><STRONG>Autolaunching script:</STRONG></FONT><BR>
+<UL>
+iTerm also supports autolaunching of an Applescript on startup. On startup, iTerm looks for an Applescript called <b>"AutoLaunch.scpt"</b> under <b>~/Library/Application Support/iTerm</b>. If it is found, the <b>AutoLauch.scpt</b> is launched and executed. This feature can be used to launch multiple sessions in defined windows and tabs when iTerm atarts up.
+</UL>
+
+
+</TD>
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<script type="text/javascript"><!--
+google_ad_client = "pub-5743532873543938";
+google_ad_width = 120;
+google_ad_height = 600;
+google_ad_format = "120x600_as";
+google_color_border = "B0E0E6";
+google_color_bg = "ffffff";
+google_color_link = "000000";
+google_color_url = "336699";
+google_color_text = "333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</TD>
+</TR>
+</TABLE>
+
+<!--#include virtual="/footer.html" -->
+
+</CENTER>
+</BODY>
+</HTML>

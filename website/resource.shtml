@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>iTerm : Additional Resource</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" LINK="#696969" ALINK="#696969" VLINK="#696969">
+<LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
+<CENTER>
+<!--#include virtual="/header.html" -->
+<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<TR>
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<!--#include virtual="/sidebar.html" -->
+</TD>
+
+
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<FONT SIZE="5"><STRONG>Additional Resource:</STRONG></FONT><BR>
+<BR>
+<FONT SIZE="4"><STRONG>Fonts:</STRONG></FONT> <BR><BR>
+As a terminal emulator, iTerm requires monospace fonts. Additionally, The font
+should include all the graphical characters if you plan to use curses based programs
+that use them, such as mc. Unfortunately, there are not many such fonts
+available. The fonts we tested to work well are listed here. If you have
+some nice fonts that you can share with us, please feel free to email us.<BR>
+<UL>
+<LI><STRONG>VT100</STRONG> Comes with OS X, rather ugly though </LI>
+<LI><STRONG>Lucide Console</STRONG> Comes with Office v.X</LI>
+<LI><STRONG>SImPL</STRONG> A very nice font made by Phil Chastney.
+Download from <A HREF="http://www.vector.org.uk/resource/simpl02.zip">here</A></LI>
+<LI><STRONG>APL385</STRONG> Another font from Dyalog.NET. Get it from <A HREF="http://www.vector.org.uk/resource/apl385.zip">here</A></LI>
+<LI><STRONG>FreeMono</STRONG> A nice font made available by Free UCS Outline Fonts project. It is bundled with iTerm.app starting from version 0.70. Visit their <A HREF="http://www.nongnu.org/freefont/"> website </A>.</LI>
+<LI><STRONG>Wen Ding Chinese fonts</STRONG> A set of simplified and traditional Chinese fonts. Download from <A HREF="http://www.arphic.net/tw/service/resource_cont.asp?id=1&toppage=2">here</A>. Thanks for Miyang Lin for providing us information.</LI>
+</UL>
+Starting from version 0.7.5, iTerm supports rendering of graphical characters with fonts that do not support them natively, such as Monaco, Andale Mono, etc. You can turn on this support enabling the "Enforce character alignment" preference in the Preferences panel. This will ensure proper alignment of graphical characters, but with a performance penalty. 
+<BR>
+<BR>
+<FONT SIZE="4"><STRONG>Icon Gallery</STRONG></FONT><BR>
+<TABLE cellspacing=10>
+<TR>
+<TD VALIGN="TOP">
+<CENTER>
+<a href="iTerm-sinomac.png"><image src="iTerm-sinomac.png"></a><br>
+our new iTerm with the Matrix look<br>
+from sinomac.com<br>
+</CENTER>
+</TD>
+
+<TD VALIGN="TOP">
+<CENTER>
+<a href="iTerm.png"><image src="iTerm-un.png"></a><br>
+iTerm with UN symbol<br>
+by Edward Daze<br>
+</CENTER>
+</TD>
+<TD VALIGN="TOP">
+<CENTER>
+<a href="iTerm-orig.png"><image src="iTerm-orig.png"></a><br>
+The old face<br>
+"cooked" by fabian<br>
+</CENTER>
+</TD>
+</TR>
+<TR>
+<TD VALIGN="TOP">
+<CENTER>
+<a href="iTerm_Bryan_Harding.png"><image src="iTerm_Bryan_Harding.png"></a><br>
+Classic icon with tabs<br>
+by Bryan Harding<br>
+</CENTER>
+</TD>
+<TD VALIGN="TOP">
+<CENTER>
+<image src="contrib.png"><br>
+</CENTER>
+</TD>
+
+</TR>
+</TABLE>
+<BR><BR>
+
+<FONT SIZE="4"><STRONG>Utf-8 patch for tcsh 6.12.00</STRONG></FONT><BR>
+By Yuichi OHKAWA<BR><BR>
+The tcsh pre-installed in Mac OS X has many problems dealing with utf-8.
+If you input mult-bytes characters to tcsh, this patch may help you 
+to edit the characters.<BR><BR>
+Download from <A HREF="ftp://ftp.tba.org.tohoku.ac.jp/pub/tcsh-6.12-utf8.patch.gz"> here </A>
+
+<BR><BR>
+
+<FONT SIZE="4"><STRONG>Interesting Links...</STRONG></FONT><BR>
+Here are some links to some iTerm related websites.<BR>
+<UL>
+<LI><A HREF="http://www.chemistry.ucsc.edu/~wgscott/xtal/terminal_finder_interactions.html">Improving Unix-Finder Interactions in OS X</A> from Professor Scott</LI>
+<LI><A HREF="http://chemistry.ucsc.edu/%7Ewgscott/xtal/iterm_tab_customization.html">iTerm Tab Name Customization</A> from Professor Scott, again :-)</LI>
+<LI><A HREF="http://www.tco.net/%7Edscott/software/itermhere/">iTerm Here</A></LI>
+<LI><A HREF="http://www.hawaii.edu/itsdocs/mac/iterm.pdf">Getting Started with iTerm</A> from University of Hawaii</LI>
+<LI><A HREF="http://www.macosxhints.com/article.php?story=20030609222910699">Use iTerm with OnMyCommand</A> from macosxhints</LI>
+<LI><A HREF="http://www.oikos.com.tw/modules/newbb/viewtopic.php?post_id=70422&topic_id=12038&forum=2#70422">A slightly outdated iTerm tutorial in Traditional Chinese</A></LI>
+</TD>
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<script type="text/javascript"><!--
+google_ad_client = "pub-5743532873543938";
+google_ad_width = 120;
+google_ad_height = 600;
+google_ad_format = "120x600_as";
+google_color_border = "B0E0E6";
+google_color_bg = "ffffff";
+google_color_link = "000000";
+google_color_url = "336699";
+google_color_text = "333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</TD>
+
+</TR>
+</TABLE>
+
+<!--#include virtual="/footer.html" -->
+
+</CENTER>
+</BODY>
+</HTML>

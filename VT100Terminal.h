@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.6 2003-01-21 03:14:40 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.7 2003-01-21 19:28:05 yfabian Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -194,7 +194,7 @@ typedef struct {
     NSColor *DefaultBG;
 
     unsigned int saveCHARATTR;
-    BOOL saveCHARSET;
+    int saveCHARSET;
     
     BOOL TRACE;
 }

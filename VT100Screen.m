@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.26 2003-01-21 18:55:56 yfabian Exp $
+// $Id: VT100Screen.m,v 1.27 2003-01-21 19:28:05 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -151,7 +151,7 @@ static BOOL PLAYBELL = YES;
         tabStop[i] = YES;
 
     for(i=0;i<300;i++) spaces[i]=' ';
-    for(i=0;i<5;i++) charset[i]=i;
+    for(i=0;i<4;i++) saveCharset[i]=charset[i]=i;
     
     return self;
 }
@@ -337,7 +337,7 @@ static BOOL PLAYBELL = YES;
 
     int i;
 
-    for(i=0;i<HEIGHT-1;i++) [STORAGE appendAttributedString:[self attrString:@"\n" ascii:YES]];
+    for(i=0;i<HEIGHT-1;i++) [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
 }
     
 - (void)beginEditing
@@ -600,7 +600,7 @@ static BOOL PLAYBELL = YES;
     }
     if (x>0) {
 //        NSLog(@"%d blanks inserted",x);
-        [STORAGE insertAttributedString:[self attrString:[NSString stringWithCharacters:spaces length:x] ascii:YES] atIndex:idx];
+        [STORAGE insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:x]] atIndex:idx];
         idx+=x;
     }
 
@@ -1164,6 +1164,7 @@ static BOOL PLAYBELL = YES;
 
 - (void)saveCursorPosition
 {
+    int i;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen saveCursorPosition]", 
 	  __FILE__, __LINE__);
@@ -1175,10 +1176,14 @@ static BOOL PLAYBELL = YES;
     
     SAVE_CURSOR_X = CURSOR_X;
     SAVE_CURSOR_Y = CURSOR_Y;
+
+    for(i=0;i<4;i++) saveCharset[i]=charset[i];
+
 }
 
 - (void)restoreCursorPosition
 {
+    int i;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen restoreCursorPosition]", 
 	  __FILE__, __LINE__);
@@ -1186,10 +1191,8 @@ static BOOL PLAYBELL = YES;
     [self showCursor:NO];
     CURSOR_X = SAVE_CURSOR_X;
     CURSOR_Y = SAVE_CURSOR_Y;
-//    [self getIndex:CURSOR_X y:CURSOR_Y];
-//    if (CURSOR_IN_MIDDLE) CURSOR_X--;
-    
-    if (CURSOR_X >= 0 && CURSOR_X < WIDTH)
+
+    for(i=0;i<4;i++) charset[i]=saveCharset[i];
     
     NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
     NSParameterAssert(CURSOR_Y >= 0 && CURSOR_Y < HEIGHT);
@@ -1247,11 +1250,11 @@ static BOOL PLAYBELL = YES;
     [STORAGE deleteCharactersInRange:aRange];
 
     if (SCROLL_BOTTOM>=HEIGHT-1) {
-        [STORAGE appendAttributedString:[self attrString:@"\n"  ascii:YES]];
+        [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
     }
     else {
         idx=[self getIndex:0 y:SCROLL_BOTTOM+1];
-        [STORAGE insertAttributedString:[self attrString:@"\n"  ascii:YES] atIndex:idx];
+        [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
     }
 }
 
@@ -1270,7 +1273,7 @@ static BOOL PLAYBELL = YES;
     //NSLog(@"SCROLL-DOWN[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
     [self showCursor:NO];
     idx=[self getIndex:0 y:SCROLL_TOP];
-    [STORAGE insertAttributedString:[self attrString:@"\n"  ascii:YES] atIndex:idx];
+    [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
     if (SCROLL_BOTTOM>=HEIGHT-1) {
         idx=[self getIndex:0 y:SCROLL_BOTTOM];
         aRange = NSMakeRange(idx-1, [STORAGE length]-idx);
@@ -1311,13 +1314,13 @@ static BOOL PLAYBELL = YES;
     idx=[self getIndex:CURSOR_X y:CURSOR_Y];
     if (CURSOR_IN_MIDDLE) {
         [STORAGE replaceCharactersInRange:NSMakeRange(idx,1)
-                     withAttributedString:[self attrString:@"??"  ascii:YES]];
+                     withAttributedString:[self defaultAttrString:@"??"]];
         idx++;
     }
     if (idx<[STORAGE length])
-        [STORAGE insertAttributedString:[self attrString:[NSString stringWithCharacters:spaces length:n]  ascii:YES] atIndex:idx];
+        [STORAGE insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]] atIndex:idx];
     else
-        [STORAGE appendAttributedString:[self attrString:[NSString stringWithCharacters:spaces length:n]  ascii:YES]];
+        [STORAGE appendAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]  ]];
     [self trimLine:CURSOR_Y];
 }
 
@@ -1330,7 +1333,7 @@ static BOOL PLAYBELL = YES;
     [self showCursor:NO];
     for(;n>0;n--) {
         idx=[self getIndex:0 y:CURSOR_Y];
-        [STORAGE insertAttributedString:[self attrString:@"\n"  ascii:YES] atIndex:idx];
+        [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
             idx=[self getIndex:0 y:SCROLL_BOTTOM];
             aRange = NSMakeRange(idx-1,[STORAGE length]-idx);
@@ -1364,11 +1367,11 @@ static BOOL PLAYBELL = YES;
             aRange.length = 1;
         [STORAGE deleteCharactersInRange:aRange];
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
-            [STORAGE appendAttributedString:[self attrString:@"\n"  ascii:YES]];
+            [STORAGE appendAttributedString:[self defaultAttrString:@"\n"]];
         }
         else {
             idx=[self getIndex:0 y:SCROLL_BOTTOM+1];
-            [STORAGE insertAttributedString:[self attrString:@"\n"  ascii:YES] atIndex:idx];
+            [STORAGE insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
         }
     }
 }
@@ -1486,6 +1489,32 @@ static BOOL PLAYBELL = YES;
 
     return attr;
 }
+
+- (NSAttributedString *)defaultAttrString:(NSString *)str
+{
+    NSMutableAttributedString *attr;
+    NSMutableDictionary *dic=[NSMutableDictionary dictionary];
+
+    if (str==nil) {
+        NSLog(@"defaultAttrString: nil received!");
+        str=@"";
+    }
+    [dic setObject:FONT forKey:NSFontAttributeName];
+    [dic setObject:[NSNumber numberWithInt:1] forKey:NSCharWidthAttributeName];
+    [dic setObject:[TERMINAL defaultFGColor]
+            forKey:NSForegroundColorAttributeName];
+    [dic setObject:[TERMINAL defaultBGColor]
+            forKey:NSBackgroundColorAttributeName];
+    
+    attr = [[NSAttributedString alloc]
+               initWithString:str
+                   attributes:dic];
+
+    [attr autorelease];
+
+    return attr;
+}
+
 
 - (BOOL) isDoubleWidthCharacter:(unichar)code
 {

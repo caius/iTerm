@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.120 2004-02-19 17:05:31 ujwal Exp $
+// $Id: PTYTextView.m,v 1.121 2004-02-19 19:42:58 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -362,6 +362,20 @@
 	forceUpdate = flag;
 }
 
+
+// We override this method since both refresh and window resize can conflict resulting in this happening twice
+// So we do not allow the size to be set larger than what the data source can fill
+- (void) setFrameSize: (NSSize) aSize
+{
+	//NSLog(@"%s (0x%x): setFrameSize to (%f,%f)", __PRETTY_FUNCTION__, self, aSize.width, aSize.height);
+
+	NSSize anotherSize = aSize;
+	
+	anotherSize.height = [dataSource numberOfLines] * lineHeight;
+	
+	[super setFrameSize: anotherSize];
+}
+
 - (void) refresh
 {
 	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
@@ -378,47 +392,16 @@
         {
             NSRect aFrame;
             
+			//NSLog(@"%s: 0x%x; new number of lines = %d; resizing height from %f to %d", 
+			//	  __PRETTY_FUNCTION__, self, numberOfLines, [self frame].size.height, height);
             aFrame = [self frame];
             aFrame.size.height = height;
             [self setFrame: aFrame];
 			if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) [self scrollEnd];
         }
     }
-
-#if 0
-	
-	// find out which lines need redrawing
-	char *dirty;
-	int width, i, j, cursorLine;
-	NSRect lineRect;
-	BOOL lineNeedsDrawing;
-	
-	width = [dataSource width];
-	height = [dataSource height];
-	dirty = [dataSource dirty];
-	cursorLine = [dataSource cursorY] - 1;
-	for(i = 0; i < height; i++)
-	{
-		lineNeedsDrawing = NO;
-		for(j = 0; j < width; j++)
-		{
-			// trigger display of line if it is dirty or has the cursor
-			if(dirty[i*width + j] || (i == cursorLine) || forceUpdate)
-				lineNeedsDrawing = YES;
-		}
-		if(lineNeedsDrawing)
-		{
-			lineRect = NSMakeRect(0, 0, [self frame].size.width, lineHeight);
-			lineRect.origin.y = ([dataSource numberOfLines] - height + i) * lineHeight;
-			[self setNeedsDisplayInRect: lineRect];
-		}
-	}
-	
-#else
 	
 	[self setNeedsDisplay: YES];
-
-#endif
 	
 }
 
@@ -606,11 +589,12 @@
 - (void)drawRect:(NSRect)rect
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView drawRect:(%f,%f,%f,%f)]",
-          __FILE__, __LINE__,
-          rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+    NSLog(@"%s(0x%x):-[PTYTextView drawRect:(%f,%f,%f,%f) frameRect: (%f,%f,%f,%f)]",
+          __PRETTY_FUNCTION__, self,
+          rect.origin.x, rect.origin.y, rect.size.width, rect.size.height,
+		  [self frame].origin.x, [self frame].origin.y, [self frame].size.width, [self frame].size.height);
 #endif
-	
+		
     int numLines, i, j, t, lineOffset, WIDTH;
 	int startScreenLineIndex,line, lineIndex;
     unichar *buf;
@@ -660,6 +644,12 @@
     {
 		curX=0;
         line = i + lineOffset;
+		
+		if(line >= [dataSource numberOfLines])
+		{
+			NSLog(@"%s (0x%x): illegal line index %d >= %d", __PRETTY_FUNCTION__, self, line, [dataSource numberOfLines]);
+			break;
+		}
 		
 		// Check if we are drawing a line in buffer
 		if (line<startScreenLineIndex) {

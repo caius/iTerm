@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.187 2004-02-19 02:52:15 yfabian Exp $
+// $Id: VT100Screen.m,v 1.188 2004-02-19 19:43:00 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1453,7 +1453,6 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen numberOfLines]",  __FILE__, __LINE__ );
 #endif
-        
     return ((bufferWrapped?scrollbackLines:lastBufferLineIndex)+HEIGHT);
 }
 

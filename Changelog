@@ -1,6 +1,7 @@
 2004-02-19  ujwal
 
 	* Forcing redraw when tabview is redrawn.
+	* Fixed scrollbar problem.
 
 2004-02-18  ujwal
 

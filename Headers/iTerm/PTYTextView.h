@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.14 2004-02-19 17:05:33 ujwal Exp $
+// $Id: PTYTextView.h,v 1.15 2004-02-19 19:43:04 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -159,6 +159,7 @@ typedef struct
 - (void) setCharWidth: (float) width;
 
 - (void) refresh;
+- (void) setFrameSize: (NSSize) aSize;
 - (void) setForceUpdate: (BOOL) flag;
 - (void) showCursor;
 - (void) hideCursor;

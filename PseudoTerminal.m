@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.259 2004-02-19 17:05:31 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.260 2004-02-19 19:42:59 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -939,7 +939,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 		
 	
-    frame = [[[_sessionMgr currentSession] TEXTVIEW] frame];
+    frame = [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect];
 #if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 		  frame.origin.x, frame.origin.y,
@@ -954,7 +954,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
         //[[[_sessionMgr sessionAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
-		[[[_sessionMgr sessionAtIndex:i] TEXTVIEW] refresh];
+		//[[[_sessionMgr sessionAtIndex:i] TEXTVIEW] refresh];
     }
     
     WIDTH = w;

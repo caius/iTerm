@@ -86,14 +86,14 @@
 					<key>Description</key>
 					<string>Number of columns</string>
 					<key>Name</key>
-					<string>columns</string>
+					<string>number of columns</string>
 				</dict>
 				<key>rows</key>
 				<dict>
 					<key>Description</key>
 					<string>Number of rows</string>
 					<key>Name</key>
-					<string>rows</string>
+					<string>number of rows</string>
 				</dict>
 			</dict>
 			<key>Description</key>
@@ -154,6 +154,30 @@
 			<string>Selects a specified session</string>
 			<key>Name</key>
 			<string>select</string>
+		</dict>
+		<key>write</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>contentsOfFile</key>
+				<dict>
+					<key>Description</key>
+					<string>File to be written</string>
+					<key>Name</key>
+					<string>contents of file</string>
+				</dict>
+				<key>text</key>
+				<dict>
+					<key>Description</key>
+					<string>Text to be written</string>
+					<key>Name</key>
+					<string>text</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>Writes text or file contents into a session</string>
+			<key>Name</key>
+			<string>write</string>
 		</dict>
 	</dict>
 	<key>Description</key>

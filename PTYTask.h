@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.2 2003-02-12 07:52:47 ujwal Exp $
+// $Id: PTYTask.h,v 1.3 2003-04-29 07:02:17 ujwal Exp $
 /*
  **  PTYTask.h
  **
@@ -50,6 +50,7 @@
 
     NSString *LOG_PATH;
     NSFileHandle *LOG_HANDLE;
+    BOOL hasOutput;
 }
 
 - (id)init;
@@ -81,6 +82,8 @@
 - (BOOL)loggingStartWithPath:(NSString *)path;
 - (void)loggingStop;
 - (BOOL)logging;
+- (BOOL) hasOutput;
+- (void) setHasOutput: (BOOL) flag;
 
 - (NSString *)description;
 

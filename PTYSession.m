@@ -37,6 +37,8 @@
 #import "NSStringITerm.h"
 #import "PTYTabViewitem.h"
 
+#include <unistd.h>
+
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
@@ -1336,6 +1338,64 @@ static NSString *PWD_ENVVALUE = @"~";
     [parent selectSession: self];
 }
 
+-(void)handleWriteScriptCommand: (NSScriptCommand *)command
+{
+    // Get the command's arguments:
+    NSDictionary *args = [command evaluatedArguments];
+    // optional argument follows (might be nil):
+    NSString *contentsOfFile = [args objectForKey:@"contentsOfFile"];
+    // optional argument follows (might be nil):
+    NSString *text = [args objectForKey:@"text"];
+    NSData *data = nil;
+    NSString *aString = nil;
 
+    if(text != nil)
+    {
+
+	aString = [NSString stringWithFormat:@"%@\n", text];
+	data = [aString dataUsingEncoding: [TERMINAL encoding]];
+	
+    }
+
+    if(contentsOfFile != nil)
+    {
+
+	aString = [NSString stringWithContentsOfFile: contentsOfFile];
+	data = [aString dataUsingEncoding: [TERMINAL encoding]];
+	
+    }
+
+    if(data != nil && [SHELL pid] > 0)
+    {
+	int i = 0;
+	// wait here until we have had some output
+	while([SHELL hasOutput] == NO && i < 5000000)
+	{
+	    usleep(50000);
+	    i += 50000;
+	}
+	
+	// do this in a new thread so that we don't get stuck.
+	[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:data];
+    }
+    
+
+}
+
+@end
+
+@implementation PTYSession (Private)
+
+-(void)_waitToWriteToTask: (NSData *) data
+{
+    int i = 0;
+    // wait here until we have had some output
+    while([SHELL hasOutput] == NO && i < 5000000)
+    {
+	usleep(50000);
+	i += 50000;
+    }
+    [SHELL writeTask: data];
+}
 
 @end

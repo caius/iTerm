@@ -86,6 +86,8 @@
 				<string>handleExecScriptCommand:</string>
 				<key>select</key>
 				<string>handleSelectScriptCommand:</string>
+				<key>write</key>
+				<string>handleWriteScriptCommand:</string>
 			</dict>
 			<key>ToOneRelationships</key>
 			<dict>
@@ -198,6 +200,36 @@
 			<string>ITRM</string>
 			<key>AppleEventCode</key>
 			<string>Slct</string>
+			<key>CommandClass</key>
+			<string>NSScriptCommand</string>
+		</dict>
+		<key>write</key>
+		<dict>
+			<key>AppleEventClassCode</key>
+			<string>ITRM</string>
+			<key>AppleEventCode</key>
+			<string>Wrte</string>
+			<key>Arguments</key>
+			<dict>
+				<key>contentsOfFile</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>iFil</string>
+					<key>Optional</key>
+					<string>YES</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
+				<key>text</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>iTxt</string>
+					<key>Optional</key>
+					<string>YES</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
+			</dict>
 			<key>CommandClass</key>
 			<string>NSScriptCommand</string>
 		</dict>

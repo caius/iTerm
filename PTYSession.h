@@ -196,3 +196,9 @@
 -(void)handleExecScriptCommand: (NSScriptCommand *)aCommand;
 
 @end
+
+@interface PTYSession (Private)
+
+-(void)_waitToWriteToTask: (NSData *) data;
+
+@end

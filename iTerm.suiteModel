@@ -296,7 +296,7 @@
 					<key>name</key>
 					<string>exec</string>
 					<key>presentationOrder</key>
-					<integer>1</integer>
+					<integer>2</integer>
 					<key>xmlEncodingVersion</key>
 					<string>2.0</string>
 				</dict>
@@ -310,6 +310,19 @@
 					<string>select</string>
 					<key>presentationOrder</key>
 					<integer>0</integer>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>write</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict/>
+					<key>methodName</key>
+					<string>handleWriteScriptCommand:</string>
+					<key>name</key>
+					<string>write</string>
+					<key>presentationOrder</key>
+					<integer>1</integer>
 					<key>xmlEncodingVersion</key>
 					<string>2.0</string>
 				</dict>
@@ -383,7 +396,7 @@
 						<key>description</key>
 						<string>Number of columns</string>
 						<key>humanReadableName</key>
-						<string>columns</string>
+						<string>number of columns</string>
 						<key>number</key>
 						<string>singular</string>
 						<key>sex</key>
@@ -416,7 +429,7 @@
 						<key>description</key>
 						<string>Number of rows</string>
 						<key>humanReadableName</key>
-						<string>rows</string>
+						<string>number of rows</string>
 						<key>number</key>
 						<string>singular</string>
 						<key>sex</key>
@@ -690,6 +703,83 @@
 			<string>NSScriptCommand</string>
 			<key>presentationOrder</key>
 			<integer>2</integer>
+			<key>resultAppleEventCode</key>
+			<string></string>
+			<key>type</key>
+			<string></string>
+			<key>xmlEncodingVersion</key>
+			<string>2.0</string>
+		</dict>
+		<key>write</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>contentsOfFile</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>File to be written</string>
+						<key>humanReadableName</key>
+						<string>contents of file</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>iFil</string>
+					<key>optional</key>
+					<string>YES</string>
+					<key>presentationOrder</key>
+					<integer>1</integer>
+					<key>type</key>
+					<string>NSString</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>text</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Text to be written</string>
+						<key>humanReadableName</key>
+						<string>text</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>iTxt</string>
+					<key>optional</key>
+					<string>YES</string>
+					<key>presentationOrder</key>
+					<integer>0</integer>
+					<key>type</key>
+					<string>NSString</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+			</dict>
+			<key>English.lproj</key>
+			<dict>
+				<key>description</key>
+				<string>Writes text or file contents into a session</string>
+				<key>humanReadableName</key>
+				<string>write</string>
+				<key>isVerb</key>
+				<string>YES</string>
+			</dict>
+			<key>appleEventClassCode</key>
+			<string>ITRM</string>
+			<key>appleEventCode</key>
+			<string>Wrte</string>
+			<key>commandClass</key>
+			<string>NSScriptCommand</string>
+			<key>presentationOrder</key>
+			<integer>3</integer>
 			<key>resultAppleEventCode</key>
 			<string></string>
 			<key>type</key>

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.164 2004-03-09 21:33:30 yfabian Exp $
+// $Id: PTYTextView.m,v 1.165 2004-03-10 19:29:00 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -912,6 +912,12 @@
     x = (locationInTextView.x-MARGIN)/charWidth;
 	if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
+	if(locationInTextView.x < MARGIN)
+	{
+		// complete selection of previous line
+		x = [dataSource width] - 1;
+		y--;
+	}		
     if (x>=[dataSource width]) x=[dataSource width];
     endX = startX = x;
     endY = startY = y;
@@ -938,7 +944,7 @@
 	if (x<0) x=0;
     if (x>=[dataSource width]) x=[dataSource width] - 1;
     y = locationInTextView.y/lineHeight;
-	if(locationInTextView.x < 0)
+	if(locationInTextView.x < MARGIN)
 	{
 		// complete selection of previous line
 		x = [dataSource width] - 1;
@@ -970,7 +976,7 @@
 		{
 			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
 			if(([aString length] == 0 || 
-				[aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0) &&
+				[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
 			   [wordChars rangeOfString: aString].length == 0)
 				break;
 			tmpX--;
@@ -998,7 +1004,7 @@
 		// if we are on a non-word char, deselect.
 		aString = [self contentFromX:startX Y:startY ToX:startX Y:startY];
 		if(([aString length] == 0 || 
-			[aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0) &&
+			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
 		   [wordChars rangeOfString: aString].length == 0)
 			startX = -1;
 		
@@ -1010,7 +1016,7 @@
 		{
 			aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY];
 			if(([aString length] == 0 || 
-				[aString rangeOfCharacterFromSet: [NSCharacterSet letterCharacterSet]].length == 0) &&
+				[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
 			   [wordChars rangeOfString: aString].length == 0)
 				break;
 			tmpX++;
@@ -1081,7 +1087,7 @@
 	if (x>=[dataSource width]) x=[dataSource width] - 1;
     
 	y = locationInTextView.y/lineHeight;
-	if(locationInTextView.x < 0)
+	if(locationInTextView.x < MARGIN)
 	{
 		// complete selection of previous line
 		x = [dataSource width] - 1;

@@ -1,5 +1,11 @@
 2003-03-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
+    * Fixed a bug in changing forground and background color 
+      in a session.
+      
+
+2003-03-03	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
     * Incorporated Max Horn's patches for a variety of 
       enhancements and fixes for some bugs and memory leaks.
       

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.36 2003-03-04 01:20:42 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.37 2003-03-04 16:35:30 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1699,16 +1699,28 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void) initDefaultCharacterAttributeDictionary
 {
-    [defaultCharacterAttributeDictionary[0] setObject:[self colorWithCode:FG_COLORCODE]
+
+    NSColor *fg, *bg;
+
+    fg = [self defaultFGColor];
+    bg = [self defaultBGColor];
+
+    if(fg == nil || (FG_COLORCODE != COLORCODE_FG_DEFAULT))
+	fg = [self colorWithCode: FG_COLORCODE];
+
+    if(fg == nil || (FG_COLORCODE != COLORCODE_FG_DEFAULT))
+	fg = [self colorWithCode: FG_COLORCODE];
+    
+    [defaultCharacterAttributeDictionary[0] setObject:fg
 			  forKey:NSForegroundColorAttributeName];
-    [defaultCharacterAttributeDictionary[0] setObject:[self colorWithCode:BG_COLORCODE]
+    [defaultCharacterAttributeDictionary[0] setObject:bg
 			  forKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
                                                forKey:@"NSCharWidthAttributeName"];
-    [defaultCharacterAttributeDictionary[1] setObject:[self colorWithCode:FG_COLORCODE]
+    [defaultCharacterAttributeDictionary[1] setObject:fg
                                                                     forKey:NSForegroundColorAttributeName];
-    [defaultCharacterAttributeDictionary[1] setObject:[self colorWithCode:BG_COLORCODE]
+    [defaultCharacterAttributeDictionary[1] setObject:bg
                                                                     forKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
@@ -1891,12 +1903,20 @@ static VT100TCC decode_string(unsigned char *datap,
 {
     [DefaultFG autorelease];
     DefaultFG=[color copy];
+    // reset our default character attributes
+    [defaultCharacterAttributeDictionary[0] setObject:color forKey:NSForegroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[1] setObject:color forKey:NSForegroundColorAttributeName];
+    
 }
 
 - (void) setBGColor:(NSColor*)color
 {
     [DefaultBG autorelease];
     DefaultBG=[color copy];
+    // reset our default character attributes
+    [defaultCharacterAttributeDictionary[0] setObject:color forKey:NSBackgroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[1] setObject:color forKey:NSBackgroundColorAttributeName];
+
 }
 
 - (NSColor *) defaultFGColor

@@ -43,6 +43,7 @@
     IBOutlet NSButton *focusFollowsMouse;
 	IBOutlet NSTextField *wordChars;
 	IBOutlet NSWindow *profilesWindow;
+	IBOutlet NSButton *enableRendezvous;
 	
 	// Bookmark stuff
 	IBOutlet NSOutlineView *bookmarksView;
@@ -71,6 +72,7 @@
     int defaultTabViewType;
     BOOL defaultPromptOnClose;
     BOOL defaultFocusFollowsMouse;
+	BOOL defaultEnableRendezvous;
 	NSString *defaultWordChars;
 }
 
@@ -108,6 +110,7 @@
 - (void) setTabViewType: (NSTabViewType) type;
 - (BOOL) promptOnClose;
 - (BOOL) focusFollowsMouse;
+- (BOOL) enableRendezvous;
 - (NSString *) wordChars;
 
 @end

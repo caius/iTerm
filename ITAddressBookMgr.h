@@ -57,7 +57,7 @@
 
 - (void) setBookmarks: (NSDictionary *) aDict;
 - (NSDictionary *) bookmarks;
-
+- (void) locateRendezvousServices;
 - (void) migrateOldBookmarks;
 
 // Model for NSOutlineView tree structure

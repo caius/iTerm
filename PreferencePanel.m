@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.117 2004-04-20 15:42:59 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.118 2004-05-27 03:00:16 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -61,6 +61,8 @@ static BOOL editingBookmark = NO;
 	self = [super init];
 	
 	[self readPreferences];
+	if(defaultEnableRendezvous == YES)
+		[[ITAddressBookMgr sharedInstance] locateRendezvousServices];
 	
 	// get the version
 	NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
@@ -119,6 +121,7 @@ static BOOL editingBookmark = NO;
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
+	defaultEnableRendezvous = [prefs objectForKey:@"EnableRendezvous"]?[[prefs objectForKey:@"EnableRendezvous"] boolValue]: YES;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
 	
@@ -156,6 +159,7 @@ static BOOL editingBookmark = NO;
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
+	[prefs setBool:defaultEnableRendezvous forKey:@"EnableRendezvous"];
 	[prefs setObject: defaultWordChars forKey: @"WordCharacters"];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
 	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
@@ -178,6 +182,7 @@ static BOOL editingBookmark = NO;
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
+	[enableRendezvous setState: defaultEnableRendezvous?NSOnState:NSOffState];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
 	
 	[self showWindow: self];
@@ -199,6 +204,7 @@ static BOOL editingBookmark = NO;
     defaultHideTab=([hideTab state]==NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
+	defaultEnableRendezvous = ([enableRendezvous state] == NSOnState);
 	[defaultWordChars release];
 	defaultWordChars = [[wordChars stringValue] retain];
 
@@ -521,6 +527,11 @@ static BOOL editingBookmark = NO;
 - (BOOL) focusFollowsMouse
 {
     return (defaultFocusFollowsMouse);
+}
+
+- (BOOL) enableRendezvous
+{
+	return (defaultEnableRendezvous);
 }
 
 - (NSString *) wordChars

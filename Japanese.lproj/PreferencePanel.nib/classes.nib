@@ -34,6 +34,7 @@
                 bookmarksView = NSOutlineView; 
                 deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
+                enableRendezvous = NSButton; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
                 middleButtonPastesFromClipboard = NSButton; 

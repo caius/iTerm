@@ -7,7 +7,7 @@
       even though the window sizes were not changed.
       
     * Fixed a window sizing problem that was evident in vi.
-      I wish NSTaView would offer to calculate its frame 
+      I wish NSTabView would offer to calculate its frame 
       based on content size just like NSScrollView.
     
 

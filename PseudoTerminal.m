@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.194 2003-06-28 19:11:26 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.195 2003-07-06 23:12:47 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1654,8 +1654,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(currentABEntry != nil)
     {
 	[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]] forKey: @"Encoding"];
-	[currentABEntry setObject: [[currentPtySession TERMINAL] defaultFGColor] forKey: @"Foreground"];
-	[currentABEntry setObject: [[currentPtySession TERMINAL] defaultBGColor] forKey: @"Background"];
+	[currentABEntry setObject: [currentPtySession foregroundColor] forKey: @"Foreground"];
+	[currentABEntry setObject: [currentPtySession backgroundColor] forKey: @"Background"];
+	[currentABEntry setObject: [currentPtySession boldColor] forKey: @"BoldColor"];
+	[currentABEntry setObject: [currentPtySession selectionColor] forKey: @"SelectionColor"];
 	[currentABEntry setObject: [NSString stringWithInt:WIDTH] forKey: @"Col"];
 	[currentABEntry setObject: [NSString stringWithInt:HEIGHT] forKey: @"Row"];
 	[currentABEntry setObject: [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100] forKey: @"Transparency"];
@@ -1682,8 +1684,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	    [currentPtySession name],@"Name",
 	    [[currentPtySession SHELL] path],@"Command",
 	    [NSNumber numberWithUnsignedInt:[[currentPtySession TERMINAL] encoding]],@"Encoding",
-	    [[currentPtySession TERMINAL] defaultFGColor],@"Foreground",
-	    [[currentPtySession TERMINAL] defaultBGColor],@"Background",
+	    [currentPtySession foregroundColor],@"Foreground",
+	    [currentPtySession backgroundColor],@"Background",
+	    [currentPtySession boldColor],@"BoldColor",
+	    [currentPtySession selectionColor],@"SelectionColor",
 	    [NSString stringWithInt:WIDTH],@"Col",
 	    [NSString stringWithInt:HEIGHT],@"Row",
 	    [NSNumber numberWithInt:100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100],@"Transparency",

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.155 2003-09-16 17:25:04 ujwal Exp $
+// $Id: VT100Screen.m,v 1.156 2003-09-24 06:59:06 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -362,6 +362,11 @@ static BOOL PLAYBELL = YES;
     scrollbackLines=lines;
 }
 
+- (PTYSession *) session
+{
+    return (SESSION);
+}
+
 - (void)setSession:(PTYSession *)session
 {
     [SESSION release];
@@ -457,7 +462,6 @@ static BOOL PLAYBELL = YES;
 {
     blinkingCursor = flag;
 }
-
 
 -(void) initScreen
 {

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.79 2003-09-13 04:08:04 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.80 2003-09-24 06:59:06 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -29,6 +29,7 @@
  */
 
 #import <iTerm/VT100Terminal.h>
+#import <iTerm/PTYSession.h>
 #import <iTerm/VT100Screen.h>
 #import <iTerm/NSStringITerm.h>
 
@@ -1836,18 +1837,24 @@ static VT100TCC decode_string(unsigned char *datap,
                                                                forKey:NSForegroundColorAttributeName];
                     [defaultCharacterAttributeDictionary[1] setObject:fg
                                                                forKey:NSForegroundColorAttributeName];
-                    [defaultCharacterAttributeDictionary[0] setObject:bg
-                                                               forKey:NSBackgroundColorAttributeName];
-                    [defaultCharacterAttributeDictionary[1] setObject:bg
-                                                               forKey:NSBackgroundColorAttributeName];
                     [characterAttributeDictionary[0] setObject:fg
                                                                forKey:NSForegroundColorAttributeName];
                     [characterAttributeDictionary[1] setObject:fg
                                                                forKey:NSForegroundColorAttributeName];
-                    [characterAttributeDictionary[0] setObject:bg
-                                                               forKey:NSBackgroundColorAttributeName];
-                    [characterAttributeDictionary[1] setObject:bg
-                                                               forKey:NSBackgroundColorAttributeName];
+		    
+		    // if we have a background image, don't se the backgound colors
+		    if([[SCREEN session] image] == nil)
+		    {
+			[defaultCharacterAttributeDictionary[0] setObject:bg
+										 forKey:NSBackgroundColorAttributeName];
+			[defaultCharacterAttributeDictionary[1] setObject:bg
+										 forKey:NSBackgroundColorAttributeName];
+			[characterAttributeDictionary[0] setObject:bg
+								   forKey:NSBackgroundColorAttributeName];
+			[characterAttributeDictionary[1] setObject:bg
+								   forKey:NSBackgroundColorAttributeName];
+		    }
+			
                     [SCREEN setScreenAttributes];
                     break;
                 case 6:  ORIGIN_MODE = mode; break;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.4 2003-09-16 17:25:09 ujwal Exp $
+// $Id: VT100Screen.h,v 1.5 2003-09-24 06:58:59 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -99,6 +99,7 @@
 - (VT100Terminal *)terminal;
 - (void)setShellTask:(PTYTask *)shell;
 - (PTYTask *)shellTask;
+- (PTYSession *) session;
 - (void)setSession:(PTYSession *)session;
 
 - (void)setTextStorage:(NSTextStorage *)storage;

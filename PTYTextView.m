@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.195 2004-04-06 18:42:23 yfabian Exp $
+// $Id: PTYTextView.m,v 1.196 2004-04-07 19:51:28 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -652,7 +652,7 @@ static SInt32 systemVersion;
 	BOOL need_draw;
 	int bgstart, ulstart;
     float curX, curY;
-	unsigned int bgcode, fgcode, c;
+	unsigned int bgcode, fgcode;
 	int y1, x1;
 	BOOL double_width;
 	BOOL reversed = [[dataSource terminal] screenMode]; 

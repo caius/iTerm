@@ -45,7 +45,6 @@
     IBOutlet id promptOnClose;
     IBOutlet id silenceBell;
     IBOutlet id blinkingCursor;
-    IBOutlet NSButton *enforceCharacterAlignment;
     IBOutlet NSButton *focusFollowsMouse;
     
     NSUserDefaults *prefs;
@@ -62,7 +61,6 @@
     BOOL defaultOpenAddressBook;
     BOOL defaultPromptOnClose;
     BOOL defaultBlinkingCursor;
-    BOOL defaultEnforceCharacterAlignment;
     BOOL defaultFocusFollowsMouse;
 }
 
@@ -90,7 +88,6 @@
 - (BOOL) promptOnClose;
 - (BOOL) openAddressBook;
 - (BOOL) blinkingCursor;
-- (BOOL) enforceCharacterAlignment;
 - (BOOL) focusFollowsMouse;
 
 @end

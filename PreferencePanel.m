@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.66 2004-02-05 20:48:07 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.67 2004-02-24 21:37:43 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -96,7 +96,6 @@ static float versionNumber;
     defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultBlinkingCursor = [prefs objectForKey:@"BlinkingCursor"]?[[prefs objectForKey:@"BlinkingCursor"] boolValue]: NO;
-    defaultEnforceCharacterAlignment = [prefs objectForKey:@"EnforceCharacterAlignment"]?[[prefs objectForKey:@"EnforceCharacterAlignment"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 }
 
@@ -119,8 +118,7 @@ static float versionNumber;
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [blinkingCursor setState: defaultBlinkingCursor?NSOnState:NSOffState];
-    [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];
-    [focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
+	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
     
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -145,7 +143,6 @@ static float versionNumber;
     defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultBlinkingCursor = ([blinkingCursor state] == NSOnState);
-    defaultEnforceCharacterAlignment = ([enforceCharacterAlignment state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 
     [prefs setBool:defaultMacNavKeys forKey:@"MacNavKeys"];
@@ -158,7 +155,6 @@ static float versionNumber;
     [prefs setBool:defaultOpenAddressBook forKey:@"OpenAddressBook"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
-    [prefs setBool:defaultEnforceCharacterAlignment forKey:@"EnforceCharacterAlignment"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
     
     [NSApp stopModal];
@@ -174,7 +170,6 @@ static float versionNumber;
     defaultTabViewType = NSTopTabsBezelBorder;
     defaultOpenAddressBook = NO;
     defaultBlinkingCursor = NO;
-    defaultEnforceCharacterAlignment = YES;
 
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
@@ -185,7 +180,6 @@ static float versionNumber;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [tabPosition selectCellWithTag: defaultTabViewType];
     [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
-    [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];    
 }
 
 - (BOOL) antiAlias
@@ -246,11 +240,6 @@ static float versionNumber;
 - (BOOL) blinkingCursor
 {
     return (defaultBlinkingCursor);
-}
-
-- (BOOL) enforceCharacterAlignment
-{
-    return (defaultEnforceCharacterAlignment);
 }
 
 - (BOOL) focusFollowsMouse

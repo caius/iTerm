@@ -2,6 +2,7 @@
 
 	* Added back support for blinking cursor. Reduced blink frequency.
 	* Added back support for "Focus follows mouse".
+	* Removed preference for "Enforce character alignment"
 
 2004-02-23  ujwal
 

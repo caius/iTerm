@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.78 2003-03-27 21:08:43 yfabian Exp $
+// $Id: VT100Screen.m,v 1.79 2003-03-28 02:37:32 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -524,7 +524,9 @@ static BOOL PLAYBELL = YES;
     static unichar s[300]={0};
     int i;
     NSString *str;
+#if USE_CUSTOM_DRAWING
     NSMutableAttributedString *aLine;
+#endif
     
     switch (token.type) {
     // our special code
@@ -546,10 +548,12 @@ static BOOL PLAYBELL = YES;
     case VT100CC_LF:
     case VT100CC_VT:
     case VT100CC_FF:
+#if USE_CUSTOM_DRAWING
         aLine=[screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
         if ([aLine length]<=0||[[aLine string] characterAtIndex:[aLine length]-1]!='\n') {
             [aLine appendAttributedString:[self attrString:@"\n"  ascii:YES]];
         }
+#endif
         [self setNewLine]; break;
     case VT100CC_CR:  CURSOR_X = 0; break;
     case VT100CC_SO:  break;
@@ -1852,7 +1856,9 @@ static BOOL PLAYBELL = YES;
 #endif
     
     [self trimLine:CURSOR_Y];
+#if USE_CUSTOM_DRAWING
     [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
+#endif
 
 }
 
@@ -2142,7 +2148,7 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
 #endif
 
-#ifdef USE_CUSTOM_DRAWING
+#if USE_CUSTOM_DRAWING
 #else
     NSColor *fg, *bg,*blink;
     NSDictionary *dic;

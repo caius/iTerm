@@ -1,3 +1,9 @@
+2003-03-27	ujwal
+
+    * Protected some ARRAY specific code in #if USE_CUSTOM_DRAWING
+      ...#endif so that BUFFER code does not crash.
+      
+
 2003-03-27	fabian
     * Bug fixes in ARRAY mode
     * We periodically scroll to the end to reduce amount

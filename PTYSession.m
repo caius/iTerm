@@ -24,6 +24,7 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#import "iTerm.h"
 #import "PTYSession.h"
 #import "PTYTask.h"
 #import "PTYTextView.h"
@@ -243,7 +244,9 @@ static NSString *PWD_ENVVALUE = @"~";
         }
     }
 
+#if USE_CUSTOM_DRAWING
     [TEXTVIEW hideCursor];
+#endif
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 	   token.type != VT100CC_NULL &&
 	   token.type != VT100_WAIT))
@@ -256,7 +259,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
-    
+
 #if USE_CUSTOM_DRAWING
     [TEXTVIEW showCursor];
     [TEXTVIEW refresh];

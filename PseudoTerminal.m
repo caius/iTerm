@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.85 2003-01-27 23:05:16 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.86 2003-01-28 22:28:31 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -153,6 +153,7 @@ static NSString *ConfigToolbarItem = @"Config";
     PTYSession *aSession;
     PTYTabViewItem *aTabViewItem;
     PTYScrollView *aScrollView;
+    NSSize aSize;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal initSession]",
@@ -175,7 +176,7 @@ static NSString *ConfigToolbarItem = @"Config";
     NSParameterAssert(aScrollView != nil);
     [aTabViewItem setView: aScrollView];
     [aScrollView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-    [SCROLLVIEW setLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [aScrollView setLineScroll: ([VT100Screen fontSize: FONT].height)];
     [aScrollView release];
 
     // Init the rest of the session
@@ -183,7 +184,8 @@ static NSString *ConfigToolbarItem = @"Config";
     [aSession setParent: self];
     [aSession setPreference: pref];
     [aSession setMainMenu: MAINMENU];
-    [aSession initScreen: [SCROLLVIEW documentVisibleRect]];
+    aSize = [PTYScrollView contentSizeForFrameSize: [aScrollView frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [aScrollView borderType]];
+    [aSession initScreen: NSMakeRect(0, 0, aSize.width, aSize.height)];
     // Set this session to be the current session
     [aScrollView setDocumentView:[aSession TEXTVIEW]];
     [aTabViewItem setLabel: @""];

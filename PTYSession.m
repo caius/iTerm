@@ -844,10 +844,8 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
 
     NSSize termSize;
-
-    termSize = [VT100Screen screenSizeInFrame: [textView frame] font: [SCREEN font]];
-    [SHELL setWidth: (int) termSize.width height: (int) termSize.height];
-    [SCREEN resizeWidth: (int) termSize.width height: (int) termSize.height];
+    [[self parent] windowDidResize: nil];
+    [textView scrollEnd];
 }
 
 - (void) timerTick:(NSTimer*)sender

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.47 2004-05-24 17:51:44 ujwal Exp $
+// $Id: PTYTextView.h,v 1.48 2004-07-05 16:04:16 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -107,6 +107,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	BOOL mouseDown;
 	BOOL mouseDragged;
     char selectMode;
+	BOOL mouseDownOnSelection;
+	NSEvent *mouseDownEvent;
 	
 	//find support
 	int lastFindX, lastFindY;
@@ -288,6 +290,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) _openURL: (NSString *) aURLString;
 - (void) _clearCacheForColor:(int)colorIndex;
 - (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase;
+- (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent;
+- (void) _dragText: (NSString *) aString forEvent: (NSEvent *) theEvent;
 
 @end
 

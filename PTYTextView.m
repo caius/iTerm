@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.219 2004-06-15 07:12:26 yfabian Exp $
+// $Id: PTYTextView.m,v 1.220 2004-07-05 16:04:12 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -124,6 +124,12 @@ static SInt32 systemVersion;
 #endif
 	int i;
     
+	if(mouseDownEvent != nil)
+    {
+		[mouseDownEvent release];
+		mouseDownEvent = nil;
+    }
+	
 	
     [[NSNotificationCenter defaultCenter] removeObserver:self];    
     for(i=0;i<16;i++) {
@@ -1036,8 +1042,18 @@ static SInt32 systemVersion;
     int x, y;
     int width = [dataSource width];
 	
+	if(mouseDownEvent != nil)
+    {
+		[mouseDownEvent release];
+		mouseDownEvent = nil;
+    }	
+    [event retain];
+    mouseDownEvent = event;
+	
+	
 	mouseDragged = NO;
 	mouseDown = YES;
+	mouseDownOnSelection = NO;
     
     locationInWindow = [event locationInWindow];
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
@@ -1061,6 +1077,13 @@ static SInt32 systemVersion;
             endX = x;
             endY = y;
         }
+		// check if we clicked inside a selection for a possible drag
+		else if(startX > -1 && [self _mouseDownOnSelection: event] == YES)
+		{
+			mouseDownOnSelection = YES;
+			[super mouseDown: event];
+			return;
+		}
         else
         {
             endX = startX = x;
@@ -1142,13 +1165,19 @@ static SInt32 systemVersion;
 	if(mouseDown == NO)
 		return;
 	mouseDown = NO;
+		
     
     if (startY>endY||(startY==endY&&startX>endX)) {
         int t;
         t=startY; startY=endY; endY=t;
         t=startX; startX=endX; endX=t;
     }
-    else if (startY==endY&&startX==endX&&!mouseDragged) startX=-1;
+    else if ([mouseDownEvent locationInWindow].x == [event locationInWindow].x &&
+			 [mouseDownEvent locationInWindow].y == [event locationInWindow].y && 
+			 [event clickCount] < 2 && !mouseDragged) 
+	{
+		startX=-1;
+	}
 	
 	// if we are on an empty line, we select the current line to the end
 	//if([self _isBlankLine: y] && y >= 0)
@@ -1174,16 +1203,28 @@ static SInt32 systemVersion;
 - (void)mouseDragged:(NSEvent *)event
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView mouseDragged:%@]",
-          __FILE__, __LINE__, event );
+    NSLog(@"%s(%d):-[PTYTextView mouseDragged:%@; modifier flags = 0x%x]",
+          __FILE__, __LINE__, event, [event modifierFlags] );
 #endif
     NSPoint locationInWindow = [event locationInWindow];
     NSPoint locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     NSRect  rectInTextView = [self visibleRect];
     int x, y, tmpX1, tmpX2, tmpY1, tmpY2;
     int width = [dataSource width];
+	NSString *theSelectedText;
 	
 	mouseDragged = YES;
+	
+	// check if we want to drag and drop a selection
+	if(mouseDownOnSelection == YES)
+	{
+		theSelectedText = [self contentFromX: startX Y: startY ToX: endX Y: endY breakLines: YES];
+		if([theSelectedText length] > 0)
+		{
+			[self _dragText: theSelectedText forEvent: event];
+			return;
+		}
+	}
     
 	// NSLog(@"(%f,%f)->(%f,%f)",locationInWindow.x,locationInWindow.y,locationInTextView.x,locationInTextView.y); 
     if (locationInTextView.y<rectInTextView.origin.y) {
@@ -1259,7 +1300,7 @@ static SInt32 systemVersion;
             
     [self _selectFromX:startX Y:startY toX:endX Y:endY];
 	[self setNeedsDisplay: YES];
-    //    NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
+	//NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }
 
 - (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines
@@ -1338,7 +1379,7 @@ static SInt32 systemVersion;
 {
 	
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s: insertLineBreaks = %d]", __PRETTY_FUNCTION__, insertLineBreaks );
+    NSLog(@"%s]", __PRETTY_FUNCTION__);
 #endif
 	
 	if (startX == -1) return nil;
@@ -2087,7 +2128,8 @@ static SInt32 systemVersion;
 	NSFont *theFont;
 	float strokeWidth = 0;
 	BOOL renderBold;
-		
+	
+	//NSLog(@"%s: drawing char %c", __PRETTY_FUNCTION__, carac);
 	//NSLog(@"%@",NSStrokeWidthAttributeName);
 	
 	theFont = aFont;
@@ -2134,7 +2176,6 @@ static SInt32 systemVersion;
 										   attributes:attrib] autorelease];
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
-	[crap drawAtPoint:NSMakePoint(0,0)];
 	[crap drawAtPoint:NSMakePoint(0,0)];
 	// on older systems, for bold, redraw the character offset by 1 pixel
 	if (renderBold && (systemVersion < 0x00001030 || !antiAlias))
@@ -2220,7 +2261,7 @@ static SInt32 systemVersion;
 	NSImage *image;
 	
 	if (c) {
-		//NSLog(@"%c(%d)",c,c);
+		//NSLog(@"%s: %c(%d)",__PRETTY_FUNCTION__, c,c);
 		image=[self _getCharImage:c 
 						   color:fg
 					 doubleWidth:dw];
@@ -2594,5 +2635,81 @@ static SInt32 systemVersion;
 	return (NO);
 }
 
+- (void) _dragText: (NSString *) aString forEvent: (NSEvent *) theEvent
+{
+	NSImage *anImage;
+	int length;
+	NSString *tmpString;
+	NSPasteboard *pboard;
+	NSArray *pbtypes;
+	NSSize imageSize;
+    NSPoint dragPoint;
+	NSSize dragOffset = NSMakeSize(0.0, 0.0);
+
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aString);
+
+	
+	length = [aString length];
+	if([aString length] > 15)
+		length = 15;
+	
+	imageSize = NSMakeSize(charWidth*length, lineHeight);
+	anImage = [[NSImage alloc] initWithSize: imageSize];
+    [anImage lockFocus];
+	if([aString length] > 15)
+		tmpString = [NSString stringWithFormat: @"%@...", [aString substringWithRange: NSMakeRange(0, 12)]];
+	else
+		tmpString = [aString substringWithRange: NSMakeRange(0, length)];
+		
+    [tmpString drawInRect: NSMakeRect(0, 0, charWidth*length, lineHeight) withAttributes: nil];
+    [anImage unlockFocus];
+    [anImage autorelease];
+	
+	// get the pasteboard
+    pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+	
+    // Declare the types and put our tabViewItem on the pasteboard
+    pbtypes = [NSArray arrayWithObjects: NSStringPboardType, nil];
+    [pboard declareTypes: pbtypes owner: self];
+    [pboard setString: aString forType: NSStringPboardType];
+	
+    // tell our app not switch windows (currently not working)
+    [NSApp preventWindowOrdering];
+	
+	// drag from center of the image
+    dragPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+    dragPoint.x -= imageSize.width/2;
+	
+    // start the drag
+    [self dragImage:anImage at: dragPoint offset:dragOffset
+			  event: mouseDownEvent pasteboard:pboard source:self slideBack:YES];
+		
+}
+
+- (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent
+{
+	NSPoint locationInWindow, locationInView;
+	int row, col;
+	char theBackgroundAttribute;
+	BOOL result;
+	
+	locationInWindow = [theEvent locationInWindow];
+	
+	locationInView = [self convertPoint: locationInWindow fromView: nil];
+	col = (locationInView.x - MARGIN)/charWidth;
+	row = locationInView.y/lineHeight;
+	
+	theBackgroundAttribute = *([dataSource screenBGColor] + ([dataSource width] * row) + col);
+	
+	
+	
+	if(theBackgroundAttribute & SELECTION_MASK)
+		result = YES;
+	else
+		result = FALSE;
+		
+	return (result);
+	
+}
 
 @end

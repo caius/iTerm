@@ -1,8 +1,10 @@
 2002-12-05	fabian
     * Fix a bug that disable "clear buffer" in the menu
+    * Fix a bug that causes incorrectly display of session status
     * Now choosing "open new tab" while no windows are open
       will open a new window first.
-
+    * Cleaned up nib files
+    
 2002-12-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added a pulldown menu at the bottom right corner 

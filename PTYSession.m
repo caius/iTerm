@@ -925,6 +925,8 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if([[PreferencePanel sharedInstance] copySelection])
 	[TEXTVIEW copy: self];
+	
+	[SCREEN textViewDidChangeSelection: [TEXTVIEW selectedRange]];
 }
 
 - (void) textViewResized: (PTYTextView *) textView;
@@ -936,6 +938,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
     [[self parent] windowDidResize: nil];
     [textView scrollEnd];
+	
 }
 
 - (void) timerTick:(NSTimer*)sender

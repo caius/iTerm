@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.173 2004-01-28 00:49:43 ujwal Exp $
+// $Id: VT100Screen.m,v 1.174 2004-02-05 16:58:41 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -928,11 +928,45 @@ static BOOL PLAYBELL = YES;
     //updateIndex=0;
 }
 
+- (int) getX: (int *)x Y: (int *)y atIndex: (int) index
+{
+#if DEBUG_USE_BUFFER
+	NSString *theString = [BUFFER string];
+	int i, col, row;
+	
+
+	if(index >= [theString length])
+	{
+		NSLog(@"%s: index %d out of bounds!",  __PRETTY_FUNCTION__, index);
+		*x = 0;
+		*y = 0;
+		return (-1);
+	}
+#endif
+	
+	row = 0;
+	col = 0;
+	for (i = 0; i < index; i++)
+	{
+		col++;
+		if ([theString characterAtIndex: i] == '\n')
+		{
+			row++;
+			col = 0;
+		}
+	}
+	
+	*x = col;
+	*y = row;
+	
+	return (0);
+}
+
 - (int) getIndexAtX:(int)x Y:(int)y withPadding:(BOOL)padding
 {
 	
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen getIndexAtX]:(%d,%d)",  __FILE__, __LINE__ , x, y );
+    NSLog(@"%s(%d):-[VT100Screen getIndexAtX]:(%d,%d)",  __PRETTY_FUNCTION__, __LINE__ , x, y );
 #endif
 	
 	
@@ -2747,6 +2781,32 @@ static BOOL PLAYBELL = YES;
     [(PTYTextView *)display refresh];
 #endif
 	
+}
+
+- (void) textViewDidChangeSelection: (NSRange) selectedRange
+{
+#if DEBUG_USE_BUFFER
+	if(selectedRange.length <= 0)
+	{
+		selectionStartColumn = 0;
+		selectionStartRow = 0;
+		selectionEndColumn = 0;
+		selectionEndRow = 0;
+		return;
+	}
+	
+	// calculate the start and end of the selection
+	int startIndex = selectedRange.location - updateIndex;
+	int endIndex = selectedRange.location + selectedRange.length - 1 - updateIndex;
+	int startCol, startRow, endCol, endRow;
+	
+	[self getX: &startCol Y: &startRow atIndex: startIndex];
+	[self getX: &endCol Y: &endRow atIndex: endIndex];
+	
+	NSLog(@"startIndex = %d; endIndex = %d; startCol = %d; startRow = %d; endCol = %d; endRow = %d", startIndex, endIndex, startCol, startRow, endCol, endRow);
+
+	
+#endif	
 }
 
 - (void) setScreenAttributes

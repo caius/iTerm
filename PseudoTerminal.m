@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.182 2003-05-29 14:58:46 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.183 2003-05-30 00:20:56 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -29,7 +29,7 @@
  */
 
 // Debug option
-#define DEBUG_ALLOC           
+#define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
@@ -244,7 +244,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [self setWindowTitle: title];
         [aSession setName: title];
     }
-             
+
 }
 
 - (void) switchSession: (id) sender
@@ -499,7 +499,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[ptyList objectAtIndex: i] terminate];
     if([ptyList count] > 0)
     {
-        [ptyList removeAllObjects];
+	[ptyList removeAllObjects];
         [ptyList release];
     }
     [ptyListLock unlock];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.66 2003-05-27 06:09:55 ujwal Exp $
+// $Id: PTYTextView.m,v 1.67 2003-05-30 00:20:56 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -239,7 +239,7 @@
 - (void) setDelegate: (id) aDelegate
 {
     [_delegate release];
-    [_delegate retain];
+    [aDelegate retain];
     _delegate = aDelegate;
 }    
 

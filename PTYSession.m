@@ -91,9 +91,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession dealloc 0x%x]", __FILE__, __LINE__, self);
 #endif
 
-    [parent release];
     [TERM_VALUE release];
-    [TEXTVIEW removeFromSuperview];
     [SCROLLVIEW release];
     [name release];
     [windowTitle release];
@@ -214,6 +212,9 @@ static NSString *PWD_ENVVALUE = @"~";
     [TERMINAL release];
     [SCREEN release];
     [TEXTVIEW setDataSource: nil];
+    [TEXTVIEW removeFromSuperview];
+    [parent release];
+
 
     if (timer) {
         [timer invalidate];
@@ -224,6 +225,7 @@ static NSString *PWD_ENVVALUE = @"~";
     TERMINAL = nil;
     SCREEN   = nil;
     timer = nil;
+    parent = nil;
 
 }
 

@@ -1,6 +1,12 @@
 2003-05-29	ujwal
 
     * Fixed bug where PseduoTerminal's delegate was not being set.
+    
+    * Fixed bug in PTYTextView in ARRY mode where the delagate was not 
+      being retained.
+    
+    * Fixed more memory leaks caused by PseudoTerminal and PTYSession 
+      retaining each other.
 
 2003-05-28	ujwal
 

@@ -1,3 +1,9 @@
+2003-01-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Refactored toolbar item popup menu to enable it in 
+      text only mode.
+      
+
 2003-01-20	fabian
     * New option in preference&address book entry
       Treat NonASCII characters as double width

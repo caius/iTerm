@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.81 2003-01-21 01:43:21 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.82 2003-01-21 08:14:41 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1210,20 +1210,19 @@ static NSString *ConfigToolbarItem = @"Config";
         [aPopUpButton setTarget: self];
         [aPopUpButton setBordered: NO];
         [[aPopUpButton cell] setArrowPosition:NSPopUpArrowAtBottom];
-
-        [aPopUpButton setAction: @selector(_addressbookPopupSelectionDidChange:)];
-        
-        [self _buildAddressBookMenu: aPopUpButton];        
-        
-        [toolbarItem setView: aPopUpButton];
+	[toolbarItem setView: aPopUpButton];
         // Release the popup button since it is retained by the toolbar item.
         [aPopUpButton release];
 
-        [toolbarItem setMinSize:[aPopUpButton bounds].size];
-        [toolbarItem setMaxSize:[aPopUpButton bounds].size];
-        [toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
-        [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open a new session",@"iTerm",@"Toolbar Item:New")];
+	// build the menu
+	[self _buildToolbarItemPopUpMenu: toolbarItem];
+
+	[toolbarItem setMinSize:[aPopUpButton bounds].size];
+	[toolbarItem setMaxSize:[aPopUpButton bounds].size];
+	[toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
+	[toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
+	[toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open a new session",@"iTerm",@"Toolbar Item:New")];
+
     }
     else { 
         toolbarItem=nil;
@@ -1264,13 +1263,13 @@ static NSString *ConfigToolbarItem = @"Config";
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu
 {
     unsigned int modflag = 0;
-    SEL shellSelector, abCommandSelector;
+    BOOL newWin;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal menuForEvent]", __FILE__, __LINE__);
 #endif
 
-    if(theEvent == nil || theMenu == nil)
+    if(theMenu == nil)
 	return;
 
     modflag = [theEvent modifierFlags];
@@ -1280,14 +1279,12 @@ static NSString *ConfigToolbarItem = @"Config";
     if (modflag & NSCommandKeyMask)
     {
 	[theMenu insertItemWithTitle: NSLocalizedStringFromTable(@"New Window",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
-	shellSelector = @selector(newWindow:);
-	abCommandSelector = @selector(_executeABMenuCommandInNewWindow:);
+	newWin = YES;
     }
     else
     {
 	[theMenu insertItemWithTitle: NSLocalizedStringFromTable(@"New Tab",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
-	shellSelector = @selector(newSession:);
-	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
+	newWin = NO;
     }
     
     // Separator
@@ -1295,21 +1292,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Build the address book menu
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
-    NSEnumerator *abEnumerator;
-    NSString *abEntry;
-    int i = 0;
-    
-    [abMenu addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")
-			     action:shellSelector keyEquivalent:@""];
-    [abMenu addItem: [NSMenuItem separatorItem]];
-    abEnumerator = [[MAINMENU addressBookNames] objectEnumerator];
-    while ((abEntry = [abEnumerator nextObject]) != nil)
-    {
-	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: abCommandSelector keyEquivalent:@""];
-	[abMenuItem setTag: i++];
-	[abMenu addItem: abMenuItem];
-	[abMenuItem release];
-    }
+    [self _buildAddressBookMenu: abMenu newWindow: newWin];
 
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
     [abMenu release];
@@ -1440,49 +1423,21 @@ static NSString *ConfigToolbarItem = @"Config";
 // Private interface
 @implementation PseudoTerminal (Private)
 
-// Runs a command from the addressbook popup
-- (void) _addressbookPopupSelectionDidChange: (id) sender
-{
-    int commandIndex;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal _addressbookPopupSelectionDidChange]",
-          __FILE__, __LINE__);
-#endif
-    
-    // If we selected tha last item, show the address book.
-    if([sender indexOfSelectedItem] == [sender indexOfItem: [sender lastItem]])
-    {
-//        [MAINMENU showABWindow: self];
-        newwin=newwin?NO:YES;
-        [newwinItem setState:(newwin ? NSOnState : NSOffState)];
-        return;
-    }
-    
-    commandIndex = [sender indexOfSelectedItem] - 1;
-    
-    if(commandIndex < 0)
-        return;
-    if (commandIndex==0) {
-        if (newwin) [MAINMENU newWindow:nil];
-        else [MAINMENU newSession:nil];
-    }
-    else {
-	[self _executeABMenuCommand: (commandIndex - 2) newWindow: newwin];
-    }
-}
-
 // Build the address book menu
-- (void) _buildAddressBookMenu: (NSPopUpButton *) aPopUpButton
+- (void) _buildAddressBookMenu: (NSMenu *) abMenu newWindow: (BOOL) newWinFlag
 {
-    NSMenuItem *item;
-    NSImage *image;
+    NSEnumerator *abEnumerator;
+    NSString *abEntry;
+    int i = 0;
+    SEL shellSelector, abCommandSelector;
+
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal _buildAddressBookMenu]",
           __FILE__, __LINE__);
 #endif
 
+#if 0
     // build the menu
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
@@ -1493,8 +1448,59 @@ static NSString *ConfigToolbarItem = @"Config";
     [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New")];
     newwinItem=[aPopUpButton lastItem];
     [newwinItem setState:(newwin ? NSOnState : NSOffState)];
+#endif
+
+    if (newWinFlag)
+    {
+	shellSelector = @selector(newWindow:);
+	abCommandSelector = @selector(_executeABMenuCommandInNewWindow:);
+    }
+    else
+    {
+	shellSelector = @selector(newSession:);
+	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
+    }
+
+    [abMenu addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")
+					   action: shellSelector keyEquivalent:@""];
+    [abMenu addItem: [NSMenuItem separatorItem]];
+    abEnumerator = [[MAINMENU addressBookNames] objectEnumerator];
+    while ((abEntry = [abEnumerator nextObject]) != nil)
+    {
+	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: abCommandSelector keyEquivalent:@""];
+	[abMenuItem setTag: i++];
+	[abMenu addItem: abMenuItem];
+	[abMenuItem release];
+    }
+    
     
 //    [aPopUpButton addItemWithTitle: NSLocalizedStringFromTable(@"Open Address Book",@"iTerm",@"Toolbar Item:Address Book")];
+    
+}
+
+- (void) _buildToolbarItemPopUpMenu: (NSToolbarItem *) toolbarItem
+{
+    NSPopUpButton *aPopUpButton;
+    NSMenuItem *item;
+    NSImage *image;
+    NSMenu *aMenu;
+    id newwinItem;
+
+    if (toolbarItem == nil)
+	return;
+    
+    aPopUpButton = (NSPopUpButton *)[toolbarItem view];
+    //[aPopUpButton setAction: @selector(_addressbookPopupSelectionDidChange:)];
+    [aPopUpButton setAction: nil];
+    [aPopUpButton removeAllItems];
+    [aPopUpButton addItemWithTitle: @""];
+
+    [self _buildAddressBookMenu: [aPopUpButton menu] newWindow: newwin];
+
+    [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
+    [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
+    newwinItem=[aPopUpButton lastItem];
+    [newwinItem setState:(newwin ? NSOnState : NSOffState)];    
     
     // Now set the icon
     item = [[aPopUpButton cell] menuItem];
@@ -1507,14 +1513,28 @@ static NSString *ConfigToolbarItem = @"Config";
     [aPopUpButton setPreferredEdge:NSMinXEdge];
     [[[aPopUpButton menu] menuRepresentation] setHorizontalEdgePadding:0.0];
 
+    // build a menu representation for text only.
+    item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New") action: nil keyEquivalent: @""];
+    aMenu = [[NSMenu alloc] initWithTitle: @"Address Book"];
+    [self _buildAddressBookMenu: aMenu newWindow: newwin];
+    [aMenu addItem: [NSMenuItem separatorItem]];
+    [aMenu addItemWithTitle: NSLocalizedStringFromTable(@"Open in a new window",@"iTerm",@"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
+    newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];
+    [newwinItem setState:(newwin ? NSOnState : NSOffState)];
+    
+    [item setSubmenu: aMenu];
+    [aMenu release];
+    [toolbarItem setMenuFormRepresentation: item];
+    [item release];
+    
 }
+
 
 // Reloads the addressbook entries into the popup toolbar item
 - (void) _reloadAddressBookMenu: (NSNotification *) aNotification
 {
     NSArray *toolbarItemArray;
     NSToolbarItem *aToolbarItem;
-    NSPopUpButton *aPopUpButton;
     int i;
     
 #if DEBUG_METHOD_TRACE
@@ -1531,8 +1551,7 @@ static NSString *ConfigToolbarItem = @"Config";
         
         if([[aToolbarItem itemIdentifier] isEqual: NewToolbarItem])
         {
-            aPopUpButton = (NSPopUpButton *)[aToolbarItem view];
-            [self _buildAddressBookMenu: aPopUpButton];
+            [self _buildToolbarItemPopUpMenu: aToolbarItem];
                         
             break;
         }
@@ -1540,6 +1559,13 @@ static NSString *ConfigToolbarItem = @"Config";
     }
     
 }
+
+- (void) _toggleNewWindowState: (id) sender
+{
+    newwin = !newwin;
+    [self _reloadAddressBookMenu: nil];
+}
+
 
 - (void) _executeABMenuCommandInNewTab: (id) sender
 {

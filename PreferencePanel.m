@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.113 2004-04-12 08:27:33 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.114 2004-04-12 08:45:39 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -427,6 +427,7 @@ static BOOL editingBookmark = NO;
 	[bookmarkDisplayProfile selectItemWithTitle: displayProfile];
 	
 	shortcut = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_SHORTCUT inItem: selectedItem];
+	shortcut = [shortcut uppercaseString];
 	if([shortcut length] < 0)
 		shortcut = @"";
 	[bookmarkShortcut selectItemWithTitle: shortcut];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.295 2004-10-03 08:28:05 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.296 2004-10-03 08:32:29 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1112,7 +1112,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 	
     frame = [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect];
-#if 1
+#if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 		  frame.origin.x, frame.origin.y,
 		  frame.size.width, frame.size.height);

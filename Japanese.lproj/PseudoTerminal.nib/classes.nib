@@ -42,7 +42,6 @@
                 nextSession = id; 
                 previousSession = id; 
                 saveSession = id; 
-                setMainMenu = id; 
                 switchSession = id; 
             }; 
             CLASS = PseudoTerminal; 

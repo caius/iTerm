@@ -86,6 +86,7 @@ static unsigned int invocationId = 0;
     NSRange characterRange, glyphRange;
     NSTextStorage *textStorage;
     NSRect previousRect;
+	float defaultLineHeight;
 
     // grab the text container; we should have only one
     if(textContainer == nil)
@@ -111,6 +112,7 @@ static unsigned int invocationId = 0;
 	if(font != nil)
 	    charWidth = [VT100Screen fontSize: font].width;
     }
+	defaultLineHeight = [font defaultLineHeightForFont];
 
     length = [theString length];
     if(length <= 0)
@@ -223,24 +225,35 @@ static unsigned int invocationId = 0;
 	[layoutMgr setLineFragmentRect: lineRect forGlyphRange: glyphRange usedRect: usedRect];
 	[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: glyphRange];
 
-	// If we encountered graphical characters, we need to lay out each glyph; EXPENSIVE
+	// If we encountered graphical characters, we need to specify the postion of the glyph since the current font may not have a native character, 
+	// and the character may be of a different font and thus be of different width.
 	NSRange graphicalCharacterRange;
 	id graphicalCharacterAttribute;
 	graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex longestEffectiveRange:&graphicalCharacterRange inRange:characterRange];
 	if(graphicalCharacterAttribute != nil || graphicalCharacterRange.length != characterRange.length)
 	{
-	    NSRange singleGlyphRange;
+	    NSRange singleGlyphRange, restOfLineGlyphRange;
 	    float x = 0;
 	    float theWidth;
 
-	    //NSLog(@"Laying out each glyph...");
 	    for (j = lineStartIndex; j <= lineEndIndex; j++)
 	    {
-		singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];
-		theWidth = ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
+			theWidth = ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
+			
+			graphicalCharacterAttribute = [textStorage attribute:@"VT100GraphicalCharacter" atIndex:lineStartIndex effectiveRange:nil];
+			if(graphicalCharacterAttribute != nil)
+			{
+				singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];
+				[layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, defaultLineHeight - BASELINE_OFFSET) forStartOfGlyphRange: singleGlyphRange];
+				// adjust the rest of the line
+				if(j < lineEndIndex)
+				{
+					restOfLineGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j+1, lineEndIndex-j+1) actualCharacterRange: nil];
+					[layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x+charWidth, defaultLineHeight - BASELINE_OFFSET) forStartOfGlyphRange: restOfLineGlyphRange];
+				}
+			}
 
-		[layoutMgr setLocation: NSMakePoint(lineFragmentPadding+x, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: singleGlyphRange];
-		x+=theWidth;
+			x+=theWidth;
 	    }
 	}
 	

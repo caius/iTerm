@@ -1,3 +1,9 @@
+2004-01-27  ujwal
+
+	* Significant improvement in display/layout speed for curses based applications 
+	  by adjusting position only for graphical glyphs, and NOT for ALL GLYPHS on 
+	  in the line.
+
 2004-01-23  ujwal
 
 	* Fixed some error handling for unknown tokens.

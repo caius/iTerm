@@ -18,7 +18,7 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Basic Usage of Bookmarks</STRONG></FONT><BR>
 <UL>
-The new organization of bookmarks depends on <STRONG>profiles</STRONG>. Bascially you need
+The new organization of bookmarks depends on <STRONG>profiles</STRONG>. Bascially, you need
 to create profiles first (there are several pre-defined profiles if you install iTerm from
 scratch), and then create your bookmarks. There are 3 kinds of profiles associated with
 each bookmark:
@@ -32,7 +32,9 @@ There is a "Global" profile in which you define keys for global things such as s
 tabs, scrolling screens.<BR>
 The other profiles are used for bookmarks. You can specify either an escape sequence, a
 hexcode, or to ignore, for each key. Several standard profiles come with the distribution,
-including vt100, xterm, ansi and linux. You can modifiy these or create your own.<BR>
+including vt100, xterm, ansi and linux. You can modifiy these or create your own. 
+The global profile is read if there is no match for the key input in the bookmark specific 
+profile. <BR>
 </UL>
 
 <FONT SIZE="5"><STRONG>Terminal</STRONG></FONT><BR>
@@ -43,11 +45,7 @@ Terminal profiles let you specify the emulation behavior of iTerm.</UL>
 <UL>
 Display profiles let you specify the display behavior of iTerm. You can create your own color set,
 specify window size and choose your favorite font. Notice since every tab within a window should
-have same size and font, the window settings will only be honored for the new created windows.</UL>
-
-<FONT SIZE="5"><STRONG>Autolaunching script:</STRONG></FONT><BR>
-<UL>
-iTerm also supports autolaunching of an Applescript on startup. On startup, iTerm looks for an Applescript called <b>"AutoLaunch.scpt"</b> under <b>~/Library/Application Support/iTerm</b>. If it is found, the <b>AutoLauch.scpt</b> is launched and executed. This feature can be used to launch multiple sessions in defined windows and tabs when iTerm atarts up.
+have same size and font, the window settings will only be honored for the new created windows.
 </UL>
 
 

@@ -21,11 +21,7 @@
 <UL>The Configure panels and the Preference panels are essentially the same thing, with the exception that the Configure panel applies changes to the current window only.  The Preference panel changes the default session settings.</UL>
 <FONT SIZE="5"><STRONG>Preferences:</STRONG></FONT>
 <UL>
-<LI><STRONG>Anti-Aliasing</STRONG>: Recommended for viewing text easier.</LI>
-<LI><STRONG>Transparency:</STRONG> Is a wonderful thing, but if you have "100%" transparency, when you click in the session window, the mouse click will be sent to the application behind iTerm.</LI>
-<LI><STRONG>Window Size:</STRONG> If  you change the size of the session window in the Configure panel it will resize the window to that size regardless of number of session open.  However, if you open a new session in a new tab, the window will remain the same size, and not honor the settings of the new session.</LI>
-<LI><STRONG>Shells:</STRONG> The default shells is /bin/tcsh.  Other common shells are:
-<UL>/bin/sh<BR>/bin/csh<BR>/bin/bash<BR>/bin/zsh.</UL></LI>
+Under the general preferences, you can define someof the settings commonly found in terminal e
 </UL>
 
 </TD>

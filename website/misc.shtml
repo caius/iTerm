@@ -31,8 +31,8 @@
 <LI><STRONG>Edward Daze</STRONG>: He made the new icons.</LI>
 <LI><STRONG>macosxguy</STRONG> from bbs.mit.edu: He originally put the chinese encoding code into JTerminal.</LI>
 <LI><A HREF="mailto:kuma@icon.rim.or.jp">Kiichi Kusama</A>: The original JTerminal author.</LI>
-
 </UL>
+
 <FONT SIZE="5"><STRONG>Localizations Contributed by:</STRONG></FONT><BR>
 <UL>
 <LI>Chinese (Traditional): <A HREF="MAILTO:gugod@gugod.org">Kang-min Liu</A> </LI>
@@ -41,10 +41,12 @@
 <LI>Japanese: <A HREF="MAILTO:kuri@makino.ecei.tohoku.ac.jp">OHKAWA Yuichi</A> </LI>
 <LI>Korean: TaeYoung Oh</LI>
 </UL>
+
 <FONT SIZE="5"><STRONG>and...</STRONG></FONT><BR>
 <UL>The application and toolbar icons are adapted from icons from <A HREF="http://kde-look.org">KDE-LOOK.org</A><BR><BR>
 We are looking for people with artistic talents to help us make iTerm's own icons. Please contact us if you feel like to help!
 </UL>
+
 </TD>
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <script type="text/javascript"><!--

@@ -83,8 +83,9 @@ For more detail, see <A HREF="history.shtml">Version History</A><BR>
 
 <FONT SIZE="5"><STRONG>Notice:</STRONG></FONT><BR>
 <UL>Due a change of bookmark organizations introduced in 0.8.0, old bookmark settings are
-no longer recognized. You have to re-enter these bookmarks manually into the new version.</UL>
-<UL>Version 0.8.0 comes with a couple of predefined keymapping/display/terminal profiles.
+no longer completely recognized. Only names, commands, directories, and shortcuts are migrated. 
+Display and terminal settings are not migrated. You have to re-enter these manually into the new version.</UL>
+<UL>Version 0.8.0 comes with few keymapping/display/terminal profiles.
 If you do not see them, please delete your iTerm.plist file in ~/Library/Preferences and
 restart the program.</UL>
 

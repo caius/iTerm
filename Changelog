@@ -4,6 +4,9 @@
       popup button value to "Custom".
       
     * Now checking for minimum OS version on startup.
+    
+    * When displaying bold for default colors, using a blend of 
+      foreground and background colors.
 
 2003-04-25	ujwal
 

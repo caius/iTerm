@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.55 2003-04-26 00:05:37 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.56 2003-04-27 06:38:32 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1956,13 +1956,30 @@ static VT100TCC decode_string(unsigned char *datap,
     NSColor *color;
 
     if (index==DEFAULT_FG_COLOR_CODE)
+    {
         color=(SCREEN_MODE?defaultBGColor:defaultFGColor);
+	if(b)
+	{
+	    NSColor *otherColor = (SCREEN_MODE?defaultFGColor:defaultBGColor);
+	    color = [color blendedColorWithFraction: 0.2 ofColor: otherColor];
+	}
+    }
     else if (index==DEFAULT_BG_COLOR_CODE)
-        color=(SCREEN_MODE?defaultFGColor:defaultBGColor);
+    {
+	color=(SCREEN_MODE?defaultFGColor:defaultBGColor);
+	if(b)
+	{
+	    NSColor *otherColor = (SCREEN_MODE?defaultBGColor:defaultFGColor);
+	    color = [color blendedColorWithFraction: 0.2 ofColor: otherColor];
+	}	
+    }
     else
+    {
         color=colorTable[b?1:0][index];
+    }
 
     return color;
+    
 }
 
 @end

@@ -24,6 +24,13 @@
 					<key>Name</key>
 					<string>background color</string>
 				</dict>
+				<key>backgroundImagePath</key>
+				<dict>
+					<key>Description</key>
+					<string>Path to background image</string>
+					<key>Name</key>
+					<string>background image path</string>
+				</dict>
 				<key>boldColor</key>
 				<dict>
 					<key>Description</key>

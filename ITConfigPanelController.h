@@ -54,6 +54,11 @@
     
     NSFont *configFont, *configNAFont;
     BOOL changingNA;
+
+    // background image
+    IBOutlet NSButton *useBackgroundImage;
+    IBOutlet NSImageView *backgroundImage;
+    NSString *backgroundImagePath;
 }
 
 + (void)show:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;

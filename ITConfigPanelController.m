@@ -38,6 +38,7 @@
 
 @interface ITConfigPanelController (Private)
 - (void)showConfigWindow:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
+- (IBAction) chooseBackgroundImage: (id) sender;
 @end
 
 @implementation ITConfigPanelController
@@ -152,6 +153,12 @@
             [[currentSession TEXTVIEW] setNeedsDisplay:YES];
         }
 
+	// set the background image if it has changed
+	if([[currentSession backgroundImagePath] isEqualToString: backgroundImagePath] == NO)
+	{
+	    [currentSession setBackgroundImagePath: backgroundImagePath];
+	}	
+
         [[currentSession SCREEN] updateScreen];
         
         [[currentSession TEXTVIEW] scrollEnd];
@@ -229,6 +236,74 @@
     }
 }
 
+// background image stuff
+- (IBAction) useBackgroundImage: (id) sender
+{
+    [CONFIG_BACKGROUND setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
+    if([useBackgroundImage state]==NSOffState)
+    {
+	backgroundImagePath = [NSString stringWithString:@""];
+	[backgroundImage setImage: nil];
+    }
+    else
+	[self chooseBackgroundImage: sender];
+}
+
+- (IBAction) chooseBackgroundImage: (id) sender
+{
+    NSOpenPanel *panel;
+    int sts;
+    NSString *directory, *filename;
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[AddressBookWindowController chooseBackgroundImage:%@]",
+          __FILE__, __LINE__);
+#endif
+
+    if([useBackgroundImage state]==NSOffState)
+    {
+	NSBeep();
+	return;
+    }
+
+    panel = [NSOpenPanel openPanel];
+    [panel setAllowsMultipleSelection: NO];
+
+    directory = NSHomeDirectory();
+    filename = [NSString stringWithString: @""];
+
+    if([backgroundImagePath length] > 0)
+    {
+	directory = [backgroundImagePath stringByDeletingLastPathComponent];
+	filename = [backgroundImagePath lastPathComponent];
+    }    
+
+    sts = [panel runModalForDirectory: directory file:filename types: [NSImage imageFileTypes]];
+    if (sts == NSOKButton) {
+	if([[panel filenames] count] > 0)
+	    backgroundImagePath = [NSString stringWithString: [[panel filenames] objectAtIndex: 0]];
+	else
+	    backgroundImagePath = nil;
+
+	if(backgroundImagePath != nil)
+	{
+	    NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
+	    [backgroundImage setImage: anImage];
+	    [anImage release];
+	}
+	else
+	    [useBackgroundImage setState: NSOffState];
+    }
+    else
+    {
+	[useBackgroundImage setState: NSOffState];
+	backgroundImagePath = nil;
+    }
+
+}
+
+
+// config panel sheet
 - (void)showConfigWindow:(PseudoTerminal*)pseudoTerminal parentWindow:(NSWindow*)parentWindow;
 {
     [self window]; // force window to load
@@ -273,6 +348,29 @@
     [AI_CODE setIntValue:[currentSession antiCode]];
     
     [CONFIG_ANTIALIAS setState: [[currentSession TEXTVIEW] antiAlias]];
+
+    // background image
+    backgroundImagePath = [currentSession backgroundImagePath];
+    if([backgroundImagePath length] > 0)
+    {
+	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+	if(anImage != nil)
+	{
+	    [backgroundImage setImage: anImage];
+	    [anImage release];
+	    [useBackgroundImage setState: NSOnState];
+	}
+	else
+	{
+	    [useBackgroundImage setState: NSOffState];
+	    backgroundImagePath = nil;
+	}
+    }
+    else
+    {
+	[useBackgroundImage setState: NSOffState];
+	backgroundImagePath = nil;
+    }    
     
     [NSApp beginSheet: [self window]
        modalForWindow: parentWindow

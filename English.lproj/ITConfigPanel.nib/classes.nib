@@ -3,6 +3,7 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
+                useBackgroundImage = id; 
                 windowConfigBackground = id; 
                 windowConfigCancel = id; 
                 windowConfigFont = id; 
@@ -28,6 +29,8 @@
                 "CONFIG_SELECTION" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
+                backgroundImage = NSImageView; 
+                useBackgroundImage = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.239 2003-09-16 06:56:11 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.240 2003-09-16 07:39:26 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1273,6 +1273,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[currentABEntry setObject: [NSNumber numberWithBool:[[self currentSession] antiIdle]] forKey: @"AntiIdle"];
 	[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]] forKey: @"AICode"];
 	[currentABEntry setObject: [[[_sessionMgr currentSession] SCREEN] nafont] forKey: @"NAFont"];
+	[currentABEntry setObject: [[_sessionMgr currentSession] backgroundImagePath]?[[_sessionMgr currentSession] backgroundImagePath]:@"" forKey: @"BackgroundImagePath"];
+
 
 	[[[ITAddressBookMgr sharedInstance] addressBook] replaceObjectAtIndex: [[[ITAddressBookMgr sharedInstance] addressBook] indexOfObject: [[_sessionMgr currentSession] addressBookEntry]] withObject: currentABEntry];
 

@@ -38,6 +38,13 @@
 					<key>Type</key>
 					<string>NSColor</string>
 				</dict>
+				<key>backgroundImagePath</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>BImg</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
 				<key>boldColor</key>
 				<dict>
 					<key>AppleEventCode</key>

@@ -116,6 +116,43 @@
 					<key>xmlEncodingVersion</key>
 					<string>2.0</string>
 				</dict>
+				<key>backgroundImagePath</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Path to background image</string>
+						<key>humanReadableName</key>
+						<string>background image path</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>BImg</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+						<key>implementAsPrimitive</key>
+						<false/>
+						<key>pbType</key>
+						<string>NSString</string>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>7</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSString</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
 				<key>boldColor</key>
 				<dict>
 					<key>English.lproj</key>

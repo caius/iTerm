@@ -1,3 +1,7 @@
+2003-08-09	ujwal
+
+    * Fixed resizing when terminal view is not in an iTerm window.
+
 2003-08-08	ujwal
 
     * Fixed a bug that caused sessions launched from applescript in a 

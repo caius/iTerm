@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.74 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PTYTextView.m,v 1.75 2003-08-09 07:41:18 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -84,6 +84,12 @@
     startIndex=-1;
     markedText=nil;
 //    [[self window] useOptimizedDrawing:YES];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(frameChanged:)
+                                                 name:NSWindowDidResizeNotification
+                                               object:[self window]];
+    
     
     return (self);
 
@@ -107,6 +113,10 @@
     [markedTextAttributes release];
     
     dataSource = nil;
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+						    name:NSWindowDidResizeNotification
+						  object:[self window]];    
 
     [super dealloc];
 }
@@ -1290,6 +1300,11 @@
     return rect;
 }
 
+- (void)frameChanged:(NSNotification*)notification;
+{
+    [[self delegate] textViewResized: self];
+}
+
 
 @end
 
@@ -1370,9 +1385,35 @@
     lastSearchLocation = 0;
     printingSelection = NO;
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(frameChanged:)
+                                                 name:NSWindowDidResizeNotification
+                                               object:[self window]];    
+
     return (self);
     
 }
+
+- (id)initWithFrame: (NSRect) aRect textContainer: (NSTextContainer *) textContainer
+{
+#if DEBUG_ALLOC
+    NSLog(@"PTYTextView: -initWithFrame: textContainer: 0x%x", self);
+#endif
+
+    self = [super initWithFrame: aRect textContainer: textContainer];
+
+    deadkey = NO;
+    lastSearchLocation = 0;
+    printingSelection = NO;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(frameChanged:)
+                                                 name:NSWindowDidResizeNotification
+                                               object: [self window]];
+
+    return (self);
+}
+
 
 - (void) dealloc
 {
@@ -1388,6 +1429,11 @@
 
     [font release];
     font = nil;
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                 name:NSWindowDidResizeNotification
+                                               object: [self window]];
+    
         
     [super dealloc];
 }
@@ -2007,6 +2053,11 @@
     	url = [NSURL URLWithString:s];
 
     [[NSWorkspace sharedWorkspace] openURL:url];
+}
+
+- (void)frameChanged:(NSNotification*)notification;
+{
+    [[self delegate] textViewResized: self];
 }
 
 

@@ -836,6 +836,20 @@ static NSString *PWD_ENVVALUE = @"~";
     
 }
 
+- (void) textViewResized: (PTYTextView *) textView;
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYSession textViewResized: 0x%x]",
+	  __FILE__, __LINE__, textView);
+#endif
+
+    NSSize termSize;
+
+    termSize = [VT100Screen screenSizeInFrame: [textView frame] font: [SCREEN font]];
+    [SHELL setWidth: (int) termSize.width height: (int) termSize.height];
+    [SCREEN resizeWidth: (int) termSize.width height: (int) termSize.height];
+}
+
 - (void) timerTick:(NSTimer*)sender
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];

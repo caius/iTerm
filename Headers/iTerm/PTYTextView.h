@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PTYTextView.h,v 1.2 2003-08-09 07:41:19 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -224,6 +224,7 @@
 
 - (id)init;
 - (id)initWithFrame: (NSRect) aRect;
+- (id)initWithFrame: (NSRect) aRect textContainer: (NSTextContainer *) textContainer;
 - (void)dealloc;
 - (BOOL)shouldDrawInsertionPoint;
 - (void)drawRect:(NSRect)rect;

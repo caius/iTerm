@@ -129,6 +129,7 @@
 - (void)deleteBackward:(id)sender;
 - (void)deleteForward:(id)sender;
 - (void) textViewDidChangeSelection: (NSNotification *) aNotification;
+- (void) textViewResized: (PTYTextView *) textView;
 
 
 // misc

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.206 2003-08-09 06:52:20 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.207 2003-08-09 07:41:18 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -141,6 +141,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [TABVIEW setAllowsTruncatedLabels: NO];
     [TABVIEW setControlSize: NSSmallControlSize];
+    [TABVIEW setAutoresizesSubviews: YES];
+
 
     WIDTH = HEIGHT = 0;
     

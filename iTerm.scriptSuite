@@ -4,43 +4,171 @@
 <dict>
 	<key>AppleEventCode</key>
 	<string>ITRM</string>
+	<key>Classes</key>
+	<dict>
+		<key>NSApplication</key>
+		<dict>
+			<key>AppleEventCode</key>
+			<string>capp</string>
+			<key>DefaultSubcontainerAttribute</key>
+			<string></string>
+			<key>Superclass</key>
+			<string>NSCoreSuite.NSApplication</string>
+			<key>ToManyRelationships</key>
+			<dict>
+				<key>terminals</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Ptrm</string>
+					<key>LocationRequiredToCreate</key>
+					<string>NO</string>
+					<key>Type</key>
+					<string>PseudoTerminal</string>
+				</dict>
+			</dict>
+		</dict>
+		<key>PTYSession</key>
+		<dict>
+			<key>AppleEventCode</key>
+			<string>Pssn</string>
+			<key>Attributes</key>
+			<dict>
+				<key>backgroundColor</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Bcol</string>
+					<key>Type</key>
+					<string>NSColor</string>
+				</dict>
+				<key>boldColor</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>bCol</string>
+					<key>Type</key>
+					<string>NSColor</string>
+				</dict>
+				<key>foregroundColor</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Fcol</string>
+					<key>Type</key>
+					<string>NSColor</string>
+				</dict>
+				<key>name</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>pnam</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
+				<key>selectionColor</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Scol</string>
+					<key>Type</key>
+					<string>NSColor</string>
+				</dict>
+				<key>transparency</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Tran</string>
+					<key>Type</key>
+					<string>NSNumber&lt;Float&gt;</string>
+				</dict>
+			</dict>
+			<key>DefaultSubcontainerAttribute</key>
+			<string></string>
+			<key>Superclass</key>
+			<string>NSCoreSuite.AbstractObject</string>
+			<key>SupportedCommands</key>
+			<dict>
+				<key>exec</key>
+				<string>handleExecScriptCommand:</string>
+			</dict>
+		</dict>
+		<key>PseudoTerminal</key>
+		<dict>
+			<key>AppleEventCode</key>
+			<string>Ptrm</string>
+			<key>Attributes</key>
+			<dict>
+				<key>columns</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Cols</string>
+					<key>Type</key>
+					<string>NSNumber&lt;Int&gt;</string>
+				</dict>
+				<key>rows</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Rows</string>
+					<key>Type</key>
+					<string>NSNumber&lt;Int&gt;</string>
+				</dict>
+			</dict>
+			<key>DefaultSubcontainerAttribute</key>
+			<string></string>
+			<key>Superclass</key>
+			<string>NSCoreSuite.AbstractObject</string>
+			<key>SupportedCommands</key>
+			<dict>
+				<key>launch</key>
+				<string>handleLaunchScriptCommand:</string>
+			</dict>
+			<key>ToManyRelationships</key>
+			<dict>
+				<key>sessions</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Pssn</string>
+					<key>LocationRequiredToCreate</key>
+					<string>NO</string>
+					<key>Type</key>
+					<string>PTYSession</string>
+				</dict>
+			</dict>
+		</dict>
+	</dict>
 	<key>Commands</key>
 	<dict>
-		<key>LaunchSession</key>
+		<key>exec</key>
 		<dict>
 			<key>AppleEventClassCode</key>
-			<string>LNCH</string>
+			<string>ITRM</string>
+			<key>AppleEventCode</key>
+			<string>Exec</string>
+			<key>Arguments</key>
+			<dict>
+				<key>command</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Cmnd</string>
+					<key>Type</key>
+					<string>NSString</string>
+				</dict>
+			</dict>
+			<key>CommandClass</key>
+			<string>NSScriptCommand</string>
+		</dict>
+		<key>launch</key>
+		<dict>
+			<key>AppleEventClassCode</key>
+			<string>ITRM</string>
 			<key>AppleEventCode</key>
 			<string>LNCH</string>
 			<key>Arguments</key>
 			<dict>
-				<key>target</key>
+				<key>session</key>
 				<dict>
 					<key>AppleEventCode</key>
-					<string>TRGT</string>
-					<key>Optional</key>
-					<string>NO</string>
+					<string>Pssn</string>
 					<key>Type</key>
-					<string>NSObject</string>
+					<string>NSString</string>
 				</dict>
 			</dict>
 			<key>CommandClass</key>
-			<string>iTermScriptCommand</string>
-		</dict>
-	</dict>
-	<key>Enumerations</key>
-	<dict>
-		<key>location</key>
-		<dict>
-			<key>AppleEventCode</key>
-			<string>LOCN</string>
-			<key>Enumerators</key>
-			<dict>
-				<key>tab</key>
-				<string>TAB </string>
-				<key>terminal</key>
-				<string>TERM</string>
-			</dict>
+			<string>NSScriptCommand</string>
 		</dict>
 	</dict>
 	<key>Name</key>

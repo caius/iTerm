@@ -132,6 +132,7 @@
 // get/set methods
 - (void) setMainMenu: (MainMenu *) theMainMenu;
 - (void) setWindow: (NSWindow *) theWindow;
+- (NSWindow *) window;
 - (PseudoTerminal *) parent;
 - (void) setParent: (PseudoTerminal *) theParent;
 - (PTYTabViewItem *) tabViewItem;
@@ -165,10 +166,16 @@
 - (void)clearBuffer;
 - (void)logStart;
 - (void)logStop;
-- (void)setFGColor:(NSColor*) color;
-- (void)setBGColor:(NSColor*) color;
+- (NSColor *) foregroundColor;
+- (void)setForegroundColor:(NSColor*) color;
+- (NSColor *) backgroundColor;
+- (void)setBackgroundColor:(NSColor*) color;
+- (NSColor *) selectionColor;
+- (void) setSelectionColor: (NSColor *) color;
+- (NSColor *) boldColor;
 - (void)setBoldColor:(NSColor*) color;
-- (void)setBackgroundAlpha:(float)bgAlpha;
+- (float) transparency;
+- (void)setTransparency:(float)transparency;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
 
 
@@ -179,5 +186,13 @@
 - (void)setLabelAttribute;
 - (void)setBell;
 - (void) setBell: (BOOL) flag;
+
+@end
+
+@interface PTYSession (ScriptingSupport)
+
+// Object specifier
+- (NSScriptObjectSpecifier *)objectSpecifier;
+-(void)handleExecScriptCommand: (NSScriptCommand *)aCommand;
 
 @end

@@ -10,6 +10,7 @@
 				05A162CE006CD5FC7F000001,
 				05A162CF006CD5FC7F000001,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			knownRegions = (
 				English,
@@ -235,7 +236,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		0464AB35006CD2EC7F000001 = {
 			buildActionMask = 2147483647;
@@ -631,7 +631,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 0;
 		};
 		DD1E48A104314F1D00A8A065 = {
 			isa = PBXFrameworkReference;
@@ -1358,6 +1357,7 @@
 			refType = 4;
 		};
 		FB01DCDE04433DFB01F955DB = {
+			fileEncoding = 30;
 			isa = PBXFileReference;
 			name = French;
 			path = French.lproj/iTerm.strings;

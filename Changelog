@@ -1,3 +1,9 @@
+2003-04-28	ujwal
+
+    * Massive code re-organization for revamped 
+      Applescript support.
+
+
 2003-04-27	fabian
     * Updated zh_CN and zh_TW IB files
     * Updated all string files
@@ -525,7 +531,7 @@
     * Simplified PseudoTerminal code by removing direct 
       references to SCREEN, SCROLLVIEW, TEXTVIEW, TERMINAL, 
       TERM_VALUE. All these operate only on the PTYSession 
-      object. Also simplified PseudoTerminal: -initSession 
+      object. Also simplified PseudoTerminal: -setupSession 
       code by moving a bunch of it into addSession which 
       is called by other stuff.
       

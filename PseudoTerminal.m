@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.154 2003-04-27 16:59:13 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.155 2003-04-28 08:03:14 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -42,6 +42,13 @@
 #import "PTYTabView.h"
 #import "PTYTabViewItem.h"
 
+// keys for attributes:
+NSString *columnsKey = @"columns";
+NSString *rowsKey = @"rows";
+// keys for to-many relationships:
+NSString *sessionsKey = @"sessions";
+
+
 @implementation PseudoTerminal
 
 #define NIB_PATH  @"PseudoTerminal"
@@ -55,55 +62,33 @@ static NSString *ABToolbarItem = @"Address";
 static NSString *CloseToolbarItem = @"Close";
 static NSString *ConfigToolbarItem = @"Config";
 
-
-+ (PseudoTerminal *)newTerminalWindow: (id) sender
-{
-    PseudoTerminal *term;
-    static int windowCount = 0;
-
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal newTerminal]", __FILE__, __LINE__);
-#endif
-    term = [[PseudoTerminal alloc] init];
-    [term setMainMenu:sender];
-    if (term == nil)
-	return nil;
-    if ([NSBundle loadNibNamed:NIB_PATH owner:term] == NO)
-	return nil;
-    // save up to 10 window positions
-    if(windowCount++ < 10)
-    {
-	[[term window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", windowCount]];
-    }
-    [[term window] setToolbar:[term setupToolbar]];
-    #if 0
-    if (lastwindow) {
-        NSRect rect;
-        rect=[lastwindow frame];
-        [[term window] setFrameTopLeftPoint:[[term window] cascadeTopLeftFromPoint:NSMakePoint(rect.origin.x,rect.origin.y+rect.size.height)]];
-    }
-    lastwindow=[term window];
-    #endif
-        
-    [sender addTerminalWindow: term];
-
-    return term;
-}
+static int windowCount = 0;
 
 - (void) newSession: (id) sender
 {
     NSString *cmd;
     NSArray *arg;
     int i;
+    PTYSession *aSession;
 
     [MainMenu breakDown:[pref shell] cmdPath:&cmd cmdArgs:&arg];
 
-    [self initSession:nil
-     foregroundColor:[pref foreground]
-     backgroundColor:[[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]
-     selectionColor: [pref selectionColor]
-            encoding:[pref encoding]
-                term:[pref terminalType]];
+    aSession = [[PTYSession alloc] init];
+    [self setupSession:aSession title: nil];
+    [aSession setForegroundColor: [pref foreground]];
+    [aSession setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
+    [aSession setSelectionColor: [pref selectionColor]];
+    [aSession setBoldColor: [pref boldColor]];
+    // set the encoding
+    [aSession setEncoding:[pref encoding]];
+    // term value
+    [aSession setTERM_VALUE: [pref terminalType]];
+
+    // Add this session to our list and make it current
+    [self addInSessions: aSession];
+    [aSession release];    
+
+    
     [self startProgram:cmd arguments:arg];
     [self setCurrentSessionName:nil];
     [currentPtySession setAutoClose: [pref autoclose]];
@@ -120,6 +105,18 @@ static NSString *ConfigToolbarItem = @"Config";
     if ((self = [super init]) == nil)
 	return nil;
 
+    [self setMainMenu:[NSApp delegate]];
+    if ([NSBundle loadNibNamed:NIB_PATH owner:self] == NO)
+	return nil;
+    // save up to 10 window positions
+    if(windowCount++ < 10)
+    {
+	[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", windowCount]];
+    }
+    [[self window] setToolbar:[self setupToolbar]];
+
+    [[NSApp delegate] addInTerminals: self];
+    
 
     // Allocate a list for our sessions
     ptyList = [[NSMutableArray alloc] init];
@@ -185,29 +182,29 @@ static NSString *ConfigToolbarItem = @"Config";
          
 }
 
-- (void)initSession:(NSString *)title
-   foregroundColor:(NSColor *) fg
-   backgroundColor:(NSColor *) bg
-   selectionColor:(NSColor *) sc
-          encoding:(NSStringEncoding)encoding
-              term:(NSString *)term
+- (void)setupSession: (PTYSession *) aSession
+		       title: (NSString *)title
 {
-    PTYSession *aSession;
     
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal initSession]",
+    NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
           __FILE__, __LINE__);
 #endif
 
-    // Allocate a new session
-    aSession = [[PTYSession alloc] init];
     NSParameterAssert(aSession != nil);    
     
     // Init the rest of the session
     [aSession setParent: self];
     [aSession setPreference: pref];
     [aSession setMainMenu: MAINMENU];
+    [aSession setWindow: [self window]];
     [aSession initScreen: [TABVIEW contentRect]];
+
+    // set some default colors
+    [aSession setForegroundColor: [pref foreground]];
+    [aSession setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
+    [aSession setSelectionColor: [pref selectionColor]];
+    [aSession setBoldColor: [pref boldColor]];
 
     // set the font
 #if USE_CUSTOM_DRAWING    
@@ -223,27 +220,6 @@ static NSString *ConfigToolbarItem = @"Config";
     
     // Set the bell option
     [VT100Screen setPlayBellFlag: ![pref silenceBell]];
-        
-    // Set the colors
-    if (fg) [aSession setFGColor:fg];
-    if (bg) [aSession setBGColor:bg];
-    if (sc) 
-        [[aSession TEXTVIEW] setSelectionColor: sc];
-    else
-        [[aSession TEXTVIEW] setSelectionColor: [pref selectionColor]];
-    [[aSession SCROLLVIEW] setBackgroundColor: bg];
-    [aSession setBoldColor: [pref boldColor]];
-
-
-    // set the terminal type
-    if (term) 
-    {
-        [aSession setTERM_VALUE: term];
-    }
-    else 
-    {
-        [aSession setTERM_VALUE: [pref terminalType]];
-    }
 
     // assign terminal and task objects
     [[aSession SCREEN] setTerminal:[aSession TERMINAL]];
@@ -260,23 +236,21 @@ static NSString *ConfigToolbarItem = @"Config";
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
 
+    // set up default encoding and terminal type
+    [aSession setEncoding: [pref encoding]];
+    [aSession setTERM_VALUE: [pref terminalType]];
+
     // initialize the screen
     [[aSession SCREEN] initScreen];
+
     [aSession startTimer];
 
-    // set the encoding
-    [[aSession TERMINAL] setEncoding:encoding];
     [[aSession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
 
     // tell the shell about our size
     [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
 
     pending = NO;
-
-    // Add this session to our list and make it current
-    [self addSession: aSession];
-    [aSession release];
-    [self setCurrentSessionName: nil];    
     
     if (title) 
     {
@@ -314,13 +288,13 @@ static NSString *ConfigToolbarItem = @"Config";
 
 }
 
-- (void) addSession: (PTYSession *) aSession
+- (void) insertSession: (PTYSession *) aSession atIndex: (int) index
 {
     PTYTabViewItem *aTabViewItem;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal addSession:]",
-          __FILE__, __LINE__, sessionIndex);
+    NSLog(@"%s(%d):-[PseudoTerminal insertSession: 0x%x atIndex: %d]",
+          __FILE__, __LINE__, aSession, index);
 #endif    
 
     if(aSession == nil)
@@ -341,12 +315,12 @@ static NSString *ConfigToolbarItem = @"Config";
 	NSParameterAssert(aTabViewItem != nil);
 	[aTabViewItem setLabel: [aSession name]];
 	[aTabViewItem setView: [aSession SCROLLVIEW]];
-	[TABVIEW addTabViewItem: aTabViewItem];
+	[TABVIEW insertTabViewItem: aTabViewItem atIndex: index];
 	//currentSessionIndex = [ptyList count] - 1;
 	//currentPtySession = aSession;
 	[aTabViewItem release];
 	[aSession setTabViewItem: aTabViewItem];
-	[self selectSession: [ptyList count] - 1];
+	[self selectSession: index];
 
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
@@ -1109,8 +1083,8 @@ static NSString *ConfigToolbarItem = @"Config";
             // set the background color for the scrollview with the appropriate transparency
             bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
             [[currentPtySession SCROLLVIEW] setBackgroundColor: bgColor];
-            [currentPtySession setFGColor:  [CONFIG_FOREGROUND color]];
-            [currentPtySession setBGColor:  bgColor];
+            [currentPtySession setForegroundColor:  [CONFIG_FOREGROUND color]];
+            [currentPtySession setBackgroundColor:  bgColor];
             [[currentPtySession TEXTVIEW] setNeedsDisplay:YES];
         }
 
@@ -1411,17 +1385,7 @@ static NSString *ConfigToolbarItem = @"Config";
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willAddTabViewItem]", __FILE__, __LINE__);
 #endif
 
-    [ptyListLock lock];
-    if(![ptyList containsObject: [tabViewItem identifier]] &&
-       [[tabViewItem identifier] isKindOfClass: [PTYSession class]])
-    {
-	PTYSession *aSession = [tabViewItem identifier];
-	
-	[aSession setParent: self];
-	[ptyList addObject: [tabViewItem identifier]];
-
-    }
-    [ptyListLock unlock];
+    [self tabView: tabView willInsertTabViewItem: tabViewItem atIndex: [tabView numberOfTabViewItems]];
 
 }
 
@@ -1565,7 +1529,7 @@ static NSString *ConfigToolbarItem = @"Config";
 	return;
 
     // create a new terminal window
-    term = [PseudoTerminal newTerminalWindow: MAINMENU];
+    term = [[PseudoTerminal alloc] init];
 
     if(term == nil)
 	return;
@@ -1591,7 +1555,7 @@ static NSString *ConfigToolbarItem = @"Config";
     [TABVIEW removeTabViewItem: aTabViewItem];
 
     // add the session to the new terminal
-    [term addSession: aSession];
+    [term addInSessions: aSession];
 
     // release the tabViewItem
     [aTabViewItem release];
@@ -1690,6 +1654,178 @@ static NSString *ConfigToolbarItem = @"Config";
 
 @end
 
+@implementation PseudoTerminal (KeyValueCoding)
+
+// accessors for attributes:
+-(int)columns
+{
+    // NSLog(@"PseudoTerminal: -columns");
+    return (WIDTH);
+}
+
+-(void)setColumns: (int)columns
+{
+    // NSLog(@"PseudoTerminal: setColumns: %d", columns);
+    if(columns > 0)
+    {
+	WIDTH = columns;
+	if([ptyList count] > 0)
+	    [self setWindowSize: NO];
+    }
+}
+
+-(int)rows
+{
+    // NSLog(@"PseudoTerminal: -rows");
+    return (HEIGHT);
+}
+
+-(void)setRows: (int)rows
+{
+    // NSLog(@"PseudoTerminal: setRows: %d", rows);
+    if(rows > 0)
+    {
+	HEIGHT = rows;
+	if([ptyList count] > 0)
+	    [self setWindowSize: NO];
+    }
+}
+
+// accessors for to-many relationships:
+-(NSArray*)sessions
+{
+    return (ptyList);
+}
+
+-(void)setSessions: (NSArray*)sessions
+{
+    // no-op
+}
+
+// accessors for to-many relationships:
+// (See NSScriptKeyValueCoding.h)
+-(id)valueInSessionsAtIndex:(unsigned)index
+{
+    // NSLog(@"PseudoTerminal: -valueInSessionsAtIndex: %d", index);
+    return ([ptyList objectAtIndex: index]);
+}
+
+-(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index
+{
+    // NSLog(@"PseudoTerminal: -replaceInSessions: 0x%x atIndex: %d", object, index);
+    [ptyList replaceObjectAtIndex: index withObject: object];
+}
+
+-(void)addInSessions:(PTYSession *)object
+{
+    // NSLog(@"PseudoTerminal: -addInSessions: 0x%x", object);
+    [self insertInSessions: object];
+}
+
+-(void)insertInSessions:(PTYSession *)object
+{
+    // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x", object);
+    [self insertInSessions: object atIndex: [ptyList count]];
+}
+
+-(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index
+{
+    // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x atIndex: %d", object, index);
+    [self setupSession: object title: nil];
+    [self insertSession: object atIndex: index];
+}
+
+-(void)removeFromSessionsAtIndex:(unsigned)index
+{
+    // NSLog(@"PseudoTerminal: -removeFromSessionsAtIndex: %d", index);
+    if(index < [ptyList count])
+    {
+	PTYSession *aSession = [ptyList objectAtIndex: index];
+	[self closeSession: aSession];
+    }
+}
+
+
+// a class method to provide the keys for KVC:
++(NSArray*)kvcKeys
+{
+    static NSArray *_kvcKeys = nil;
+    if( nil == _kvcKeys ){
+	_kvcKeys = [[NSArray alloc] initWithObjects:
+	    columnsKey, rowsKey, sessionsKey,  nil ];
+    }
+    return _kvcKeys;
+}
+
+@end
+
+
+@implementation PseudoTerminal (ScriptingSupport)
+
+// Object specifier
+- (NSScriptObjectSpecifier *)objectSpecifier
+{
+    unsigned index = 0;
+    id classDescription = nil;
+
+    NSScriptObjectSpecifier *containerRef;
+
+    NSArray *terminals = [[NSApp delegate] terminals];
+    index = [terminals indexOfObjectIdenticalTo:self];
+    if (index != NSNotFound) {
+	containerRef     = [NSApp objectSpecifier];
+	classDescription = [NSClassDescription classDescriptionForClass:[NSApp class]];
+	//create and return the specifier
+	return [[[NSIndexSpecifier allocWithZone:[self zone]]
+               initWithContainerClassDescription: classDescription
+                              containerSpecifier: containerRef
+                                             key: @ "terminals"
+                                           index: index] autorelease];
+    } else {
+        return nil;
+    }
+
+}
+
+// Handlers for supported commands:
+-(void)handleLaunchScriptCommand: (NSScriptCommand *)command
+{
+    // Get the command's arguments:
+    NSDictionary *args = [command evaluatedArguments];
+    NSString *session = [args objectForKey:@"session"];
+
+    BOOL aBool = NO;
+    NSArray *abArray;
+    int i;
+    
+    // search for the session in the addressbook
+    abArray = [MAINMENU addressBookNames];
+    for (i = 0; i < [abArray count]; i++)
+    {
+	if([[abArray objectAtIndex: i] caseInsensitiveCompare: session] == NSOrderedSame)
+	{
+	    aBool = YES;
+	    break;
+	}
+    }
+
+    if(aBool == YES)
+    {
+	[MAINMENU executeABCommandAtIndex: i inTerminal: self];
+    }
+    else if([session caseInsensitiveCompare: @"Default Session"] == NSOrderedSame)
+    {
+	[self newSession: self];
+    }
+    else
+	NSBeep();
+
+    
+    return;
+}
+
+
+@end
 
 // Private interface
 @implementation PseudoTerminal (Private)

@@ -75,6 +75,207 @@
 		</dict>
 		<key>PTYSession</key>
 		<dict>
+			<key>Attributes</key>
+			<dict>
+				<key>backgroundColor</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Background color</string>
+						<key>humanReadableName</key>
+						<string>background color</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Bcol</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>2</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSColor</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>boldColor</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Bold color</string>
+						<key>humanReadableName</key>
+						<string>bold color</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>bCol</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>4</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSColor</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>foregroundColor</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Foreground color</string>
+						<key>humanReadableName</key>
+						<string>foreground color</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Fcol</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>1</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSColor</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>name</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Name of this session</string>
+						<key>humanReadableName</key>
+						<string>name</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>pnam</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>0</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSString</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>selectionColor</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Selection color</string>
+						<key>humanReadableName</key>
+						<string>selection color</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Scol</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>3</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSColor</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>transparency</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Transparency</string>
+						<key>humanReadableName</key>
+						<string>transparency</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Tran</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>5</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSNumber&lt;Float&gt;</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+			</dict>
 			<key>English.lproj</key>
 			<dict>
 				<key>description</key>
@@ -83,6 +284,22 @@
 				<string>session</string>
 				<key>pluralName</key>
 				<string>sessions</string>
+			</dict>
+			<key>SupportedCommands</key>
+			<dict>
+				<key>exec</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict/>
+					<key>methodName</key>
+					<string>handleExecScriptCommand:</string>
+					<key>name</key>
+					<string>exec</string>
+					<key>presentationOrder</key>
+					<integer>0</integer>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
 			</dict>
 			<key>appleEventCode</key>
 			<string>Pssn</string>
@@ -108,6 +325,75 @@
 		</dict>
 		<key>PseudoTerminal</key>
 		<dict>
+			<key>Attributes</key>
+			<dict>
+				<key>columns</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Number of columns</string>
+						<key>humanReadableName</key>
+						<string>columns</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Cols</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>0</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSNumber&lt;Int&gt;</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+				<key>rows</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Number of rows</string>
+						<key>humanReadableName</key>
+						<string>rows</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Rows</string>
+					<key>codeGenDict</key>
+					<dict>
+						<key>callDidChange</key>
+						<true/>
+						<key>callUndoManager</key>
+						<true/>
+						<key>implementAccessors</key>
+						<true/>
+					</dict>
+					<key>presentationOrder</key>
+					<integer>1</integer>
+					<key>readOnly</key>
+					<string>NO</string>
+					<key>type</key>
+					<string>NSNumber&lt;Int&gt;</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+			</dict>
 			<key>English.lproj</key>
 			<dict>
 				<key>description</key>
@@ -116,6 +402,22 @@
 				<string>terminal</string>
 				<key>pluralName</key>
 				<string>terminals</string>
+			</dict>
+			<key>SupportedCommands</key>
+			<dict>
+				<key>launch</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict/>
+					<key>methodName</key>
+					<string>handleLaunchScriptCommand:</string>
+					<key>name</key>
+					<string>launch</string>
+					<key>presentationOrder</key>
+					<integer>0</integer>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
 			</dict>
 			<key>ToManyRelationships</key>
 			<dict>
@@ -176,6 +478,115 @@
 			<string>2.0</string>
 		</dict>
 	</dict>
+	<key>Commands</key>
+	<dict>
+		<key>exec</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>command</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Command executed in a session</string>
+						<key>humanReadableName</key>
+						<string>command</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Cmnd</string>
+					<key>optional</key>
+					<string>NO</string>
+					<key>presentationOrder</key>
+					<integer>0</integer>
+					<key>type</key>
+					<string>NSString</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+			</dict>
+			<key>English.lproj</key>
+			<dict>
+				<key>description</key>
+				<string>Executes a command in a session</string>
+				<key>humanReadableName</key>
+				<string>exec</string>
+				<key>isVerb</key>
+				<string>YES</string>
+			</dict>
+			<key>appleEventClassCode</key>
+			<string>ITRM</string>
+			<key>appleEventCode</key>
+			<string>Exec</string>
+			<key>commandClass</key>
+			<string>NSScriptCommand</string>
+			<key>presentationOrder</key>
+			<integer>1</integer>
+			<key>resultAppleEventCode</key>
+			<string></string>
+			<key>type</key>
+			<string></string>
+			<key>xmlEncodingVersion</key>
+			<string>2.0</string>
+		</dict>
+		<key>launch</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>session</key>
+				<dict>
+					<key>English.lproj</key>
+					<dict>
+						<key>description</key>
+						<string>Name of session to be launched</string>
+						<key>humanReadableName</key>
+						<string>session</string>
+						<key>number</key>
+						<string>singular</string>
+						<key>sex</key>
+						<string>none</string>
+					</dict>
+					<key>appleEventCode</key>
+					<string>Pssn</string>
+					<key>optional</key>
+					<string>NO</string>
+					<key>presentationOrder</key>
+					<integer>0</integer>
+					<key>type</key>
+					<string>NSString</string>
+					<key>xmlEncodingVersion</key>
+					<string>2.0</string>
+				</dict>
+			</dict>
+			<key>English.lproj</key>
+			<dict>
+				<key>description</key>
+				<string>Launches a default or saved session</string>
+				<key>humanReadableName</key>
+				<string>launch</string>
+				<key>isVerb</key>
+				<string>YES</string>
+			</dict>
+			<key>appleEventClassCode</key>
+			<string>ITRM</string>
+			<key>appleEventCode</key>
+			<string>LNCH</string>
+			<key>commandClass</key>
+			<string>NSScriptCommand</string>
+			<key>presentationOrder</key>
+			<integer>0</integer>
+			<key>resultAppleEventCode</key>
+			<string></string>
+			<key>type</key>
+			<string></string>
+			<key>xmlEncodingVersion</key>
+			<string>2.0</string>
+		</dict>
+	</dict>
 	<key>English.lproj</key>
 	<dict>
 		<key>description</key>
@@ -201,7 +612,7 @@
 		<string>Ujwal Sathyam</string>
 	</dict>
 	<key>name</key>
-	<string>iTermSuite</string>
+	<string>iTerm</string>
 	<key>presentationOrder</key>
 	<integer>2147483647</integer>
 	<key>suiteNameReferenceMap</key>

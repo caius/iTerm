@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.44 2003-04-27 07:56:25 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.45 2003-04-28 08:03:14 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -87,7 +87,6 @@
     BOOL resizeInProgress;
 }
 
-+ (PseudoTerminal *)newTerminalWindow: sender;
 - (void) newSession: (id) sender;
 
 - (id)init;
@@ -98,14 +97,8 @@
             height:(int)height
               font:(NSFont *)font
             nafont:(NSFont *)nafont;
-- (void)initSession:(NSString *)title
-   foregroundColor:(NSColor *) fg
-   backgroundColor:(NSColor *) bg
-   selectionColor: (NSColor*) sc
-          encoding:(NSStringEncoding)encoding
-              term:(NSString *)term;
-
-- (void) addSession: (PTYSession *)aSession;
+- (void)setupSession: (PTYSession *) aSession title: (NSString *)title;
+- (void) insertSession: (PTYSession *) aSession atIndex: (int) index;
 - (void) switchSession: (id) sender;
 - (void) selectSession: (int) sessionIndex;
 - (void) closeSession: (PTYSession*) aSession;
@@ -191,6 +184,41 @@
 - (void)setPreference:(id)pref;
 - (id) preference;
 
+
+@end
+
+@interface PseudoTerminal (KeyValueCoding)
+
+// accessors for attributes:
+-(int)columns;
+-(void)setColumns: (int)columns;
+-(int)rows;
+-(void)setRows: (int)rows;
+
+// accessors for to-many relationships:
+-(NSArray*)sessions;
+-(void)setSessions: (NSArray*)sessions;
+
+// accessors for to-many relationships:
+// (See NSScriptKeyValueCoding.h)
+-(id)valueInSessionsAtIndex:(unsigned)index;
+-(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index;
+-(void)addInSessions:(PTYSession *)object;
+-(void)insertInSessions:(PTYSession *)object;
+-(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index;
+-(void)removeFromSessionsAtIndex:(unsigned)index;
+
+// a class method to provide the keys for KVC:
++(NSArray*)kvcKeys;
+
+@end
+
+@interface PseudoTerminal (ScriptingSupport)
+
+// Object specifier
+- (NSScriptObjectSpecifier *)objectSpecifier;
+
+-(void)handleLaunchScriptCommand: (NSScriptCommand *)command;
 
 @end
 

@@ -2,55 +2,138 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Commands</key>
+	<key>Classes</key>
 	<dict>
-		<key>LaunchSession</key>
+		<key>NSApplication</key>
 		<dict>
-			<key>Arguments</key>
+			<key>Description</key>
+			<string>Main application class</string>
+			<key>Name</key>
+			<string>application</string>
+			<key>PluralName</key>
+			<string>applications</string>
+		</dict>
+		<key>PTYSession</key>
+		<dict>
+			<key>Attributes</key>
 			<dict>
-				<key>target</key>
+				<key>backgroundColor</key>
 				<dict>
 					<key>Description</key>
-					<string>This is where the session will be opened.</string>
+					<string>Background color</string>
 					<key>Name</key>
-					<string>in</string>
-					<key>Number</key>
-					<string>singular</string>
-					<key>Sex</key>
-					<string>none</string>
+					<string>background color</string>
+				</dict>
+				<key>boldColor</key>
+				<dict>
+					<key>Description</key>
+					<string>Bold color</string>
+					<key>Name</key>
+					<string>bold color</string>
+				</dict>
+				<key>foregroundColor</key>
+				<dict>
+					<key>Description</key>
+					<string>Foreground color</string>
+					<key>Name</key>
+					<string>foreground color</string>
+				</dict>
+				<key>name</key>
+				<dict>
+					<key>Description</key>
+					<string>Name of this session</string>
+					<key>Name</key>
+					<string>name</string>
+				</dict>
+				<key>selectionColor</key>
+				<dict>
+					<key>Description</key>
+					<string>Selection color</string>
+					<key>Name</key>
+					<string>selection color</string>
+				</dict>
+				<key>transparency</key>
+				<dict>
+					<key>Description</key>
+					<string>Transparency</string>
+					<key>Name</key>
+					<string>transparency</string>
 				</dict>
 			</dict>
 			<key>Description</key>
-			<string>This launches a new session</string>
-			<key>IsVerb</key>
-			<string>YES</string>
+			<string>A terminal session</string>
 			<key>Name</key>
-			<string>launch session</string>
+			<string>session</string>
+			<key>PluralName</key>
+			<string>sessions</string>
+		</dict>
+		<key>PseudoTerminal</key>
+		<dict>
+			<key>Attributes</key>
+			<dict>
+				<key>columns</key>
+				<dict>
+					<key>Description</key>
+					<string>Number of columns</string>
+					<key>Name</key>
+					<string>columns</string>
+				</dict>
+				<key>rows</key>
+				<dict>
+					<key>Description</key>
+					<string>Number of rows</string>
+					<key>Name</key>
+					<string>rows</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>A pseudo terminal</string>
+			<key>Name</key>
+			<string>terminal</string>
+			<key>PluralName</key>
+			<string>terminals</string>
+		</dict>
+	</dict>
+	<key>Commands</key>
+	<dict>
+		<key>exec</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>command</key>
+				<dict>
+					<key>Description</key>
+					<string>Command executed in a session</string>
+					<key>Name</key>
+					<string>command</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>Executes a command in a session</string>
+			<key>Name</key>
+			<string>exec</string>
+		</dict>
+		<key>launch</key>
+		<dict>
+			<key>Arguments</key>
+			<dict>
+				<key>session</key>
+				<dict>
+					<key>Description</key>
+					<string>Name of session to be launched</string>
+					<key>Name</key>
+					<string>session</string>
+				</dict>
+			</dict>
+			<key>Description</key>
+			<string>Launches a default or saved session</string>
+			<key>Name</key>
+			<string>launch</string>
 		</dict>
 	</dict>
 	<key>Description</key>
-	<string>Commands to control iTerm</string>
-	<key>Enumerations</key>
-	<dict>
-		<key>location</key>
-		<dict>
-			<key>tab</key>
-			<dict>
-				<key>Description</key>
-				<string>Opens session in a new tab.</string>
-				<key>Name</key>
-				<string>tab</string>
-			</dict>
-			<key>terminal</key>
-			<dict>
-				<key>Description</key>
-				<string>Opens session in a new terminal window.</string>
-				<key>Name</key>
-				<string>terminal</string>
-			</dict>
-		</dict>
-	</dict>
+	<string>Scripting interface for iTerm.app</string>
 	<key>Name</key>
-	<string>iTerm commands</string>
+	<string>iTerm Suite</string>
 </dict>
 </plist>

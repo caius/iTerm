@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.18 2003-04-15 15:12:24 ujwal Exp $
+// $Id: MainMenu.h,v 1.19 2003-04-28 08:03:12 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -73,7 +73,6 @@
 - (void) saveAddressBook;
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal;
 - (PseudoTerminal *) frontPseudoTerminal;
-- (void) addTerminalWindow: (PseudoTerminal *) theTerminalWindow;
 - (void) removeTerminalWindow: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
 - (NSArray *)addressBookNames;
@@ -90,6 +89,28 @@
 - (PreferencePanel *) preferencePanel;
 
 @end
+
+// Scripting support
+@interface MainMenu (KeyValueCoding)
+
+- (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key;
+
+// accessors for to-many relationships:
+-(NSArray*)terminals;
+-(void)setTerminals: (NSArray*)terminals;
+
+-(id)valueInTerminalsAtIndex:(unsigned)index;
+-(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index;
+- (void) addInTerminals: (PseudoTerminal *) object;
+- (void) insertInTerminals: (PseudoTerminal *) object;
+-(void)insertInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index;
+-(void)removeFromTerminalsAtIndex:(unsigned)index;
+
+// a class method to provide the keys for KVC:
++(NSArray*)kvcKeys;
+
+@end
+
 
 // Private interface
 @interface MainMenu (Private)

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.49 2003-04-27 07:56:25 ujwal Exp $
+// $Id: MainMenu.m,v 1.50 2003-04-28 08:03:13 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -179,6 +179,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (IBAction)newWindow:(id)sender
 {
     PseudoTerminal *term;
+    PTYSession *aSession;
     NSString *cmd;
     NSArray *arg;
     int i;
@@ -188,20 +189,24 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
           __FILE__, __LINE__);
 #endif
 
-    term = [PseudoTerminal newTerminalWindow: self];
+    term = [[PseudoTerminal alloc] init];
     [term setPreference:PREF_PANEL];
     [MainMenu breakDown:[PREF_PANEL shell] cmdPath:&cmd cmdArgs:&arg];
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
-    [term initWindow:[PREF_PANEL col]
-              height:[PREF_PANEL row]
-                font:[PREF_PANEL font]
-              nafont:[PREF_PANEL nafont]];
-    [term initSession:nil
-     foregroundColor:[PREF_PANEL foreground]
-     backgroundColor:[[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
-     selectionColor: [PREF_PANEL selectionColor]
-            encoding:[PREF_PANEL encoding]
-                term:[PREF_PANEL terminalType]];
+    aSession = [[PTYSession alloc] init];
+    [term setupSession: aSession title: nil];
+    [aSession setForegroundColor: [PREF_PANEL foreground]];
+    [aSession setBackgroundColor: [[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]];
+    [aSession setSelectionColor: [PREF_PANEL selectionColor]];
+    [aSession setBoldColor: [PREF_PANEL boldColor]];
+    [aSession setEncoding: [PREF_PANEL encoding]];
+    // term value
+    [aSession setTERM_VALUE: [PREF_PANEL terminalType]];
+
+    // Add this session to our term and make it current
+    [term addInSessions: aSession];
+    [aSession release];    
+    
     [term startProgram:cmd arguments:arg];
     [term setCurrentSessionName:nil];
     [[term currentSession] setAutoClose:[PREF_PANEL autoclose]];
@@ -478,12 +483,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     return (FRONT);
 }
 
-- (void) addTerminalWindow: (PseudoTerminal *) theTerminalWindow
-{
-    if(theTerminalWindow)
-        [terminalWindows addObject: theTerminalWindow];
-}
-
 - (void) removeTerminalWindow: (PseudoTerminal *) theTerminalWindow
 {
     if(FRONT == theTerminalWindow)
@@ -564,6 +563,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (void) executeABCommandAtIndex: (int) theIndex inTerminal: (PseudoTerminal *) theTerm
 {
     PseudoTerminal *term;
+    PTYSession *aSession;
     NSString *cmd;
     NSArray *arg;
     NSDictionary *entry;
@@ -580,65 +580,72 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     // Where do we execute this command?
     if(theTerm == nil)
     {
-        term = [PseudoTerminal newTerminalWindow: self];
+        term = [[PseudoTerminal alloc] init];
         [term setPreference:PREF_PANEL];
-        [term initWindow:[[entry objectForKey:@"Col"]intValue]
-                    height:[[entry objectForKey:@"Row"] intValue]
-                    font:[entry objectForKey:@"Font"]
-                nafont:[entry objectForKey:@"NAFont"]];
+	[term setColumns: [[entry objectForKey:@"Col"]intValue]];
+	[term setRows: [[entry objectForKey:@"Row"]intValue]];
+	[term setAllFont: [entry objectForKey:@"Font"] nafont: [entry objectForKey:@"NAFont"]];
     }
     else
         term = theTerm;
     
-    // Initialize a new session        
-    [term initSession:[entry objectForKey:@"Name"]
-        foregroundColor:[entry objectForKey:@"Foreground"]
-        backgroundColor:[[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]
-        selectionColor:[entry objectForKey:@"SelectionColor"]
-                encoding:encoding
-                    term:[entry objectForKey:@"Term Type"]];
+    // Initialize a new session
+    aSession = [[PTYSession alloc] init];
+    [term setupSession: aSession title: [entry objectForKey:@"Name"]];
+    [aSession setForegroundColor: [entry objectForKey:@"Foreground"]];
+    [aSession setBackgroundColor: [[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]];
+    [aSession setSelectionColor: [entry objectForKey:@"SelectionColor"]];
+    if([entry objectForKey:@"BoldColor"] != nil)
+	[aSession setBoldColor: [entry objectForKey:@"BoldColor"]];
+    else
+	[aSession setBoldColor: [PREF_PANEL boldColor]];
+    [aSession setEncoding: encoding];
+    [aSession setTERM_VALUE: [entry objectForKey:@"Term Type"]];
+
+    // Add this session to our term and make it current
+    [term addInSessions: aSession];
+    [aSession release];    
     
     NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
     
     // Start the command        
     [term startProgram:cmd arguments:arg environment:env];
-    [[term currentSession] setEncoding:encoding];
-    [[term currentSession] setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
-    [[term currentSession] setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
-    [[term currentSession] setAutoClose:[[entry objectForKey:@"AutoClose"] boolValue]];
+    [aSession setEncoding:encoding];
+    [aSession setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
+    [aSession setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
+    [aSession setAutoClose:[[entry objectForKey:@"AutoClose"] boolValue]];
     
     // If we created a new window, set the size
     if (theTerm == nil) {
         [term setWindowSize: YES];
     };
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
-    [[term currentSession] setAddressBookEntry:entry];
-    [[term currentSession] setDoubleWidth:[[entry objectForKey:@"DoubleWidth"] boolValue]];
+    [aSession setAddressBookEntry:entry];
+    [aSession setDoubleWidth:[[entry objectForKey:@"DoubleWidth"] boolValue]];
     if ([entry objectForKey:@"ansiBlack"]) {
-    [[term currentSession] setColorTable:0 highLight:NO color:[entry objectForKey:@"ansiBlack"]];
-    [[term currentSession] setColorTable:1 highLight:NO color:[entry objectForKey:@"ansiRed"]];
-    [[term currentSession] setColorTable:2 highLight:NO color:[entry objectForKey:@"ansiGreen"]];
-    [[term currentSession] setColorTable:3 highLight:NO color:[entry objectForKey:@"ansiYellow"]];
-    [[term currentSession] setColorTable:4 highLight:NO color:[entry objectForKey:@"ansiBlue"]];
-    [[term currentSession] setColorTable:5 highLight:NO color:[entry objectForKey:@"ansiMagenta"]];
-    [[term currentSession] setColorTable:6 highLight:NO color:[entry objectForKey:@"ansiCyan"]];
-    [[term currentSession] setColorTable:7 highLight:NO color:[entry objectForKey:@"ansiWhite"]];
-    [[term currentSession] setColorTable:0 highLight:YES color:[entry objectForKey:@"ansiHiBlack"]];
-    [[term currentSession] setColorTable:1 highLight:YES color:[entry objectForKey:@"ansiHiRed"]];
-    [[term currentSession] setColorTable:2 highLight:YES color:[entry objectForKey:@"ansiHiGreen"]];
-    [[term currentSession] setColorTable:3 highLight:YES color:[entry objectForKey:@"ansiHiYellow"]];
-    [[term currentSession] setColorTable:4 highLight:YES color:[entry objectForKey:@"ansiHiBlue"]];
-    [[term currentSession] setColorTable:5 highLight:YES color:[entry objectForKey:@"ansiHiMagenta"]];
-    [[term currentSession] setColorTable:6 highLight:YES color:[entry objectForKey:@"ansiHiCyan"]];
-    [[term currentSession] setColorTable:7 highLight:YES color:[entry objectForKey:@"ansiHiWhite"]];
+    [aSession setColorTable:0 highLight:NO color:[entry objectForKey:@"ansiBlack"]];
+    [aSession setColorTable:1 highLight:NO color:[entry objectForKey:@"ansiRed"]];
+    [aSession setColorTable:2 highLight:NO color:[entry objectForKey:@"ansiGreen"]];
+    [aSession setColorTable:3 highLight:NO color:[entry objectForKey:@"ansiYellow"]];
+    [aSession setColorTable:4 highLight:NO color:[entry objectForKey:@"ansiBlue"]];
+    [aSession setColorTable:5 highLight:NO color:[entry objectForKey:@"ansiMagenta"]];
+    [aSession setColorTable:6 highLight:NO color:[entry objectForKey:@"ansiCyan"]];
+    [aSession setColorTable:7 highLight:NO color:[entry objectForKey:@"ansiWhite"]];
+    [aSession setColorTable:0 highLight:YES color:[entry objectForKey:@"ansiHiBlack"]];
+    [aSession setColorTable:1 highLight:YES color:[entry objectForKey:@"ansiHiRed"]];
+    [aSession setColorTable:2 highLight:YES color:[entry objectForKey:@"ansiHiGreen"]];
+    [aSession setColorTable:3 highLight:YES color:[entry objectForKey:@"ansiHiYellow"]];
+    [aSession setColorTable:4 highLight:YES color:[entry objectForKey:@"ansiHiBlue"]];
+    [aSession setColorTable:5 highLight:YES color:[entry objectForKey:@"ansiHiMagenta"]];
+    [aSession setColorTable:6 highLight:YES color:[entry objectForKey:@"ansiHiCyan"]];
+    [aSession setColorTable:7 highLight:YES color:[entry objectForKey:@"ansiHiWhite"]];
     }
     else {
         for(i=0;i<8;i++) {
-            [[term currentSession] setColorTable:i highLight:NO color:[PREF_PANEL colorFromTable:i highLight:NO]];
-            [[term currentSession] setColorTable:i highLight:YES color:[PREF_PANEL colorFromTable:i highLight:YES]];
+            [aSession setColorTable:i highLight:NO color:[PREF_PANEL colorFromTable:i highLight:NO]];
+            [aSession setColorTable:i highLight:YES color:[PREF_PANEL colorFromTable:i highLight:YES]];
         }
     }
-    [[term currentSession] setBoldColor: [entry objectForKey:@"BoldColor"]];
     
 }
 
@@ -681,6 +688,90 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
 
 @end
+
+// keys for to-many relationships:
+NSString *terminalsKey = @"terminals";
+
+// Scripting support
+@implementation MainMenu (KeyValueCoding)
+
+- (BOOL)application:(NSApplication *)sender delegateHandlesKey:(NSString *)key
+{
+    // NSLog(@"key = %@", key);
+    return [key isEqualToString:@"terminals"];
+}
+
+// accessors for to-many relationships:
+-(NSArray*)terminals
+{
+    // NSLog(@"iTerm: -terminals");
+    return (terminalWindows);
+}
+
+-(void)setTerminals: (NSArray*)terminals
+{
+    // no-op
+}
+
+// accessors for to-many relationships:
+// (See NSScriptKeyValueCoding.h)
+-(id)valueInTerminalsAtIndex:(unsigned)index
+{
+    // NSLog(@"iTerm: valueInTerminalsAtIndex %d", index);
+    return ([terminalWindows objectAtIndex: index]);
+}
+
+-(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
+{
+    // NSLog(@"iTerm: replaceInTerminals 0x%x atIndex %d", object, index);
+    [terminalWindows replaceObjectAtIndex: index withObject: object];
+}
+
+- (void) addInTerminals: (PseudoTerminal *) object
+{
+    // NSLog(@"iTerm: addInTerminals 0x%x", object);
+    [self insertInTerminals: object atIndex: [terminalWindows count]];
+}
+
+- (void) insertInTerminals: (PseudoTerminal *) object
+{
+    // NSLog(@"iTerm: insertInTerminals 0x%x", object);
+    [self insertInTerminals: object atIndex: [terminalWindows count]];
+}
+
+
+-(void)insertInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
+{
+    // NSLog(@"iTerm: insertInTerminals 0x%x atIndex; %d", object, index);
+    [object setPreference:PREF_PANEL];
+    [object initWindow:[PREF_PANEL col]
+              height:[PREF_PANEL row]
+                font:[PREF_PANEL font]
+              nafont:[PREF_PANEL nafont]];    
+    [terminalWindows insertObject: object atIndex: index];
+}
+
+-(void)removeFromTerminalsAtIndex:(unsigned)index
+{
+    // NSLog(@"iTerm: removeFromTerminalsAtInde %d", index);
+    [terminalWindows removeObjectAtIndex: index];
+}
+
+
+// a class method to provide the keys for KVC:
++(NSArray*)kvcKeys
+{
+    static NSArray *_kvcKeys = nil;
+    if( nil == _kvcKeys ){
+	_kvcKeys = [[NSArray alloc] initWithObjects:
+	    terminalsKey,  nil ];
+    }
+    return _kvcKeys;
+}
+
+
+@end
+
 
 // Private interface
 @implementation MainMenu (Private)

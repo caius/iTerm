@@ -897,6 +897,11 @@ static NSString *PWD_ENVVALUE = @"~";
     WINDOW = theWindow;
 }
 
+- (NSWindow *) window
+{
+    return (WINDOW);
+}
+
 - (PseudoTerminal *) parent
 {
     return (parent);
@@ -971,6 +976,8 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabel: theName];
         [self setBell: NO];
     }
+    if((PTYTabViewItem *)tabViewItem == (PTYTabViewItem *)[[tabViewItem tabView] selectedTabViewItem])
+	[[self window] setTitle: name];
 }
 
 - (PTYTask *) SHELL
@@ -1073,7 +1080,12 @@ static NSString *PWD_ENVVALUE = @"~";
     [TERMINAL setEncoding:encoding];
 }
 
-- (void)setFGColor:(NSColor*) color
+- (NSColor *) foregroundColor
+{
+    return ([TERMINAL defaultFGColor]);
+}
+
+- (void)setForegroundColor:(NSColor*) color
 {
     if(color == nil)
         return;
@@ -1092,7 +1104,12 @@ static NSString *PWD_ENVVALUE = @"~";
 
 }
 
-- (void)setBGColor:(NSColor*) color
+- (NSColor *) backgroundColor
+{
+    return ([TERMINAL defaultBGColor]);
+}
+
+- (void)setBackgroundColor:(NSColor*) color
 {
     if(color == nil)
         return;
@@ -1105,6 +1122,13 @@ static NSString *PWD_ENVVALUE = @"~";
         // Change the bg color for future stuff
         [TERMINAL setBGColor: color];
     }
+    [[self SCROLLVIEW] setBackgroundColor: color];
+
+}
+
+- (NSColor *) boldColor
+{
+    return ([TERMINAL defaultBoldColor]);
 }
 
 - (void)setBoldColor:(NSColor*) color
@@ -1112,14 +1136,31 @@ static NSString *PWD_ENVVALUE = @"~";
     [[self TERMINAL] setBoldColor: color];
 }
 
+- (NSColor *) selectionColor
+{
+    return ([TEXTVIEW selectionColor]);
+}
+
+- (void) setSelectionColor: (NSColor *) color
+{
+    [TEXTVIEW setSelectionColor: color];
+}
+
+
 // Changes transparency
-- (void)setBackgroundAlpha:(float)bgAlpha
+
+- (float) transparency
+{
+    return (100*(1 - [[TERMINAL defaultBGColor] alphaComponent]));
+}
+
+- (void)setTransparency:(float)transparency
 {
     NSColor *newcolor;
     
-    newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:bgAlpha];
+    newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency/100)];
     if (newcolor != nil && newcolor != [TERMINAL defaultBGColor]) {
-        [self setBGColor: newcolor];
+        [self setBackgroundColor: newcolor];
     }
 }
 
@@ -1235,5 +1276,55 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     return addressBookEntry;
 }
+
+@end
+
+@implementation PTYSession (ScriptingSupport)
+
+// Object specifier
+- (NSScriptObjectSpecifier *)objectSpecifier
+{
+    unsigned index = 0;
+    id classDescription = nil;
+
+    NSScriptObjectSpecifier *containerRef = nil;
+
+    NSArray *recipients = [[self parent] sessions];
+    index = [recipients indexOfObjectIdenticalTo:self];
+    if (index != NSNotFound)
+    {
+	containerRef     = [[self parent] objectSpecifier];
+	classDescription = [containerRef keyClassDescription];
+	//create and return the specifier
+	return [[[NSIndexSpecifier allocWithZone:[self zone]]
+               initWithContainerClassDescription: classDescription
+                              containerSpecifier: containerRef
+                                             key: @ "sessions"
+                                           index: index] autorelease];
+    } else {
+	// NSLog(@"recipient not found!");
+        return nil;
+    }
+
+}
+
+// Handlers for supported commands:
+-(void)handleExecScriptCommand: (NSScriptCommand *)aCommand
+{
+    // Get the command's arguments:
+    NSDictionary *args = [aCommand evaluatedArguments];
+    NSString *command = [args objectForKey:@"command"];
+
+    NSString *cmd;
+    NSArray *arg;
+
+    [MainMenu breakDown:command cmdPath:&cmd cmdArgs:&arg];
+
+    [self startProgram:cmd arguments:arg environment:[NSDictionary dictionary]];
+    
+
+    return;
+}
+
 
 @end

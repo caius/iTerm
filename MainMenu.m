@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.37 2003-03-18 08:36:15 ujwal Exp $
+// $Id: MainMenu.m,v 1.38 2003-03-18 15:55:48 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -76,7 +76,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
           __FILE__, __LINE__);
 #endif
 
-    if(([terminalWindows count] > 0) && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
+    if(([terminalWindows count] > 0) && [PREF_PANEL promptOnClose] && ![[terminalWindows objectAtIndex: 0] showCloseWindow])
 	return (NO);
     
     [terminalWindows removeAllObjects];

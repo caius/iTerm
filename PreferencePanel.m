@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.29 2003-03-18 08:36:15 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.30 2003-03-18 15:55:49 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -162,7 +162,7 @@ static int TRANSPARENCY  =10;
     defaultDoubleWidth=[[prefs objectForKey:@"DoubleWidth"] boolValue];
     defaultRemapDeleteKey = [prefs objectForKey:@"RemapDeleteKey"]?[[prefs objectForKey:@"RemapDeleteKey"] boolValue]: YES;
     defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
-    defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: NO;
+    defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     changingNA=NO;
 
 }

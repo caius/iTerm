@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.130 2003-03-18 08:36:15 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.131 2003-03-18 15:55:49 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -772,7 +772,11 @@ static NSString *ConfigToolbarItem = @"Config";
     NSLog(@"%s(%d):-[PseudoTerminal windowShouldClose:%@]",
 	  __FILE__, __LINE__, aNotification);
 #endif
-    return [self showCloseWindow];
+
+    if([pref promptOnClose])
+	return [self showCloseWindow];
+    else
+	return (YES);
 }
 
 - (void)windowWillClose:(NSNotification *)aNotification

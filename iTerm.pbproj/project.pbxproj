@@ -173,6 +173,7 @@
 				0464AB4E006CD2EC7F000001,
 			);
 			buildSettings = {
+				DEBUGGING_SYMBOLS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_LDFLAGS = "";
@@ -199,7 +200,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.6.4a</string>
+	<string>0.6.5</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>iTerm Help</string>
 	<key>CFBundleHelpBookName</key>
@@ -215,11 +216,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.6.4a</string>
+	<string>0.6.5</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.6.4a</string>
+	<string>0.6.5</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
 	<key>NSExtensions</key>

@@ -92,6 +92,7 @@
                 shell = id; 
                 terminal = id; 
                 transparency = id; 
+                "transparency_control" = id; 
             }; 
             SUPERCLASS = NSResponder; 
         }, 

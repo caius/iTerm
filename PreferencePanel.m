@@ -119,6 +119,7 @@ static int TRANSPARENCY  =10;
     [row setIntValue:defaultRow];
     [col setIntValue:defaultCol];
     [transparency setIntValue:defaultTransparency];
+    [transparency_control setIntValue:defaultTransparency];
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
     [fontExample setTextColor:defaultForeground];

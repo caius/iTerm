@@ -19,6 +19,7 @@
     IBOutlet id shell;
     IBOutlet id terminal;
     IBOutlet id transparency;
+    IBOutlet id transparency_control;
     IBOutlet id autoclose;
     IBOutlet id optionKey;
     IBOutlet id antiAlias;

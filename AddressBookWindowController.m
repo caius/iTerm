@@ -544,8 +544,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     } else {
         NSBeginAlertSheet(
                         NSLocalizedStringFromTableInBundle(@"Do you really want to remove this item?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
+			  NSLocalizedStringFromTableInBundle(@"Remove",@"iTerm", [NSBundle bundleForClass: [self class]], @"Remove"),
                         NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"),
-                        NSLocalizedStringFromTableInBundle(@"Remove",@"iTerm", [NSBundle bundleForClass: [self class]], @"Remove"),
                         nil,
                         [self window],               // window sheet is attached to
                         self,                   // we'll be our own delegate
@@ -554,12 +554,14 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
                         sender,                 // context info
                         NSLocalizedStringFromTableInBundle(@"There is no undo for this operation.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
                         nil);                   // no parameters in message
+
+	[[self window] makeKeyAndOrderFront: self];
     }
 }
 
 - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
-    if ( returnCode == NSAlertAlternateReturn) {
+    if ( returnCode == NSAlertDefaultReturn) {
         [[self addressBook] removeObjectAtIndex:[adTable selectedRow]];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
@@ -570,8 +572,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	[[NSNotificationCenter defaultCenter]
     postNotificationName: @"Reload AddressBook"
 				object: nil
-			      userInfo: nil];
-	
+			      userInfo: nil];	
     }
 }
 
@@ -739,6 +740,11 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     if([adTable numberOfRows] > 0 && [adTable numberOfSelectedRows] <= 0){
 	[adTable selectRow: 0 byExtendingSelection: NO];
     }
+    if(isDefaultEntry([addressBook objectAtIndex: [adTable selectedRow]]))
+	[deleteButton setEnabled: NO];
+    else
+	[deleteButton setEnabled: YES];
+    
     [[self window] makeFirstResponder: adTable];
 
     [adTable setDoubleAction: @selector(executeABCommand:)];
@@ -797,12 +803,15 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
 
 // Table view delegate
-- (void)tableViewSelectionIsChanging:(NSNotification *)aNotification
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
     if([adTable numberOfSelectedRows] == 1)
     {
 	[addButton setEnabled: YES];
-	[deleteButton setEnabled: YES];
+	if(isDefaultEntry([addressBook objectAtIndex: [adTable selectedRow]]))
+	    [deleteButton setEnabled: NO];
+	else
+	    [deleteButton setEnabled: YES];
 	[duplicateButton setEnabled: YES];
 	[editButton setEnabled: YES];
     }

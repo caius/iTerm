@@ -146,7 +146,7 @@
 			  row:(int)rowIndex;
 
 // Table view delegate
-- (void)tableViewSelectionIsChanging:(NSNotification *)aNotification;
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 
 @end
 

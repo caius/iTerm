@@ -1,3 +1,13 @@
+2003-05-12	ujwal
+
+    * Moved AddressBook file to new location under 
+      ~/Library/Application Support/iTerm.
+      
+    * On startup, iTerm.app now looks for an "AutoLaunch.scpt"
+      script under ~/Library/Application Support/iTerm. If it 
+      finds one, it launches the apple script.
+
+
 2003-05-11	ujwal
 
     * Added '+' in keypad mode.

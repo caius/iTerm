@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.62 2003-05-11 06:06:41 ujwal Exp $
+// $Id: MainMenu.m,v 1.63 2003-05-12 15:22:24 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -39,11 +39,13 @@
 #import "AddressBookWindowController.h"
 
 
-#define DEFAULT_FONTNAME  @"Osaka-Mono"
-#define DEFAULT_FONTSIZE  12
-
-static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
+static NSString* OLD_ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Address Book";
+static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/AddressBook";
+static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
+static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
 static NSStringEncoding const *encodingList=nil;
+
+static BOOL usingAutoLaunchScript = NO;
 
 // comaparator function for addressbook entries
 static BOOL isDefaultEntry( NSDictionary *entry )
@@ -94,6 +96,15 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     putenv("TERM_PROGRAM=iTerm.app");
 }
 
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[MainMenu applicationDidFinishLaunching]",
+          __FILE__, __LINE__);
+#endif
+    
+}
+
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification
 {
 #if DEBUG_METHOD_TRACE
@@ -115,6 +126,29 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app
 {
+
+    // Check if we have an autolauch script to execute. Do it only once, i.e. at application launch.
+    if(usingAutoLaunchScript == NO &&
+       [[NSFileManager defaultManager] fileExistsAtPath: [AUTO_LAUNCH_SCRIPT stringByExpandingTildeInPath]] != nil)
+    {
+	usingAutoLaunchScript = YES;
+	
+	NSAppleScript *autoLaunchScript;
+	NSDictionary *errorInfo = [NSDictionary dictionary];
+	NSURL *aURL = [NSURL fileURLWithPath: [AUTO_LAUNCH_SCRIPT stringByExpandingTildeInPath]];
+
+	usingAutoLaunchScript = YES;
+
+	// Make sure our script suite registry is loaded
+	[NSScriptSuiteRegistry sharedScriptSuiteRegistry];
+
+	autoLaunchScript = [[NSAppleScript alloc] initWithContentsOfURL: aURL error: &errorInfo];
+	[autoLaunchScript executeAndReturnError: &errorInfo];
+		
+	return (YES);
+    }
+
+    // else do the usual default stuff.
     if ([PREF_PANEL openAddressBook]) {
         [self showABWindow:nil];
     }
@@ -511,6 +545,21 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 #endif
 
     if (addressBook!=nil) return;
+
+    // We have a new location for the addressbook
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]])
+    {
+	// create the iTerm directory if it does not exist
+	if([fileManager fileExistsAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
+	{
+	    [fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
+	}
+
+	// move the addressbook to the new location
+	[fileManager movePath: [OLD_ADDRESS_BOOK_FILE stringByExpandingTildeInPath]
+			      toPath: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath] handler: nil];
+    }
 
     addressBook = [[NSUnarchiver unarchiveObjectWithFile: [ADDRESS_BOOK_FILE stringByExpandingTildeInPath]] retain];
     if (addressBook == nil) {

@@ -1,3 +1,11 @@
+2003-04-10	ujwal
+
+    * Put back in the code for not auto-scrolling down 
+      on new output if the user has scrolled up. It had 
+      been interfering with the vttest program. Now we 
+      auto-scroll down whan the window size changes, so 
+      vttest largely works.
+
 2003-04-09	ujwal
 
     * Preliminary support for print-to-ansi.

@@ -810,10 +810,10 @@ static NSString *PWD_ENVVALUE = @"~";
         if (output>3) {
             [SCREEN updateScreen];
             // If the user has not scrolled up, move to the end
-            /*       if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
-                [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
-([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height)) */
-           [TEXTVIEW moveLastLine];
+	    if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+	 [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+	([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
+		[TEXTVIEW moveLastLine];
             output=0;
             dirty=NO;
         }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.139 2003-04-01 16:22:58 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.140 2003-04-10 15:31:20 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -964,6 +964,9 @@ static NSString *ConfigToolbarItem = @"Config";
     // Display the new size in the window title.
     NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [currentPtySession name], WIDTH, HEIGHT];
     [self setWindowTitle: aTitle];
+
+    // Reset the scrollbar to the bottom
+    [[currentPtySession TEXTVIEW] moveLastLine];
 
     //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [WINDOW frame].size.width, [WINDOW frame].size.height);
 

@@ -229,6 +229,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [TERMINAL putStreamData:data];
 
     [SCREEN beginEditing];
+    [SCREEN showCursor:NO];
 
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
 	   token.type != VT100CC_NULL &&
@@ -240,6 +241,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (token.type == VT100_NOTSUPPORT) {
 	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
+    [SCREEN showCursor:YES];
     [SCREEN endEditing];
 
     // If the user has not scrolled up, move to the end
@@ -247,7 +249,6 @@ static NSString *PWD_ENVVALUE = @"~";
 	[[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
        ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
 	[self moveLastLine];
-    [SCREEN showCursor];
 }
 
 - (void)brokenPipe
@@ -289,171 +290,184 @@ static NSString *PWD_ENVVALUE = @"~";
     NSString *keystr;
     NSString *unmodkeystr;
     unichar unicode;
+    static NSEvent *old=nil;
+    static BOOL deadkey=NO;
     
 #if DEBUG_METHOD_TRACE || DEBUG_KEYDOWNDUMP
     NSLog(@"%s(%d):-[PseudoTerminal keyDown:%@]",
 	  __FILE__, __LINE__, event);
 #endif
 
-    modflag = [event modifierFlags];
-    keycode = [event keyCode];
-    keystr  = [event characters];
-    unmodkeystr = [event charactersIgnoringModifiers];
-    unicode = [keystr characterAtIndex:0];
-    iIdleCount=0;
-
-//    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
-//          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
-    
-    // Check if we are navigating through sessions or scrolling
-    if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask))) 
-    {
-        // command/shift + function key's
-        switch (unicode) 
-        {
-            case NSLeftArrowFunctionKey: // cursor left
-                // Check if we want to just move to the previous session
-                [parent previousSession: nil];
-                return;
-            case NSRightArrowFunctionKey: // cursor left
-                // Check if we want to just move to the next session
-                [parent nextSession: nil];
-                return;
-            case NSDeleteFunctionKey:
-                if (modflag&NSFunctionKeyMask)
-                    NSLog(@"### DEBUG ###\n%@", SCREEN);
-                break;
-            case NSPageUpFunctionKey: 
-                if(modflag & NSShiftKeyMask)
-                    [TEXTVIEW scrollPageUp: self]; 
-                break;
-            case NSPageDownFunctionKey: 
-                if(modflag & NSShiftKeyMask)
-                    [TEXTVIEW scrollPageDown: self]; 
-                break;
-            default:
-                if ((modflag & NSCommandKeyMask) && (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey)) {
-                    [parent selectSession:unicode-NSF1FunctionKey];
-                }
-                break;      
-        }
+    if (deadkey) {
+        if (!EXIT) [self interpretKeyEvents:[NSArray arrayWithObjects:old,event,nil]];
+        [old release];
+        deadkey=NO;
+    }
+    else if ([[event characters] length]<1) {
+        deadkey=YES;
+        old=[[event copy] retain];
     }
     else {
+        modflag = [event modifierFlags];
+        keycode = [event keyCode];
+        keystr  = [event characters];
+        unmodkeystr = [event charactersIgnoringModifiers];
+        unicode = [keystr characterAtIndex:0];
 
-        if (modflag & NSFunctionKeyMask) {
-            NSData *data = nil;
-            int f = -1;
+        iIdleCount=0;
 
-            switch(unicode) {
-                case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp]; break;
-                case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown]; break;
-                case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft]; break;
-                case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight]; break;
+//        NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
+//              event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
 
-                case NSF1FunctionKey: f = 1; break;
-                case NSF2FunctionKey: f = 2; break;
-                case NSF3FunctionKey: f = 3; break;
-                case NSF4FunctionKey: f = 4; break;
-                case NSF5FunctionKey: f = 5; break;
-                case NSF6FunctionKey: f = 6; break;
-                case NSF7FunctionKey: f = 7; break;
-                case NSF8FunctionKey: f = 8; break;
-                case NSF9FunctionKey: f = 9; break;
-                case NSF10FunctionKey: f = 10; break;
-                case NSF11FunctionKey: f = 11; break;
-                case NSF12FunctionKey: f = 12; break;
-                    break;
-
-                case NSInsertFunctionKey:
-//                case NSHelpFunctionKey:
-                    data = [TERMINAL keyInsert]; break;
-                case NSDeleteFunctionKey:
-                    data = [TERMINAL keyDelete]; break;
-                case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
-                case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
-                case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
-                case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
-
-                case NSPrintScreenFunctionKey:
-                    break;
-                case NSScrollLockFunctionKey:
-                case NSPauseFunctionKey:
-                    break;
-            }
-
-//            if ((modflag&NSShiftKeyMask)&&f>=0) f+=12;
-            if (f >= 0)
-                data = [TERMINAL keyFunction:f];
-
-            if (data != nil) {
-                send_str = (char *)[data bytes];
-                send_strlen = [data length];
-            }
-        }
-        else if ([pref option] != OPT_NORMAL &&
-                 modflag & NSAlternateKeyMask)
+        // Check if we are navigating through sessions or scrolling
+        if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
         {
-            NSData *keydat = (modflag & NSControlKeyMask)?
-            [keystr dataUsingEncoding:NSUTF8StringEncoding]:
-            [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
-                    // META combination
-            if (keydat != nil) {
-                send_str = (char *)[keydat bytes];
-                send_strlen = [keydat length];
-            }
-            if ([pref option] == OPT_ESC)
-                send_pchr = '\e';
-            else if ([pref option] == OPT_META && send_str != NULL) {
-                int i;
-                for (i = 0; i < send_strlen; ++i) {
-                    send_str[i] |= 0x80;
-                }
+            // command/shift + function key's
+            switch (unicode)
+            {
+                case NSLeftArrowFunctionKey: // cursor left
+                                             // Check if we want to just move to the previous session
+                    [parent previousSession: nil];
+                    return;
+                case NSRightArrowFunctionKey: // cursor left
+                                              // Check if we want to just move to the next session
+                    [parent nextSession: nil];
+                    return;
+                case NSDeleteFunctionKey:
+                    if (modflag&NSFunctionKeyMask)
+                        NSLog(@"### DEBUG ###\n%@", SCREEN);
+                    break;
+                case NSPageUpFunctionKey:
+                    if(modflag & NSShiftKeyMask)
+                        [TEXTVIEW scrollPageUp: self];
+                    break;
+                case NSPageDownFunctionKey:
+                    if(modflag & NSShiftKeyMask)
+                        [TEXTVIEW scrollPageDown: self];
+                    break;
+                default:
+                    if ((modflag & NSCommandKeyMask) && (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey)) {
+                        [parent selectSession:unicode-NSF1FunctionKey];
+                    }
+                    break;
             }
         }
         else {
-            int i, max = [keystr length];
-            NSMutableString *mstr = [NSMutableString stringWithString:keystr];
-            NSData *data;
-            
-            for(i=0; i<max; i++)
-                if ([mstr characterAtIndex:i] == 0xa5)
-                    [mstr replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
 
-            data = [mstr dataUsingEncoding:NSUTF8StringEncoding];
+            if (modflag & NSFunctionKeyMask) {
+                NSData *data = nil;
+                int f = -1;
 
-            if (data != nil ) {
-                send_str = (char *)[data bytes];
-                send_strlen = [data length];
+                switch(unicode) {
+                    case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp]; break;
+                    case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown]; break;
+                    case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft]; break;
+                    case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight]; break;
+
+                    case NSF1FunctionKey: f = 1; break;
+                    case NSF2FunctionKey: f = 2; break;
+                    case NSF3FunctionKey: f = 3; break;
+                    case NSF4FunctionKey: f = 4; break;
+                    case NSF5FunctionKey: f = 5; break;
+                    case NSF6FunctionKey: f = 6; break;
+                    case NSF7FunctionKey: f = 7; break;
+                    case NSF8FunctionKey: f = 8; break;
+                    case NSF9FunctionKey: f = 9; break;
+                    case NSF10FunctionKey: f = 10; break;
+                    case NSF11FunctionKey: f = 11; break;
+                    case NSF12FunctionKey: f = 12; break;
+                        break;
+
+                    case NSInsertFunctionKey:
+                        //                case NSHelpFunctionKey:
+                        data = [TERMINAL keyInsert]; break;
+                    case NSDeleteFunctionKey:
+                        data = [TERMINAL keyDelete]; break;
+                    case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
+                    case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
+                    case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
+                    case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
+
+                    case NSPrintScreenFunctionKey:
+                        break;
+                    case NSScrollLockFunctionKey:
+                    case NSPauseFunctionKey:
+                        break;
+                }
+
+                //            if ((modflag&NSShiftKeyMask)&&f>=0) f+=12;
+                if (f >= 0)
+                    data = [TERMINAL keyFunction:f];
+
+                if (data != nil) {
+                    send_str = (char *)[data bytes];
+                    send_strlen = [data length];
+                }
             }
-            if (modflag & NSNumericPadKeyMask &&
-                send_strlen == 1 &&
-                send_str[0] == 0x03)
+            else if ([pref option] != OPT_NORMAL &&
+                     modflag & NSAlternateKeyMask)
             {
-                send_str = "\012";  // NumericPad Entry -> 0x0a
-                send_strlen = 1;
+                NSData *keydat = (modflag & NSControlKeyMask)?
+                [keystr dataUsingEncoding:NSUTF8StringEncoding]:
+                [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
+                // META combination
+                if (keydat != nil) {
+                    send_str = (char *)[keydat bytes];
+                    send_strlen = [keydat length];
+                }
+                if ([pref option] == OPT_ESC)
+                    send_pchr = '\e';
+                else if ([pref option] == OPT_META && send_str != NULL) {
+                    int i;
+                    for (i = 0; i < send_strlen; ++i) {
+                        send_str[i] |= 0x80;
+                    }
+                }
             }
-        }
+            else {
+                int i, max = [keystr length];
+                NSMutableString *mstr = [NSMutableString stringWithString:keystr];
+                NSData *data;
 
-	// Make sure we scroll down to the end
-	[self moveLastLine];
+                for(i=0; i<max; i++)
+                    if ([mstr characterAtIndex:i] == 0xa5)
+                        [mstr replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
 
-        if (EXIT == NO ) {
-            if (send_pchr >= 0) {
-                char c = send_pchr;
+                data = [mstr dataUsingEncoding:NSUTF8StringEncoding];
 
-                [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
+                if (data != nil ) {
+                    send_str = (char *)[data bytes];
+                    send_strlen = [data length];
+                }
+                if (modflag & NSNumericPadKeyMask &&
+                    send_strlen == 1 &&
+                    send_str[0] == 0x03)
+                {
+                    send_str = "\012";  // NumericPad Entry -> 0x0a
+                    send_strlen = 1;
+                }
             }
-            if (send_chr >= 0) {
-                char c = send_chr;
 
-                [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
-            }
-            if (send_str != NULL) {
-                [SHELL writeTask:[NSData dataWithBytes:send_str length:send_strlen]];
+            // Make sure we scroll down to the end
+            [self moveLastLine];
+
+            if (EXIT == NO ) {
+                if (send_pchr >= 0) {
+                    char c = send_pchr;
+
+                    [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
+                }
+                if (send_chr >= 0) {
+                    char c = send_chr;
+
+                    [SHELL writeTask:[NSData dataWithBytes:&c length:1]];
+                }
+                if (send_str != NULL) {
+                    [SHELL writeTask:[NSData dataWithBytes:send_str length:send_strlen]];
+                }
             }
         }
     }
-    
 }
 
 - (void)insertText:(NSString *)string
@@ -462,6 +476,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSMutableString *mstring;
     int i, max;
 
+    NSLog(@"insertText: %@",string);
     mstring = [NSMutableString stringWithString:string];
     max = [string length];
     for(i=0; i<max; i++) {

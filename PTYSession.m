@@ -1347,23 +1347,16 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (float) transparency
 {
-    return (1 - [[TEXTVIEW defaultBGColor] alphaComponent]);
+    return ([TEXTVIEW transparency]);
 }
 
 - (void)setTransparency:(float)transparency
 {
-    NSColor *newcolor;
 	
     // set transparency of background image
     [SCROLLVIEW setTransparency: transparency];
+	[TEXTVIEW setTransparency: transparency];
 	
-    // set alpha channel of background color
-    newcolor = [[TEXTVIEW defaultBGColor] colorWithAlphaComponent:(1 - transparency)];
-    if (newcolor != nil && newcolor != [TEXTVIEW defaultBGColor])
-    {
-		[self setBackgroundColor: newcolor];
-		[TEXTVIEW setNeedsDisplay: YES];
-    }
 }
 
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c

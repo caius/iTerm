@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.154 2004-03-03 23:13:57 yfabian Exp $
+// $Id: PTYTextView.m,v 1.155 2004-03-04 00:10:52 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -638,6 +638,7 @@
 			if (!need_draw){
 				if (bgstart>=0) {
 					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
+					aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 					[aColor set];
 					
 					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
@@ -663,6 +664,7 @@
 				}
 				else if (bg[j]!=bgcode || (ulstart>=0 && (fg[j]!=fgcode || !buf[j]))) { //background or underline property change?
 					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
+					aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 					[aColor set];
 					
 					bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
@@ -693,6 +695,7 @@
 		// finish pending jobs
 		if (bgstart>=0) {
 			aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
+			aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 			[aColor set];
 			
 			bgRect = NSMakeRect(curX+bgstart*charWidth,curY-lineHeight,(j-bgstart)*charWidth,lineHeight);
@@ -749,7 +752,7 @@
 		i = y1*[dataSource width]+x1;
 		if(showCursor)
 		{
-			[[self defaultCursorColor] set];
+			[[[self defaultCursorColor] colorWithAlphaComponent: (1 - transparency)] set];
 			if([[self window] isKeyWindow])
 			{
 				NSRectFill(NSMakeRect(x1*charWidth,
@@ -1846,6 +1849,18 @@
 	}
 	NSBeep();
 }
+
+// transparency
+- (float) transparency
+{
+	return (transparency);
+}
+
+- (void) setTransparency: (float) fVal
+{
+	transparency = fVal;
+}
+
 @end
 
 //

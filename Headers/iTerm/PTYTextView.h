@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.24 2004-03-03 23:14:11 yfabian Exp $
+// $Id: PTYTextView.h,v 1.25 2004-03-04 00:10:52 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -88,6 +88,9 @@ typedef struct
     NSColor* defaultBoldColor;
 	NSColor* defaultCursorColor;
 	NSColor* selectionColor;
+	
+	// transparency
+	float transparency;
 	
     // data source
     VT100Screen *dataSource;
@@ -181,6 +184,10 @@ typedef struct
 
 // selection
 - (IBAction) selectAll: (id) sender;
+
+// transparency
+- (float) transparency;
+- (void) setTransparency: (float) fVal;
 
 //
 // Drag and Drop methods for our text view

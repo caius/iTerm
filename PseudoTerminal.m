@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.107 2003-02-15 07:36:35 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.108 2003-02-15 07:38:48 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -66,7 +66,7 @@ static NSString *ConfigToolbarItem = @"Config";
     if ([NSBundle loadNibNamed:NIB_PATH owner:term] == NO)
 	return nil;
     // save up to 10 window positions
-    if(windowCount++ < 11)
+    if(windowCount++ < 10)
     {
 	[[term window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", windowCount]];
     }

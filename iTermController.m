@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.37 2004-03-28 09:39:46 ujwal Exp $
+// $Id: iTermController.m,v 1.38 2004-03-29 00:27:19 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -210,6 +210,12 @@ static BOOL usingAutoLaunchScript = NO;
 - (void)newSessionInWindowAtIndex: (id) sender
 {
     [self launchBookmark:[sender representedObject] inTerminal:nil];
+}
+
+// meant for action for menu items that have a submenu
+- (void) noAction: (id) sender
+{
+	
 }
 
 - (IBAction)newSession:(id)sender
@@ -556,6 +562,8 @@ NSString *terminalsKey = @"terminals";
 		{
 			subMenu = [self _menuForNode: childNode action: aSelector target: aTarget withShortcuts: withShortcuts];
 			[aMenuItem setSubmenu: subMenu];
+			[aMenuItem setAction: @selector(noAction:)];
+			[aMenuItem setTarget: self];
 		}
 		else
 		{

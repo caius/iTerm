@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.236 2003-09-14 22:33:50 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.237 2003-09-15 15:41:21 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -173,7 +173,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
 {
-    NSMutableDictionary *addressBookPreferences;
+    NSMutableDictionary *addressBookPreferences, *tempPrefs;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -195,15 +195,25 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[addressBookPreferences removeObjectForKey: @"BackgroundImagePath"];
 	[aSession setAddressBookEntry:addressBookPreferences];
 	[aSession setPreferencesFromAddressBookEntry: addressBookPreferences];
-	if(FONT == nil)
-	{
-	    [self setAllFont: [addressBookPreferences objectForKey:@"Font"] nafont: [addressBookPreferences objectForKey:@"NAFont"]];
-	}	
+	tempPrefs = addressBookPreferences;
     }
     else
     {
 	[aSession setPreferencesFromAddressBookEntry: [aSession addressBookEntry]];
+	tempPrefs = [aSession addressBookEntry];
     }
+
+    if(FONT == nil)
+    {
+	[self setAllFont: [tempPrefs objectForKey:@"Font"] nafont: [tempPrefs objectForKey:@"NAFont"]];
+    }
+    
+    if(WIDTH == 0 && HEIGHT == 0)
+    {
+	[self setColumns: [[tempPrefs objectForKey:@"Col"]intValue]];
+	[self setRows: [[tempPrefs objectForKey:@"Row"]intValue]];
+    }
+    
 
     
     // Set the bell option

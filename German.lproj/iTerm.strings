@@ -14,16 +14,16 @@
 "Cancel" = "Abbrechen";
 
 /* Context menu */
-"Clear Buffer" = "Puffer löschen";
+"Clear Buffer" = "Puffer l√∂schen";
 
 /* Toolbar Item: Close Session */
-"Close" = "Schließen";
+"Close" = "Schlie√üen";
 
 /* Toolbar Item Tip: Close */
-"Close the current session" = "Derzeitige Sitzung schließen";
+"Close the current session" = "Derzeitige Sitzung schlie√üen";
 
 /* Close window */
-"Close Window?" = "Fenster schließen?";
+"Close Window?" = "Fenster schlie√üen?";
 
 /* Close Session */
 "The current session will be closed"="Die derzeitige Sitzung wird geschlossen werden";
@@ -49,19 +49,19 @@
 
 
 /* Removal Alert */
-"Do you really want to remove this item?" = "Möchten Sie dieses Objekt wirklich entfernen?";
+"Do you really want to remove this item?" = "M√∂chten Sie dieses Objekt wirklich entfernen?";
 
 /* Toolbar Item:New */
 "Default Session"="Standard-Sitzung";
 "New" = "Neu";
-"Open in a new window"="In einem neuen Fenster öffnen";
-"Open a new session"="Eine neue Sitzung öffnen";
+"Open in a new window"="In einem neuen Fenster √∂ffnen";
+"Open a new session"="Eine neue Sitzung √∂ffnen";
 
 /* OK */
 "OK" = "OK";
 
 /* Toolbar Item Tip:Bookmarks */
-"Open the bookmarks" = "Die Lesezeichen öffnen";
+"Open the bookmarks" = "Die Lesezeichen √∂ffnen";
 
 /* Context menu */
 "Paste" = "Einsetzen";
@@ -70,35 +70,35 @@
 "Save" = "Sichern";
 
 /* Context menu */
-"Select" = "Auswählen";
+"Select" = "Ausw√§hlen";
 
 /* Context menu */
 "Move to new window" = "In neues Fenster bewegen";
 
 /* Anti-Idle: wrong input */
-"Please enter a valid code (0~255)" = "Bitte geben Sie einen zulässigen Code ein (0~255)";
+"Please enter a valid code (0~255)" = "Bitte geben Sie einen zul√§ssigen Code ein (0~255)";
 
 /* wrong input */
-"Please enter a valid window size" = "Bitte geben Sie eine zulässige Fenstergröße ein";
+"Please enter a valid window size" = "Bitte geben Sie eine zul√§ssige Fenstergr√∂√üe ein";
 
 /* Remove */
 "Remove" = "Entfernen";
 
 /* Context menu */
-"Select All" = "Alles auswählen";
+"Select All" = "Alles ausw√§hlen";
 "Save" = "Sichern";
 "Print..." = "Drucken...";
 "Print Selection..." = "Auswahl drucken...";
 
 /* Removal Alert */
-"There is no undo for this operation." = "Für diese Operation gibt es kein Widerrufen.";
+"There is no undo for this operation." = "F√ºr diese Operation gibt es kein Widerrufen.";
 
 /* wrong input */
 "Wrong Input" = "Falsche Eingabe";
 
 /* Upgrade */
-"Upgrade Warning: New language encodings available!"="Upgrade-Warnung: Neue Sprach-Encodings verfügbar!";
-"Please reset all the encoding settings in your preference and bookmarks"="Bitte setzen Sie alle Encoding-Einstellungen in Ihren Voreinstellungen und Lesezeichen zurück";
+"Upgrade Warning: New language encodings available!"="Upgrade-Warnung: Neue Sprach-Encodings verf√ºgbar!";
+"Please reset all the encoding settings in your preference and bookmarks"="Bitte setzen Sie alle Encoding-Einstellungen in Ihren Voreinstellungen und Lesezeichen zur√ºck";
 
 /* Author */
 "fabian"="fabian";
@@ -112,7 +112,7 @@
 "Configuration saved"="Konfiguration gespeichert";
 
 /* OS Version */
-"Minimum_OS"="iTerm benötigt OS X Version 10.2 oder höher. Das Programm wird jetzt beendet werden.";
+"Minimum_OS"="iTerm ben√∂tigt OS X Version 10.2 oder h√∂her. Das Programm wird jetzt beendet werden.";
 
 /* Sorry */
 "Sorry"="Sorry";

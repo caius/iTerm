@@ -128,27 +128,28 @@
         }
         
         // set the selection color if it has changed
-        if([[currentSession TEXTVIEW] selectionColor] != [CONFIG_SELECTION color])
+        if([[[currentSession TEXTVIEW] selectionColor] isEqual: [CONFIG_SELECTION color]] == NO)
             [[currentSession TEXTVIEW] setSelectionColor: [CONFIG_SELECTION color]];
         
         // set the bold color if it has changed
-        if([[currentSession TERMINAL] defaultBoldColor] != [CONFIG_BOLD color])
-            [[currentSession TERMINAL] setBoldColor: [CONFIG_BOLD color]];
+        if([[currentSession boldColor] isEqual: [CONFIG_BOLD color]] == NO)
+            [currentSession setBoldColor: [CONFIG_BOLD color]];
 
-	if([currentSession transparency] * 100.0 != [CONFIG_TRANSPARENCY intValue])
-	{
-            [currentSession setTransparency:  [CONFIG_TRANSPARENCY floatValue]/100.0];
-	}
-        
-        if(([[currentSession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 
-           ([[currentSession TERMINAL] defaultBGColor] != [CONFIG_BACKGROUND color]))
+	// change foreground color if it has changed
+	if(([[currentSession foregroundColor] isEqual:[CONFIG_FOREGROUND color]] == NO))
+        {
+            [currentSession setForegroundColor:  [CONFIG_FOREGROUND color]];
+        }
+
+	// change the background color if it is enabled and has changed
+        if([CONFIG_BACKGROUND isEnabled] &&
+           ([[currentSession backgroundColor] isEqual: [CONFIG_BACKGROUND color]] == NO))
         {
             NSColor *bgColor;
-            
+
             // set the background color for the scrollview with the appropriate transparency
             bgColor = [[CONFIG_BACKGROUND color] colorWithAlphaComponent: (1-[CONFIG_TRANSPARENCY intValue]/100.0)];
             [[currentSession SCROLLVIEW] setBackgroundColor: bgColor];
-            [currentSession setForegroundColor:  [CONFIG_FOREGROUND color]];
             [currentSession setBackgroundColor:  bgColor];
             [[currentSession TEXTVIEW] setNeedsDisplay:YES];
         }
@@ -157,6 +158,12 @@
 	if([[currentSession backgroundImagePath] isEqualToString: backgroundImagePath] == NO)
 	{
 	    [currentSession setBackgroundImagePath: backgroundImagePath];
+	}
+
+	// change transparency if it has changed
+	if([currentSession transparency] * 100.0 != [CONFIG_TRANSPARENCY intValue])
+	{
+            [currentSession setTransparency:  [CONFIG_TRANSPARENCY floatValue]/100.0];
 	}	
 
         [[currentSession SCREEN] updateScreen];

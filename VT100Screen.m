@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.72 2003-03-12 22:08:19 yfabian Exp $
+// $Id: VT100Screen.m,v 1.73 2003-03-14 22:53:03 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -186,7 +186,9 @@ static BOOL PLAYBELL = YES;
     BUFFER=[[NSMutableAttributedString alloc] init];
     screenLines = [[NSMutableArray alloc] init];
 
-    minIndex=0;
+    updateIndex=minIndex=0;
+    screenLock=0;
+    
     return self;
 }
 
@@ -1260,7 +1262,7 @@ static BOOL PLAYBELL = YES;
     {
 	int idx;
         idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];
-        //NSLog(@"showCursor: %d(%d)",idx,[[STORAGE string] length]);
+        //NSLog(@"showCursor: %d(%d)(%d+%d)(%d)",idx,[[STORAGE string] length],[self getIndex:CURSOR_X y:CURSOR_Y], updateIndex,[BUFFER length]);
         if (idx>=[[STORAGE string] length]) {
             [STORAGE appendAttributedString:[self defaultAttrString:@" "]];
         }
@@ -1846,9 +1848,9 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_BUFFER
     if (idx<[BUFFER length])
-        [BUFFER insertAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]] atIndex:idx];
+        [BUFFER insertAttributedString:[self attrString:[NSString stringWithCharacters:spaces length:n] ascii:YES] atIndex:idx];
     else
-        [BUFFER appendAttributedString:[self defaultAttrString:[NSString stringWithCharacters:spaces length:n]]];
+        [BUFFER appendAttributedString:[self attrString:[NSString stringWithCharacters:spaces length:n] ascii:YES]];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -2143,19 +2145,15 @@ static BOOL PLAYBELL = YES;
     NSColor *fg, *bg,*blink;
     NSDictionary *dic;
     NSRange range;
-    NSString *s=[STORAGE string];
-    int len=[s length];
+    int len=[[STORAGE string] length];
     int idx=len-1;
-    int y=0;
-
-    for(;y<HEIGHT&&idx>=0;idx--) {
-        if ([s characterAtIndex:idx]=='\n') y++;
-    }
-    if (y<HEIGHT) idx++; else idx+=2;
     
+    if (screenLock) return;
+    [self setScreenLock];
 //    NSLog(@"blink!!");
+    
     [STORAGE beginEditing];
-    for(;idx<len;) {
+    for(idx=updateIndex;idx<len;) {
         if ([[STORAGE attribute:NSBlinkAttributeName atIndex:idx effectiveRange:&range] intValue]) {
 //            NSLog(@"true blink!!");
             for(;idx<range.length+range.location;idx++) {
@@ -2179,6 +2177,7 @@ static BOOL PLAYBELL = YES;
     }
     [STORAGE endEditing];
     blinkShow=!blinkShow;
+    [self removeScreenLock];
 }
 
 - (int) cursorX
@@ -2332,7 +2331,7 @@ static BOOL PLAYBELL = YES;
 #endif
 
 #if DEBUG_USE_BUFFER
-    NSString *s=[STORAGE string];
+    NSString *s=[BUFFER string];
     int len=[s length];
     int idx=len-1;
     int y=0;
@@ -2343,9 +2342,9 @@ static BOOL PLAYBELL = YES;
     if (y<HEIGHT) idx++; else idx+=2;
 //    NSLog(@"renew: %d, %d",updateIndex, idx);
 
-    if (updateIndex<idx) {
-        [BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];
-        updateIndex=idx;
+    if (idx) {
+        [BUFFER deleteCharactersInRange:NSMakeRange(0,idx)];
+        updateIndex+=idx;
     }
 
     minIndex=[BUFFER length];
@@ -2362,15 +2361,37 @@ static BOOL PLAYBELL = YES;
 {
     
 #if DEBUG_USE_BUFFER
-    int len=[BUFFER length];
+    int len, slen;
+    int idx;
 
-    if (len<=0||minIndex>len) return;
-//    NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length]-updateIndex-minIndex,len-minIndex);
+
+    idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+    if ([[SESSION TEXTVIEW] hasMarkedText]) {
+        len=idx;
+        slen=[[SESSION TEXTVIEW] markedRange].location;
+    }
+    else {
+        len=[BUFFER length];
+        slen=[STORAGE length];
+    }
+    if (len<=0||minIndex>len||screenLock) return;
+    [self setScreenLock];
+
+    //NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
+
     [STORAGE beginEditing];
-    [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,[STORAGE length]-updateIndex-minIndex)
+    [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,slen-updateIndex-minIndex)
                  withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
     [STORAGE endEditing];
+    //NSLog(@"updated: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
+    //if ([BUFFER length]>[STORAGE length]) NSLog(@"%@",BUFFER);
     [self renewBuffer];
+    //NSLog(@"renewed: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
+    [[SESSION TEXTVIEW] setCursorIndex:[self getTVIndex:CURSOR_X y:CURSOR_Y]];
+    //NSLog(@"showCursor");
+    [self showCursor];
+    //NSLog(@"shown");
+    [self removeScreenLock];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -2405,6 +2426,16 @@ static BOOL PLAYBELL = YES;
     [[SESSION SCROLLVIEW] setBackgroundColor: bg];
     [[SESSION SCROLLVIEW] setNeedsDisplay: YES];
 
+}
+
+- (void) setScreenLock
+{
+    screenLock++;
+}
+
+- (void) removeScreenLock
+{
+    if (screenLock) screenLock--;
 }
 
 @end

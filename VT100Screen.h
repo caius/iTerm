@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.22 2003-03-12 20:30:35 yfabian Exp $
+// $Id: VT100Screen.h,v 1.23 2003-03-14 22:53:03 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -65,7 +65,8 @@
     
     unsigned int  TOP_LINE;
     unsigned int  LINE_LIMIT;
-    int  OLD_CURSOR_INDEX;
+    int OLD_CURSOR_INDEX;
+    int screenLock;
 
     NSView *display;
 }
@@ -160,6 +161,8 @@
 - (int) numberOfLines;
 - (NSAttributedString *)stringAtLine: (int) n;
 - (void) setScreenAttributes;
+- (void) setScreenLock;
+- (void) removeScreenLock;
 
 - (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (NSAttributedString *)defaultAttrString:(NSString *)str;

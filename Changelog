@@ -1,6 +1,8 @@
 2003-03-14	fabian
     * Decrease the brightness of default color to give it
       more contrast to the highlight
+    * Fixed a bug related to input CJK.
+    * Updated Japanese nib files by Yuichi OHKAWA
       
 2003-03-13	fabian
     * Added a new option to allow opening the address book

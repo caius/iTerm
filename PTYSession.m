@@ -500,9 +500,7 @@ static NSString *PWD_ENVVALUE = @"~";
 
 	    // trigger an update of the display.
 	    [SCREEN updateScreen];
-	    [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-	    [SCREEN showCursor];
-	    
+    
 	}
     }
 }
@@ -693,11 +691,7 @@ static NSString *PWD_ENVVALUE = @"~";
     if (blink>50) { [SCREEN blink]; blink=0; }
     if (oIdleCount<2||dirty) {
         if (output>3) {
-            // sometimes showCursor will change buffer too
-            [SCREEN getIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1];
             [SCREEN updateScreen];
-            [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-            [SCREEN showCursor];
             // If the user has not scrolled up, move to the end
             /*       if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
                 [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==

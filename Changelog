@@ -1,3 +1,8 @@
+2002-12-16	fabian
+    * Change version number to 0.5.6
+    * Make author name localized strings in About panel.
+    * Add a "Report a Bug" link in About panel.
+    
 2002-12-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added popup button in toolbar for quick access to 

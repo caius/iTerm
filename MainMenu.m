@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.11 2002-12-16 02:59:59 ujwal Exp $
+// $Id: MainMenu.m,v 1.12 2002-12-16 16:28:41 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -549,8 +549,8 @@ static BOOL newWindow=YES;
 
 - (IBAction)showAbout:(id)sender
 {
-    NSURL *author1URL, *author2URL, *webURL;
-    NSAttributedString *author1, *author2, *webSite;
+    NSURL *author1URL, *author2URL, *webURL, *bugURL;
+    NSAttributedString *author1, *author2, *webSite, *bugReport;
     NSMutableAttributedString *tmpAttrString;
     NSDictionary *linkAttributes;
 //    [NSApp orderFrontStandardAboutPanel:nil];
@@ -561,7 +561,7 @@ static BOOL newWindow=YES;
                         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
 					    [NSColor blueColor], NSForegroundColorAttributeName,
 					    NULL];
-    author1 = [[NSAttributedString alloc] initWithString: @"fabian" attributes: linkAttributes];
+    author1 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTable(@"fabian",@"iTerm",@"Author") attributes: linkAttributes];
     
     // Spacer...
     tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
@@ -572,7 +572,7 @@ static BOOL newWindow=YES;
                         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
 					    [NSColor blueColor], NSForegroundColorAttributeName,
 					    NULL];
-    author2 = [[NSAttributedString alloc] initWithString: @"Ujwal S. Sathyam" attributes: linkAttributes];
+    author2 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTable(@"Ujwal S. Sathyam",@"iTerm",@"Author") attributes: linkAttributes];
     
     // Web URL
     webURL = [NSURL URLWithString: @"http://iterm.sourceforge.net"];
@@ -582,7 +582,14 @@ static BOOL newWindow=YES;
 					    NULL];
     webSite = [[NSAttributedString alloc] initWithString: @"http://iterm.sourceforge.net" attributes: linkAttributes];
 
-
+    // Bug report
+    bugURL = [NSURL URLWithString: @"https://sourceforge.net/tracker/?func=add&group_id=67789&atid=518973"];
+    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: webURL, NSLinkAttributeName,
+        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
+        [NSColor blueColor], NSForegroundColorAttributeName,
+        NULL];
+    bugReport = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTable(@"Report A Bug", @"iTerm", @"About") attributes: linkAttributes];
+    
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
     [[AUTHORS textStorage] appendAttributedString: author1];
@@ -591,6 +598,9 @@ static BOOL newWindow=YES;
     [tmpAttrString initWithString: @"\n"];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: webSite];
+    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
+    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
+    [[AUTHORS textStorage] appendAttributedString: bugReport];
     [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];
 
     

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.h,v 1.1 2004-03-18 08:48:34 ujwal Exp $
+// $Id: Tree.h,v 1.2 2004-03-18 19:50:43 ujwal Exp $
 //
 /*
  **  Tree.h
@@ -59,6 +59,7 @@
 
 - (BOOL) isLeaf;
 - (void) setIsLeaf: (BOOL) flag;
+- (BOOL)isGroup;
 
 - (void)insertChild:(TreeNode*)child atIndex:(int)index;
 - (void)insertChildren:(NSArray*)children atIndex:(int)index;

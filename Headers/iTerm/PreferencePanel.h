@@ -31,6 +31,7 @@
 #define OPT_ESC    2
 
 @class iTermController;
+@class TreeNode;
 
 @interface PreferencePanel : NSWindowController
 {
@@ -57,7 +58,9 @@
 	IBOutlet NSPopUpButton *bookmarkTerminalProfile;
 	IBOutlet NSPopUpButton *bookmarkKeyboardProfile;
 	IBOutlet NSPopUpButton *bookmarkDisplayProfile;
-	    
+	NSArray	 		*draggedNodes;
+
+    
     NSUserDefaults *prefs;
 
 
@@ -114,4 +117,8 @@
 - (void)_deleteBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 - (void)_editBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
 - (void) _loadProfiles;
+- (NSArray*) _draggedNodes;
+- (NSArray *) _selectedNodes;
+- (void)_performDropOperation:(id <NSDraggingInfo>)info onNode:(TreeNode*)parentNode atIndex:(int)childIndex;
+
 @end

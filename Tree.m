@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.m,v 1.2 2004-03-18 16:45:11 ujwal Exp $
+// $Id: Tree.m,v 1.3 2004-03-18 19:50:40 ujwal Exp $
 //
 /*
  **  Tree.m
@@ -168,6 +168,11 @@
 
 - (TreeNode*)nodeParent { 
     return nodeParent; 
+}
+
+- (BOOL)isGroup
+{
+	return (!isLeaf);
 }
 
 - (BOOL) isLeaf

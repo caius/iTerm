@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.93 2004-03-18 16:45:11 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.94 2004-03-18 19:50:40 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -36,6 +36,8 @@
 #import <iTerm/Tree.h>
 
 static float versionNumber;
+
+#define iTermOutlineViewPboardType 	@"iTermOutlineViewPboardType"
 
 @implementation PreferencePanel
 
@@ -202,6 +204,64 @@ static float versionNumber;
 	[[ITAddressBookMgr sharedInstance] setObjectValue: object forKey:[tableColumn identifier] inItem: item];	
 }
 
+// ================================================================
+//  NSOutlineView data source methods. (dragging related)
+// ================================================================
+
+- (BOOL)outlineView:(NSOutlineView *)olv writeItems:(NSArray*)items toPasteboard:(NSPasteboard*)pboard 
+{
+    draggedNodes = items; // Don't retain since this is just holding temporaral drag information, and it is only used during a drag!  We could put this in the pboard actually.
+    
+    // Provide data for our custom type, and simple NSStrings.
+    [pboard declareTypes:[NSArray arrayWithObjects: iTermOutlineViewPboardType, nil] owner:self];
+    
+    // the actual data doesn't matter since DragDropSimplePboardType drags aren't recognized by anyone but us!.
+    [pboard setData:[NSData data] forType:iTermOutlineViewPboardType]; 
+    	
+    return YES;
+}
+
+- (unsigned int)outlineView:(NSOutlineView*)olv validateDrop:(id <NSDraggingInfo>)info proposedItem:(id)item proposedChildIndex:(int)childIndex 
+{
+    // This method validates whether or not the proposal is a valid one. Returns NO if the drop should not be allowed.
+    TreeNode *targetNode = item;
+    BOOL targetNodeIsValid = YES;
+		
+	// Refuse if: dropping "on" the view itself unless we have no data in the view.
+	if (targetNode==nil && childIndex==NSOutlineViewDropOnItemIndex && [[ITAddressBookMgr sharedInstance] numberOfChildrenOfItem: nil]!=0) 
+		targetNodeIsValid = NO;
+	
+	if ([targetNode isLeaf])
+		targetNodeIsValid = NO;
+		
+	// Check to make sure we don't allow a node to be inserted into one of its descendants!
+	if (targetNodeIsValid && ([info draggingSource]==bookmarksView) && [[info draggingPasteboard] availableTypeFromArray:[NSArray arrayWithObject: iTermOutlineViewPboardType]] != nil) 
+	{
+		NSArray *_draggedNodes = [[[info draggingSource] dataSource] _draggedNodes];
+		targetNodeIsValid = ![targetNode isDescendantOfNodeInArray: _draggedNodes];
+	}
+    
+    // Set the item and child index in case we computed a retargeted one.
+    [bookmarksView setDropItem:targetNode dropChildIndex:childIndex];
+    
+    return targetNodeIsValid ? NSDragOperationGeneric : NSDragOperationNone;
+}
+
+- (BOOL)outlineView:(NSOutlineView*)olv acceptDrop:(id <NSDraggingInfo>)info item:(id)targetItem childIndex:(int)childIndex 
+{
+	TreeNode *parentNode;
+	
+	parentNode = targetItem;
+	if(parentNode == nil)
+		parentNode = [[ITAddressBookMgr sharedInstance] rootNode];
+
+	childIndex = (childIndex==NSOutlineViewDropOnItemIndex?0:childIndex);
+    
+    [self _performDropOperation:info onNode:parentNode atIndex:childIndex];
+	
+    return YES;
+}
+
 
 // Bookmark actions
 - (IBAction) addBookmarkFolder: (id) sender
@@ -283,10 +343,17 @@ static float versionNumber;
 
 
 // NSWindow delegate
-- (void)windowWillLoad;
+- (void)windowWillLoad
 {
     // We finally set our autosave window frame name and restore the one from the user's defaults.
     [self setWindowFrameAutosaveName: @"Preferences"];
+}
+
+- (void) windowDidLoad
+{
+	// Register to get our custom type!
+    [bookmarksView registerForDraggedTypes:[NSArray arrayWithObjects: iTermOutlineViewPboardType, nil]];
+
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
@@ -494,6 +561,51 @@ static float versionNumber;
 	[bookmarkDisplayProfile removeAllItems];
 	[bookmarkDisplayProfile addItemsWithTitles: profileArray];
 	
+}
+
+- (NSArray *) _selectedNodes 
+{ 
+    NSMutableArray *items = [NSMutableArray array];
+    NSEnumerator *selectedRows = [bookmarksView selectedRowEnumerator];
+    NSNumber *selRow = nil;
+    while( (selRow = [selectedRows nextObject]) ) 
+	{
+        if ([bookmarksView itemAtRow:[selRow intValue]]) 
+            [items addObject: [bookmarksView itemAtRow:[selRow intValue]]];
+    }
+    return items;
+}
+
+
+- (NSArray*) _draggedNodes   
+{ 
+	return draggedNodes; 
+}
+
+- (void)_performDropOperation:(id <NSDraggingInfo>)info onNode:(TreeNode*)parentNode atIndex:(int)childIndex 
+{
+    // Helper method to insert dropped data into the model. 
+    NSPasteboard * pboard = [info draggingPasteboard];
+    NSMutableArray * itemsToSelect = nil;
+    
+    // Do the appropriate thing depending on wether the data is DragDropSimplePboardType or NSStringPboardType.
+    if ([pboard availableTypeFromArray:[NSArray arrayWithObjects:iTermOutlineViewPboardType, nil]] != nil) {
+        PreferencePanel *dragDataSource = [[info draggingSource] dataSource];
+        NSArray *_draggedNodes = [TreeNode minimumNodeCoverFromNodesInArray: [dragDataSource _draggedNodes]];
+        NSEnumerator *draggedNodesEnum = [_draggedNodes objectEnumerator];
+        TreeNode *_draggedNode = nil, *_draggedNodeParent = nil;
+        
+		itemsToSelect = [NSMutableArray arrayWithArray:[self _selectedNodes]];
+		
+        while ((_draggedNode = [draggedNodesEnum nextObject])) {
+            _draggedNodeParent = [_draggedNode nodeParent];
+            if (parentNode==_draggedNodeParent && [parentNode indexOfChild: _draggedNode]<childIndex) childIndex--;
+            [_draggedNodeParent removeChild: _draggedNode];
+        }
+        [parentNode insertChildren: _draggedNodes atIndex: childIndex];
+    } 
+	
+    [bookmarksView reloadData];
 }
 
 @end

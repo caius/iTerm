@@ -67,6 +67,7 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 {
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, aDict);
 	bookmarks = [TreeNode treeFromDictionary: aDict];
+	[bookmarks setIsLeaf: NO];
 	[bookmarks retain];
 }
 
@@ -234,6 +235,11 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm/Addre
 - (void) deleteBookmarkNode: (TreeNode *) aNode
 {
 	[aNode removeFromParent];
+}
+
+- (TreeNode *) rootNode
+{
+	return (bookmarks);
 }
 
 @end

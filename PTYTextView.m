@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.199 2004-04-12 18:18:54 ujwal Exp $
+// $Id: PTYTextView.m,v 1.200 2004-04-12 23:07:27 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -410,7 +410,6 @@ static SInt32 systemVersion;
     [nafont release];
     [naFont retain];
     nafont=naFont;
-	[self setNeedsDisplay: YES];
     [self setMarkedTextAttributes:
         [NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor yellowColor], NSBackgroundColorAttributeName,
@@ -419,6 +418,8 @@ static SInt32 systemVersion;
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
 	[self resetCharCache];
+	forceUpdate = YES;
+	[self setNeedsDisplay: YES];
 }
 
 - (void) resetCharCache

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.22 2004-04-12 19:02:03 ujwal Exp $
+// $Id: PTYTask.m,v 1.23 2004-04-12 23:07:27 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -30,7 +30,7 @@
 
 // Debug option
 #define DEBUG_THREAD          0
-#define DEBUG_ALLOC           1
+#define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
 #import <stdio.h>

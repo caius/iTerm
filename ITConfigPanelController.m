@@ -259,12 +259,8 @@ static ITConfigPanelController *singleInstance = nil;
         }
     }
 	
-	if ((configFont != nil && [_pseudoTerminal font] != configFont) ||
-		(configNAFont != nil && [_pseudoTerminal nafont] != configNAFont)) 
-	{
-		[_pseudoTerminal setFont:configFont nafont:configNAFont];
-		[_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
-	}
+	[_pseudoTerminal setFont:configFont nafont:configNAFont];
+	[_pseudoTerminal resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
 	
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.18 2003-01-08 17:20:14 yfabian Exp $
+// $Id: MainMenu.m,v 1.19 2003-01-08 20:56:21 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -166,7 +166,6 @@ static BOOL newWindow=YES;
     NSDictionary *env=[NSDictionary dictionaryWithObject:([entry objectForKey:@"Directory"]?[entry objectForKey:@"Directory"]:@"~")  forKey:@"PWD"];
         
     [term startProgram:cmd arguments:arg environment:env];
-    encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
     [[term currentSession] setEncoding:encoding];
     [[term currentSession] setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
     [[term currentSession] setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];

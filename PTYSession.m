@@ -196,7 +196,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	[TEXTVIEW setVerticallyResizable:YES];
     }
     else
-	TEXTVIEW = [[[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)] autorelease];
+	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
   
     [TEXTVIEW setDrawsBackground:NO];
     [TEXTVIEW setEditable:YES]; // For NSTextInput protocol

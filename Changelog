@@ -1,3 +1,7 @@
+2003-10-15	fabian
+
+    * Put in Ujwal's fix of crash when enforce aligment unchecked
+    
 2003-10-10	fabian
 
     * Corrected the encoding for the French version of iTerm.strings.

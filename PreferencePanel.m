@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.64 2004-01-20 20:45:34 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.65 2004-01-22 01:58:26 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -112,7 +112,7 @@ static float versionNumber;
     
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
-    [tabViewType selectCellWithTag: defaultTabViewType];
+    [tabPosition selectCellWithTag: defaultTabViewType];
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
@@ -138,7 +138,7 @@ static float versionNumber;
 
     defaultMacNavKeys=([macnavkeys state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
-    defaultTabViewType=[[tabViewType selectedCell] tag];
+    defaultTabViewType=[[tabPosition selectedCell] tag];
     defaultCopySelection=([copySelection state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
     defaultSilenceBell=([silenceBell state]==NSOnState);
@@ -183,7 +183,7 @@ static float versionNumber;
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
-    [tabViewType selectCellWithTag: defaultTabViewType];
+    [tabPosition selectCellWithTag: defaultTabViewType];
     [blinkingCursor setState:defaultBlinkingCursor?NSOnState:NSOffState];
     [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];    
 }

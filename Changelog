@@ -1,3 +1,8 @@
+2004-01-21	ujwal
+
+	* Fixed some weird nib corruption in Preferences. Tab positioning 
+	  was lost.
+
 2004-01-20	ujwal
 
     * Added support for "Focus follows mouse".

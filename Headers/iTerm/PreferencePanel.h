@@ -34,6 +34,7 @@
 
 @interface PreferencePanel : NSResponder
 {
+	IBOutlet NSMatrix *tabPosition;
     IBOutlet id antiAlias;
     IBOutlet id copySelection;
     IBOutlet id hideTab;
@@ -43,7 +44,6 @@
     IBOutlet id prefPanel;
     IBOutlet id promptOnClose;
     IBOutlet id silenceBell;
-    IBOutlet id tabViewType;
     IBOutlet id blinkingCursor;
     IBOutlet NSButton *enforceCharacterAlignment;
     IBOutlet NSButton *focusFollowsMouse;

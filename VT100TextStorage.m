@@ -112,7 +112,8 @@
 	    // Now replace only the diff 
 	    if([origDiffString length] > 0 && [newDiffString length] > 0)
 	    {
-		NSRange aRange = [[contents string] rangeOfString: origDiffString];
+		NSRange aRange;
+		aRange = NSMakeRange(range.location + [commonString length], [origDiffString length]);
 		[contents replaceCharactersInRange: aRange withString: newDiffString];
 		[self edited:NSTextStorageEditedCharacters range:aRange changeInLength:[self length] - origLen];
 		return;

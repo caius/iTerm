@@ -147,6 +147,8 @@
             [currentSession setBackgroundColor:  bgColor];
             [[currentSession TEXTVIEW] setNeedsDisplay:YES];
         }
+
+        [[currentSession SCREEN] updateScreen];
         
         [[currentSession TEXTVIEW] scrollEnd];
         [_pseudoTerminal setCurrentSessionName: [CONFIG_NAME stringValue]]; 

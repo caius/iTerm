@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.144 2003-09-11 01:21:13 ujwal Exp $
+// $Id: VT100Screen.m,v 1.145 2003-09-11 07:35:40 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1370,10 +1370,10 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_BUFFER
     NSMutableDictionary *dic;
-
+    
     // Show cursor at new position by reversing foreground/background colors
     if (CURSOR_X >= 0 && CURSOR_X < WIDTH &&
-        CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
+        CURSOR_Y >= 0 && CURSOR_Y < HEIGHT && !updateIndex)
     {
 	int idx;
         idx = [self getTVIndex:CURSOR_X y:CURSOR_Y];

@@ -1,3 +1,7 @@
+2003-09-27	ujwal
+
+    * Disabling log start/stop menus depending on current logging status.
+
 2003-09-26	fabian
 
     * Updated French, Japanese and Korean localizations.

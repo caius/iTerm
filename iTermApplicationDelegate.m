@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.4 2003-09-08 19:39:36 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.5 2003-09-27 21:34:37 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -101,6 +101,11 @@
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(buildSessionSubmenu:)
                                                  name: @"iTermNameOfSessionDidChange"
+                                               object: nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(resetLogMenu:)
+                                                 name: @"iTermSessionDidBecomeActive"
                                                object: nil];    
     
     return self;
@@ -306,6 +311,16 @@
     
 }
 
+- (void) resetLogMenu: (NSNotification *) aNotification
+{
+    PTYSession *aSession = [aNotification object];
+
+    if(aSession == nil)
+	return;
+
+    [logStart setEnabled: ![aSession logging]];
+    [logStop setEnabled: [aSession logging]];
+}
 
 @end
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.240 2003-09-16 07:39:26 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.241 2003-09-27 21:34:37 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -267,6 +267,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[_sessionMgr currentSession] setLabelAttribute];
     [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
     [[TABVIEW window] setNextResponder:self];
+
+    // send a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: aSession];
 }
 
 - (void)selectSessionAtIndexAction:(id)sender
@@ -731,17 +734,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)logStart:(id)sender
 {
-    if (![[[_sessionMgr currentSession] SHELL] logging]) [[_sessionMgr currentSession] logStart];
+    if (![[_sessionMgr currentSession] logging]) [[_sessionMgr currentSession] logStart];
+    // send a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [_sessionMgr currentSession]];
 }
 
 - (IBAction)logStop:(id)sender
 {
-    if ([[[_sessionMgr currentSession] SHELL] logging]) [[_sessionMgr currentSession] logStop];
+    if ([[_sessionMgr currentSession] logging]) [[_sessionMgr currentSession] logStop];
+    // send a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [_sessionMgr currentSession]];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
-    BOOL logging = [[[_sessionMgr currentSession] SHELL] logging];
+    BOOL logging = [[_sessionMgr currentSession] logging];
     BOOL result = YES;
 
 #if DEBUG_METHOD_TRACE

@@ -1453,6 +1453,11 @@ static NSString *PWD_ENVVALUE = @"~";
     doubleWidth=set;
 }
 
+- (BOOL) logging
+{
+    return ([SHELL logging]);
+}
+
 - (void)logStart
 {
     NSSavePanel *panel;

@@ -181,6 +181,7 @@
 
 - (void)clearBuffer;
 - (void)clearScrollbackBuffer;
+- (BOOL) logging;
 - (void)logStart;
 - (void)logStop;
 - (NSString *) backgroundImagePath;

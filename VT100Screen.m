@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.148 2003-09-11 20:27:25 ujwal Exp $
+// $Id: VT100Screen.m,v 1.149 2003-09-12 05:41:25 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -466,6 +466,13 @@ static BOOL PLAYBELL = YES;
     int i;
 #if DEBUG_USE_ARRAY
     NSMutableAttributedString *aLine;
+#endif
+
+#if DEBUG_USE_BUFFER
+    if([BUFFER length] > 0)
+    {
+	[BUFFER deleteCharactersInRange: NSMakeRange(0, [BUFFER length])];
+    }
 #endif
 
     [TERMINAL initDefaultCharacterAttributeDictionary];

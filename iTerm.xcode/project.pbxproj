@@ -92,7 +92,7 @@
 				DD46BB5405FD6B9B00027283,
 				DDDB7AD605D773B400E197C2,
 				8787B13F05FD191400901149,
-				F658C86B06054425000A13D5,
+				F658CAFA060587A0000A13D5,
 				20E74F4804E9089700000106,
 				20B8891904E924CD00000106,
 				20B88B6004E948FA00000106,
@@ -735,7 +735,7 @@
 				DDDB7AD705D773B400E197C2,
 				8787B14005FD191400901149,
 				DD46BB5505FD6B9B00027283,
-				F658C86D06054425000A13D5,
+				F658CAFB060587A0000A13D5,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2145,14 +2145,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		F658C86B06054425000A13D5 = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			path = iTermTerminalProfileMgr.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		F658C86C06054425000A13D5 = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -2161,14 +2153,23 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		F658C86D06054425000A13D5 = {
-			fileRef = F658C86B06054425000A13D5;
+		F658C86E06054425000A13D5 = {
+			fileRef = F658C86C06054425000A13D5;
 			isa = PBXBuildFile;
 			settings = {
 			};
 		};
-		F658C86E06054425000A13D5 = {
-			fileRef = F658C86C06054425000A13D5;
+		F658CAFA060587A0000A13D5 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = iTermTerminalProfileMgr.h;
+			path = Headers/iTerm/iTermTerminalProfileMgr.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		F658CAFB060587A0000A13D5 = {
+			fileRef = F658CAFA060587A0000A13D5;
 			isa = PBXBuildFile;
 			settings = {
 			};

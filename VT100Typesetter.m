@@ -243,7 +243,8 @@
     }
 
     // set the next glyph to be laid out
-    *nextGlyph = glyphIndex;
+    if(nextGlyph)
+	*nextGlyph = glyphIndex;
     
 }
 

@@ -1,3 +1,9 @@
+2002-11-28	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed crash when closing window when a session program 
+      had exited.
+      
+
 2002-11-28      fabian
     * Added Japanese (EUC-JP/SJIS) and Korean (EUC-KR) support
 

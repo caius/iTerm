@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.4 2002-11-27 17:26:44 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.5 2002-11-28 19:27:12 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -9,7 +9,7 @@
 //
 
 // Debug option
-#define DEBUG_ALLOC           0
+#define DEBUG_ALLOC           1
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_SCREENDUMP      0
 #define DEBUG_KEYDOWNDUMP     0
@@ -362,8 +362,9 @@ static NSDictionary *newOutputStateAttribute;
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal releaseObjects]", __FILE__, __LINE__);
 #endif
-    
+        
     // Release all our sessions
+    [ptyListLock lock];
     for(i = 0; i < [ptyList count]; i++)
         [[ptyList objectAtIndex: i] terminate];
     if([ptyList count] > 0)
@@ -376,6 +377,7 @@ static NSDictionary *newOutputStateAttribute;
         [buttonList removeAllObjects];
         [buttonList release];
     }
+    [ptyListLock unlock];
     [ptyListLock release];
     ptyListLock = nil;
    
@@ -394,7 +396,7 @@ static NSDictionary *newOutputStateAttribute;
     idleStateAttribute = nil;
     [newOutputStateAttribute release];
     newOutputStateAttribute = nil;
-
+    
 }
 
 - (void)startProgram:(NSString *)program
@@ -585,7 +587,7 @@ static NSDictionary *newOutputStateAttribute;
     if (EXIT == NO) {
 	[SHELL stopNoWait];
     }
-
+    
     [self releaseObjects];
     [MAINMENU removeTerminalWindow: self];
 }

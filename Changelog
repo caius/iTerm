@@ -3,6 +3,8 @@
       window when startup.
     * Change version number to 0.6.5
     * Localized GPL license statement for zh_CN and zn_TW
+    * Fixed a bug in PseudoTerminal.nib, zh_TW
+    * Cleaned up unused outlets in PseudoTerminal
     
 2003-03-12	fabian
     * Fixed a bug that causes incorrect process of color.

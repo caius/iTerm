@@ -538,6 +538,9 @@
 			fileRef = 8793A10104992C7D0073D10E;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		8793A10404992C7D0073D10E = {
@@ -588,6 +591,9 @@
 			fileRef = 87D5C48F043229390073D10E;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		87D5C492043229390073D10E = {
@@ -622,6 +628,9 @@
 			fileRef = DD12B4D60491DAA000A8A065;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD12B4D90491DAA000A8A065 = {
@@ -873,84 +882,126 @@
 			fileRef = FB8D9E6503D6136101F955DB;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48B30431502A00A8A065 = {
 			fileRef = FB019DE203670C6501F955DB;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48B40431502B00A8A065 = {
 			fileRef = E8CF7565026DDA6303A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48B50431502C00A8A065 = {
 			fileRef = E8CF7566026DDA6303A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48B60431502C00A8A065 = {
 			fileRef = E8CF7568026DDA6303A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48B70431502D00A8A065 = {
 			fileRef = F5E533B203B2959201A8A066;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48B80431502E00A8A065 = {
 			fileRef = F5E533B503B2959201A8A066;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48B90431503000A8A065 = {
 			fileRef = E8CF7567026DDA6303A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48BA0431503300A8A065 = {
 			fileRef = F52ED8DC037F0A7D01A8A066;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48BB0431503400A8A065 = {
 			fileRef = F56B230A03A1B36701A8A066;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48BC0431503500A8A065 = {
 			fileRef = E8CF7569026DDA6303A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48BD0431503700A8A065 = {
 			fileRef = E8CF756A026DDA6303A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48BE0431503800A8A065 = {
 			fileRef = E8A66F040272453F03A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48BF0431503900A8A065 = {
 			fileRef = E8E901A302743CA303A80106;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD1E48C10431505F00A8A065 = {
@@ -1201,6 +1252,9 @@
 			fileRef = DD4BAB7B0470C44C00A8A065;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DD4BAB7E0470C44C00A8A065 = {
@@ -1259,6 +1313,9 @@
 			fileRef = DDA86B9C048EFCEA00A8A065;
 			isa = PBXBuildFile;
 			settings = {
+				ATTRIBUTES = (
+					Public,
+				);
 			};
 		};
 		DDA86B9E048EFCF500A8A065 = {

@@ -1,3 +1,8 @@
+2003-05-18	ujwal
+
+    * Added a submenu under the tools menu to choose between sessions 
+      with keyboard shortcuts.
+
 2003-05-17	ujwal
 
     * Made PseudoTerminal a true NSWindowController class.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.22 2003-05-13 15:32:58 ujwal Exp $
+// $Id: MainMenu.h,v 1.23 2003-05-18 08:08:26 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -42,6 +42,10 @@
     // about window
     IBOutlet id ABOUT;
     IBOutlet NSTextView *AUTHORS;
+
+    // Menu items
+    IBOutlet NSMenuItem *selectTab;
+    
     // address book data
     NSMutableArray *addressBook;
 
@@ -75,6 +79,7 @@
 - (void) saveAddressBook;
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal;
 - (PseudoTerminal *) frontPseudoTerminal;
+- (void) buildSessionSubmenu;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSStringEncoding const*) encodingList;
 - (NSArray *)addressBookNames;
@@ -120,5 +125,6 @@
 
 - (void) _executeABMenuCommandInNewTab: (id) sender;
 - (void) _executeABMenuCommandInNewWindow: (id) sender;
+- (void) _selectSessionAtIndex: (id) sender;
 
 @end

@@ -986,6 +986,12 @@ static NSString *PWD_ENVVALUE = @"~";
         [self setBell: NO];
     }
 
+    // get the session submenu to be rebuilt
+    if([[[self parent] mainMenu] frontPseudoTerminal] == [self parent])
+    {
+	[[[self parent] mainMenu] buildSessionSubmenu];
+    }
+    
 }
 
 - (NSString *) windowTitle

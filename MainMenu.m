@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.66 2003-05-18 02:14:19 ujwal Exp $
+// $Id: MainMenu.m,v 1.67 2003-05-18 08:08:25 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -247,7 +247,8 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [terminalWindows removeAllObjects];
     [terminalWindows release];
 
-    [PREF_PANEL release];    
+    [PREF_PANEL release];
+    
 }
 
 // Action methods
@@ -596,11 +597,50 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal
 {
     FRONT = thePseudoTerminal;
+
+    [self buildSessionSubmenu];
+
 }
 
 - (PseudoTerminal *) frontPseudoTerminal
 {
     return (FRONT);
+}
+
+- (void) buildSessionSubmenu
+{
+    // build a submenu to select tabs
+    NSMenu *aMenu = [[NSMenu alloc] initWithTitle: @"SessionMenu"];
+    NSEnumerator *anEnumerator;
+    PTYSession *aSession;
+    int i;
+
+    // clear whatever menu we already have
+    [selectTab setSubmenu: nil];
+
+    anEnumerator = [[FRONT sessions] objectEnumerator];
+
+    i = 0;
+    while((aSession = [anEnumerator nextObject]) != nil)
+    {
+	NSMenuItem *aMenuItem;
+
+	i++;
+
+	if(i < 10)
+	{
+	    aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(_selectSessionAtIndex:) keyEquivalent: [NSString stringWithFormat: @"%d", i]];
+	    [aMenuItem setTag: i-1];
+
+	    [aMenu addItem: aMenuItem];
+	    [aMenuItem release];
+	}
+	
+    }
+    [selectTab setSubmenu: aMenu];
+
+    [aMenu release];
+    
 }
 
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow
@@ -916,6 +956,14 @@ NSString *terminalsKey = @"terminals";
 - (void) _executeABMenuCommandInNewWindow: (id) sender
 {
     [self executeABCommandAtIndex: [sender tag] inTerminal: nil];
+}
+
+- (void) _selectSessionAtIndex: (id) sender
+{
+    if(FRONT != nil)
+	[FRONT selectSessionAtIndex: [sender tag]];
+    else
+	NSBeep();
 }
 
 @end

@@ -33,7 +33,7 @@
             }; 
             CLASS = MainMenu; 
             LANGUAGE = ObjC; 
-            OUTLETS = {ABOUT = id; AUTHORS = NSTextView; FRONT = id; }; 
+            OUTLETS = {ABOUT = id; AUTHORS = NSTextView; FRONT = id; selectTab = NSMenuItem; }; 
             SUPERCLASS = NSObject; 
         }, 
         {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 

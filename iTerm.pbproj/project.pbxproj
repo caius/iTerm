@@ -1233,6 +1233,12 @@
 			settings = {
 			};
 		};
+		DDF28988047764E300A8A065 = {
+			isa = PBXFileReference;
+			name = Korean;
+			path = Korean.lproj/iTerm.strings;
+			refType = 4;
+		};
 //DD0
 //DD1
 //DD2
@@ -1526,7 +1532,7 @@
 				FBBB8B47039D9E1701F955DB,
 				FBBB8B48039D9E1F01F955DB,
 				FB80353003CA062601F955DB,
-				FBDF6A570427960101F955DB,
+				DDF28988047764E300A8A065,
 				FB01DCDE04433DFB01F955DB,
 			);
 			isa = PBXVariantGroup;
@@ -1642,13 +1648,6 @@
 			isa = PBXFileReference;
 			name = Korean;
 			path = Korean.lproj/PseudoTerminal.nib;
-			refType = 4;
-		};
-		FBDF6A570427960101F955DB = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			name = Korean;
-			path = Korean.lproj/iTerm.strings;
 			refType = 4;
 		};
 		FBDF6B63042A6B3101F955DB = {

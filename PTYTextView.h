@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.16 2003-02-27 19:53:09 yfabian Exp $
+// $Id: PTYTextView.h,v 1.17 2003-03-15 00:01:33 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -55,7 +55,6 @@
     BOOL antiAlias;
 
     // dead key support
-    NSEvent *deadKeyEvent;
     BOOL deadkey;
     int	cursorIndex;
 

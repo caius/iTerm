@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.38 2003-03-14 22:53:02 yfabian Exp $
+// $Id: PTYTextView.m,v 1.39 2003-03-15 00:01:33 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -47,7 +47,6 @@
     self = [super init];
     [[NSCursor IBeamCursor] setOnMouseEntered: NO];
 
-    deadKeyEvent = nil;
     deadkey = NO;
 
     return (self);
@@ -62,7 +61,6 @@
     self = [super initWithFrame: aRect];
     [[NSCursor IBeamCursor] setOnMouseEntered: NO];
 
-    deadKeyEvent = nil;
     deadkey = NO;
 
     return (self);
@@ -306,14 +304,12 @@
 
     // Check for dead keys
     if (deadkey) {
-        [self interpretKeyEvents:[NSArray arrayWithObjects:deadKeyEvent,event,nil]];
-        [deadKeyEvent release];
-        deadkey=NO;
+        [self interpretKeyEvents:[NSArray arrayWithObject:event]];
+        deadkey=[self hasMarkedText];
 	return;
     }
     else if ([[event characters] length]<1) {
         deadkey=YES;
-        deadKeyEvent=[event copy];
 	[self interpretKeyEvents:[NSArray arrayWithObject:event]];
 	return;
     }    

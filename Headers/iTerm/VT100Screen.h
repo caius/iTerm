@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.7 2004-02-13 21:36:17 ujwal Exp $
+// $Id: VT100Screen.h,v 1.8 2004-02-18 22:57:43 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -73,8 +73,7 @@
 	
 	int		bufferWrapped, lastBufferLineIndex;
 	
-	unichar *tempBuffer;
-	unichar sc[300]; 
+	char *tempBuffer;
 }
 
 + (void)setPlayBellFlag:(BOOL)flag;

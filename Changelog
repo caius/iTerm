@@ -1,3 +1,8 @@
+2004-02-18  fabian
+
+	* Enhanced the [PTYTextView drawRect] to use dirty array more efficiently.
+	* fixed a bug in save/restoreBuffer in VT100Screen.
+	
 2004-02-17  fabian
 
 	* Fixed a bug in [VT100Screen eraseInDisplay].

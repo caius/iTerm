@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.184 2004-02-18 08:31:03 yfabian Exp $
+// $Id: VT100Screen.m,v 1.185 2004-02-18 22:57:41 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -55,7 +55,7 @@ void translate(unichar *s, int len)
 /* pad the source string whenever double width character appears */
 void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 {
-    static unichar sc[300]; 
+    unichar sc[300]; 
 	int l=[s length];
 	int i,j;
 	
@@ -722,15 +722,22 @@ static BOOL PLAYBELL = YES;
 
 - (void) saveBuffer
 {	
+	int size=WIDTH*HEIGHT;
+	
 	if (tempBuffer) free(tempBuffer);
-	tempBuffer=(unichar*)malloc(WIDTH*HEIGHT*sizeof(unichar));
-	memcpy(tempBuffer, screenLines, WIDTH*HEIGHT*sizeof(unichar));
+	tempBuffer=(char*)malloc(size*(sizeof(unichar)+2*sizeof(char)));
+	memcpy(tempBuffer, screenLines, size*sizeof(unichar));
+	memcpy(tempBuffer+size*sizeof(unichar), screenFGColor, size*sizeof(char));
+	memcpy(tempBuffer+size*(sizeof(unichar)+sizeof(char)), screenBGColor, size*sizeof(char));
 }
 
 - (void) restoreBuffer
 {	
+	int size=WIDTH*HEIGHT;
 	if (!tempBuffer) return;
 	memcpy(screenLines, tempBuffer, WIDTH*HEIGHT*sizeof(unichar));
+	memcpy(screenFGColor, tempBuffer+size*sizeof(unichar), size*sizeof(char));
+	memcpy(screenBGColor, tempBuffer+size*(sizeof(unichar)+sizeof(char)), size*sizeof(char));
 	free(tempBuffer);
 	tempBuffer=NULL;
 }
@@ -1418,12 +1425,11 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
 #endif
 	int i;
-	BOOL b=NO;
-	
+		
 	for (i=0; i<WIDTH*HEIGHT; i++) {
-		if (screenFGColor[i]&BLINK_MASK) { dirty[i]=1; b=YES; }
+		if (dirty[i]) break;
 	}
-    if (b) [(PTYTextView *)display refresh];
+    if (i<WIDTH*HEIGHT) [(PTYTextView *)display refresh];
 }
 
 - (int) cursorX

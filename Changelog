@@ -1,6 +1,6 @@
 2003-04-24	ujwal
 
-    * Fixed some window sizing problems when toolbar is visible.
+    * Re-implemented window resizing.
 
 2003-04-23	ujwal
 

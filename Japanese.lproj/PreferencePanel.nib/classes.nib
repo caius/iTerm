@@ -9,6 +9,7 @@
                 antiAlias = id; 
                 blinkingCursor = id; 
                 copySelection = id; 
+                enforceCharacterAlignment = NSButton; 
                 hideTab = id; 
                 macnavkeys = id; 
                 openAddressBook = id; 

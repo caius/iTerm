@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.113 2003-07-19 06:56:07 ujwal Exp $
+// $Id: VT100Screen.m,v 1.114 2003-07-19 16:51:17 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1890,7 +1890,9 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     //NSLog(@"SCROLL-DOWN[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
     idx=[self getIndexAtX:0 Y:SCROLL_TOP withPadding:YES];
-    [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+    if(newLineString == nil)
+	newLineString = [[self attrString:@"\n" ascii:YES] retain];
+    [BUFFER insertAttributedString: newLineString atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY

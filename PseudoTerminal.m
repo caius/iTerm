@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.63 2003-01-07 08:12:04 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.64 2003-01-07 21:28:46 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -119,7 +119,7 @@ static NSString *ConfigToolbarItem = @"Config";
     tabviewRect = [[WINDOW contentView] frame];
     tabviewRect.origin.x -= 10;
     tabviewRect.size.width += 20;
-    tabviewRect.origin.y -= 13;
+    tabviewRect.origin.y -= 10;
     tabviewRect.size.height += 10;
     TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
@@ -164,7 +164,6 @@ static NSString *ConfigToolbarItem = @"Config";
     aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: aSession];
     NSParameterAssert(aTabViewItem != nil);
     [TABVIEW addTabViewItem: aTabViewItem];
-    [aTabViewItem release];
 
     
     // Allocate a scrollview and add to the tabview
@@ -227,7 +226,7 @@ static NSString *ConfigToolbarItem = @"Config";
     
     if([ptyList count] == 0)
     {
-        [self setWindowSize];
+//        [self setWindowSize];
         // Tell us whenever something happens with the tab view
         [TABVIEW setDelegate: self];
     }
@@ -252,6 +251,15 @@ static NSString *ConfigToolbarItem = @"Config";
     currentPtySession = aSession;
     [TABVIEW selectTabViewItem: aTabViewItem];
     [self setCurrentSessionName: nil];
+
+    if ([TABVIEW numberOfTabViewItems]>1) {
+        [TABVIEW setTabViewType: NSTopTabsBezelBorder];
+    }
+    else [TABVIEW setTabViewType: NSNoTabsBezelBorder];
+
+    if ([TABVIEW numberOfTabViewItems]<=2) [self setWindowSize];
+
+    [aTabViewItem release];
     
     [WINDOW makeKeyAndOrderFront:self];
         
@@ -328,6 +336,12 @@ static NSString *ConfigToolbarItem = @"Config";
                         
             break;
         }
+    }
+
+    if ([TABVIEW numberOfTabViewItems]>1) [TABVIEW setTabViewType: NSTopTabsBezelBorder];
+    else {
+        [TABVIEW setTabViewType: NSNoTabsBezelBorder];
+        [self setWindowSize];
     }
     
 }
@@ -552,7 +566,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     thisWindow = [SCROLLVIEW window];
     winSize = size;
-    winSize.height = size.height + 32; // account for tabview
+    winSize.height = size.height + ([TABVIEW numberOfTabViewItems]>1?32:10); // account for tabview
     [thisWindow setContentSize:winSize];
 }
 
@@ -754,7 +768,7 @@ static NSString *ConfigToolbarItem = @"Config";
     
     // Calculate scrollview size
     scrollviewSize = contentSize;
-    scrollviewSize.height = contentSize.height - 32; // account for tabview
+    scrollviewSize.height = contentSize.height - [TABVIEW numberOfTabViewItems]>1?32:10; // account for tabview
     //NSLog(@"scrollview size: width = %f; height = %f", scrollviewSize.width, scrollviewSize.height);
 
     
@@ -785,7 +799,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     // Calculate the window content size
     contentSize = scrollviewSize;
-    contentSize.height = scrollviewSize.height + 32; // account for tabview
+    contentSize.height = scrollviewSize.height + [TABVIEW numberOfTabViewItems]>1?32:10; // account for tabview
     //NSLog(@"content size: width = %f; height = %f", contentSize.width, contentSize.height);
     
     // Finally calculate the window frame size

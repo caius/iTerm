@@ -87,6 +87,7 @@ static int TRANSPARENCY  =10;
     defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
+    defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     changingNA=NO;
                  
     return self;
@@ -135,7 +136,8 @@ static int TRANSPARENCY  =10;
     [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
-    
+    [hideTab setState:defaultHideTab?NSOnState:NSOffState];
+   
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
 }
@@ -214,6 +216,7 @@ static int TRANSPARENCY  =10;
     defaultAutoclose=([autoclose state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
     defaultCopySelection=([copySelection state]==NSOnState);
+    defaultHideTab=([hideTab state]==NSOnState);
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
@@ -234,6 +237,7 @@ static int TRANSPARENCY  =10;
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
     [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
+    [prefs setBool:defaultHideTab forKey:@"HideTab"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -264,6 +268,8 @@ static int TRANSPARENCY  =10;
     defaultTransparency=TRANSPARENCY;
     defaultAutoclose=YES;
     defaultOption=0;
+    defaultHideTab=YES;
+    defaultCopySelection=YES;
 
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
@@ -288,9 +294,13 @@ static int TRANSPARENCY  =10;
     [fontExample setBackgroundColor:defaultBackground];
     [fontExample setFont:defaultFont];
     [fontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultFont fontName], [defaultFont pointSize]]];
-    defaultAutoclose=([autoclose state]==NSOnState);
-    defaultOption=[optionKey selectedColumn];
 
+    [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
+    [optionKey selectCellAtRow:0 column:defaultOption];
+    [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
+    [hideTab setState:defaultHideTab?NSOnState:NSOffState];
+
+    
 }
 
 - (NSColor*) background
@@ -371,6 +381,11 @@ static int TRANSPARENCY  =10;
 - (BOOL) copySelection
 {
     return (defaultCopySelection);
+}
+
+- (BOOL) hideTab
+{
+    return (defaultHideTab);
 }
 
 @end

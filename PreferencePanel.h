@@ -24,6 +24,7 @@
     IBOutlet id optionKey;
     IBOutlet id antiAlias;
     IBOutlet id copySelection;
+    IBOutlet id hideTab;
     
     NSUserDefaults *prefs;
 
@@ -45,7 +46,7 @@
     int defaultOption;
     BOOL defaultAntiAlias;
     BOOL defaultCopySelection;
-
+    BOOL defaultHideTab;
     BOOL changingNA;
 
 }
@@ -81,6 +82,7 @@
 - (BOOL) autoclose;
 - (int) option;
 - (BOOL) copySelection;
+- (BOOL) hideTab;
 
 
 @end

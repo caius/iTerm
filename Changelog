@@ -1,7 +1,11 @@
 2002-01-13	fabian
+    * Add Hide-Tab as an option
+    * Updated Chinese nib files(Japanese nib files need
+      to be updated)
     * bold is now enabled when font with appropriate bold
       size is used.
     * bug fixes in VT100Screen
+    
       
 2003-01-13	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

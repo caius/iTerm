@@ -86,6 +86,7 @@
                 encoding = id; 
                 fontExample = id; 
                 foreground = id; 
+                hideTab = id; 
                 nafontExample = id; 
                 optionKey = id; 
                 prefPanel = id; 

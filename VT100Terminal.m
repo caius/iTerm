@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.14 2003-01-14 17:08:06 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.15 2003-01-14 18:17:37 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -99,7 +99,6 @@ static VT100TCC decode_csi(unsigned char *, size_t, size_t *,VT100Screen *);
 static VT100TCC decode_xterm(unsigned char *, size_t, size_t *,NSStringEncoding);
 static VT100TCC decode_other(unsigned char *, size_t, size_t *);
 static VT100TCC decode_control(unsigned char *, size_t, size_t *,NSStringEncoding,VT100Screen *);
-static VT100TCC decode_ascii(unsigned char *, size_t, size_t *);
 static int utf8_reqbyte(unsigned char);
 static VT100TCC decode_utf8(unsigned char *, size_t, size_t *);
 static VT100TCC decode_euccn(unsigned char *, size_t, size_t *);

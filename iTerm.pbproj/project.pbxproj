@@ -176,7 +176,6 @@
 				0464AB4B006CD2EC7F000001,
 				0464AB4E006CD2EC7F000001,
 				DD1E48DF0432063D00A8A065,
-				8750B97D0467185B0073D10E,
 			);
 			buildSettings = {
 				OPTIMIZATION_CFLAGS = "-O0";
@@ -384,43 +383,6 @@
 			isa = PBXFileReference;
 			path = FreeMonoOblique.ttf;
 			refType = 4;
-		};
-		8750B97D0467185B0073D10E = {
-			buildActionMask = 2147483647;
-			dstPath = Fonts;
-			dstSubfolderSpec = 7;
-			files = (
-				8750B98904671BB80073D10E,
-				8750B98A04671BB80073D10E,
-				8750B98B04671BB80073D10E,
-				8750B98C04671BB80073D10E,
-			);
-			isa = PBXCopyFilesBuildPhase;
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8750B98904671BB80073D10E = {
-			fileRef = 8750B975046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		8750B98A04671BB80073D10E = {
-			fileRef = 8750B976046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		8750B98B04671BB80073D10E = {
-			fileRef = 8750B977046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		8750B98C04671BB80073D10E = {
-			fileRef = 8750B978046717F40073D10E;
-			isa = PBXBuildFile;
-			settings = {
-			};
 		};
 		876DBBC1043277AF0073D10E = {
 			isa = PBXFileReference;
@@ -645,6 +607,7 @@
 				DD1E489D04314F1D00A8A065,
 				DD1E489E04314F1D00A8A065,
 				DD1E489F04314F1D00A8A065,
+				DDBE32D10467596A00A8A065,
 			);
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1139,6 +1102,43 @@
 		};
 		DD8CF2EE03CDD34C00A8A065 = {
 			fileRef = DD8CF2DD03CDD34B00A8A065;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDBE32D10467596A00A8A065 = {
+			buildActionMask = 2147483647;
+			dstPath = Fonts;
+			dstSubfolderSpec = 7;
+			files = (
+				DDBE32D20467597D00A8A065,
+				DDBE32D30467597D00A8A065,
+				DDBE32D40467597D00A8A065,
+				DDBE32D50467597D00A8A065,
+			);
+			isa = PBXCopyFilesBuildPhase;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DDBE32D20467597D00A8A065 = {
+			fileRef = 8750B975046717F40073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDBE32D30467597D00A8A065 = {
+			fileRef = 8750B976046717F40073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDBE32D40467597D00A8A065 = {
+			fileRef = 8750B977046717F40073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		DDBE32D50467597D00A8A065 = {
+			fileRef = 8750B978046717F40073D10E;
 			isa = PBXBuildFile;
 			settings = {
 			};

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.58 2003-05-05 22:53:34 ujwal Exp $
+// $Id: MainMenu.m,v 1.59 2003-05-06 04:32:58 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -156,7 +156,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     // activate our fonts
     // Get the main bundle object
-    NSBundle *appBundle = [NSBundle mainBundle];
+    NSBundle *appBundle = [NSBundle bundleForClass: [self class]];
     // Ask for the path to the resources
     NSString *fontsPath = [appBundle pathForResource: @"Fonts" ofType: nil inDirectory: nil];
 

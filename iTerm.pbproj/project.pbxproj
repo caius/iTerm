@@ -52,6 +52,7 @@
 				20D5CC6404E7AA0500000106,
 				E8A66F030272453F03A80106,
 				DD5284490510553000A8A065,
+				875826CD06012D9E00D271D0,
 				8737F0C305F567E300E31F74,
 				8776D95505FD32E6002B3015,
 				20E74F4904E9089700000106,
@@ -85,6 +86,7 @@
 				20D5CC6304E7AA0500000106,
 				872EBC6204E42E320073D10E,
 				DD0E91A4050F77A700A8A065,
+				875826CF06012DB100D271D0,
 				8737F0C105F567C700E31F74,
 				8776D95705FD32FB002B3015,
 				20E74F4804E9089700000106,
@@ -208,7 +210,6 @@
 				PRODUCT_NAME = iTerm;
 				REZ_EXECUTABLE = YES;
 				SECTORDER_FLAGS = "";
-				USE_GCC3 = YES;
 				WARNING_CFLAGS = "-Wall -Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = app;
 			};
@@ -984,6 +985,31 @@
 			path = FreeMonoOblique.ttf;
 			refType = 4;
 		};
+		875826CD06012D9E00D271D0 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			path = iTermDisplayProfileMgr.m;
+			refType = 4;
+		};
+		875826CE06012D9E00D271D0 = {
+			fileRef = 875826CD06012D9E00D271D0;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		875826CF06012DB100D271D0 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			name = iTermDisplayProfileMgr.h;
+			path = Headers/iTerm/iTermDisplayProfileMgr.h;
+			refType = 4;
+		};
+		875826D006012DB100D271D0 = {
+			fileRef = 875826CF06012DB100D271D0;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		876DBBC1043277AF0073D10E = {
 			isa = PBXFileReference;
 			name = zh_CN;
@@ -1186,6 +1212,7 @@
 				DD0E91A5050F77A700A8A065,
 				8737F0C205F567C700E31F74,
 				8776D95805FD32FB002B3015,
+				875826D006012DB100D271D0,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1242,6 +1269,7 @@
 				DD52844A0510553000A8A065,
 				8737F0C405F567E300E31F74,
 				8776D95605FD32E6002B3015,
+				875826CE06012D9E00D271D0,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1286,7 +1314,6 @@
 				PRINCIPAL_CLASS = "";
 				PRODUCT_NAME = iTerm;
 				SECTORDER_FLAGS = "";
-				USE_GCC3 = YES;
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = framework;
 			};

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.16 2003-01-20 20:33:29 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.17 2003-01-21 01:43:22 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -100,6 +100,7 @@ static VT100TCC decode_xterm(unsigned char *, size_t, size_t *,NSStringEncoding)
 static VT100TCC decode_other(unsigned char *, size_t, size_t *);
 static VT100TCC decode_control(unsigned char *, size_t, size_t *,NSStringEncoding,VT100Screen *);
 static int utf8_reqbyte(unsigned char);
+static VT100TCC decode_ascii(unsigned char *, size_t, size_t *);
 static VT100TCC decode_utf8(unsigned char *, size_t, size_t *);
 static VT100TCC decode_euccn(unsigned char *, size_t, size_t *);
 static VT100TCC decode_big5(unsigned char *,size_t, size_t *);
@@ -531,7 +532,7 @@ static VT100TCC decode_other(unsigned char *datap,
                 default:    
                     result.type = VT100_NOTSUPPORT;
             }
-	    *rmlen = 2;
+	    *rmlen = 3;
 	}
 	break;
 
@@ -545,12 +546,43 @@ static VT100TCC decode_other(unsigned char *datap,
 	*rmlen = 2;
 	break;
 
-    case ')': case '(':
-	if (c2 < 0 || c3 < 0) {
+    case '(':
+        if (c2 < 0) {
+            result.type = VT100_WAIT;
+        }
+        else {
+            result.type = VT100CSI_SCS0;
+            result.u.code=c2;
+            *rmlen = 3;
+        }
+        break;
+    case ')':
+        if (c2 < 0) {
+            result.type = VT100_WAIT;
+        }
+        else {
+            result.type = VT100CSI_SCS1;
+            result.u.code=c2;
+            *rmlen = 3;
+        }
+        break;
+    case '*':
+        if (c2 < 0) {
+            result.type = VT100_WAIT;
+        }
+        else {
+            result.type = VT100CSI_SCS2;
+            result.u.code=c2;
+            *rmlen = 3;
+        }
+        break;
+    case '+':
+	if (c2 < 0) {
 	    result.type = VT100_WAIT;
 	}
 	else {
-	    result.type = VT100_NOTSUPPORT;
+	    result.type = VT100CSI_SCS3;
+            result.u.code=c2;
 	    *rmlen = 3;
 	}
 	break;
@@ -649,6 +681,23 @@ static VT100TCC decode_control(unsigned char *datap,
     return result;
 }
 
+static VT100TCC decode_ascii(unsigned char *datap,
+                             size_t datalen,
+                             size_t *rmlen)
+{
+    unsigned char *last = datap;
+    size_t len = datalen;
+    VT100TCC result;
+        while (len > 0 && *last >= 0x20 && *last <= 0x7f) {
+            ++last;
+            --len;
+        }
+            *rmlen = datalen - len;
+        result.type = VT100_ASCIISTRING;
+        result.u.string = [NSString stringWithCString:datap length:*rmlen];
+            return result;
+}
+
 static int utf8_reqbyte(unsigned char f)
 {
     int result;
@@ -681,11 +730,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
     int reqbyte;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<=0x7f) {
-            p++;
-            len--;
-        }
-        else if (*p>=0x80) {
+        if (*p>=0x80) {
             reqbyte = utf8_reqbyte(*datap);
             if ((reqbyte > 0) && (len >= reqbyte)) {
                 p += reqbyte;
@@ -720,11 +765,7 @@ static VT100TCC decode_euccn(unsigned char *datap,
 
 
     while (len > 0) {
-        if (*p>=0x20&&*p<=0x7f) {
-            p++;
-            len--;
-        }
-        else if (iseuccn(*p)&&len>1) {
+            if (iseuccn(*p)&&len>1) {
             if ((*(p+1)>=0x40&&*(p+1)<=0x7e)||*(p+1)>=0x80&&*(p+1)<=0xfe) {
                 p += 2;
                 len -= 2;
@@ -758,11 +799,7 @@ static VT100TCC decode_big5(unsigned char *datap,
     size_t len = datalen;
     
     while (len > 0) {
-        if (*p>=0x20&&*p<=0x7f) {
-            p++;
-            len--;
-        }
-        else if (isbig5(*p)&&len>1) {
+        if (isbig5(*p)&&len>1) {
             if ((*(p+1)>=0x40&&*(p+1)<=0x7e)||*(p+1)>=0xa1&&*(p+1)<=0xfe) {
                 p += 2;
                 len -= 2;
@@ -796,11 +833,7 @@ static VT100TCC decode_euc_jp(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<=0x7f) {
-            p++;
-            len--;
-        }
-        else if  (len > 1 && *p == 0x8e) {
+        if  (len > 1 && *p == 0x8e) {
                 p += 2;
                 len -= 2;
         }
@@ -836,11 +869,7 @@ static VT100TCC decode_sjis(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<=0x7f) {
-            p++;
-            len--;
-        }
-        else if (issjiskanji(*p)&&len>1) {
+        if (issjiskanji(*p)&&len>1) {
             p += 2;
             len -= 2;
         }
@@ -873,11 +902,7 @@ static VT100TCC decode_euckr(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20&&*p<=0x7f) {
-            p++;
-            len--;
-        }
-        else if (iseuckr(*p)&&len>1) {
+        if (iseuckr(*p)&&len>1) {
                 p += 2;
                 len -= 2;
         }
@@ -904,7 +929,7 @@ static VT100TCC decode_other_enc(unsigned char *datap,
     size_t len = datalen;
 
     while (len > 0) {
-        if (*p>=0x20) {
+        if (*p>0x7f) {
             p++;
             len--;
         }
@@ -1098,7 +1123,10 @@ static VT100TCC decode_string(unsigned char *datap,
 	    result = decode_control(datap, datalen, &rmlen, ENCODING, SCREEN);
 	}
 	else {
-            if (isString(datap,ENCODING)) {
+            if (isascii(*datap)) {
+                result = decode_ascii(datap, datalen, &rmlen);
+            }
+            else if (isString(datap,ENCODING)) {
 		result = decode_string(datap, datalen, &rmlen, ENCODING);
                 if(rmlen == 0) {
                     result.type = VT100_UNKNOWNCHAR;
@@ -1211,7 +1239,7 @@ static VT100TCC decode_string(unsigned char *datap,
     char str[256];
     size_t len;
 
-    sprintf(str, KEY_FUNCTION_FORMAT, no + 10);
+    sprintf(str, KEY_FUNCTION_FORMAT, no + 11);
     len = strlen(str);
     return [NSData dataWithBytes:str length:len];
 }
@@ -1276,7 +1304,7 @@ static VT100TCC decode_string(unsigned char *datap,
     return XON;
 }
 
-- (BOOL) charset
+- (int) charset
 {
     return CHARSET;
 }
@@ -1461,11 +1489,19 @@ static VT100TCC decode_string(unsigned char *datap,
         case VT100CSI_DECKPNM:
             KEYPAD_MODE = NO;
             break;
-        case VT100CC_SO:
-            CHARSET = NO;
-            break;
         case VT100CC_SI:
-            CHARSET = YES;
+        case VT100CSI_SCS0:
+            CHARSET = 0;
+            break;
+        case VT100CC_SO:
+        case VT100CSI_SCS1:
+            CHARSET = 1;
+            break;
+        case VT100CSI_SCS2:
+            CHARSET = 2;
+            break;
+        case VT100CSI_SCS3:
+            CHARSET = 3;
             break;
         case VT100CC_DC1:
             XON = YES;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.11 2003-01-17 23:22:19 ujwal Exp $
+// $Id: MainMenu.h,v 1.12 2003-01-21 01:43:21 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -37,6 +37,7 @@
     IBOutlet id adAI;
     IBOutlet id adAICode;
     IBOutlet id adClose;
+    IBOutlet id adDoubleWidth;
     IBOutlet NSTextField *adNATextExample;
     IBOutlet NSColorWell *adSelection;
     

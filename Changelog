@@ -1,9 +1,17 @@
+2003-01-20	fabian
+    * New option in preference&address book entry
+      Treat NonASCII characters as double width
+    * Graphical characters now works for VT100 font
+    * Fixed a bug in function key code
+    * New SetASCIIString() to process ascii strings and
+      old SetString() to handle other(multibytes) strings
+    * Cleaned up code in VT100Screen.m
+      
 2003-01-20	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Enabling AUTOWRAP_MODE in VT100Terminal by default 
       for long command lines.
       
-
 2003-01-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added support to specify text highlight/selection color 
@@ -14,7 +22,6 @@
 
     * Fixed common bugs in insertLines, scrollDown in 
       VT100Screen.
-      
 
 2003-01-15	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

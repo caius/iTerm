@@ -94,6 +94,7 @@ static int TRANSPARENCY  =10;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
+    defaultDoubleWidth=[[prefs objectForKey:@"DoubleWidth"] boolValue];
     changingNA=NO;
                  
     return self;
@@ -145,6 +146,7 @@ static int TRANSPARENCY  =10;
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
+    [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -228,6 +230,7 @@ static int TRANSPARENCY  =10;
     defaultCopySelection=([copySelection state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
     defaultSilenceBell=([silenceBell state]==NSOnState);
+    defaultDoubleWidth=([doubleWidth state]==NSOnState);
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
@@ -252,6 +255,7 @@ static int TRANSPARENCY  =10;
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
     [prefs setBool:defaultSilenceBell forKey:@"SilenceBell"];
+    [prefs setBool:defaultDoubleWidth forKey:@"DoubleWidth"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -275,7 +279,7 @@ static int TRANSPARENCY  =10;
     defaultCol=COL;
     defaultRow=ROW;
     
-        defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
+    defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     defaultShell=[[SHELL copy] retain];
     defaultTerminal=[[TERM copy] retain];
     
@@ -284,7 +288,9 @@ static int TRANSPARENCY  =10;
     defaultOption=0;
     defaultHideTab=YES;
     defaultCopySelection=YES;
-
+    defaultSilenceBell=NO;
+    defaultDoubleWidth=YES;
+    
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
     [encoding removeAllItems];
@@ -313,6 +319,8 @@ static int TRANSPARENCY  =10;
     [optionKey selectCellAtRow:0 column:defaultOption];
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
+    [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
+    [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
 
     
 }
@@ -405,6 +413,11 @@ static int TRANSPARENCY  =10;
 - (BOOL) silenceBell
 {
     return (defaultSilenceBell);
+}
+
+- (BOOL) doubleWidth
+{
+    return (defaultDoubleWidth);
 }
 
 - (NSColor *) selectionColor

@@ -26,6 +26,7 @@
     IBOutlet id copySelection;
     IBOutlet id hideTab;
     IBOutlet id silenceBell;
+    IBOutlet id doubleWidth;
     IBOutlet id selectionColor;
     
     NSUserDefaults *prefs;
@@ -52,6 +53,7 @@
     BOOL defaultHideTab;
     BOOL defaultSilenceBell;
     BOOL changingNA;
+    BOOL defaultDoubleWidth;
 
 }
 
@@ -88,6 +90,7 @@
 - (BOOL) copySelection;
 - (BOOL) hideTab;
 - (BOOL) silenceBell;
+- (BOOL) doubleWidth;
 - (NSColor *) selectionColor;
 
 

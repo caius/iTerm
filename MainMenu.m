@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.28 2003-01-17 23:22:19 ujwal Exp $
+// $Id: MainMenu.m,v 1.29 2003-01-21 01:43:21 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -99,6 +99,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [term startProgram:cmd arguments:arg];
     [term setCurrentSessionName:nil];
     [[term currentSession] setAutoClose:[PREF_PANEL autoclose]];
+    [[term currentSession] setDoubleWidth:[PREF_PANEL doubleWidth]];
 
 }
 
@@ -185,14 +186,15 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [[term currentSession] setEncoding:encoding];
     [[term currentSession] setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
     [[term currentSession] setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
-    [[term currentSession] setAutoClose:[[entry objectForKey:@"AutoClose"] intValue]];
+    [[term currentSession] setAutoClose:[[entry objectForKey:@"AutoClose"] boolValue]];
     
     
     if (newWindow) {
         [term setWindowSize: YES];
     };
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
-    [[term currentSession] setAddressBookEntry:entry];    
+    [[term currentSession] setAddressBookEntry:entry];
+    [[term currentSession] setDoubleWidth:[[entry objectForKey:@"DoubleWidth"] boolValue]];
 }
 
 - (IBAction)adbAddEntry:(id)sender
@@ -234,6 +236,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adAI setState:[PREF_PANEL ai]?NSOnState:NSOffState];
     [adAICode setIntValue:[PREF_PANEL aiCode]];
     [adClose setState:[PREF_PANEL autoclose]?NSOnState:NSOffState];
+    [adDoubleWidth setState:[PREF_PANEL doubleWidth]?NSOnState:NSOffState];
     
     [adTransparency setIntValue:[PREF_PANEL transparency]];
     [adTransparency2 setIntValue:[PREF_PANEL transparency]];
@@ -260,6 +263,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
             [NSNumber numberWithBool:[adClose state]],@"AutoClose",
+            [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
             NULL];
         [addressBook addObject:ae];
 	[addressBook sortUsingFunction: addressBookComparator context: nil];
@@ -336,9 +340,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adNATextExample setTextColor:[entry objectForKey:@"Foreground"]];
     [adNATextExample setBackgroundColor:[entry objectForKey:@"Background"]];
     [adNATextExample setFont:aeNAFont];
-    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?NSOffState:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
-    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?0:[[entry objectForKey:@"AICode"] intValue]];
-    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?NSOffState:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
+    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[PREF_PANEL ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
+    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[PREF_PANEL aiCode]:[[entry objectForKey:@"AICode"] intValue]];
+    [adClose setState:([entry objectForKey:@"AutoClose"]==nil?[PREF_PANEL autoclose]:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
+    [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?[PREF_PANEL doubleWidth]:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
 
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
@@ -362,6 +367,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
             [NSNumber numberWithBool:[adClose state]],@"AutoClose",
+            [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
             NULL];
         [addressBook replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
 	[addressBook sortUsingFunction: addressBookComparator context: nil];

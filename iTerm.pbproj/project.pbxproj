@@ -65,6 +65,7 @@
 		};
 		0464AB15006CD2EC7F000001 = {
 			children = (
+				FB8D9E6503D6136101F955DB,
 				FB019DE203670C6501F955DB,
 				E8CF7565026DDA6303A80106,
 				E8CF7566026DDA6303A80106,
@@ -237,6 +238,7 @@
 				FB33DD7D03B2871901F955DB,
 				F5E533B603B2959201A8A066,
 				F5E533B903B2959201A8A066,
+				FB8D9E6603D6136101F955DB,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1018,6 +1020,7 @@
 				FB7EECE30340D3CD01F955DB,
 				FB019DE603670C6501F955DB,
 				FBBB91E603A1033101F955DB,
+				FB8D9E6703D6136101F955DB,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1269,6 +1272,23 @@
 		};
 		FB896719038D935801F955DB = {
 			fileRef = FB896717038D935801F955DB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FB8D9E6503D6136101F955DB = {
+			isa = PBXFileReference;
+			path = charmaps.h;
+			refType = 4;
+		};
+		FB8D9E6603D6136101F955DB = {
+			fileRef = FB8D9E6503D6136101F955DB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		FB8D9E6703D6136101F955DB = {
+			fileRef = FB8D9E6503D6136101F955DB;
 			isa = PBXBuildFile;
 			settings = {
 			};

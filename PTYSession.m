@@ -917,6 +917,16 @@ static NSString *PWD_ENVVALUE = @"~";
     autoClose=set;
 }
 
+- (BOOL) doubleWidth
+{
+    return doubleWidth;
+}
+
+- (void) setDoubleWidth:(BOOL)set
+{
+    doubleWidth=set;
+}
+
 - (void)logStart
 {
     NSSavePanel *panel;

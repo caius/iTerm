@@ -52,6 +52,7 @@
                 adCol = id; 
                 adCommand = NSTextField; 
                 adDir = id; 
+                adDoubleWidth = id; 
                 adEncoding = NSComboBox; 
                 adForeground = NSColorWell; 
                 adNATextExample = NSTextField; 
@@ -85,6 +86,7 @@
                 background = id; 
                 col = id; 
                 copySelection = id; 
+                doubleWidth = id; 
                 encoding = id; 
                 fontExample = id; 
                 foreground = id; 

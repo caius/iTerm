@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.7 2003-01-14 16:48:39 yfabian Exp $
+// $Id: VT100Screen.h,v 1.8 2003-01-21 01:43:21 yfabian Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -34,8 +34,9 @@
     VT100Terminal *TERMINAL;
     PTYTask *SHELL;
     PTYSession *SESSION;
-    NSWindow *WINDOW; 
-
+    NSWindow *WINDOW;
+    int charset[4];
+    
     unsigned int  TOP_LINE;
     unsigned int  LINE_LIMIT;
     unsigned int  OLD_CURSOR_INDEX;
@@ -82,11 +83,11 @@
 - (void)clearBuffer;
 
 // internal
-- (void)setString:(NSString *)s;
-- (void)setStringToX:(int)x
-                   Y:(int)y
-              string:(NSString *)string;
-- (void)setStringSpaceToX:(int)x Y:(int)y length:(int)len;
+- (void)setDoubleWidthString:(NSString *)s;
+- (void)setASCIIString:(NSString *)s;
+- (void)setASCIIStringToX:(int)x
+                     Y:(int)y
+                string:(NSString *)string;
 - (void)setNewLine;
 - (void)deleteCharacters:(int)n;
 - (void)backSpace;
@@ -119,12 +120,12 @@
 - (int) cursorX;
 - (int) cursorY;
 
-- (NSMutableDictionary *)characterAttributeDictionary;
-- (NSAttributedString *)attrStringFromChar:(unichar) c;
-- (NSAttributedString *)attrString:(NSString *)str;
+- (NSAttributedString *)attrString:(NSString *)str ascii:(BOOL)asc;
 - (int) getIndex:(int)x y:(int)y;
 - (BOOL) isDoubleWidthCharacter:(unichar)code;
 
 - (void) clearTabStop;
+
+- (NSString *)translate: (NSString *)s;
 
 @end

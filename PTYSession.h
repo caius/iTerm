@@ -55,6 +55,7 @@
     BOOL antiIdle;
     BOOL waiting;
     BOOL autoClose;
+    BOOL doubleWidth;
     NSFont *configFont;
     PreferencePanel *pref;
     NSDictionary *addressBookEntry;
@@ -130,6 +131,8 @@
 - (void) setAntiCode:(int)code;
 - (BOOL) autoClose;
 - (void) setAutoClose:(BOOL)set;
+- (BOOL) doubleWidth;
+- (void) setDoubleWidth:(BOOL)set;
 - (NSDictionary *) addressBookEntry;
 - (void) setAddressBookEntry:(NSDictionary*) entry;
 

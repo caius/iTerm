@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.4 2003-01-14 16:48:40 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.5 2003-01-21 01:43:22 yfabian Exp $
 //
 //  VT100Terminal.h
 //  JTerminal
@@ -35,10 +35,10 @@
 #define VT100_NOTSUPPORT  	1001
 #define VT100_SKIP        	1002
 #define VT100_STRING      	1003       // string
-#define VT100_UNKNOWNCHAR 	1004
-
-#define VT100CSI_DECSET		1005
-#define VT100CSI_DECRST		1006
+#define VT100_ASCIISTRING	1004	   // ASCII string
+#define VT100_UNKNOWNCHAR 	1005
+#define VT100CSI_DECSET		1006
+#define VT100CSI_DECRST		1007
 
 #define VT100CSI_CPR         2000       // Cursor Position Report
 #define VT100CSI_CUB         2001       // Cursor Backward
@@ -71,10 +71,14 @@
 #define VT100CSI_RI          2038       // Reverse Index
 #define VT100CSI_RIS         2039       // Reset To Initial State
 #define VT100CSI_RM          2040       // Reset Mode
-#define VT100CSI_SCS         2041       // Select Character Set
-#define VT100CSI_SGR         2042       // Select Graphic Rendition
-#define VT100CSI_SM          2043       // Set Mode
-#define VT100CSI_TBC         2044       // Tabulation Clear
+#define VT100CSI_SCS         2041
+#define VT100CSI_SCS0        2041       // Select Character Set 0
+#define VT100CSI_SCS1        2042       // Select Character Set 1
+#define VT100CSI_SCS2        2043       // Select Character Set 2
+#define VT100CSI_SCS3        2044       // Select Character Set 3
+#define VT100CSI_SGR         2045       // Select Graphic Rendition
+#define VT100CSI_SM          2046       // Set Mode
+#define VT100CSI_TBC         2047       // Tabulation Clear
 
 
 // some xterm extension
@@ -176,7 +180,7 @@ typedef struct {
     BOOL INTERLACE_MODE;	// YES=On, NO=Off
     BOOL KEYPAD_MODE;		// YES=Application, NO=Numeric
     BOOL INSERT_MODE;		// YES=Insert, NO=Replace
-    BOOL CHARSET;		// YES=G1, NO=G0
+    int  CHARSET;		// G0...G3
     BOOL XON;			// YES=XON, NO=XOFF
     
     unsigned int CHARATTR;
@@ -230,7 +234,7 @@ typedef struct {
 - (BOOL)interlaceMode;
 - (BOOL)keypadMode;
 - (BOOL)insertMode;
-- (BOOL)charset;
+- (int)charset;
 - (BOOL)xon;
 
 - (int)foregroundColorCode;

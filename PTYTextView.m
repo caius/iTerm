@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.1.1.1 2002-11-26 04:56:49 ujwal Exp $
+// $Id: PTYTextView.m,v 1.2 2002-12-04 22:18:49 yfabian Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -279,8 +279,6 @@
         [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Clear Buffer",@"iTerm",@"Context menu")
                          action:@selector(clearBuffer:) keyEquivalent:@""];
         [cMenu addItem:[NSMenuItem separatorItem]];
-        [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Triggers...",@"iTerm",@"Context menu")
-                         action:@selector(showTriggerWindow:) keyEquivalent:@""];
         [cMenu addItemWithTitle:NSLocalizedStringFromTable(@"Configure...",@"iTerm",@"Context menu")
                          action:@selector(showConfigWindow:) keyEquivalent:@""];
     }

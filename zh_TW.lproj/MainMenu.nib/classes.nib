@@ -3,8 +3,11 @@
         {
             ACTIONS = {
                 clearBuffer = id; 
+                closeCurrentSession = id; 
                 logStart = id; 
                 logStop = id; 
+                nextSession = id; 
+                previousSession = id; 
                 setEncodingBIG5 = id; 
                 setEncodingEUCCN = id; 
                 setEncodingUTF8 = id; 
@@ -29,6 +32,7 @@
                 adbGotoQuickOpen = id; 
                 adbOk = id; 
                 adbRemoveEntry = id; 
+                newSession = id; 
                 newWindow = id; 
                 showABWindow = id; 
                 showAbout = id; 
@@ -45,9 +49,12 @@
                 ABOUT = id; 
                 "AB_PANEL" = id; 
                 "AE_PANEL" = id; 
+                FRONT = id; 
                 "PREF_PANEL" = id; 
                 "QO_COMMAND" = id; 
                 "QO_DIR" = id; 
+                "QO_NewTab" = id; 
+                "QO_NewWindow" = id; 
                 "QO_PANEL" = id; 
                 "QO_TYPE" = id; 
                 adBackground = NSColorWell; 
@@ -57,6 +64,7 @@
                 adEncoding = NSComboBox; 
                 adForeground = NSColorWell; 
                 adName = NSTextField; 
+                adNewWindow = id; 
                 adRow = id; 
                 adTable = NSTableView; 
                 adTermType = id; 
@@ -88,6 +96,46 @@
                 shell = id; 
                 terminal = id; 
                 transparency = id; 
+            }; 
+            SUPERCLASS = NSResponder; 
+        }, 
+        {
+            ACTIONS = {
+                clearBuffer = id; 
+                closeCurrentSession = id; 
+                logStart = id; 
+                logStop = id; 
+                newSession = id; 
+                nextSession = id; 
+                previousSession = id; 
+                setEncodingBIG5 = id; 
+                setEncodingEUCCN = id; 
+                setEncodingUTF8 = id; 
+                setMainMenu = id; 
+                switchSession = id; 
+                windowConfigBackground = id; 
+                windowConfigCancel = id; 
+                windowConfigFont = id; 
+                windowConfigForeground = id; 
+                windowConfigOk = id; 
+            }; 
+            CLASS = PseudoTerminal; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "AI_CODE" = id; 
+                "AI_ON" = id; 
+                "CONFIG_BACKGROUND" = id; 
+                "CONFIG_COL" = id; 
+                "CONFIG_ENCODING" = id; 
+                "CONFIG_EXAMPLE" = id; 
+                "CONFIG_FOREGROUND" = id; 
+                "CONFIG_NAME" = id; 
+                "CONFIG_PANEL" = id; 
+                "CONFIG_ROW" = id; 
+                "CONFIG_TRANS2" = id; 
+                "CONFIG_TRANSPARENCY" = id; 
+                SCROLLVIEW = id; 
+                WINDOW = id; 
             }; 
             SUPERCLASS = NSResponder; 
         }

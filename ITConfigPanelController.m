@@ -134,7 +134,7 @@
         if([[currentSession TERMINAL] defaultBoldColor] != [CONFIG_BOLD color])
             [[currentSession TERMINAL] setBoldColor: [CONFIG_BOLD color]];
 
-	if((100-[[[currentSession TERMINAL] defaultBGColor] alphaComponent]*100 != [CONFIG_TRANSPARENCY intValue]))
+	if([currentSession transparency] * 100.0 != [CONFIG_TRANSPARENCY intValue])
 	{
             [currentSession setTransparency:  [CONFIG_TRANSPARENCY floatValue]/100.0];
 	}

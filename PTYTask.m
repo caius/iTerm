@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.10 2003-04-29 07:02:17 ujwal Exp $
+// $Id: PTYTask.m,v 1.11 2003-07-04 08:08:08 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -71,7 +71,7 @@ static void setup_tty_param(struct termios *term,
     term->c_cc[VKILL]     = CTRLKEY('U');
     term->c_cc[VREPRINT]  = CTRLKEY('R');
     term->c_cc[VINTR]     = CTRLKEY('C');
-    term->c_cc[VQUIT]     = 0x1c;	// Control+\
+    term->c_cc[VQUIT]     = 0x1c;	// Control+backslash
     term->c_cc[VSUSP]     = CTRLKEY('Z');
     term->c_cc[VDSUSP]    = CTRLKEY('Y');
     term->c_cc[VSTART]    = CTRLKEY('Q');

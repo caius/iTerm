@@ -1040,6 +1040,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     else
     {
+	[imageView setImage: nil];
 	[SCROLLVIEW setDrawsBackground: YES];
     }
     

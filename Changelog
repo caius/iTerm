@@ -1,3 +1,7 @@
+2004-01-20	ujwal
+
+    * Added support for "Focus follows mouse".
+
 2004-01-19	ujwal
 
     * Made cmd-W behave more consistently when Find and AddressBook windows 

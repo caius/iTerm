@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.94 2004-01-20 07:34:32 ujwal Exp $
+// $Id: PTYTextView.m,v 1.95 2004-01-20 20:45:34 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2234,7 +2234,11 @@
 
 - (void)mouseEntered:(NSEvent *)theEvent
 {
-    // no-op. Overridden to prevent I-beam cursor from activating.
+    // Overridden to prevent I-beam cursor from activating.
+    
+    // check for focus follows mouse
+    if([[PreferencePanel sharedInstance] focusFollowsMouse] == YES)
+	[[self window] makeKeyAndOrderFront: self];
 }
 
 - (void) setCursorIndex:(int) idx

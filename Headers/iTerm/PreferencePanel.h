@@ -46,6 +46,7 @@
     IBOutlet id tabViewType;
     IBOutlet id blinkingCursor;
     IBOutlet NSButton *enforceCharacterAlignment;
+    IBOutlet NSButton *focusFollowsMouse;
     
     NSUserDefaults *prefs;
 
@@ -62,6 +63,7 @@
     BOOL defaultPromptOnClose;
     BOOL defaultBlinkingCursor;
     BOOL defaultEnforceCharacterAlignment;
+    BOOL defaultFocusFollowsMouse;
 }
 
 - (IBAction) editDefaultSession: (id) sender;
@@ -88,5 +90,6 @@
 - (BOOL) openAddressBook;
 - (BOOL) blinkingCursor;
 - (BOOL) enforceCharacterAlignment;
+- (BOOL) focusFollowsMouse;
 
 @end

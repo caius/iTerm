@@ -10,6 +10,7 @@
                 blinkingCursor = id; 
                 copySelection = id; 
                 enforceCharacterAlignment = NSButton; 
+                focusFollowsMouse = NSButton; 
                 hideTab = id; 
                 macnavkeys = id; 
                 openAddressBook = id; 

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.63 2003-11-28 06:49:56 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.64 2004-01-20 20:45:34 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -97,6 +97,7 @@ static float versionNumber;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultBlinkingCursor = [prefs objectForKey:@"BlinkingCursor"]?[[prefs objectForKey:@"BlinkingCursor"] boolValue]: NO;
     defaultEnforceCharacterAlignment = [prefs objectForKey:@"EnforceCharacterAlignment"]?[[prefs objectForKey:@"EnforceCharacterAlignment"] boolValue]: YES;
+    defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 }
 
 - (void)run
@@ -119,6 +120,7 @@ static float versionNumber;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
     [blinkingCursor setState: defaultBlinkingCursor?NSOnState:NSOffState];
     [enforceCharacterAlignment setState:defaultEnforceCharacterAlignment?NSOnState:NSOffState];
+    [focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
     
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -144,6 +146,7 @@ static float versionNumber;
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultBlinkingCursor = ([blinkingCursor state] == NSOnState);
     defaultEnforceCharacterAlignment = ([enforceCharacterAlignment state] == NSOnState);
+    defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 
     [prefs setBool:defaultMacNavKeys forKey:@"MacNavKeys"];
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
@@ -156,6 +159,7 @@ static float versionNumber;
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
     [prefs setBool:defaultEnforceCharacterAlignment forKey:@"EnforceCharacterAlignment"];
+    [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
     
     [NSApp stopModal];
 }
@@ -239,9 +243,14 @@ static float versionNumber;
     return (defaultBlinkingCursor);
 }
 
-- (BOOL) enforceCharacterAlignment;
+- (BOOL) enforceCharacterAlignment
 {
     return (defaultEnforceCharacterAlignment);
+}
+
+- (BOOL) focusFollowsMouse
+{
+    return (defaultFocusFollowsMouse);
 }
 
 - (IBAction) editDefaultSession: (id) sender

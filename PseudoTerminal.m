@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.58 2003-01-05 08:34:17 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.59 2003-01-06 01:19:08 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1179,6 +1179,9 @@ static NSString *ConfigToolbarItem = @"Config";
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu
 {
+    unsigned int modflag = 0;
+    SEL shellSelector, abCommandSelector;
+    
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal menuForEvent]", __FILE__, __LINE__);
 #endif
@@ -1186,9 +1189,22 @@ static NSString *ConfigToolbarItem = @"Config";
     if(theEvent == nil || theMenu == nil)
 	return;
 
+    modflag = [theEvent modifierFlags];
+
     // Address Book
-    [theMenu insertItemWithTitle:NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")
-						      action:nil keyEquivalent:@"" atIndex: 0];
+    // Figure out whether the command shall be executed in a new window or tab
+    if (modflag & NSCommandKeyMask)
+    {
+	[theMenu insertItemWithTitle: NSLocalizedStringFromTable(@"New Window",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
+	shellSelector = @selector(newWindow:);
+	abCommandSelector = @selector(_executeABMenuCommandInNewWindow:);
+    }
+    else
+    {
+	[theMenu insertItemWithTitle: NSLocalizedStringFromTable(@"New Tab",@"iTerm",@"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
+	shellSelector = @selector(newSession:);
+	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
+    }
     
     // Separator
     [theMenu insertItem:[NSMenuItem separatorItem] atIndex: 1];
@@ -1200,12 +1216,12 @@ static NSString *ConfigToolbarItem = @"Config";
     int i = 0;
     
     [abMenu addItemWithTitle: NSLocalizedStringFromTable(@"Default session",@"iTerm",@"Toolbar Item: New")
-			     action:@selector(newSession:) keyEquivalent:@""];
+			     action:shellSelector keyEquivalent:@""];
     [abMenu addItem: [NSMenuItem separatorItem]];
     abEnumerator = [[MAINMENU addressBookNames] objectEnumerator];
     while ((abEntry = [abEnumerator nextObject]) != nil)
     {
-	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: @selector(_executeABMenuCommand:) keyEquivalent:@""];
+	NSMenuItem *abMenuItem = [[NSMenuItem alloc] initWithTitle: abEntry action: abCommandSelector keyEquivalent:@""];
 	[abMenuItem setTag: i++];
 	[abMenu addItem: abMenuItem];
 	[abMenuItem release];
@@ -1213,6 +1229,14 @@ static NSString *ConfigToolbarItem = @"Config";
 
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
     [abMenu release];
+
+    // Separator
+    [theMenu addItem:[NSMenuItem separatorItem]];
+
+    // Configure
+    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Configure...",@"iTerm",@"Context menu")
+				     action:@selector(showConfigWindow:) keyEquivalent:@""];
+    
 }
 
 
@@ -1371,9 +1395,14 @@ static NSString *ConfigToolbarItem = @"Config";
     
 }
 
-- (void) _executeABMenuCommand: (id) sender
+- (void) _executeABMenuCommandInNewTab: (id) sender
 {
     [self _executeABMenuCommand: [sender tag] newWindow: NO];
+}
+
+- (void) _executeABMenuCommandInNewWindow: (id) sender
+{
+    [self _executeABMenuCommand: [sender tag] newWindow: YES];
 }
 
 - (void) _executeABMenuCommand: (int) commandIndex newWindow: (BOOL) theFlag

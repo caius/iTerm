@@ -631,13 +631,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Clear Buffer",@"iTerm",@"Context menu")
 		     action:@selector(clearBuffer:) keyEquivalent:@""];
 
-    // Separator
-    [theMenu addItem:[NSMenuItem separatorItem]];
-
-    // Configure
-    [theMenu addItemWithTitle:NSLocalizedStringFromTable(@"Configure...",@"iTerm",@"Context menu")
-		     action:@selector(showConfigWindow:) keyEquivalent:@""];
-
     // Ask the parent if it has anything to add
     if ([[self parent] respondsToSelector:@selector(menuForEvent: menu:)])
 	[[self parent] menuForEvent:theEvent menu: theMenu];

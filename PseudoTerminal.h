@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.22 2003-01-05 08:34:16 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.23 2003-01-06 01:19:08 ujwal Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -173,7 +173,8 @@
 - (void) _addressbookPopupSelectionDidChange: (id) sender;
 - (void) _buildAddressBookMenu: (NSPopUpButton *) aPopUpButton;
 - (void) _reloadAddressBookMenu: (NSNotification *) aNotification;
-- (void) _executeABMenuCommand: (id) sender;
+- (void) _executeABMenuCommandInNewTab: (id) sender;
+- (void) _executeABMenuCommandInNewWindow: (id) sender;
 - (void) _executeABMenuCommand: (int) commandIndex newWindow: (BOOL) theFlag;
 - (void) _sessionPopupSelectionDidChange: (id) sender;
 

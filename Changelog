@@ -1,7 +1,9 @@
 2003-01-05	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added Address Book into contextual menu. Entries 
-      will be executed in a new session.
+      can be executed in a new tab or in a new window. 
+      To execute in a new window, hold down the command 
+      key while accessing the contextual menu.
     
     * Refactored the contextual menu code, so that the 
       text view does not have know about the address book 

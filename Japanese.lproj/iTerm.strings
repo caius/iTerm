@@ -1,8 +1,8 @@
 /* Context menu */
-"-> Browser" = "-> Webブラウザ";
+"-> Browser" = "Webブラウザで開く";
 
 /* Context menu */
-"-> Mail" = "-> メール";
+"-> Mail" = "メールを送信";
 
 /* Toolbar Item:Address Book */
 "Address Book" = "アドレスブック";
@@ -26,7 +26,7 @@
 "Close Window?" = "ウインドウを閉じますか？";
 
 /* Close Session */
-"The current session will be closed"="このセッションは閉じられます";
+"The current session will be closed"="このセッションを閉じます";
 "All unsaved data will be lost"="保存していないデータは失われます";
 
 /* Toolbar Item:Configure */
@@ -83,8 +83,8 @@
 "Wrong Input" = "間違った入力";
 
 /* Upgrade */
-"Upgrade Warning: New language encodings available!"="アップグレード警告: 新しいエンコードがあります！";
-"Please reset all the encoding settings in your preference and address book"="環境設定とアドレスブックの中の全てのエンコード設定を再設定して下さい";
+"Upgrade Warning: New language encodings available"="アップグレード警告: 新しいエンコーディングが存在します";
+"Please reset all the encoding settings in your preference and address book"="環境設定とアドレスブックの中の全てのエンコーディング設定を再設定して下さい";
 
 /* Author */
 "fabian"="fabian";

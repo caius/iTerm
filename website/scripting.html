@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>iTerm : Navigation</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" LINK="#696969" ALINK="#696969" VLINK="#696969">
+<LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
+<CENTER>
+<A HREF="index.html"><IMG SRC="iTerm.png" TITLE="" ALT="iTerm" BORDER="0"></A>
+<H1>iTerm Project Homepage</H1>
+
+<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<TR>
+<TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF">
+<FONT SIZE="5"><STRONG>iTerm Info:</STRONG></FONT><BR>
+<UL>
+<LI><A HREF="index.html">Home</A></LI>
+<LI><A HREF="navigation.html">Address Book</A></LI>
+<LI><A HREF="preferences.html">Configure Panel</A></LI>
+<LI><A HREF="navigation.html">Contextual Menu</A></LI>
+<LI><A HREF="install.html">Installation</A></LI>
+<LI><A HREF="misc.html">Misc</A></LI>
+<LI><A HREF="navigation.html">Navigation</A></LI>
+<LI><A HREF="preferences.html">Preferences</A></LI>
+<LI><A HREF="scripting.html">Scripting</A></LI>
+<LI><A HREF="install.html">System Requirements</A></LI>
+<LI><A HREF="history.html">Version History</A></LI>
+<LI><A HREF="resource.html">Addition Resource</A><IMG src="new.gif"></LI>
+</UL>
+
+<FONT SIZE="5"><STRONG>Download:</STRONG></FONT><BR>
+<UL><A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">iTerm 0.6.5</A><IMG src="new.gif"> The latest iTerm release</UL>
+<FONT SIZE="5"><STRONG>Links:</STRONG></FONT><BR>
+<UL>
+<A HREF="http://sourceforge.net/projects/iterm/">iTerm (sourceforge project page)</A><BR>
+<A HREF="http://sourceforge.net/tracker/?atid=518976&group_id=67789&func=browse">Request a feature</A><BR>
+<A HREF="http://sourceforge.net/tracker/?atid=518973&group_id=67789&func=browse">Submit a Bug</A><BR>
+<BR>
+<A HREF="http://sourceforge.net">
+<IMG SRC="http://sourceforge.net/sflogo.php?group_id=67789&amp;type=2" WIDTH="125" HEIGHT="37" BORDER="0" ALT="SourceForge Logo"></A>
+</UL>
+
+</TD>
+
+
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<FONT SIZE="5"><STRONG>Scripting support:</STRONG></FONT><BR>
+<UL>
+iTerm has basic Applescript support allowing one to write stand-alone scripts to launch the application and open multiple 
+sessions from the addressbook into either new tabs or new windows. The syntax is as follows:
+<br>
+<br>
+launch session <STRONG>"session_name"</STRONG> in tab
+<br>
+launch session <STRONG>"session_name"</STRONG> in terminal
+<br>
+<br>
+The first command opens the session named <STRONG>"session_name"</STRONG> in a new tab, while the second opens it in a new window. A session with that name has to exist in the address book. If a default session is desired, use <STRONG>"default session"</STRONG> as the session name. New tabs will be placed in the top active window. Here is a sample Applescript:
+
+<br>
+<br>
+<STRONG>tell application iTerm</STRONG>
+<br>
+    <STRONG>activate</STRONG>
+<br>
+    launch session <STRONG>"Root Shell"</STRONG> in tab
+<br>
+    launch session <STRONG>"default session"</STRONG> in terminal
+<br>
+    launch session <STRONG>"Fink list"</STRONG> in tab
+<br>
+<STRONG>end tell</STRONG>
+
+<br><br>
+These scripts can then be saved as stand-alone executable applications.
+
+</UL>
+
+</TD>
+</TR>
+</TABLE>
+
+<BR>
+<FONT SIZE="-1">
+Modified: Mar 19th, 2003<BR>Created: Dec 18th, 2002<BR>
+<A HREF="MAILTO:fabian@macvillage.net">Fabian</A> and <A HREF="MAILTO:ujwal@setlurgroup.com">Ujwal S. Sathyam</A><BR>
+Support free software by writing one.<BR>
+</FONT>
+
+</CENTER>
+</BODY>
+</HTML>

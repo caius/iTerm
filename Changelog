@@ -1,3 +1,13 @@
+2003-03-20	fabian
+    * Japanese localization patch from Yuichi OHKAWA
+    * Imported all the website files into the project
+    
+2003-03-19	fabian
+    * Fixed some AddressBook interface issues
+    * Corrected typos in Korean localizations
+    * Updated help files
+    * finalize the release of 0.6.5
+    
 2003-03-18	fabian
     * Added Korean localization provided by TaeYoung Oh
     * Updated Chinese nib files for new option.

@@ -8,7 +8,6 @@
             OUTLETS = {
                 antiAlias = id; 
                 blinkingCursor = id; 
-                copySelection = id; 
                 enforceCharacterAlignment = NSButton; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
@@ -17,6 +16,7 @@
                 optionKey = id; 
                 prefPanel = id; 
                 promptOnClose = id; 
+                selectionCopiesText = NSButton; 
                 silenceBell = id; 
                 tabPosition = NSMatrix; 
             }; 

@@ -36,7 +36,7 @@
 {
 	IBOutlet NSMatrix *tabPosition;
     IBOutlet id antiAlias;
-    IBOutlet id copySelection;
+    IBOutlet NSButton *selectionCopiesText;
     IBOutlet id hideTab;
     IBOutlet id openAddressBook;
     IBOutlet id optionKey;
@@ -82,6 +82,7 @@
 - (int) option;
 - (BOOL) macnavkeys;
 - (BOOL) copySelection;
+- (void) setCopySelection: (BOOL) flag;
 - (BOOL) hideTab;
 - (BOOL) silenceBell;
 - (NSTabViewType) tabViewType;

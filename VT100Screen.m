@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.175 2004-02-05 17:01:21 ujwal Exp $
+// $Id: VT100Screen.m,v 1.176 2004-02-05 20:48:07 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -205,6 +205,11 @@ static BOOL PLAYBELL = YES;
     screenLock= [[NSLock alloc] init];
     screenIsLocked = NO;
     
+	selectionStartColumn = -1;
+	selectionStartRow = -1;
+	selectionEndColumn = -1;
+	selectionEndRow = -1;
+	
     return self;
 }
 
@@ -1062,8 +1067,14 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen getTVIndex]:(%d,%d)",  __FILE__, __LINE__ , x, y );
 #endif
+	int index;
 	
-    return [self getIndexAtX:x Y:y withPadding:YES] + updateIndex;
+	index = [self getIndexAtX:x Y:y withPadding:YES];
+	
+	if(index < 0)
+		return (-1);
+	
+    return (index + updateIndex);
 }
 
 - (void)setASCIIString:(NSString *)string
@@ -2727,6 +2738,30 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     int len, slen;
     int idx;
+	NSString *selectedString = nil;
+	NSRange oldSelectionRange, newSelectionRange;
+	
+	
+	oldSelectionRange = [[SESSION TEXTVIEW] selectedRange];
+	if(oldSelectionRange.length > 0)
+	{
+		selectedString = [[STORAGE string] substringWithRange: oldSelectionRange];
+		[selectedString retain];
+		if(oldSelectionRange.location + oldSelectionRange.length - 1 < updateIndex)
+		{
+			selectionStartColumn = -1;
+			selectionStartRow = -1;
+			selectionEndColumn = -1;
+			selectionEndRow = -1;
+		}
+	}
+	else
+	{
+		selectionStartColumn = -1;
+		selectionStartRow = -1;
+		selectionEndColumn = -1;
+		selectionEndRow = -1;		
+	}
     
     idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
     if ([[SESSION TEXTVIEW] hasMarkedText]) {
@@ -2774,7 +2809,34 @@ static BOOL PLAYBELL = YES;
 	
     //NSLog(@"showCursor");
     [self showCursor];
-    //NSLog(@"shown");    
+    //NSLog(@"shown");  
+	
+	// reselect any selection
+	if(selectionStartColumn >= 0)
+	{
+		int rangeStart, rangeEnd;
+		NSString *newSelectedString;
+		
+		rangeStart = [self getTVIndex: selectionStartColumn y: selectionStartRow];
+		rangeEnd = [self getTVIndex: selectionEndColumn y: selectionEndRow];
+		newSelectionRange = NSMakeRange(rangeStart, rangeEnd - rangeStart + 1);
+		if(newSelectionRange.location < [STORAGE length] && 
+		   ((newSelectionRange.location + newSelectionRange.length - 1) < [STORAGE length]))
+		{
+			newSelectedString = [[STORAGE string] substringWithRange: newSelectionRange];
+			if([newSelectedString isEqualToString: selectedString] == YES)
+			{
+				BOOL copySelectionPreference = [[PreferencePanel sharedInstance] copySelection];
+				
+				[[PreferencePanel sharedInstance] setCopySelection: FALSE];
+				[[SESSION TEXTVIEW] setSelectedRange: newSelectionRange];
+				[[PreferencePanel sharedInstance] setCopySelection: copySelectionPreference];
+			}
+		}
+	}
+	[selectedString release];
+	selectedString = nil;
+	
 #endif
 	
 #if DEBUG_USE_ARRAY
@@ -2788,10 +2850,6 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
 	if(selectedRange.length <= 0 || selectedRange.location < updateIndex)
 	{
-		selectionStartColumn = 0;
-		selectionStartRow = 0;
-		selectionEndColumn = 0;
-		selectionEndRow = 0;
 		return;
 	}
 	
@@ -2799,13 +2857,25 @@ static BOOL PLAYBELL = YES;
 	int startIndex = selectedRange.location - updateIndex;
 	int endIndex = selectedRange.location + selectedRange.length - 1 - updateIndex;
 	int startCol, startRow, endCol, endRow;
+	int res1, res2;
 	
-	[self getX: &startCol Y: &startRow atIndex: startIndex];
-	[self getX: &endCol Y: &endRow atIndex: endIndex];
-	
-	NSLog(@"startIndex = %d; endIndex = %d; startCol = %d; startRow = %d; endCol = %d; endRow = %d", startIndex, endIndex, startCol, startRow, endCol, endRow);
-
-	
+	res1 = [self getX: &startCol Y: &startRow atIndex: startIndex];
+	res2 = [self getX: &endCol Y: &endRow atIndex: endIndex];
+	if(res1 >= 0 && res2 >= 0)
+	{
+		selectionStartColumn = startCol;
+		selectionStartRow = startRow;
+		selectionEndColumn = endCol;
+		selectionEndRow = endRow;
+	}
+	else
+	{
+		selectionStartColumn = -1;
+		selectionStartRow = -1;
+		selectionEndColumn = -1;
+		selectionEndRow = -1;		
+	}
+		
 #endif	
 }
 

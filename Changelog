@@ -1,3 +1,7 @@
+2004-02-05  ujwal
+
+	* Selection is maintained after screen update unless text of selection has changed.
+
 2004-02-03  ujwal
 
 	* Not closing task if writing 0 bytes in PTYTask.m

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.65 2004-01-22 01:58:26 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.66 2004-02-05 20:48:07 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -113,7 +113,7 @@ static float versionNumber;
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
     [tabPosition selectCellWithTag: defaultTabViewType];
-    [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
+    [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
@@ -139,7 +139,7 @@ static float versionNumber;
     defaultMacNavKeys=([macnavkeys state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
     defaultTabViewType=[[tabPosition selectedCell] tag];
-    defaultCopySelection=([copySelection state]==NSOnState);
+    defaultCopySelection=([selectionCopiesText state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
     defaultSilenceBell=([silenceBell state]==NSOnState);
     defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
@@ -178,7 +178,7 @@ static float versionNumber;
 
     [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
-    [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
+    [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
@@ -206,6 +206,11 @@ static float versionNumber;
 - (BOOL) copySelection
 {
     return (defaultCopySelection);
+}
+
+- (void) setCopySelection: (BOOL) flag
+{
+	defaultCopySelection = flag;
 }
 
 - (BOOL) hideTab

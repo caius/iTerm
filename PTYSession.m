@@ -70,8 +70,8 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if (normalStateAttribute == nil) 
     {
-	NSFont *tabLabelFont = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
-	
+		NSFont *tabLabelFont = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
+		
         normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor blackColor],NSForegroundColorAttributeName, tabLabelFont, NSFontAttributeName, nil] retain];
         chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
@@ -174,36 +174,36 @@ static NSString *PWD_ENVVALUE = @"~";
 #if 0
     if([[PreferencePanel sharedInstance] enforceCharacterAlignment] == NO)
     {
-	// use standard text system
-	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
+		// use standard text system
+		TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
     }
     else
 #endif
-	// use our custom text system
+		// use our custom text system
     {
-	VT100LayoutManager* aLayoutManager = [[VT100LayoutManager alloc] init];
-	VT100Typesetter *aTypesetter;
-	NSTextContainer *aTextContainer;
-	
-	textStorage = [[VT100TextStorage alloc] init];
-	[textStorage addLayoutManager:aLayoutManager];
-	[aLayoutManager release];
-	
+		VT100LayoutManager* aLayoutManager = [[VT100LayoutManager alloc] init];
+		VT100Typesetter *aTypesetter;
+		NSTextContainer *aTextContainer;
+		
+		textStorage = [[VT100TextStorage alloc] init];
+		[textStorage addLayoutManager:aLayoutManager];
+		[aLayoutManager release];
+		
         aTextContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize(aSize.width, 1e7)];
-	[aLayoutManager addTextContainer:aTextContainer];
-	[aTextContainer release];
-	
+		[aLayoutManager addTextContainer:aTextContainer];
+		[aTextContainer release];
+		
         aTypesetter = [[VT100Typesetter alloc] init];
-	[aTypesetter setScreen: SCREEN];
-	[aLayoutManager setTypesetter: aTypesetter];
-	[aTypesetter release];
-	
+		[aTypesetter setScreen: SCREEN];
+		[aLayoutManager setTypesetter: aTypesetter];
+		[aTypesetter release];
+		
         TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
-	[aTextContainer setWidthTracksTextView:YES];
-	[aTextContainer setHeightTracksTextView:NO];
-	[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
-	[TEXTVIEW setHorizontallyResizable:NO];
-	[TEXTVIEW setVerticallyResizable:YES];
+		[aTextContainer setWidthTracksTextView:YES];
+		[aTextContainer setHeightTracksTextView:NO];
+		[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
+		[TEXTVIEW setHorizontallyResizable:NO];
+		[TEXTVIEW setVerticallyResizable:YES];
     }
     
     [TEXTVIEW setDrawsBackground:NO];
@@ -249,8 +249,8 @@ static NSString *PWD_ENVVALUE = @"~";
 }
 
 - (void)startProgram:(NSString *)program
-	   arguments:(NSArray *)prog_argv
-	 environment:(NSDictionary *)prog_env
+		   arguments:(NSArray *)prog_argv
+		 environment:(NSDictionary *)prog_env
 {
     NSString *path = program;
     NSMutableArray *argv = [NSMutableArray arrayWithArray:prog_argv];
@@ -263,9 +263,9 @@ static NSString *PWD_ENVVALUE = @"~";
     textViewSize = [VT100Screen requireSizeWithFont:[[self SCREEN] tallerFont] width:(int) screenSize.width height:(int) screenSize.height];
     //[[self TEXTVIEW] setFrame: NSMakeRect(0, 0, textViewSize.width, textViewSize.height)];
     scrollViewSize = [PTYScrollView frameSizeForContentSize:textViewSize
-				      hasHorizontalScroller:NO
-					hasVerticalScroller:YES
-						 borderType:NSNoBorder];
+									  hasHorizontalScroller:NO
+										hasVerticalScroller:YES
+												 borderType:NSNoBorder];
     //[[self SCROLLVIEW] setFrame: NSMakeRect(0, 0, scrollViewSize.width, scrollViewSize.height)];
     
     
@@ -274,7 +274,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession startProgram:%@ arguments:%@ environment:%@]",
-	  __FILE__, __LINE__, program, prog_argv, prog_env );
+		  __FILE__, __LINE__, program, prog_argv, prog_env );
 #endif
     if ([env objectForKey:TERM_ENVNAME] == nil)
         [env setObject:TERM_VALUE forKey:TERM_ENVNAME];
@@ -283,10 +283,10 @@ static NSString *PWD_ENVVALUE = @"~";
         [env setObject:[PWD_ENVVALUE stringByExpandingTildeInPath] forKey:PWD_ENVNAME];
     
     [SHELL launchWithPath:path
-		arguments:argv
-	      environment:env
-		    width:[SCREEN width]
-		   height:[SCREEN height]];
+				arguments:argv
+			  environment:env
+					width:[SCREEN width]
+				   height:[SCREEN height]];
     
 }
 
@@ -302,7 +302,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL sendSignal: SIGHUP];
     while ((pid=waitpid([SHELL pid],&status,0))>0)
     {
-	usleep(10000);
+		usleep(10000);
     }    
     //[SHELL sendSignal: SIGKILL];
     if(tabViewItem)
@@ -338,12 +338,12 @@ static NSString *PWD_ENVVALUE = @"~";
     // check if we want to send this input to all the sessions
     if([parent sendInputToAllSessions] == NO)
     {
-	[SHELL writeTask: data];
+		[SHELL writeTask: data];
     }
     else
     {
-	// send to all sessions
-	[parent sendInputToAllSessions: data];
+		// send to all sessions
+		[parent sendInputToAllSessions: data];
     }
 }
 
@@ -374,16 +374,16 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
     
     while (TERMINAL&&((token = [TERMINAL getNextToken]), 
-		      token.type != VT100CC_NULL &&
-		      token.type != VT100_WAIT))
+					  token.type != VT100CC_NULL &&
+					  token.type != VT100_WAIT))
     {
-	if (token.type != VT100_SKIP)
-	    [SCREEN putToken:token];
+		if (token.type != VT100_SKIP)
+			[SCREEN putToken:token];
     }
     
     oIdleCount=0;
     if (token.type == VT100_NOTSUPPORT) {
-	NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
+		NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
     }
     
 #if USE_CUSTOM_DRAWING
@@ -436,7 +436,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if DEBUG_METHOD_TRACE || DEBUG_KEYDOWNDUMP
     NSLog(@"%s(%d):-[PseudoTerminal keyDown:%@]",
-	  __FILE__, __LINE__, event);
+		  __FILE__, __LINE__, event);
 #endif
     
     modflag = [event modifierFlags];
@@ -459,228 +459,228 @@ static NSString *PWD_ENVVALUE = @"~";
     // Check if we are navigating through sessions or scrolling
     if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
     {
-	// command/shift + function key's
-	switch (unicode)
-	{
-	    case NSLeftArrowFunctionKey: // cursor left
-					 // Check if we want to just move to the previous session
-		[parent previousSession: nil];
-		return;
-	    case NSRightArrowFunctionKey: // cursor left
-					  // Check if we want to just move to the next session
-		[parent nextSession: nil];
-		return;
-	    case NSDeleteFunctionKey:
+		// command/shift + function key's
+		switch (unicode)
+		{
+			case NSLeftArrowFunctionKey: // cursor left
+										 // Check if we want to just move to the previous session
+				[parent previousSession: nil];
+				return;
+			case NSRightArrowFunctionKey: // cursor left
+										  // Check if we want to just move to the next session
+				[parent nextSession: nil];
+				return;
+			case NSDeleteFunctionKey:
                 // NSLog(@"### DEBUG ###\n%@", SCREEN);
-		break;
-	    case NSPageUpFunctionKey:
-		[TEXTVIEW scrollPageUp: self];
-		[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
-		break;
-	    case NSPageDownFunctionKey:
-		[TEXTVIEW scrollPageDown: self];
-		[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
-		break;
-	    case NSHomeFunctionKey:
+				break;
+			case NSPageUpFunctionKey:
+				[TEXTVIEW scrollPageUp: self];
+				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
+				break;
+			case NSPageDownFunctionKey:
+				[TEXTVIEW scrollPageDown: self];
+				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
+				break;
+			case NSHomeFunctionKey:
                 [TEXTVIEW scrollHome];
-		break;
-	    case NSEndFunctionKey:
+				break;
+			case NSEndFunctionKey:
                 [TEXTVIEW scrollEnd];
-		break;
-	    case NSClearLineFunctionKey:
-		if(modflag & NSCommandKeyMask)
-		    [TERMINAL toggleNumLock];
-		break;
+				break;
+			case NSClearLineFunctionKey:
+				if(modflag & NSCommandKeyMask)
+					[TERMINAL toggleNumLock];
+				break;
             case NSUpArrowFunctionKey:
                 if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
-		    [TEXTVIEW scrollPageUp: self];
+					[TEXTVIEW scrollPageUp: self];
                 else
                     [TEXTVIEW scrollLineUp: self];
-		[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
+				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
                 break;
             case NSDownArrowFunctionKey:
                 if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
                     [TEXTVIEW scrollPageDown: self];
                 else
                     [TEXTVIEW scrollLineDown: self];
-		[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
+				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
                 break;
                 
-	    default:
-		if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
-		    [parent selectSessionAtIndex:unicode-NSF1FunctionKey];                    
-		break;
-	}
+			default:
+				if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
+					[parent selectSessionAtIndex:unicode-NSF1FunctionKey];                    
+				break;
+		}
     }
     else 
     {
-	if (modflag & NSFunctionKeyMask)
+		if (modflag & NSFunctionKeyMask)
         {
-	    NSData *data = nil;
-	    
-	    switch(unicode) 
+			NSData *data = nil;
+			
+			switch(unicode) 
             {
                 case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp:modflag]; break;
-		case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown:modflag]; break;
-		case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft:modflag]; break;
-		case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight:modflag]; break;
-		    
-		case NSInsertFunctionKey:
-		    // case NSHelpFunctionKey:
-		    data = [TERMINAL keyInsert]; break;
-		case NSDeleteFunctionKey:
-		    data = [TERMINAL keyDelete]; break;
-		case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
-		case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
-		case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
-		case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
-		    
-		case NSPrintScreenFunctionKey:
-		    break;
-		case NSScrollLockFunctionKey:
-		case NSPauseFunctionKey:
-		    break;
-		case NSClearLineFunctionKey:
-		    if(![TERMINAL numLock] || [TERMINAL keypadMode])
-			data = [TERMINAL keyPFn: 1];
-		    break;
-	    }
-	    
+				case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown:modflag]; break;
+				case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft:modflag]; break;
+				case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight:modflag]; break;
+					
+				case NSInsertFunctionKey:
+					// case NSHelpFunctionKey:
+					data = [TERMINAL keyInsert]; break;
+				case NSDeleteFunctionKey:
+					data = [TERMINAL keyDelete]; break;
+				case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
+				case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
+				case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
+				case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
+					
+				case NSPrintScreenFunctionKey:
+					break;
+				case NSScrollLockFunctionKey:
+				case NSPauseFunctionKey:
+					break;
+				case NSClearLineFunctionKey:
+					if(![TERMINAL numLock] || [TERMINAL keypadMode])
+						data = [TERMINAL keyPFn: 1];
+					break;
+			}
+			
             if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey)
                 data = [TERMINAL keyFunction:unicode-NSF1FunctionKey+1];
-	    
-	    if (data != nil) {
-		send_str = (char *)[data bytes];
-		send_strlen = [data length];
-	    }
-	}
-	else if ([[PreferencePanel sharedInstance] option] != OPT_NORMAL &&
-		 modflag & NSAlternateKeyMask)
-	{
-	    NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
-	    [keystr dataUsingEncoding:NSUTF8StringEncoding]:
-	    [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
-	    // META combination
-	    if (keydat != nil) {
-		send_str = (char *)[keydat bytes];
-		send_strlen = [keydat length];
-	    }
-            if ([[PreferencePanel sharedInstance] option] == OPT_ESC) {
-		send_pchr = '\e';
-		//                send_chr=unmodkeystr;
-            }
-	    else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) 
-            {
-		int i;
-		for (i = 0; i < send_strlen; ++i)
-		    send_str[i] |= 0x80;
-	    }
-	}
-	else 
-	{
-	    int max = [keystr length];
-	    NSData *data;
-	    
-	    if (max!=1||[keystr characterAtIndex:0] > 0x7f)
-		data = [keystr dataUsingEncoding:[TERMINAL encoding]];
-	    else
-		data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
-	    
-	    // Check if we are in keypad mode
-	    if((modflag & NSNumericPadKeyMask) && (![TERMINAL numLock] || [TERMINAL keypadMode]))
-	    {
-		switch (unicode)
-		{
-		    case '=':
-			data = [TERMINAL keyPFn: 2];;
-			break;
-		    case '/':
-			data = [TERMINAL keyPFn: 3];
-			break;
-		    case '*':
-			data = [TERMINAL keyPFn: 4];
-			break;
-		    default:
-			data = [TERMINAL keypadData: unicode keystr: keystr];
-			break;
+			
+			if (data != nil) {
+				send_str = (char *)[data bytes];
+				send_strlen = [data length];
+			}
 		}
-	    }
-	    
-	    // Check if we want to remap the delete key to backspace
-	    if((unicode == NSDeleteCharacter) && [self remapDeleteKey])
-		data = [TERMINAL keyBackspace];
-	    
-	    if (data != nil ) {
-		send_str = (char *)[data bytes];
-		send_strlen = [data length];
-	    }
-	    
-	    // NSLog(@"modflag = 0x%x; send_strlen = %d; send_str[0] = '%c (0x%x)'", modflag, send_strlen, send_str[0]);
-	    if ((modflag & NSNumericPadKeyMask &&
-		 send_strlen == 1 &&
-		 send_str[0] == 0x03) || keycode==52)
-	    {
-		send_str = "\012";  // NumericPad or Laptop Enter -> 0x0a
-		send_strlen = 1;
-	    }
-	    if (modflag & NSControlKeyMask &&
-		send_strlen == 1 &&
-		send_str[0] == '|')
-	    {
-		send_str = "\034"; // control-backslash
-		send_strlen = 1;
-	    }
-	    
-	    if ((modflag & NSControlKeyMask) && 
-		(modflag & NSShiftKeyMask) &&
-		send_strlen == 1 &&
-		send_str[0] == '/')
-	    {
-		send_str = "\177"; // control-?
-		send_strlen = 1;
-	    }						
-	    else if (modflag & NSControlKeyMask &&
-		     send_strlen == 1 &&
-		     send_str[0] == '/')
-	    {
-		send_str = "\037"; // control-/
-		send_strlen = 1;
-	    }
-	    
-	}
-	
-	// Make sure we scroll down to the end
-	[TEXTVIEW scrollEnd];
-	
-	if (EXIT == NO ) 
+		else if ([[PreferencePanel sharedInstance] option] != OPT_NORMAL &&
+				 modflag & NSAlternateKeyMask)
+		{
+			NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
+			[keystr dataUsingEncoding:NSUTF8StringEncoding]:
+			[unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
+			// META combination
+			if (keydat != nil) {
+				send_str = (char *)[keydat bytes];
+				send_strlen = [keydat length];
+			}
+            if ([[PreferencePanel sharedInstance] option] == OPT_ESC) {
+				send_pchr = '\e';
+				//                send_chr=unmodkeystr;
+            }
+			else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) 
+            {
+				int i;
+				for (i = 0; i < send_strlen; ++i)
+					send_str[i] |= 0x80;
+			}
+		}
+		else 
+		{
+			int max = [keystr length];
+			NSData *data;
+			
+			if (max!=1||[keystr characterAtIndex:0] > 0x7f)
+				data = [keystr dataUsingEncoding:[TERMINAL encoding]];
+			else
+				data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
+			
+			// Check if we are in keypad mode
+			if((modflag & NSNumericPadKeyMask) && (![TERMINAL numLock] || [TERMINAL keypadMode]))
+			{
+				switch (unicode)
+				{
+					case '=':
+						data = [TERMINAL keyPFn: 2];;
+						break;
+					case '/':
+						data = [TERMINAL keyPFn: 3];
+						break;
+					case '*':
+						data = [TERMINAL keyPFn: 4];
+						break;
+					default:
+						data = [TERMINAL keypadData: unicode keystr: keystr];
+						break;
+				}
+			}
+			
+			// Check if we want to remap the delete key to backspace
+			if((unicode == NSDeleteCharacter) && [self remapDeleteKey])
+				data = [TERMINAL keyBackspace];
+			
+			if (data != nil ) {
+				send_str = (char *)[data bytes];
+				send_strlen = [data length];
+			}
+			
+			// NSLog(@"modflag = 0x%x; send_strlen = %d; send_str[0] = '%c (0x%x)'", modflag, send_strlen, send_str[0]);
+			if ((modflag & NSNumericPadKeyMask &&
+				 send_strlen == 1 &&
+				 send_str[0] == 0x03) || keycode==52)
+			{
+				send_str = "\012";  // NumericPad or Laptop Enter -> 0x0a
+				send_strlen = 1;
+			}
+			if (modflag & NSControlKeyMask &&
+				send_strlen == 1 &&
+				send_str[0] == '|')
+			{
+				send_str = "\034"; // control-backslash
+				send_strlen = 1;
+			}
+			
+			if ((modflag & NSControlKeyMask) && 
+				(modflag & NSShiftKeyMask) &&
+				send_strlen == 1 &&
+				send_str[0] == '/')
+			{
+				send_str = "\177"; // control-?
+				send_strlen = 1;
+			}						
+			else if (modflag & NSControlKeyMask &&
+					 send_strlen == 1 &&
+					 send_str[0] == '/')
+			{
+				send_str = "\037"; // control-/
+				send_strlen = 1;
+			}
+			
+		}
+		
+		// Make sure we scroll down to the end
+		[TEXTVIEW scrollEnd];
+		
+		if (EXIT == NO ) 
         {
-	    if (send_pchr >= 0) {
-		char c = send_pchr;
-		dataPtr = &c;
-		dataLength = 1;
-	    }
-	    if (send_chr >= 0) {
-		char c = send_chr;
-		dataPtr = &c;
-		dataLength = 1;
-	    }
-	    if (send_str != NULL) {
-		dataPtr = send_str;
-		dataLength = send_strlen;
-	    }
-	    
-	    [self writeTask:[NSData dataWithBytes:dataPtr length:dataLength]];
-	    
+			if (send_pchr >= 0) {
+				char c = send_pchr;
+				dataPtr = &c;
+				dataLength = 1;
+			}
+			if (send_chr >= 0) {
+				char c = send_chr;
+				dataPtr = &c;
+				dataLength = 1;
+			}
+			if (send_str != NULL) {
+				dataPtr = send_str;
+				dataLength = send_strlen;
+			}
+			
+			[self writeTask:[NSData dataWithBytes:dataPtr length:dataLength]];
+			
 #if USE_CUSTOM_DRAWING
             [TEXTVIEW scrollEnd];
 #else
-	    // scroll to the end
+			// scroll to the end
             //[TEXTVIEW scrollEnd];
             PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
             [ptys setUserScroll: NO];
-	    //[SCREEN updateScreen];
+			//[SCREEN updateScreen];
 #endif
-	}
+		}
     }
 }
 
@@ -688,7 +688,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     // Handle the option-click event
     return (([theEvent type] == NSLeftMouseDown) &&
-	    ([theEvent modifierFlags] & NSAlternateKeyMask));       
+			([theEvent modifierFlags] & NSAlternateKeyMask));       
 }
 
 - (void)handleEvent: (NSEvent *) theEvent
@@ -696,7 +696,7 @@ static NSString *PWD_ENVVALUE = @"~";
     // We handle option-click to position the cursor...
     if(([theEvent type] == NSLeftMouseDown) &&
        ([theEvent modifierFlags] & NSAlternateKeyMask))
-	[self handleOptionClick: theEvent];
+		[self handleOptionClick: theEvent];
 }
 
 - (void) handleOptionClick: (NSEvent *) theEvent
@@ -721,27 +721,27 @@ static NSString *PWD_ENVVALUE = @"~";
     
     
     if(x == [SCREEN cursorX] && y == [SCREEN cursorY])
-	return;
+		return;
     
     NSData *data;
     int i;
     // now move the cursor up or down
     for(i = 0; i < abs(y - [SCREEN cursorY]); i++)
     {
-	if(y < [SCREEN cursorY])
+		if(y < [SCREEN cursorY])
             data = [TERMINAL keyArrowUp:0];
-	else
+		else
             data = [TERMINAL keyArrowDown:0];
-	[self writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
+		[self writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
     }
     // now move the cursor left or right    
     for(i = 0; i < abs(x - [SCREEN cursorX]); i++)
     {
-	if(x < [SCREEN cursorX])
-	    data = [TERMINAL keyArrowLeft:0];
-	else
-	    data = [TERMINAL keyArrowRight:0];
-	[self writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
+		if(x < [SCREEN cursorX])
+			data = [TERMINAL keyArrowLeft:0];
+		else
+			data = [TERMINAL keyArrowRight:0];
+		[self writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
     }
     
     // trigger an update of the display.
@@ -771,7 +771,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession insertText:%@]",
-	  __FILE__, __LINE__, mstring);
+		  __FILE__, __LINE__, mstring);
 #endif
     
     //if([TERMINAL encoding] != NSUTF8StringEncoding) {
@@ -783,7 +783,7 @@ static NSString *PWD_ENVVALUE = @"~";
     //}
     
     data = [mstring dataUsingEncoding:[TERMINAL encoding]
-		 allowLossyConversion:YES];
+				 allowLossyConversion:YES];
 
     if (data != nil) 
     [self writeTask:data];
@@ -793,7 +793,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession insertNewline:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self insertText:@"\n"];
 }
@@ -802,7 +802,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession insertTab:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self insertText:@"\t"];
 }
@@ -811,7 +811,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession moveUp:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self writeTask:[TERMINAL keyArrowUp:0]];
 }
@@ -820,7 +820,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession moveDown:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self writeTask:[TERMINAL keyArrowDown:0]];
 }
@@ -829,7 +829,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession moveLeft:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self writeTask:[TERMINAL keyArrowLeft:0]];
 }
@@ -838,7 +838,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession moveRight:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self writeTask:[TERMINAL keyArrowRight:0]];
 }
@@ -847,7 +847,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession pageUp:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self writeTask:[TERMINAL keyPageUp]];
 }
@@ -856,7 +856,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession pageDown:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self writeTask:[TERMINAL keyPageDown]];
 }
@@ -882,15 +882,15 @@ static NSString *PWD_ENVVALUE = @"~";
     {
         NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
                                     dataUsingEncoding:[TERMINAL encoding]
-				 allowLossyConversion:YES];
+								 allowLossyConversion:YES];
         if (strdata != nil){
-	    // Do this in a new thread since we do not want to block the read code.
-	    [NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:strdata];
-	    //[self writeTask:strdata];
-	}
+			// Do this in a new thread since we do not want to block the read code.
+			[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:strdata];
+			//[self writeTask:strdata];
+		}
     }
     else
-	NSBeep();
+		NSBeep();
 }
 
 - (void)deleteBackward:(id)sender
@@ -899,7 +899,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession deleteBackward:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     
     [self writeTask:[NSData dataWithBytes:&p length:1]];
@@ -911,7 +911,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession deleteForward:%@]",
-	  __FILE__, __LINE__, sender);
+		  __FILE__, __LINE__, sender);
 #endif
     [self writeTask:[NSData dataWithBytes:&p length:1]];
 }
@@ -920,11 +920,11 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession textViewDidChangeSelection]",
-	  __FILE__, __LINE__);
+		  __FILE__, __LINE__);
 #endif
     
     if([[PreferencePanel sharedInstance] copySelection])
-	[TEXTVIEW copy: self];
+		[TEXTVIEW copy: self];
 	
 	[SCREEN textViewDidChangeSelection: [TEXTVIEW selectedRange]];
 }
@@ -933,7 +933,7 @@ static NSString *PWD_ENVVALUE = @"~";
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession textViewResized: 0x%x]",
-	  __FILE__, __LINE__, textView);
+		  __FILE__, __LINE__, textView);
 #endif
     
     [[self parent] windowDidResize: nil];
@@ -961,11 +961,11 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #if USE_CUSTOM_DRAWING
     if (output>10&&dirty) {
-	// If the user has not scrolled up, move to the end
-	//	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
-	//    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
+		// If the user has not scrolled up, move to the end
+		//	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
+		//    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
         if (![(PTYScroller *)[SCROLLVIEW verticalScroller] userScroll])
-	    [TEXTVIEW scrollEnd];
+			[TEXTVIEW scrollEnd];
         output=0;
         dirty=NO;
     }
@@ -973,19 +973,19 @@ static NSString *PWD_ENVVALUE = @"~";
     
 #else
     if (blink>15) {
-	[SCREEN blink];
-	blink=0;
+		[SCREEN blink];
+		blink=0;
     }
     if (oIdleCount<2||dirty) 
     {
         if (output>3) 
         {
             [SCREEN updateScreen];
-	    //NSLog(@"floatValue = %f", [[SCROLLVIEW verticalScroller] floatValue]);
+			//NSLog(@"floatValue = %f", [[SCROLLVIEW verticalScroller] floatValue]);
             // If the user has not scrolled up, move to the end
-	    //	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
-	    //    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
-	    if (![(PTYScroller *)[SCROLLVIEW verticalScroller] userScroll])
+			//	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
+			//    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
+			if (![(PTYScroller *)[SCROLLVIEW verticalScroller] userScroll])
                 [TEXTVIEW scrollEnd];
             output=0;
             dirty=NO;
@@ -1046,39 +1046,39 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
     [self setBackgroundColor: [aePrefs objectForKey: @"Background"]];
     if([aePrefs objectForKey: @"SelectionColor"] != nil)
-	[self setSelectionColor: [aePrefs objectForKey: @"SelectionColor"]];
+		[self setSelectionColor: [aePrefs objectForKey: @"SelectionColor"]];
     else
-	[self setSelectionColor: [AddressBookWindowController defaultSelectionColor]];
+		[self setSelectionColor: [AddressBookWindowController defaultSelectionColor]];
     if([aePrefs objectForKey: @"BoldColor"] != nil)
-	[self setBoldColor: [aePrefs objectForKey: @"BoldColor"]];
+		[self setBoldColor: [aePrefs objectForKey: @"BoldColor"]];
     else
-	[self setBoldColor: [AddressBookWindowController defaultBoldColor]];
+		[self setBoldColor: [AddressBookWindowController defaultBoldColor]];
     if([aePrefs objectForKey: @"AnsiBlackColor"] == nil)
     {
-	for(i = 0; i < 8; i++)
-	{
-	    colorTable[0][i] = [AddressBookWindowController colorFromTable: i highLight: NO];
-	    colorTable[1][i] = [AddressBookWindowController colorFromTable: i highLight: YES];
-	}
+		for(i = 0; i < 8; i++)
+		{
+			colorTable[0][i] = [AddressBookWindowController colorFromTable: i highLight: NO];
+			colorTable[1][i] = [AddressBookWindowController colorFromTable: i highLight: YES];
+		}
     }
     else
     {
-	colorTable[0][0]= [aePrefs objectForKey:@"AnsiBlackColor"];
-	colorTable[0][1]= [aePrefs objectForKey:@"AnsiRedColor"];
-	colorTable[0][2]= [aePrefs objectForKey:@"AnsiGreenColor"];
-	colorTable[0][3]= [aePrefs objectForKey:@"AnsiYellowColor"];
-	colorTable[0][4]= [aePrefs objectForKey:@"AnsiBlueColor"];
-	colorTable[0][5]= [aePrefs objectForKey:@"AnsiMagentaColor"];
-	colorTable[0][6]= [aePrefs objectForKey:@"AnsiCyanColor"];
-	colorTable[0][7]= [aePrefs objectForKey:@"AnsiWhiteColor"];
-	colorTable[1][0]= [aePrefs objectForKey:@"AnsiHiBlackColor"];
-	colorTable[1][1]= [aePrefs objectForKey:@"AnsiHiRedColor"];
-	colorTable[1][2]= [aePrefs objectForKey:@"AnsiHiGreenColor"];
-	colorTable[1][3]= [aePrefs objectForKey:@"AnsiHiYellowColor"];
-	colorTable[1][4]= [aePrefs objectForKey:@"AnsiHiBlueColor"];
-	colorTable[1][5]= [aePrefs objectForKey:@"AnsiHiMagentaColor"];
-	colorTable[1][6]= [aePrefs objectForKey:@"AnsiHiCyanColor"];
-	colorTable[1][7]= [aePrefs objectForKey:@"AnsiHiWhiteColor"];
+		colorTable[0][0]= [aePrefs objectForKey:@"AnsiBlackColor"];
+		colorTable[0][1]= [aePrefs objectForKey:@"AnsiRedColor"];
+		colorTable[0][2]= [aePrefs objectForKey:@"AnsiGreenColor"];
+		colorTable[0][3]= [aePrefs objectForKey:@"AnsiYellowColor"];
+		colorTable[0][4]= [aePrefs objectForKey:@"AnsiBlueColor"];
+		colorTable[0][5]= [aePrefs objectForKey:@"AnsiMagentaColor"];
+		colorTable[0][6]= [aePrefs objectForKey:@"AnsiCyanColor"];
+		colorTable[0][7]= [aePrefs objectForKey:@"AnsiWhiteColor"];
+		colorTable[1][0]= [aePrefs objectForKey:@"AnsiHiBlackColor"];
+		colorTable[1][1]= [aePrefs objectForKey:@"AnsiHiRedColor"];
+		colorTable[1][2]= [aePrefs objectForKey:@"AnsiHiGreenColor"];
+		colorTable[1][3]= [aePrefs objectForKey:@"AnsiHiYellowColor"];
+		colorTable[1][4]= [aePrefs objectForKey:@"AnsiHiBlueColor"];
+		colorTable[1][5]= [aePrefs objectForKey:@"AnsiHiMagentaColor"];
+		colorTable[1][6]= [aePrefs objectForKey:@"AnsiHiCyanColor"];
+		colorTable[1][7]= [aePrefs objectForKey:@"AnsiHiWhiteColor"];
     }
     for(i=0;i<8;i++) {
         [self setColorTable:i highLight:NO color:colorTable[0][i]];
@@ -1094,7 +1094,7 @@ static NSString *PWD_ENVVALUE = @"~";
     // background image
     imageFilePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
     if([imageFilePath length] > 0)
-	[self setBackgroundImagePath: imageFilePath];
+		[self setBackgroundImagePath: imageFilePath];
     
     // transparency
     [self setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];    
@@ -1127,7 +1127,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
     // Ask the parent if it has anything to add
     if ([[self parent] respondsToSelector:@selector(menuForEvent: menu:)])
-	[[self parent] menuForEvent:theEvent menu: theMenu];    
+		[[self parent] menuForEvent:theEvent menu: theMenu];    
 }
 
 - (PseudoTerminal *) parent
@@ -1171,22 +1171,22 @@ static NSString *PWD_ENVVALUE = @"~";
     NSMutableString *aMutableString;
     
     if([name isEqualToString: theName])
-	return;
+		return;
     
     if(name)
     {
-	// clear the window title if it is not different
-	if([self windowTitle] == nil || [name isEqualToString: [self windowTitle]])
-	    [self setWindowTitle: nil];
+		// clear the window title if it is not different
+		if([self windowTitle] == nil || [name isEqualToString: [self windowTitle]])
+			[self setWindowTitle: nil];
         [name release];
         name = nil;
     }
     if(theName)
     {
         name = [theName retain];
-	// sync the window title if it is not set to something else
-	if([self windowTitle] == nil)
-	    [self setWindowTitle: theName];
+		// sync the window title if it is not set to something else
+		if([self windowTitle] == nil)
+			[self setWindowTitle: theName];
     }
     if([theName length] > 20)
     {
@@ -1204,7 +1204,7 @@ static NSString *PWD_ENVVALUE = @"~";
     // get the session submenu to be rebuilt
     if([[iTermController sharedInstance] currentTerminal] == [self parent])
     {
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNameOfSessionDidChange" object: self userInfo: nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNameOfSessionDidChange" object: self userInfo: nil];
     }
 }
 
@@ -1220,9 +1220,9 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if(theTitle != nil)
     {
-	windowTitle = [theTitle retain];
-	if([[self parent] currentSession] == self)
-	    [[[self parent] window] setTitle: windowTitle];
+		windowTitle = [theTitle retain];
+		if([[self parent] currentSession] == self)
+			[[[self parent] window] setTitle: windowTitle];
     }
 }
 
@@ -1331,39 +1331,39 @@ static NSString *PWD_ENVVALUE = @"~";
     [backgroundImagePath release];
     if([imageFilePath length] > 0 && [imageFilePath isAbsolutePath] == NO)
     {
-	NSBundle *myBundle = [NSBundle bundleForClass: [self class]];
-	backgroundImagePath = [myBundle pathForResource: imageFilePath ofType: @""];
-	[backgroundImagePath retain];
+		NSBundle *myBundle = [NSBundle bundleForClass: [self class]];
+		backgroundImagePath = [myBundle pathForResource: imageFilePath ofType: @""];
+		[backgroundImagePath retain];
     }
     else
     {
-	[imageFilePath retain];
-	backgroundImagePath = imageFilePath;
+		[imageFilePath retain];
+		backgroundImagePath = imageFilePath;
     }
     if([backgroundImagePath length] > 0)
     {
-	NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
-	if(anImage != nil)
-	{
-	    [SCROLLVIEW setDrawsBackground: NO];
-	    [imageView setImage: anImage];
-	    [anImage setScalesWhenResized: YES];
-	    [imageView setImageScaling: NSScaleToFit];
-	    [anImage release];
-	}
-	else
-	{
-	    [backgroundImagePath release];
-	    backgroundImagePath = nil;
-	    [SCROLLVIEW setDrawsBackground: YES];
-	}
+		NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+		if(anImage != nil)
+		{
+			[SCROLLVIEW setDrawsBackground: NO];
+			[imageView setImage: anImage];
+			[anImage setScalesWhenResized: YES];
+			[imageView setImageScaling: NSScaleToFit];
+			[anImage release];
+		}
+		else
+		{
+			[backgroundImagePath release];
+			backgroundImagePath = nil;
+			[SCROLLVIEW setDrawsBackground: YES];
+		}
     }
     else
     {
-	[imageView setImage: nil];
-	[SCROLLVIEW setDrawsBackground: YES];
-	[backgroundImagePath release];
-	backgroundImagePath = nil;
+		[imageView setImage: nil];
+		[SCROLLVIEW setDrawsBackground: YES];
+		[backgroundImagePath release];
+		backgroundImagePath = nil;
     }
 }
 
@@ -1449,8 +1449,8 @@ static NSString *PWD_ENVVALUE = @"~";
     newcolor = [[TERMINAL defaultBGColor] colorWithAlphaComponent:(1 - transparency)];
     if (newcolor != nil && newcolor != [TERMINAL defaultBGColor])
     {
-	[self setBackgroundColor: newcolor];
-	[TEXTVIEW setNeedsDisplay: YES];
+		[self setBackgroundColor: newcolor];
+		[TEXTVIEW setNeedsDisplay: YES];
     }
 }
 
@@ -1608,16 +1608,16 @@ static NSString *PWD_ENVVALUE = @"~";
     index = [recipients indexOfObjectIdenticalTo:self];
     if (index != NSNotFound)
     {
-	containerRef     = [[self parent] objectSpecifier];
-	classDescription = [containerRef keyClassDescription];
-	//create and return the specifier
-	return [[[NSIndexSpecifier allocWithZone:[self zone]]
+		containerRef     = [[self parent] objectSpecifier];
+		classDescription = [containerRef keyClassDescription];
+		//create and return the specifier
+		return [[[NSIndexSpecifier allocWithZone:[self zone]]
                initWithContainerClassDescription: classDescription
                               containerSpecifier: containerRef
                                              key: @ "sessions"
                                            index: index] autorelease];
     } else {
-	// NSLog(@"recipient not found!");
+		// NSLog(@"recipient not found!");
         return nil;
     }
     
@@ -1629,8 +1629,8 @@ static NSString *PWD_ENVVALUE = @"~";
     // if we are already doing something, get out.
     if([SHELL pid] > 0)
     {
-	NSBeep();
-	return;
+		NSBeep();
+		return;
     }
     
     // Get the command's arguments:
@@ -1665,28 +1665,28 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if(text != nil)
     {
-	aString = [NSString stringWithFormat:@"%@\n", text];
-	data = [aString dataUsingEncoding: [TERMINAL encoding]];
+		aString = [NSString stringWithFormat:@"%@\n", text];
+		data = [aString dataUsingEncoding: [TERMINAL encoding]];
     }
     
     if(contentsOfFile != nil)
     {
-	aString = [NSString stringWithContentsOfFile: contentsOfFile];
-	data = [aString dataUsingEncoding: [TERMINAL encoding]];
+		aString = [NSString stringWithContentsOfFile: contentsOfFile];
+		data = [aString dataUsingEncoding: [TERMINAL encoding]];
     }
     
     if(data != nil && [SHELL pid] > 0)
     {
-	int i = 0;
-	// wait here until we have had some output
-	while([SHELL firstOutput] == NO && i < 5000000)
-	{
-	    usleep(50000);
-	    i += 50000;
-	}
-	
-	// do this in a new thread so that we don't get stuck.
-	[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:data];
+		int i = 0;
+		// wait here until we have had some output
+		while([SHELL firstOutput] == NO && i < 5000000)
+		{
+			usleep(50000);
+			i += 50000;
+		}
+		
+		// do this in a new thread so that we don't get stuck.
+		[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:data];
     }
 }
 
@@ -1705,8 +1705,8 @@ static NSString *PWD_ENVVALUE = @"~";
     // wait here until we have had some output
     while([SHELL hasOutput] == NO && i < 5000000)
     {
-	usleep(50000);
-	i += 50000;
+		usleep(50000);
+		i += 50000;
     }
     [self writeTask: data];
 }

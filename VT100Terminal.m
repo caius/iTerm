@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.25 2003-02-10 20:27:43 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.26 2003-02-11 03:14:21 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -190,6 +190,7 @@ static size_t getCSIParam(unsigned char *datap,
     int i;
     BOOL unrecognized=NO;
     unsigned char *orgp = datap;
+    BOOL readNumericParameter = NO;
 
     NSCParameterAssert(datap != NULL);
     NSCParameterAssert(datalen >= 2);
@@ -214,6 +215,7 @@ static size_t getCSIParam(unsigned char *datap,
 	param->question = NO;
 
     while (datalen > 0) {
+		
 	if (isdigit(*datap)) {
 	    int n = *datap - '0';
             datap++;
@@ -225,15 +227,28 @@ static size_t getCSIParam(unsigned char *datap,
 		datap++;
 		datalen--;
 	    }
-	    if (param->count == 0 )
-		param->count = 1;
-	    param->p[param->count - 1] = n;
+	    //if (param->count == 0 )
+		//param->count = 1;
+	    //param->p[param->count - 1] = n;
+	    if(param->count < VT100CSIPARAM_MAX)
+		param->p[param->count] = n;
+	    // increment the parameter count
+	    param->count++;
+
+	    // set the numeric parameter flag
+	    readNumericParameter = YES;
+
 	}
 	else if (*datap == ';') {
 	    datap++;
 	    datalen--;
 
-	    param->count++;
+	    // If we got an implied (blank) parameter, increment the parameter count again
+	    if(readNumericParameter == NO)
+		param->count++;
+	    // reset the parameter flag
+	    readNumericParameter = NO;
+
 	    if (param->count >= VT100CSIPARAM_MAX) {
 		// broken
 		//param->cmd = 0xff;
@@ -375,8 +390,8 @@ static VT100TCC decode_csi(unsigned char *datap,
 
                 case 'r':
                     result.type = VT100CSI_DECSTBM;
-                    SET_PARAM_DEFAULT(param, 0, 0);
-                    SET_PARAM_DEFAULT(param, 1, 0);
+                    SET_PARAM_DEFAULT(param, 0, 1);
+                    SET_PARAM_DEFAULT(param, 1, [SCREEN height]);
                     break;
 
                 case 'y':

@@ -3,6 +3,14 @@
     * Added support for alternate keypad mode and 
       PF1, PF2, PF3, PF4 keys.
       
+    * Fixed a bug in VT100Terminal: getCSIParam() 
+      where the the paramters would be parsed into 
+      incorrect array indices when blank (implied) 
+      parameters were encountered. This is was messing 
+      up some token processing where the position of 
+      the parameters in the array was important like 
+      [VT100Screen: -setTopBottom].
+      
 
 2003-02-10	fabian
     * Cleaned up showCursor code

@@ -128,3 +128,30 @@
 
 /* Script */
 "Script" = "Script";
+
+/* Key Binding Actions */
+"next tab"="next tab";
+"next window"="next window";
+"previous tab"="previous tab";
+"previous window"="previous window";
+"scroll line down"="scroll line down";
+"scroll line up"="scroll line up";
+"scroll page down"="scroll page down";
+"scroll page up"="scroll page up";
+"send escape sequence"="send escape sequence";
+"send hex code"="send hex code";
+"unknown action ID"="unknown action ID";
+
+/* Key Names */
+"cursor down"="cursor down";
+"cursor left"="cursor left";
+"cursor right"="cursor right";
+"cursor up"="cursor up";
+"del"="del";
+"delete"="delete";
+"end"="end";
+"home"="home";
+"numlock"="numlock";
+"page down"="page down";
+"page up"="page up";
+"unknown key"="unknown key";

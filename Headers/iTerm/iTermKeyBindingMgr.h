@@ -121,6 +121,10 @@
 					 action: (unsigned int) action
 					   text: (NSString *) text
 				profile: (NSString *) profile;
+- (void) deleteEntryAtIndex: (int) index inProfile: (NSString *) profile;
+
+- (NSString *) keyCombinationAtIndex: (int) index inProfile: (NSString *) profile;
+- (NSString *) actionForKeyCombinationAtIndex: (int) index inProfile: (NSString *) profile;
 - (int) actionForKeyEvent: (NSEvent *) anEvent escapeSequence: (NSString **) escapeSequence hexCode: (int *) hexCode;
 - (int) entryAtIndex: (int) index key: (NSString *) unmodkeystr modifiers: (int *) modifiers;
 

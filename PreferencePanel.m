@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.74 2004-03-02 08:22:47 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.75 2004-03-02 16:59:09 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -284,7 +284,14 @@ static float versionNumber;
 - (IBAction) kbEntryDelete: (id) sender
 {
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	
+	if([kbEntryTableView selectedRow] >= 0)
+	{
+		[[iTermKeyBindingMgr singleInstance] deleteEntryAtIndex: [kbEntryTableView selectedRow] 
+													  inProfile: [kbProfileSelector titleOfSelectedItem]];
+		[kbEntryTableView reloadData];
+	}
+	else
+		NSBeep();
 }
 
 // NSTableView data source
@@ -294,6 +301,20 @@ static float versionNumber;
 		return (0);
 	
 	return ([[iTermKeyBindingMgr singleInstance] numberOfEntriesInProfile: [kbProfileSelector titleOfSelectedItem]]);
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+	if([[aTableColumn identifier] intValue] ==  0)
+	{
+		return ([[iTermKeyBindingMgr singleInstance] keyCombinationAtIndex: rowIndex 
+																 inProfile: [kbProfileSelector titleOfSelectedItem]]);
+	}
+	else
+	{
+		return ([[iTermKeyBindingMgr singleInstance] actionForKeyCombinationAtIndex: rowIndex 
+																 inProfile: [kbProfileSelector titleOfSelectedItem]]);
+	}
 }
 
 

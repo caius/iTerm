@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.13 2003-01-07 16:39:47 yfabian Exp $
+// $Id: VT100Screen.m,v 1.14 2003-01-07 21:44:08 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -905,6 +905,7 @@ static BOOL PLAYBELL = YES;
 - (void)eraseInLine:(VT100TCC)token
 {
     int i, idx;
+    NSString *s;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen eraseInLine:(param=%d)]",
@@ -919,9 +920,10 @@ static BOOL PLAYBELL = YES;
 	// continue, next case....
 
     case 0:
-        idx=[self getIndex:CURSOR_X y:CURSOR_Y];
-        for(i=0;[[STORAGE string] characterAtIndex:idx+i]!='\n'&&idx+i<[STORAGE length];i++);
-        [STORAGE deleteCharactersInRange:NSMakeRange(idx,i)];
+        i=idx=[self getIndex:CURSOR_X y:CURSOR_Y];
+        s=[STORAGE string];
+        for(i=0;i<[STORAGE length]&&[s characterAtIndex:i]!='\n';i++);
+        if (i>idx) [STORAGE deleteCharactersInRange:NSMakeRange(idx,i-idx)];
         
         //[self setStringSpaceToX:CURSOR_X Y:CURSOR_Y length:WIDTH-CURSOR_X];
         break;

@@ -162,7 +162,6 @@
 				0464AB4E006CD2EC7F000001,
 			);
 			buildSettings = {
-				DEBUGGING_SYMBOLS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_CFLAGS = "";

@@ -1,4 +1,5 @@
 2003-01-07	fabian
+    * fixed a bug in eraseInLine()
     * hide the tab when there's only one session
     * new VT100Screen code, should be faster
     * Japanese localization files updated

@@ -157,7 +157,8 @@
         }
 
 	// set the background image if it has changed
-	if([[currentSession backgroundImagePath] isEqualToString: backgroundImagePath] == NO)
+	if(backgroundImagePath != nil &&
+    [[currentSession backgroundImagePath] isEqualToString: backgroundImagePath] == NO)
 	{
 	    [currentSession setBackgroundImagePath: backgroundImagePath];
 	}

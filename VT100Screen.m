@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.129 2003-08-31 08:48:52 ujwal Exp $
+// $Id: VT100Screen.m,v 1.130 2003-09-01 09:06:06 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1746,11 +1746,16 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen saveCursorPosition]", 
 	  __FILE__, __LINE__);
 #endif
-    if (CURSOR_X >= 0 && CURSOR_X < WIDTH)
 
-    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
-    NSParameterAssert(CURSOR_Y >= 0 && CURSOR_Y < HEIGHT);
-    
+    if(CURSOR_X < 0)
+	CURSOR_X = 0;
+    if(CURSOR_X >= WIDTH)
+	CURSOR_X = WIDTH-1;
+    if(CURSOR_Y < 0)
+	CURSOR_Y = 0;
+    if(CURSOR_Y >= HEIGHT)
+	CURSOR_Y = HEIGHT;
+        
     SAVE_CURSOR_X = CURSOR_X;
     SAVE_CURSOR_Y = CURSOR_Y;
 

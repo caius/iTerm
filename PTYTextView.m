@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.206 2004-04-18 04:48:56 ujwal Exp $
+// $Id: PTYTextView.m,v 1.207 2004-04-18 04:49:48 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1965,7 +1965,7 @@ static SInt32 systemVersion;
 			strokeWidth = 0;
 		else
 		{
-			strokeWidth = antiAlias?(float)bold*(-0.2):0;
+			strokeWidth = antiAlias?(float)bold*(-0.1):0;
 			theFont = aFont;
 		}
 	}

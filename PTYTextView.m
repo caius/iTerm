@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.193 2004-03-31 22:57:37 yfabian Exp $
+// $Id: PTYTextView.m,v 1.194 2004-04-03 01:23:55 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -718,14 +718,16 @@ static SInt32 systemVersion;
 			buf=[dataSource bufferLines]+lineIndex*WIDTH;
 			fg=[dataSource bufferFGColor]+lineIndex*WIDTH;
 			bg=[dataSource bufferBGColor]+lineIndex*WIDTH;
+			//NSLog(@"Buffer: %d",lineIndex);
 		}
 		else 
-		{ // not in buffer
+		{ // on screen
 			lineIndex=line-startScreenLineIndex;
 			buf=[dataSource screenLines]+lineIndex*WIDTH;
 			fg=[dataSource screenFGColor]+lineIndex*WIDTH;
 			bg=[dataSource screenBGColor]+lineIndex*WIDTH;
 			dirty=[dataSource dirty]+lineIndex*WIDTH;
+			//NSLog(@"Screen: %d",lineIndex);
 		}	
 		
 		//draw background and underline here

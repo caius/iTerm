@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.283 2004-03-28 04:11:05 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.284 2004-04-03 01:24:12 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -344,7 +344,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		{
             [[aSession TEXTVIEW] scrollEnd];
 		}
-		
+		else if ([TABVIEW numberOfTabViewItems] == 2)
+		{
+			[self windowDidResize: nil];
+			[self setWindowSize: YES];
+		}
+			
 		if([self windowInited])
 			[[self window] makeKeyAndOrderFront: self];
 		[[iTermController sharedInstance] setCurrentTerminal: self];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.216 2004-05-09 20:38:05 ujwal Exp $
+// $Id: PTYTextView.m,v 1.217 2004-05-09 22:02:38 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -962,6 +962,13 @@ static SInt32 systemVersion;
 	
     // Hide the cursor
     [NSCursor setHiddenUntilMouseMoves: YES];   
+	
+	// Check whether we have a custom mapping for this event
+	if([delegate hasKeyMappingForEvent: event])
+	{
+		[delegate keyDown: event];
+		return;
+	}
 
     IM_INPUT_INSERT = NO;
     if (IMEnable) {

@@ -7,13 +7,19 @@
     * Fixed bug where a blink attribute would cause bold 
       attributes to be lost.
       
+    * Validating paste menu item only if there is a string 
+      type on the pasteboard.
+      
+    * New resizing code did not really work, so disbled it 
+      and using original method.
+      
 
 2002-12-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed some resizing issues by implementing 
       windowWillResize: toSize: window delegate method.
       
-    * Default shell commans is "login -fp $USER" to start 
+    * Default shell command is "login -fp $USER" to start 
       a login shell.
       
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.49 2003-04-10 00:07:17 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.50 2003-04-10 06:00:55 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1394,7 +1394,8 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void) printToken: (VT100TCC) token
 {
     //NSLog(@"Printing token at 0x%x; length = %d", token.position, token.length);
-    fwrite(token.position, token.length, 1, pipeFile);
+    if(pipeFile != NULL)
+	fwrite(token.position, token.length, 1, pipeFile);
 }
 
 - (NSData *)keyArrowUp

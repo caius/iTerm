@@ -301,8 +301,8 @@ static NSString *PWD_ENVVALUE = @"~";
                     data = [TERMINAL keyDelete]; break;
                 case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
                 case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
-                case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
-                case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
+                case NSPageUpFunctionKey: [TEXTVIEW scrollPageUp: self]; break;
+                case NSPageDownFunctionKey: [TEXTVIEW scrollPageDown: self]; break;
 
                 case NSPrintScreenFunctionKey:
                     break;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.37 2002-12-18 04:56:51 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.38 2002-12-18 04:58:22 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -141,6 +141,7 @@ static NSDictionary *deadStateAttribute;
     [[WINDOW contentView] addSubview: SCROLLVIEW];
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [SCROLLVIEW setLineScroll: ([VT100Screen fontSize: FONT].height)];
+    [SCROLLVIEW setPageScroll: (10*[VT100Screen fontSize: FONT].height)];
     [SCROLLVIEW release];
     
     

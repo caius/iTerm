@@ -20,6 +20,8 @@
       
     * Fixed crash when customizing toolbar.
     
+    * Page Up and Page Down keys now scroll the text view.
+    
 
 2002-12-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

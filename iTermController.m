@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.6 2003-08-08 22:16:56 ujwal Exp $
+// $Id: iTermController.m,v 1.7 2003-08-11 09:58:24 sgehrman Exp $
 /*
  **  iTermController.m
  **
@@ -633,11 +633,10 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
     [term startProgram:cmd arguments:arg environment:env];
     
     // If we created a new window, set the size
-    if (theTerm == nil) {
+    if (theTerm == nil)
         [term setWindowSize: NO];
-    };
-    [term setCurrentSessionName:[entry objectForKey:@"Name"]];
     
+    [term setCurrentSessionName:[entry objectForKey:@"Name"]];
 }
 
 - (void) interpreteKey: (int) code newWindow:(BOOL) newWin
@@ -653,7 +652,6 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
             [self executeABCommandAtIndex:i inTerminal: newWin?nil:FRONT];
         }
     }
-            
 }
 
 - (PTYTextView *) frontTextView

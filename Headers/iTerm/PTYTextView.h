@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.2 2003-08-09 07:41:19 ujwal Exp $
+// $Id: PTYTextView.h,v 1.3 2003-08-11 09:55:58 sgehrman Exp $
 //
 /*
  **  PTYTextView.h
@@ -220,6 +220,8 @@
 
     // for the typesetter
     NSFont *font;
+    
+    BOOL _inFrameChanged;
 }
 
 - (id)init;

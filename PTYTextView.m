@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.76 2003-08-09 15:54:17 ujwal Exp $
+// $Id: PTYTextView.m,v 1.77 2003-08-11 09:55:39 sgehrman Exp $
 /*
  **  PTYTextView.m
  **
@@ -2059,7 +2059,15 @@
 - (void)frameChanged:(NSNotification*)notification
 {
     if([notification object] == [self window] && [[self delegate] respondsToSelector: @selector(textViewResized:)])
-	[[self delegate] textViewResized: self];
+    {
+        // SNG - hack to prevent this getting caught in a loop
+        if (!_inFrameChanged)
+        {
+            _inFrameChanged = YES;
+            [[self delegate] textViewResized: self];
+            _inFrameChanged = NO;
+        }
+    }
 }
 
 

@@ -156,7 +156,6 @@
     NSLog(@"PTYTabViewItem: -sizeOfLabel");
 #endif
 
-        
     if(labelAttributes != nil)
     {
         attributedLabel = [[NSMutableAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
@@ -181,7 +180,9 @@
         aSize = [super sizeOfLabel: shouldTruncateLabel];
     }
 
-    if (aSize.width>[((PTYTabView*)[self tabView]) maxLabelSize]) aSize.width=[((PTYTabView*)[self tabView]) maxLabelSize];
+    if (aSize.width > [((PTYTabView*)[self tabView]) maxLabelSize]) 
+        aSize.width = [((PTYTabView*)[self tabView]) maxLabelSize];
+    
     return (aSize);
 }
 

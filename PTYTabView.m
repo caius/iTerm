@@ -185,9 +185,10 @@
     
     // add the item
     maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]+1)-17;
-    if (maxLabelSize<20) maxLabelSize=20;
-    [super addTabViewItem: aTabViewItem];
+    if (maxLabelSize<20) 
+        maxLabelSize=20;
     
+    [super addTabViewItem: aTabViewItem];
 }
 
 - (void) removeTabViewItem: (NSTabViewItem *) aTabViewItem
@@ -203,9 +204,10 @@
     
     // remove the item
     maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]-1)-17;
-    if (maxLabelSize<20) maxLabelSize=20;
-    [super removeTabViewItem: aTabViewItem];
+    if (maxLabelSize<20) 
+        maxLabelSize=20;
     
+    [super removeTabViewItem: aTabViewItem];
 }
 
 - (void) insertTabViewItem: (NSTabViewItem *) tabViewItem atIndex: (int) index
@@ -221,12 +223,11 @@
 
     // insert the item
     maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]+1)-17;
-    if (maxLabelSize<20) maxLabelSize=20;
+    if (maxLabelSize<20) 
+        maxLabelSize=20;
     
     [super insertTabViewItem: tabViewItem atIndex: index];
-    
 }
-
 
 // drag and drop
 - (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)flag

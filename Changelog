@@ -1,3 +1,11 @@
+2003-01-07	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Adjusted some visual sizing glitches when going from 
+      no tabs to tabs and vice versa.
+      
+    * windowWillResize: toSize does the default OS thing.
+    
+
 2003-01-07	fabian
     * fixed a bug in eraseInLine()
     * hide the tab when there's only one session

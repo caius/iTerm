@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.65 2003-01-08 01:21:21 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.66 2003-01-08 02:08:19 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -119,8 +119,8 @@ static NSString *ConfigToolbarItem = @"Config";
     tabviewRect = [[WINDOW contentView] frame];
     tabviewRect.origin.x -= 10;
     tabviewRect.size.width += 20;
-    tabviewRect.origin.y -= 10;
-    tabviewRect.size.height += 10;
+    tabviewRect.origin.y -= 13;
+    tabviewRect.size.height += 17;
     TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
     [TABVIEW setAllowsTruncatedLabels: NO];
@@ -543,6 +543,27 @@ static NSString *ConfigToolbarItem = @"Config";
     NSSize size, vsize, winSize;
     NSWindow *thisWindow;
     int i;
+    NSRect tabviewRect;
+
+    // Resize the tabview first if necessary
+    if([TABVIEW numberOfTabViewItems] > 1)
+    {
+	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect.origin.x -= 10;
+	tabviewRect.size.width += 20;
+	tabviewRect.origin.y -= 13;
+	tabviewRect.size.height += 10;
+    }
+    else
+    {
+	tabviewRect = [[WINDOW contentView] frame];
+	tabviewRect.origin.x -= 10;
+	tabviewRect.size.width += 20;
+	tabviewRect.origin.y -= 13;
+	tabviewRect.size.height += 17;
+    }
+    [TABVIEW setFrame: tabviewRect];
+
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );

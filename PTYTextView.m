@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.173 2004-03-19 15:39:59 ujwal Exp $
+// $Id: PTYTextView.m,v 1.174 2004-03-19 16:38:24 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -657,7 +657,17 @@
 		
 	// [self adjustScroll] should've made sure we are at an integer multiple of a line
 	curY=rect.origin.y +lineHeight;
-		
+	
+	// redraw margins if we have a background image, otherwise we can still "see" the margin
+	if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
+	{
+		bgRect = NSMakeRect(0, rect.origin.y, MARGIN, rect.size.height);
+		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+		bgRect = NSMakeRect(rect.size.width - MARGIN, rect.origin.y, MARGIN, rect.size.height);
+		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+	}
+	
+	
     for(i = 0; i < numLines; i++)
     {
 		curX = MARGIN;

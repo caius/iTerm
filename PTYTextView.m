@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.29 2003-02-13 16:29:41 yfabian Exp $
+// $Id: PTYTextView.m,v 1.30 2003-02-14 23:41:44 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -342,7 +342,8 @@
     aString = [aMutableAttributedString string];
     if((aString == nil) || ([aString length] == 0))
 	return;
-    aString = [aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if([aString length] > 1) // Cocoa bug?
+	aString = [aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
 
     // Put the trimmed string on the pasteboard
     [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];

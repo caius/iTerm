@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.79 2003-03-28 02:37:32 ujwal Exp $
+// $Id: VT100Screen.m,v 1.80 2003-03-28 18:29:04 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -985,9 +985,8 @@ static BOOL PLAYBELL = YES;
                 //      [s substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]);
                 [aLine replaceCharactersInRange:NSMakeRange(idx,i)
                             withAttributedString:[self attrString:[s substringWithRange:NSMakeRange(idx2,j)]  ascii:YES]];
-                [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
-                
 	    }
+            [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
 #endif
 	    
             CURSOR_X=x;
@@ -1148,8 +1147,9 @@ static BOOL PLAYBELL = YES;
                 //      [string substringWithRange:NSMakeRange(idx2,j)],idx2,j,[store length]); 
                 [aLine replaceCharactersInRange:NSMakeRange(idx,i)
                         withAttributedString:[self attrString:[string substringWithRange:NSMakeRange(idx2,j)]  ascii:NO]];	    
-		[(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
 	    }
+            [(PTYTextView*)display setDirtyLine:TOP_LINE+CURSOR_Y];
+
 #endif
 	    
 	    
@@ -1798,8 +1798,12 @@ static BOOL PLAYBELL = YES;
     aLine = [screenLines objectAtIndex: TOP_LINE + y];
     for(x=0, idx=0;x<WIDTH&&idx<[aLine length]&&[[aLine string] characterAtIndex:idx]!='\n';idx++,x++)
         if (ISDOUBLEWIDTHCHARACTERINLINE(idx, aLine)) x++;
-    if (idx < [aLine length])
-	[aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length] - idx)];
+    if (idx < [aLine length]) {
+	if ([[aLine string] characterAtIndex:idx]=='\n')
+            [aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length] - idx -1)];
+        else
+            [aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length] - idx)];
+    }
 #endif
     
 }    

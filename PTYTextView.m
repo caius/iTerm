@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.45 2003-03-27 21:08:41 yfabian Exp $
+// $Id: PTYTextView.m,v 1.46 2003-03-28 18:29:03 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -59,7 +59,7 @@
     startIndex=-1;
     for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
     [[self window] useOptimizedDrawing:YES];
-    [[self window] setAutodisplay:NO];
+//    [[self window] setAutodisplay:NO];
     
     return (self);
 }
@@ -84,7 +84,7 @@
     deadkey = NO;
     startIndex=-1;
     for (i=0;i<MAX_HEIGHT;i++) displayLines[i]=-1;
-    [[self window] useOptimizedDrawing:YES];
+//    [[self window] useOptimizedDrawing:YES];
     
     return (self);
 
@@ -290,9 +290,15 @@
             aFrame.size.height = height;
             [self setFrame: aFrame];
             [self setNeedsDisplayInRect:NSMakeRect(0,aSize.height,aSize.width,height)];
+            resized=YES;
         }
     }
 //    [self displayIfNeeded];
+}
+
+- (BOOL) resized
+{
+    return resized;
 }
 
 -(void) scrollLineUp:(id) receiver
@@ -362,6 +368,7 @@
 
         [self scrollRectToVisible: aFrame];
     }
+    resized=NO;
 }
 
 
@@ -419,14 +426,19 @@
             ;
         }else {
             if (startIndex!=-1&&lstartY<=i+lineOffset&&i+lineOffset<=lendY) {
+                if ([aLine length]<=0) continue;
                 NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
                 if (lstartY==lendY&&lstartY==i+lineOffset) {
-                    [s addAttributes:selectionTextAttributes range:NSMakeRange(lstartIndex, lendIndex-lstartIndex+1)];
+                    if (lstartIndex<[aLine length]) {
+                        if (lendIndex>=[aLine length]) lendIndex=[aLine length]-1;
+                        if (lendIndex>=lstartIndex) [s addAttributes:selectionTextAttributes range:NSMakeRange(lstartIndex, lendIndex-lstartIndex+1)];
+                    }
                 }
                 else if (lstartY==i+lineOffset) {
-                    [s addAttributes:selectionTextAttributes range:NSMakeRange(lstartIndex, [aLine length]-lstartIndex)];
+                    if (lstartIndex<[aLine length]) [s addAttributes:selectionTextAttributes range:NSMakeRange(lstartIndex, [aLine length]-lstartIndex)];
                 }
                 else if (lendY==i+lineOffset) {
+                    if (lendIndex>=[aLine length]) lendIndex=[aLine length]-1;
                     [s addAttributes:selectionTextAttributes range:NSMakeRange(0, lendIndex+1)];
                 }
                 else {
@@ -437,12 +449,11 @@
             }
             else if (CURSOR&&i+lineOffset==y&&![self hasMarkedText]) {
                 // show the cursor in the line array
+                int idx=[dataSource getIndexAtX:[dataSource cursorX]-1 Y:[dataSource cursorY]-1 withPadding:YES];
                 NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
                 NSMutableDictionary *dic;
                 NSColor *fg, *bg;
-                int idx;
 
-                idx=[dataSource getIndexAtX:[dataSource cursorX]-1 Y:[dataSource cursorY]-1 withPadding:YES];
                 if(idx >= [aLine length])
                     [s appendAttributedString:[dataSource defaultAttrString:@" "]];
                 else if ([[s string] characterAtIndex:idx]=='\n')
@@ -534,8 +545,11 @@
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
 
     fontSize = [dataSource characterSize];
+    if (startIndex>=0)
+        [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY+1)*fontSize.height)];
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
     y = locationInTextView.y/fontSize.height;
+    if (x>=[(VT100Screen*)dataSource width]) x=[(VT100Screen*)dataSource width]-1;
     startIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
     startY=y;
 }
@@ -555,7 +569,11 @@
 
     fontSize = [dataSource characterSize];
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
+    if (x>=[(VT100Screen*)dataSource width]) x=[(VT100Screen*)dataSource width]-1;
+    if (x<0) x=0;
     y = locationInTextView.y/fontSize.height;
+    if (y<0) y=0;
+    if (y>=[dataSource numberOfLines]) y=numberOfLines-1;
     endIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
     endY=y;
     if (startY>endY||(startY==endY&&startIndex>endIndex)) {
@@ -568,7 +586,7 @@
         if([[[_delegate parent] preference] copySelection])
             [self copy: self];
     }
-    [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(y+1)*fontSize.height)];
+    [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY+1)*fontSize.height)];
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -577,7 +595,9 @@
     NSLog(@"%s(%d):-[PTYTextView mouseDragged:%@]",
           __FILE__, __LINE__, event );
 #endif
-    NSPoint locationInWindow, locationInTextView;
+    NSPoint locationInWindow = [event locationInWindow];
+    NSPoint locationInTextView = [self convertPoint: locationInWindow fromView: nil];
+    NSRect  rectInTextView = [self convertRect: [[self enclosingScrollView] frame] fromView: [self enclosingScrollView]];
     NSSize fontSize;
     int x, y;
 
@@ -587,12 +607,32 @@
           locationInTextView.x,locationInTextView.y,
           locationInScrollView.x,locationInScrollView.y); */
     fontSize = [dataSource characterSize];
+    if (locationInTextView.y<rectInTextView.origin.y) {
+        rectInTextView.origin.y=locationInTextView.y;
+        [self scrollRectToVisible: rectInTextView];
+    }
+    else if (locationInTextView.y>rectInTextView.origin.y+rectInTextView.size.height) {
+        rectInTextView.origin.y+=locationInTextView.y-rectInTextView.origin.y-rectInTextView.size.height;
+        [self scrollRectToVisible: rectInTextView];
+    }
+    
     x = (locationInTextView.x - fontSize.width)/fontSize.width + 1;
+    if (x>=[(VT100Screen*)dataSource width]) x=[(VT100Screen*)dataSource width]-1;
+    if (x<0) x=0;
     y = locationInTextView.y/fontSize.height;
+    if (y<0) y=0;
+    if (y>=[dataSource numberOfLines]) y=numberOfLines-1;
+    if (startY<endY)
+        [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY+1)*fontSize.height)];
+    else
+        [self setNeedsDisplayInRect:NSMakeRect(0,endY*fontSize.height,[self frame].size.width,(startY+1)*fontSize.height)];
     endIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
     endY=y;
 //    NSLog(@"(%d,%d)-(%d,%d)",startIndex,startY,endIndex,endY);
-    [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(y+1)*fontSize.height)];
+    if (startY<endY)
+        [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY+1)*fontSize.height)];
+    else
+        [self setNeedsDisplayInRect:NSMakeRect(0,endY*fontSize.height,[self frame].size.width,(startY+1)*fontSize.height)];
 }
 
 
@@ -611,13 +651,22 @@
 
     for(y=startY;y<=endY;y++) {
         aLine=[dataSource stringAtLine:y];
+        if ([aLine length]<=0) continue;
         if (y==startY&&y==endY) {
-            aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(startIndex,endIndex-startIndex+1)]];
+            if (startIndex<[aLine length]) {
+                if (endIndex>=[aLine length]) endIndex=[aLine length]-1;
+                aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(startIndex,endIndex-startIndex+1)]];
+            }
+            else continue;
         }
         else if (y==startY) {
-            aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(startIndex,[aLine length]-startIndex)]];
+            if (startIndex<[aLine length]) {
+                aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(startIndex,[aLine length]-startIndex)]];
+            }
+            else continue;
         }
         else if (y==endY) {
+            if (endIndex>=[aLine length]) endIndex=[aLine length]-1;
             aString=[[NSMutableString alloc] initWithString:[[aLine string] substringWithRange:NSMakeRange(0,endIndex+1)]];
         }
         else {
@@ -632,8 +681,10 @@
     }
 
     // Put the trimmed string on the pasteboard
-    [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];
-    [pboard setString: copyString forType: NSStringPboardType];
+    if ([copyString length]>0) {
+        [pboard declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner: self];
+        [pboard setString: copyString forType: NSStringPboardType];
+    }
     [copyString release];
 }
 
@@ -721,6 +772,10 @@
                                           action:@selector(selectAll:) keyEquivalent:@""];
 
 
+    // Ask the delegae if there is anything to be added
+    if ([[self delegate] respondsToSelector:@selector(menuForEvent: menu:)])
+        [[self delegate] menuForEvent:theEvent menu: cMenu];
+    
     return [cMenu autorelease];
 }
 

@@ -530,6 +530,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 
 #if USE_CUSTOM_DRAWING
+            [TEXTVIEW moveLastLine];
 #else
 	    // trigger an update of the display.
 	    [SCREEN updateScreen];
@@ -790,10 +791,15 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
 #if USE_CUSTOM_DRAWING
-    if (output>50) {
+    if (output>10&&dirty) {
+        if([TEXTVIEW resized]||([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
+            [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
+           ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
         [TEXTVIEW moveLastLine];
         output=0;
+        dirty=NO;
     }
+    if (oIdleCount<2) dirty=YES;
     
 #else
     if (blink>50) { [SCREEN blink]; blink=0; }

@@ -1,3 +1,8 @@
+2003-03-28	fabian
+    * Fixed bugs in selection
+    * Fixed context menu
+    * Fixed wrong setDirtyLine calls in VT100Screen
+    
 2003-03-27	ujwal
 
     * Protected some ARRAY specific code in #if USE_CUSTOM_DRAWING

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.21 2003-03-27 02:14:29 yfabian Exp $
+// $Id: PTYTextView.h,v 1.22 2003-03-28 18:29:02 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -60,6 +60,8 @@
 
     // dead key support
     BOOL deadkey;
+
+    BOOL resized;
     BOOL CURSOR;
     int	cursorIndex;
 
@@ -124,8 +126,9 @@
 - (void) refresh;
 - (void) setDirtyLine: (int) y;
 - (void) moveLastLine;
--(void) showCursor;
--(void) hideCursor;
+- (BOOL) resized;
+- (void) showCursor;
+- (void) hideCursor;
 
     //
     // Drag and Drop methods for our text view

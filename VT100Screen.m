@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.180 2004-02-15 06:34:03 ujwal Exp $
+// $Id: VT100Screen.m,v 1.181 2004-02-15 08:59:16 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -803,9 +803,9 @@ static BOOL PLAYBELL = YES;
 				memset(dirty+screenIdx+CURSOR_X,1,WIDTH-CURSOR_X);
 			}
 		}
-		memcpy(screenLines+screenIdx+CURSOR_X,buffer+idx,j*sizeof(unichar));
-		memset(screenFGColor+screenIdx+CURSOR_X,[TERMINAL foregroundColorCode],j);
-		memset(screenBGColor+screenIdx+CURSOR_X,[TERMINAL backgroundColorCode],j);
+		memcpy(screenLines + screenIdx + CURSOR_X, buffer + idx, j * sizeof(unichar));
+		memset(screenFGColor + screenIdx + CURSOR_X, [TERMINAL foregroundColorCode], j);
+		memset(screenBGColor + screenIdx + CURSOR_X, [TERMINAL backgroundColorCode], j);
 		memset(dirty+screenIdx+CURSOR_X,1,j);
 		
 		CURSOR_X = newx;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.101 2004-02-14 00:58:34 ujwal Exp $
+// $Id: PTYTextView.m,v 1.102 2004-02-15 08:59:16 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -805,6 +805,7 @@
 						ulstart = ((fg[j] & UNDER_MASK) && buf[j]) ? j:-1;
 					}
 				}
+								
 			}
 			
 			if (bgstart >= 0) 
@@ -864,11 +865,22 @@
 	{
 		[defaultFGColor set];
 		i = y1*[dataSource width]+x1;
-		NSFrameRect(NSMakeRect(x1*charWidth,
+		[[NSColor cyanColor] set];
+		NSRectFill(NSMakeRect(x1*charWidth,
 							   (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight,
 							   charWidth,lineHeight));
+		// draw any character on cursor if we need to
+		unichar aChar = [dataSource screenLines][i];
+		if(aChar)
+		{
+			[self drawCharacter: aChar 
+						fgColor:[dataSource screenFGColor][i] 
+							AtX:x1*charWidth 
+							  Y:(y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight];
+		}
 		[dataSource dirty][i] = 1; //cursor loc is dirty
 	}
+	
 	forceUpdate = NO;
 	//    NSLog(@"enddraw");
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.137 2003-09-09 15:41:09 ujwal Exp $
+// $Id: VT100Screen.m,v 1.138 2003-09-09 23:16:36 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1544,7 +1544,6 @@ static BOOL PLAYBELL = YES;
 	// update TOP_LINE
 	TOP_LINE += HEIGHT;
 	
-	return;
     }
     else
 	clearingBuffer = NO;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.58 2003-04-28 02:03:58 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.59 2003-04-29 00:22:39 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -78,6 +78,10 @@ static NSString *NSBlinkAttributeName=@"NSBlinkAttributeName";
 #define CURSOR_RESET_UP      "\033[A"
 #define CURSOR_RESET_RIGHT   "\033[C"
 #define CURSOR_RESET_LEFT    "\033[D"
+#define CURSOR_MOD_DOWN      "\033[%dB"
+#define CURSOR_MOD_UP        "\033[%dA"
+#define CURSOR_MOD_RIGHT     "\033[%dC"
+#define CURSOR_MOD_LEFT      "\033[%dD"
 
 #define KEY_INSERT           "\033[2~"
 #define KEY_PAGE_UP          "\033[5~"
@@ -1371,44 +1375,92 @@ static VT100TCC decode_string(unsigned char *datap,
 	fwrite(token.position, token.length, 1, pipeFile);
 }
 
-- (NSData *)keyArrowUp
+- (NSData *)keyArrowUp:(unsigned int)modflag
 {
-    if (CURSOR_MODE) 
-	return [NSData dataWithBytes:CURSOR_SET_UP
-			      length:conststr_sizeof(CURSOR_SET_UP)];
-    else
-	return [NSData dataWithBytes:CURSOR_RESET_UP
-			      length:conststr_sizeof(CURSOR_RESET_UP)];
+    int mod=0;
+    static char buf[20];
+
+    if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+    else if (modflag&NSControlKeyMask) mod=5;
+    else if (modflag&NSShiftKeyMask) mod=2;
+    if (mod) {
+        sprintf(buf,CURSOR_MOD_UP,mod);
+        return [NSData dataWithBytes:buf length:strlen(buf)];
+    }
+    else {
+        if (CURSOR_MODE)
+            return [NSData dataWithBytes:CURSOR_SET_UP
+                                                       length:conststr_sizeof(CURSOR_SET_UP)];
+        else
+            return [NSData dataWithBytes:CURSOR_RESET_UP
+                                                       length:conststr_sizeof(CURSOR_RESET_UP)];
+    }
 }
 
-- (NSData *)keyArrowDown
+- (NSData *)keyArrowDown:(unsigned int)modflag
 {
-    if (CURSOR_MODE) 
-	return [NSData dataWithBytes:CURSOR_SET_DOWN
-			      length:conststr_sizeof(CURSOR_SET_DOWN)];
-    else
-	return [NSData dataWithBytes:CURSOR_RESET_DOWN
-			      length:conststr_sizeof(CURSOR_RESET_DOWN)];
+    int mod=0;
+    static char buf[20];
+
+    if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+    else if (modflag&NSControlKeyMask) mod=5;
+    else if (modflag&NSShiftKeyMask) mod=2;
+    if (mod) {
+        sprintf(buf,CURSOR_MOD_DOWN,mod);
+        return [NSData dataWithBytes:buf length:strlen(buf)];
+    }
+    else {
+        if (CURSOR_MODE)
+            return [NSData dataWithBytes:CURSOR_SET_DOWN
+                                  length:conststr_sizeof(CURSOR_SET_DOWN)];
+        else
+            return [NSData dataWithBytes:CURSOR_RESET_DOWN
+                                  length:conststr_sizeof(CURSOR_RESET_DOWN)];
+    }
 }
 
-- (NSData *)keyArrowLeft
+- (NSData *)keyArrowLeft:(unsigned int)modflag
 {
-    if (CURSOR_MODE) 
-	return [NSData dataWithBytes:CURSOR_SET_LEFT
-			      length:conststr_sizeof(CURSOR_SET_LEFT)];
-    else
-	return [NSData dataWithBytes:CURSOR_RESET_LEFT
-			      length:conststr_sizeof(CURSOR_RESET_LEFT)];
+    int mod=0;
+    static char buf[20];
+
+    if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+    else if (modflag&NSControlKeyMask) mod=5;
+    else if (modflag&NSShiftKeyMask) mod=2;
+    if (mod) {
+        sprintf(buf,CURSOR_MOD_LEFT,mod);
+        return [NSData dataWithBytes:buf length:strlen(buf)];
+    }
+    else {
+        if (CURSOR_MODE)
+            return [NSData dataWithBytes:CURSOR_SET_LEFT
+                                                       length:conststr_sizeof(CURSOR_SET_LEFT)];
+        else
+            return [NSData dataWithBytes:CURSOR_RESET_LEFT
+                                                       length:conststr_sizeof(CURSOR_RESET_LEFT)];
+    }
 }
 
-- (NSData *)keyArrowRight
+- (NSData *)keyArrowRight:(unsigned int)modflag
 {
-    if (CURSOR_MODE) 
-	return [NSData dataWithBytes:CURSOR_SET_RIGHT
-			      length:conststr_sizeof(CURSOR_SET_RIGHT)];
-    else
-	return [NSData dataWithBytes:CURSOR_RESET_RIGHT
-			      length:conststr_sizeof(CURSOR_RESET_RIGHT)];
+    int mod=0;
+    static char buf[20];
+
+    if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+    else if (modflag&NSControlKeyMask) mod=5;
+    else if (modflag&NSShiftKeyMask) mod=2;
+    if (mod) {
+        sprintf(buf,CURSOR_MOD_RIGHT,mod);
+        return [NSData dataWithBytes:buf length:strlen(buf)];
+    }
+    else {
+        if (CURSOR_MODE)
+            return [NSData dataWithBytes:CURSOR_SET_RIGHT
+                                                       length:conststr_sizeof(CURSOR_SET_RIGHT)];
+        else
+            return [NSData dataWithBytes:CURSOR_RESET_RIGHT
+                                                       length:conststr_sizeof(CURSOR_RESET_RIGHT)];
+    }
 }
 
 - (NSData *)keyInsert
@@ -1423,8 +1475,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyDelete
 {
-//    unsigned char del = 0x7f;
-//    return [NSData dataWithBytes:&del length:1];
+    //    unsigned char del = 0x7f;
+    //    return [NSData dataWithBytes:&del length:1];
     return [NSData dataWithBytes:KEY_DEL length:conststr_sizeof(KEY_DEL)];
 }
 
@@ -1440,8 +1492,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyPageUp
 {
-    return [NSData dataWithBytes:KEY_PAGE_UP 
-		   length:conststr_sizeof(KEY_PAGE_UP)];
+    return [NSData dataWithBytes:KEY_PAGE_UP
+                                        length:conststr_sizeof(KEY_PAGE_UP)];
 }
 
 - (NSData *)keyPageDown

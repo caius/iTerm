@@ -390,10 +390,10 @@ static NSString *PWD_ENVVALUE = @"~";
 	    int f = -1;
 
 	    switch(unicode) {
-		case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp]; break;
-		case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown]; break;
-		case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft]; break;
-		case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight]; break;
+                case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp:modflag]; break;
+		case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown:modflag]; break;
+		case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft:modflag]; break;
+		case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight:modflag]; break;
 
 		case NSF1FunctionKey: f = 1; break;
 		case NSF2FunctionKey: f = 2; break;
@@ -590,18 +590,18 @@ static NSString *PWD_ENVVALUE = @"~";
     for(i = 0; i < abs(y - [SCREEN cursorY]); i++)
     {
 	if(y < [SCREEN cursorY])
-	    data = [TERMINAL keyArrowUp];
+            data = [TERMINAL keyArrowUp:0];
 	else
-	    data = [TERMINAL keyArrowDown];
+            data = [TERMINAL keyArrowDown:0];
 	[SHELL writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
     }
     // now move the cursor left or right    
     for(i = 0; i < abs(x - [SCREEN cursorX]); i++)
     {
 	if(x < [SCREEN cursorX])
-	    data = [TERMINAL keyArrowLeft];
+	    data = [TERMINAL keyArrowLeft:0];
 	else
-	    data = [TERMINAL keyArrowRight];
+	    data = [TERMINAL keyArrowRight:0];
 	[SHELL writeTask:[NSData dataWithBytes:[data bytes] length:[data length]]];
     }
     
@@ -666,7 +666,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession moveUp:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
-    [SHELL writeTask:[TERMINAL keyArrowUp]];
+    [SHELL writeTask:[TERMINAL keyArrowUp:0]];
 }
 
 - (void)moveDown:(id)sender
@@ -675,7 +675,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession moveDown:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
-    [SHELL writeTask:[TERMINAL keyArrowDown]];
+    [SHELL writeTask:[TERMINAL keyArrowDown:0]];
 }
 
 - (void)moveLeft:(id)sender
@@ -684,7 +684,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession moveLeft:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
-    [SHELL writeTask:[TERMINAL keyArrowLeft]];
+    [SHELL writeTask:[TERMINAL keyArrowLeft:0]];
 }
 
 - (void)moveRight:(id)sender
@@ -693,7 +693,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession moveRight:%@]",
 	  __FILE__, __LINE__, sender);
 #endif
-    [SHELL writeTask:[TERMINAL keyArrowRight]];
+    [SHELL writeTask:[TERMINAL keyArrowRight:0]];
 }
 
 - (void)pageUp:(id)sender

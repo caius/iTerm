@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.9 2003-11-12 03:09:10 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.10 2004-01-19 18:41:32 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -141,6 +141,11 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
                                              selector: @selector(resetLogMenu:)
                                                  name: @"iTermSessionDidBecomeActive"
                                                object: nil];    
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(nonTerminalWindowBecameKey:)
+                                                 name:@"nonTerminalWindowBecameKey"
+                                               object:nil];    
     
     return self;
 }
@@ -284,6 +289,22 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
     [self buildSessionSubmenu: aNotification];
     [self buildAddressBookMenu: aNotification];
+    
+    // reset the close tab/window shortcuts
+    [closeTab setAction: @selector(closeCurrentSession:)];
+    [closeTab setTarget: frontTerminal];
+    [closeTab setKeyEquivalent: @"w"];
+    [closeWindow setKeyEquivalent: @"W"];
+    [closeWindow setKeyEquivalentModifierMask: NSCommandKeyMask];
+    
+}
+
+- (void) nonTerminalWindowBecameKey: (NSNotification *) aNotification
+{
+    [closeTab setAction: nil];
+    [closeTab setKeyEquivalent: @""];
+    [closeWindow setKeyEquivalent: @"w"];
+    [closeWindow setKeyEquivalentModifierMask: NSCommandKeyMask];
 }
 
 - (void) buildSessionSubmenu: (NSNotification *) aNotification

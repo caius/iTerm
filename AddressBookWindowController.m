@@ -237,6 +237,12 @@ static NSColor* xtermColorTable[2][8];
     [self autorelease];
 }
 
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+    // Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
+}
+
 // get/set methods
 - (NSMutableArray *) addressBook
 {

@@ -1,3 +1,8 @@
+2004-01-19	ujwal
+
+    * Made cmd-W behave more consistantly when Find and AddressBook windows 
+      are key.
+
 2004-01-01	ujwal
 
 	* Cursor blinks only in active window.

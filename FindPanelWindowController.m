@@ -90,6 +90,13 @@ static FindPanelWindowController *sharedInstance = nil;
     }
     
     [caseCheckBox setIntValue:[[FindCommandHandler sharedInstance] ignoresCase]];
+    
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+    // Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
 }
 
 - (IBAction)ignoreCaseSwitchAction:(id)sender;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.2 2002-12-04 22:18:49 yfabian Exp $
+// $Id: PTYTextView.m,v 1.3 2002-12-08 20:22:34 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -31,6 +31,10 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTextView: -dealloc");
 #endif
+    
+    if(cMenu != nil)
+        [cMenu release];
+    cMenu = nil;
     
     [super dealloc];
 }
@@ -302,6 +306,7 @@
         [s1 appendString:@"\""];
     }
     system([s1 cString]);
+    [s1 release];
 }
 
 - (void) browse:(id)sender
@@ -320,6 +325,7 @@
         [s1 appendString:@"\""];
     }
     system([s1 cString]);
+    [s1 release];
 }
 
 @end

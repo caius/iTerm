@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.5 2002-11-28 19:27:12 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.6 2002-11-28 19:28:41 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -9,7 +9,7 @@
 //
 
 // Debug option
-#define DEBUG_ALLOC           1
+#define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_SCREENDUMP      0
 #define DEBUG_KEYDOWNDUMP     0

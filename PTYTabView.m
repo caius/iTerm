@@ -28,11 +28,7 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTabView: -dealloc");
 #endif
-    
-    if(cMenu != nil)
-        [cMenu release];
-    cMenu = nil;
-    
+        
     [super dealloc];
 }
 
@@ -42,12 +38,9 @@
 {
     int i;
     NSMenuItem *aMenuItem;
+    NSMenu *cMenu;
     
-    if(cMenu != nil)
-        [cMenu release];
-    cMenu = nil;
-
-    cMenu = [[NSMenu alloc] initWithTitle:@""];
+    cMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
     
     for (i = 0; i < [self numberOfTabViewItems]; i++)
     {

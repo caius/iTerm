@@ -12,8 +12,6 @@
 
 @interface PTYTabView : NSTabView {
 
-    NSMenu *cMenu;
-
 }
 
 - (id)initWithFrame: (NSRect) aFrame;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.13 2003-08-20 00:50:16 ujwal Exp $
+// $Id: PTYTask.m,v 1.14 2003-08-29 16:11:20 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -48,7 +48,7 @@
 
 #define CTRLKEY(c)   ((c)-'A'+1)
 
-#define MEASURE_PROCESSING_TIME		0
+#define MEASURE_PROCESSING_TIME		1
 
 static void setup_tty_param(struct termios *term,
 			    struct winsize *win,
@@ -230,9 +230,10 @@ static int writep(int fds, char *buf, size_t len)
             }
 
 #if MEASURE_PROCESSING_TIME
+	    // measure processing time if we want to.
 	    if(newOutput == NO)
 	    {
-		NSLog(@"PTYTask: Start new output");
+		//NSLog(@"PTYTask: Start new output");
 		newOutput = YES;
 	    }
 #endif
@@ -244,9 +245,13 @@ static int writep(int fds, char *buf, size_t len)
 #if MEASURE_PROCESSING_TIME
 	else if (sts == 0)
 	{
+	    // time out; do some other tasks in this idle time
+	    [rootProxy doIdleTasks];
+
+	    // measure processing time if we want to.
 	    if(newOutput == YES)
 	    {
-		NSLog(@"PTYTask: End new output");
+		//NSLog(@"PTYTask: End new output");
 		newOutput = NO;
 	    }	    
 	}
@@ -420,6 +425,13 @@ static int writep(int fds, char *buf, size_t len)
 - (id)delegate
 {
     return DELEGATEOBJECT;
+}
+
+- (void) doIdleTasks
+{
+    if ([DELEGATEOBJECT respondsToSelector:@selector(doIdleTasks)]) {
+	[DELEGATEOBJECT doIdleTasks];
+    }
 }
 
 - (NSData *)readData

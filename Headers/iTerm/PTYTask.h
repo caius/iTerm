@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PTYTask.h,v 1.2 2003-08-29 16:11:11 ujwal Exp $
 /*
  **  PTYTask.h
  **
@@ -65,6 +65,7 @@
 - (void)setDelegate:(id)object;
 - (id)delegate;
 
+- (void) doIdleTasks;
 - (NSData *)readData;
 - (void)readTask:(NSData *)data;
 - (void)writeTask:(NSData *)data;

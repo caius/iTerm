@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.124 2003-08-29 15:43:24 ujwal Exp $
+// $Id: VT100Screen.m,v 1.125 2003-08-29 16:11:20 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2201,6 +2201,8 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen removeOverLine]",  __FILE__, __LINE__);
 #endif
 
+    [self setScreenLock];
+
     if (TOP_LINE > scrollbackLines) {
 #if DEBUG_USE_BUFFER
 	int idx;
@@ -2233,6 +2235,9 @@ static BOOL PLAYBELL = YES;
 
         NSParameterAssert(TOP_LINE >= 0);
     }
+
+    [self removeScreenLock];
+    
 }
 
 - (void)deviceReport:(VT100TCC)token
@@ -2558,7 +2563,6 @@ static BOOL PLAYBELL = YES;
     //NSLog(@"updated: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
     //if ([BUFFER length]>[STORAGE length]) NSLog(@"%@",BUFFER);
     [self renewBuffer];
-    [self removeOverLine];
     //NSLog(@"renewed: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
     cursorIndex = [self getTVIndex:CURSOR_X y:CURSOR_Y];
     [[SESSION TEXTVIEW] setCursorIndex: cursorIndex];

@@ -127,6 +127,8 @@
 
 // misc
 - (void) handleOptionClick: (NSEvent *) theEvent;
+- (void) doIdleTasks;
+
 
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;

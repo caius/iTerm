@@ -4,6 +4,8 @@
     * Disabled "trim white space on copy" feature. Terminal applications should 
       not really be doing this. If the feature is requested again, we could make 
       it an option.
+    * Made PTYTask: +_processReadTask non-blocking so that other functions can be 
+      performed during idle time.
 
 2003-08-28	fabian
 

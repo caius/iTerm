@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.2 2003-08-06 16:03:00 ujwal Exp $
+// $Id: iTermController.m,v 1.3 2003-08-08 15:50:53 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -914,10 +914,11 @@ NSString *terminalsKey = @"terminals";
     {
 	NSDictionary *defaultSessionPreferences = [self defaultAddressBookEntry];
 
-	[object initWindow:[[defaultSessionPreferences objectForKey: @"Col"] intValue]
-	     height:[[defaultSessionPreferences objectForKey: @"Row"] intValue]
-	       font:[defaultSessionPreferences objectForKey: @"Font"]
-	     nafont:[defaultSessionPreferences objectForKey: @"NAFont"]];
+	[object setWidth: [[defaultSessionPreferences objectForKey: @"Col"] intValue]
+			 height: [[defaultSessionPreferences objectForKey: @"Row"] intValue]];
+	[object setFont: [defaultSessionPreferences objectForKey: @"Font"]
+			nafont: [defaultSessionPreferences objectForKey: @"NAFont"]];
+	[object initWindow];
     }
     [terminalWindows insertObject: object atIndex: index];
 }

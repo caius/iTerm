@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.198 2003-08-06 16:03:00 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.199 2003-08-08 15:50:53 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -103,6 +103,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     tabViewDragOperationInProgress = NO;
     resizeInProgress = NO;
 
+    // Add ourselves as an observer for notifications to reload the addressbook.
+    [[NSNotificationCenter defaultCenter] addObserver: self
+					     selector: @selector(_reloadAddressBookMenu:)
+						 name: @"Reload AddressBook"
+					       object: nil];
+    
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal init: 0x%x]", __FILE__, __LINE__, self);
 #endif
@@ -117,29 +123,26 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
 }
 
-- (void)initWindow:(int)width
-            height:(int)height
-              font:(NSFont *)font
-            nafont:(NSFont *)nafont
+- (id) initViewWithFrame: (NSRect) frame
+{
+    NSRect tabviewRect;
+
+    [self initWithWindowNibName: NIB_PATH];
+
+    TABVIEW = [[PTYTabView alloc] initWithFrame: tabviewRect];
+    [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [TABVIEW setAllowsTruncatedLabels: NO];
+    [TABVIEW setControlSize: NSSmallControlSize];
+
+    return (self);
+}
+
+- (void)initWindow
 {
 
-    WIDTH=width;
-    HEIGHT=height;
     NSRect tabviewRect;
-    NSDictionary *defaultSessionPreferences = [iTerm defaultAddressBookEntry];
-//    NSColor *bgColor;
-
-    if (!font)
-        font = [defaultSessionPreferences objectForKey: @"Font"];
-    if (!nafont)
-        nafont = [defaultSessionPreferences objectForKey: @"NAFont"];
     
-    NSParameterAssert(font != nil);
-
-    [FONT autorelease];
-    FONT=[font copy];
-    [NAFONT autorelease];
-    NAFONT=[nafont copy];
+    NSParameterAssert(FONT != nil);
     
     // Create the tabview
     tabviewRect = [[[self window] contentView] frame];
@@ -158,12 +161,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         
     [[self window] setDelegate: self];
     
-    // Add ourselves as an observer for notifications to reload the addressbook.
-    [[NSNotificationCenter defaultCenter] addObserver: self
-        selector: @selector(_reloadAddressBookMenu:)
-        name: @"Reload AddressBook"
-        object: nil];
-
     [self setWindowInited: YES];
          
 }
@@ -567,6 +564,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 }
 
+- (void) setWidth: (int) width height: (int) height
+{
+    WIDTH = width;
+    HEIGHT = height;
+}
 
 - (void)setWindowSize: (BOOL) resizeContentFrames
 {
@@ -693,6 +695,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) setWindowTitle: (NSString *)title
 {
     [[self window] setTitle:title];
+}
+
+- (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
+{
+    [FONT autorelease];
+    FONT=[font copy];
+    [NAFONT autorelease];
+    NAFONT=[nafont copy];
 }
 
 - (void)setAllFont:(NSFont *)font nafont:(NSFont *) nafont
@@ -1012,7 +1022,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
 //    [CONFIG_PANEL center];
     pending=YES;
-    [NSApp beginSheet:CONFIG_PANEL modalForWindow:[self window]
+    [NSApp beginSheet:CONFIG_PANEL modalForWindow:[TABVIEW window]
         modalDelegate:self didEndSelector:nil contextInfo:nil];
 }
 
@@ -1583,10 +1593,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     if([term windowInited] == NO)
     {
-	[term initWindow: WIDTH
-	   height: HEIGHT
-	     font: FONT
-	   nafont: NAFONT];
+	[term setWidth: WIDTH height: HEIGHT];
+	[term setFont: FONT nafont: NAFONT];
+	[term initWindow];
     }
 
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.58 2003-08-06 16:03:00 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.59 2003-08-08 15:50:53 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -91,13 +91,11 @@
 
 - (id)init;
 - (id) initWithWindowNibName: (NSString *) windowNibName;
+- (id) initViewWithFrame: (NSRect) frame;
 - (void)dealloc;
 - (void)releaseObjects;
 
-- (void)initWindow:(int)width
-            height:(int)height
-              font:(NSFont *)font
-            nafont:(NSFont *)nafont;
+- (void)initWindow;
 - (void)setupSession: (PTYSession *) aSession title: (NSString *)title;
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index;
 - (void) switchSession: (id) sender;
@@ -123,7 +121,9 @@
 - (void)setWindowSize: (BOOL) resizeContentFrames;
 - (void)setWindowTitle;
 - (void)setWindowTitle: (NSString *)title;
+- (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (void)setAllFont:(NSFont *)font nafont:(NSFont *)nafont;
+- (void)setWidth: (int) width height: (int) height;
 
 
 // iTermController

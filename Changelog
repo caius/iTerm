@@ -1,6 +1,7 @@
 2003-11-06	ujwal
 
     * Fixed bug causing incorrect number of columns.
+    * Updating screen on keydown.
 
 2003-11-05	ujwal
 

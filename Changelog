@@ -6,7 +6,7 @@
     * Implemented "Find" functionality to search through the text 
       view.
 
-    * Implemented "Print Selection..." to print print selected text. 
+    * Implemented "Print Selection..." to print selected text. 
       Currently works only on rectangular selections.
 
 2003-05-12	ujwal

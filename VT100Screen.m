@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.123 2003-08-29 15:15:25 ujwal Exp $
+// $Id: VT100Screen.m,v 1.124 2003-08-29 15:43:24 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2545,7 +2545,7 @@ static BOOL PLAYBELL = YES;
     //NSLog(@"updating: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
 
     [STORAGE beginEditing];
-    if(updateIndex < [STORAGE length])
+    if((updateIndex+minIndex) < [STORAGE length])
     {
 	[STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,slen-updateIndex-minIndex)
 		     withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];

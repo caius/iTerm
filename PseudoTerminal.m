@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.278 2004-03-24 15:47:14 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.279 2004-03-26 04:39:02 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -341,11 +341,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 		if ([TABVIEW numberOfTabViewItems] == 1)
 		{
-#if USE_CUSTOM_DRAWING
             [[aSession TEXTVIEW] scrollEnd];
-#else
-			[[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
-#endif
 		}
 		
 		if([self windowInited])
@@ -702,6 +698,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [thisWindow setContentSize:winSize];
 	
     [thisWindow setFrameTopLeftPoint: topLeft];
+	//[self windowDidResize: nil];
 }
 
 - (void)setWindowTitle
@@ -1044,7 +1041,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     w = (int)((frame.size.width - MARGIN * 2)/charWidth);
     h = (int)(frame.size.height/charHeight);
     //NSLog(@"here:%d,%d",w,h);
-	
+
+	if (WIDTH ==w && HEIGHT ==h)
+		return;
+
     for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
         [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
@@ -1310,11 +1310,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			
             [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 			[self setWindowSize: NO];
-#if USE_CUSTOM_DRAWING
             [[aSession TEXTVIEW] scrollEnd];
-#else
-			[[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
-#endif
 		}
 		else
 		{

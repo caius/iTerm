@@ -28,19 +28,6 @@
 #ifndef _ITERM_H_
 #define _ITERM_H_
 
-#define USE_CUSTOM_LAYOUT	0	// for custom typesetter and layout in text system
-
-
-#define USE_CUSTOM_DRAWING	1
-
-#if USE_CUSTOM_DRAWING
-#define DEBUG_USE_ARRAY		1
-#define DEBUG_USE_BUFFER	0
-#else
-#define DEBUG_USE_ARRAY		0
-#define DEBUG_USE_BUFFER	1
-#endif
-
 
 #define NSLogRect(aRect)	NSLog(@"Rect = %f,%f,%f,%f", (aRect).origin.x, (aRect).origin.y, (aRect).size.width, (aRect).size.height)
 

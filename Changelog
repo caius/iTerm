@@ -2,6 +2,7 @@
 
 	* Removed 'Bookmarks' button from toolbar.
 	* Updates of website files.
+	* Removed all reference to USE_CUSTOM_DRAWING & USE_CUSTOM_LAYOUT
 	
 2004-03-25  ujwal
 	

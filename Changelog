@@ -1,5 +1,11 @@
 2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
+    * Fixed a bug in resizing tabs and window when closing 
+      a session.
+      
+
+2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
     * Manually firing screen update timer after a keyDown 
       to make user input more responsive.
       

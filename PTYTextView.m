@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.82 2003-08-17 16:39:48 ujwal Exp $
+// $Id: PTYTextView.m,v 1.83 2003-08-29 15:34:56 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1769,10 +1769,10 @@
     
     // Further process the string
     aString = [aMutableAttributedString string];
-    if((aString == nil) || ([aString length] == 0))
-        return nil;
-    if([aString length] > 1) // Cocoa bug?
-        aString = [aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    //if((aString == nil) || ([aString length] == 0))
+    //    return nil;
+    //if([aString length] > 1) // Cocoa bug?
+    //    aString = [aString stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceAndNewlineCharacterSet]];
     
     return aString;
 }

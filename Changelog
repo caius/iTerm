@@ -1,6 +1,9 @@
 2003-08-29	ujwal
     
     * Fixed a problem in calculating number of rows when tabs are on the side.
+    * Disabled "trim white space on copy" feature. Terminal applications should 
+      not really be doing this. If the feature is requested again, we could make 
+      it an option.
 
 2003-08-28	fabian
 

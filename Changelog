@@ -1,3 +1,10 @@
+2003-09-02	fabian
+
+    * Updated Korean and French translations.
+    * Fixed laptop's enter key.
+    * Fixed the lost new line attributes bug.
+    * Cleaned up eraseInDisplay code
+    
 2003-08-30	fabian
 
     * Implemented scrollback buffer size UI.

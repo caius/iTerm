@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.131 2003-09-02 05:53:04 yfabian Exp $
+// $Id: VT100Screen.m,v 1.132 2003-09-03 01:47:40 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -228,9 +228,6 @@ static BOOL PLAYBELL = YES;
     [savedBuffer release];
 
     [screenLines autorelease];
-
-    [newLineString release];
-    newLineString = nil;
 
     [STORAGE release];    
 
@@ -505,8 +502,6 @@ static BOOL PLAYBELL = YES;
 
     [TERMINAL initDefaultCharacterAttributeDictionary];
 
-    [newLineString release];
-    newLineString = nil;
 
 }
 
@@ -1293,6 +1288,9 @@ static BOOL PLAYBELL = YES;
 
 - (void)setNewLine
 {
+    static NSRange nlr;
+    static NSMutableAttributedString *newLineString=nil; //should be safe to share
+    int idx;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)-[%d,%d]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y, SCROLL_TOP, SCROLL_BOTTOM);
@@ -1300,13 +1298,19 @@ static BOOL PLAYBELL = YES;
 
     if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) {
         CURSOR_Y++;
+        idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:NO];
+        [BUFFER setAttributes:[TERMINAL characterAttributeDictionary:YES] range:NSMakeRange(idx-1,1)];
     }
     // if top of scrolling area is the same as the screen, add a new line at the bottom of the scrolling area so that
     // the top line goes into the scrollback buffer.
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
 #if DEBUG_USE_BUFFER
-	if(newLineString == nil)
+        if(newLineString == nil) {
 	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
+            nlr=NSMakeRange(0,1);
+        }
+        else
+            [newLineString setAttributes:[TERMINAL characterAttributeDictionary:YES] range:nlr];
 	[BUFFER appendAttributedString:newLineString];
 #endif
 
@@ -1454,6 +1458,10 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen clearScreen]", __FILE__, __LINE__);
 #endif
     [self resizeWidth:WIDTH height:HEIGHT];
+/*    int i;
+
+    for (i=0;i<HEIGHT;i++)
+        [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]]; */
 }
 
 - (void)eraseInDisplay:(VT100TCC)token
@@ -1461,10 +1469,6 @@ static BOOL PLAYBELL = YES;
     int x1, y1, x2, y2;
     int y;
     int idx,i;
-
-#if DEBUG_USE_BUFFER
-    NSString *store=[BUFFER string];
-#endif
 
 #if DEBUG_USE_ARRAY
     NSMutableAttributedString *aLine;
@@ -1503,12 +1507,14 @@ static BOOL PLAYBELL = YES;
     // if we are clearing the entire screen, move the current screen into the scrollback buffer
     if(x1 == 0 && y1 == 0 && x2 == (WIDTH -1 ) && y2 == (HEIGHT - 1) && clearingBuffer == NO)
     {
+        for (i=0;i<HEIGHT;i++)
+            [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
+        NSLog(@"Clear all");
+        /*
 	[self setScreenLock];
 	[STORAGE beginEditing];
 	//NSLog(@"'%@'", [BUFFER string]);
-	if(newLineString == nil)
-	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
-	[STORAGE appendAttributedString:newLineString];
+	[STORAGE appendAttributedString:[self attrString:@"\n" ascii:YES]];
 	TOP_LINE++;
 	updateIndex = [STORAGE length];
 	// turn off the cursor
@@ -1532,50 +1538,37 @@ static BOOL PLAYBELL = YES;
 	}
     }
     else
-	clearingBuffer = NO;
+	clearingBuffer = NO;*/
+        return;
+    }
 #endif
 
-    for (y = y1; y <= y2; ++y ) {
-        if (y == y1 && y == y2) {
-//            NSLog(@"%d->%d,%d",x1,x2,y);
-            if (x2 - x1 > 0)
-                [self setASCIIStringToX:x1  Y:y  string:[NSString stringWithCharacters:spaces length:x2 - x1+1]];
-        }
-        else if (y == y1) {
-            i=idx=[self getIndexAtX:x1 Y:y withPadding:YES];
+    if (y1 == y2) {
+        //            NSLog(@"%d->%d,%d",x1,x2,y);
+        if (x2 - x1 > 0)
+            [self setASCIIStringToX:x1  Y:y1  string:[NSString stringWithCharacters:spaces length:x2 - x1+1]];
+    }
+    else {
 #if DEBUG_USE_BUFFER
-            for(;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
-//            NSLog(@"start: %d,%d",idx,i);
-            if (i>idx) [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
+        idx=[self getIndexAtX:x1 Y:y1 withPadding:YES];
+        i=[self getIndexAtX:0 Y:y2 withPadding:NO];
+        [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
+        for(y=y1;y<y2;y++)
+            [BUFFER insertAttributedString:[self attrString:@"\n" ascii:YES] atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
-	    // erase in our line
-	    aLine = [screenLines objectAtIndex: TOP_LINE  + y];
+        // erase in our lines
+        for(y=y1;y<y2;y++) {
+            aLine = [screenLines objectAtIndex: TOP_LINE  + y];
+            idx=y==y1?[self getIndexAtX:x1 Y:y withPadding:NO]:0;
             if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(idx,[aLine length]-idx)];
             [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
+        }
 #endif
 
-        }
-        else if (y == y2) {
-            [self setASCIIStringToX:0  Y:y  string:[NSString stringWithCharacters:spaces length:x2+1]];
-        }
-        else {
-            i=idx=[self getIndexAtX:0 Y:y withPadding:YES];
-#if DEBUG_USE_BUFFER
-            for(;i<[store length]&&[store characterAtIndex:i]!='\n';i++);
-           // NSLog(@"whole line %d(%d,%d)",y,idx,i);
-            if (i>idx) [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
-#endif
-#if DEBUG_USE_ARRAY
-	    // erase in our line
-	    aLine = [screenLines objectAtIndex: TOP_LINE  + y];
-           // NSLog(@"whole line %d(%d,%d)",y,idx,i);
-            if (idx<[aLine length]) [aLine deleteCharactersInRange:NSMakeRange(0,[aLine length])];
-            [(PTYTextView*)display setDirtyLine:TOP_LINE+y];
-#endif
-	    
-        }
+        [self setASCIIStringToX:0  Y:y2  string:[NSString stringWithCharacters:spaces length:x2+1]];
+
     }
 }
 
@@ -1609,6 +1602,7 @@ static BOOL PLAYBELL = YES;
         s=[BUFFER string];
         for(;i<[s length]&&[s characterAtIndex:i]!='\n';i++);
         if (i>idx) [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
+        if (idx<[BUFFER length]) [BUFFER setAttributes:[TERMINAL characterAttributeDictionary:YES] range:NSMakeRange(idx,1)];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -1858,9 +1852,7 @@ static BOOL PLAYBELL = YES;
 
     if (SCROLL_BOTTOM>=HEIGHT-1) {
 #if DEBUG_USE_BUFFER
-	if(newLineString == nil)
-	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
-        [BUFFER appendAttributedString:newLineString];
+        [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -1873,9 +1865,7 @@ static BOOL PLAYBELL = YES;
     else if(CURSOR_Y <= SCROLL_BOTTOM) {
 #if DEBUG_USE_BUFFER
         idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM+1 withPadding:YES];
-	if(newLineString == nil)
-	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
-        [BUFFER insertAttributedString:newLineString atIndex:idx];
+        [BUFFER insertAttributedString:[self attrString:@"\n" ascii:YES] atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -1912,9 +1902,7 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
     //NSLog(@"SCROLL-DOWN[%d-%d]",SCROLL_TOP,SCROLL_BOTTOM);
     idx=[self getIndexAtX:0 Y:SCROLL_TOP withPadding:YES];
-    if(newLineString == nil)
-	newLineString = [[self attrString:@"\n" ascii:YES] retain];
-    [BUFFER insertAttributedString: newLineString atIndex:idx];
+    [BUFFER insertAttributedString: [self attrString:@"\n" ascii:YES] atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -2080,7 +2068,7 @@ static BOOL PLAYBELL = YES;
     for(;n>0;n--) {
 #if DEBUG_USE_BUFFER
         idx=[self getIndexAtX:0 Y:CURSOR_Y withPadding:YES];
-        [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+        [BUFFER insertAttributedString:[self attrString:@"\n" ascii:YES] atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -2173,7 +2161,7 @@ static BOOL PLAYBELL = YES;
 
         if (SCROLL_BOTTOM<CURSOR_Y||SCROLL_BOTTOM>=HEIGHT-1) {
 #if DEBUG_USE_BUFFER
-            [BUFFER appendAttributedString:[self defaultAttrString:@"\n"]];
+            [BUFFER appendAttributedString:[self attrString:@"\n" ascii:YES]];
 #endif
 #if DEBUG_USE_ARRAY
 	    [screenLines addObject: aLine];
@@ -2182,7 +2170,7 @@ static BOOL PLAYBELL = YES;
         else {
 #if DEBUG_USE_BUFFER
             idx=[self getIndexAtX:0 Y:SCROLL_BOTTOM+1 withPadding:YES];
-            [BUFFER insertAttributedString:[self defaultAttrString:@"\n"] atIndex:idx];
+            [BUFFER insertAttributedString:[self attrString:@"\n" ascii:YES] atIndex:idx];
 #endif
 #if DEBUG_USE_ARRAY
 	    [screenLines insertObject: aLine atIndex: SCROLL_BOTTOM];

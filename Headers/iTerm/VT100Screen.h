@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
+// $Id: VT100Screen.h,v 1.2 2003-09-03 01:47:43 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -72,8 +72,6 @@
     BOOL blinkingCursor;
 
     NSView *display;
-
-    NSAttributedString *newLineString;
 
 }
 

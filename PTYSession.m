@@ -539,11 +539,11 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_strlen = [data length];
 	    }
 
-	    if (modflag & NSNumericPadKeyMask &&
+	    if ((modflag & NSNumericPadKeyMask &&
 		send_strlen == 1 &&
-		send_str[0] == 0x03)
+		send_str[0] == 0x03) || keycode==52)
 	    {
-		send_str = "\012";  // NumericPad Entry -> 0x0a
+		send_str = "\012";  // NumericPad or Laptop Enter -> 0x0a
 		send_strlen = 1;
 	    }
 	    if (modflag & NSControlKeyMask &&

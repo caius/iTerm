@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.151 2003-09-14 22:30:48 ujwal Exp $
+// $Id: VT100Screen.m,v 1.152 2003-09-15 04:09:03 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -762,6 +762,7 @@ static BOOL PLAYBELL = YES;
 	      __FILE__, __LINE__, token.type);
 	break;
     }
+//    NSLog(@"Done");
     
 }
 
@@ -1438,8 +1439,8 @@ static BOOL PLAYBELL = YES;
 	    int idx = [self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
 
 #if DEBUG_USE_BUFFER	    
-            width = [[BUFFER attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
             if (idx<[BUFFER length]&&[[BUFFER string] characterAtIndex:idx]!='\n') {
+                width = [[BUFFER attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
                 [BUFFER deleteCharactersInRange:NSMakeRange(idx, 1)];
                 if (width==2)  [BUFFER insertAttributedString:[self attrString:@"?" ascii:YES] atIndex:idx];
             }
@@ -1449,8 +1450,8 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_ARRAY
 	    // delete from line
 	    aLine = [screenLines objectAtIndex: TOP_LINE + CURSOR_Y];
-            width = [[aLine attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
             if(idx < [aLine length]&&[[aLine string] characterAtIndex:idx]!='\n') {
+                width = [[aLine attribute:NSCharWidthAttributeName atIndex:(idx) effectiveRange:nil] intValue];
                 [aLine deleteCharactersInRange:NSMakeRange(idx, 1)];
                 if(width == 2)
                     [aLine insertAttributedString:[self attrString:@"?" ascii:YES] atIndex:idx];
@@ -2249,7 +2250,11 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_USE_BUFFER
         for(i=0,idx=0;i<over&&idx<len;idx++)
             if ([s characterAtIndex:idx]=='\n') i++;
-        NSParameterAssert(idx<len);
+        if (idx>=len) {
+            NSLog(@"!!!removeOverLine overflow!!!");
+            [self removeScreenLock];
+            return;
+        }
         [STORAGE beginEditing];
         [STORAGE deleteCharactersInRange:NSMakeRange(0, idx)];
 	[STORAGE endEditing];

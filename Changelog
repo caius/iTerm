@@ -1,3 +1,9 @@
+2004-04-27  fabian
+
+    * Added support for double/triple click and drag to copy.
+    * Fixes for shift-to-extend-selection
+    * Now Command-selection opens what is selected in a browser.
+    
 2004-04-26  ujwal
 	
 	* Fixed resize bug in VT100Screen.

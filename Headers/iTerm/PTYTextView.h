@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.43 2004-04-27 00:28:17 ujwal Exp $
+// $Id: PTYTextView.h,v 1.44 2004-04-27 23:59:24 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -44,6 +44,7 @@ typedef struct
 } CharCache;
 	
 #define CACHESIZE 2048
+enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 
 @interface PTYTextView : NSView <NSTextInput>
 {
@@ -105,6 +106,7 @@ typedef struct
     int startX, startY, endX, endY;
 	BOOL mouseDown;
 	BOOL mouseDragged;
+    char selectMode;
 	
 	//find support
 	int lastFindX, lastFindY;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.212 2004-04-27 00:28:16 ujwal Exp $
+// $Id: PTYTextView.m,v 1.213 2004-04-27 23:59:19 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1020,6 +1020,7 @@ static SInt32 systemVersion;
     
     NSPoint locationInWindow, locationInTextView;
     int x, y;
+    int width = [dataSource width];
 	
 	mouseDragged = NO;
 	mouseDown = YES;
@@ -1031,19 +1032,48 @@ static SInt32 systemVersion;
 	if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
 	
-    if (x>=[dataSource width]) x= [dataSource width] - 1;
+    if (x>=[dataSource width]) x = width  - 1;
 	
 	// if we are holding the shift key down, we are extending selection
 	if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
 	{
-		endX = x;
-		endY = y;
+		if (x+y*width<startX+startY*width) {
+            startX = endX;
+            startY = endY;
+        }
+        endX = x;
+        endY = y;
 	}
 	else
 	{
 		endX = startX = x;
 		endY = startY = y;
 	}	
+
+	// Handle double and triple click
+	if([event clickCount] == 2)
+	{
+        int tmpX1, tmpY1, tmpX2, tmpY2;
+        
+        // double-click; select word
+        selectMode = SELECT_WORD;
+		[self _getWordForX: x y: y startX: &tmpX1 startY: &tmpY1 endX: &tmpX2 endY: &tmpY2];
+		startX = tmpX1;
+		startY = tmpY1;
+		endX = tmpX2;
+		endY = tmpY2;		
+	}
+	else if ([event clickCount] >= 3)
+	{
+        // triple-click; select line
+		startX = 0;
+        selectMode = SELECT_LINE;
+		endX = [dataSource width] - 1;
+		startY = endY = y;
+	}
+    else {
+        selectMode = SELECT_CHAR;
+    }
 	    
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
@@ -1051,11 +1081,7 @@ static SInt32 systemVersion;
 }
 
 - (void)mouseUp:(NSEvent *)event
-{
-	NSPoint locationInWindow, locationInTextView;
-    int x, y, tmpX1, tmpY1, tmpX2, tmpY2;
-	
-	
+{	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView mouseUp:%@]",
           __FILE__, __LINE__, event );
@@ -1065,65 +1091,31 @@ static SInt32 systemVersion;
 		return;
 	mouseDown = NO;
     
-    locationInWindow = [event locationInWindow];
-    locationInTextView = [self convertPoint: locationInWindow fromView: nil];
-    
-    x = (locationInTextView.x-MARGIN)/charWidth;
-	if (x<0) x=0;
-    if (x>=[dataSource width]) x=[dataSource width] - 1;
-    y = locationInTextView.y/lineHeight;
-	if(locationInTextView.x < MARGIN && startY < y)
-	{
-		// complete selection of previous line
-		x = [dataSource width] - 1;
-		y--;
-	}	
-    if (y<0) y=0;
-    if (y>=[dataSource numberOfLines]) y=numberOfLines-1;
-    endX=x;
-    endY=y;
     if (startY>endY||(startY==endY&&startX>endX)) {
-        y=startY; startY=endY; endY=y;
-        y=startX; startX=endX; endX=y;
-		x = endX; y = endY;
+        int t;
+        t=startY; startY=endY; endY=t;
+        t=startX; startX=endX; endX=t;
     }
     else if (startY==endY&&startX==endX&&!mouseDragged) startX=-1;
 	
 	// if we are on an empty line, we select the current line to the end
-	if([self _isBlankLine: y] && y >= 0)
-	  endX = [dataSource width] - 1;
+	//if([self _isBlankLine: y] && y >= 0)
+	//  endX = [dataSource width] - 1;
 	
-	// handle command click on URL
-	if([event modifierFlags] & NSCommandKeyMask)
-	{
-		NSString *aURL = [self _getWordForX: x y: y startX: NULL startY: NULL endX: NULL endY: NULL];
-		[self _openURL: aURL];
-	}
 	
-	// Handle double and triple click
-	if([event clickCount] == 2)
-	{
-		// double-click; select word
-		[self _getWordForX: x y: y startX: &tmpX1 startY: &tmpY1 endX: &tmpX2 endY: &tmpY2];
-		startX = tmpX1;
-		startY = tmpY1;
-		endX = tmpX2;
-		endY = tmpY2;		
-	}
-	else if ([event clickCount] >= 3)
-	{
-		// triple-click; select line
-		startX = 0;
-		endX = [dataSource width] - 1;
-		startY = endY = y;
-	}
-
 	[self _selectFromX:startX Y:startY toX:endX Y:endY];
     if (startX!=-1&&_delegate) {
 		// if we want to copy our selection, do so
         if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
+        // handle command click on URL
+        if([event modifierFlags] & NSCommandKeyMask)
+        {
+            [self _openURL: [self selectedText]];
+        }
     }
+
+    selectMode = SELECT_CHAR;
 	[self setNeedsDisplay: YES];
 }
 
@@ -1136,7 +1128,8 @@ static SInt32 systemVersion;
     NSPoint locationInWindow = [event locationInWindow];
     NSPoint locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     NSRect  rectInTextView = [self visibleRect];
-    int x, y;
+    int x, y, tmpX1, tmpX2, tmpY1, tmpY2;
+    int width = [dataSource width];
 	
 	mouseDragged = YES;
     
@@ -1152,26 +1145,67 @@ static SInt32 systemVersion;
     
     x = (locationInTextView.x - MARGIN) / charWidth;
 	if (x < 0) x = 0;
-	if (x>=[dataSource width]) x=[dataSource width] - 1;
+	if (x>=width) x = width - 1;
 	
     
 	y = locationInTextView.y/lineHeight;
 	
 	// if we are on an empty line, we select the current line to the end
 	if([self _isBlankLine: y] && y >= 0)
-		x = [dataSource width] - 1;
+		x = width - 1;
 	
 	if(locationInTextView.x < MARGIN && startY < y)
 	{
 		// complete selection of previous line
-		x = [dataSource width] - 1;
+		x = width - 1;
 		y--;
 	}
     if (y<0) y=0;
     if (y>=[dataSource numberOfLines]) y=numberOfLines - 1;
-    endX=x;
-    endY=y;
-	[self _selectFromX:startX Y:startY toX:endX Y:endY];
+    
+    switch (selectMode) {
+        case SELECT_CHAR:
+            endX=x;
+            endY=y;
+            break;
+        case SELECT_WORD:
+            [self _getWordForX: x y: y startX: &tmpX1 startY: &tmpY1 endX: &tmpX2 endY: &tmpY2];
+            if (startX+startY*width<tmpX2+tmpY2*width) {
+                if (startX+startY*width>endX+endY*width) {
+                    int tx1, tx2, ty1, ty2;
+                    [self _getWordForX: startX y: startY startX: &tx1 startY: &ty1 endX: &tx2 endY: &ty2];
+                    startX = tx1;
+                    startY = ty1;
+                }
+                endX = tmpX2;
+                endY = tmpY2;
+            }
+            else {
+                if (startX+startY*width<endX+endY*width) {
+                    int tx1, tx2, ty1, ty2;
+                    [self _getWordForX: startX y: startY startX: &tx1 startY: &ty1 endX: &tx2 endY: &ty2];
+                    startX = tx2;
+                    startY = ty2;
+                }
+                endX = tmpX1;
+                endY = tmpY1;
+            }
+            break;
+        case SELECT_LINE:
+            if (startY <= y) {
+                startX = 0;
+                endX = [dataSource width] - 1;
+                endY = y;
+            }
+            else {
+                endX = 0;
+                endY = y;
+                startX = [dataSource width] - 1;
+            }
+            break;
+    }
+            
+    [self _selectFromX:startX Y:startY toX:endX Y:endY];
 	[self setNeedsDisplay: YES];
     //    NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }

@@ -118,17 +118,7 @@
         // set the anti-alias if it has changed
         if([CONFIG_ANTIALIAS state] != [[currentSession TEXTVIEW] antiAlias])
         {
-            PTYSession *aSession;
-            ITSessionMgr* sessionMgr = [_pseudoTerminal sessionMgr];
-            int i, cnt = [sessionMgr numberOfSessions];
-            
-            for(i=0; i<cnt; i++)
-            {
-                aSession = [sessionMgr sessionAtIndex: i];
-                [[aSession TEXTVIEW] setAntiAlias: [CONFIG_ANTIALIAS state]];
-            }
-            
-            [[currentSession TEXTVIEW] setNeedsDisplay: YES];
+			[_pseudoTerminal setAntiAlias: [CONFIG_ANTIALIAS state]];
         }
         
         // set the selection color if it has changed

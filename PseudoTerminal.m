@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.282 2004-03-27 22:35:16 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.283 2004-03-28 04:11:05 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -236,6 +236,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	 	
     [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
 	[[aSession TEXTVIEW] setFont:FONT nafont:NAFONT];
+	[[aSession TEXTVIEW] setAntiAlias: antiAlias];
     [[aSession TEXTVIEW] setLineHeight: charHeight];
     [[aSession TEXTVIEW] setLineWidth: WIDTH * charWidth];
 	[[aSession TEXTVIEW] setCharWidth: charWidth];
@@ -817,6 +818,28 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	charVerticalSpacingMultiplier = vertical;
 	//NSLog(@"horizontal = %f; vertical = %f", horizontal, vertical);
 	[self setCharSizeUsingFont: FONT];
+}
+
+- (BOOL) antiAlias
+{
+	return (antiAlias);
+}
+
+- (void) setAntiAlias: (BOOL) bAntiAlias
+{
+	PTYSession *aSession;
+	int i, cnt = [_sessionMgr numberOfSessions];
+	
+	antiAlias = bAntiAlias;
+	
+	for(i=0; i<cnt; i++)
+	{
+		aSession = [_sessionMgr sessionAtIndex: i];
+		[[aSession TEXTVIEW] setAntiAlias: antiAlias];
+	}
+	
+	[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+	
 }
 
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont

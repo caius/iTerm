@@ -999,7 +999,6 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCREEN setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
 	[SCREEN setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
 	[TEXTVIEW setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
-	[TEXTVIEW setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
     [self setEncoding: [terminalProfileMgr encodingForProfile: terminalProfile]];
     [self setTERM_VALUE: [terminalProfileMgr typeForProfile: terminalProfile]];
     [self setAntiCode: [terminalProfileMgr idleCharForProfile: terminalProfile]];

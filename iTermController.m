@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.35 2004-03-24 21:11:52 ujwal Exp $
+// $Id: iTermController.m,v 1.36 2004-03-28 04:11:05 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -384,6 +384,7 @@ static BOOL usingAutoLaunchScript = NO;
 		
 		[term setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
 		[term setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
+		[term setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
 		[term setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
 			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
 		[term setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 

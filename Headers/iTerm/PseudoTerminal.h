@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.21 2004-03-26 04:41:17 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.22 2004-03-28 04:11:06 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -46,7 +46,8 @@
 	int charWidth, charHeight;
 	float charHorizontalSpacingMultiplier, charVerticalSpacingMultiplier;
     NSFont *FONT, *NAFONT;
-    float alpha;
+	BOOL antiAlias;
+    //float alpha;
     BOOL tabViewDragOperationInProgress;
     BOOL windowInited;
 	BOOL sendInputToAllSessions;
@@ -89,6 +90,8 @@
 - (float) smallerSizeForSize: (float) aSize;
 - (NSFont *) font;
 - (NSFont *) nafont;
+- (BOOL) antiAlias;
+- (void) setAntiAlias: (BOOL) bAntiAlias;
 - (void)setWidth:(int)width height:(int)height;
 - (int)width;
 - (int)height;

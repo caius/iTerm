@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.187 2004-03-27 22:35:16 ujwal Exp $
+// $Id: PTYTextView.m,v 1.188 2004-03-28 04:11:05 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -178,6 +178,7 @@ static SInt32 systemVersion;
           __FILE__, __LINE__, antiAliasFlag);
 #endif
     antiAlias = antiAliasFlag;
+	[self resetCharCache];
 }
 
 - (BOOL) blinkingCursor
@@ -1998,7 +1999,7 @@ static SInt32 systemVersion;
 	crap = [[[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
 										   attributes:attrib] autorelease];
 	[image lockFocus];
-	[[NSGraphicsContext currentContext] setShouldAntialias:antiAlias];
+	[[NSGraphicsContext currentContext] setShouldAntialias:(antiAlias || bold)];
 	[crap drawAtPoint:NSMakePoint(0,0)];
 	// on older systems, for bold, redraw the character
 	if (bold && systemVersion < 0x00001030)

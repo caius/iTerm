@@ -2,7 +2,7 @@
 
 	* Fixed a couple of emulation problems with reverse video on 
 	  OpenVMS systems in scrollDown and scrollUp. New lines now have 
-	  default fg and bg.
+	  fg and bg colors of the line they just replaced.
 
 2004-02-25  ujwal
 

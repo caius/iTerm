@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.193 2004-02-26 15:53:45 ujwal Exp $
+// $Id: VT100Screen.m,v 1.194 2004-02-26 16:11:01 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1253,8 +1253,9 @@ static BOOL PLAYBELL = YES;
 		memmove(screenBGColor+SCROLL_TOP*WIDTH, screenBGColor+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
 	}
 	memset(screenLines+SCROLL_BOTTOM*WIDTH,0,WIDTH*sizeof(unichar));
-	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
+	// don't change the fg and bg colors of this new line. Let it inherit the properties of what was there before.
+	//memset(screenFGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
+	//memset(screenBGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
 //    else if(CURSOR_Y <= SCROLL_BOTTOM) {
 }
@@ -1274,8 +1275,9 @@ static BOOL PLAYBELL = YES;
 		memmove(screenBGColor+(SCROLL_TOP+1)*WIDTH, screenBGColor+(SCROLL_TOP)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
 	}
 	memset(screenLines+SCROLL_TOP*WIDTH,0,WIDTH*sizeof(unichar));
-	memset(screenFGColor+SCROLL_TOP*WIDTH,DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_TOP*WIDTH,DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
+	// don't change the fg and bg colors of this new line. Let it inherit the properties of what was there before.
+	//memset(screenFGColor+SCROLL_TOP*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
+	//memset(screenBGColor+SCROLL_TOP*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));    
 }
 

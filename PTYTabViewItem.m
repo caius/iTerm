@@ -29,7 +29,6 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-static NSImage *warningImage;
 
 @implementation PTYTabViewItem
 
@@ -40,9 +39,6 @@ static NSImage *warningImage;
 #endif
 
     dragTarget = NO;
-    if (warningImage==nil) {
-        warningImage=[NSImage imageNamed:@"important"];
-    }
 
     return([super initWithIdentifier: anIdentifier]);
 }
@@ -84,9 +80,32 @@ static NSImage *warningImage;
 								    range: NSMakeRange(0, [attributedLabel length])];
 	}
         if (bell) {
-            [warningImage compositeToPoint:NSMakePoint(tabRect.origin.x,tabRect.origin.y+16)
-                                 operation:NSCompositeSourceOver];
-            [attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x+18,tabRect.origin.y)];
+	    int tabViewType = [[self tabView] tabViewType];
+	    if(tabViewType == NSTopTabsBezelBorder || tabViewType == NSBottomTabsBezelBorder)
+	    {
+		if(warningImage == nil)
+		    warningImage=[NSImage imageNamed:@"important"];
+		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x,tabRect.origin.y+16)
+		       operation:NSCompositeSourceOver];
+		[attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x+18,tabRect.origin.y)];
+	    }
+	    else if(tabViewType == NSRightTabsBezelBorder)
+	    {
+		if(warningImage == nil)
+		    warningImage=[NSImage imageNamed:@"important_r"];
+		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x + 12,tabRect.origin.y + 15)
+		       operation:NSCompositeSourceOver];
+		[attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x + 14,tabRect.origin.y)];		
+	    }
+	    else if(tabViewType == NSLeftTabsBezelBorder)
+	    {
+		if(warningImage == nil)
+		    warningImage=[NSImage imageNamed:@"important_l"];
+		[warningImage compositeToPoint:NSMakePoint(tabRect.origin.x - 3,tabRect.origin.y)
+				     operation:NSCompositeSourceOver];
+		[attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x + 15,tabRect.origin.y)];
+	    }
+	    
         }
         else [attributedLabel drawAtPoint:tabRect.origin];
         

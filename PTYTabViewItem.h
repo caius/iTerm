@@ -33,6 +33,7 @@
     NSDictionary *labelAttributes;
     BOOL dragTarget;
     BOOL bell;
+    NSImage *warningImage;
 
 }
 

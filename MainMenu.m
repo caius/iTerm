@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.72 2003-05-25 07:32:18 ujwal Exp $
+// $Id: MainMenu.m,v 1.73 2003-05-25 07:45:53 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -432,57 +432,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [p release];
 }
 
-- (NSDictionary *)newDeafultObject
-{
-    char *userShell, *thisUser;
-    NSString *shell;
-
-    // This would be better read from a file stored in the package (with some bits added at run time)
-    
-    // Get the user's default shell
-    if((thisUser = getenv("USER")) != NULL) {
-        shell = [NSString stringWithFormat: @"login -fp %s", thisUser];
-    } else if((userShell = getenv("SHELL")) != NULL) {
-        shell = [NSString stringWithCString: userShell];
-    } else {
-        shell = @"/bin/bash --login";
-    }
-
-    NSDictionary *ae;
-    ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-        @"Default session",@"Name",
-        shell,@"Command",
-        [NSNumber numberWithUnsignedInt:1],@"Encoding",
-        [NSColor colorWithCalibratedRed:0.8f
-                                            green:0.8f
-                                             blue:0.8f
-                                            alpha:1.0f],@"Foreground",
-        [NSColor blackColor],@"Background",
-        [NSColor colorWithCalibratedRed:0.45f
-                                               green:0.5f
-                                                blue:0.55f
-                                               alpha:1.0f],@"SelectionColor",
-        [NSColor redColor],@"BoldColor",
-        [NSNumber numberWithUnsignedInt:25],@"Row",
-        [NSNumber numberWithUnsignedInt:80],@"Col",
-        [NSNumber numberWithInt:10],@"Transparency",
-        @"xterm",@"Term Type",
-        [@"~"  stringByExpandingTildeInPath],@"Directory",
-        [NSFont fontWithName:@"FreeMonoBold" size:13],@"Font",
-        [NSFont fontWithName:@"Osaka-Mono"
-			    size:14],@"NAFont",
-        [NSNumber numberWithBool:false],@"AntiIdle",
-        [NSNumber numberWithUnsignedInt:0],@"AICode",
-        [NSNumber numberWithBool:true],@"AutoClose",
-        [NSNumber numberWithBool:false],@"DoubleWidth",
-        [NSNumber numberWithUnsignedInt:0],@"Shortcut",
-        [NSNumber numberWithBool:true],@"DefaultEntry",
-        NULL];
-//    [ae autorelease];
-    return ae;
-}
-
-
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal
 {
     FRONT = thePseudoTerminal;
@@ -726,7 +675,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     // Insert default entry
     if ( [addressBook count] < 1 || ![[addressBook objectAtIndex: 0] objectForKey:@"DefaultEntry"] ) {
-        [addressBook insertObject:[self newDeafultObject] atIndex: 0];
+        [addressBook insertObject:[self newDefaultAddressBookEntry] atIndex: 0];
     }
     // There can be only one
     int i;
@@ -759,6 +708,72 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     return ([[self addressBook] objectAtIndex: entryIndex]);
 
 }
+
+- (NSMutableDictionary *) defaultAddressBookEntry
+{
+    int i;
+
+    for(i = 0; i < [[self addressBook] count]; i++)
+    {
+	NSMutableDictionary *entry = [[self addressBook] objectAtIndex: i];
+
+	if([entry objectForKey: @"DefaultEntry"] != nil)
+	    return (entry);
+    }
+
+    return (nil);
+}
+
+- (NSDictionary *)newDefaultAddressBookEntry
+{
+    char *userShell, *thisUser;
+    NSString *shell;
+
+    // This would be better read from a file stored in the package (with some bits added at run time)
+
+    // Get the user's default shell
+    if((thisUser = getenv("USER")) != NULL) {
+        shell = [NSString stringWithFormat: @"login -fp %s", thisUser];
+    } else if((userShell = getenv("SHELL")) != NULL) {
+        shell = [NSString stringWithCString: userShell];
+    } else {
+        shell = @"/bin/bash --login";
+    }
+
+    NSDictionary *ae;
+    ae=[[NSDictionary alloc] initWithObjectsAndKeys:
+        @"Default session",@"Name",
+        shell,@"Command",
+        [NSNumber numberWithUnsignedInt:1],@"Encoding",
+        [NSColor colorWithCalibratedRed:0.8f
+				  green:0.8f
+				   blue:0.8f
+				  alpha:1.0f],@"Foreground",
+        [NSColor blackColor],@"Background",
+        [NSColor colorWithCalibratedRed:0.45f
+				  green:0.5f
+				   blue:0.55f
+				  alpha:1.0f],@"SelectionColor",
+        [NSColor redColor],@"BoldColor",
+        [NSNumber numberWithUnsignedInt:25],@"Row",
+        [NSNumber numberWithUnsignedInt:80],@"Col",
+        [NSNumber numberWithInt:10],@"Transparency",
+        @"xterm",@"Term Type",
+        [@"~"  stringByExpandingTildeInPath],@"Directory",
+        [NSFont fontWithName:@"FreeMonoBold" size:13],@"Font",
+        [NSFont fontWithName:@"Osaka-Mono"
+					     size:14],@"NAFont",
+        [NSNumber numberWithBool:false],@"AntiIdle",
+        [NSNumber numberWithUnsignedInt:0],@"AICode",
+        [NSNumber numberWithBool:true],@"AutoClose",
+        [NSNumber numberWithBool:false],@"DoubleWidth",
+        [NSNumber numberWithUnsignedInt:0],@"Shortcut",
+        [NSNumber numberWithBool:true],@"DefaultEntry",
+        NULL];
+        [ae autorelease];
+    return ae;
+}
+
 
 - (void) addAddressBookEntry: (NSDictionary *) entry
 {

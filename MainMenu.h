@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.24 2003-05-25 07:32:18 ujwal Exp $
+// $Id: MainMenu.h,v 1.25 2003-05-25 07:45:54 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -72,7 +72,6 @@
 
 // Utility methods
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
-- (NSDictionary *)newDeafultObject;
 - (void) setFrontPseudoTerminal: (PseudoTerminal *) thePseudoTerminal;
 - (PseudoTerminal *) frontPseudoTerminal;
 - (void) buildSessionSubmenu;
@@ -97,6 +96,8 @@
 - (void) initAddressBook;
 - (void) saveAddressBook;
 - (NSArray *)addressBookNames;
+- (NSDictionary *)newDefaultAddressBookEntry;
+- (NSMutableDictionary *) defaultAddressBookEntry;
 - (NSDictionary *)addressBookEntry: (int) entryIndex;
 - (void) addAddressBookEntry: (NSDictionary *) entry;
 - (void) replaceAddressBookEntry:(NSDictionary *) old with:(NSDictionary *)new;

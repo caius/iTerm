@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.10 2004-03-14 06:05:38 ujwal Exp $
+// $Id: VT100Screen.h,v 1.11 2004-03-19 22:10:30 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -57,6 +57,7 @@
     PTYSession *SESSION;
     int charset[4], saveCharset[4];
     BOOL blinkShow;
+	BOOL PLAYBELL;
 
     
     BOOL blinkingCursor;
@@ -77,7 +78,6 @@
 	char *tempBuffer;
 }
 
-+ (void)setPlayBellFlag:(BOOL)flag;
 
 - (id)init;
 - (void)dealloc;
@@ -103,6 +103,7 @@
 
 - (BOOL) blinkingCursor;
 - (void) setBlinkingCursor: (BOOL) flag;
+- (void)setPlayBellFlag:(BOOL)flag;
 
 
 // edit screen buffer

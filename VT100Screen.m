@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.201 2004-03-14 06:05:37 ujwal Exp $
+// $Id: VT100Screen.m,v 1.202 2004-03-19 22:10:26 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -81,17 +81,6 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 #define TABSIZE     8
 
-static BOOL PLAYBELL = YES;
-
-
-+ (void)setPlayBellFlag:(BOOL)flag
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):+[VT100Screen setPlayBellFlag:%s]",
-	  __FILE__, __LINE__, flag == YES ? "YES" : "NO");
-#endif
-    PLAYBELL = flag;
-}
 
 - (id)init
 {
@@ -1353,6 +1342,15 @@ static BOOL PLAYBELL = YES;
 	
 	memset(dirty+idx1,1,(SCROLL_BOTTOM-CURSOR_Y+1)*WIDTH);
 	
+}
+
+- (void)setPlayBellFlag:(BOOL)flag
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):+[VT100Screen setPlayBellFlag:%s]",
+		  __FILE__, __LINE__, flag == YES ? "YES" : "NO");
+#endif
+    PLAYBELL = flag;
 }
 
 - (void)playBell

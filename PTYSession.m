@@ -995,7 +995,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setTransparency: [displayProfileMgr transparencyForProfile: displayProfile]];    
 	
     // set up the rest of the preferences
-    [VT100Screen setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
+    [SCREEN setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
 	[SCREEN setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
 	[TEXTVIEW setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
 	[TEXTVIEW setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];

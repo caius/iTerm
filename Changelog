@@ -1,3 +1,7 @@
+2003-06-22	ujwal
+
+    * Updated documentation.
+
 2003-06-21	ujwal
 
     * Version string in "About" box is dynamically generated.
@@ -105,7 +109,7 @@
 
     * Fixed bug where PseduoTerminal's delegate was not being set.
     
-    * Fixed bug in PTYTextView in ARRY mode where the delagate was not 
+    * Fixed bug in PTYTextView in ARRAY mode where the delagate was not 
       being retained. 
           
     * Fixed more memory leaks caused by PseudoTerminal and PTYSession 
@@ -527,7 +531,7 @@
     * Fixed a bug in dead key processing
       
 2003-03-13	fabian
-    * Added a new option to allow opening the address book
+    * Added a new option to allow opening the bookmarks
       window when startup.
     * Change version number to 0.6.5
     * Localized GPL license statement for zh_CN and zn_TW
@@ -941,7 +945,7 @@
       
 
 2003-01-20	fabian
-    * New option in preference&address book entry
+    * New option in preference&bookmarks entry
       Treat NonASCII characters as double width
     * Graphical characters now works for VT100 font
     * Fixed a bug in function key code
@@ -960,7 +964,7 @@
 2003-01-17	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added support to specify text highlight/selection color 
-      in preferences, session settings, and address book.
+      in preferences, session settings, and bookmarks.
       
 
 2003-01-16	Ujwal S. Sathyam <ujwal@setlurgroup.com>
@@ -1015,7 +1019,7 @@
 
 2003-01-11	Aaron D. Gerber <gerber@trvnet.net>
 
-    * When you edit or add an entry to the address book,
+    * When you edit or add an entry to the bookmarks,
       it will be sorted.
       
 2003-01-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
@@ -1042,7 +1046,7 @@
     * Fixed a bug in putToken(), NEL
     
 2003-01-08	fabian
-    * Added new option in address book entries that allow
+    * Added new option in bookmarks entries that allow
       user to set "close session automatically" individually
       
 2003-01-08	Ujwal S. Sathyam <ujwal@setlurgroup.com>
@@ -1095,7 +1099,7 @@
       key while accessing the contextual menu.
     
     * Refactored the contextual menu code, so that the 
-      text view does not have know about the address book 
+      text view does not have know about the bookmarks 
       and session configuration.
       
     * Fixed AutoResizingMask of buttons in Bookmarks.
@@ -1312,7 +1316,7 @@
     * Fixed a few inconsistencies in the interface about 
       transparency
     * Fixed a bug that make user unable to open a new 
-      window from quick run and address book panel.
+      window from quick run and bookmarks panel.
     * Now the version number is 0.5.5
 
 2002-12-08	fabian

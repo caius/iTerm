@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.25 2003-05-25 07:45:54 ujwal Exp $
+// $Id: MainMenu.h,v 1.26 2003-06-22 18:18:37 ujwal Exp $
 /*
  **  MainMenu.h
  **
@@ -46,7 +46,7 @@
     // Menu items
     IBOutlet NSMenuItem *selectTab;
     
-    // address book data
+    // bookmarks data
     NSMutableArray *addressBook;
 
     // PseudoTerminal objects

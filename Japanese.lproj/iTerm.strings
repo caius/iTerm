@@ -61,7 +61,7 @@
 "OK" = "OK";
 
 /* Toolbar Item Tip:Bookmarks */
-"Open the address book" = "アドレスブックを開く";
+"Open the bookmarks" = "アドレスブックを開く";
 
 /* Context menu */
 "Paste" = "ペースト";
@@ -98,7 +98,7 @@
 
 /* Upgrade */
 "Upgrade Warning: New language encodings available"="アップグレード警告: 新しいエンコーディングが存在します";
-"Please reset all the encoding settings in your preference and address book"="環境設定とアドレスブックの中の全てのエンコーディング設定を再設定して下さい";
+"Please reset all the encoding settings in your preference and bookmarks"="環境設定とアドレスブックの中の全てのエンコーディング設定を再設定して下さい";
 
 /* Author */
 "fabian"="fabian";

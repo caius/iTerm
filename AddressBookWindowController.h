@@ -31,7 +31,7 @@
 
 @interface AddressBookWindowController : NSWindowController {
 
-    // address book window
+    // bookmarks window
     IBOutlet NSTableView *adTable;
 
     // address entry window
@@ -89,7 +89,7 @@
     BOOL changingNA;
     BOOL defaultEntry;
 
-    // address book data
+    // bookmarks data
     NSMutableArray *addressBook;
 
     // default values from preference

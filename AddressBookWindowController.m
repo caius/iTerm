@@ -335,7 +335,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	}
     }
 
-    // Save the address book.
+    // Save the bookmarks.
     [[NSApp delegate] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
@@ -505,7 +505,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 	//        NSLog(@"%s(%d):-[Address entry replaced:%@]",
  //              __FILE__, __LINE__, ae );
 
-	// Save the address book.
+	// Save the bookmarks.
 	[[NSApp delegate] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu
@@ -522,7 +522,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 {
     [adTable selectRow: 0 byExtendingSelection: NO];
     [self adbDuplicateEntry: nil];
-    // Save the address book.
+    // Save the bookmarks.
     [[NSApp delegate] saveAddressBook];
 
     // Post a notification to all open terminals to reload their addressbooks into the shortcut menu
@@ -565,7 +565,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [[self addressBook] removeObjectAtIndex:[adTable selectedRow]];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
         [adTable reloadData];
-	// Save the address book.
+	// Save the bookmarks.
 	[[NSApp delegate] saveAddressBook];
 
 	// Post a notification to all open terminals to reload their addressbooks into the shortcut menu

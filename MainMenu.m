@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.77 2003-06-21 21:37:46 ujwal Exp $
+// $Id: MainMenu.m,v 1.78 2003-06-22 18:18:37 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -489,7 +489,7 @@ extern  NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictio
 }
 
 
-// Build the address book menu
+// Build the bookmarks menu
 - (void) buildAddressBookMenu: (NSMenu *) abMenu forTerminal: (id) sender
 {
     NSEnumerator *abEnumerator;

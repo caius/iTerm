@@ -61,7 +61,7 @@
 "OK" = "OK";
 
 /* Toolbar Item Tip:Bookmarks */
-"Open the address book" = "Open the address book";
+"Open the bookmarks" = "Open the bookmarks";
 
 /* Context menu */
 "Paste" = "Paste";
@@ -98,7 +98,7 @@
 
 /* Upgrade */
 "Upgrade Warning: New language encodings available!"="Upgrade Warning: New language encodings available!";
-"Please reset all the encoding settings in your preference and address book"="Please reset all the encoding settings in your preference and address book";
+"Please reset all the encoding settings in your preference and bookmarks"="Please reset all the encoding settings in your preference and bookmarks";
 
 /* Author */
 "fabian"="fabian";

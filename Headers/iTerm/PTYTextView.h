@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.44 2004-04-27 23:59:24 yfabian Exp $
+// $Id: PTYTextView.h,v 1.45 2004-05-08 19:10:35 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -121,6 +121,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	
 	// trackingRect tab
 	NSTrackingRectTag trackingRectTag;
+	
+	BOOL keyIsARepeat;
 }
 
 - (id)initWithFrame: (NSRect) aRect;
@@ -132,6 +134,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (BOOL)shouldDrawInsertionPoint;
 - (void)drawRect:(NSRect)rect;
 - (void)keyDown:(NSEvent *)event;
+- (BOOL) keyIsARepeat;
 - (void)mouseExited:(NSEvent *)event;
 - (void)mouseEntered:(NSEvent *)event;
 - (void)mouseDown:(NSEvent *)event;

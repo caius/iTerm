@@ -619,7 +619,9 @@ static NSString *PWD_ENVVALUE = @"~";
 		}
     }
 	
-	[self updateDisplay];
+	// let the update thred update display if a key is being held down
+	if([TEXTVIEW keyIsARepeat] == NO)
+		[self updateDisplay];
 }
 
 
@@ -725,7 +727,9 @@ static NSString *PWD_ENVVALUE = @"~";
     if (data != nil) 
 		[self writeTask:data];
 
-	[self updateDisplay];
+	// let the update thred update display if a key is being held down
+	if([TEXTVIEW keyIsARepeat] == NO)
+		[self updateDisplay];
 }
 
 - (void)insertNewline:(id)sender

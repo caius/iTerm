@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.214 2004-04-28 05:07:22 yfabian Exp $
+// $Id: PTYTextView.m,v 1.215 2004-05-08 19:10:30 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -958,6 +958,8 @@ static SInt32 systemVersion;
           __FILE__, __LINE__, event );
 #endif
     
+	keyIsARepeat = [event isARepeat];
+	
     // Hide the cursor
     [NSCursor setHiddenUntilMouseMoves: YES];   
 
@@ -983,6 +985,11 @@ static SInt32 systemVersion;
             [delegate keyDown:event];
         }
     }
+}
+
+- (BOOL) keyIsARepeat
+{
+	return (keyIsARepeat);
 }
 
 - (void) otherMouseDown: (NSEvent *) event

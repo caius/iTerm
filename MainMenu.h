@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.8 2003-01-08 17:20:13 yfabian Exp $
+// $Id: MainMenu.h,v 1.9 2003-01-14 19:11:53 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -98,6 +98,7 @@
 - (NSStringEncoding const*) encodingList;
 - (NSArray *)addressBookNames;
 - (NSDictionary *)addressBookEntry: (int) entryIndex;
+- (void) addAddressBookEntry: (NSDictionary *) entry;
 
 // Preference Panel
 - (IBAction)showPrefWindow:(id)sender;

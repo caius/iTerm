@@ -39,6 +39,7 @@
                 newSession = id; 
                 nextSession = id; 
                 previousSession = id; 
+                saveSession = id; 
                 setMainMenu = id; 
                 switchSession = id; 
                 windowConfigBackground = id; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.73 2003-01-14 18:17:27 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.74 2003-01-14 19:12:22 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1357,6 +1357,33 @@ static NSString *ConfigToolbarItem = @"Config";
 {
     return (pref);
 }
+
+- (IBAction)saveSession:(id)sender
+{
+    NSDictionary *ae;
+
+    ae=[[NSDictionary alloc] initWithObjectsAndKeys:
+        [self currentSessionName],@"Name",
+        [SHELL path],@"Command",
+        [NSNumber numberWithUnsignedInt:[TERMINAL encoding]],@"Encoding",
+        [TERMINAL defaultFGColor],@"Foreground",
+        [TERMINAL defaultBGColor],@"Background",
+        [NSString stringWithInt:WIDTH],@"Row",
+        [NSString stringWithInt:HEIGHT],@"Col",
+        [NSNumber numberWithInt:100-[[TERMINAL defaultBGColor] alphaComponent]*100],@"Transparency",
+        [[self currentSession] TERM_VALUE],@"Term Type",
+        @"",@"Directory",
+        [SCREEN font],@"Font",
+        [SCREEN nafont],@"NAFont",
+        [NSNumber numberWithBool:[[self currentSession] antiIdle]],@"AntiIdle",
+        [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]],@"AICode",
+        [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
+        NULL];
+//    NSLog(@"new entry:%@",ae);
+    [MAINMENU addAddressBookEntry: ae];
+    [MAINMENU saveAddressBook];
+}
+
 
 
 @end

@@ -8,6 +8,7 @@
                 logStop = id; 
                 nextSession = id; 
                 previousSession = id; 
+                saveSession = id; 
                 showConfigWindow = id; 
             }; 
             CLASS = FirstResponder; 

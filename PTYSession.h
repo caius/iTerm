@@ -128,6 +128,7 @@
 - (int) antiCode;
 - (void) setAntiIdle:(BOOL)set;
 - (void) setAntiCode:(int)code;
+- (BOOL) autoClose;
 - (void) setAutoClose:(BOOL)set;
 
 - (void)clearBuffer;

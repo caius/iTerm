@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.22 2003-01-11 22:15:12 ujwal Exp $
+// $Id: MainMenu.m,v 1.23 2003-01-14 19:11:58 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -732,4 +732,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     
 }
 
+- (void) addAddressBookEntry: (NSDictionary *) entry
+{
+    [addressBook addObject:entry];
+    [addressBook sortUsingFunction: addressBookComparator context: nil];
+    [adTable reloadData];
+}
 @end

@@ -906,6 +906,11 @@ static NSString *PWD_ENVVALUE = @"~";
     ai_code=code;
 }
 
+- (BOOL) autoClose
+{
+    return autoClose;
+}
+
 - (void) setAutoClose:(BOOL)set
 {
     autoClose=set;

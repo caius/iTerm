@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.12 2003-02-19 16:36:07 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.13 2003-02-19 19:28:40 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -139,7 +139,10 @@ typedef struct {
 #define VT100CHARATTR_REVERSE  7
 
 // xterm additions
-#define VT100CHARATTR_POSITIVE  27
+#define VT100CHARATTR_NORMAL  		22
+#define VT100CHARATTR_NOT_UNDER  	24
+#define VT100CHARATTR_STEADY	  	25
+#define VT100CHARATTR_POSITIVE  	27
 
 #define VT100CHARATTR_BOLDMASK    (1)
 #define VT100CHARATTR_UNDERMASK   (1<<1)

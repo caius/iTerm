@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.146 2003-09-11 18:16:38 ujwal Exp $
+// $Id: VT100Screen.m,v 1.147 2003-09-11 20:24:26 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -829,7 +829,7 @@ static BOOL PLAYBELL = YES;
     }
     [savedBuffer release];
     savedBuffer = nil;
-    updateIndex=0;
+    //updateIndex=0;
 }
 
 - (int) getIndexAtX:(int)x Y:(int)y withPadding:(BOOL)padding

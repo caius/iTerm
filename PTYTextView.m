@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.23 2003-02-05 07:52:49 ujwal Exp $
+// $Id: PTYTextView.m,v 1.24 2003-02-11 23:12:30 ujwal Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -120,11 +120,27 @@
     BOOL IMEnable = [imana wantsToInterpretAllKeystrokes];
     id delegate = [self delegate];
     BOOL put;
+    static NSEvent *old=nil;
+    static BOOL deadkey=NO;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView keyDown:%@]",
 	  __FILE__, __LINE__, event );
 #endif
+
+    // Check for dead keys
+    if (deadkey) {
+        [self interpretKeyEvents:[NSArray arrayWithObjects:old,event,nil]];
+        [old release];
+        deadkey=NO;
+	return;
+    }
+    else if ([[event characters] length]<1) {
+        deadkey=YES;
+        old=[[event copy] retain];
+	[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+	return;
+    }    
     
     if (IMEnable) {
 	BOOL prev = [self hasMarkedText];
@@ -181,12 +197,14 @@
     NSLog(@"%s(%d):-[PTYTextView insertText:%@]",
 	  __FILE__, __LINE__, aString);
 #endif
+#if 0
     IM_INPUT_INSERT = YES;
 
     [storage beginEditing];
     [storage deleteCharactersInRange:[self markedRange]];
     [storage endEditing];
     IM_INPUT_MARKEDRANGE = NSMakeRange(0, 0);
+#endif
 
     if ([delegate respondsToSelector:@selector(insertText:)])
 	[delegate insertText:aString];

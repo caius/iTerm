@@ -1,3 +1,10 @@
+2003-02-11	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Moved dead key code from PTYSession: -keyDown to 
+      PTYTextView: -keyDown since that implements the 
+      NSTextInput protocol.
+      
+
 2003-02-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added support for alternate keypad mode and 

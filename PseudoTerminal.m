@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.147 2003-04-24 22:24:08 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.148 2003-04-24 22:34:21 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -908,7 +908,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
                                        
     // Now calculate an appropriate terminal height for this in integers.
-    h = floor(textviewSize.height/[[currentPtySession SCREEN] characterSize].height) - 1;
+    h = floor(textviewSize.height/[[currentPtySession SCREEN] characterSize].height);
     //NSLog(@"h = %d", h);
     
     // Now do the reverse calculation

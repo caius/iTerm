@@ -1,5 +1,9 @@
 2004-03-23  fabian
 
+	* Changed version number to 0.8.0
+	
+2004-03-22  fabian
+
 	* Fixed a bug in encoding settings.
 	* Added cursor text and selection text in config panel.
 	* Fixed bugs in char cache. It now follows changes of color setting correctly.

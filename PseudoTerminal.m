@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.189 2003-06-02 16:34:19 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.190 2003-06-02 16:41:02 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1663,6 +1663,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                         nil,nil);
     }
     [currentPtySession setAddressBookEntry: new];
+    [new release];
     [MAINMENU saveAddressBook];
 }
 

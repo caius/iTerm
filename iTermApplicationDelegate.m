@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.25 2004-09-25 20:26:43 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.26 2004-10-10 07:04:12 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -35,6 +35,7 @@
 #import <iTerm/PTYSession.h>
 #import <iTerm/VT100Terminal.h>
 #import <iTerm/FindPanelWindowController.h>
+#import <iTerm/PTYWindow.h>
 
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
 
@@ -315,6 +316,7 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 - (void) reloadMenus: (NSNotification *) aNotification
 {
     PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
+	unsigned int drawerState;
     
     [previousTerminal setAction: (frontTerminal?@selector(previousTerminal:):nil)];
     [nextTerminal setAction: (frontTerminal?@selector(nextTerminal:):nil)];
@@ -339,6 +341,20 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 		[fontSizeFollowWindowResize setState: NSOnState];
     else
 		[fontSizeFollowWindowResize setState: NSOffState];
+	
+	// reword some menu items
+ 	drawerState = [[(PTYWindow *)[frontTerminal window] drawer] state];
+	if(drawerState == NSDrawerClosedState || drawerState == NSDrawerClosingState)
+	{
+		[toggleBookmarksView setTitle: 
+			NSLocalizedStringFromTableInBundle(@"Show Bookmarks", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+	}
+	else
+	{
+		[toggleBookmarksView setTitle: 
+			NSLocalizedStringFromTableInBundle(@"Hide Bookmarks", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+	}
+	
 	
 }
 

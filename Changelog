@@ -1,3 +1,7 @@
+2004-10-10  ujwal
+
+	* Added support to display Bookmarks in drawer of terminal window.
+
 2004-10-03  ujwal
 
 	* Periodically refreshing autorelease pool in display update thread to avoid 

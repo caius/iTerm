@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.6 2004-03-14 06:05:37 ujwal Exp $ */
+/* $Id: PTYWindow.m,v 1.7 2004-10-10 07:04:12 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -86,6 +86,11 @@
     if([delegate conformsToProtocol: @protocol(PTYWindowDelegateProtocol)])
 	[delegate windowDidToggleToolbarVisibility: self];    
     
+}
+
+- (NSDrawer *) drawer
+{
+	return (drawer);
 }
 
 @end

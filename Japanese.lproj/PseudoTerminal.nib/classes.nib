@@ -29,7 +29,13 @@
         }, 
         {CLASS = PTYScrollView; LANGUAGE = ObjC; SUPERCLASS = NSScrollView; }, 
         {CLASS = PTYTextView; LANGUAGE = ObjC; SUPERCLASS = NSTextView; }, 
-        {CLASS = PTYWindow; LANGUAGE = ObjC; SUPERCLASS = NSWindow; }, 
+        {
+            ACTIONS = {toggleToolbarShown = id; }; 
+            CLASS = PTYWindow; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {drawer = NSDrawer; }; 
+            SUPERCLASS = NSWindow; 
+        }, 
         {
             ACTIONS = {
                 clearBuffer = id; 
@@ -41,11 +47,16 @@
                 moveTabToNewWindowContextualMenuAction = id; 
                 nextSession = id; 
                 previousSession = id; 
-                saveSession = id; 
+                saveDisplayProfile = id; 
+                saveTerminalProfile = id; 
                 switchSession = id; 
+                toggleBookmarksView = id; 
+                toggleFontSizeFollowWindowResize = id; 
+                toggleInputToAllSessions = id; 
             }; 
             CLASS = PseudoTerminal; 
             LANGUAGE = ObjC; 
+            OUTLETS = {bookmarksView = NSOutlineView; }; 
             SUPERCLASS = NSWindowController; 
         }
     ); 

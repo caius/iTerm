@@ -18,6 +18,7 @@
                 saveTerminalProfile = id; 
                 showConfigWindow = id; 
                 showFindPanel = id; 
+                toggleBookmarksView = id; 
                 toggleInputToAllSessions = id; 
                 toggleRemapDeleteKey = id; 
             }; 
@@ -113,7 +114,6 @@
                 newWindow = id; 
                 nextTerminal = id; 
                 previousTerminal = id; 
-                showABWindow = id; 
                 showAbout = id; 
                 showPrefWindow = id; 
                 smallerFont = id; 
@@ -125,15 +125,16 @@
                 AUTHORS = NSTextView; 
                 closeTab = NSMenuItem; 
                 closeWindow = NSMenuItem; 
+                fontSizeFollowWindowResize = NSMenuItem; 
                 logStart = NSMenuItem; 
                 logStop = NSMenuItem; 
                 newTab = NSMenuItem; 
                 newWindow = NSMenuItem; 
                 nextTerminal = NSMenuItem; 
                 previousTerminal = NSMenuItem; 
-                remapDeleteKey = NSMenuItem; 
                 selectTab = NSMenuItem; 
                 sendInputToAllSessions = NSMenuItem; 
+                toggleBookmarksView = NSMenuItem; 
             }; 
             SUPERCLASS = NSObject; 
         }

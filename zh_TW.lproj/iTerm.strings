@@ -170,3 +170,7 @@
 "Display Profile Saved To: %@"="顯示設置會儲存到: %@";
 "Terminal Profile Saved To: %@"="終端機設置會儲存到: %@";
 "All bookmarks associated with this profile are effected"="所有與此設置相關的書籤全都會被影響";
+
+/* Bookmarks */
+"Show Bookmarks" = "Show Bookmarks";
+"Hide Bookmarks"="Hide Bookmarks";

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.14 2004-09-25 20:26:43 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.15 2004-10-10 07:04:12 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -49,6 +49,7 @@
     IBOutlet NSMenuItem *closeWindow;
     IBOutlet NSMenuItem *sendInputToAllSessions;
 	IBOutlet NSMenuItem *fontSizeFollowWindowResize;
+	IBOutlet NSMenuItem *toggleBookmarksView;
 
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.296 2004-10-03 08:32:29 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.297 2004-10-10 07:04:12 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -54,6 +54,7 @@
 #import <iTerm/ITSessionMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
+#import <iTerm/Tree.h>
 #include <unistd.h>
 
 // keys for attributes:
@@ -165,6 +166,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [TABVIEW release];
 	
     [[self window] setDelegate: self];
+	
+	[[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(_reloadAddressBook:)
+                                                 name: @"iTermReloadAddressBook"
+                                               object: nil];	
+	
+	[bookmarksView setDataSource: [PreferencePanel sharedInstance]];
+	[bookmarksView setDelegate: self];
+	[bookmarksView setTarget: self];
+	[bookmarksView setDoubleAction: @selector(doubleClickedOnBookmarksView:)];
     
     [self setWindowInited: YES];
 }
@@ -483,6 +494,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal dealloc: 0x%x]", __FILE__, __LINE__, self);
 #endif
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [self releaseObjects];
     [_toolbarController release];
 	
@@ -1094,7 +1106,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
 		font = [self _getMaxFont:font height:proposedFrameSize.height - nch lines:HEIGHT];
 		proposedFrameSize.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
-		NSLog(@"actual height: %f\t scale: %f\t new size:%f\told:%f",proposedFrameSize.height,scale, [font pointSize], [FONT pointSize]);
+		//NSLog(@"actual height: %f\t scale: %f\t new size:%f\told:%f",proposedFrameSize.height,scale, [font pointSize], [FONT pointSize]);
 	}
 	
     return (proposedFrameSize);
@@ -1125,7 +1137,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		float height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier;
 
 		if (height != charHeight) {
-			NSLog(@"Old size: %f\t proposed New size:%f\tWindow Height: %f",[FONT pointSize], [font pointSize],frame.size.height);
+			//NSLog(@"Old size: %f\t proposed New size:%f\tWindow Height: %f",[FONT pointSize], [font pointSize],frame.size.height);
 			NSFont *nafont = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([NAFONT pointSize] * scale))];
 			nafont = [self _getMaxFont:nafont height:frame.size.height lines:HEIGHT];
 			
@@ -1618,6 +1630,41 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
 }
 
+
+// NSOutlineView delegate methods
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn 
+			   item:(id)item
+{
+	return (NO);
+}
+
+// NSOutlineView doubleclick action
+- (IBAction) doubleClickedOnBookmarksView: (id) sender
+{
+	int selectedRow = [bookmarksView selectedRow];
+	TreeNode *selectedItem;
+	
+	if(selectedRow < 0)
+		return;
+	
+	selectedItem = [bookmarksView itemAtRow: selectedRow];
+	if(selectedItem != nil && [selectedItem isLeaf])
+	{
+		[[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] inTerminal: self];
+	}
+	
+}
+
+// Bookmarks
+- (IBAction) toggleBookmarksView: (id) sender
+{
+	[[(PTYWindow *)[self window] drawer] toggle: sender];	
+	// Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
+}
+
+
+
 @end
 
 @implementation PseudoTerminal (Private)
@@ -1685,6 +1732,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	} while (height >= newHeight);
 	
 	return newfont;
+}
+
+- (void) _reloadAddressBook: (NSNotification *) aNotification
+{
+	[bookmarksView reloadData];
 }
 
 @end

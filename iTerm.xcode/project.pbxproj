@@ -2044,14 +2044,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		F63C178E0616010F00C79EBB = {
-			isa = PBXFileReference;
-			lastKnownFileType = image.png;
-			name = "iTerm-un.png";
-			path = "website/iTerm-un.png";
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		F645F2B00557B868005F354A = {
 			isa = PBXFileReference;
 			lastKnownFileType = image.png;
@@ -2115,15 +2107,6 @@
 			isa = PBXBuildFile;
 			settings = {
 			};
-		};
-		F65CCFA005F7DE6C00F04CFF = {
-			fileEncoding = 4;
-			isa = PBXFileReference;
-			lastKnownFileType = text.html.other;
-			name = screenshot.shtml;
-			path = website/screenshot.shtml;
-			refType = 4;
-			sourceTree = "<group>";
 		};
 		F65CCFFA05F7EB0700F04CFF = {
 			isa = PBXFileReference;
@@ -2394,7 +2377,6 @@
 				FBDF6B91042A6BD801F955DB,
 				FBDF6B92042A6BD801F955DB,
 				FBDF6B93042A6BD801F955DB,
-				F63C178E0616010F00C79EBB,
 				FBDF6B94042A6BD801F955DB,
 				FBDF6B95042A6BD801F955DB,
 				FBDF6B96042A6BD801F955DB,
@@ -2411,7 +2393,6 @@
 				FBDF6B9A042A6BD801F955DB,
 				F65CCFFA05F7EB0700F04CFF,
 				F65CCFFB05F7EB0700F04CFF,
-				F65CCFA005F7DE6C00F04CFF,
 				FBDF6B9B042A6BD801F955DB,
 				FBDF6B9C042A6BD801F955DB,
 				FBDF6B9D042A6BD801F955DB,

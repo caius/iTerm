@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.26 2004-09-12 07:15:29 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.27 2004-10-10 07:04:17 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -35,6 +35,7 @@
 
 @interface PseudoTerminal : NSWindowController <PTYTabViewDelegateProtocol, PTYWindowDelegateProtocol>
 {
+	IBOutlet NSOutlineView *bookmarksView;
     /// tab view
     PTYTabView *TABVIEW;
     PTToolbarController* _toolbarController;
@@ -150,6 +151,8 @@
 - (IBAction) saveDisplayProfile: (id) sender;
 - (IBAction) saveTerminalProfile: (id) sender;
 
+// Bookmarks
+- (IBAction) toggleBookmarksView: (id) sender;
 
 @end
 

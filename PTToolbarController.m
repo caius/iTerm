@@ -30,6 +30,7 @@
 #import "PseudoTerminal.h"
 
 NSString *NewToolbarItem = @"New";
+NSString *BookmarksToolbarItem = @"Bookmarks";
 NSString *CloseToolbarItem = @"Close";
 NSString *ConfigToolbarItem = @"Config";
 
@@ -69,6 +70,7 @@ NSString *ConfigToolbarItem = @"Config";
     NSMutableArray* itemIdentifiers= [[[NSMutableArray alloc]init] autorelease];
     
     [itemIdentifiers addObject: NewToolbarItem];
+	[itemIdentifiers addObject: BookmarksToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
@@ -83,6 +85,7 @@ NSString *ConfigToolbarItem = @"Config";
     NSMutableArray* itemIdentifiers = [[[NSMutableArray alloc]init] autorelease];
     
     [itemIdentifiers addObject: NewToolbarItem];
+	[itemIdentifiers addObject: BookmarksToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
@@ -126,6 +129,19 @@ NSString *ConfigToolbarItem = @"Config";
         [toolbarItem setTarget: nil];
         [toolbarItem setAction: @selector(showConfigWindow:)];
     } 
+	else if ([itemIdent isEqual: BookmarksToolbarItem]) 
+    {
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item: Bookmarks") ];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item: Bookmarks") ];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", thisBundle, @"Toolbar Item Tip: Bookmarks")];
+        imagePath = [thisBundle pathForResource:@"addressbook"
+                                         ofType:@"png"];
+        anImage = [[NSImage alloc] initByReferencingFile: imagePath];
+        [toolbarItem setImage: anImage];
+        [anImage release];
+        [toolbarItem setTarget: nil];
+        [toolbarItem setAction: @selector(toggleBookmarksView:)];
+    } 	
     else if ([itemIdent isEqual: NewToolbarItem])
     {
         NSPopUpButton *aPopUpButton;

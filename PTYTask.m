@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.5 2003-02-25 16:16:36 ujwal Exp $
+// $Id: PTYTask.m,v 1.6 2003-04-02 16:07:09 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -96,13 +96,44 @@ static int writep(int fds, char *buf, size_t len)
     int wrtlen = len;
     int result = 0;
     int sts = 0;
+    char *tmpPtr = buf;
+    int chunk;
+    struct timeval tv;
+    fd_set wfds,efds;
 
     while (wrtlen > 0) {
-	sts = write(fds, &(buf[len - wrtlen]), wrtlen);
+
+	FD_ZERO(&wfds);
+	FD_ZERO(&efds);
+	FD_SET(fds, &wfds);
+	FD_SET(fds, &efds);	
+	
+	tv.tv_sec = 0;
+	tv.tv_usec = 100000;
+
+	sts = select(fds + 1, NULL, &wfds, &efds, &tv);
+
+	if (sts == 0) {
+	    NSLog(@"Write timeout!");
+	    break;
+	}
+	else if (FD_ISSET(fds, &efds)) {
+	    NSLog(@"Write error!");
+	    break;
+	}
+	
+
+	if(wrtlen > 1024)
+	    chunk = 1024;
+	else
+	    chunk = wrtlen;
+	sts = write(fds, tmpPtr, wrtlen);
 	if (sts <= 0)
 	    break;
 
 	wrtlen -= sts;
+	tmpPtr += sts;
+
     }
     if (sts <= 0)
 	result = sts;

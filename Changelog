@@ -1,3 +1,8 @@
+2003-04-02	ujwal
+
+    * Fixed a problem that was causing iTerm to hang when 
+      a large piece of text was being pasted.
+
 2003-04-01	fabian
     * Fixed a bug in text input
     * Applied the URL parsing into ARRAY code

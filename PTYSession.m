@@ -732,8 +732,11 @@ static NSString *PWD_ENVVALUE = @"~";
         NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
                                     dataUsingEncoding:[TERMINAL encoding]
                                 allowLossyConversion:YES];
-        if (strdata != nil)
-            [SHELL writeTask:strdata];
+        if (strdata != nil){
+	    // Do this in a new thread since we do not want to block the read code.
+	    [NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:strdata];
+	    //[SHELL writeTask:strdata];
+	}
     }
     else
 	NSBeep();

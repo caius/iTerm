@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.15 2004-02-18 06:14:15 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.16 2004-02-18 06:56:58 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -10,7 +10,7 @@
  **
  **  Project: iTerm
  **
- **  Description: NSScrollView subclass. Currently does not do anything special.
+ **  Description: NSScrollView subclass. Handles scroll detection and background images.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by

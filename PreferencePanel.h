@@ -54,6 +54,7 @@
     IBOutlet id selectionColor;
     IBOutlet id tabViewType;
     IBOutlet id remapDeleteKey;
+    IBOutlet id openAddressBook;
     
     NSUserDefaults *prefs;
 
@@ -82,6 +83,7 @@
     BOOL defaultDoubleWidth;
     int defaultTabViewType;
     BOOL defaultRemapDeleteKey;
+    BOOL defaultOpenAddressBook;
 
 }
 
@@ -125,6 +127,6 @@
 - (NSColor *) selectionColor;
 - (NSTabViewType) tabViewType;
 - (BOOL)remapDeleteKey;
-
+- (BOOL)openAddressBook;
 
 @end

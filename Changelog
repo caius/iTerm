@@ -1,8 +1,15 @@
+2003-03-13	fabian
+    * Added a new option to allow opening the address book
+      window when startup.
+    * Change version number to 0.6.5
+    * Localized GPL license statement for zh_CN and zn_TW
+    
 2003-03-12	fabian
     * Fixed a bug that causes incorrect process of color.
     * Cleaned up the color code
     * Fixed a bug related to reversed video mode.
     * Changed default black color to pure black.
+    * Fixed some timer settings
     
 2003-03-11	fabian
     * Changed the color code. Now we no longer have fixed

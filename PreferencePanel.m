@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.27 2003-03-11 22:54:49 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.28 2003-03-13 18:50:18 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -161,6 +161,7 @@ static int TRANSPARENCY  =10;
     defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
     defaultDoubleWidth=[[prefs objectForKey:@"DoubleWidth"] boolValue];
     defaultRemapDeleteKey = [prefs objectForKey:@"RemapDeleteKey"]?[[prefs objectForKey:@"RemapDeleteKey"] boolValue]: YES;
+    defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
     changingNA=NO;
 
 }
@@ -210,6 +211,7 @@ static int TRANSPARENCY  =10;
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
     [remapDeleteKey setState:defaultRemapDeleteKey?NSOnState:NSOffState];
+    [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -302,6 +304,7 @@ static int TRANSPARENCY  =10;
     defaultSilenceBell=([silenceBell state]==NSOnState);
     defaultDoubleWidth=([doubleWidth state]==NSOnState);
     defaultRemapDeleteKey = ([remapDeleteKey state] == NSOnState);
+    defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
 
     [prefs setInteger:defaultCol forKey:@"Col"];
     [prefs setInteger:defaultRow forKey:@"Row"];
@@ -329,6 +332,7 @@ static int TRANSPARENCY  =10;
     [prefs setBool:defaultDoubleWidth forKey:@"DoubleWidth"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultRemapDeleteKey forKey:@"RemapDeleteKey"];
+    [prefs setBool:defaultOpenAddressBook forKey:@"OpenAddressBook"];
     
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -365,6 +369,7 @@ static int TRANSPARENCY  =10;
     defaultDoubleWidth=YES;
     defaultTabViewType = NSTopTabsBezelBorder;
     defaultRemapDeleteKey = YES;
+    defaultOpenAddressBook = NO;
     
     [shell setStringValue:defaultShell];
     [terminal setStringValue:defaultTerminal];
@@ -397,6 +402,7 @@ static int TRANSPARENCY  =10;
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [doubleWidth setState:defaultDoubleWidth?NSOnState:NSOffState];
     [remapDeleteKey setState:defaultRemapDeleteKey?NSOnState:NSOffState];
+    [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [tabViewType selectCellWithTag: defaultTabViewType];
 
     
@@ -510,6 +516,11 @@ static int TRANSPARENCY  =10;
 - (BOOL)remapDeleteKey
 {
     return (defaultRemapDeleteKey);
+}
+
+- (BOOL)openAddressBook
+{
+    return (defaultOpenAddressBook);
 }
 
 @end

@@ -93,6 +93,7 @@
                 foreground = id; 
                 hideTab = id; 
                 nafontExample = id; 
+                openAddressBook = id; 
                 optionKey = id; 
                 prefPanel = id; 
                 remapDeleteKey = id; 

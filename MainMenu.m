@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.34 2003-03-04 01:20:39 ujwal Exp $
+// $Id: MainMenu.m,v 1.35 2003-03-13 18:50:17 yfabian Exp $
 /*
  **  MainMenu.m
  **
@@ -85,7 +85,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app
 {
-    [self newWindow:nil];
+    if ([PREF_PANEL openAddressBook]) {
+        [self showABWindow:nil];
+    }
+    else [self newWindow:nil];
     
     return YES;
 }

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.76 2004-03-03 00:27:09 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.77 2004-03-03 00:54:55 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -356,24 +356,11 @@ static float versionNumber;
 	if(sender == kbEntryKey)
 	{
 		if([kbEntryKey indexOfSelectedItem] == KEY_HEX_CODE)
-		{
-			[kbEntryKeyModifierOption setState: NSOffState];
-			[kbEntryKeyModifierControl setState: NSOffState];
-			[kbEntryKeyModifierShift setState: NSOffState];
-			[kbEntryKeyModifierCommand setState: NSOffState];
-			
-			[kbEntryKeyModifierOption setEnabled: NO];
-			[kbEntryKeyModifierControl setEnabled: NO];
-			[kbEntryKeyModifierShift setEnabled: NO];
-			[kbEntryKeyModifierCommand setEnabled: NO];	
+		{			
 			[kbEntryKeyCode setHidden: NO];
 		}
 		else
 		{			
-			[kbEntryKeyModifierOption setEnabled: YES];
-			[kbEntryKeyModifierControl setEnabled: YES];
-			[kbEntryKeyModifierShift setEnabled: YES];
-			[kbEntryKeyModifierCommand setEnabled: YES];
 			[kbEntryKeyCode setStringValue: @""];
 			[kbEntryKeyCode setHidden: YES];
 		}

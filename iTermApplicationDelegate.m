@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.13 2004-01-28 20:05:48 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.14 2004-02-24 21:22:52 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -92,6 +92,7 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+	[self buildAddressBookMenu:nil];
 }
 
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification

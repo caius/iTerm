@@ -42,4 +42,17 @@
     // don't do anything.
 }
 
+- (void)textStorage:(NSTextStorage *)aTextStorage edited:(unsigned)mask range:(NSRange)range changeInLength:(int)lengthChange invalidatedRange:(NSRange)invalidatedCharRange
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"VT100LayoutManager: aTextStorage: edited: (0x%x) range: (%d,%d) changeInLength: (%d) invalidatedRange: (%d,%d)", mask, range.location, range.length, lengthChange, invalidatedCharRange.location, invalidatedCharRange.length);
+#endif
+
+    if(mask == NSTextStorageEditedAttributes)
+	return;
+
+    [super textStorage: aTextStorage edited: mask range: range changeInLength: lengthChange invalidatedRange: invalidatedCharRange];
+    
+}
+
 @end

@@ -34,4 +34,6 @@
 
 - (void)textContainerChangedGeometry:(NSTextContainer *)aTextContainer;
 
+- (void)textStorage:(NSTextStorage *)aTextStorage edited:(unsigned)mask range:(NSRange)range changeInLength:(int)lengthChange invalidatedRange:(NSRange)invalidatedCharRange;
+
 @end

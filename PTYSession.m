@@ -439,7 +439,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
     else if ((modflag & NSAlternateKeyMask) && (modflag & NSControlKeyMask)) {
 //        NSLog(@"opt_control_key detected(%d)",(modflag & NSShiftKeyMask));
-        [MAINMENU interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
+        [iTerm interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
     }
     else if((modflag & NSAlternateKeyMask) && (unicode == NSDeleteCharacter))
     {
@@ -1011,9 +1011,9 @@ static NSString *PWD_ENVVALUE = @"~";
 
 
 // get/set methods
-- (void) setMainMenu:(iTermController *) theMainMenu
+- (void) setITermController:(iTermController *) theMainMenu
 {
-    MAINMENU=theMainMenu;
+    iTerm=theMainMenu;
 }
 
 - (PseudoTerminal *) parent
@@ -1099,9 +1099,9 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     // get the session submenu to be rebuilt
-    if([[[self parent] mainMenu] frontPseudoTerminal] == [self parent])
+    if([[[self parent] iTerm] frontPseudoTerminal] == [self parent])
     {
-	[[[self parent] mainMenu] buildSessionSubmenu];
+	[[[self parent] iTerm] buildSessionSubmenu];
     }
     
 }

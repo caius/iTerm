@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.56 2003-08-06 15:55:57 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.57 2003-08-06 16:03:00 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -271,7 +271,7 @@ static float versionNumber;
     return (defaultEnforceCharacterAlignment);
 }
 
-- (void) setMainMenu: (iTermController *) theParent
+- (void) setITermController: (iTermController *) theParent
 {
     iTerm = theParent;
 }

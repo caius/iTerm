@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.197 2003-08-06 15:55:57 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.198 2003-08-06 16:03:00 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -77,7 +77,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return nil;
 
     // set our delegate
-    //[self setMainMenu: [NSApp delegate]];
+    //[self setITermController: [NSApp delegate]];
     
     // setup our toolbar
     [[self window] setToolbar:[self setupToolbar]];
@@ -126,7 +126,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     WIDTH=width;
     HEIGHT=height;
     NSRect tabviewRect;
-    NSDictionary *defaultSessionPreferences = [MAINMENU defaultAddressBookEntry];
+    NSDictionary *defaultSessionPreferences = [iTerm defaultAddressBookEntry];
 //    NSColor *bgColor;
 
     if (!font)
@@ -183,11 +183,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // Init the rest of the session
     [aSession setParent: self];
     [aSession setPreference: pref];
-    [aSession setMainMenu: MAINMENU];
+    [aSession setITermController: iTerm];
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set some default parameters
-    defaultParameters = [MAINMENU addressBookEntry: 0];
+    defaultParameters = [iTerm addressBookEntry: 0];
     [aSession setAddressBookEntry:defaultParameters];
     [aSession setPreferencesFromAddressBookEntry: defaultParameters];
 
@@ -329,7 +329,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 
 	[[self window] makeKeyAndOrderFront: self];
-	[MAINMENU setFrontPseudoTerminal: self];
+	[iTerm setFrontPseudoTerminal: self];
     }
 }
 
@@ -368,7 +368,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             }
             else if (i<currentSessionIndex) currentSessionIndex--;
 
-	    [[self mainMenu] buildSessionSubmenu];
+	    [[self iTerm] buildSessionSubmenu];
                         
             break;
         }
@@ -827,7 +827,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     
 
-    [MAINMENU terminalWillClose: self];
+    [iTerm terminalWillClose: self];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
@@ -839,7 +839,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     [self selectSessionAtIndex: [self currentSessionIndex]];
     
-    [MAINMENU setFrontPseudoTerminal: self];
+    [iTerm setFrontPseudoTerminal: self];
 
     // update the cursor
     [[currentPtySession SCREEN] showCursor];
@@ -971,7 +971,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (IBAction)showConfigWindow:(id)sender
 {
     int r;
-    NSStringEncoding const *p=[MAINMENU encodingList];
+    NSStringEncoding const *p=[iTerm encodingList];
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal showConfigWindow:%@]",
@@ -999,7 +999,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     while (*p) {
         //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
         [CONFIG_ENCODING addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[[currentPtySession TERMINAL] encoding]) r=p-[MAINMENU encodingList];
+        if (*p==[[currentPtySession TERMINAL] encoding]) r=p-[iTerm encodingList];
         p++;
     }
     [CONFIG_ENCODING selectItemAtIndex:r];
@@ -1047,7 +1047,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (IBAction)windowConfigOk:(id)sender
 {
 
-    NSDictionary *defaultSessionPreferences = [MAINMENU defaultAddressBookEntry];
+    NSDictionary *defaultSessionPreferences = [iTerm defaultAddressBookEntry];
 
     
     if ([CONFIG_COL intValue]<1||[CONFIG_ROW intValue]<1) {
@@ -1062,7 +1062,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         nil,nil);
     }else {
-        [[self currentSession] setEncoding:[MAINMENU encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
+        [[self currentSession] setEncoding:[iTerm encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
         if ((configFont != nil&&[[currentPtySession SCREEN] font]!=configFont) ||
 	    (configNAFont!= nil&&[[currentPtySession SCREEN] nafont]!=configNAFont)) {
             [self setAllFont:configFont nafont:configNAFont];
@@ -1220,7 +1220,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:Bookmarks")];
         [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open the bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item Tip:Bookmarks")];
         [toolbarItem setImage: [NSImage imageNamed: @"addressbook"]];
-        [toolbarItem setTarget: MAINMENU];
+        [toolbarItem setTarget: iTerm];
         [toolbarItem setAction: @selector(showABWindow:)];
     }
     else if ([itemIdent isEqual: CloseToolbarItem]) {
@@ -1361,7 +1361,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // Build the bookmarks menu
     NSMenu *abMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [MAINMENU buildAddressBookMenu: abMenu forTerminal: (newWin?nil:self)];
+    [iTerm buildAddressBookMenu: abMenu forTerminal: (newWin?nil:self)];
 
     [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
     [abMenu release];
@@ -1590,7 +1590,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 
 
-    [MAINMENU addInTerminals: term];
+    [iTerm addInTerminals: term];
     [term release];
     
     [term setPreference:pref];
@@ -1623,14 +1623,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] performClose:sender];
 }
 
-- (iTermController *) mainMenu;
+- (iTermController *) iTerm;
 {
-    return (MAINMENU);
+    return (iTerm);
 }
 
-- (void) setMainMenu:(id) sender
+- (void) setITermController:(id) sender
 {
-    MAINMENU=sender;
+    iTerm=sender;
 }
 
 
@@ -1668,7 +1668,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[currentABEntry setObject: [NSNumber numberWithUnsignedInt:[[self currentSession] antiCode]] forKey: @"AICode"];
 	[currentABEntry setObject: [[currentPtySession SCREEN] nafont] forKey: @"NAFont"];
 
-	[[MAINMENU addressBook] replaceObjectAtIndex: [[MAINMENU addressBook] indexOfObject: [currentPtySession addressBookEntry]] withObject: currentABEntry];
+	[[iTerm addressBook] replaceObjectAtIndex: [[iTerm addressBook] indexOfObject: [currentPtySession addressBookEntry]] withObject: currentABEntry];
 
 	NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
 		 [currentABEntry objectForKey:@"Name"],
@@ -1700,7 +1700,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	    [NSNumber numberWithBool:[[self currentSession] autoClose]],@"AutoClose",
 	    [NSNumber numberWithBool:[[self currentSession] doubleWidth]],@"DoubleWidth",
 	    NULL];
-        [MAINMENU addAddressBookEntry: new];
+        [iTerm addAddressBookEntry: new];
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Configuration saved as a new entry in Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Config"),
                         [new objectForKey:@"Name"],
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
@@ -1708,7 +1708,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[new release];
 	[currentPtySession setAddressBookEntry: new];
     }
-    [MAINMENU saveAddressBook];
+    [iTerm saveAddressBook];
 
     
 }
@@ -1884,7 +1884,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     NSScriptObjectSpecifier *containerRef;
 
-    NSArray *terminals = [[self mainMenu] terminals];
+    NSArray *terminals = [[self iTerm] terminals];
     index = [terminals indexOfObjectIdenticalTo:self];
     if (index != NSNotFound) {
 	containerRef     = [NSApp objectSpecifier];
@@ -1913,7 +1913,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     int i;
     
     // search for the session in the addressbook
-    abArray = [MAINMENU addressBookNames];
+    abArray = [iTerm addressBookNames];
     for (i = 0; i < [abArray count]; i++)
     {
 	if([[abArray objectAtIndex: i] caseInsensitiveCompare: session] == NSOrderedSame)
@@ -1925,11 +1925,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     if(aBool == YES)
     {
-	[MAINMENU executeABCommandAtIndex: i inTerminal: self];
+	[iTerm executeABCommandAtIndex: i inTerminal: self];
     }
     else if([session caseInsensitiveCompare: @"Default Session"] == NSOrderedSame)
     {
-	[MAINMENU executeABCommandAtIndex: 0 inTerminal: self];
+	[iTerm executeABCommandAtIndex: 0 inTerminal: self];
     }
     else
 	NSBeep();
@@ -1966,7 +1966,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
 
-    [MAINMENU buildAddressBookMenu: [aPopUpButton menu] forTerminal: (newwin?nil:self)];
+    [iTerm buildAddressBookMenu: [aPopUpButton menu] forTerminal: (newwin?nil:self)];
 
     [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
     [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
@@ -1994,7 +1994,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // build a menu representation for text only.
     item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New") action: nil keyEquivalent: @""];
     aMenu = [[NSMenu alloc] initWithTitle: @"Bookmarks"];
-    [MAINMENU buildAddressBookMenu: aMenu forTerminal: (newwin?nil:self)];
+    [iTerm buildAddressBookMenu: aMenu forTerminal: (newwin?nil:self)];
     [aMenu addItem: [NSMenuItem separatorItem]];
     [aMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(_toggleNewWindowState:) keyEquivalent: @""];
     newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];

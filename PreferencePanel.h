@@ -68,7 +68,7 @@
 
 }
 
-- (void) setMainMenu: (iTermController *) theParent;
+- (void) setITermController: (iTermController *) theParent;
 - (IBAction) editDefaultSession: (id) sender;
 
 - (id)init;

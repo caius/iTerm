@@ -41,7 +41,7 @@
 @interface PTYSession : NSResponder {
     
     /// iTermController reference
-    iTermController *MAINMENU;
+    iTermController *iTerm;
     
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
@@ -139,7 +139,7 @@
 
 
 // get/set methods
-- (void) setMainMenu: (iTermController *) theMainMenu;
+- (void) setITermController: (iTermController *) theMainMenu;
 - (PseudoTerminal *) parent;
 - (void) setParent: (PseudoTerminal *) theParent;
 - (PTYTabViewItem *) tabViewItem;

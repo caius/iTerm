@@ -198,7 +198,6 @@ static NSImage *warningImage;
 
 - (void) setBell:(BOOL)b
 {
-
     // do this only if there is a change
     if(bell == b)
 	return;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.51 2003-02-25 16:06:15 ujwal Exp $
+// $Id: VT100Screen.m,v 1.52 2003-02-25 20:31:56 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -185,6 +185,8 @@ static BOOL PLAYBELL = YES;
 
     BUFFER=[[NSMutableAttributedString alloc] init];
     screenLines = [[NSMutableArray alloc] init];
+
+    minIndex=0;
     
     return self;
 }
@@ -741,7 +743,7 @@ static BOOL PLAYBELL = YES;
 //    NSLog(@"index:%d[%d] (CURSOR_IN_MIDDLE:%d)",idx,[s length],CURSOR_IN_MIDDLE);
 
 #endif
-    
+    if (idx<minIndex) minIndex=idx;
     return idx;
 }
 
@@ -1140,11 +1142,8 @@ static BOOL PLAYBELL = YES;
         }
         // reverse the video on the position where the cursor is supposed to be shown.
         dic=[NSMutableDictionary dictionaryWithDictionary: [STORAGE attributesAtIndex:idx effectiveRange:nil]];
-        fg=[dic objectForKey:NSBackgroundColorAttributeName];
-        bg=[dic objectForKey:NSForegroundColorAttributeName];
-        //        NSLog(@"set fg=%@\nbg=%@",fg,bg);
-        [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-        [dic setObject:fg forKey:NSForegroundColorAttributeName];
+        [dic setObject:[TERMINAL defaultFGColor] forKey:NSBackgroundColorAttributeName];
+        [dic setObject:[TERMINAL defaultBGColor] forKey:NSForegroundColorAttributeName];
         //        NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];
 #endif
@@ -2295,11 +2294,14 @@ static BOOL PLAYBELL = YES;
         if ([s characterAtIndex:idx]=='\n') y++;
     }
     if (y<HEIGHT) idx++; else idx+=2;
+//    NSLog(@"renew: %d, %d",updateIndex, idx);
 
-    updateIndex=idx;
-//    NSLog(@"renew: %d, %d",updateIndex, len-updateIndex);
-    [BUFFER  replaceCharactersInRange:NSMakeRange(0,[BUFFER length])
-                 withAttributedString:[STORAGE attributedSubstringFromRange:NSMakeRange(updateIndex,len-updateIndex)]];
+    if (updateIndex<idx) {
+        [BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];
+        updateIndex=idx;
+    }
+
+    minIndex=[BUFFER length];
 #endif
 }
 
@@ -2308,17 +2310,19 @@ static BOOL PLAYBELL = YES;
     
 //    NSLog(@"changing %d,%d,%d",updateIndex,[STORAGE length]-updateIndex,[BUFFER length]);
 #if DEBUG_USE_BUFFER
-    if ([BUFFER length]<=0) return;
+    int len=[BUFFER length];
+//    NSString *aString;
 
-    NSString *aString;
+    if (len<=0||minIndex>=len) return;
+//    NSLog(@"changing %d+%d,%d,%d",updateIndex,minIndex,[STORAGE length]-updateIndex-minIndex,len-minIndex);
 
     [STORAGE beginEditing];
-    [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex,[STORAGE length]-updateIndex)
-                 withAttributedString:BUFFER];
+    [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,[STORAGE length]-updateIndex-minIndex)
+                 withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
     [STORAGE endEditing];
     [self renewBuffer];
-
-    aString = [STORAGE string];
+    
+//    aString = [STORAGE string];
     
 #endif
 

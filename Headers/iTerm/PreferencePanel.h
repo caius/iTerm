@@ -39,7 +39,6 @@
     IBOutlet id hideTab;
     IBOutlet id openAddressBook;
     IBOutlet id promptOnClose;
-    IBOutlet id silenceBell;
     IBOutlet NSButton *focusFollowsMouse;
 	IBOutlet NSTextField *wordChars;
 	    
@@ -49,7 +48,6 @@
 
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
-    BOOL defaultSilenceBell;
     int defaultTabViewType;
     BOOL defaultOpenAddressBook;
     BOOL defaultPromptOnClose;
@@ -65,7 +63,6 @@
 
 - (IBAction)ok:(id)sender;
 - (IBAction)cancel:(id)sender;
-- (IBAction)restore:(id)sender;
 
 - (void)run;
 

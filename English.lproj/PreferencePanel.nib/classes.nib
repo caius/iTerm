@@ -2,7 +2,7 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {cancel = id; editDefaultSession = id; ok = id; restore = id; }; 
+            ACTIONS = {cancel = id; editDefaultSession = id; ok = id; }; 
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
             OUTLETS = {
@@ -11,7 +11,6 @@
                 openAddressBook = id; 
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 
-                silenceBell = id; 
                 tabPosition = NSMatrix; 
                 wordChars = NSTextField; 
             }; 

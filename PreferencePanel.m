@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.84 2004-03-08 23:03:32 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.85 2004-03-09 01:18:19 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -95,7 +95,6 @@ static float versionNumber;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
-    defaultSilenceBell=[[prefs objectForKey:@"SilenceBell"] boolValue];
     defaultOpenAddressBook = [prefs objectForKey:@"OpenAddressBook"]?[[prefs objectForKey:@"OpenAddressBook"] boolValue]: NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
@@ -109,7 +108,6 @@ static float versionNumber;
     [tabPosition selectCellWithTag: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
-    [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
@@ -132,14 +130,12 @@ static float versionNumber;
     defaultTabViewType=[[tabPosition selectedCell] tag];
     defaultCopySelection=([selectionCopiesText state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
-    defaultSilenceBell=([silenceBell state]==NSOnState);
     defaultOpenAddressBook = ([openAddressBook state] == NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
-    [prefs setBool:defaultSilenceBell forKey:@"SilenceBell"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultOpenAddressBook forKey:@"OpenAddressBook"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
@@ -149,23 +145,6 @@ static float versionNumber;
     
     [[self window] close];
 }
-
-- (IBAction)restore:(id)sender
-{    
-    defaultHideTab=YES;
-    defaultCopySelection=YES;
-    defaultSilenceBell=NO;
-    defaultTabViewType = NSTopTabsBezelBorder;
-    defaultOpenAddressBook = NO;
-
-    [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
-    [hideTab setState:defaultHideTab?NSOnState:NSOffState];
-    [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
-    [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
-    [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
-    [tabPosition selectCellWithTag: defaultTabViewType];
-}
-
 
 // NSWindow delegate
 - (void)windowWillLoad;
@@ -206,7 +185,7 @@ static float versionNumber;
 
 - (BOOL) silenceBell
 {
-    return (defaultSilenceBell);
+    return (NO); // fix me
 }
 
 - (void) setTabViewType: (NSTabViewType) type

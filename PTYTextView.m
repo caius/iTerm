@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.122 2004-02-19 20:01:22 ujwal Exp $
+// $Id: PTYTextView.m,v 1.123 2004-02-19 23:20:06 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1217,9 +1217,9 @@
 //
 - (void) draggingExited:(id <NSDraggingInfo>)sender
 {
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView draggingExited:%@]", __FILE__, __LINE__, sender );
-//#endif
+#endif
     
     // We don't do anything special, so let the parent NSTextView handle this.
     [super draggingExited: sender];

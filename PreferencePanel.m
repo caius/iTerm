@@ -15,7 +15,7 @@ static int   ROW   = 25;
 
 static NSString* TERM    =@"vt100";
 static NSString* SHELL   =@"/bin/bash --login";
-static NSStringEncoding *encodingList=nil;
+static NSStringEncoding const *encodingList=nil;
 
 static int TRANSPARENCY  =10;
 
@@ -73,6 +73,11 @@ static int TRANSPARENCY  =10;
     defaultFont=[[([prefs objectForKey:@"Font"]?
     [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Font"]]:FONT)
                       copy] retain];
+    defaultNAFont=[[([prefs objectForKey:@"NAFont"]?
+                   [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"NAFont"]]:FONT)
+        copy] retain];
+    
+    changingNA=NO;
                  
     return self;
 }
@@ -83,7 +88,7 @@ static int TRANSPARENCY  =10;
 
 - (void)run
 {
-    NSStringEncoding *p=encodingList;
+    NSStringEncoding const *p=encodingList;
     int r;
     
     [prefPanel center];
@@ -110,6 +115,11 @@ static int TRANSPARENCY  =10;
     [fontExample setBackgroundColor:defaultBackground];
     [fontExample setFont:defaultFont];
     [fontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultFont fontName], [defaultFont pointSize]]];
+
+    [nafontExample setTextColor:defaultForeground];
+    [nafontExample setBackgroundColor:defaultBackground];
+    [nafontExample setFont:defaultNAFont];
+    [nafontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultNAFont fontName], [defaultNAFont pointSize]]];
     
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];
@@ -122,9 +132,20 @@ static int TRANSPARENCY  =10;
 
 - (IBAction)changeFontButton:(id)sender
 {
+    changingNA=NO;
+
     [[fontExample window] makeFirstResponder:[fontExample window]];
     [[fontExample window] setDelegate:self];
     [[NSFontManager sharedFontManager] setSelectedFont:defaultFont isMultiple:NO];
+    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
+}
+
+- (IBAction)changeNAFontButton:(id)sender
+{
+    changingNA=YES;
+    [[nafontExample window] makeFirstResponder:[nafontExample window]];
+    [[nafontExample window] setDelegate:self];
+    [[NSFontManager sharedFontManager] setSelectedFont:defaultNAFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 
@@ -135,10 +156,18 @@ static int TRANSPARENCY  =10;
 
 - (void)changeFont:(id)fontManager
 {
-    [defaultFont autorelease];
-    defaultFont=[fontManager convertFont:[fontExample font]];
-    [fontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultFont fontName], [defaultFont pointSize]]];
-    [fontExample setFont:defaultFont];
+    if (changingNA) {
+        [defaultNAFont autorelease];
+        defaultNAFont=[fontManager convertFont:[nafontExample font]];
+        [nafontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultNAFont fontName], [defaultNAFont pointSize]]];
+        [nafontExample setFont:defaultNAFont];
+    }
+    else {
+        [defaultFont autorelease];
+        defaultFont=[fontManager convertFont:[fontExample font]];
+        [fontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultFont fontName], [defaultFont pointSize]]];
+        [fontExample setFont:defaultFont];
+    }
 }
 
 - (IBAction)ok:(id)sender
@@ -179,6 +208,8 @@ static int TRANSPARENCY  =10;
               forKey:@"Background"];
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultFont]
               forKey:@"Font"];
+    [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultNAFont]
+              forKey:@"NAFont"];
 
     [NSApp stopModal];
     [[NSColorPanel sharedColorPanel] close];
@@ -189,7 +220,7 @@ static int TRANSPARENCY  =10;
 - (IBAction)restore:(id)sender
 {
     int r;
-    NSStringEncoding *p=encodingList;
+    NSStringEncoding const *p=encodingList;
     
     if (defaultBackground) [defaultBackground autorelease];
     if (defaultForeground) [defaultForeground autorelease];
@@ -278,6 +309,21 @@ static int TRANSPARENCY  =10;
 - (NSFont*) font
 {
     return defaultFont;
+}
+
+- (NSFont*) nafont
+{
+    return defaultNAFont;
+}
+
+- (BOOL) ai
+{
+    return NO;
+}
+
+- (int) aiCode
+{
+    return 0;
 }
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.13 2002-12-16 21:11:24 ujwal Exp $
+// $Id: MainMenu.m,v 1.14 2002-12-16 23:10:52 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -80,7 +80,8 @@ static BOOL newWindow=YES;
     //        NSLog(@"%s(%d):-[PseudoTerminal ready to run:%@ arguments:%@]", __FILE__, __LINE__, cmd, arg );
     [term initWindow:[PREF_PANEL col]
               height:[PREF_PANEL row]
-                font:[PREF_PANEL font]];
+                font:[PREF_PANEL font]
+              nafont:[PREF_PANEL nafont]];
     [term initSession:nil
      foregroundColor:[PREF_PANEL foreground]
      backgroundColor:[[PREF_PANEL background] colorWithAlphaComponent: (1.0-[PREF_PANEL transparency]/100.0)]
@@ -130,7 +131,8 @@ static BOOL newWindow=YES;
             [term setPreference:PREF_PANEL];
             [term initWindow:[PREF_PANEL col]
                       height:[PREF_PANEL row]
-                        font:[PREF_PANEL font]];
+                        font:[PREF_PANEL font]
+                      nafont:[PREF_PANEL nafont]];
         }
         else term=FRONT;
 //        NSLog(@"%@",term);
@@ -238,7 +240,8 @@ static BOOL newWindow=YES;
         [term setPreference:PREF_PANEL];
         [term initWindow:[[entry objectForKey:@"Col"]intValue]
                     height:[[entry objectForKey:@"Row"] intValue]
-                    font:[entry objectForKey:@"Font"]];
+                    font:[entry objectForKey:@"Font"]
+                  nafont:[entry objectForKey:@"NAFont"]];
     }
     else term=FRONT;
     [term initSession:[entry objectForKey:@"Name"]
@@ -252,6 +255,8 @@ static BOOL newWindow=YES;
     [term startProgram:cmd arguments:arg environment:env];
     encoding=[[entry objectForKey:@"Encoding"] unsignedIntValue];
     [[term currentSession] setEncoding:encoding];
+    [[term currentSession] setAntiCode:[[entry objectForKey:@"AICode"] intValue]];
+    [[term currentSession] setAntiIdle:[[entry objectForKey:@"AntiIdle"] boolValue]];
     
     if (newWindow) {
         [term setWindowSize];
@@ -290,6 +295,14 @@ static BOOL newWindow=YES;
     [adTextExample setTextColor:[PREF_PANEL foreground]];
     [adTextExample setBackgroundColor:[PREF_PANEL background]];
 
+    aeNAFont=[[[PREF_PANEL nafont] copy] retain];
+    [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
+    [adNATextExample setTextColor:[PREF_PANEL foreground]];
+    [adNATextExample setBackgroundColor:[PREF_PANEL background]];
+    [adNATextExample setFont:aeNAFont];
+    [adAI setState:[PREF_PANEL ai]?NSOnState:NSOffState];
+    [adAICode setIntValue:[PREF_PANEL aiCode]];
+    
     [adTransparency setIntValue:[PREF_PANEL transparency]];
     [adTransparency2 setIntValue:[PREF_PANEL transparency]];
 
@@ -309,7 +322,10 @@ static BOOL newWindow=YES;
             [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
             [adTermType stringValue],@"Term Type",
             [adDir stringValue],@"Directory",
-            aeFont,@"Font", 
+            aeFont,@"Font",
+            aeNAFont,@"NAFont",
+            [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
+            [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
             NULL];
         [addressBook addObject:ae];
 //        NSLog(@"%s(%d):-[Address entry added:%@]",
@@ -374,7 +390,16 @@ static BOOL newWindow=YES;
     [adTextExample setTextColor:[entry objectForKey:@"Foreground"]];
     [adTextExample setBackgroundColor:[entry objectForKey:@"Background"]];
     [adTextExample setFont:aeFont];
-    
+
+    aeNAFont=[entry objectForKey:@"NAFont"];
+    if (aeNAFont==nil) aeNAFont=[aeFont copy];
+    [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
+    [adNATextExample setTextColor:[entry objectForKey:@"Foreground"]];
+    [adNATextExample setBackgroundColor:[entry objectForKey:@"Background"]];
+    [adNATextExample setFont:aeNAFont];
+    [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?[PREF_PANEL ai]:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
+    [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?[PREF_PANEL aiCode]:[[entry objectForKey:@"AICode"] intValue]];
+
     r= [NSApp runModalForWindow:AE_PANEL];
     [AE_PANEL close];
     if (r == NSRunStoppedResponse) {
@@ -391,7 +416,10 @@ static BOOL newWindow=YES;
             [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
             [adTermType stringValue],@"Term Type",
             [adDir stringValue],@"Directory",
-            aeFont,@"Font", 
+            aeFont,@"Font",
+            aeNAFont,@"NAFont",
+            [NSNumber numberWithBool:[adAI state]],@"AntiIdle",
+            [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
             NULL];
         [addressBook replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
 //        NSLog(@"%s(%d):-[Address entry replaced:%@]",
@@ -462,8 +490,17 @@ static BOOL newWindow=YES;
 
 - (IBAction)adEditFont:(id)sender
 {
+    changingNA=NO;
     [[adTextExample window] makeFirstResponder:[adTextExample window]];
     [[NSFontManager sharedFontManager] setSelectedFont:aeFont isMultiple:NO];
+    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
+}
+
+- (IBAction)adEditNAFont:(id)sender
+{
+    changingNA=YES;
+    [[adNATextExample window] makeFirstResponder:[adNATextExample window]];
+    [[NSFontManager sharedFontManager] setSelectedFont:aeNAFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 
@@ -490,10 +527,18 @@ static BOOL newWindow=YES;
 
 - (void)changeFont:(id)fontManager
 {
-    [aeFont autorelease];
-    aeFont=[fontManager convertFont:[adTextExample font]];
-    [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
-    [adTextExample setFont:aeFont];
+    if (changingNA) {
+        [aeNAFont autorelease];
+        aeNAFont=[fontManager convertFont:[adNATextExample font]];
+        [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
+        [adNATextExample setFont:aeNAFont];
+    }
+    else {
+        [aeFont autorelease];
+        aeFont=[fontManager convertFont:[adTextExample font]];
+        [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
+        [adTextExample setFont:aeFont];
+    }
 }
 
 // Table data source

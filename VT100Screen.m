@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.3 2002-12-09 02:29:46 yfabian Exp $
+// $Id: VT100Screen.m,v 1.4 2002-12-16 23:10:56 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -353,20 +353,21 @@ static BOOL PLAYBELL = YES;
     [STORAGE endEditing];
 }
 
-- (void)setFont:(NSFont *)font
+- (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
 {
-    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setFont:%@]", __FILE__, __LINE__, font );
 #endif
     [FONT release];
     FONT = [font copy];
-
+    [NAFONT release];
+    NAFONT = [nafont copy];
     FONT_SIZE = [VT100Screen fontSize:FONT];
-    [dic setObject:FONT forKey:NSFontAttributeName];
 
-    [STORAGE setAttributes:dic range:NSMakeRange(0, [STORAGE length])];
+    [STORAGE addAttribute:NSFontAttributeName
+                    value:FONT
+                    range:NSMakeRange(0, [STORAGE length])];
 }
 
 - (NSFont *)font
@@ -375,6 +376,14 @@ static BOOL PLAYBELL = YES;
     NSLog(@"%s(%d):-[VT100Screen font]",__FILE__, __LINE__);
 #endif
     return FONT;
+}
+
+- (NSFont *)nafont
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen font]",__FILE__, __LINE__);
+#endif
+    return NAFONT;
 }
 
 -(NSString *)fullLine
@@ -537,7 +546,7 @@ static BOOL PLAYBELL = YES;
                 if (ISDOUBLEWIDTHCHARACTER([string characterAtIndex:idx2+j])) x++;
             if (x>WIDTH) {
                 //            NSLog(@"setString: Hanzi cut at the end of line");
-                [string replaceCharactersInRange:NSMakeRange(idx2+j-1,1) withString:@"  "];
+                [string replaceCharactersInRange:NSMakeRange(idx2+j-1,1) withString:@"? "];
                 //            NSLog(@"           alter string to: %@",string);
                 x--;
             }
@@ -557,7 +566,7 @@ static BOOL PLAYBELL = YES;
             //        NSLog(@"index {%d,%d]->%d",CURSOR_X,CURSOR_Y,idx);
             if (CURSOR_IN_MIDDLE) {
                 //            NSLog(@"setString: Start from middle of a hanzi");
-                [string insertString:@" " atIndex:idx2];
+                [string insertString:@"?" atIndex:idx2];
                 CURSOR_X--;
             }
 
@@ -565,7 +574,7 @@ static BOOL PLAYBELL = YES;
                 if (ISDOUBLEWIDTHCHARACTER([string characterAtIndex:idx2+j])) x++;
             if (x>WIDTH) {
                 //            NSLog(@"setString: Hanzi cut at the end of line");
-                [string replaceCharactersInRange:NSMakeRange(idx2+j-1,1) withString:@"  "];
+                [string replaceCharactersInRange:NSMakeRange(idx2+j-1,1) withString:@"??"];
                 //            NSLog(@"           alter string to: %@",string);
                 x--;
             }
@@ -579,7 +588,7 @@ static BOOL PLAYBELL = YES;
 
             if (x2>x) {
                 //            NSLog(@"setString: End in the middle of a hanzi");
-                [string insertString:@" " atIndex:idx2+j];
+                [string insertString:@"?" atIndex:idx2+j];
                 j++;
                 x++;
             }
@@ -1235,17 +1244,31 @@ static BOOL PLAYBELL = YES;
 
 - (NSAttributedString *)attrString:(NSString *)str
 {
-    NSAttributedString *attr;
+    NSMutableAttributedString *attr;
+    int i,j,len;
+    BOOL ASCII;
 
     if (str==nil) {
         NSLog(@"attrString: nil received!");
         str=@"";
     }
-    
-    attr = [[NSAttributedString alloc]
+
+    attr = [[NSMutableAttributedString alloc]
                initWithString:str
                    attributes:[self characterAttributeDictionary]];
     [attr autorelease];
+    
+    len=[str length];
+    for (i=0;i<len;i++) {
+        ASCII=([str characterAtIndex:i]<0x7f);
+        for(j=i;j<len&&ASCII==([str characterAtIndex:j]<0x7f);j++);
+        if (!ASCII) {
+            [attr addAttribute:NSFontAttributeName
+                         value:NAFONT
+                         range:NSMakeRange(i,j-i+1)];
+        }
+        ASCII=!ASCII;
+    }
 
     return attr;
 }

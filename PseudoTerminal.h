@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.11 2002-12-14 08:54:09 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.12 2002-12-16 23:10:54 yfabian Exp $
 //
 //  PseudoTerminal.h
 //  JTerminal
@@ -35,6 +35,7 @@
     IBOutlet id CONFIG_BACKGROUND;
     IBOutlet id CONFIG_FOREGROUND;
     IBOutlet id CONFIG_EXAMPLE;
+    IBOutlet id CONFIG_NAEXAMPLE;
     IBOutlet id CONFIG_TRANSPARENCY;
     IBOutlet id CONFIG_TRANS2;
     IBOutlet id CONFIG_NAME;
@@ -47,9 +48,7 @@
     IBOutlet id OA_ON;
     char ai_code;
 
-    // Contextual Menu
-    id cMenu;
-        
+       
     // Session list
     NSMutableArray *ptyList;
     NSMutableArray *buttonList;
@@ -64,11 +63,12 @@
     NSString *TERM_VALUE;
     VT100Screen   *SCREEN;
     int WIDTH,HEIGHT;
-    NSFont *FONT;
+    NSFont *FONT, *NAFONT;
     PTYTextView *TEXTVIEW;
     BOOL pending;
     float alpha;
-    NSFont *configFont;
+    NSFont *configFont, *configNAFont;
+    BOOL changingNA;
     PreferencePanel *pref;
 }
 
@@ -81,7 +81,8 @@
 
 - (void)initWindow:(int)width
             height:(int)height
-              font:(NSFont *)font;
+              font:(NSFont *)font
+            nafont:(NSFont *)nafont;
 - (void)initSession:(NSString *)title
    foregroundColor:(NSColor *) fg
    backgroundColor:(NSColor *) bg
@@ -109,8 +110,8 @@
 - (void)setWindowSize;
 - (void)setWindowTitle;
 - (void)setWindowTitle: (NSString *)title;
-- (void)setAllFont:(NSFont *)font;
-- (void)setFont:(NSFont *)font;
+- (void)setAllFont:(NSFont *)font nafont:(NSFont *)nafont;
+- (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 
 // MainMenu
 - (void)setMainMenu:(id) sender;
@@ -145,6 +146,7 @@
 - (IBAction)windowConfigOk:(id)sender;
 - (IBAction)windowConfigCancel:(id)sender;
 - (IBAction)windowConfigFont:(id)sender;
+- (IBAction)windowConfigNAFont:(id)sender;
 - (IBAction)windowConfigForeground:(id)sender;
 - (IBAction)windowConfigBackground:(id)sender;
 - (void) resizeWindow:(int) w height:(int)h;

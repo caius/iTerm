@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.29 2002-12-16 21:16:01 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.30 2002-12-16 23:10:55 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -115,6 +115,7 @@ static NSDictionary *deadStateAttribute;
 - (void)initWindow:(int)width
             height:(int)height
               font:(NSFont *)font
+            nafont:(NSFont *)nafont
 {
     WIDTH=width;
     HEIGHT=height;
@@ -122,11 +123,16 @@ static NSDictionary *deadStateAttribute;
     NSRect scrollViewFrame;
 
     if (!font)
-        font = [[[pref font] copy] retain];
+        font = [pref font];
+    if (!nafont)
+        nafont=font;
+    
     NSParameterAssert(font != nil);
 
     if (FONT) [FONT autorelease];
     FONT=[[font copy] retain];
+    if (NAFONT) [NAFONT autorelease];
+    NAFONT=[[nafont copy] retain];
     
     // Create the scrollview
     scrollViewFrame = [[WINDOW contentView] frame];
@@ -198,8 +204,8 @@ static NSDictionary *deadStateAttribute;
     if (fg) [aSession setFGColor:fg];
     if (bg) [aSession setBGColor:bg];
     [SCROLLVIEW setBackgroundColor: bg];
-    
-    [self setFont:FONT];
+
+    [self setFont:FONT nafont:NAFONT];
     if (term) 
     {
         [aSession setTERM_VALUE: term];
@@ -579,7 +585,7 @@ static NSDictionary *deadStateAttribute;
     [WINDOW setTitle:title];
 }
 
-- (void)setAllFont:(NSFont *)font
+- (void)setAllFont:(NSFont *)font nafont:(NSFont *) nafont
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setAllFont:%@]",
@@ -589,22 +595,24 @@ static NSDictionary *deadStateAttribute;
 
     for(i=0;i<[ptyList count]; i++) {
         [[[ptyList objectAtIndex:i] TEXTVIEW]  setFont:font];
-        [[[ptyList objectAtIndex:i] SCREEN]  setFont:font];
+        [[[ptyList objectAtIndex:i] SCREEN]  setFont:font nafont:nafont];
     }
     if (FONT) [FONT autorelease];
     FONT=[[font copy] retain];
+    if (NAFONT) [NAFONT autorelease];
+    NAFONT=[[nafont copy] retain];
 }
 
-- (void)setFont:(NSFont *)font
+- (void)setFont:(NSFont *)font nafont:(NSFont *) nafont
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setFont:%@]",
           __FILE__, __LINE__, font);
 #endif
     [TEXTVIEW  setFont:font];
-    [SCREEN  setFont:font];
-    if (FONT) [FONT autorelease];
-    FONT=[[font copy] retain];
+    [SCREEN  setFont:font nafont:nafont];
+/*    if (FONT) [FONT autorelease];
+    FONT=[[font copy] retain]; */
 }
 
 - (void)changeFont:(id)sender
@@ -614,10 +622,18 @@ static NSDictionary *deadStateAttribute;
 	  __FILE__, __LINE__, sender);
 #endif
 //    NSLog(@"changeFont!!!!");
-    configFont=[[NSFontManager sharedFontManager] convertFont:configFont];
-    if (configFont!=nil) {
-        [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
-        [CONFIG_EXAMPLE setFont:configFont];
+    if (changingNA) {
+        configNAFont=[[NSFontManager sharedFontManager] convertFont:configNAFont];
+        if (configNAFont!=nil) {
+            [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
+            [CONFIG_NAEXAMPLE setFont:configFont];
+        }
+    } else{
+        configFont=[[NSFontManager sharedFontManager] convertFont:configFont];
+        if (configFont!=nil) {
+            [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
+            [CONFIG_EXAMPLE setFont:configFont];
+        }
     }
 }
 
@@ -801,6 +817,10 @@ static NSDictionary *deadStateAttribute;
     [CONFIG_EXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configFont fontName], [configFont pointSize]]];
     [CONFIG_EXAMPLE setTextColor:[TERMINAL defaultFGColor]];
     [CONFIG_EXAMPLE setBackgroundColor:[TERMINAL defaultBGColor]];
+    configNAFont=[SCREEN nafont];
+    [CONFIG_NAEXAMPLE setStringValue:[NSString stringWithFormat:@"%@ %g", [configNAFont fontName], [configNAFont pointSize]]];
+    [CONFIG_NAEXAMPLE setTextColor:[TERMINAL defaultFGColor]];
+    [CONFIG_NAEXAMPLE setBackgroundColor:[TERMINAL defaultBGColor]];
     [CONFIG_COL setIntValue:[SCREEN width]];
     [CONFIG_ROW setIntValue:[SCREEN height]];
     [CONFIG_NAME setStringValue:[self currentSessionName]];
@@ -867,8 +887,8 @@ static NSDictionary *deadStateAttribute;
                         nil,nil);
     }else {
         [[self currentSession] setEncoding:[MAINMENU encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
-        if (configFont != nil&&[SCREEN font]!=configFont) {
-            [self setAllFont:configFont];
+        if ((configFont != nil&&[SCREEN font]!=configFont)||(configNAFont!= nil&&[SCREEN nafont]!=configNAFont)) {
+            [self setAllFont:configFont nafont:configNAFont];
         }
 
         [self resizeWindow:[CONFIG_COL intValue] height:[CONFIG_ROW intValue]];
@@ -928,9 +948,19 @@ static NSDictionary *deadStateAttribute;
 
 - (IBAction)windowConfigFont:(id)sender
 {
+    changingNA=NO;
     [[CONFIG_EXAMPLE window] makeFirstResponder:[CONFIG_EXAMPLE window]];
     [[CONFIG_EXAMPLE window] setDelegate:self];
     [[NSFontManager sharedFontManager] setSelectedFont:configFont isMultiple:NO];
+    [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
+}
+
+- (IBAction)windowConfigNAFont:(id)sender
+{
+    changingNA=YES;
+    [[CONFIG_NAEXAMPLE window] makeFirstResponder:[CONFIG_NAEXAMPLE window]];
+    [[CONFIG_NAEXAMPLE window] setDelegate:self];
+    [[NSFontManager sharedFontManager] setSelectedFont:configNAFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.2 2002-12-07 19:58:09 ujwal Exp $
+// $Id: VT100Screen.h,v 1.3 2002-12-16 23:10:55 yfabian Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -26,7 +26,7 @@
     BOOL CURSOR_IN_MIDDLE;
 
     NSTextStorage *STORAGE;
-    NSFont *FONT;
+    NSFont *FONT, *NAFONT;
     NSSize FONT_SIZE;
     VT100Terminal *TERMINAL;
     PTYTask *SHELL;
@@ -69,8 +69,9 @@
 - (NSTextStorage *)textStorage;
 - (void)beginEditing;
 - (void)endEditing;
-- (void)setFont:(NSFont *)font;
+- (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (NSFont *)font;
+- (NSFont *)nafont;
 - (void)setLineLimit:(unsigned int)maxline;
 
 // edit screen buffer

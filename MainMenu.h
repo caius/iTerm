@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.h,v 1.5 2002-12-14 08:54:09 ujwal Exp $
+// $Id: MainMenu.h,v 1.6 2002-12-16 23:10:52 yfabian Exp $
 //
 //  MainMenu.h
 //  JTerminal
@@ -41,9 +41,13 @@
     IBOutlet id adTermType;
     IBOutlet id adDir;
     IBOutlet id adNewWindow;
+    IBOutlet id adAI;
+    IBOutlet id adAICode;
+    IBOutlet NSTextField *adNATextExample;
     
-    NSFont* aeFont;
-
+    NSFont *aeFont, *aeNAFont;
+    BOOL changingNA;
+    
     // preference window
     IBOutlet id PREF_PANEL;
 
@@ -87,6 +91,7 @@
 - (IBAction)adEditBackground:(id)sender;
 - (IBAction)adEditCancel:(id)sender;
 - (IBAction)adEditFont:(id)sender;
+- (IBAction)adEditNAFont:(id)sender;
 - (IBAction)adEditForeground:(id)sender;
 - (IBAction)adEditOK:(id)sender;
 - (void)changeFont:(id)fontManager;

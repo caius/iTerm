@@ -21,6 +21,7 @@
                 adEditCancel = id; 
                 adEditFont = id; 
                 adEditForeground = id; 
+                adEditNAFont = id; 
                 adEditOK = id; 
                 adbAddEntry = id; 
                 adbCancel = id; 
@@ -55,12 +56,15 @@
                 "QO_NewWindow" = id; 
                 "QO_PANEL" = id; 
                 "QO_TYPE" = id; 
+                adAI = id; 
+                adAICode = id; 
                 adBackground = NSColorWell; 
                 adCol = id; 
                 adCommand = NSTextField; 
                 adDir = id; 
                 adEncoding = NSComboBox; 
                 adForeground = NSColorWell; 
+                adNATextExample = id; 
                 adName = NSTextField; 
                 adNewWindow = id; 
                 adRow = id; 
@@ -78,6 +82,7 @@
                 changeBackground = id; 
                 changeFontButton = id; 
                 changeForeground = id; 
+                changeNAFontButton = id; 
                 ok = id; 
                 restore = id; 
             }; 
@@ -89,6 +94,7 @@
                 encoding = id; 
                 fontExample = id; 
                 foreground = id; 
+                nafontExample = id; 
                 prefPanel = id; 
                 row = id; 
                 shell = id; 

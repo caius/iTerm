@@ -14,8 +14,10 @@
 	<key>IBOpenObjects</key>
 	<array>
 		<integer>421</integer>
+		<integer>387</integer>
+		<integer>533</integer>
 	</array>
 	<key>IBSystem Version</key>
-	<string>6F21</string>
+	<string>6C115</string>
 </dict>
 </plist>

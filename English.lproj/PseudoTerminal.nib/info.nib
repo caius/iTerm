@@ -10,9 +10,10 @@
 	<array/>
 	<key>IBOpenObjects</key>
 	<array>
+		<integer>5</integer>
 		<integer>168</integer>
 	</array>
 	<key>IBSystem Version</key>
-	<string>6F21</string>
+	<string>6C115</string>
 </dict>
 </plist>

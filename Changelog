@@ -14,8 +14,11 @@
     * Change version number to 0.5.6
     * Make author name localized strings in About panel.
     * Add a "Report a Bug" link in About panel.
-    * Turn on the GREED_KEYDOWN flag in PTYTextView.m to allow special key
-      to work when IM is turned on.
+    * Turn on the GREED_KEYDOWN flag in PTYTextView.m to 
+      allow special key to work when IM is turned on.
+    * Add a 2nd font option to display CJK font to address
+      some screen text alignment problems.
+    * Add anti-idle settings to AddressBook
       
 2002-12-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

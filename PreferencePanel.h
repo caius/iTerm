@@ -8,6 +8,7 @@
     IBOutlet id col;
     IBOutlet id encoding;
     IBOutlet id fontExample;
+    IBOutlet id nafontExample;
     IBOutlet id foreground;
     IBOutlet id prefPanel;
     IBOutlet id row;
@@ -28,7 +29,10 @@
     NSString* defaultTerminal;
     
     NSFont* defaultFont;
+    NSFont* defaultNAFont;
     float defaultTransparency;
+
+    BOOL changingNA;
 
 }
 
@@ -39,6 +43,7 @@
 
 - (IBAction)changeBackground:(id)sender;
 - (IBAction)changeFontButton:(id)sender;
+- (IBAction)changeNAFontButton:(id)sender;
 - (IBAction)changeForeground:(id)sender;
 - (IBAction)ok:(id)sender;
 - (IBAction)restore:(id)sender;
@@ -55,5 +60,9 @@
 - (NSString*) terminalType;
 - (int) transparency;
 - (NSFont*) font;
+- (NSFont*) nafont;
+- (BOOL) ai;
+- (int) aiCode;
+
 
 @end

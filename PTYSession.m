@@ -480,9 +480,8 @@ static NSString *PWD_ENVVALUE = @"~";
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession moveLastLine]", __FILE__, __LINE__);
 #endif
-    int i=[SCREEN getIndex:0 y:0];
     
-    [TEXTVIEW scrollRangeToVisible:NSMakeRange(i, [[SCREEN textStorage] length]-i)];
+    [TEXTVIEW scrollRangeToVisible:NSMakeRange([[SCREEN textStorage] length],0)];
 }
 
 - (void) timerTick:(NSTimer*)sender

@@ -59,6 +59,7 @@
                 windowConfigCancel = id; 
                 windowConfigFont = id; 
                 windowConfigForeground = id; 
+                windowConfigNAFont = id; 
                 windowConfigOk = id; 
             }; 
             CLASS = PseudoTerminal; 
@@ -66,22 +67,19 @@
             OUTLETS = {
                 "AI_CODE" = id; 
                 "AI_ON" = id; 
-                "AI_PANEL" = id; 
                 "CONFIG_BACKGROUND" = id; 
                 "CONFIG_COL" = id; 
                 "CONFIG_ENCODING" = id; 
                 "CONFIG_EXAMPLE" = id; 
                 "CONFIG_FOREGROUND" = id; 
+                "CONFIG_NAEXAMPLE" = id; 
                 "CONFIG_NAME" = id; 
                 "CONFIG_PANEL" = id; 
                 "CONFIG_ROW" = id; 
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
-                "OA_ON" = id; 
                 SCROLLVIEW = id; 
-                "WA_ON" = id; 
                 WINDOW = id; 
-                cMenu = id; 
                 sessionPopup = NSPopUpButton; 
             }; 
             SUPERCLASS = NSResponder; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.210 2003-08-11 07:24:07 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.211 2003-08-11 07:30:16 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -157,7 +157,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     contentSize = [NSScrollView contentSizeForFrameSize: [TABVIEW contentRect].size
 							    hasHorizontalScroller: NO
 							    hasVerticalScroller: YES
-							    borderType: NSBezelBorder];
+							    borderType: NSNoBorder];
 	
     termSize = [VT100Screen screenSizeInFrame: NSMakeRect(0, 0, contentSize.width, contentSize.height) font: aFont1];
     [self setWidth: (int) termSize.width height: (int) termSize.height];

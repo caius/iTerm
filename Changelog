@@ -1,3 +1,8 @@
+2003-09-10	ujwal
+
+    * Fixed big memory leak where text view and scrollview were not being 
+      released.
+
 2003-09-09	ujwal
 
     * Fixed screen bauffer saving code in eraseInDisplay by partially 

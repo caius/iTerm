@@ -764,7 +764,7 @@ static NSColor* xtermColorTable[2][8];
     NSDictionary *entry;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession logStart:%@]",
+    NSLog(@"%s(%d):-[AddressBookWindowController chooseBackgroundImage:%@]",
           __FILE__, __LINE__);
 #endif
 
@@ -773,33 +773,23 @@ static NSColor* xtermColorTable[2][8];
 	NSBeep();
 	return;
     }
-    
+
     panel = [NSOpenPanel openPanel];
     [panel setAllowsMultipleSelection: NO];
+
+    directory = NSHomeDirectory();
+    filename = @"";
 
     if(indexOfSelectedEntry > -1)
     {
 	entry=[[self addressBook] objectAtIndex: indexOfSelectedEntry];
+	backgroundImagePath = [[entry objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
 
-	if(entry == nil)
-	{
-	    directory = NSHomeDirectory();
-	    filename = @"";
-	}
-	else
+	if(entry != nil && [backgroundImagePath length] > 0)
 	{
 	    directory = [backgroundImagePath stringByDeletingLastPathComponent];
 	    filename = [backgroundImagePath lastPathComponent];
-	    if(directory == nil)
-		directory = NSHomeDirectory();
-	    if(filename == nil)
-		filename = @"";
 	}
-    }
-    else
-    {
-	directory = NSHomeDirectory();
-	filename = @"";
     }
 
     sts = [panel runModalForDirectory: directory file:filename types: [NSImage imageFileTypes]];
@@ -815,9 +805,9 @@ static NSColor* xtermColorTable[2][8];
 	    [backgroundImage setImage: anImage];
 	    [anImage release];
 	}
-	
+
     }
-    
+
 }
 
 // Table data source

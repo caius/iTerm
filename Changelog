@@ -8,6 +8,9 @@
       where an unwanted "\n" was inserted when 
       CURSOR_Y > SCROLL_BOTTOM.
       
+    * Made flag to open session in new window in the toolbar 
+      popup menu sticky.
+      
 
 2003-02-10	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

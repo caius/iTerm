@@ -25,6 +25,9 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifndef _ITERM_H_
+#define _ITERM_H_
+
 #define USE_CUSTOM_DRAWING	0
 
 #if USE_CUSTOM_DRAWING
@@ -72,3 +75,5 @@
 #ifndef RECREATE_AUTORELEASE_POOL
 #define RECREATE_AUTORELEASE_POOL(X)
 #endif
+
+#endif // _ITERM_H_

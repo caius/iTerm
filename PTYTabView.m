@@ -372,6 +372,7 @@
 	    // Tell the previous drag target that it is not a target anymore
 	    [(PTYTabViewItem *)[self tabViewItemAtIndex: dragTargetTabViewItemIndex] resignDragTarget];
 	}
+	dragTargetTabViewItemIndex = -1;
     }
     else if (dragTargetTabViewItem == aTabViewItem)
     {
@@ -387,7 +388,7 @@
     }
     else if((dragTargetTabViewItemIndex >= 0) &&
 	    (dragTargetTabViewItem == (PTYTabViewItem *)[self tabViewItemAtIndex: dragTargetTabViewItemIndex]))
-    {	
+    {
 	return (ret);
     }
     else 

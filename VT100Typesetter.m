@@ -171,7 +171,7 @@
 	if(doubleWidthCharacterAttribute != nil || doubleWidthCharacterRange.length != characterRange.length)
 	{
 	    lineWidth = 0;
-	    for (j = lineStartIndex; j < lineEndIndex - lineStartIndex + 1; j++)
+	    for (j = lineStartIndex; j < lineEndIndex + 1; j++)
 	    {
 		lineWidth += ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
 	    }

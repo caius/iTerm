@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.144 2003-04-15 15:12:24 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.145 2003-04-16 14:34:05 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -821,6 +821,8 @@ static NSString *ConfigToolbarItem = @"Config";
 	  __FILE__, __LINE__, aNotification);
 #endif
 
+    [self selectSession: [self currentSessionIndex]];
+    
     [MAINMENU setFrontPseudoTerminal: self];
 
     // update the cursor

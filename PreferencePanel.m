@@ -249,7 +249,7 @@ static int TRANSPARENCY  =10;
 
 - (IBAction)ok:(id)sender
 {
-    if ([col intValue]>150||[col intValue]<10||[row intValue]>150||[row intValue]<3) {
+    if ([col intValue]<1||[row intValue]<1) {
         NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),

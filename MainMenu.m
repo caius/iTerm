@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.30 2003-01-27 23:05:13 ujwal Exp $
+// $Id: MainMenu.m,v 1.31 2003-01-30 16:10:30 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -450,7 +450,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
 - (IBAction)adEditOK:(id)sender
 {
-    if ([adCol intValue]>150||[adCol intValue]<10||[adRow intValue]>150||[adRow intValue]<3) {
+    if ([adCol intValue]<1||[adRow intValue]<1) {
         NSRunAlertPanel(NSLocalizedStringFromTable(@"Wrong Input",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"Please enter a valid window size",@"iTerm",@"wrong input"),
                         NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),

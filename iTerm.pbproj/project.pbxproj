@@ -349,6 +349,7 @@
 				E813FB7E0297522703A80106,
 				FBBB8B49039D9E6501F955DB,
 				FBBB8B4A039D9E6D01F955DB,
+				FB80352E03CA060201F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = MainMenu.nib;
@@ -372,6 +373,7 @@
 				E813FB87029754BB03A80106,
 				FBBB8B4B039D9E7E01F955DB,
 				FBBB8B4C039D9E8501F955DB,
+				FB80352F03CA060A01F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = PseudoTerminal.nib;
@@ -819,6 +821,7 @@
 				FB151F2603648AB401F955DB,
 				FBBB8B47039D9E1701F955DB,
 				FBBB8B48039D9E1F01F955DB,
+				FB80353003CA062601F955DB,
 			);
 			isa = PBXVariantGroup;
 			name = iTerm.strings;
@@ -1171,6 +1174,24 @@
 			isa = PBXApplicationReference;
 			path = iTerm.app;
 			refType = 3;
+		};
+		FB80352E03CA060201F955DB = {
+			isa = PBXFileReference;
+			name = Japanese;
+			path = Japanese.lproj/MainMenu.nib;
+			refType = 4;
+		};
+		FB80352F03CA060A01F955DB = {
+			isa = PBXFileReference;
+			name = Japanese;
+			path = Japanese.lproj/PseudoTerminal.nib;
+			refType = 4;
+		};
+		FB80353003CA062601F955DB = {
+			isa = PBXFileReference;
+			name = Japanese;
+			path = Japanese.lproj/iTerm.strings;
+			refType = 4;
 		};
 		FB896717038D935801F955DB = {
 			isa = PBXFileReference;

@@ -3,6 +3,8 @@
     * Updated Chinese nib files for anti-aliasing and print&save
     * Chinese strings files updated for new contextual menu item
     * Set the version number to 0.6.1
+    * Incorporated the patch sent by kuri@makino.ecei.tohoku.ac.jp
+      
     
 2003-01-05	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.8 2003-01-06 17:06:07 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.9 2003-01-06 18:54:39 yfabian Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -676,8 +676,10 @@ static int utf8_reqbyte(unsigned char f)
         result = 4;
     else if ((f & 0xfc) == 0xf8)
         result = 5;
-    else 
+    else if ((f & 0xfe) == 0xfc)
         result = 6;
+    else
+        result = 0;
 
     return result;
 }
@@ -698,7 +700,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
         }
         else if (*p>=0x80) {
             reqbyte = utf8_reqbyte(*datap);
-            if (len>reqbyte) {
+            if ((reqbyte > 0) && (len >= reqbyte)) {
                 p += reqbyte;
                 len -= reqbyte;
             }
@@ -1111,6 +1113,11 @@ static VT100TCC decode_string(unsigned char *datap,
 	else {
 	    if (isString(datap,ENCODING)) {
 		result = decode_string(datap, datalen, &rmlen, ENCODING);
+                if(rmlen == 0) {
+                    result.type = VT100_UNKNOWNCHAR;
+                    result.u.code = datap[0];
+                    rmlen = 1;
+                }
 	    }
 	    else {
 		result.type = VT100_UNKNOWNCHAR;

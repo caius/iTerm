@@ -390,7 +390,15 @@ static NSString *PWD_ENVVALUE = @"~";
             }
         }
         else {
-            NSData *data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
+            int i, max = [keystr length];
+            NSMutableString *mstr = [NSMutableString stringWithString:keystr];
+            NSData *data;
+            
+            for(i=0; i<max; i++)
+                if ([mstr characterAtIndex:i] == 0xa5)
+                    [mstr replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
+
+            data = [mstr dataUsingEncoding:NSUTF8StringEncoding];
 
             if (data != nil ) {
                 send_str = (char *)[data bytes];
@@ -427,14 +435,29 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)insertText:(NSString *)string
 {
     NSData *data;
+    NSMutableString *mstring;
+    int i, max;
+
+    mstring = [NSMutableString stringWithString:string];
+    max = [string length];
+    for(i=0; i<max; i++) {
+        if ([mstring characterAtIndex:i] == 0xa5) {
+            [mstring replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
+        }
+    }
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession insertText:%@]",
-	  __FILE__, __LINE__, string);
+	  __FILE__, __LINE__, mstring);
 #endif
 
-    data = [string dataUsingEncoding:[TERMINAL encoding]
-		allowLossyConversion:YES];
+    if([TERMINAL encoding] != NSUTF8StringEncoding) {
+        data = [mstring dataUsingEncoding:[TERMINAL encoding]
+                    allowLossyConversion:YES];
+    } else {
+        char *fs_str = (char *)[mstring fileSystemRepresentation];
+        data = [NSData dataWithBytes:fs_str length:strlen(fs_str)];
+    }
     if (data != nil) 
 	[SHELL writeTask:data];
 }

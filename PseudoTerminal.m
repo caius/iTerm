@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.60 2003-01-06 17:06:05 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.61 2003-01-06 18:54:15 yfabian Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -1105,6 +1105,7 @@ static NSString *ConfigToolbarItem = @"Config";
 
     if ([itemIdent isEqual: ABToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"Address Book",@"iTerm",@"Toolbar Item:Address Book")];
         [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open the address book",@"iTerm",@"Toolbar Item Tip:Address Book")];
         [toolbarItem setImage: [NSImage imageNamed: @"addressbook"]];
         [toolbarItem setTarget: MAINMENU];
@@ -1112,6 +1113,7 @@ static NSString *ConfigToolbarItem = @"Config";
     }
     else if ([itemIdent isEqual: CloseToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"Close",@"iTerm",@"Toolbar Item: Close Session")];
         [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Close the current session",@"iTerm",@"Toolbar Item Tip: Close")];
         [toolbarItem setImage: [NSImage imageNamed: @"close"]];
         [toolbarItem setTarget: self];
@@ -1119,6 +1121,7 @@ static NSString *ConfigToolbarItem = @"Config";
     }
    else if ([itemIdent isEqual: ConfigToolbarItem]) {
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"Configure",@"iTerm",@"Toolbar Item:Configure") ];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"Configure",@"iTerm",@"Toolbar Item:Configure") ];
         [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Configure current window",@"iTerm",@"Toolbar Item Tip:Configure")];
         [toolbarItem setImage: [NSImage imageNamed: @"config"]];
         [toolbarItem setTarget: self];
@@ -1144,6 +1147,7 @@ static NSString *ConfigToolbarItem = @"Config";
         [toolbarItem setMinSize:[aPopUpButton bounds].size];
         [toolbarItem setMaxSize:[aPopUpButton bounds].size];
         [toolbarItem setLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTable(@"New",@"iTerm",@"Toolbar Item:New")];
         [toolbarItem setToolTip: NSLocalizedStringFromTable(@"Open a new session",@"iTerm",@"Toolbar Item:New")];
     }
     else { 

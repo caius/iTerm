@@ -1,3 +1,8 @@
+2003-01-25	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Address Book window now has Autosave name.
+    
+
 2003-01-24	fabian
     * Fixed a bug in VT100Terminal that causes loss of
       character sometimes

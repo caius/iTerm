@@ -9,6 +9,8 @@
 	  Cocoa's built in text system at compile time. "Enforce character alignment" 
 	  preference can now be turned off for fonts that have native support for 
 	  graphical characters.
+	  
+	* Replaced a 10.3 only API in PTYSession.m with one that works on 10.2 as well.
 
 2004-01-23  ujwal
 

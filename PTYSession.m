@@ -70,7 +70,7 @@ static NSString *PWD_ENVVALUE = @"~";
     
     if (normalStateAttribute == nil) 
     {
-		NSFont *tabLableFont = [NSFont systemFontOfSize: [NSFont systemFontSizeForControlSize: NSSmallControlSize]];
+	NSFont *tabLableFont = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
 		
         normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor blackColor],NSForegroundColorAttributeName, tabLableFont, NSFontAttributeName, nil] retain];

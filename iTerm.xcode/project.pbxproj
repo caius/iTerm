@@ -2043,15 +2043,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		F64B59F305ED4A0D00FE8ACB = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = history.html;
-			path = website/history.html;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		F64B59FA05ED4AA800FE8ACB = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -2067,15 +2058,6 @@
 			lastKnownFileType = text.html;
 			name = footer.html;
 			path = website/footer.html;
-			refType = 4;
-			sourceTree = "<group>";
-		};
-		F64B5A4905ED5FCF00FE8ACB = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = text.html;
-			name = index.html;
-			path = website/index.html;
 			refType = 4;
 			sourceTree = "<group>";
 		};
@@ -2311,9 +2293,7 @@
 		};
 		FBDF6B63042A6B3101F955DB = {
 			children = (
-				F64B59F305ED4A0D00FE8ACB,
 				FBDF6B8F042A6BD801F955DB,
-				F64B5A4905ED5FCF00FE8ACB,
 				FBDF6B90042A6BD801F955DB,
 				FBDF6B91042A6BD801F955DB,
 				FBDF6B92042A6BD801F955DB,

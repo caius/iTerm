@@ -1,3 +1,10 @@
+2002-12-18	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Page up/down scrolling keys now need Shift key down 
+      a la xterm since some programs like vi need to 
+      interpret page up/down keys on their own.
+      
+
 2002-12-17	fabian
     * Added an AutoClose option in preference
     * Re-arranged preference panel

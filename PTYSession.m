@@ -244,10 +244,10 @@ static NSString *PWD_ENVVALUE = @"~";
 //    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
 //          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
     
-    // Check if we are navigating through sessions
-    if ((modflag & NSFunctionKeyMask) && (modflag & NSCommandKeyMask)) 
+    // Check if we are navigating through sessions or scrolling
+    if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask))) 
     {
-        // command + function key's
+        // command/shift + function key's
         switch (unicode) 
         {
             case NSLeftArrowFunctionKey: // cursor left
@@ -261,8 +261,17 @@ static NSString *PWD_ENVVALUE = @"~";
             case NSDeleteFunctionKey:
                 if (modflag&NSFunctionKeyMask)
                     NSLog(@"### DEBUG ###\n%@", SCREEN);
+                break;
+            case NSPageUpFunctionKey: 
+                if(modflag & NSShiftKeyMask)
+                    [TEXTVIEW scrollPageUp: self]; 
+                break;
+            case NSPageDownFunctionKey: 
+                if(modflag & NSShiftKeyMask)
+                    [TEXTVIEW scrollPageDown: self]; 
+                break;
             default:
-                if (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey) {
+                if ((modflag & NSCommandKeyMask) && (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey)) {
                     [parent selectSession:unicode-NSF1FunctionKey];
                 }
                 break;      
@@ -301,8 +310,8 @@ static NSString *PWD_ENVVALUE = @"~";
                     data = [TERMINAL keyDelete]; break;
                 case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
                 case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
-                case NSPageUpFunctionKey: [TEXTVIEW scrollPageUp: self]; break;
-                case NSPageDownFunctionKey: [TEXTVIEW scrollPageDown: self]; break;
+                case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
+                case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
 
                 case NSPrintScreenFunctionKey:
                     break;

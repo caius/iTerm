@@ -643,6 +643,8 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     if(color == nil)
         return;
+        
+    [TEXTVIEW setTextColor: color];
 
     if(([TERMINAL defaultFGColor] != color) || 
         ([[TERMINAL defaultFGColor] alphaComponent] != [color alphaComponent]))
@@ -663,6 +665,8 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     if(color == nil)
         return;
+        
+    [TEXTVIEW setBackgroundColor: color];
         
     if(([TERMINAL defaultBGColor] != color) || 
         ([[TERMINAL defaultBGColor] alphaComponent] != [color alphaComponent]))

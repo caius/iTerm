@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.54 2003-04-01 22:12:27 yfabian Exp $
+// $Id: PTYTextView.m,v 1.55 2003-04-10 20:37:38 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -267,7 +267,7 @@
 - (void) setDirtyLine: (int) y
 {
 //    NSLog(@"setDirtyline:%d",y);
-    [self setNeedsDisplayInRect:NSMakeRect(0,y*lineHeight,[self frame].size.width,(y+1)*lineHeight)];
+    [self setNeedsDisplayInRect:NSMakeRect(0,y*lineHeight,[self frame].size.width,lineHeight)];
     if (startIndex!=-1&&y>=startY && y<=endY) startIndex=-1;
 }
 
@@ -381,7 +381,7 @@
 #endif
 
     // set the antialias flag
-   [[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
+    [[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 
     [super drawRect: rect];
 
@@ -416,8 +416,6 @@
             
     for(i = 0; i <numLines/*&&aRect.origin.y<rect.orgin.y+rect.size.height*/; i++)
     {
-        //if (displayLines[row+i]==i+lineOffset) continue;
-        //displayLines[row+i]=i+lineOffset
         aLine = [[self dataSource] stringAtLine: i + lineOffset];
         if(aLine == nil)
         {
@@ -461,6 +459,7 @@
                         [s appendAttributedString:markedText];
                     else
                         [s insertAttributedString:markedText atIndex:idx];
+                    
                     [s drawInRect: aRect];
                     [s release];
                 }
@@ -474,7 +473,6 @@
                     else {
                         NSMutableAttributedString *s=[[NSMutableAttributedString alloc] initWithAttributedString:aLine];
                         NSMutableDictionary *dic;
-                        NSColor *fg, *bg;
 
                         if(idx >= [aLine length])
                             [s appendAttributedString:[dataSource defaultAttrString:@" "]];
@@ -482,10 +480,8 @@
                             [s insertAttributedString:[dataSource defaultAttrString:@" "] atIndex:idx];
                         // reverse the video on the position where the cursor is supposed to be shown.
                         dic=[NSMutableDictionary dictionaryWithDictionary: [s attributesAtIndex:idx effectiveRange:nil]];
-                        fg=[dic objectForKey:NSBackgroundColorAttributeName];
-                        bg=[dic objectForKey:NSForegroundColorAttributeName];
-                        [dic setObject:bg forKey:NSBackgroundColorAttributeName];
-                        [dic setObject:fg forKey:NSForegroundColorAttributeName];
+                        [dic setObject:[[dataSource terminal] defaultFGColor] forKey:NSBackgroundColorAttributeName];
+                        [dic setObject:[[dataSource terminal] defaultBGColor] forKey:NSForegroundColorAttributeName];
                         [s setAttributes:dic range:NSMakeRange(idx,1)];
                         [s drawInRect: aRect];
                         [s release];
@@ -494,17 +490,8 @@
             }
             else {
                 [aLine drawInRect: aRect];
-                /*NSAttributedString *one;
-                NSPoint loc=aRect.origin;
-                int idx;
-                
-                for(idx=0;idx<[aLine length];idx++) {
-                    one=[aLine attributedSubstringFromRange:NSMakeRange(idx,1)];
-                    [one drawAtPoint:loc];
-                    loc.x+=[dataSource characterSize].width;
-                }*/
+//                [aLine drawAtPoint: aRect.origin];
             }
-                    
         }
         //NSLog(@"line %d[%@]: %f",i + lineOffset, [aLine string], aRect.origin.y);
         aRect.origin.y += lineHeight;
@@ -626,7 +613,7 @@
         if([[[_delegate parent] preference] copySelection])
             [self copy: self];
     }
-    [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY+1)*fontSize.height)];
+    [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY-startY+1)*fontSize.height)];
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -661,16 +648,16 @@
     if (y<0) y=0;
     if (y>=[dataSource numberOfLines]) y=numberOfLines-1;
     if (startY<endY)
-        [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY+1)*fontSize.height)];
+        [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY-startY+1)*fontSize.height)];
     else
-        [self setNeedsDisplayInRect:NSMakeRect(0,endY*fontSize.height,[self frame].size.width,(startY+1)*fontSize.height)];
+        [self setNeedsDisplayInRect:NSMakeRect(0,endY*fontSize.height,[self frame].size.width,(startY-endY+1)*fontSize.height)];
     endIndex=[dataSource getIndexAtX:x Y:y-[dataSource topLines] withPadding:NO];
     endY=y;
 //    NSLog(@"(%d,%d)-(%d,%d)",startIndex,startY,endIndex,endY);
     if (startY<endY)
-        [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY+1)*fontSize.height)];
+        [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY-startY+1)*fontSize.height)];
     else
-        [self setNeedsDisplayInRect:NSMakeRect(0,endY*fontSize.height,[self frame].size.width,(startY+1)*fontSize.height)];
+        [self setNeedsDisplayInRect:NSMakeRect(0,endY*fontSize.height,[self frame].size.width,(startY-endY+1)*fontSize.height)];
 }
 
 - (NSString *) selectedText

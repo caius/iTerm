@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.50 2003-04-10 06:00:55 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.51 2003-04-10 20:37:41 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1699,29 +1699,25 @@ static VT100TCC decode_string(unsigned char *datap,
 
     [characterAttributeDictionary[0] setObject:fg
                                         forKey:NSForegroundColorAttributeName];
-    [characterAttributeDictionary[0] setObject:bg
-                                        forKey:NSBackgroundColorAttributeName];
+    [characterAttributeDictionary[0] removeObjectForKey:NSBackgroundColorAttributeName];
     [characterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
     [characterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
                                         forKey:@"NSCharWidthAttributeName"];
     [characterAttributeDictionary[1] setObject:fg
                                         forKey:NSForegroundColorAttributeName];
-    [characterAttributeDictionary[1] setObject:bg
-                                        forKey:NSBackgroundColorAttributeName];
+    [characterAttributeDictionary[1] removeObjectForKey:NSBackgroundColorAttributeName];
     [characterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
     [characterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
                                         forKey:@"NSCharWidthAttributeName"];
     [defaultCharacterAttributeDictionary[0] setObject:fg
 			  forKey:NSForegroundColorAttributeName];
-    [defaultCharacterAttributeDictionary[0] setObject:bg
-			  forKey:NSBackgroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[0] removeObjectForKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
                                                forKey:@"NSCharWidthAttributeName"];
     [defaultCharacterAttributeDictionary[1] setObject:fg
                                                forKey:NSForegroundColorAttributeName];
-    [defaultCharacterAttributeDictionary[1] setObject:bg
-                                               forKey:NSBackgroundColorAttributeName];
+    [defaultCharacterAttributeDictionary[1] removeObjectForKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
                                                forKey:@"NSCharWidthAttributeName"];
@@ -1844,7 +1840,8 @@ static VT100TCC decode_string(unsigned char *datap,
         }
         else {
             [dic setObject:fg forKey:NSForegroundColorAttributeName];
-            [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+            if (BG_COLORCODE!=DEFAULT_BG_COLOR_CODE) [dic setObject:bg forKey:NSBackgroundColorAttributeName];
+            else [dic removeObjectForKey:NSBackgroundColorAttributeName];
         }
 
         [dic setObject:[NSNumber numberWithInt:under]
@@ -1852,15 +1849,6 @@ static VT100TCC decode_string(unsigned char *datap,
         [dic setObject:[NSNumber numberWithInt:blink]
                 forKey:NSBlinkAttributeName];
     }
-    /*    if(bold)    {
-        aFont = [[NSFontManager sharedFontManager] convertFont: defaultFont toHaveTrait: NSBoldFontMask];
-    //        NSLog(@"%@->%@(%f, %f)",[SCREEN font], aFont, [VT100Screen fontSize:[SCREEN font]].height, [VT100Screen fontSize:aFont].height);
-    if ([VT100Screen fontSize:aFont].height>[VT100Screen fontSize: [SCREEN tallerFont]].height) aFont=defaultFont;
-    }
-    else
-{
-        aFont=defaultFont;
-}*/
 }
 
 - (void)_setCharAttr:(VT100TCC)token
@@ -1955,15 +1943,17 @@ static VT100TCC decode_string(unsigned char *datap,
     defaultBGColor=[color copy];
 
     // reset our default character attributes
-    [defaultCharacterAttributeDictionary[0] setObject:color
-                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
-    [defaultCharacterAttributeDictionary[1] setObject:color
-                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
-    [characterAttributeDictionary[0] setObject:color
-                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
-    [characterAttributeDictionary[1] setObject:color
-                                               forKey:(SCREEN_MODE?NSForegroundColorAttributeName:NSBackgroundColorAttributeName)];
-    [SCREEN setScreenAttributes];
+    if (SCREEN_MODE) {
+        [defaultCharacterAttributeDictionary[0] setObject:color
+                                                   forKey:NSForegroundColorAttributeName];
+        [defaultCharacterAttributeDictionary[1] setObject:color
+                                                   forKey:NSForegroundColorAttributeName];
+        [characterAttributeDictionary[0] setObject:color
+                                            forKey:NSForegroundColorAttributeName];
+        [characterAttributeDictionary[1] setObject:color
+                                            forKey:NSForegroundColorAttributeName];
+        [SCREEN setScreenAttributes];
+    }
 
 }
 

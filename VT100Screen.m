@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.84 2003-04-10 00:07:17 ujwal Exp $
+// $Id: VT100Screen.m,v 1.85 2003-04-10 20:37:39 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -84,7 +84,7 @@ static BOOL PLAYBELL = YES;
     [dic setObject:font forKey:NSFontAttributeName];
     sz = [@"A" sizeWithAttributes:dic];
 
-//    NSLog(@"%f %f %f %f %f",[font defaultLineHeightForFont],sz.height,[font xHeight],[font capHeight],[font underlinePosition]);
+//    NSLog(@"%@\n\tdefaultLineHeight:%f\n\tHieght of 'A':%f\n\txHeight:%f\n\tcapHeight:%f\n\tunderlinePosition:%f\n\tascender:%f\n\tdescender:%f",font,[font defaultLineHeightForFont],sz.height,[font xHeight],[font capHeight],[font underlinePosition], [font ascender], [font descender]);
 #if DEBUG_USE_BUFFER
     return NSMakeSize(sz.width,[font defaultLineHeightForFont]);
 #else

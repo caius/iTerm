@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.83 2004-01-26 07:40:19 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.84 2004-02-08 19:32:38 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -569,7 +569,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
     VT100TCC result;
     NSData *data;
     BOOL unrecognized=NO;
-    char s[100]={0}, *c=nil;
+    char s[1024]={0}, *c=nil;
 
     NSCParameterAssert(datap != NULL);
     NSCParameterAssert(datalen >= 2);
@@ -601,7 +601,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
             datalen--;
             datap++;
             (*rmlen)++;
-            while (*datap!=0x007&&c-s<100&&datalen>0) {
+            while (*datap!=0x007&&c-s<sizeof(s)&&datalen>0) {
                 *c=*datap;
                 datalen--;
                 datap++;

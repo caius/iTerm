@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.17 2002-12-08 01:12:35 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.18 2002-12-08 01:42:11 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -157,7 +157,6 @@ static NSDictionary *newOutputStateAttribute;
           encoding:(NSStringEncoding)encoding
               term:(NSString *)term
 {
-    NSWindow *window;
     PTYSession *aSession;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal initSession]",
@@ -217,10 +216,8 @@ static NSDictionary *newOutputStateAttribute;
         [self setWindowSize];
     [SHELL setWidth:WIDTH  height:HEIGHT];
 
-    window = [SCROLLVIEW window];
-    [window makeFirstResponder:TEXTVIEW];
-    [window setNextResponder:self];
-    [window setDelegate:self];
+    [WINDOW makeFirstResponder:TEXTVIEW];
+    [WINDOW setNextResponder:self];
 
     EXIT = NO;
     pending = NO;
@@ -304,7 +301,8 @@ static NSDictionary *newOutputStateAttribute;
     [currentPtySession moveLastLine];
     [self _drawSessionButtons];
     [self setWindowTitle];
-//    [WINDOW makeFirstResponder: self];
+    [WINDOW makeFirstResponder:TEXTVIEW];
+    [WINDOW setNextResponder:self];
 
 }
 

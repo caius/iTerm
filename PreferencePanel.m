@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.39 2003-04-27 07:56:25 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.40 2003-04-28 02:03:58 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -331,10 +331,10 @@ static int TRANSPARENCY  =10;
 	[terminal setStringValue:defaultTerminal];
     [encoding removeAllItems];
     [tabSelector removeAllItems];
-    [tabSelector addItemWithTitle:@"Display"];
-    [tabSelector addItemWithTitle:@"Shell"];
-    [tabSelector addItemWithTitle:@"Emulation"];
-    [tabSelector addItemWithTitle:@"Color"];
+    [tabSelector addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Display",@"iTerm", [NSBundle bundleForClass: [self class]], @"PreferencePanel")];
+    [tabSelector addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Shell",@"iTerm", [NSBundle bundleForClass: [self class]], @"PreferencePanel")];
+    [tabSelector addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Emulation",@"iTerm", [NSBundle bundleForClass: [self class]], @"PreferencePanel")];
+    [tabSelector addItemWithTitle:NSLocalizedStringFromTableInBundle(@"Color",@"iTerm", [NSBundle bundleForClass: [self class]], @"PreferencePanel")];
     [tabSelector selectItemAtIndex:0];
     [prefTab selectTabViewItemAtIndex:0];
     

@@ -101,3 +101,9 @@
 
 /* Quit */
 "Quit"="Quit";
+
+/* PreferencePanel */
+"Display"="Display";
+"Shell"="Shell";
+"Emulation"="Emulation";
+"Color"="Color";

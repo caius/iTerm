@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.45 2003-03-12 22:08:20 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.46 2003-03-13 21:21:05 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1151,9 +1151,9 @@ static VT100TCC decode_string(unsigned char *datap,
                                                     blue:0.0f
                                                    alpha:1.0f]
         retain];
-    colorTable[3] = [[NSColor colorWithCalibratedRed:0.0f
+    colorTable[3] = [[NSColor colorWithCalibratedRed:0.8f
                                                   green:0.8f
-                                                   blue:0.8f
+                                                   blue:0.0f
                                                   alpha:1.0f]
         retain];
     colorTable[4] = [[NSColor colorWithCalibratedRed:0.0f

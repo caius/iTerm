@@ -8,6 +8,7 @@
     * Changed Address Book behavior:
         double click opens a new session
         new window is specified using a switch
+    * Correct the yellow
         
 2003-03-12	fabian
     * Fixed a bug that causes incorrect process of color.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.h,v 1.2 2003-09-06 20:17:34 yfabian Exp $
+// $Id: PTYScrollView.h,v 1.3 2003-09-06 22:09:27 ujwal Exp $
 /*
  **  PTYScrollView.h
  **
@@ -38,7 +38,7 @@
 - (void)trackScrollButtons:(NSEvent *)theEvent;
 - (void)trackKnob:(NSEvent *)theEvent;
 - (BOOL)userScroll;
-- (void)resetUserScroll;
+- (void)setUserScroll: (BOOL) scroll;
 
 @end
 
@@ -48,5 +48,6 @@
 
 - (void) dealloc;
 - (id)initWithFrame:(NSRect)frame;
+- (void)scrollWheel:(NSEvent *)theEvent;
 
 @end

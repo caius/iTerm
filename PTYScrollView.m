@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.9 2003-09-06 20:17:32 yfabian Exp $
+// $Id: PTYScrollView.m,v 1.10 2003-09-06 22:09:32 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -44,16 +44,24 @@
 
 - (void)trackScrollButtons:(NSEvent *)theEvent
 {
-//    NSLog(@"scrollbutton");
-    userScroll=YES;
     [super trackScrollButtons:theEvent];
+
+    //NSLog(@"scrollbutton");
+    if([self floatValue] != 1)
+	userScroll=YES;
+    else
+	userScroll = NO;
 }
 
 - (void)trackKnob:(NSEvent *)theEvent
 {
-//    NSLog(@"trackKnob");
-    userScroll=YES;
     [super trackKnob:theEvent];
+
+    //NSLog(@"trackKnob: %f", [self floatValue]);
+    if([self floatValue] != 1)
+	userScroll=YES;
+    else
+	userScroll = NO;
 }
 
 - (BOOL)userScroll
@@ -61,9 +69,9 @@
     return userScroll;
 }
 
-- (void)resetUserScroll
+- (void)setUserScroll: (BOOL) scroll
 {
-    userScroll=NO;
+    userScroll=scroll;
 }
 
 @end
@@ -96,7 +104,21 @@
 
     aScroller=[[PTYScroller alloc] init];
     [self setVerticalScroller: aScroller];
+    [aScroller release];
     return self;
+}
+
+- (void)scrollWheel:(NSEvent *)theEvent
+{
+    PTYScroller *verticalScroller = (PTYScroller *)[self verticalScroller];
+
+    [super scrollWheel: theEvent];
+
+    //NSLog(@"PTYScrollView: scrollWheel: %f", [verticalScroller floatValue]);
+    if([verticalScroller floatValue] < 1.0)
+	[verticalScroller setUserScroll: YES];
+    else
+	[verticalScroller setUserScroll: NO];
 }
 
 @end

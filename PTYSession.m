@@ -580,7 +580,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    // scroll to the end
             //[TEXTVIEW scrollEnd];
             PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
-            [ptys resetUserScroll];
+            [ptys setUserScroll: NO];
 	    //[SCREEN updateScreen];
 #endif
 	}
@@ -864,7 +864,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	// If the user has not scrolled up, move to the end
 //	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
 //    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
-        if (~[[SCROLLVIEW verticalScroller] userScroll])
+        if (![[SCROLLVIEW verticalScroller] userScroll])
 	    [TEXTVIEW scrollEnd];
         output=0;
         dirty=NO;
@@ -883,8 +883,9 @@ static NSString *PWD_ENVVALUE = @"~";
             [SCREEN updateScreen];
 	    //NSLog(@"floatValue = %f", [[SCROLLVIEW verticalScroller] floatValue]);
             // If the user has not scrolled up, move to the end
-	    if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
-	|| [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
+	    //	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
+     //    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
+	    if (![(PTYScroller *)[SCROLLVIEW verticalScroller] userScroll])
                 [TEXTVIEW scrollEnd];
             output=0;
             dirty=NO;

@@ -36,6 +36,7 @@
 @class PseudoTerminal;
 @class MainMenu;
 @class PTYTabViewItem;
+@class VT100TextStorage;
 
 @interface PTYSession : NSResponder {
     
@@ -44,6 +45,9 @@
     
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
+
+    // text storage
+    VT100TextStorage *textStorage;
 
     // tty device
     NSString *tty;

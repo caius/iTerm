@@ -58,7 +58,7 @@
     
     NSRect lineRect;
     unsigned int glyphIndex, charIndex, lineStartIndex, lineEndIndex;
-    int i, j, length;
+    int numLines, j, length;
     BOOL atEnd, isValidIndex, lineEndCharExists;
     NSString *theString;
     NSRange characterRange, glyphRange;
@@ -92,9 +92,6 @@
     }
 
     length = [theString length];
-#if DEBUG_METHOD_TRACE
-    NSLog(@"length = %d", length);
-#endif
     if(length <= 0)
     {
 	*nextGlyph = 0;
@@ -104,7 +101,7 @@
     // process lines
     glyphIndex = startGlyphIndex;
     
-    for(i = 0; i< maxNumLines; i++)
+    for(numLines = 0; numLines < maxNumLines; numLines++)
     {
 	atEnd = NO;
 	lineEndCharExists = NO;
@@ -199,6 +196,10 @@
 	    NSRect lastGlyphRect = [layoutMgr lineFragmentRectForGlyphAtIndex: lineStartIndex-1 effectiveRange: nil];
 	    lineRect = NSMakeRect(0, lastGlyphRect.origin.y + [font defaultLineHeightForFont], [textContainer containerSize].width, [font defaultLineHeightForFont]);
 	}
+#if DEBUG_METHOD_TRACE
+	NSLog(@"Laying out line %f; numLines = %d", lineRect.origin.y/[font defaultLineHeightForFont] + 1, numLines);
+#endif
+	
 	
 	// Now fill the line
 	NSRect usedRect = lineRect;

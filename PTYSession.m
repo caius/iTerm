@@ -38,6 +38,7 @@
 #import "PTYTabViewitem.h"
 #import "AddressBookWindowController.h"
 
+#import "VT100TextStorage.h"
 #import "VT100LayoutManager.h"
 #import "VT100Typesetter.h"
 
@@ -98,6 +99,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [SCROLLVIEW release];
     [name release];
     [windowTitle release];
+    [textStorage release];
         
     [normalStateAttribute release];
     normalStateAttribute = nil;
@@ -130,25 +132,40 @@ static NSString *PWD_ENVVALUE = @"~";
 
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
-    TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 #if USE_CUSTOM_DRAWING
+    TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 #else
+
+    #if USE_CUSTOM_LAYOUT
+	VT100LayoutManager *aLayoutManager;
+	VT100Typesetter *aTypesetter;
+	NSTextContainer *aTextContainer;
+
+	textStorage = [[VT100TextStorage alloc] init];
+	aLayoutManager = [[VT100LayoutManager alloc] init];
+	[textStorage addLayoutManager:aLayoutManager];
+	[aLayoutManager release];
+	aTextContainer = [[NSTextContainer alloc] initWithContainerSize: NSMakeSize(aSize.width, 1e7)];
+	[aLayoutManager addTextContainer:aTextContainer];
+	[aTextContainer release];
+	aTypesetter = [[VT100Typesetter alloc] init];
+	[aLayoutManager setTypesetter: aTypesetter];
+	[aTypesetter release];
+	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height) textContainer: aTextContainer];
+	[aTextContainer setWidthTracksTextView:YES];
+	[aTextContainer setHeightTracksTextView:NO];
+	[TEXTVIEW setMaxSize:NSMakeSize(1e7, 1e7)];
+	[TEXTVIEW setHorizontallyResizable:NO];
+	[TEXTVIEW setVerticallyResizable:YES];
+    #else
+	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
+    #endif
+    
     [TEXTVIEW setDrawsBackground:YES];
     [TEXTVIEW setEditable:YES]; // For NSTextInput protocol
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-
-#if USE_CUSTOM_LAYOUT
-    VT100LayoutManager *aLayoutManager;
-    VT100Typesetter *aTypesetter;
-
-    aLayoutManager = [[VT100LayoutManager alloc] init];
-    [[TEXTVIEW textContainer] replaceLayoutManager: aLayoutManager];
-    [aLayoutManager release];
-    aTypesetter = [[VT100Typesetter alloc] init];
-    [[TEXTVIEW layoutManager] setTypesetter: aTypesetter];
-    [aTypesetter release];
-#endif
+    
     
 #endif
     [TEXTVIEW setDelegate: self];
@@ -834,7 +851,10 @@ static NSString *PWD_ENVVALUE = @"~";
     if (oIdleCount<2) dirty=YES;
     
 #else
-    if (blink>30) { [SCREEN blink]; blink=0; }
+    if (blink>30) {
+	//[SCREEN blink];
+	blink=0;
+    }
     if (oIdleCount<2||dirty) {
         if (output>3) {
             [SCREEN updateScreen];

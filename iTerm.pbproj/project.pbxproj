@@ -63,6 +63,7 @@
 				F5E533B303B2959201A8A066,
 				F56B230B03A1B36701A8A066,
 				DD12B4D70491DAA000A8A065,
+				8793A10204992C7D0073D10E,
 				DDA86B9E048EFCF500A8A065,
 			);
 			isa = PBXGroup;
@@ -89,6 +90,7 @@
 				E8A66F040272453F03A80106,
 				E8E901A302743CA303A80106,
 				DD12B4D60491DAA000A8A065,
+				8793A10104992C7D0073D10E,
 				DDA86B9C048EFCEA00A8A065,
 			);
 			isa = PBXGroup;
@@ -520,6 +522,30 @@
 			path = French.lproj/PseudoTerminal.nib;
 			refType = 4;
 		};
+		8793A10104992C7D0073D10E = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = VT100TextStorage.h;
+			refType = 4;
+		};
+		8793A10204992C7D0073D10E = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			path = VT100TextStorage.m;
+			refType = 4;
+		};
+		8793A10304992C7D0073D10E = {
+			fileRef = 8793A10104992C7D0073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		8793A10404992C7D0073D10E = {
+			fileRef = 8793A10204992C7D0073D10E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		87D5C471043227820073D10E = {
 			children = (
 				87D5C472043227820073D10E,
@@ -626,6 +652,7 @@
 				DD4BAB7D0470C44C00A8A065,
 				DDA86B9D048EFCEA00A8A065,
 				DD12B4D80491DAA000A8A065,
+				8793A10304992C7D0073D10E,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -674,6 +701,7 @@
 				DD4BAB7E0470C44C00A8A065,
 				DDA86B9F048EFCF500A8A065,
 				DD12B4D90491DAA000A8A065,
+				8793A10404992C7D0073D10E,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

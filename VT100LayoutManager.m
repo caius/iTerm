@@ -48,40 +48,40 @@
 #if DEBUG_METHOD_TRACE
     NSLog(@"VT100LayoutManager: aTextStorage: edited: (0x%x) range: (%d,%d) changeInLength: (%d) invalidatedRange: (%d,%d)", mask, range.location, range.length, lengthChange, invalidatedCharRange.location, invalidatedCharRange.length);
 #endif
-
+    
     // don't do anything if we just had attribute changes
     if(mask == NSTextStorageEditedAttributes)
-	return;
+    {
+	//NSRange glyphRange;
+	//glyphRange = [self glyphRangeForCharacterRange: range actualCharacterRange: nil];
+	//[self invalidateDisplayForGlyphRange: glyphRange];
+	return;	
+    }
 
 #if 0
-    if (lengthChange == 0)
+    if (lengthChange == 0 && range.location == invalidatedCharRange.location && range.length == invalidatedCharRange.length)
     {
 	// get the glyph range
 	NSRange glyphRange;
 	unsigned nextGlyph;
 	int numLines = 0;
 
-	glyphRange = [self glyphRangeForCharacterRange: range actualCharacterRange: nil];
+	//[self invalidateGlyphsForCharacterRange:invalidatedCharRange changeInLength:0 actualCharacterRange:nil];
+	//glyphRange = [self glyphRangeForCharacterRange: range actualCharacterRange: nil];
 	if(glyphRange.length > 0)
 	{
 	    // get the number of lines in the range
 	    int i;
-	    for (i = range.location; i < range.location + range.length; i++)
-	    {
-		if([[aTextStorage string] characterAtIndex: i] == '\n')
-		    numLines++;
-	    }
-	    if(numLines == 0)
-		numLines = 1;
+	    numLines = 1;
 
 	    // invalidate the display for this glyph range
 	    //[self invalidateDisplayForGlyphRange: glyphRange];
 
-	    //[self invalidateGlyphsForCharacterRange:invalidatedCharRange changeInLength:0 actualCharacterRange:nil];
-	    //[self invalidateLayoutForCharacterRange:invalidatedCharRange isSoft:YES actualCharacterRange:nil];
-
 	    // call the typesetter to work on only this range
 	    [[self typesetter] layoutGlyphsInLayoutManager: self startingAtGlyphIndex: glyphRange.location maxNumberOfLineFragments: numLines nextGlyphIndex: &nextGlyph];
+	    NSRect glyphRect = [self boundingRectForGlyphRange:glyphRange inTextContainer:[[self firstTextView] textContainer]];
+	    NSLogRect(glyphRect);
+	    [[self firstTextView] setNeedsDisplayInRect: glyphRect];
 
 
 	    return;

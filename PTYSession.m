@@ -1207,6 +1207,11 @@ static NSString *PWD_ENVVALUE = @"~";
     SCROLLVIEW = [theSCROLLVIEW retain];
 }
 
+- (NSStringEncoding) encoding
+{
+	return [TERMINAL encoding];
+}
+
 - (void)setEncoding:(NSStringEncoding)encoding
 {
 #if DEBUG_METHOD_TRACE

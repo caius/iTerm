@@ -121,7 +121,7 @@
 - (void)deleteForward:(id)sender;
 - (void)textViewDidChangeSelection: (NSNotification *) aNotification;
 - (void)textViewResized: (PTYTextView *) textView;
-- (void) tabViewWillRedraw: (NSNotification *) aNotification;
+- (void)tabViewWillRedraw: (NSNotification *) aNotification;
 
 
 // misc
@@ -158,6 +158,7 @@
 - (void) setTEXTVIEW: (PTYTextView *) theTEXTVIEW;
 - (PTYScrollView *) SCROLLVIEW;
 - (void) setSCROLLVIEW: (PTYScrollView *) theSCROLLVIEW;
+- (NSStringEncoding) encoding;
 - (void)setEncoding:(NSStringEncoding)encoding;
 - (BOOL) antiIdle;
 - (int) antiCode;
@@ -174,7 +175,7 @@
 
 - (void)clearBuffer;
 - (void)clearScrollbackBuffer;
-- (BOOL) logging;
+- (BOOL)logging;
 - (void)logStart;
 - (void)logStop;
 - (NSString *) backgroundImagePath;

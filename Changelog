@@ -3,6 +3,7 @@
 	* Fixed a bug in encoding settings.
 	* Added cursor text and selection text in config panel.
 	* Fixed bugs in char cache. It now follows changes of color setting correctly.
+	* Added Save Display/Terminal Profile in Tools menu.
 	
 2004-03-21  ujwal
 

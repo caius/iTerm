@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.275 2004-03-19 23:53:33 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.276 2004-03-23 03:19:56 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1417,6 +1417,63 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] performClose:sender];
 }
 
+- (IBAction) saveDisplayProfile: (id) sender
+{
+	iTermDisplayProfileMgr *displayProfileMgr;
+	NSDictionary *aDict;
+	NSString *displayProfile;
+	PTYSession *current;
+	
+	current = [self currentSession];
+	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+	aDict = [current addressBookEntry];
+	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
+	if(displayProfile == nil)
+		displayProfile = [displayProfileMgr defaultProfileName];	
+	
+	[displayProfileMgr setTransparency: [current transparency] forProfile: displayProfile];
+	[displayProfileMgr setBackgroundImage: [current backgroundImagePath] forProfile: displayProfile];
+	[displayProfileMgr setWindowColumns: [self columns] forProfile: displayProfile];
+	[displayProfileMgr setWindowRows: [self rows] forProfile: displayProfile];
+	[displayProfileMgr setWindowFont: [self font] forProfile: displayProfile];
+	[displayProfileMgr setWindowNAFont: [self nafont] forProfile: displayProfile];
+	[displayProfileMgr setWindowHorizontalCharSpacing: charHorizontalSpacingMultiplier forProfile: displayProfile];
+	[displayProfileMgr setWindowVerticalCharSpacing: charVerticalSpacingMultiplier forProfile: displayProfile];
+	[displayProfileMgr setWindowAntiAlias: [[current TEXTVIEW] antiAlias] forProfile: displayProfile];
+	[displayProfileMgr setColor: [current foregroundColor] forType: TYPE_FOREGROUND_COLOR forProfile: displayProfile];
+	[displayProfileMgr setColor: [current backgroundColor] forType: TYPE_BACKGROUND_COLOR forProfile: displayProfile];
+	[displayProfileMgr setColor: [current boldColor] forType: TYPE_BOLD_COLOR forProfile: displayProfile];
+	[displayProfileMgr setColor: [current selectionColor] forType: TYPE_SELECTION_COLOR forProfile: displayProfile];
+	[displayProfileMgr setColor: [current selectedTextColor] forType: TYPE_SELECTED_TEXT_COLOR forProfile: displayProfile];
+	[displayProfileMgr setColor: [current cursorColor] forType: TYPE_CURSOR_COLOR forProfile: displayProfile];
+	[displayProfileMgr setColor: [current cursorTextColor] forType: TYPE_CURSOR_TEXT_COLOR forProfile: displayProfile];
+	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Display Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), displayProfile],
+								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are effected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
+								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
+}
+
+- (IBAction) saveTerminalProfile: (id) sender
+{
+	iTermTerminalProfileMgr *terminalProfileMgr;
+	NSDictionary *aDict;
+	NSString *terminalProfile;
+	PTYSession *current;
+	
+	current = [self currentSession];
+	terminalProfileMgr = [iTermTerminalProfileMgr singleInstance];
+	aDict = [current addressBookEntry];
+	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
+	if(terminalProfile == nil)
+		terminalProfile = [terminalProfileMgr defaultProfileName];	
+
+	[terminalProfileMgr setEncoding: [current encoding] forProfile: terminalProfile];
+	[terminalProfileMgr setSendIdleChar: [current antiIdle] forProfile: terminalProfile];
+	[terminalProfileMgr setIdleChar: [current antiCode] forProfile: terminalProfile];
+
+	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Terminal Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), terminalProfile],
+								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are effected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
+								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
+}
 
 @end
 

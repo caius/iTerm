@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.19 2004-03-19 08:11:55 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.20 2004-03-23 03:19:56 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -420,14 +420,14 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 
 // accessors for to-many relationships:
 // (See NSScriptKeyValueCoding.h)
--(id)valueInTerminalsAtIndex:(unsigned)index
+-(id)valueInTerminalsAtIndex:(unsigned)idx
 {
-    return [[iTermController sharedInstance] valueInTerminalsAtIndex:index];
+    return [[iTermController sharedInstance] valueInTerminalsAtIndex:idx];
 }
 
--(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
+-(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)idx
 {
-    [[iTermController sharedInstance] replaceInTerminals:object atIndex:index];
+    [[iTermController sharedInstance] replaceInTerminals:object atIndex:idx];
 }
 
 - (void)addInTerminals:(PseudoTerminal *) object
@@ -440,15 +440,15 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
     [[iTermController sharedInstance] insertInTerminals:object];
 }
 
--(void)insertInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
+-(void)insertInTerminals:(PseudoTerminal *)object atIndex:(unsigned)idx
 {
-    [[iTermController sharedInstance] insertInTerminals:object atIndex:index];
+    [[iTermController sharedInstance] insertInTerminals:object atIndex:idx];
 }
 
--(void)removeFromTerminalsAtIndex:(unsigned)index
+-(void)removeFromTerminalsAtIndex:(unsigned)idx
 {
-    // NSLog(@"iTerm: removeFromTerminalsAtInde %d", index);
-    [[iTermController sharedInstance] removeFromTerminalsAtIndex: index];
+    // NSLog(@"iTerm: removeFromTerminalsAtInde %d", idx);
+    [[iTermController sharedInstance] removeFromTerminalsAtIndex: idx];
 }
 
 // a class method to provide the keys for KVC:

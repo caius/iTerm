@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.178 2004-03-19 23:53:33 ujwal Exp $
+// $Id: PTYTextView.m,v 1.179 2004-03-20 00:21:11 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -853,7 +853,7 @@
 				}
 				double_width = ([dataSource screenLines][i+1] == 0xffff);
 				[self _drawCharacter: aChar 
-							fgColor: CURSOR_TEXT 
+							 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:fg[i] 
 								AtX: x1 * charWidth + MARGIN 
 								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
 						doubleWidth: double_width];

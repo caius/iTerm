@@ -1,3 +1,16 @@
+2003-01-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Can't reproduce the emacs editing bug anymore.
+    
+    * Added a work around for the vi editing bug.
+      Inserting lines into a file with vi was not working.
+      The implementation for the Reverse Index command 
+      in VT100Screen: -putToken: method had to be hacked 
+      always do a scrollDown. This is not as per specs. 
+      The problem manifests itself only on MacOS X, not 
+      while ssh'd into a Linux box. Is this a Cocoa bug?
+      
+
 2003-01-01	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added support for bold character attributes.

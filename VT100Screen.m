@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.10 2003-01-01 20:56:56 ujwal Exp $
+// $Id: VT100Screen.m,v 1.11 2003-01-04 23:30:20 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -500,8 +500,9 @@ static BOOL PLAYBELL = YES;
         CURSOR_Y--;
         if (CURSOR_Y<0) {
             CURSOR_Y=0;
-            [self scrollDown];
+            //[self scrollDown];
         }
+	    [self scrollDown];  // FIXME
             break;
     case VT100CSI_RIS: break;
     case VT100CSI_RM: break;

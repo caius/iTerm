@@ -106,10 +106,14 @@
 - (NSDictionary *) profiles;
 - (void) setProfiles: (NSMutableDictionary *) aDict;
 
+- (NSDictionary *) globalProfile;
 - (BOOL) isGlobalProfile: (NSString *)profileName;
 - (void) addProfileWithName: (NSString *) aString;
 - (void) deleteProfileWithName: (NSString *) aString;
 - (int) numberOfEntriesInProfile: (NSString *) profileName;
+
+- (int) optionKeyForProfile: (NSString *) profileName;
+- (void) setOptionKey: (int) option forProfile: (NSString *) profileName;
 
 - (void) addEntryForKeyCode: (unsigned int) hexCode 
 				  modifiers: (unsigned int) modifiers

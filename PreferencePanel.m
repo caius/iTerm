@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.80 2004-03-05 00:40:14 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.81 2004-03-05 16:04:59 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -93,7 +93,6 @@ static float versionNumber;
 
     defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
         
-    defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
@@ -110,10 +109,12 @@ static float versionNumber;
 {
 	NSEnumerator *kbProfileEnumerator;
 	NSString *aString;
+	NSString *selectedKBProfile;
 	
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
-    [optionKey selectCellAtRow:0 column:defaultOption];
+	selectedKBProfile = [kbProfileSelector titleOfSelectedItem];
+    [optionKey selectCellAtRow:0 column:[[iTermKeyBindingMgr singleInstance] optionKeyForProfile: selectedKBProfile]];
     [tabPosition selectCellWithTag: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
@@ -146,7 +147,6 @@ static float versionNumber;
 {    
     defaultAntiAlias = ([antiAlias state]==NSOnState);
 
-    defaultOption=[optionKey selectedColumn];
     defaultTabViewType=[[tabPosition selectedCell] tag];
     defaultCopySelection=([selectionCopiesText state]==NSOnState);
     defaultHideTab=([hideTab state]==NSOnState);
@@ -156,7 +156,6 @@ static float versionNumber;
     defaultBlinkingCursor = ([blinkingCursor state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 
-    [prefs setInteger:defaultOption forKey:@"OptionKey"];
     [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
@@ -166,6 +165,8 @@ static float versionNumber;
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultBlinkingCursor forKey:@"BlinkingCursor"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
+	[[iTermKeyBindingMgr singleInstance] setOptionKey: [optionKey selectedColumn] 
+										   forProfile: [kbProfileSelector titleOfSelectedItem]];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
     
     [[self window] close];
@@ -173,7 +174,6 @@ static float versionNumber;
 
 - (IBAction)restore:(id)sender
 {    
-    defaultOption=0;
     defaultHideTab=YES;
     defaultCopySelection=YES;
     defaultSilenceBell=NO;
@@ -181,7 +181,6 @@ static float versionNumber;
     defaultOpenAddressBook = NO;
     defaultBlinkingCursor = NO;
 
-    [optionKey selectCellAtRow:0 column:defaultOption];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
@@ -209,9 +208,13 @@ static float versionNumber;
 // Keybinding stuff
 - (IBAction) kbProfileChanged: (id) sender
 {
+	NSString *selectedKBProfile;
 	//NSLog(@"%s; %@", __PRETTY_FUNCTION__, sender);
-		
-	[kbProfileDeleteButton setEnabled: ![[iTermKeyBindingMgr singleInstance] isGlobalProfile: [kbProfileSelector titleOfSelectedItem]]];
+	
+	selectedKBProfile = [kbProfileSelector titleOfSelectedItem];
+
+	[kbProfileDeleteButton setEnabled: ![[iTermKeyBindingMgr singleInstance] isGlobalProfile: selectedKBProfile]];
+    [optionKey selectCellAtRow:0 column:[[iTermKeyBindingMgr singleInstance] optionKeyForProfile: selectedKBProfile]];
 
 	[kbEntryTableView reloadData];
 }
@@ -406,11 +409,6 @@ static float versionNumber;
     return defaultAntiAlias;
 }
 
-
-- (int) option
-{
-    return defaultOption;
-}
 
 - (BOOL) copySelection
 {

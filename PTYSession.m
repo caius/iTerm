@@ -490,7 +490,7 @@ static NSString *PWD_ENVVALUE = @"~";
 				send_strlen = [data length];
 			}
 		}
-		else if ([[PreferencePanel sharedInstance] option] != OPT_NORMAL &&
+		else if ([self optionKey] != OPT_NORMAL &&
 				 modflag & NSAlternateKeyMask)
 		{
 			NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
@@ -501,10 +501,10 @@ static NSString *PWD_ENVVALUE = @"~";
 				send_str = (char *)[keydat bytes];
 				send_strlen = [keydat length];
 			}
-            if ([[PreferencePanel sharedInstance] option] == OPT_ESC) {
+            if ([self optionKey] == OPT_ESC) {
 				send_pchr = '\e';
             }
-			else if ([[PreferencePanel sharedInstance] option] == OPT_META && send_str != NULL) 
+			else if ([self optionKey] == OPT_META && send_str != NULL) 
             {
 				int i;
 				for (i = 0; i < send_strlen; ++i)
@@ -1473,6 +1473,16 @@ static NSString *PWD_ENVVALUE = @"~";
 - (BOOL)exited
 {
     return EXIT;
+}
+
+- (int) optionKey
+{
+	NSString *kbProfile;
+	
+	// Grab our keyboard profile
+	kbProfile = [[self addressBookEntry] objectForKey: @"Keyboard Profile"];
+	
+	return ([[iTermKeyBindingMgr singleInstance] optionKeyForProfile: kbProfile]);
 }
 
 - (void) setAddressBookEntry:(NSDictionary*) entry

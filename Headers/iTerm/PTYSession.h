@@ -195,7 +195,7 @@
 - (float) transparency;
 - (void)setTransparency:(float)transparency;
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
-
+- (int) optionKey;
 
 // Session status
 

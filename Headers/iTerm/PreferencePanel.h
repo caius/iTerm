@@ -67,7 +67,6 @@
 
     unsigned int defaultScrollback;
 
-    int defaultOption;
     BOOL defaultAntiAlias;
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
@@ -107,7 +106,6 @@
 - (void)run;
 
 - (BOOL) antiAlias;
-- (int) option;
 - (BOOL) copySelection;
 - (void) setCopySelection: (BOOL) flag;
 - (BOOL) hideTab;

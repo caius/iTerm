@@ -588,6 +588,34 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	}
 }
 
+- (int) optionKeyForProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	
+	if([profileName length] > 0)
+		aProfile = [profiles objectForKey: profileName];
+	else
+		aProfile = [self globalProfile];
+	return ([[aProfile objectForKey: @"Option Key"] intValue]);
+}
+
+- (void) setOptionKey: (int) option forProfile: (NSString *) profileName
+{
+	NSMutableDictionary *aProfile;
+	
+	//NSLog(@"%s: profile = %@; option = %d", __PRETTY_FUNCTION__, profileName, option);
+	aProfile = [profiles objectForKey: profileName];
+	[aProfile setObject: [NSNumber numberWithInt: option] forKey: @"Option Key"];
+}
+
+- (NSDictionary *) globalProfile
+{
+	NSString *globalProfile;
+	
+	globalProfile = NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+
+	return ([profiles objectForKey: globalProfile]);
+}
 
 - (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
 {

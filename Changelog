@@ -2,6 +2,8 @@
 
 	* Checking in new preferences UI. Backend code for Color and 
 	  Terminal, and Bookmark editor still needs to be done.
+	* Fixed [PTYTextView selectedText] so that '\n' is inserted only 
+	  on a hard wrap.
 
 2004-03-06  fabian
 

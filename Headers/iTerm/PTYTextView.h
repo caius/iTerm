@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.25 2004-03-04 00:10:52 ujwal Exp $
+// $Id: PTYTextView.h,v 1.26 2004-03-08 07:29:18 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -133,6 +133,7 @@ typedef struct
 - (NSString *) content;
 - (void)copy: (id) sender;
 - (void)paste:(id)sender;
+- (void) pasteSelection: (id) sender;
 - (BOOL)validateMenuItem:(NSMenuItem *)item;
 - (void)changeFont:(id)sender;
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent;

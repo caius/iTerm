@@ -444,7 +444,7 @@ static NSString *PWD_ENVVALUE = @"~";
 		if ([mstr characterAtIndex:i] == 0xa5)
 		    [mstr replaceCharactersInRange:NSMakeRange(i, 1) withString:@"\\"];
 
-	    data = [mstr dataUsingEncoding:NSUTF8StringEncoding];
+	    data = [mstr dataUsingEncoding:[TERMINAL encoding]];
 
 	    // Check if we are in keypad mode
 	    if(modflag & NSNumericPadKeyMask)

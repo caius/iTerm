@@ -151,7 +151,7 @@ static NSString *PWD_ENVVALUE = @"~";
     // Allocate a text view
     aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
-	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable];
+	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 	
     // assign terminal and task objects
     [SCREEN setShellTask:SHELL];

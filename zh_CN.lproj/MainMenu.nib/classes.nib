@@ -60,6 +60,7 @@
                 adNewWindow = id; 
                 adRow = id; 
                 adSelection = NSColorWell; 
+                adShortcut = id; 
                 adTable = NSTableView; 
                 adTermType = id; 
                 adTextExample = NSTextField; 

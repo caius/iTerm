@@ -1,6 +1,14 @@
 2003-03-20	fabian
     * Japanese localization patch from Yuichi OHKAWA
     * Imported all the website files into the project
+    * New key combination for scrolling:
+        cmd-Up/Down arrow: scroll one line up/down
+        shift-cmd-Up/Down arrow: scroll one pague up/down
+    * Added an alert window after configuration is saved.
+    * Added shortcut option for address entry.
+        Control-Option-Key: Open in new tab
+        Shift-Control-Option-Key: Open in new window
+      (not working when some input method is being used)
     
 2003-03-19	fabian
     * Fixed some AddressBook interface issues

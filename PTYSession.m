@@ -308,8 +308,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
     iIdleCount=0;
 
-    //NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
-    //      event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
+//    NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c)",
+//          event,modflag,keycode,keystr,unmodkeystr,unicode,unicode);
 
     // Check if we are navigating through sessions or scrolling
     if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
@@ -340,14 +340,33 @@ static NSString *PWD_ENVVALUE = @"~";
 	    case NSClearLineFunctionKey:
 		if(modflag & NSCommandKeyMask)
 		    [TERMINAL toggleNumLock];
-		break;		
+		break;
+            case NSUpArrowFunctionKey:
+                if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
+                    [TEXTVIEW scrollPageUp: self];
+                else if (modflag & NSCommandKeyMask)
+                    [TEXTVIEW scrollLineUp: self];
+                break;
+            case NSDownArrowFunctionKey:
+                if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
+                    [TEXTVIEW scrollPageDown: self];
+                else if (modflag & NSCommandKeyMask)
+                    [TEXTVIEW scrollLineDown: self];
+                break;
+                
 	    default:
 		if ((modflag & NSCommandKeyMask) && (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey)) {
 		    [parent selectSession:unicode-NSF1FunctionKey];
 		}
+                    
 		break;
 	}
     }
+    else if ((modflag & NSAlternateKeyMask) && (modflag & NSControlKeyMask)) {
+//        NSLog(@"opt_control_key detected(%d)",(modflag & NSShiftKeyMask));
+        [MAINMENU interpreteKey:[unmodkeystr characterAtIndex:0] newWindow:((modflag & NSShiftKeyMask)!=0) ];
+    }
+        
     else {
 
 	if (modflag & NSFunctionKeyMask) {

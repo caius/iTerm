@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.40 2003-03-13 19:09:55 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.41 2003-03-21 00:16:21 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -187,6 +187,7 @@
 // Preferences
 - (void)setPreference:(id)pref;
 - (id) preference;
+
 
 @end
 

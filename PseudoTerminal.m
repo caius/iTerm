@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.131 2003-03-18 15:55:49 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.132 2003-03-21 00:16:21 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1639,6 +1639,12 @@ static NSString *ConfigToolbarItem = @"Config";
             NULL];
         //    NSLog(@"new entry:%@",ae);
         [MAINMENU replaceAddressBookEntry:old with:new];
+        NSRunAlertPanel(NSLocalizedStringFromTable(@"Configuration saved",@"iTerm",@"Config"),
+                        [old objectForKey:@"Name"],
+                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+                        nil,nil);
+        
+        
     }
     else {
         new=[[NSDictionary alloc] initWithObjectsAndKeys:
@@ -1661,9 +1667,12 @@ static NSString *ConfigToolbarItem = @"Config";
             NULL];
         //    NSLog(@"new entry:%@",ae);
         [MAINMENU addAddressBookEntry: new];
+        NSRunAlertPanel(NSLocalizedStringFromTable(@"Configuration saved as a new entry in Address Book",@"iTerm",@"Config"),
+                        [new objectForKey:@"Name"],
+                        NSLocalizedStringFromTable(@"OK",@"iTerm",@"OK"),
+                        nil,nil);
     }
     [MAINMENU saveAddressBook];
-
 }
 
 @end

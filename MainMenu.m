@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.38 2003-03-18 15:55:48 ujwal Exp $
+// $Id: MainMenu.m,v 1.39 2003-03-21 00:16:21 yfabian Exp $
 /*
  **  MainMenu.m
  **
@@ -233,6 +233,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     }
     [adEncoding selectItemAtIndex:r];
     [adTermType selectItemAtIndex:0];
+    [adShortcut selectItemAtIndex:0];
     [adRow setIntValue:[PREF_PANEL row]];
     [adCol setIntValue:[PREF_PANEL col]];
     [adForeground setColor:[PREF_PANEL foreground]];
@@ -282,6 +283,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
             [NSNumber numberWithBool:[adClose state]],@"AutoClose",
             [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
+            [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
             NULL];
         [addressBook addObject:ae];
 	[addressBook sortUsingFunction: addressBookComparator context: nil];
@@ -323,6 +325,12 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         [adTermType setStringValue:[entry objectForKey:@"Term Type"]];
     else
         [adTermType selectItemAtIndex:0];
+    if ([entry objectForKey:@"Shortcut"]&&[[entry objectForKey:@"Shortcut"] intValue]) {
+        [adShortcut setStringValue:[NSString stringWithFormat:@"%c",[[entry  objectForKey:@"Shortcut"] intValue]]];
+    }
+    else
+        [adShortcut selectItemAtIndex:0];
+        
     [adForeground setColor:[entry objectForKey:@"Foreground"]];
     [adBackground setColor:[entry objectForKey:@"Background"]];
     if([entry objectForKey:@"SelectionColor"])
@@ -386,6 +394,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
             [NSNumber numberWithBool:[adClose state]],@"AutoClose",
             [NSNumber numberWithBool:[adDoubleWidth state]],@"DoubleWidth",
+            [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
             NULL];
         [addressBook replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
 	[addressBook sortUsingFunction: addressBookComparator context: nil];
@@ -538,6 +547,10 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             
             s=[NSString localizedNameOfStringEncoding:(NSStringEncoding)[[theRecord objectForKey:@"Encoding"] unsignedIntValue]];
             break;
+        case 3:
+//            NSLog(@"%@:%d",[theRecord objectForKey:@"Name"],[[theRecord objectForKey:@"Shortcut"] intValue]);
+            s=([[theRecord objectForKey:@"Shortcut"] intValue]?
+            [NSString stringWithFormat:@"%c",[[theRecord objectForKey:@"Shortcut"] intValue]]:@"");
     }
             
     return s;
@@ -881,6 +894,23 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 {
     [addressBook replaceObjectAtIndex:[addressBook indexOfObject:old] withObject:new];
 }
+
+- (void) interpreteKey: (int) code newWindow:(BOOL) newWin
+{
+    int i, c, n=[addressBook count];
+
+    if (code>='a'&&code<='z') code+='A'-'a';
+//    NSLog(@"got code:%d (%s)",code,(newWin?"new":"old"));
+    
+    for(i=0; i<n; i++) {
+        c=[[[addressBook objectAtIndex:i] objectForKey:@"Shortcut"] intValue];
+        if (code==c) {
+            [self executeABCommandAtIndex:i inTerminal: newWin?nil:FRONT];
+        }
+    }
+            
+}
+
 
 @end
 

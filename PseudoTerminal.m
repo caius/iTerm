@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.171 2003-05-14 02:16:28 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.172 2003-05-17 06:04:08 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -512,6 +512,7 @@ static int windowCount = 0;
     ptyListLock = nil;
    
     ptyList = nil;
+    WINDOW = nil;
 
         
     // Remove ourselves as an observer for notifications to reload the addressbook.

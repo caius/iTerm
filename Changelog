@@ -1,3 +1,8 @@
+2003-05-16	ujwal
+
+    * Fixed a crash when closing a window with both "close session 
+      when it ends" and "Prompt on closing" are unselected.
+
 2003-05-15	ujwal
 
     * making sure we have a ~/Library/Application Support/iTerm 

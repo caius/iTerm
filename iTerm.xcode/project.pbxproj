@@ -101,7 +101,6 @@
 				872EBC5F04E42E320073D10E,
 				872EBC5804E42E320073D10E,
 				872EBC5404E42E320073D10E,
-				872EBC5604E42E320073D10E,
 				872EBC5B04E42E320073D10E,
 				872EBC5A04E42E320073D10E,
 				872EBC6104E42E320073D10E,
@@ -524,15 +523,6 @@
 			refType = 4;
 			sourceTree = "<group>";
 		};
-		872EBC5604E42E320073D10E = {
-			fileEncoding = 30;
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = PTYTypesetter.h;
-			path = Headers/iTerm/PTYTypesetter.h;
-			refType = 4;
-			sourceTree = "<group>";
-		};
 		872EBC5704E42E320073D10E = {
 			fileEncoding = 30;
 			isa = PBXFileReference;
@@ -714,7 +704,6 @@
 			files = (
 				874205F00564168A00CFC3F1,
 				874205F10564168A00CFC3F1,
-				874205F20564168A00CFC3F1,
 				874205F30564168A00CFC3F1,
 				874205F40564168A00CFC3F1,
 				874205F50564168A00CFC3F1,
@@ -751,15 +740,6 @@
 		};
 		874205F10564168A00CFC3F1 = {
 			fileRef = 872EBC5404E42E320073D10E;
-			isa = PBXBuildFile;
-			settings = {
-				ATTRIBUTES = (
-					Public,
-				);
-			};
-		};
-		874205F20564168A00CFC3F1 = {
-			fileRef = 872EBC5604E42E320073D10E;
 			isa = PBXBuildFile;
 			settings = {
 				ATTRIBUTES = (

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.77 2004-03-03 00:54:55 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.78 2004-03-03 01:39:07 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -94,7 +94,6 @@ static float versionNumber;
     defaultAntiAlias=[prefs objectForKey:@"AntiAlias"]?[[prefs objectForKey:@"AntiAlias"] boolValue]: YES;
         
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
-    defaultMacNavKeys=[prefs objectForKey:@"MacNavKeys"]?[[prefs objectForKey:@"MacNavKeys"] boolValue]: NO;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
@@ -114,7 +113,6 @@ static float versionNumber;
 	
     [antiAlias setState:defaultAntiAlias?NSOnState:NSOffState];
     
-    [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
     [tabPosition selectCellWithTag: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
@@ -147,7 +145,6 @@ static float versionNumber;
 {    
     defaultAntiAlias = ([antiAlias state]==NSOnState);
 
-    defaultMacNavKeys=([macnavkeys state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
     defaultTabViewType=[[tabPosition selectedCell] tag];
     defaultCopySelection=([selectionCopiesText state]==NSOnState);
@@ -158,7 +155,6 @@ static float versionNumber;
     defaultBlinkingCursor = ([blinkingCursor state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 
-    [prefs setBool:defaultMacNavKeys forKey:@"MacNavKeys"];
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
     [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
@@ -176,7 +172,6 @@ static float versionNumber;
 
 - (IBAction)restore:(id)sender
 {    
-    defaultMacNavKeys=YES;
     defaultOption=0;
     defaultHideTab=YES;
     defaultCopySelection=YES;
@@ -185,7 +180,6 @@ static float versionNumber;
     defaultOpenAddressBook = NO;
     defaultBlinkingCursor = NO;
 
-    [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
@@ -411,10 +405,6 @@ static float versionNumber;
     return defaultAntiAlias;
 }
 
-- (BOOL) macnavkeys
-{
-    return defaultMacNavKeys;
-}
 
 - (int) option
 {

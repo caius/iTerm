@@ -42,7 +42,6 @@
                 kbProfileDeleteButton = NSButton; 
                 kbProfileName = NSTextField; 
                 kbProfileSelector = NSPopUpButton; 
-                macnavkeys = id; 
                 openAddressBook = id; 
                 optionKey = id; 
                 promptOnClose = id; 

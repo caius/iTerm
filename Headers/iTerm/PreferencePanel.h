@@ -40,7 +40,6 @@
     IBOutlet id hideTab;
     IBOutlet id openAddressBook;
     IBOutlet id optionKey;
-    IBOutlet id macnavkeys;
     IBOutlet id promptOnClose;
     IBOutlet id silenceBell;
     IBOutlet id blinkingCursor;
@@ -68,7 +67,6 @@
     unsigned int defaultScrollback;
 
     int defaultOption;
-    BOOL defaultMacNavKeys;
     BOOL defaultAntiAlias;
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
@@ -109,7 +107,6 @@
 
 - (BOOL) antiAlias;
 - (int) option;
-- (BOOL) macnavkeys;
 - (BOOL) copySelection;
 - (void) setCopySelection: (BOOL) flag;
 - (BOOL) hideTab;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.45 2004-05-08 19:10:35 ujwal Exp $
+// $Id: PTYTextView.h,v 1.46 2004-05-09 20:38:12 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -236,6 +236,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
     // Save method
 - (void) saveDocumentAs: (id) sender;
 - (void) print:(id)sender;
+- (void) printContent: (NSString *) aString;
 
 // Find method
 - (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase;

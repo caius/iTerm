@@ -1,7 +1,11 @@
 2004-05-08  ujwal
 
+	* Fixed printing.
+
+2004-05-08  ujwal
+
 	* Re-implemented display update thread using NSThread instead of NSTimer 
-	  to avoid posting frequent event so n main run loop. Hopefully this 
+	  to avoid posting frequent events on main run loop. Hopefully this 
 	  should reduce CPU usage seen on laptops. Also, the thread is called 
 	  from the controlling Pseudoterminal instead of in each tab. Thread 
 	  updates all tabs in the controlling PseudoTerminal. This should reduce 

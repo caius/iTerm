@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.215 2004-05-08 19:10:30 ujwal Exp $
+// $Id: PTYTextView.m,v 1.216 2004-05-09 20:38:05 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1468,7 +1468,7 @@ static SInt32 systemVersion;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView validateMenuItem:%@; supermenu = %@]", __FILE__, __LINE__, item, [[item menu] supermenu] );
 #endif
-    
+    	
     if ([item action] == @selector(paste:))
     {
         NSPasteboard *pboard = [NSPasteboard generalPasteboard];
@@ -1480,7 +1480,7 @@ static SInt32 systemVersion;
         return NO;
     else if ([item action]==@selector(saveDocumentAs:) ||
 			 [item action] == @selector(selectAll:) || 
-			 [item action] == @selector(print:))
+			 ([item action] == @selector(print:) && [item tag] != 1))
     {
         // We always validate the above commands
         return (YES);
@@ -1488,7 +1488,8 @@ static SInt32 systemVersion;
     else if ([item action]==@selector(mail:) ||
              [item action]==@selector(browse:) ||
              [item action]==@selector(copy:) ||
-			 [item action]==@selector(pasteSelection:))
+			 [item action]==@selector(pasteSelection:) || 
+			 ([item action]==@selector(print:) && [item tag] == 1)) // print selection
     {
         //        NSLog(@"selected range:%d",[self selectedRange].length);
         return (startX>=0);
@@ -1773,6 +1774,32 @@ static SInt32 systemVersion;
 // Print
 - (void) print: (id) sender
 {
+	NSRect visibleRect;
+	int lineOffset, numLines;
+	
+	switch ([sender tag])
+	{
+		case 0: // visible range
+			visibleRect = [[self enclosingScrollView] documentVisibleRect];
+			// Starting from which line?
+			lineOffset = visibleRect.origin.y/lineHeight;			
+			// How many lines do we need to draw?
+			numLines = visibleRect.size.height/lineHeight;
+			[self printContent: [self contentFromX: 0 Y: lineOffset 
+											   ToX: [dataSource width] - 1 Y: lineOffset + numLines - 1
+										breakLines: YES]];
+			break;
+		case 1: // text selection
+			[self printContent: [self selectedText]];
+			break;
+		case 2: // entire buffer
+			[self printContent: [self content]];
+			break;
+	}
+}
+
+- (void) printContent: (NSString *) aString
+{
     NSPrintInfo *aPrintInfo;
 	    
     aPrintInfo = [NSPrintInfo sharedPrintInfo];
@@ -1782,14 +1809,9 @@ static SInt32 systemVersion;
 	
     // create a temporary view with the contents, change to black on white, and print it
     NSTextView *tempView;
-	NSString *aString;
     NSMutableAttributedString *theContents;
 	
-	// We get our content of the textview or selection, if any
-	aString = [self selectedText];
-	if (!aString) aString = [self content];
-
-    tempView = [[NSTextView alloc] initWithFrame: [self frame]];
+    tempView = [[NSTextView alloc] initWithFrame: [[self enclosingScrollView] documentVisibleRect]];
     theContents = [[NSMutableAttributedString alloc] initWithString: aString];
     [theContents addAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
 		[NSColor textBackgroundColor], NSBackgroundColorAttributeName,

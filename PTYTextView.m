@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.192 2004-03-31 06:02:42 ujwal Exp $
+// $Id: PTYTextView.m,v 1.193 2004-03-31 22:57:37 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -38,6 +38,9 @@
 #import <iTerm/FindPanelWindowController.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/PTYScrollView.h>
+
+#define  SELECT_CODE 0x40
+#define  CURSOR_CODE 0x80
 
 static SInt32 systemVersion;
 
@@ -254,7 +257,9 @@ static SInt32 systemVersion;
 	[selectedTextColor release];
 	[aColor retain];
 	selectedTextColor = aColor;
-	[self _clearCacheForColor: SELECTED_TEXT];
+	[self _clearCacheForColor: SELECT_CODE];
+	[self _clearCacheForColor: SELECT_CODE | BOLD_MASK];
+	
 	[self setNeedsDisplay: YES];
 }
 
@@ -263,7 +268,9 @@ static SInt32 systemVersion;
 	[cursorTextColor release];
 	[aColor retain];
 	cursorTextColor = aColor;
-	[self _clearCacheForColor: CURSOR_TEXT];
+	[self _clearCacheForColor: CURSOR_CODE];
+	[self _clearCacheForColor: CURSOR_CODE | BOLD_MASK];
+	
 	[self setNeedsDisplay: YES];
 }
 
@@ -313,29 +320,26 @@ static SInt32 systemVersion;
 - (NSColor *) colorForCode:(unsigned int) index 
 {
     NSColor *color;
-	int reversed;
 	
-	if(index & SELECTED_TEXT)
+	if(index & SELECT_CODE)
 		return (selectedTextColor);
 	
-	if(index & CURSOR_TEXT)
+	if(index & CURSOR_CODE)
 		return (cursorTextColor);
-	
-	reversed = [[dataSource terminal] screenMode];
 	
 	if (index&DEFAULT_FG_COLOR_CODE)
     {
 		if (index&1) // background color?
 		{
-			color=(reversed?defaultFGColor:defaultBGColor);
+			color=defaultBGColor;
 		}
 		else if(index&BOLD_MASK)
 		{
-			color = (reversed?defaultBGColor:[self defaultBoldColor]);
+			color = [self defaultBoldColor];
 		}
 		else
 		{
-			color = (reversed?defaultBGColor:defaultFGColor);
+			color = defaultFGColor;
 		}
     }
     else
@@ -648,9 +652,10 @@ static SInt32 systemVersion;
 	BOOL need_draw;
 	int bgstart, ulstart;
     float curX, curY;
-	unsigned int bgcode, fgcode;
+	unsigned int bgcode, fgcode, c;
 	int y1, x1;
 	BOOL double_width;
+	BOOL reversed = [[dataSource terminal] screenMode]; 
 	
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
@@ -662,7 +667,7 @@ static SInt32 systemVersion;
 			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
 		}
 		else {
-			aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
+			aColor = [self colorForCode:(reversed ? DEFAULT_FG_COLOR_CODE : DEFAULT_BG_COLOR_CODE)];
 			aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 			[aColor set];
 			NSRectFill(rect);
@@ -733,7 +738,9 @@ static SInt32 systemVersion;
 			// if we don't have to update next char, finish pending jobs
 			if (!need_draw){
 				if (bgstart>=0) {
-					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
+					aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
+						[self colorForCode: 
+							((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
 					aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 					[aColor set];
 					
@@ -747,7 +754,7 @@ static SInt32 systemVersion;
 					
 				}						
 				if (ulstart>=0) {
-					[[self colorForCode:fgcode] set];
+					[[self colorForCode:(fgcode & 0x3f)] set];
 					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
 				}
 				bgstart=ulstart=-1;
@@ -759,7 +766,9 @@ static SInt32 systemVersion;
 					bgcode = bg[j] & 0xff; 
 				}
 				else if (bg[j]!=bgcode || (ulstart>=0 && (fg[j]!=fgcode || !buf[j]))) { //background or underline property change?
-					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
+					aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
+						[self colorForCode: 
+							((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
 					aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 					[aColor set];
 					
@@ -778,7 +787,7 @@ static SInt32 systemVersion;
 					fgcode = fg[j] & 0xff; 
 				}
 				else if ( ulstart>=0 && (fg[j]!=fgcode || !buf[j])) { //underline or fg color property change?
-					[[self colorForCode:fgcode] set];
+					[[self colorForCode:(fgcode & 0x3f)] set];
 					NSRectFill(NSMakeRect(curX+ulstart*charWidth,curY-2,(j-ulstart)*charWidth,1));
 					fgcode=fg[j] & 0xff;
 					ulstart=(fg[j]&UNDER_MASK && buf[j])?j:-1;
@@ -788,7 +797,9 @@ static SInt32 systemVersion;
 		
 		// finish pending jobs
 		if (bgstart>=0) {
-			aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode:bgcode]; 
+			aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
+				[self colorForCode: 
+					((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
 			aColor = [aColor colorWithAlphaComponent: (1 - transparency)];
 			[aColor set];
 			
@@ -814,7 +825,8 @@ static SInt32 systemVersion;
 				if((bg[j] & SELECTION_MASK) && ((fg[j] & 0x1f) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | ((fg[j] & BOLD_MASK) & 0xff); // check for bold
 				else
-					fgcode = fg[j] & 0xff;				
+					fgcode = (reversed && fg[j] & DEFAULT_FG_COLOR_CODE) ? 
+						(DEFAULT_BG_COLOR_CODE | (fg[j] & BOLD_MASK)) : (fg[j] & 0xff);
 				if (fg[j]&BLINK_MASK) {
 					if (blinkShow) {				
 						[self _drawCharacter:buf[j] fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
@@ -1953,14 +1965,12 @@ static SInt32 systemVersion;
 	int seed;
 	
 	if (fg & SELECTED_TEXT) {
-		c = SELECTED_TEXT;
+		c = SELECT_CODE | (fg & BOLD_MASK);
 	}
 	else if (fg & CURSOR_TEXT) {
-		c = CURSOR_TEXT;
+		c = CURSOR_CODE | (fg & BOLD_MASK);
 	}
 	else {
-		if ([[dataSource terminal] screenMode] && (fg&DEFAULT_FG_COLOR_CODE)) // reversed screen mode?
-			c = DEFAULT_FG_COLOR_CODE | DEFAULT_BG_COLOR_CODE;
 		c &= (BOLD_MASK|0x1f); // turn of all masks except for bold and default fg color
 	}
 	if (!code) return nil;

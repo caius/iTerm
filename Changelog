@@ -1,6 +1,7 @@
 2004-03-31  fabian
 
 	* Updated Korean localization, by TaeYoung Oh
+	* Fixed problems displaying blinking and underline characters.
 	
 2004-03-30  ujwal
 

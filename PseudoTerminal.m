@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.14 2002-12-07 23:19:47 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.15 2002-12-07 23:49:26 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -117,6 +117,7 @@ static NSDictionary *newOutputStateAttribute;
     NSColor *bgColor;
     NSRect scrollViewFrame, aRect;
     NSScrollView *aScrollView;
+    NSSize size, vsize, winSize;
 
     if (!font)
         font = [[[pref font] copy] retain];
@@ -160,9 +161,9 @@ static NSDictionary *newOutputStateAttribute;
     // set the background color for the scrollview with the appropriate transparency
     bgColor = [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)];
     [SCROLLVIEW setBackgroundColor: bgColor];
-
+    
     [WINDOW setDelegate: self];
-     
+         
 }
 
 - (void)initSession:(NSString *)title
@@ -227,8 +228,8 @@ static NSDictionary *newOutputStateAttribute;
     [TERMINAL setEncoding:encoding];
     [TERMINAL setTrace:YES];	// debug vt100 escape sequence decode
     
-
-    [self setWindowSize];
+    if([ptyList count] == 0)
+        [self setWindowSize];
     [SHELL setWidth:WIDTH  height:HEIGHT];
 
     window = [SCROLLVIEW window];
@@ -514,7 +515,7 @@ static NSDictionary *newOutputStateAttribute;
 - (void)setWindowSize
 {
     NSSize size, vsize, winSize;
-    NSWindow *window;
+    NSWindow *thisWindow;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
@@ -529,10 +530,10 @@ static NSDictionary *newOutputStateAttribute;
 			      hasVerticalScroller:YES
 			   	       borderType:NSNoBorder];
 
-    window = [SCROLLVIEW window];
+    thisWindow = [SCROLLVIEW window];
     winSize = size;
     winSize.height = size.height + 30;
-    [window setContentSize:winSize];
+    [thisWindow setContentSize:winSize];
     [SCROLLVIEW setFrameSize:size];
     [[SCROLLVIEW documentView] setFrameSize:vsize];
 }
@@ -766,6 +767,10 @@ static NSDictionary *newOutputStateAttribute;
         [[[ptyList objectAtIndex:i] SHELL] setWidth:w  height:h];
         [[[ptyList objectAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
+    
+    WIDTH = w;
+    HEIGHT = h;
+    
     [self _drawSessionButtons];
 
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.140 2003-09-10 20:36:44 ujwal Exp $
+// $Id: VT100Screen.m,v 1.141 2003-09-10 23:42:01 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -805,11 +805,14 @@ static BOOL PLAYBELL = YES;
 - (void) saveBuffer
 {
     [savedBuffer release];
+    [self updateScreen];
     savedBuffer = [[NSAttributedString alloc] initWithAttributedString: BUFFER];
 }
 
 - (void) restoreBuffer
 {
+
+    [self updateScreen];
     if([savedBuffer length] > 0)
     {
 	[BUFFER setAttributedString: savedBuffer];
@@ -1519,14 +1522,13 @@ static BOOL PLAYBELL = YES;
 
 #if DEBUG_USE_BUFFER    
     // if we are clearing the entire screen, move the current screen into the scrollback buffer
+    NSAttributedString *newLineString = [self attrString:@"\n" ascii:YES];
     if(x1 == 0 && y1 == 0 && x2 == (WIDTH -1 ) && y2 == (HEIGHT - 1) && clearingBuffer == NO)
     {
-	NSAttributedString *newLineString;
 	
-	[self setScreenLock];
+/*	[self setScreenLock];
 	[STORAGE beginEditing];
 	//NSLog(@"'%@'", [BUFFER string]);
-	newLineString = [[self attrString:@"\n" ascii:YES] retain];
 	[STORAGE appendAttributedString:newLineString];
 	TOP_LINE++;
 	updateIndex = [STORAGE length];
@@ -1542,13 +1544,12 @@ static BOOL PLAYBELL = YES;
 	[STORAGE endEditing];
 	[self removeScreenLock];
 	[[SESSION TEXTVIEW] scrollEnd];
-
 	// update TOP_LINE
-	TOP_LINE += HEIGHT;
+	TOP_LINE += HEIGHT; */
+        for(i=0;i<HEIGHT;i++) [BUFFER appendAttributedString:newLineString];
+        return;
 	
     }
-    else
-	clearingBuffer = NO;
 #endif
 
     if (y1 == y2) {
@@ -1562,7 +1563,7 @@ static BOOL PLAYBELL = YES;
         i=[self getIndexAtX:0 Y:y2 withPadding:NO];
         [BUFFER deleteCharactersInRange:NSMakeRange(idx,i-idx)];
         for(y=y1;y<y2;y++)
-            [BUFFER insertAttributedString:[self attrString:@"\n" ascii:YES] atIndex:idx];
+            [BUFFER insertAttributedString:newLineString atIndex:idx];
 #endif
 
 #if DEBUG_USE_ARRAY
@@ -2228,7 +2229,7 @@ static BOOL PLAYBELL = YES;
 	[STORAGE beginEditing];
         [STORAGE deleteCharactersInRange:NSMakeRange(0, idx)];
 	[STORAGE endEditing];
-        if (idx<updateIndex) updateIndex-=idx;
+        if (idx<=updateIndex) updateIndex-=idx;
         else {
             [BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];
             updateIndex=0;

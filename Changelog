@@ -1,6 +1,7 @@
 2003-09-10	fabian
 
     * Changed doIdleCode behavior to reduce CPU using of idle sessions.
+    * Fixed a bug in save/restore buffer, and revert the eraseInDisplay code.
     
 2003-09-10	ujwal
 

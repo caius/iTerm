@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.66 2003-05-14 17:18:11 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.67 2003-05-27 06:09:55 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1514,18 +1514,26 @@ static VT100TCC decode_string(unsigned char *datap,
 		   length:conststr_sizeof(KEY_PAGE_DOWN)];
 }
 
+// Reference: http://www.utexas.edu/cc/faqs/unix/VT200-function-keys.html
+// http://www.cs.utk.edu/~shuford/terminal/misc_old_terminals_news.txt
 - (NSData *)keyFunction:(int)no
 {
     char str[256];
     size_t len;
 
-    if (no < 7) {
+    if (no <= 5) {
 	sprintf(str, KEY_FUNCTION_FORMAT, no + 10);
     }
-    else if (no < 11)
+    else if (no <= 10)
 	sprintf(str, KEY_FUNCTION_FORMAT, no + 11);
+    else if (no <= 14)
+	sprintf(str, KEY_FUNCTION_FORMAT, no + 12);
+    else if (no <= 16)
+	sprintf(str, KEY_FUNCTION_FORMAT, no + 13);
+    else if (no <= 20)
+	sprintf(str, KEY_FUNCTION_FORMAT, no + 14);
     else
-        sprintf(str, KEY_FUNCTION_FORMAT, no + 12);
+        str[0] = 0;
 
     len = strlen(str);
     return [NSData dataWithBytes:str length:len];

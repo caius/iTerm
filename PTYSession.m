@@ -331,6 +331,11 @@ static NSString *PWD_ENVVALUE = @"~";
 
     // Clear the bell
     [self setBell: NO];
+    
+
+    if ( (modflag & NSFunctionKeyMask) && [pref macnavkeys] && ((unicode == NSPageUpFunctionKey) || (unicode == NSPageDownFunctionKey) || (unicode == NSHomeFunctionKey) || (unicode == NSEndFunctionKey)) ) {
+        modflag ^= NSShiftKeyMask; // Toggle meaning of shift key for
+    }
 
     // Check if we are navigating through sessions or scrolling
     if ((modflag & NSFunctionKeyMask) && ((modflag & NSCommandKeyMask) || (modflag & NSShiftKeyMask)))
@@ -347,16 +352,19 @@ static NSString *PWD_ENVVALUE = @"~";
 		[parent nextSession: nil];
 		return;
 	    case NSDeleteFunctionKey:
-		if (modflag&NSFunctionKeyMask)
-		    NSLog(@"### DEBUG ###\n%@", SCREEN);
+                NSLog(@"### DEBUG ###\n%@", SCREEN);
 		break;
 	    case NSPageUpFunctionKey:
-		if(modflag & NSShiftKeyMask)
-		    [TEXTVIEW scrollPageUp: self];
+                [TEXTVIEW scrollPageUp: self];
 		break;
 	    case NSPageDownFunctionKey:
-		if(modflag & NSShiftKeyMask)
-		    [TEXTVIEW scrollPageDown: self];
+                [TEXTVIEW scrollPageDown: self];
+		break;
+	    case NSHomeFunctionKey:
+                [TEXTVIEW scrollHome];
+		break;
+	    case NSEndFunctionKey:
+                [TEXTVIEW scrollEnd];
 		break;
 	    case NSClearLineFunctionKey:
 		if(modflag & NSCommandKeyMask)
@@ -365,18 +373,18 @@ static NSString *PWD_ENVVALUE = @"~";
             case NSUpArrowFunctionKey:
                 if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
                     [TEXTVIEW scrollPageUp: self];
-                else if (modflag & NSCommandKeyMask)
+                else
                     [TEXTVIEW scrollLineUp: self];
                 break;
             case NSDownArrowFunctionKey:
                 if ((modflag & NSShiftKeyMask) && (modflag & NSCommandKeyMask))
                     [TEXTVIEW scrollPageDown: self];
-                else if (modflag & NSCommandKeyMask)
+                else
                     [TEXTVIEW scrollLineDown: self];
                 break;
                 
 	    default:
-		if ((modflag & NSCommandKeyMask) && (unicode>=NSF1FunctionKey&&unicode<=NSF35FunctionKey)) {
+		if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey) {
 		    [parent selectSessionAtIndex:unicode-NSF1FunctionKey];
 		}
                     
@@ -392,27 +400,12 @@ static NSString *PWD_ENVVALUE = @"~";
 
 	if (modflag & NSFunctionKeyMask) {
 	    NSData *data = nil;
-	    int f = -1;
 
 	    switch(unicode) {
                 case NSUpArrowFunctionKey: data = [TERMINAL keyArrowUp:modflag]; break;
 		case NSDownArrowFunctionKey: data = [TERMINAL keyArrowDown:modflag]; break;
 		case NSLeftArrowFunctionKey: data = [TERMINAL keyArrowLeft:modflag]; break;
 		case NSRightArrowFunctionKey: data = [TERMINAL keyArrowRight:modflag]; break;
-
-		case NSF1FunctionKey: f = 1; break;
-		case NSF2FunctionKey: f = 2; break;
-		case NSF3FunctionKey: f = 3; break;
-		case NSF4FunctionKey: f = 4; break;
-		case NSF5FunctionKey: f = 5; break;
-		case NSF6FunctionKey: f = 6; break;
-		case NSF7FunctionKey: f = 7; break;
-		case NSF8FunctionKey: f = 8; break;
-		case NSF9FunctionKey: f = 9; break;
-		case NSF10FunctionKey: f = 10; break;
-		case NSF11FunctionKey: f = 11; break;
-		case NSF12FunctionKey: f = 12; break;
-		    break;
 
 		case NSInsertFunctionKey:
 		    // case NSHelpFunctionKey:
@@ -435,9 +428,9 @@ static NSString *PWD_ENVVALUE = @"~";
 		    break;
 	    }
 
-	    //            if ((modflag&NSShiftKeyMask)&&f>=0) f+=12;
-	    if (f >= 0)
-		data = [TERMINAL keyFunction:f];
+            if (NSF1FunctionKey<=unicode&&unicode<=NSF35FunctionKey) {
+                data = [TERMINAL keyFunction:unicode-NSF1FunctionKey+1];
+            }
 
 	    if (data != nil) {
 		send_str = (char *)[data bytes];
@@ -520,7 +513,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	}
 
 	// Make sure we scroll down to the end
-	[TEXTVIEW moveLastLine];
+	[TEXTVIEW scrollEnd];
 
 	if (EXIT == NO ) {
 	    if (send_pchr >= 0) {
@@ -538,9 +531,10 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 
 #if USE_CUSTOM_DRAWING
-            [TEXTVIEW moveLastLine];
+            [TEXTVIEW scrollEnd];
 #else
 	    // trigger an update of the display.
+            [TEXTVIEW scrollEnd];
 	    [SCREEN updateScreen];
 #endif
     
@@ -730,6 +724,7 @@ static NSString *PWD_ENVVALUE = @"~";
     board = [NSPasteboard generalPasteboard];
     NSParameterAssert(board != nil );
     str = [board stringForType:NSStringPboardType];
+    [TEXTVIEW scrollEnd];
     [self pasteString: str];
 }
 
@@ -806,7 +801,7 @@ static NSString *PWD_ENVVALUE = @"~";
         if([TEXTVIEW resized]||([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
                                 [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
            ([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-            [TEXTVIEW moveLastLine];
+            [TEXTVIEW scrollEnd];
         output=0;
         dirty=NO;
     }
@@ -821,7 +816,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	    if(([[TEXTVIEW enclosingScrollView] documentVisibleRect].origin.y +
 	 [[TEXTVIEW enclosingScrollView] documentVisibleRect].size.height) ==
 	([TEXTVIEW frame].origin.y + [TEXTVIEW frame].size.height))
-		[TEXTVIEW moveLastLine];
+		[TEXTVIEW scrollEnd];
             output=0;
             dirty=NO;
         }

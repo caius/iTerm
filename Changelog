@@ -1,3 +1,11 @@
+2003-05-26	ujwal
+    
+    * Incorporated Peter Lewis' Mac navigation keys code patch.
+
+2003-05-25	ujwal
+
+    * Refactored some AddressBook code.
+
 2003-05-22	ujwal
 
     * Moved "Remap Delete Key" preference to addressbook session.

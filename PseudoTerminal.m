@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.179 2003-05-19 15:41:59 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.180 2003-05-27 06:09:55 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -320,7 +320,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	if ([TABVIEW numberOfTabViewItems] == 1)
 	{
 #if USE_CUSTOM_DRAWING
-            [[aSession TEXTVIEW] moveLastLine];
+            [[aSession TEXTVIEW] scrollEnd];
 #else
 	    [[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
 #endif
@@ -934,7 +934,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self setWindowTitle: aTitle];    
 
     // Reset the scrollbar to the bottom
-    [[currentPtySession TEXTVIEW] moveLastLine];
+    [[currentPtySession TEXTVIEW] scrollEnd];
 
 
     //NSLog(@"Didresize: w = %d, h = %d; frame.size.width = %f, frame.size.height = %f",WIDTH,HEIGHT, [[self window] frame].size.width, [[self window] frame].size.height);
@@ -1105,7 +1105,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [[currentPtySession TEXTVIEW] setNeedsDisplay:YES];
         }
 
-        [[[self currentSession] TEXTVIEW] moveLastLine];
+        [[[self currentSession] TEXTVIEW] scrollEnd];
         [self setCurrentSessionName: [CONFIG_NAME stringValue]]; 
     
         [CONFIG_PANEL setDelegate:CONFIG_PANEL];
@@ -1473,7 +1473,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 	    [self setWindowSize: NO];
 #if USE_CUSTOM_DRAWING
-            [[aSession TEXTVIEW] moveLastLine];
+            [[aSession TEXTVIEW] scrollEnd];
 #else
 	    [[aSession TEXTVIEW] scrollRangeToVisible: NSMakeRange([[[aSession TEXTVIEW] string] length] - 1, 1)];
 #endif

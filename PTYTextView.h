@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.28 2003-05-13 21:33:36 ujwal Exp $
+// $Id: PTYTextView.h,v 1.29 2003-05-27 06:09:55 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -124,7 +124,6 @@
 
 - (void) refresh;
 - (void) setDirtyLine: (int) y;
-- (void) moveLastLine;
 - (BOOL) resized;
 - (void) showCursor;
 - (void) hideCursor;
@@ -143,10 +142,12 @@
 - (void)resetCursorRects;
 
 // Scrolling control
--(void) scrollLineUp:(id) receiver;
--(void) scrollLineDown:(id) receiver;
--(void) scrollPageUp:(id) receiver;
--(void) scrollPageDown:(id) receiver;
+- (void) scrollLineUp: (id) sender;
+- (void) scrollLineDown: (id) sender;
+- (void) scrollPageUp: (id) sender;
+- (void) scrollPageDown: (id) sender;
+- (void) scrollHome;
+- (void) scrollEnd;
 
     // Save method
 - (void) saveDocumentAs: (id) sender;
@@ -257,7 +258,8 @@
 - (void) setLineWidth: (float) aLineWidth;
 
 - (void) refresh;
-- (void)moveLastLine;
+- (void) scrollHome;
+- (void) scrollEnd;
 
 //
 // Drag and Drop methods for our text view

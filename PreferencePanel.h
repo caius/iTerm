@@ -62,6 +62,7 @@
     IBOutlet id nafontExample;
     IBOutlet id openAddressBook;
     IBOutlet id optionKey;
+    IBOutlet id macnavkeys;
     IBOutlet id prefPanel;
     IBOutlet id prefTab;
     IBOutlet id promptOnClose;
@@ -101,6 +102,7 @@
 
     BOOL defaultAutoclose;
     int defaultOption;
+    BOOL defaultMacNavKeys;
     BOOL defaultAntiAlias;
     BOOL defaultCopySelection;
     BOOL defaultHideTab;
@@ -151,6 +153,7 @@
 - (int) aiCode;
 - (BOOL) autoclose;
 - (int) option;
+- (BOOL) macnavkeys;
 - (BOOL) copySelection;
 - (BOOL) hideTab;
 - (BOOL) silenceBell;

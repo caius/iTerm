@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.47 2003-05-07 15:14:49 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.48 2003-05-27 06:09:55 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -306,6 +306,7 @@ static float versionNumber;
         
     defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
+    defaultMacNavKeys=[prefs objectForKey:@"MacNavKeys"]?[[prefs objectForKey:@"MacNavKeys"] boolValue]: YES;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
@@ -413,6 +414,7 @@ static float versionNumber;
     [nafontExample setFont:defaultNAFont];
     [nafontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultNAFont fontName], [defaultNAFont pointSize]]];
     [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
+    [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
     [tabViewType selectCellWithTag: defaultTabViewType];
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
@@ -537,6 +539,7 @@ static float versionNumber;
     defaultAntiAlias = ([antiAlias state]==NSOnState);
 
     defaultAutoclose=([autoclose state]==NSOnState);
+    defaultMacNavKeys=([macnavkeys state]==NSOnState);
     defaultOption=[optionKey selectedColumn];
     defaultTabViewType=[[tabViewType selectedCell] tag];
     defaultCopySelection=([copySelection state]==NSOnState);
@@ -603,6 +606,7 @@ static float versionNumber;
     [prefs setObject:[NSArchiver archivedDataWithRootObject:defaultNAFont]
               forKey:@"NAFont"];
     [prefs setBool:defaultAutoclose forKey:@"AutoClose"];
+    [prefs setBool:defaultMacNavKeys forKey:@"MacNavKeys"];
     [prefs setInteger:defaultOption forKey:@"OptionKey"];
     [prefs setBool:defaultAntiAlias forKey:@"AntiAlias"];
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
@@ -656,6 +660,7 @@ static float versionNumber;
     
     defaultTransparency=TRANSPARENCY;
     defaultAutoclose=YES;
+    defaultMacNavKeys=YES;
     defaultOption=0;
     defaultHideTab=YES;
     defaultCopySelection=YES;
@@ -710,6 +715,7 @@ static float versionNumber;
     [fontExample setStringValue:[NSString stringWithFormat:@"%@ %g", [defaultFont fontName], [defaultFont pointSize]]];
 
     [autoclose setState:defaultAutoclose?NSOnState:NSOffState];
+    [macnavkeys setState:defaultMacNavKeys?NSOnState:NSOffState];
     [optionKey selectCellAtRow:0 column:defaultOption];
     [copySelection setState:defaultCopySelection?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
@@ -796,6 +802,11 @@ static float versionNumber;
 - (BOOL) autoclose
 {
     return defaultAutoclose;
+}
+
+- (BOOL) macnavkeys
+{
+    return defaultMacNavKeys;
 }
 
 - (int) option

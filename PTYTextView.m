@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.65 2003-05-18 07:02:11 ujwal Exp $
+// $Id: PTYTextView.m,v 1.66 2003-05-27 06:09:55 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -299,7 +299,7 @@
     return resized;
 }
 
--(void) scrollLineUp:(id) receiver
+-(void) scrollLineUp: (id) sender
 {
     NSRect scrollRect;
 
@@ -309,7 +309,7 @@
     [self scrollRectToVisible: scrollRect];
 }
 
--(void) scrollLineDown:(id) receiver
+-(void) scrollLineDown: (id) sender
 {
     NSRect scrollRect;
 
@@ -318,7 +318,7 @@
     [self scrollRectToVisible: scrollRect];
 }
 
--(void) scrollPageUp:(id) receiver
+-(void) scrollPageUp: (id) sender
 {
     NSRect scrollRect;
 
@@ -327,7 +327,7 @@
     [self scrollRectToVisible: scrollRect];
 }
 
--(void) scrollPageDown:(id) receiver;
+-(void) scrollPageDown: (id) sender
 {
     NSRect scrollRect;
 
@@ -336,23 +336,19 @@
     [self scrollRectToVisible: scrollRect];
 }
 
--(void) hideCursor
+-(void) scrollHome
 {
-    CURSOR=NO;
-    [self setDirtyLine: [dataSource cursorY]+[dataSource topLines]-1];
+    NSRect scrollRect;
+
+    scrollRect= [self visibleRect];
+    scrollRect.origin.y = 0;
+    [self scrollRectToVisible: scrollRect];
 }
 
--(void) showCursor
-{
-    CURSOR=YES;
-    [self setDirtyLine: [dataSource cursorY]+[dataSource topLines]-1];
-}
-
-
-- (void)moveLastLine
+- (void)scrollEnd
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView moveLastLine]", __FILE__, __LINE__ );
+    NSLog(@"%s(%d):-[PTYTextView scrollEnd]", __FILE__, __LINE__ );
 #endif
 
     if (numberOfLines > 0)
@@ -367,6 +363,19 @@
         [self scrollRectToVisible: aFrame];
     }
     resized=NO;
+}
+
+
+-(void) hideCursor
+{
+    CURSOR=NO;
+    [self setDirtyLine: [dataSource cursorY]+[dataSource topLines]-1];
+}
+
+-(void) showCursor
+{
+    CURSOR=YES;
+    [self setDirtyLine: [dataSource cursorY]+[dataSource topLines]-1];
 }
 
 
@@ -1484,10 +1493,19 @@
     
 }
 
-- (void)moveLastLine
+-(void) scrollHome
+{
+    NSRect scrollRect;
+
+    scrollRect= [self visibleRect];
+    scrollRect.origin.y = 0;
+    [self scrollRectToVisible: scrollRect];
+}
+
+- (void)scrollEnd
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView moveLastLine]", __FILE__, __LINE__ );
+    NSLog(@"%s(%d):-[PTYTextView scrollEnd]", __FILE__, __LINE__ );
 #endif
 
     if (numberOfLines > 0)

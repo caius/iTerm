@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.25 2003-01-15 17:56:16 yfabian Exp $
+// $Id: MainMenu.m,v 1.26 2003-01-15 20:20:53 yfabian Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -48,7 +48,6 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
 
     // set the TERM_PROGRAM environment variable
     putenv("TERM_PROGRAM=iTerm.app");
-
 }
 
 - (BOOL) applicationShouldTerminate: (NSNotification *) theNotification

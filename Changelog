@@ -1,3 +1,9 @@
+2003-01-14	fabian
+    * Enhanced save session
+    * Fixed insert mode bug
+    * Fixed wrap around mode
+    * Failed attempt to set up mouse cursor
+    
 2003-01-14	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Fixed bug where adding a second tab would cause 

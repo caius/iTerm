@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.16 2003-01-15 17:56:16 yfabian Exp $
+// $Id: PTYTextView.m,v 1.17 2003-01-15 20:20:53 yfabian Exp $
 //
 //  PTYTextView.m
 //  JTerminal
@@ -23,6 +23,7 @@
 #if DEBUG_ALLOC
     NSLog(@"PTYTextView: -init");
 #endif
+    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
 
     return [super init];
 }
@@ -624,6 +625,15 @@
     //[self paste];
 }
 
+- (void)resetCursorRects
+{
+    static NSCursor *cursor=nil;
+    
+//    NSLog(@"Setting mouse here");
+    if (!cursor) cursor=[[[NSCursor alloc] initWithImage:[[NSCursor arrowCursor] image] hotSpot:NSMakePoint(0,0)] retain];
+    [self addCursorRect:[self bounds] cursor:cursor];
+    [cursor setOnMouseEntered:YES];
+}
 
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.20 2003-01-14 17:07:56 yfabian Exp $
+// $Id: VT100Screen.m,v 1.21 2003-01-15 20:20:53 yfabian Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -614,11 +614,18 @@ static BOOL PLAYBELL = YES;
 
     for(idx2=0;idx2<[string length];) {
         if (CURSOR_X>=WIDTH) {
-            [self setNewLine];
-            CURSOR_X=0;
+            if ([TERMINAL wraparoundMode]) {
+                [self setNewLine];
+                CURSOR_X=0;
+            }
+            else {
+                CURSOR_X=WIDTH-1;
+                idx2=[string length]-1;
+                if (ISDOUBLEWIDTHCHARACTER([string characterAtIndex:idx2]))
+                    CURSOR_X--;
+            }
         }
-//        if ([TERMINAL insertMode]) {
-        if (NO) {
+        if ([TERMINAL insertMode]) {
             for(j=0,x=CURSOR_X;x<WIDTH&&idx2+j<[string length];x++,j++)
                 if (ISDOUBLEWIDTHCHARACTER([string characterAtIndex:idx2+j])) x++;
             if (x>WIDTH) {

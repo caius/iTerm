@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.8 2003-01-15 17:56:16 yfabian Exp $
+// $Id: PTYTextView.h,v 1.9 2003-01-15 20:20:53 yfabian Exp $
 //
 //  PTYTextView.h
 //  JTerminal
@@ -71,6 +71,9 @@
 - (BOOL) prepareForDragOperation: (id<NSDraggingInfo>) sender;
 - (BOOL) performDragOperation: (id<NSDraggingInfo>) sender;
 - (void) concludeDragOperation: (id<NSDraggingInfo>) sender;
+
+// Cursor control
+- (void)resetCursorRects;
 
 // Save method
 - (void) saveDocumentAs: (id) sender;

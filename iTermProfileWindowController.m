@@ -197,9 +197,10 @@ static NSStringEncoding const *encodingList = nil;
 			[[kbEntryAction itemAtIndex: i] setAction: nil];
 		}
 		[kbEntryAction selectItemAtIndex: KEY_ACTION_ESCAPE_SEQUENCE];
+		
 	}
 	
-	
+	[self kbEntrySelectorChanged: kbEntryAction];
 	
 	[NSApp beginSheet: addKBEntry
        modalForWindow: [self window]

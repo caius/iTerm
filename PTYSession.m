@@ -579,7 +579,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #else
 	    // scroll to the end
             //[TEXTVIEW scrollEnd];
-            PTYScroller *ptys=[SCROLLVIEW verticalScroller];
+            PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
             [ptys resetUserScroll];
 	    //[SCREEN updateScreen];
 #endif

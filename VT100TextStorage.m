@@ -27,13 +27,17 @@
 #import "iTerm.h"
 #import "VT100TextStorage.h"
 
-#define DEBUG_METHOD_TRACE    0
+#define DEBUG_METHOD_TRACE		0
+#define DEBUG_ALLOC		    	0
 
 
 @implementation VT100TextStorage
 
 - (id)initWithAttributedString:(NSAttributedString *)attrStr
 {
+#if DEBUG_ALLOC
+    NSLog(@"VT100TextStorage: initWithAttributedString: %@", attrStr);
+#endif
     if (self = [super init])
     {
 	contents = attrStr ? [attrStr mutableCopy] : [[NSMutableAttributedString alloc] init];
@@ -48,6 +52,9 @@
 
 - (void)dealloc
 {
+#if DEBUG_ALLOC
+    NSLog(@"VT100TextStorage: dealloc");
+#endif    
     [contents release];
     [super dealloc];
 }

@@ -102,6 +102,7 @@
 + (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili;
 + (NSColor *) defaultSelectionColor;
 + (NSColor *) defaultBoldColor;
++ (NSColor *) highlightColor:(NSColor *)color;
 
 // NSWindow delegate methods
 - (void)windowWillClose:(NSNotification *)aNotification;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.180 2003-05-27 06:09:55 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.181 2003-05-29 06:30:55 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -128,12 +128,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     WIDTH=width;
     HEIGHT=height;
     NSRect tabviewRect;
+    NSDictionary *defaultSessionPreferences = [MAINMENU defaultAddressBookEntry];
 //    NSColor *bgColor;
 
     if (!font)
-        font = [pref font];
+        font = [defaultSessionPreferences objectForKey: @"Font"];
     if (!nafont)
-        nafont=font;
+        nafont = [defaultSessionPreferences objectForKey: @"NAFont"];
     
     NSParameterAssert(font != nil);
 
@@ -1044,6 +1045,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)windowConfigOk:(id)sender
 {
+
+    NSDictionary *defaultSessionPreferences = [MAINMENU defaultAddressBookEntry];
+
+    
     if ([CONFIG_COL intValue]<1||[CONFIG_ROW intValue]<1) {
         NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Wrong Input",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
                         NSLocalizedStringFromTableInBundle(@"Please enter a valid window size",@"iTerm", [NSBundle bundleForClass: [self class]], @"wrong input"),
@@ -1090,8 +1095,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         // set the bold color if it has changed
         if([[currentPtySession TERMINAL] defaultBoldColor] != [CONFIG_BOLD color])
             [[currentPtySession TERMINAL] setBoldColor: [CONFIG_BOLD color]];	
-            
-        if(([pref transparency] != (100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100)) || 
+
+        if(([[defaultSessionPreferences objectForKey: @"Transparency"] intValue] != (100-[[[currentPtySession TERMINAL] defaultBGColor] alphaComponent]*100)) || 
             ([[currentPtySession TERMINAL] defaultFGColor] != [CONFIG_FOREGROUND color]) || 
             ([[currentPtySession TERMINAL] defaultBGColor] != [CONFIG_BACKGROUND color]))
         {

@@ -2,66 +2,21 @@
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {
-                cancel = id; 
-                changeBackground = id; 
-                changeColorScheme = id; 
-                changeFontButton = id; 
-                changeForeground = id; 
-                changeNAFontButton = id; 
-                changeTab = id; 
-                editColorScheme = id; 
-                ok = id; 
-                restore = id; 
-            }; 
+            ACTIONS = {cancel = id; ok = id; restore = id; }; 
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                ansiBlack = id; 
-                ansiBlue = id; 
-                ansiCyan = id; 
-                ansiGreen = id; 
-                ansiHiBlack = id; 
-                ansiHiBlue = id; 
-                ansiHiCyan = id; 
-                ansiHiGreen = id; 
-                ansiHiMagenta = id; 
-                ansiHiRed = id; 
-                ansiHiWhite = id; 
-                ansiHiYellow = id; 
-                ansiMagenta = id; 
-                ansiRed = id; 
-                ansiWhite = id; 
-                ansiYellow = id; 
                 antiAlias = id; 
-                autoclose = id; 
-                background = id; 
-                boldColor = id; 
-                col = id; 
-                colorScheme = id; 
                 copySelection = id; 
-                doubleWidth = id; 
-                encoding = id; 
-                fontExample = id; 
-                foreground = id; 
                 hideTab = id; 
-                nafontExample = id; 
+                macnavkeys = id; 
                 openAddressBook = id; 
                 optionKey = id; 
                 prefPanel = id; 
-                prefTab = id; 
                 promptOnClose = id; 
-                remapDeleteKey = id; 
-                row = id; 
                 scrollbackLines = id; 
-                selectionColor = id; 
-                shell = id; 
                 silenceBell = id; 
-                tabSelector = id; 
                 tabViewType = id; 
-                terminal = id; 
-                transparency = id; 
-                "transparency_control" = id; 
             }; 
             SUPERCLASS = NSResponder; 
         }

@@ -159,8 +159,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         retain];
 
     for (i=0;i<8;i++) {
-        xtermColorTable[1][i]=[[PreferencePanel highlightColor:xtermColorTable[0][i]] retain];
-        iTermColorTable[1][i]=[[PreferencePanel highlightColor:iTermColorTable[0][i]] retain];
+        xtermColorTable[1][i]=[[AddressBookWindowController highlightColor:xtermColorTable[0][i]] retain];
+        iTermColorTable[1][i]=[[AddressBookWindowController highlightColor:iTermColorTable[0][i]] retain];
     }
 
 }
@@ -474,7 +474,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adAI setState:([entry objectForKey:@"AntiIdle"]==nil?NO:[[entry objectForKey:@"AntiIdle"] boolValue])?NSOnState:NSOffState];
     [adAICode setIntValue:[entry objectForKey:@"AICode"]==nil?0:[[entry objectForKey:@"AICode"] intValue]];
     [adClose setState:([entry objectForKey:@"AutoClose"]==nil?NO:[[entry objectForKey:@"AutoClose"] boolValue])?NSOnState:NSOffState];
-    [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?[[self preferences] doubleWidth]:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
+    [adDoubleWidth setState:([entry objectForKey:@"DoubleWidth"]==nil?0:[[entry objectForKey:@"DoubleWidth"] boolValue])?NSOnState:NSOffState];
     [adRemapDeleteKey setState:([entry objectForKey:@"RemapDeleteKey"]==nil?NO:[[entry objectForKey:@"RemapDeleteKey"] boolValue])?NSOnState:NSOffState];
 
 

@@ -1,3 +1,10 @@
+2003-05-28	ujwal
+
+    * Removed duplicate preferences from main preference panel.
+    
+    * Added UI for Peter Lewis's mac navigation patch.
+
+
 2003-05-26	ujwal
     
     * Incorporated Peter Lewis' Mac navigation keys code patch.

@@ -367,7 +367,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 			break;
 		case KEY_ACTION_ESCAPE_SEQUENCE:
 			actionString = [NSString stringWithFormat:@"%@ %@", 
-				NSLocalizedStringFromTableInBundle(@"send escape sequence",@"iTerm", 
+				NSLocalizedStringFromTableInBundle(@"send ^[",@"iTerm", 
 															  [NSBundle bundleForClass: [self class]], 
 															  @"Key Binding Actions"),
 				auxText];

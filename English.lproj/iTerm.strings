@@ -141,7 +141,7 @@
 "scroll line up"="scroll line up";
 "scroll page down"="scroll page down";
 "scroll page up"="scroll page up";
-"send escape sequence"="send escape sequence";
+"send ^["="send ^[";
 "send hex code"="send hex code";
 "unknown action ID"="unknown action ID";
 

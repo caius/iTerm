@@ -1,3 +1,9 @@
+2003-04-21	ujwal
+    
+    * Set document cursor of scrollview to arrow cursor so that 
+      the I-Beam cursor is disabled. Removed all other cursor related 
+      code.
+
 2003-04-20	ujwal
     
     * When preferences are read, if the selected font is not 

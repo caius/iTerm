@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.55 2003-04-10 20:37:38 yfabian Exp $
+// $Id: PTYTextView.m,v 1.56 2003-04-22 01:44:17 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -47,7 +47,6 @@
     NSDictionary *dic;
 
     self = [super init];
-//    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
     dataSource=_delegate=markedTextAttributes=NULL;
     dic = [NSDictionary dictionaryWithObjectsAndKeys: [NSColor yellowColor],
         NSBackgroundColorAttributeName,
@@ -71,7 +70,6 @@
     NSDictionary *dic;
     
     self = [super initWithFrame: aRect];
-//    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
     dataSource=_delegate=markedTextAttributes=NULL;
 
     dic = [NSDictionary dictionaryWithObjectsAndKeys: [NSColor yellowColor],
@@ -1114,16 +1112,6 @@
     NSLog(@"print...");
 }
 
-- (void)resetCursorRects
-{
-    static NSCursor *cursor=nil;
-
-    //    NSLog(@"Setting mouse here");
-    if (!cursor) cursor=[[[NSCursor alloc] initWithImage:[[NSCursor arrowCursor] image] hotSpot:NSMakePoint(0,0)] retain];
-    [self addCursorRect:[self bounds] cursor:cursor];
-    [cursor setOnMouseEntered:YES];
-}
-
 - (void) setCursorIndex:(int) idx
 {
     cursorIndex=idx;
@@ -1359,7 +1347,6 @@
 #endif
 
     self = [super initWithFrame: aRect];
-    [[NSCursor IBeamCursor] setOnMouseEntered: NO];
 
     deadkey = NO;
 

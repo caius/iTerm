@@ -128,13 +128,14 @@ static NSString *PWD_ENVVALUE = @"~";
 #if USE_CUSTOM_DRAWING
 #else
     [TEXTVIEW setDrawsBackground:NO];
-    [TEXTVIEW setEditable:YES];
+    [TEXTVIEW setEditable:YES]; // For NSTextInput protocol
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 #endif
     [TEXTVIEW setDelegate: self];
     [TEXTVIEW setAntiAlias: [pref antiAlias]];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
+    [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
 
     
     // Allocate screen, shell, and terminal objects

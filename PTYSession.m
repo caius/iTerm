@@ -202,12 +202,12 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW setEditable:YES]; // For NSTextInput protocol
     [TEXTVIEW setSelectable:YES];
     [TEXTVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    [SCREEN setTextStorage:[TEXTVIEW textStorage]];
     
 #endif
 
     // assign terminal and task objects
     [SCREEN setShellTask:SHELL];
-    [SCREEN setTextStorage:[TEXTVIEW textStorage]];
     [SCREEN setTerminal:TERMINAL];
     [TERMINAL setScreen: SCREEN];
     [SHELL setDelegate:self];
@@ -915,7 +915,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	// If the user has not scrolled up, move to the end
 //	if([[SCROLLVIEW verticalScroller] floatValue] == 0 	// scroller is at top
 //    || [[SCROLLVIEW verticalScroller] floatValue] == 1)	// scroller is at end
-        if (![[SCROLLVIEW verticalScroller] userScroll])
+        if (![(PTYScroller *)[SCROLLVIEW verticalScroller] userScroll])
 	    [TEXTVIEW scrollEnd];
         output=0;
         dirty=NO;

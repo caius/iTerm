@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.167 2003-11-09 09:12:05 ujwal Exp $
+// $Id: VT100Screen.m,v 1.168 2003-11-13 23:45:29 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2292,6 +2292,9 @@ static BOOL PLAYBELL = YES;
 		[BUFFER deleteCharactersInRange:NSMakeRange(0,idx-updateIndex)];
 		updateIndex=0;
 	    }        
+        NS_HANDLER
+	    NSLog(@"%s: removeOverLine: Exception: %@", __FILE__, localException);
+	NS_ENDHANDLER
     #endif
 	    
     
@@ -2302,9 +2305,6 @@ static BOOL PLAYBELL = YES;
 	    TOP_LINE -= over;
     
 	    NSParameterAssert(TOP_LINE >= 0);
-	NS_HANDLER
-	    NSLog(@"%s: removeOverLine: Exception: %@", __FILE__, localException);
-	NS_ENDHANDLER
     }
 
     [self removeScreenLock];

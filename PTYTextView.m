@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.92 2003-09-23 15:18:47 ujwal Exp $
+// $Id: PTYTextView.m,v 1.93 2003-11-13 23:45:29 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -167,7 +167,7 @@
           __FILE__, __LINE__,attr);
 #endif
     [markedTextAttributes release];
-    [attr retain]
+    [attr retain];
     markedTextAttributes=attr;
 }
 
@@ -220,7 +220,7 @@
             NULL]];
     
     [font release];
-    [aFont retain]
+    [aFont retain];
     font=aFont;
     [nafont release];
     [naFont retain];
@@ -626,7 +626,7 @@
     else if (startY==endY&&startIndex==endIndex) startIndex=-1;
     
     if (startIndex!=-1&&_delegate) {
-        if([[[_delegate parent] preference] copySelection])
+        if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
     }
     [self setNeedsDisplayInRect:NSMakeRect(0,startY*fontSize.height,[self frame].size.width,(endY-startY+1)*fontSize.height)];

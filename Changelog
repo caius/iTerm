@@ -1,3 +1,9 @@
+2003-11-13	ujwal
+
+    * Added Xcode project.
+    * Update Makefile to work with both Xcode and ProjectBuilder.
+    * Fixed ARRAY code build errors. Still does not run correctly.
+
 2003-11-09	ujwal
 
     * Removed hardcoded references to Osaka-Mono font.

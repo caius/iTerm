@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.30 2003-01-23 07:57:59 ujwal Exp $
+// $Id: VT100Screen.m,v 1.31 2003-01-31 23:35:42 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -864,24 +864,32 @@ static BOOL PLAYBELL = YES;
 #endif
 //    NSLog(@"----showCursor: (%d,%d):%d",CURSOR_X,CURSOR_Y,show);
 
+    // Erase cursor at old position by resetting foreground/background colors
     if (OLD_CURSOR_INDEX>=0&&OLD_CURSOR_INDEX<[[STORAGE string] length]) {
         if ([STORAGE attribute:NSReversedAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil]==@"YES") {
-            fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
-            bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
+            //fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
+            //bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:OLD_CURSOR_INDEX effectiveRange:nil];
+	    fg = [TERMINAL defaultFGColor];
+	    bg = [TERMINAL defaultBGColor];
 //            NSLog(@"fg=%@\nbg=%@",fg,bg);
-            dic=[NSDictionary dictionaryWithObjectsAndKeys:fg,NSBackgroundColorAttributeName,bg,NSForegroundColorAttributeName,@"NO",NSReversedAttributeName,nil];
+            dic=[NSDictionary dictionaryWithObjectsAndKeys:bg,NSBackgroundColorAttributeName,fg,NSForegroundColorAttributeName,@"NO",NSReversedAttributeName,nil];
 //            NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX],[[STORAGE string] characterAtIndex:OLD_CURSOR_INDEX]);
             [STORAGE setAttributes:dic range:NSMakeRange(OLD_CURSOR_INDEX,1)];
             OLD_CURSOR_INDEX=-1;
         }
     }
+
+    // Show cursor at new position by reversing foreground/background colors
     if (show && CURSOR_X >= 0 && CURSOR_X < WIDTH &&
         CURSOR_Y >= 0 && CURSOR_Y < HEIGHT)
     {
         int idx = [self getIndex:CURSOR_X y:CURSOR_Y];
         if (idx>=[[STORAGE string] length]||[[STORAGE string] characterAtIndex:idx]=='\n') [self insertBlank:1];
-        fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
-        bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+        //fg=[STORAGE attribute:NSForegroundColorAttributeName atIndex:idx effectiveRange:nil];
+        //bg=[STORAGE attribute:NSBackgroundColorAttributeName atIndex:idx effectiveRange:nil];
+	// reverse the video on the position where the cursor is supposed to be shown.
+	fg = [TERMINAL defaultFGColor];
+	bg = [[TERMINAL defaultBGColor] colorWithAlphaComponent: 1.0]; // remove any transparency
         dic=[NSDictionary dictionaryWithObjectsAndKeys:fg,NSBackgroundColorAttributeName,bg,NSForegroundColorAttributeName,@"YES",NSReversedAttributeName,nil];
         //                NSLog(@"----showCursor: (%d,%d):[%d|%c]",CURSOR_X,CURSOR_Y,[[STORAGE string] characterAtIndex:idx],[[STORAGE string] characterAtIndex:idx]);
         [STORAGE setAttributes:dic range:NSMakeRange(idx,1)];

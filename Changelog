@@ -1,3 +1,9 @@
+2003-01-31	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed bug in showing cursor when going up in command 
+      history
+      
+
 2003-01-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Removed terminal size constraints from Preferences, 

@@ -1,3 +1,7 @@
+2003-09-27	fabian
+
+    * Added a section of Interesting Links in resources section of website.
+    
 2003-09-27	ujwal
 
     * Disabling log start/stop menus depending on current logging status.
@@ -6,7 +10,7 @@
 
     * Updated French, Japanese and Korean localizations.
     * Changed versumber to 0.7.8
-    * Updated help files and website files for new version
+    * Updated help files and website files for new version.
     
 2003-09-26	ujwal
 

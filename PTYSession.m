@@ -700,7 +700,7 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 
     if (blink>5) { [SCREEN blink]; blink=0; }
-    if (output % 2 == 0) {
+    if (output % 2 == 0 && oIdleCount < 3) {
 	[SCREEN updateScreen];
 	[TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
 	[SCREEN showCursor];

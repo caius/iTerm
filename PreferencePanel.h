@@ -91,7 +91,7 @@
 - (BOOL) silenceBell;
 - (NSTabViewType) tabViewType;
 - (BOOL) promptOnClose;
-- (BOOL)openAddressBook;
+- (BOOL) openAddressBook;
 - (BOOL) blinkingCursor;
 - (BOOL) enforceCharacterAlignment;
 

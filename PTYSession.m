@@ -368,7 +368,7 @@ static NSString *PWD_ENVVALUE = @"~";
     keycode = [event keyCode];
     keystr  = [event characters];
     unmodkeystr = [event charactersIgnoringModifiers];
-    unicode = [keystr characterAtIndex:0];
+    unicode = [keystr length]>0?[keystr characterAtIndex:0]:0;
 
     iIdleCount=0;
 
@@ -489,7 +489,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	else if ([pref option] != OPT_NORMAL &&
 		    modflag & NSAlternateKeyMask)
 	{
-	    NSData *keydat = (modflag & NSControlKeyMask)?
+	    NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
 	    [keystr dataUsingEncoding:NSUTF8StringEncoding]:
 	    [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
 	    // META combination
@@ -497,8 +497,10 @@ static NSString *PWD_ENVVALUE = @"~";
 		send_str = (char *)[keydat bytes];
 		send_strlen = [keydat length];
 	    }
-	    if ([pref option] == OPT_ESC)
+            if ([pref option] == OPT_ESC) {
 		send_pchr = '\e';
+//                send_chr=unmodkeystr;
+            }
 	    else if ([pref option] == OPT_META && send_str != NULL) {
 		int i;
 		for (i = 0; i < send_strlen; ++i) {
@@ -918,7 +920,12 @@ static NSString *PWD_ENVVALUE = @"~";
 
 
 // Preferences
-- (void)setPreference:(id)preference;
+- (id) preference
+{
+    return pref;
+}
+
+- (void)setPreference:(id)preference
 {
     pref=preference;
 }

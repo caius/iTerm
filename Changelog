@@ -1,3 +1,6 @@
+2003-07-21	fabian
+    * Fixed a bug that messes up deadkey input with alternative OPTION key options.
+    
 2003-07-21	ujwal
 
     * Checked in new icons and images.

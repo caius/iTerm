@@ -103,7 +103,8 @@
 - (BOOL) isActiveSession;
 
 // Preferences
-- (void)setPreference:(id)preference;
+- (id) preference;
+- (void) setPreference:(id)preference;
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs;
 
 // PTYTask

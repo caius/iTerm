@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplication.m,v 1.2 2004-04-11 07:04:26 ujwal Exp $
+// $Id: iTermApplication.m,v 1.3 2004-04-11 07:07:21 ujwal Exp $
 //
 /*
  **  iTermApplication.m
@@ -60,6 +60,9 @@
 			else
 				[super sendEvent: anEvent];
 		}
+		else
+		   [super sendEvent: anEvent];
+
 	}
 	else
 		[super sendEvent: anEvent];

@@ -1,3 +1,8 @@
+2003-01-23	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed mapping of function keys in VT100Terminal.
+    
+
 2003-01-21	fabian
     * Fixed bug in SetDoubleWidthString()
     * Fixed bug in attrString that disabled bold

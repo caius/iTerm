@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.20 2003-01-21 20:21:15 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.21 2003-01-23 16:35:02 ujwal Exp $
 //
 //  VT100Terminal.m
 //  JTerminal
@@ -1246,7 +1246,14 @@ static VT100TCC decode_string(unsigned char *datap,
     char str[256];
     size_t len;
 
-    sprintf(str, KEY_FUNCTION_FORMAT, no + 11);
+    if (no < 10)
+    {
+	sprintf(str, KEY_FUNCTION_FORMAT, no + 10);
+    }
+    else
+	sprintf(str, KEY_FUNCTION_FORMAT, no + 11);
+	
+
     len = strlen(str);
     return [NSData dataWithBytes:str length:len];
 }

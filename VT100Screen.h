@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.5 2002-12-22 02:26:57 ujwal Exp $
+// $Id: VT100Screen.h,v 1.6 2003-01-07 16:39:46 yfabian Exp $
 //
 //  VT100Screen.h
 //  JTerminal
@@ -112,7 +112,7 @@
 - (void)insertBlank: (int)n;
 - (void)insertLines: (int)n;
 - (void)deleteLines: (int)n;
-
+- (void)trimLine: (int) y;
 - (void)showCursor;
 - (void)showCursor:(BOOL)show;
 - (void)blink;
@@ -122,7 +122,6 @@
 - (NSMutableDictionary *)characterAttributeDictionary;
 - (NSAttributedString *)attrStringFromChar:(unichar) c;
 - (NSAttributedString *)attrString:(NSString *)str;
-- (NSString *)fullLine;
 - (int) getIndex:(int)x y:(int)y;
 - (BOOL) isDoubleWidthCharacter:(unichar)code;
 

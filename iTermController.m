@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.26 2003-10-05 18:48:17 ujwal Exp $
+// $Id: iTermController.m,v 1.27 2003-11-05 22:24:39 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -426,11 +426,7 @@ static BOOL usingAutoLaunchScript = NO;
     
     // Start the command        
     [term startProgram:cmd arguments:arg environment:env];
-    
-    // If we created a new window, set the size
-    if (theTerm == nil)
-        [term setWindowSize: NO];
-    
+        
     [term setCurrentSessionName:[entry objectForKey:@"Name"]];
 }
 

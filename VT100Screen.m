@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.209 2004-10-23 18:45:48 ujwal Exp $
+// $Id: VT100Screen.m,v 1.210 2004-11-10 07:50:03 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1051,6 +1051,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 #endif
 
 	int idx, x1 ,x2;
+	int fgCode, bgCode;
 	
 	x1 = x2 = 0;
     switch (token.u.csi.p[0]) {
@@ -1069,8 +1070,20 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	}
 	idx=CURSOR_Y*WIDTH+x1;
 	memset(screenLines+idx,0,(x2-x1)*sizeof(unichar));
-	memset(screenFGColor+idx,[TERMINAL foregroundColorCode],(x2-x1)*sizeof(char));
-	memset(screenBGColor+idx,[TERMINAL backgroundColorCode],(x2-x1)*sizeof(char));
+	// if we erasing entire lines, set to default foreground and background colors. Some systems (like OpenVMS)
+	// do not send explicit video information
+	if(x1 == 0 && x2 == WIDTH)
+	{
+		fgCode = DEFAULT_FG_COLOR_CODE;
+		bgCode = DEFAULT_BG_COLOR_CODE;
+	}
+	else
+	{
+		fgCode = [TERMINAL foregroundColorCode];
+		bgCode = [TERMINAL backgroundColorCode];
+	}
+	memset(screenFGColor+idx,fgCode,(x2-x1)*sizeof(char));
+	memset(screenBGColor+idx,bgCode,(x2-x1)*sizeof(char));
 	memset(dirty+idx,1,(x2-x1)*sizeof(char));
 }
 

@@ -1,3 +1,9 @@
+2004-11-09  ujwal
+	
+	* Fixed more reverse video issues on OpenVMS: in [VT100Screen: -eraseInLine]; if 
+	  entire line is erased, it gets default foreground and background colors.
+
+
 2004-10-27  ujwal
 
 	* Fixed bug in nested bookmark search.

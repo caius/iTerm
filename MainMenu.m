@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.67 2003-05-18 08:08:25 ujwal Exp $
+// $Id: MainMenu.m,v 1.68 2003-05-19 01:59:34 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -646,7 +646,9 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow
 {
     if(FRONT == theTerminalWindow)
-        FRONT = nil;
+    {
+	[self setFrontPseudoTerminal: nil];
+    }
     if(theTerminalWindow)
     {
         [terminalWindows removeObject: theTerminalWindow];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.176 2003-05-18 08:08:26 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.177 2003-05-19 01:59:34 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -881,8 +881,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
     // update the cursor
     [[currentPtySession SCREEN] showCursor];
-
-    [[self mainMenu] setFrontPseudoTerminal: nil];
 
 }
 

@@ -510,7 +510,11 @@
     [aTabView removeTabViewItem: aTabViewItem];
     // add the tabViewItem to ourselves at the appropriate index; or do an add
     if(index >= 0)
+    {
 	[self insertTabViewItem: aTabViewItem atIndex: index];
+	// make it active
+	[self selectTabViewItemAtIndex: index];
+    }
     else
 	[self addTabViewItem: aTabViewItem];
     // release the tabViewItem

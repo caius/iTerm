@@ -968,6 +968,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSColor *colorTable[2][8];
     int i;
     NSString *backgroundImagePath;
+    BOOL useBackgroundImage;
     
     [self setForegroundColor: [aePrefs objectForKey: @"Foreground"]];
     [self setBackgroundColor: [[aePrefs objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[aePrefs objectForKey: @"Transparency"] intValue]/100.0)]];
@@ -1020,8 +1021,9 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setDoubleWidth:[[aePrefs objectForKey:@"DoubleWidth"] boolValue]];
     [self setRemapDeleteKey: [[[self addressBookEntry] objectForKey: @"RemapDeleteKey"] boolValue]];
 
+    useBackgroundImage = [[aePrefs objectForKey:@"UseBackgroundImage"] boolValue];
     backgroundImagePath = [[aePrefs objectForKey:@"BackgroundImagePath"] stringByExpandingTildeInPath];
-    if([backgroundImagePath length] > 0)
+    if(useBackgroundImage && [backgroundImagePath length] > 0)
     {
 	NSImage *anImage = [[NSImage alloc] initByReferencingFile: backgroundImagePath];
 	if(anImage != nil)

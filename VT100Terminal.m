@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.60 2003-05-02 17:37:08 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.61 2003-05-07 17:53:31 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1721,7 +1721,11 @@ static VT100TCC decode_string(unsigned char *datap,
 {
 
     NSColor *fg, *bg;
+    NSMutableParagraphStyle *pstyle=[[NSMutableParagraphStyle alloc] init];
 
+    [pstyle setLineBreakMode:NSLineBreakByClipping];
+    [pstyle setParagraphSpacing:0];
+    [pstyle setLineSpacing:0];
     fg = [self defaultFGColor];
     bg = [self defaultBGColor];
 
@@ -1731,24 +1735,32 @@ static VT100TCC decode_string(unsigned char *datap,
     [characterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
     [characterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
                                         forKey:@"NSCharWidthAttributeName"];
+    [characterAttributeDictionary[0] setObject:pstyle
+                                        forKey:NSParagraphStyleAttributeName];
     [characterAttributeDictionary[1] setObject:fg
                                         forKey:NSForegroundColorAttributeName];
     [characterAttributeDictionary[1] removeObjectForKey:NSBackgroundColorAttributeName];
     [characterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
     [characterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
                                         forKey:@"NSCharWidthAttributeName"];
+    [characterAttributeDictionary[1] setObject:pstyle
+                                        forKey:NSParagraphStyleAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:fg
-			  forKey:NSForegroundColorAttributeName];
+                                                                    forKey:NSForegroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] removeObjectForKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:[SCREEN font] forKey:NSFontAttributeName];
     [defaultCharacterAttributeDictionary[0] setObject:[NSNumber numberWithInt:(1)]
                                                forKey:@"NSCharWidthAttributeName"];
+    [defaultCharacterAttributeDictionary[0] setObject:pstyle
+                                               forKey:NSParagraphStyleAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:fg
                                                forKey:NSForegroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] removeObjectForKey:NSBackgroundColorAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[SCREEN nafont] forKey:NSFontAttributeName];
     [defaultCharacterAttributeDictionary[1] setObject:[NSNumber numberWithInt:(2)]
                                                forKey:@"NSCharWidthAttributeName"];
+    [defaultCharacterAttributeDictionary[1] setObject:pstyle
+                                               forKey:NSParagraphStyleAttributeName];
 }
 
 - (void)_setMode:(VT100TCC)token

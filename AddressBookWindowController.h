@@ -63,6 +63,7 @@
 
     NSFont *aeFont, *aeNAFont;
     BOOL changingNA;
+    BOOL defaultEntry;
 
     // address book data
     NSMutableArray *addressBook;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.59 2003-05-06 04:32:58 ujwal Exp $
+// $Id: MainMenu.m,v 1.60 2003-05-07 17:53:31 yfabian Exp $
 /*
  **  MainMenu.m
  **
@@ -46,8 +46,24 @@ static NSString* ADDRESS_BOOK_FILE = @"~/Library/Application Support/iTerm Addre
 static NSStringEncoding const *encodingList=nil;
 
 // comaparator function for addressbook entries
+static BOOL isDefaultEntry( NSDictionary *entry )
+{
+    return [entry objectForKey: @"DefaultEntry"] && [[entry objectForKey: @"DefaultEntry"] boolValue];
+}
+
+static NSString *entryVisibleName( NSDictionary *entry )
+{
+    if ( isDefaultEntry( entry ) ) {
+        return @"Default session";
+    } else {
+        return [entry objectForKey:@"Name"];
+    }
+}
+
 static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
 {
+    if ( isDefaultEntry( entry1 ) ) return -1;
+    if ( isDefaultEntry( entry2 ) ) return 1;
     return ([(NSString *)[entry1 objectForKey: @"Name"] caseInsensitiveCompare: (NSString *)[entry2 objectForKey: @"Name"]]);
 }
 
@@ -196,19 +212,21 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 // Action methods
 - (IBAction)newWindow:(id)sender
 {
-    PseudoTerminal *term;
+//    PseudoTerminal *term;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[MainMenu newWindow]",
           __FILE__, __LINE__);
 #endif
 
-    term = [[PseudoTerminal alloc] init];
-    [self addInTerminals: term];
-    [term release];
+    [self executeABCommandAtIndex:0 inTerminal: nil];
+
+//    term = [[PseudoTerminal alloc] init];
+//    [self addInTerminals: term];
+//    [term release];
     
-    [term setPreference:PREF_PANEL];
-    [term newSession:nil];
+//    [term setPreference:PREF_PANEL];
+//    [term newSession:nil];
 }
 
 - (IBAction)newSession:(id)sender
@@ -218,10 +236,12 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSLog(@"%s(%d):-[MainMenu newSession]",
           __FILE__, __LINE__);
 #endif
-    if(FRONT == nil)
-        [self newWindow:nil];
-    else
-        [FRONT newSession: self];
+
+    [self executeABCommandAtIndex:0 inTerminal: FRONT];
+//    if(FRONT == nil)
+//        [self newWindow:nil];
+//    else
+//        [FRONT newSession: self];
 }
 
 // Address book window
@@ -260,7 +280,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     theRecord = [addressBook objectAtIndex:rowIndex];
     switch ([[col identifier] intValue]) {
         case 0:
-            s=[theRecord objectForKey:@"Name"];
+            s=entryVisibleName( theRecord );
             break;
         case 1:
             s=[theRecord objectForKey:@"Command"];
@@ -432,6 +452,56 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [p release];
 }
 
+- (NSDictionary *)newDeafultObject
+{
+    char *userShell, *thisUser;
+    NSString *shell;
+
+    // This would be better read from a file stored in the package (with some bits added at run time)
+    
+    // Get the user's default shell
+    if((thisUser = getenv("USER")) != NULL) {
+        shell = [NSString stringWithFormat: @"login -fp %s", thisUser];
+    } else if((userShell = getenv("SHELL")) != NULL) {
+        shell = [NSString stringWithCString: userShell];
+    } else {
+        shell = @"/bin/bash --login";
+    }
+
+    NSDictionary *ae;
+    ae=[[NSDictionary alloc] initWithObjectsAndKeys:
+        @"Default session",@"Name",
+        shell,@"Command",
+        [NSNumber numberWithUnsignedInt:1],@"Encoding",
+        [NSColor colorWithCalibratedRed:0.8f
+                                            green:0.8f
+                                             blue:0.8f
+                                            alpha:1.0f],@"Foreground",
+        [NSColor blackColor],@"Background",
+        [NSColor colorWithCalibratedRed:0.45f
+                                               green:0.5f
+                                                blue:0.55f
+                                               alpha:1.0f],@"SelectionColor",
+        [NSColor redColor],@"BoldColor",
+        [NSNumber numberWithUnsignedInt:25],@"Row",
+        [NSNumber numberWithUnsignedInt:80],@"Col",
+        [NSNumber numberWithInt:10],@"Transparency",
+        @"xterm",@"Term Type",
+        [@"~"  stringByExpandingTildeInPath],@"Directory",
+        [NSFont userFixedPitchFontOfSize: 12],@"Font",
+        [NSFont fontWithName:@"Osaka-Mono"
+			    size:14],@"NAFont",
+        [NSNumber numberWithBool:false],@"AntiIdle",
+        [NSNumber numberWithUnsignedInt:0],@"AICode",
+        [NSNumber numberWithBool:true],@"AutoClose",
+        [NSNumber numberWithBool:false],@"DoubleWidth",
+        [NSNumber numberWithUnsignedInt:0],@"Shortcut",
+        [NSNumber numberWithBool:true],@"DefaultEntry",
+        NULL];
+//    [ae autorelease];
+    return ae;
+}
+
 - (void) initAddressBook
 {
 
@@ -447,7 +517,23 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         NSLog(@"No file loaded");
         addressBook=[[NSMutableArray array] retain];
     }
-
+    
+    // Insert default entry
+    if ( [addressBook count] < 1 || ![[addressBook objectAtIndex: 0] objectForKey:@"DefaultEntry"] ) {
+        [addressBook insertObject:[self newDeafultObject] atIndex: 0];
+    }
+    // There can be only one
+    int i;
+    for ( i = 1; i < [addressBook count]; i++) {
+        if ( isDefaultEntry( [addressBook objectAtIndex: i] ) ) {
+            NSDictionary *entry = [addressBook objectAtIndex: i];
+            NSMutableDictionary *newentry = [NSMutableDictionary dictionaryWithDictionary:entry];
+            // [entry release]?
+            [newentry removeObjectForKey:@"DefaultEntry"];
+            entry = [NSDictionary dictionaryWithDictionary:newentry];
+            [addressBook replaceObjectAtIndex:i withObject:entry];
+        }
+    }
 }
 
 - (void) saveAddressBook
@@ -494,7 +580,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     for(i = 0; i < [addressBook count]; i++)
     {
         anEntry = [addressBook objectAtIndex: i];
-        [anArray addObject: [anEntry objectForKey:@"Name"]];
+        [anArray addObject: entryVisibleName( anEntry )];
     }
     
     return ([anArray autorelease]);
@@ -507,7 +593,8 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSEnumerator *abEnumerator;
     NSString *abEntry;
     int i = 0;
-    SEL shellSelector, abCommandSelector;
+//    SEL shellSelector;
+    SEL abCommandSelector;
 
 
 #if DEBUG_METHOD_TRACE
@@ -517,18 +604,18 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     if (sender == nil)
     {
-	shellSelector = @selector(newWindow:);
+//	shellSelector = @selector(newWindow:);
 	abCommandSelector = @selector(_executeABMenuCommandInNewWindow:);
     }
     else
     {
-	shellSelector = @selector(newSession:);
+//	shellSelector = @selector(newSession:);
 	abCommandSelector = @selector(_executeABMenuCommandInNewTab:);
     }
 
-    [abMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Default session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New")
-					   action: shellSelector keyEquivalent:@""];
-    [abMenu addItem: [NSMenuItem separatorItem]];
+//    [abMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Default session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New")
+//					   action: shellSelector keyEquivalent:@""];
+//    [abMenu addItem: [NSMenuItem separatorItem]];
     abEnumerator = [[self addressBookNames] objectEnumerator];
     while ((abEntry = [abEnumerator nextObject]) != nil)
     {

@@ -33,8 +33,24 @@ static NSStringEncoding const *encodingList=nil;
 static AddressBookWindowController *singleInstance = nil;
 
 // comaparator function for addressbook entries
+static BOOL isDefaultEntry( NSDictionary *entry )
+{
+    return [entry objectForKey: @"DefaultEntry"] && [[entry objectForKey: @"DefaultEntry"] boolValue];
+}
+
+static NSString *entryVisibleName( NSDictionary *entry )
+{
+    if ( isDefaultEntry( entry ) ) {
+        return @"Default session";
+    } else {
+        return [entry objectForKey:@"Name"];
+    }
+}
+
 static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *entry2, void *context)
 {
+    if ( isDefaultEntry( entry1 ) ) return -1;
+    if ( isDefaultEntry( entry2 ) ) return 1;
     return ([(NSString *)[entry1 objectForKey: @"Name"] caseInsensitiveCompare: (NSString *)[entry2 objectForKey: @"Name"]]);
 }
 
@@ -115,6 +131,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         if (*p==[[self preferences] encoding]) r=p-encodingList;
         p++;
     }
+    defaultEntry = false;
     [adEncoding selectItemAtIndex:r];
     [adTermType selectItemAtIndex:0];
     [adShortcut selectItemAtIndex:0];
@@ -169,6 +186,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             [NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
             [NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
             [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
+            [NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
             NULL];
         [[self addressBook] addObject:ae];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
@@ -192,9 +210,11 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSStringEncoding const *p=encodingList;
     id entry;
 
-    if ([adTable selectedRow]<0) return
-	[AE_PANEL center];
+    if ([adTable selectedRow]<0) return;
+    [AE_PANEL center];
+    
     entry=[[self addressBook] objectAtIndex:[adTable selectedRow]];
+    defaultEntry = isDefaultEntry( entry );
     [adName setStringValue:[entry objectForKey:@"Name"]];
     [adCommand setStringValue:[entry objectForKey:@"Command"]];
     [adEncoding removeAllItems];
@@ -265,7 +285,6 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [AE_PANEL close];
     if (r == NSRunStoppedResponse) {
         NSDictionary *ae;
-
         ae=[[NSDictionary alloc] initWithObjectsAndKeys:
             [adName stringValue],@"Name",
             [adCommand stringValue],@"Command",
@@ -286,6 +305,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
             [NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
             [NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
             [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
+            [NSNumber numberWithBool:defaultEntry && [adNewEntry state]==NSOffState],@"DefaultEntry",
             NULL];
         if ([adNewEntry state]==NSOnState) [[self addressBook] insertObject:ae atIndex:[adTable selectedRow]];
         else [[self addressBook] replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
@@ -315,18 +335,24 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
 - (IBAction)adbRemoveEntry:(id)sender
 {
-    NSBeginAlertSheet(
-                      NSLocalizedStringFromTableInBundle(@"Do you really want to remove this item?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
-                      NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"),
-                      NSLocalizedStringFromTableInBundle(@"Remove",@"iTerm", [NSBundle bundleForClass: [self class]], @"Remove"),
-                      nil,
-                      [self window],               // window sheet is attached to
-                      self,                   // we'll be our own delegate
-                      @selector(sheetDidEnd:returnCode:contextInfo:),     // did-end selector
-                      NULL,                   // no need for did-dismiss selector
-                      sender,                 // context info
-                      NSLocalizedStringFromTableInBundle(@"There is no undo for this operation.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
-                      nil);                   // no parameters in message
+    if ([adTable selectedRow]<0) return;
+    
+    if ( isDefaultEntry( [[self addressBook] objectAtIndex:[adTable selectedRow]] ) ) {
+        // Post Alert or better yet, disable the remote button
+    } else {
+        NSBeginAlertSheet(
+                        NSLocalizedStringFromTableInBundle(@"Do you really want to remove this item?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
+                        NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"),
+                        NSLocalizedStringFromTableInBundle(@"Remove",@"iTerm", [NSBundle bundleForClass: [self class]], @"Remove"),
+                        nil,
+                        [self window],               // window sheet is attached to
+                        self,                   // we'll be our own delegate
+                        @selector(sheetDidEnd:returnCode:contextInfo:),     // did-end selector
+                        NULL,                   // no need for did-dismiss selector
+                        sender,                 // context info
+                        NSLocalizedStringFromTableInBundle(@"There is no undo for this operation.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Removal Alert"),
+                        nil);                   // no parameters in message
+    }
 }
 
 - (void)sheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo

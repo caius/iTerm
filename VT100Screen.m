@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.188 2004-02-19 19:43:00 ujwal Exp $
+// $Id: VT100Screen.m,v 1.189 2004-02-20 16:27:09 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -32,6 +32,8 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
+#define MAX_STRING_SIZE			1024
+
 #import <iTerm/iTerm.h>
 #import <iTerm/VT100Screen.h>
 #import <iTerm/NSStringITerm.h>
@@ -55,7 +57,7 @@ void translate(unichar *s, int len)
 /* pad the source string whenever double width character appears */
 void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 {
-    unichar sc[300]; 
+    unichar sc[MAX_STRING_SIZE]; 
 	int l=[s length];
 	int i,j;
 	
@@ -747,14 +749,14 @@ static BOOL PLAYBELL = YES;
 {
     int idx, screenIdx;
     int j, len, newx;
-	unichar buffer[300];
+	unichar buffer[MAX_STRING_SIZE];
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setString:%@ at %d]",
           __FILE__, __LINE__, string, CURSOR_X);
 #endif
 
-	if ([string length] < 1 || !string || [string length] > 300) 
+	if ([string length] < 1 || !string || [string length] > MAX_STRING_SIZE) 
 	{
 		NSLog(@"%s: invalid string '%@'", __PRETTY_FUNCTION__, string);
 		return;		

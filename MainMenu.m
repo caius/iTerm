@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.16 2002-12-19 21:36:33 yfabian Exp $
+// $Id: MainMenu.m,v 1.17 2002-12-30 19:49:46 ujwal Exp $
 //
 //  MainMenu.m
 //  JTerminal
@@ -39,6 +39,9 @@ static BOOL newWindow=YES;
 //    systemEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     terminalWindows = [[NSMutableArray alloc] init];
 //  [self showQOWindow:self];
+
+    // set the TERM_PROGRAM environment variable
+    putenv("TERM_PROGRAM=iTerm.app");
 
 }
 

@@ -1,3 +1,8 @@
+2002-12-30	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Setting TERM_PROGRAM environment variable to iTerm.app.
+    
+
 2002-12-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 
     * Added Save/Print functionality.

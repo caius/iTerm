@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.32 2003-02-23 00:37:54 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.33 2003-02-23 07:46:27 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1145,7 +1145,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	return nil;
 
     ENCODING = NSASCIIStringEncoding;
-    STREAM   = [[NSMutableData data] retain];
+    STREAM   = [[NSMutableData alloc] init];
     COLOR_BLACK  = [DEFAULT_BLACK copy];
     COLOR_RED    = [DEFAULT_RED copy];
     COLOR_GREEN  = [DEFAULT_GREEN copy];
@@ -1179,13 +1179,15 @@ static VT100TCC decode_string(unsigned char *datap,
     strictAnsiMode = NO;
 
     defaultCharacterAttributeDictionary = [[NSMutableDictionary alloc] init];
+    streamOffset = 0;
 
     return self;
 }
 
 - (void)dealloc
 {
-    [STREAM autorelease];
+    if(STREAM != nil)
+	[STREAM release];
 
     [super dealloc];
 }
@@ -1229,6 +1231,8 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void)putStreamData:(NSData *)data
 {
+    if([STREAM length] == 0)
+	streamOffset = 0;
     [STREAM appendData:data];
 }
 
@@ -1241,11 +1245,19 @@ static VT100TCC decode_string(unsigned char *datap,
 #if 0
     NSLog(@"buffer data = %@", STREAM);
 #endif
-    datap = (unsigned char *)[STREAM bytes];
-    datalen = (size_t)[STREAM length];
+
+    // get our current position in the stream
+    datap = (unsigned char *)[STREAM bytes] + streamOffset;
+    datalen = (size_t)[STREAM length] - streamOffset;
 
     if (datalen == 0) {
 	result.type = VT100CC_NULL;
+	// We are done with this stream. Get rid of it and allocate a new one
+	// to avoid allowing this to grow too big.
+	streamOffset = 0;
+	[STREAM release];
+	STREAM = nil;
+	STREAM = [[NSMutableData alloc] init];	
     }
     else {
 	size_t rmlen = 0;
@@ -1278,10 +1290,9 @@ static VT100TCC decode_string(unsigned char *datap,
 //		NSLog(@"INPUT-BUFFER %@, read %d byte, type %d", 
 //                      STREAM, rmlen, result.type);
 	    }
-	    [STREAM autorelease];
-	    STREAM = [[NSMutableData dataWithBytes:&(datap[rmlen]) 
-					    length:datalen - rmlen] 
-			 retain];
+
+	    // mark our current position in the stream
+	    streamOffset += rmlen;
 	}
     }
 

@@ -7,7 +7,11 @@
       toolbar size mode is NSToolbarSizeModeSmall.
       
     * Further speed optimizations by caching rarely changing 
-      character attribute dictionaries.
+      character attribute dictionaries. We are also not 
+      recreating our data stream in VT100Terminal every 
+      time we pick off a token. That is too expensive. 
+      We just mark our position in the stream and recreate 
+      the stream only when we reach the end.
       
 
 2003-02-21	Ujwal S. Sathyam <ujwal@setlurgroup.com>

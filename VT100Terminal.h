@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.14 2003-02-23 00:37:54 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.15 2003-02-23 07:46:27 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -230,6 +230,7 @@ typedef struct {
     BOOL strictAnsiMode;
 
     NSMutableDictionary *defaultCharacterAttributeDictionary;
+    unsigned int streamOffset;
 }
 
 + (void)initialize;

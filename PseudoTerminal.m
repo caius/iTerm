@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.288 2004-04-20 15:42:59 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.289 2004-05-02 02:09:16 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -943,7 +943,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     while ((aSession = [sessionEnumerator nextObject]) != nil)
     {
+		PTYScroller *ptys=(PTYScroller *)[[aSession SCROLLVIEW] verticalScroller];
+		
 		[[aSession SHELL] writeTask:data];
+
+		// Make sure we scroll down to the end
+		[[aSession TEXTVIEW] scrollEnd];
+		[ptys setUserScroll: NO];		
+		
     }    
 	
 	[pool release];

@@ -272,16 +272,24 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void)writeTask:(NSData *)data
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
+
     // check if we want to send this input to all the sessions
     if([parent sendInputToAllSessions] == NO)
     {
 		[SHELL writeTask: data];
+		// Make sure we scroll down to the end
+		[TEXTVIEW scrollEnd];
+		[ptys setUserScroll: NO];		
     }
     else
     {
 		// send to all sessions
 		[parent sendInputToAllSessions: data];
     }
+		
+	[pool release];
 }
 
 - (void)readTask:(NSData *)data
@@ -608,12 +616,7 @@ static NSString *PWD_ENVVALUE = @"~";
 			}
 			
 		}
-		
-		// Make sure we scroll down to the end
-		[TEXTVIEW scrollEnd];
-		PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
-		[ptys setUserScroll: NO];
-		
+				
 		if (EXIT == NO ) 
         {
 			if (send_pchr >= 0) {
@@ -832,18 +835,9 @@ static NSString *PWD_ENVVALUE = @"~";
         NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
                                     dataUsingEncoding:[TERMINAL encoding]
 								 allowLossyConversion:YES];
-		// check if we want to send this input to all the sessions
-		if([parent sendInputToAllSessions] == NO)
-		{
-			// Do this in a new thread since we do not want to block the read code.
-			[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:strdata];
-		}
-		else
-		{
-			// send to all sessions
-			// Do this in a new thread since we do not want to block the read code.
-			[NSThread detachNewThreadSelector:@selector(sendInputToAllSessions:) toTarget:parent withObject:strdata];
-		}
+		
+		// Do this in a new thread since we do not want to block the read code.
+		[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:self withObject:strdata];
 		
     }
     else

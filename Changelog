@@ -1,3 +1,9 @@
+2003-01-13	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+
+    * Fixed bug where adding a second tab would cause 
+      the scroll position of the first tab to be reset.
+      
+
 2002-01-13	fabian
     * New command in Tools menu: Save Config
     * Add Hide-Tab as an option

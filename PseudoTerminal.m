@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.74 2003-01-14 19:12:22 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.75 2003-01-15 02:27:23 ujwal Exp $
 //
 //  PseudoTerminal.m
 //  JTerminal
@@ -580,7 +580,6 @@ static NSString *ConfigToolbarItem = @"Config";
 
     for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
     {
-        [[[TABVIEW tabViewItemAtIndex: i] view] setFrameSize:size];
         [(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] setLineScroll: ([VT100Screen fontSize: FONT].height)];
         [[(PTYScrollView *)[[TABVIEW tabViewItemAtIndex: i] view] documentView] setFrameSize:vsize];
     }

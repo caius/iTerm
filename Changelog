@@ -1,3 +1,8 @@
+2004-04-24  ujwal
+
+	* Removed some code in PTToolbarController that triggered a 
+	  bug in toolbar visibility toggling.
+
 2004-04-20  ujwal
 
 	* Added an option to have middle mouse button paste from clipboard.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.126 2004-02-20 06:14:27 yfabian Exp $
+// $Id: PTYTextView.m,v 1.127 2004-02-20 08:06:59 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -609,7 +609,6 @@
     float curX, curY;
 	char bgcode, sel, fgcode;
 	int y1,y2,x1,x2;
-	static int pre_x1, pre_x2, pre_y1, pre_y2;
 	
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
@@ -629,16 +628,32 @@
 	// Check if somethng is selected on screen
 	if (startX!=-1) { 
 		// let x1/y1 always be the beginning of the selection
-		if (startY>endY||(startY==endY&&startX>endX)) {y1=endY; x1=endX; y2=startY; x2=startX;}
-		else {y1=startY; x1=startX; y2=endY; x2=endX;}
+		if (startY > endY || (startY == endY && startX > endX)) 
+		{
+			y1 = endY; 
+			x1 = endX; 
+			y2 = startY; 
+			x2 = startX;
+		}
+		else 
+		{
+			y1 = startY; 
+			x1 = startX; 
+			y2 = endY;
+			x2 = endX;
+		}
 		
 		// if selection has changed from last, we redraw everything
-		if ((pre_x1!=x1||pre_y1!=y1||pre_y2!=y2||pre_x2!=x2) && 
-			((y1>=lineOffset && y1<=lineOffset+numLines) || (y2>=lineOffset && y2<=lineOffset+numLines))) {
+		if ((pre_x1 != x1 || pre_y1 != y1 || pre_y2 != y2 || pre_x2 != x2) && 
+			((y1 >= lineOffset && y1 <= lineOffset + numLines) || 
+			 (y2 >= lineOffset && y2 <= lineOffset + numLines))) 
+		{
 			forceUpdate=YES; //force redraw everything
+			pre_x1 = x1; pre_y1 = y1; pre_x2 = x2; pre_y2 = y2;
 		}
 	}
-	else x1=-1;
+	else 
+		x1=-1;
 	
 	// [self adjustScroll] should've made sure we are at an integer multiple of a line
 	curY=rect.origin.y +lineHeight;
@@ -655,7 +670,8 @@
 		}
 		
 		// Check if we are drawing a line in buffer
-		if (line<startScreenLineIndex) {
+		if (line < startScreenLineIndex) 
+		{
 			lineIndex=startScreenLineIndex-line;
 			lineIndex=[dataSource lastBufferLineIndex]-lineIndex;
 			if (lineIndex<0) lineIndex+=[dataSource scrollbackLines];
@@ -663,7 +679,8 @@
 			fg=[dataSource bufferFGColor]+lineIndex*WIDTH;
 			bg=[dataSource bufferBGColor]+lineIndex*WIDTH;
 		}
-		else { // not in buffer
+		else 
+		{ // not in buffer
 			lineIndex=line-startScreenLineIndex;
 			buf=[dataSource screenLines]+lineIndex*WIDTH;
 			fg=[dataSource screenFGColor]+lineIndex*WIDTH;
@@ -678,7 +695,11 @@
 			// Check if we need to redraw next char
 			need_draw = line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK);
 			// find out if the current char is being selected
-			sel=(x1!=-1&&((line>y1&&line<y2)||(line==y1&&y1==y2&&j>=x1&&j<x2)||(line==y1&&y1!=y2&&j>=x1)||(line==y2&&y1!=y2&&j<x2)))?-1:bg[j];
+			sel=(x1 != -1 && x2 != -1 &&
+				 ((line > y1 && line < y2) ||
+				  (line == y1 && y1 == y2 && j >= x1 && j <= x2) ||
+				  (line == y1 && y1 != y2 && j >= x1) ||
+				  (line == y2 && y1 != y2 && j <= x2)))?-1:bg[j];
 			
 			// if we don't have to update next char, finish pending jobs
 			if (!need_draw){
@@ -890,8 +911,9 @@
     x = locationInTextView.x/charWidth;
     y = locationInTextView.y/lineHeight;
     if (x>=[dataSource width]) x=[dataSource width];
-    endX=startX=x;
-    endY=startY=y;
+    startX=x;
+    startY=y;
+	endX = endY = -1;
 	    
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
@@ -912,7 +934,7 @@
     locationInTextView = [self convertPoint: locationInWindow fromView: nil];
     
     x = locationInTextView.x/charWidth;
-    if (x>=[dataSource width]) x=[dataSource width];
+    if (x>=[dataSource width]) x=[dataSource width] - 1;
     if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
     if (y<0) y=0;
@@ -949,6 +971,10 @@
 			tmpX = 0;
 		if(tmpY < 0)
 			tmpY = 0;
+		if(tmpX >= [dataSource width])
+			tmpX = [dataSource width];
+		if(tmpY >= [dataSource numberOfLines])
+			tmpY = [dataSource numberOfLines] - 1;		
 		startX = tmpX;
 		startY = tmpY;
 		
@@ -967,6 +993,11 @@
 				tmpX = 0;
 			}
 		}
+		tmpX--;
+		if(tmpX < 0)
+			tmpX = 0;
+		if(tmpY < 0)
+			tmpY = 0;		
 		if(tmpX >= [dataSource width])
 			tmpX = [dataSource width];
 		if(tmpY >= [dataSource numberOfLines])
@@ -987,6 +1018,7 @@
         if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
     }
+
 	[self setNeedsDisplay: YES];
 }
 
@@ -1014,11 +1046,11 @@
     }
     
     x = locationInTextView.x/charWidth;
-    if (x>=[dataSource width]) x=[dataSource width];
+    if (x>=[dataSource width]) x=[dataSource width] - 1;
     if (x<0) x=0;
     y = locationInTextView.y/lineHeight;
     if (y<0) y=0;
-    if (y>=[dataSource numberOfLines]) y=numberOfLines-1;
+    if (y>=[dataSource numberOfLines]) y=numberOfLines - 1;
     endX=x;
     endY=y;
 	[self setNeedsDisplay: YES];
@@ -1046,10 +1078,14 @@
 			line=y-scline;
 			buf=[dataSource screenLines]+line*width;
 		}
-		x1=0; x2=width;
-		if (y==starty) x1=startx;
-		if (y==endy) x2=endx;
-		for(;x1<=x2;x1++,j++) {
+		x1=0; 
+		x2=width - 1;
+		if (y == starty) 
+			x1 = startx;
+		if (y == endy) 
+			x2=endx;
+		for(; x1 <= x2; x1++,j++) 
+		{
 			if (buf[x1]!=0xffff) {
 				temp[j]=buf[x1]?buf[x1]:' ';
 			}
@@ -1066,6 +1102,16 @@
 	return str;
 }
 
+- (IBAction) selectAll: (id) sender
+{
+	// set the selection region for the whole text
+	startX = 0;
+	startY = 0;
+	endX = [dataSource width] - 1;
+	endY = [dataSource numberOfLines] - 1;
+	[self setNeedsDisplay: YES];
+}
+
 - (NSString *) selectedText
 {
 	
@@ -1076,7 +1122,7 @@
     if (startX<0) 
         return nil;
 	
-	return [self contentFromX:startX Y:startY ToX:endX-1 Y:endY];
+	return [self contentFromX:startX Y:startY ToX:endX Y:endY];
 }
 
 - (NSString *) content
@@ -1116,6 +1162,18 @@
         [_delegate paste:sender];
 }
 
+- (void) pasteSelection: (id) sender
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s: %@]", __PRETTY_FUNCTION__, sender );
+#endif
+    
+    if ([[self selectedText] length] > 0 && [_delegate respondsToSelector:@selector(pasteString:)])
+        [_delegate pasteString:[self selectedText]];
+	
+}
+
+
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
 #if DEBUG_METHOD_TRACE
@@ -1138,11 +1196,16 @@
     }
     else if ([item action]==@selector(mail:) ||
              [item action]==@selector(browse:) ||
-             [item action]==@selector(copy:))
+             [item action]==@selector(copy:) ||
+			 [item action]==@selector(pasteSelection:))
     {
         //        NSLog(@"selected range:%d",[self selectedRange].length);
         return (startX>=0);
     }
+	else if ([item action] == @selector(selectAll:))
+	{
+		return (YES);
+	}
     else
         return NO;
 }

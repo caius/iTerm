@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.15 2004-02-19 19:43:04 ujwal Exp $
+// $Id: PTYTextView.h,v 1.16 2004-02-20 08:07:03 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -94,6 +94,8 @@ typedef struct
 	
     //selection
     int startX, startY, endX, endY;
+	int pre_x1, pre_x2, pre_y1, pre_y2;
+
 	
 	//find support
 	int lastFindX, lastFindY;
@@ -164,6 +166,9 @@ typedef struct
 - (void) showCursor;
 - (void) hideCursor;
 
+// selection
+- (IBAction) selectAll: (id) sender;
+
 //
 // Drag and Drop methods for our text view
 //
@@ -174,7 +179,7 @@ typedef struct
 - (BOOL) performDragOperation: (id<NSDraggingInfo>) sender;
 - (void) concludeDragOperation: (id<NSDraggingInfo>) sender;
 
-    // Cursor control
+// Cursor control
 - (void)resetCursorRects;
 
 // Scrolling control
@@ -190,10 +195,10 @@ typedef struct
 - (void) saveDocumentAs: (id) sender;
 - (void) print:(id)sender;
 
-	// Find method
+// Find method
 - (void) findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) caseCheck;
 
-    // NSTextInput
+// NSTextInput
 - (void)insertText:(id)aString;
 - (void)setMarkedText:(id)aString selectedRange:(NSRange)selRange;
 - (void)unmarkText;

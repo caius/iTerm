@@ -198,7 +198,6 @@
 	if(hasGraphicalCharacters == YES)
 	{
 	    NSRange singleGlyphRange;
-	    //NSRect glyphRect;
 	    float x = 0;
 	    float theWidth;
 
@@ -206,15 +205,17 @@
 	    {
 		singleGlyphRange = [layoutMgr glyphRangeForCharacterRange: NSMakeRange(j, 1) actualCharacterRange: nil];
 		theWidth = ISDOUBLEWIDTHCHARACTER(j)?charWidth*2:charWidth;
-		//glyphRect.origin.x = x;
-		//glyphRect.size.width = [textContainer containerSize].width - x;
-		//glyphRect.origin.y = lineRect.origin.y;
-		//glyphRect.size.height = [font defaultLineHeightForFont];
-		//usedRect = glyphRect;
-		//usedRect.size.width = (singleGlyphRange.length) * theWidth + 2*lineFragmentPadding;
-		//if(usedRect.size.width > glyphRect.size.width)
-		//    usedRect.size.width = glyphRect.size.width;
-		//[layoutMgr setLineFragmentRect: glyphRect forGlyphRange: singleGlyphRange usedRect: usedRect];
+
+		NSRect glyphRect;
+		glyphRect.origin.x = x;
+		glyphRect.size.width = [textContainer containerSize].width - x;
+		glyphRect.origin.y = lineRect.origin.y;
+		glyphRect.size.height = [font defaultLineHeightForFont];
+		usedRect = glyphRect;
+		usedRect.size.width = (singleGlyphRange.length) * theWidth + 2*lineFragmentPadding;
+		if(usedRect.size.width > glyphRect.size.width)
+		    usedRect.size.width = glyphRect.size.width;
+		[layoutMgr setLineFragmentRect: glyphRect forGlyphRange: singleGlyphRange usedRect: usedRect];
 		[layoutMgr setLocation: NSMakePoint(lineFragmentPadding, [font defaultLineHeightForFont] - BASELINE_OFFSET) forStartOfGlyphRange: singleGlyphRange];
 		x+=theWidth;
 	    }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.258 2004-02-18 09:03:45 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.259 2004-02-19 17:05:31 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -953,7 +953,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
         [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
-        [[[_sessionMgr sessionAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
+        //[[[_sessionMgr sessionAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
 		[[[_sessionMgr sessionAtIndex:i] TEXTVIEW] refresh];
     }
     

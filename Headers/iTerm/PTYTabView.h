@@ -53,6 +53,7 @@
 - (id)initWithFrame: (NSRect) aFrame;
 - (void) dealloc;
 - (BOOL)acceptsFirstResponder;
+- (void) drawRect: (NSRect) rect;
 
 // contextual menu
 - (NSMenu *) menuForEvent: (NSEvent *) theEvent;

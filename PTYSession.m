@@ -81,7 +81,7 @@ static NSString *PWD_ENVVALUE = @"~";
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PTYSession init 0x%x]", __FILE__, __LINE__, self);
 #endif    
-    
+	
     return (self);
 }
 
@@ -173,6 +173,13 @@ static NSString *PWD_ENVVALUE = @"~";
     antiIdle = NO;
     REFRESHED = NO;
 	
+	// register for notifications
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(tabViewWillRedraw:)
+                                                 name:@"iTermTabViewWillRedraw"
+                                               object:nil];
+	
+	
     [tabViewItem setLabelAttributes: chosenStateAttribute];
 }
 
@@ -225,6 +232,9 @@ static NSString *PWD_ENVVALUE = @"~";
 #endif
 	
     int pid, status;
+	
+	// deregister from the notification center
+	[[NSNotificationCenter defaultCenter] removeObserver:self];    
     
     [SHELL sendSignal: SIGHUP];
     while ((pid=waitpid([SHELL pid],&status,0))>0)
@@ -1034,6 +1044,13 @@ static NSString *PWD_ENVVALUE = @"~";
     [tabViewItem release];
     tabViewItem = [theTabViewItem retain];
 }
+
+- (void) tabViewWillRedraw: (NSNotification *) aNotification
+{
+	if([aNotification object] == [[self tabViewItem] tabView])
+		[TEXTVIEW setForceUpdate: YES];
+}
+
 
 - (NSString *) uniqueID
 {

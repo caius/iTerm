@@ -134,6 +134,15 @@
     return (NO);
 }
 
+- (void) drawRect: (NSRect) rect
+{
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermTabViewWillRedraw" object: self];
+	[super drawRect: rect];
+	
+}
+
 // build a conextual menu displaying the current tabs
 - (NSMenu *) menuForEvent: (NSEvent *) theEvent
 {

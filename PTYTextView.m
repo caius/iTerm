@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.119 2004-02-19 05:26:39 yfabian Exp $
+// $Id: PTYTextView.m,v 1.120 2004-02-19 17:05:31 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -41,42 +41,13 @@
 
 @implementation PTYTextView
 
-- (id)init
-{
-#if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -init 0x%x", self);
-#endif
-
-    int loop;
-	
-    self = [super init];
-    dataSource=_delegate=markedTextAttributes=NULL;
-    [self setMarkedTextAttributes:
-        [NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor yellowColor], NSBackgroundColorAttributeName,
-            [NSColor blackColor], NSForegroundColorAttributeName,
-            [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
-            NULL]];
-    deadkey = NO;
-	CURSOR=YES;
-    lastFindX=startX=-1;
-    [[self window] useOptimizedDrawing:YES];
-    markedText=nil;
-	for (loop=0;loop<CACHESIZE;loop++)
-    {
-		charImages[loop].image=nil;
-    }
-
-    charWidth = 12;
-	
-    return (self);
-}
 
 - (id)initWithFrame: (NSRect) aRect
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTextView: -init 0x%x", self);
-#endif    
+    NSLog(@"%s 0x%x", __PRETTY_FUNCTION__, self);
+#endif
+    	
     self = [super initWithFrame: aRect];
     dataSource=_delegate=markedTextAttributes=NULL;
     
@@ -89,14 +60,20 @@
             NULL]];
     deadkey = NO;
 	CURSOR=YES;
-    startX=-1;
+	lastFindX = startX = -1;
     markedText=nil;
-    //    [[self window] useOptimizedDrawing:YES];
+	[[self window] useOptimizedDrawing:YES];
     
+	// register for some notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(frameChanged:)
                                                  name:NSWindowDidResizeNotification
                                                object:nil];
+	
+	// init the cache
+	memset(charImages, 0, CACHESIZE*sizeof(CharCache));	
+    charWidth = 12;
+		
 	
     return (self);
 }
@@ -380,12 +357,17 @@
 	charWidth = width;
 }
 
+- (void) setForceUpdate: (BOOL) flag
+{
+	forceUpdate = flag;
+}
+
 - (void) refresh
 {
 	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 
     NSSize aSize;
-    int height;
+	int height;
     
     if(dataSource != nil)
     {
@@ -403,8 +385,40 @@
         }
     }
 
+#if 0
+	
+	// find out which lines need redrawing
+	char *dirty;
+	int width, i, j, cursorLine;
+	NSRect lineRect;
+	BOOL lineNeedsDrawing;
+	
+	width = [dataSource width];
+	height = [dataSource height];
+	dirty = [dataSource dirty];
+	cursorLine = [dataSource cursorY] - 1;
+	for(i = 0; i < height; i++)
+	{
+		lineNeedsDrawing = NO;
+		for(j = 0; j < width; j++)
+		{
+			// trigger display of line if it is dirty or has the cursor
+			if(dirty[i*width + j] || (i == cursorLine) || forceUpdate)
+				lineNeedsDrawing = YES;
+		}
+		if(lineNeedsDrawing)
+		{
+			lineRect = NSMakeRect(0, 0, [self frame].size.width, lineHeight);
+			lineRect.origin.y = ([dataSource numberOfLines] - height + i) * lineHeight;
+			[self setNeedsDisplayInRect: lineRect];
+		}
+	}
+	
+#else
 	
 	[self setNeedsDisplay: YES];
+
+#endif
 	
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.13 2004-02-19 02:50:18 yfabian Exp $
+// $Id: PTYTextView.h,v 1.14 2004-02-19 17:05:33 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -102,7 +102,7 @@ typedef struct
 	CharCache	charImages[CACHESIZE];
 }
 
-- (id)init;
+- (id)initWithFrame: (NSRect) aRect;
 - (void)dealloc;
 - (BOOL)isFlipped;
 - (BOOL)isOpaque;
@@ -159,6 +159,7 @@ typedef struct
 - (void) setCharWidth: (float) width;
 
 - (void) refresh;
+- (void) setForceUpdate: (BOOL) flag;
 - (void) showCursor;
 - (void) hideCursor;
 

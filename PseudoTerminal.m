@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.280 2004-03-26 04:41:17 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.281 2004-03-27 21:15:41 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1051,16 +1051,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		    
     w = (int)((frame.size.width - MARGIN * 2)/charWidth);
     h = (int)(frame.size.height/charHeight);
-    //NSLog(@"here:%d,%d",w,h);
 
-	if (WIDTH ==w && HEIGHT ==h)
-		return;
 
     for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
         [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
-        //[[[_sessionMgr sessionAtIndex:i] SCROLLVIEW] setFrameSize:[TABVIEW contentRect].size];
-		//[[[_sessionMgr sessionAtIndex:i] TEXTVIEW] refresh];
     }
     
     WIDTH = w;

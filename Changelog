@@ -1,3 +1,7 @@
+2004-06-15  fabian
+
+	* Fixed title problem in some web html files
+	
 2004-05-26  ujwal
 
 	* Added an option to enable/disable Rendezvous.
@@ -20,6 +24,10 @@
 	  leaves behind a zombie shell process that goes away only when iTerm 
 	  is quit.
 
+2004-05-15  fabian
+
+    * Selection now occurs when mouseDown instead of mouseUp.
+    
 2004-05-11  ujwal
 	
 	* Added support to set cursor color and cursor text color from applescript.

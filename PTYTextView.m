@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.218 2004-05-24 17:51:43 ujwal Exp $
+// $Id: PTYTextView.m,v 1.219 2004-06-15 07:12:26 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1123,6 +1123,9 @@ static SInt32 systemVersion;
         }            
 	}
 	    
+    if (startX>-1 && (startX != endX || startY!=endY)) 
+        [self _selectFromX:startX Y:startY toX:endX Y:endY];
+
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
 	[self setNeedsDisplay: YES];
@@ -2131,6 +2134,7 @@ static SInt32 systemVersion;
 										   attributes:attrib] autorelease];
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
+	[crap drawAtPoint:NSMakePoint(0,0)];
 	[crap drawAtPoint:NSMakePoint(0,0)];
 	// on older systems, for bold, redraw the character offset by 1 pixel
 	if (renderBold && (systemVersion < 0x00001030 || !antiAlias))

@@ -500,9 +500,9 @@ static NSString *PWD_ENVVALUE = @"~";
 	    }
 
 	    // trigger an update of the display.
-	    //[SCREEN updateScreen];
-	    //[TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
-	    //[SCREEN showCursor];
+	    [SCREEN updateScreen];
+	    [TEXTVIEW setCursorIndex:[SCREEN getTVIndex:[SCREEN cursorX]-1 y:[SCREEN cursorY]-1]];
+	    [SCREEN showCursor];
 	    
 	}
     }
@@ -742,6 +742,11 @@ static NSString *PWD_ENVVALUE = @"~";
     }
 }
 
+- (void) setBell
+{
+    [tabViewItem setBell:YES];
+}
+
 // Preferences
 - (void)setPreference:(id)preference;
 {
@@ -844,10 +849,13 @@ static NSString *PWD_ENVVALUE = @"~";
         aMutableString = [[NSMutableString alloc] initWithString: [theName substringWithRange: NSMakeRange(0, 17)]];
         [aMutableString appendString: @"..."];
         [tabViewItem setLabel: aMutableString];
+        [tabViewItem setBell: NO];
         [aMutableString release];
     }
-    else
+    else {
         [tabViewItem setLabel: theName];
+        [tabViewItem setBell: NO];
+    }
 }
 
 - (PTYTask *) SHELL

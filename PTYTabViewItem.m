@@ -29,6 +29,7 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
+static NSImage *warningImage;
 
 @implementation PTYTabViewItem
 
@@ -39,6 +40,9 @@
 #endif
 
     dragTarget = NO;
+    if (warningImage==nil) {
+        warningImage=[NSImage imageNamed:@"important"];
+    }
 
     return([super initWithIdentifier: anIdentifier]);
 }
@@ -61,9 +65,9 @@
 // Override this to be able to customize the label attributes
 - (void)drawLabel:(BOOL)shouldTruncateLabel inRect:(NSRect)tabRect
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"PTYTabViewItem: -drawLabel");
-#endif
+//#if DEBUG_METHOD_TRACE
+    NSLog(@"PTYTabViewItem: -drawLabel(bell=%@)",bell?@"YES":@"NO");
+//#endif
 
     if(labelAttributes != nil)
     {
@@ -78,8 +82,14 @@
 								    range: NSMakeRange(0, [attributedLabel length])];
 	    [attributedLabel addAttribute: NSBackgroundColorAttributeName value: [NSColor blackColor]
 								    range: NSMakeRange(0, [attributedLabel length])];
-	}	
-        [attributedLabel drawAtPoint:tabRect.origin];
+	}
+        if (bell) {
+            [warningImage compositeToPoint:NSMakePoint(tabRect.origin.x,tabRect.origin.y+16)
+                                 operation:NSCompositeSourceOver];
+            [attributedLabel drawAtPoint:NSMakePoint(tabRect.origin.x+18,tabRect.origin.y)];
+        }
+        else [attributedLabel drawAtPoint:tabRect.origin];
+        
         [attributedLabel release];
         
     }
@@ -115,6 +125,9 @@
 
 	}
         aSize = [attributedLabel size];
+        if (bell) {
+            aSize.width+=18;
+        }
         [attributedLabel release];
     }
     else
@@ -155,6 +168,7 @@
     // redraw the label
     NSString *theLabel = [[self label] copy];
     [self setLabel: theLabel];
+    bell=NO;
     [theLabel release];
     
 }
@@ -182,5 +196,13 @@
     [theLabel release];    
 }
 
+- (void) setBell:(BOOL)b
+{
+    // redraw the label
+    NSString *theLabel = [[self label] copy];
+    bell=b;
+    [self setLabel: theLabel];
+    [theLabel release];
+}
 
 @end

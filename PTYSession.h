@@ -171,5 +171,6 @@
 - (void)resetStatus;
 - (BOOL)exited;
 - (void)setLabelAttribute;
+- (void)setBell;
 
 @end

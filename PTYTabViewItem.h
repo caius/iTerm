@@ -32,6 +32,7 @@
 
     NSDictionary *labelAttributes;
     BOOL dragTarget;
+    BOOL bell;
 
 }
 
@@ -45,6 +46,7 @@
 // set/get custom label
 - (NSDictionary *) labelAttributes;
 - (void) setLabelAttributes: (NSDictionary *) theLabelAttributes;
+- (void) setBell:(BOOL)b;
 
 // drag-n-drop utilities
 - (void) becomeDragTarget;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.49 2003-02-24 19:45:01 yfabian Exp $
+// $Id: VT100Screen.m,v 1.50 2003-02-24 22:06:37 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1432,8 +1432,10 @@ static BOOL PLAYBELL = YES;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen playBell]",  __FILE__, __LINE__);
 #endif
-    if (PLAYBELL)
+    if (PLAYBELL) {
 	NSBeep();
+        [SESSION setBell];
+    }
 }
 
 - (void)removeOverLine

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.245 2003-10-05 19:38:37 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.246 2003-10-09 22:57:59 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -139,16 +139,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     termSize = [VT100Screen screenSizeInFrame: NSMakeRect(0, 0, contentSize.width, contentSize.height) font: aFont1];
     [self setWidth: (int) termSize.width height: (int) termSize.height];
 
-    if(timer == nil)
-    {
-	// start a common timer for all the periodic timer code for all sessions
-	timer =[[NSTimer scheduledTimerWithTimeInterval:0.02
-					  target:self
-					selector:@selector(timerTick:)
-					userInfo:nil
-					 repeats:YES] retain];	
-    }
-
     return ([TABVIEW autorelease]);
 }
 
@@ -171,30 +161,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [TABVIEW release];
         
     [[self window] setDelegate: self];
-
-    if(timer == nil)
-    {
-	// start a common timer for all the periodic timer code for all sessions
-	timer =[[NSTimer scheduledTimerWithTimeInterval:0.02
-									     target:self
-									   selector:@selector(timerTick:)
-									   userInfo:nil
-									    repeats:YES] retain];
-    }    
     
     [self setWindowInited: YES];
-}
-
-- (void) timerTick: (NSTimer *) sender
-{
-    PTYSession *aSession;
-    NSEnumerator *sessionEnumerator;
-
-    // call periodic code in each session
-    sessionEnumerator = [[self sessions] objectEnumerator];
-    while ((aSession = [sessionEnumerator nextObject]) != nil)
-	[aSession timerTick: sender];    
-
 }
 
 - (ITSessionMgr*)sessionMgr;
@@ -263,7 +231,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession SCREEN] setWidth:WIDTH height:HEIGHT];
 //    NSLog(@"%d,%d",WIDTH,HEIGHT);
     
-    //[aSession startTimer];
+    [aSession startTimer];
 
     [[aSession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
 
@@ -505,7 +473,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_ALLOC
     NSLog(@"%s(%d):-[PseudoTerminal dealloc: 0x%x]", __FILE__, __LINE__, self);
 #endif
-    [timer release];
     [self releaseObjects];
     [_toolbarController release];
         
@@ -834,7 +801,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [[[_sessionMgr sessionAtIndex: i] SHELL] stopNoWait];
     }
 
-    [timer invalidate];
     [self releaseObjects];
 
     // Release our window postion

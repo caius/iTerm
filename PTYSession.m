@@ -632,7 +632,7 @@ static NSString *PWD_ENVVALUE = @"~";
             //[TEXTVIEW scrollEnd];
             PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
             [ptys setUserScroll: NO];
-	    [SCREEN updateScreen];
+	    //[SCREEN updateScreen];
 #endif
 	}
     }

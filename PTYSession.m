@@ -241,22 +241,22 @@ static NSDictionary *deadStateAttribute;
     [SHELL sendSignal:SIGKILL];
     [SHELL stop];
     EXIT = YES;
-    if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-    {
-        [tabViewItem setLabelAttributes: deadStateAttribute];
-        [tabViewItem redrawLabel];
-    }
-
 
     if (timer) {
         [timer invalidate];
         [timer release];
         timer=nil;
     }
+    
     if ([pref autoclose]) {
         [parent closeSession:self];
     }
-    else [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
+    else 
+    {
+        [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
+        [tabViewItem setLabelAttributes: deadStateAttribute];
+        [tabViewItem redrawLabel];
+    }
 }
 
 // PTYTextView
@@ -890,8 +890,11 @@ static NSDictionary *deadStateAttribute;
 - (void) resetStatus;
 {
     waiting=REFRESHED=NO;
-    [tabViewItem setLabelAttributes: chosenStateAttribute];
-    [tabViewItem redrawLabel];
+    if([self exited] == NO)
+    {
+        [tabViewItem setLabelAttributes: chosenStateAttribute];
+        [tabViewItem redrawLabel];
+    }
 }
 
 - (BOOL)idle

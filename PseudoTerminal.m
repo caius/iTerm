@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.251 2004-01-21 21:51:17 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.252 2004-01-22 00:11:09 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -718,7 +718,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[session TEXTVIEW]  setFont:font];
 #endif
         [[session SCREEN]  setFont:font nafont:nafont];
-		[[session SCREEN] forceUpdateScreen];
 	
     }
     [FONT autorelease];

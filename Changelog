@@ -12,6 +12,9 @@
     * Fixed bug in PseudoTerminal: -saveSession where 
       row and column values were swapped.
       
+    * Better sunchronization between window and session 
+      titles. Tab label width is limited to 20 characters.
+      
 
 2003-01-20	fabian
     * New option in preference&address book entry

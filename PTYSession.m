@@ -735,6 +735,7 @@ static NSString *PWD_ENVVALUE = @"~";
 }
 - (void) setName: (NSString *) theName
 {
+    NSMutableString *aMutableString;
     if(name)
     {
         [name release];
@@ -745,7 +746,15 @@ static NSString *PWD_ENVVALUE = @"~";
         [theName retain];
         name = theName;
     }
-    [tabViewItem setLabel: theName];
+    if([theName length] > 20)
+    {
+        aMutableString = [[NSMutableString alloc] initWithString: [theName substringWithRange: NSMakeRange(0, 17)]];
+        [aMutableString appendString: @"..."];
+        [tabViewItem setLabel: aMutableString];
+        [aMutableString release];
+    }
+    else
+        [tabViewItem setLabel: theName];
 }
 
 - (PTYTask *) SHELL

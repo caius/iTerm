@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.28 2003-01-21 20:21:14 yfabian Exp $
+// $Id: VT100Screen.m,v 1.29 2003-01-22 01:50:29 ujwal Exp $
 //
 //  VT100Screen.m
 //  JTerminal
@@ -538,7 +538,12 @@ static BOOL PLAYBELL = YES;
     case XTERMCC_WINICON_TITLE:
     case XTERMCC_ICON_TITLE:
         //[SESSION setName:token.u.string];
-        if (token.type==XTERMCC_WIN_TITLE||token.type==XTERMCC_WINICON_TITLE) [WINDOW setTitle:token.u.string];
+        if (token.type==XTERMCC_WIN_TITLE||token.type==XTERMCC_WINICON_TITLE) 
+        {
+            if([[SESSION parent] currentSession] == SESSION)
+                [WINDOW setTitle:token.u.string];
+            [SESSION setName: token.u.string];
+        }
         if (token.type==XTERMCC_ICON_TITLE||token.type==XTERMCC_WINICON_TITLE) [SESSION setName:token.u.string];
         break;
     case XTERMCC_INSBLNK: [self insertBlank:token.u.csi.p[0]]; break;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.12 2003-08-08 20:12:57 ujwal Exp $
+// $Id: PTYTask.m,v 1.13 2003-08-20 00:50:16 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -485,6 +485,9 @@ static int writep(int fds, char *buf, size_t len)
 - (void)setWidth:(int)width height:(int)height
 {
     struct winsize winsize;
+
+    if(FILDES == -1)
+	return;
 
     ioctl(FILDES, TIOCGWINSZ, &winsize);
     winsize.ws_col = width;

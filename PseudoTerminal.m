@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.177 2003-05-19 01:59:34 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.178 2003-05-19 14:46:53 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -70,20 +70,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) newSession: (id) sender
 {
-    NSString *cmd;
-    NSArray *arg;
-    PTYSession *aSession;
-
-    [MainMenu breakDown:[pref shell] cmdPath:&cmd cmdArgs:&arg];
-
-    aSession = [[PTYSession alloc] init];
-    // Add this session to our list and make it current
-    [self addInSessions: aSession];
-    [aSession release];
-        
-    [self startProgram:cmd arguments:arg];
-    [self setCurrentSessionName:nil];
-    
+    [MAINMENU executeABCommandAtIndex:0 inTerminal: self];
 }
 
 - (id) initWithWindowNibName: (NSString *) windowNibName
@@ -186,6 +173,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     int i;
     NSDictionary *defaultParameters;
+    NSColor *defaultColorTable[2][8];
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -206,9 +194,26 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession setBackgroundColor: [[defaultParameters objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[defaultParameters objectForKey: @"Transparency"] intValue]/100.0)]];
     [aSession setSelectionColor: [defaultParameters objectForKey: @"SelectionColor"]];
     [aSession setBoldColor: [defaultParameters objectForKey: @"BoldColor"]];
+    defaultColorTable[0][0]= [defaultParameters objectForKey:@"AnsiBlack"];
+    defaultColorTable[0][1]= [defaultParameters objectForKey:@"AnsiRed"];
+    defaultColorTable[0][2]= [defaultParameters objectForKey:@"AnsiGreen"];
+    defaultColorTable[0][3]= [defaultParameters objectForKey:@"AnsiYellow"];
+    defaultColorTable[0][4]= [defaultParameters objectForKey:@"AnsiBlue"];
+    defaultColorTable[0][5]= [defaultParameters objectForKey:@"AnsiMagenta"];
+    defaultColorTable[0][6]= [defaultParameters objectForKey:@"AnsiCyan"];
+    defaultColorTable[0][7]= [defaultParameters objectForKey:@"AnsiWhite"];
+    defaultColorTable[1][0]= [defaultParameters objectForKey:@"AnsiHiBlack"];
+    defaultColorTable[1][1]= [defaultParameters objectForKey:@"AnsiHiRed"];
+    defaultColorTable[1][2]= [defaultParameters objectForKey:@"AnsiHiGreen"];
+    defaultColorTable[1][3]= [defaultParameters objectForKey:@"AnsiHiYellow"];
+    defaultColorTable[1][4]= [defaultParameters objectForKey:@"AnsiHiBlue"];
+    defaultColorTable[1][5]= [defaultParameters objectForKey:@"AnsiHiMagenta"];
+    defaultColorTable[1][6]= [defaultParameters objectForKey:@"AnsiHiCyan"];
+    defaultColorTable[1][7]= [defaultParameters objectForKey:@"AnsiHiWhite"];
+    
     for(i=0;i<8;i++) {
-        [aSession setColorTable:i highLight:NO color:[pref colorFromTable:i highLight:NO]];
-        [aSession setColorTable:i highLight:YES color:[pref colorFromTable:i highLight:YES]];
+        [aSession setColorTable:i highLight:NO color:defaultColorTable[0][i]];
+        [aSession setColorTable:i highLight:YES color:defaultColorTable[1][i]];
     }    
 
     // set the font

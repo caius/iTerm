@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.68 2003-05-19 01:59:34 ujwal Exp $
+// $Id: MainMenu.m,v 1.69 2003-05-19 14:46:53 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -731,6 +731,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     NSDictionary *entry;
     NSStringEncoding encoding;
     int i;
+    NSColor *colorTable[2][8];
 
     // Grab the addressbook command
     entry = [addressBook objectAtIndex:theIndex];
@@ -759,7 +760,8 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     // Add this session to our term and make it current
     [term addInSessions: aSession];
     [aSession release];
-    
+
+    // set our saved colors
     [aSession setForegroundColor: [entry objectForKey:@"Foreground"]];
     [aSession setBackgroundColor: [[entry objectForKey:@"Background"] colorWithAlphaComponent: (1.0-[[entry objectForKey:@"Transparency"] intValue]/100.0)]];
     [aSession setSelectionColor: [entry objectForKey:@"SelectionColor"]];
@@ -767,6 +769,38 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 	[aSession setBoldColor: [entry objectForKey:@"BoldColor"]];
     else
 	[aSession setBoldColor: [PREF_PANEL boldColor]];
+    if([entry objectForKey: @"AnsiBlack"] == nil)
+    {
+	for(i = 0; i < 8; i++)
+	{
+	    colorTable[0][i] = [AddressBookWindowController colorFromTable: i highLight: NO];
+	    colorTable[1][i] = [AddressBookWindowController colorFromTable: i highLight: YES];
+	}
+    }
+    else
+    {
+	colorTable[0][0]= [entry objectForKey:@"AnsiBlack"];
+	colorTable[0][1]= [entry objectForKey:@"AnsiRed"];
+	colorTable[0][2]= [entry objectForKey:@"AnsiGreen"];
+	colorTable[0][3]= [entry objectForKey:@"AnsiYellow"];
+	colorTable[0][4]= [entry objectForKey:@"AnsiBlue"];
+	colorTable[0][5]= [entry objectForKey:@"AnsiMagenta"];
+	colorTable[0][6]= [entry objectForKey:@"AnsiCyan"];
+	colorTable[0][7]= [entry objectForKey:@"AnsiWhite"];
+	colorTable[1][0]= [entry objectForKey:@"AnsiHiBlack"];
+	colorTable[1][1]= [entry objectForKey:@"AnsiHiRed"];
+	colorTable[1][2]= [entry objectForKey:@"AnsiHiGreen"];
+	colorTable[1][3]= [entry objectForKey:@"AnsiHiYellow"];
+	colorTable[1][4]= [entry objectForKey:@"AnsiHiBlue"];
+	colorTable[1][5]= [entry objectForKey:@"AnsiHiMagenta"];
+	colorTable[1][6]= [entry objectForKey:@"AnsiHiCyan"];
+	colorTable[1][7]= [entry objectForKey:@"AnsiHiWhite"];
+    }
+    for(i=0;i<8;i++) {
+        [aSession setColorTable:i highLight:NO color:colorTable[0][i]];
+        [aSession setColorTable:i highLight:YES color:colorTable[1][i]];
+    }
+    
     [aSession setEncoding: encoding];
     [aSession setTERM_VALUE: [entry objectForKey:@"Term Type"]];
 

@@ -34,6 +34,18 @@
 static NSStringEncoding const *encodingList=nil;
 static AddressBookWindowController *singleInstance = nil;
 
+static NSColor *iTermBackground;
+static NSColor *iTermForeground;
+static NSColor *iTermSelection;
+static NSColor *iTermBold;
+static NSColor* iTermColorTable[2][8];
+static NSColor *xtermBackground;
+static NSColor *xtermForeground;
+static NSColor *xtermSelection;
+static NSColor *xtermBold;
+static NSColor* xtermColorTable[2][8];
+
+
 // comaparator function for addressbook entries
 static BOOL isDefaultEntry( NSDictionary *entry )
 {
@@ -71,6 +83,128 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     return singleInstance;
 }
 
++ (void)initialize
+{
+    int i;
+
+    [super initialize];
+
+    iTermBackground = [[NSColor blackColor] retain];
+    iTermForeground = [[NSColor colorWithCalibratedRed:0.8f
+						 green:0.8f
+						  blue:0.8f
+						 alpha:1.0f]
+        retain];
+    iTermSelection = [[NSColor colorWithCalibratedRed:0.45f
+						green:0.5f
+						 blue:0.55f
+						alpha:1.0f]
+        retain];
+
+    iTermBold = [[NSColor redColor] retain];
+
+    xtermBackground = [[NSColor whiteColor] retain];
+    xtermForeground = [[NSColor blackColor] retain];
+    xtermSelection = [NSColor selectedTextBackgroundColor];
+    xtermBold = [[NSColor redColor] retain];
+
+    xtermColorTable[0][0]  = [[NSColor blackColor] retain];
+    xtermColorTable[0][1]  = [[NSColor redColor] retain];
+    xtermColorTable[0][2]  = [[NSColor greenColor] retain];
+    xtermColorTable[0][3] = [[NSColor yellowColor] retain];
+    xtermColorTable[0][4] = [[NSColor blueColor] retain];
+    xtermColorTable[0][5] = [[NSColor magentaColor] retain];
+    xtermColorTable[0][6]  = [[NSColor cyanColor] retain];
+    xtermColorTable[0][7]  = [[NSColor whiteColor] retain];
+    iTermColorTable[0][0]  = [[NSColor colorWithCalibratedRed:0.0f
+							green:0.0f
+							 blue:0.0f
+							alpha:1.0f]
+        retain];
+    iTermColorTable[0][1]  = [[NSColor colorWithCalibratedRed:0.7f
+                                                        green:0.0f
+                                                         blue:0.0f
+                                                        alpha:1.0f]
+        retain];
+    iTermColorTable[0][2]  = [[NSColor colorWithCalibratedRed:0.0f
+                                                        green:0.7f
+                                                         blue:0.0f
+                                                        alpha:1.0f]
+        retain];
+    iTermColorTable[0][3] = [[NSColor colorWithCalibratedRed:0.7f
+                                                       green:0.7f
+                                                        blue:0.0f
+                                                       alpha:1.0f]
+        retain];
+    iTermColorTable[0][4] = [[NSColor colorWithCalibratedRed:0.0f
+                                                       green:0.0f
+                                                        blue:0.7f
+                                                       alpha:1.0f]
+        retain];
+    iTermColorTable[0][5] = [[NSColor colorWithCalibratedRed:0.7f
+                                                       green:0.0f
+                                                        blue:0.7f
+                                                       alpha:1.0f]
+        retain];
+    iTermColorTable[0][6]  = [[NSColor colorWithCalibratedRed:0.45f
+                                                        green:0.45f
+                                                         blue:0.7f
+                                                        alpha:1.0f]
+        retain];
+    iTermColorTable[0][7]  = [[NSColor colorWithCalibratedRed:0.7f
+                                                        green:0.7f
+                                                         blue:0.7f
+                                                        alpha:1.0f]
+        retain];
+
+    for (i=0;i<8;i++) {
+        xtermColorTable[1][i]=[[PreferencePanel highlightColor:xtermColorTable[0][i]] retain];
+        iTermColorTable[1][i]=[[PreferencePanel highlightColor:iTermColorTable[0][i]] retain];
+    }
+
+}
+
++ (NSColor *) highlightColor:(NSColor *)color
+{
+
+    color=[color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    if ([color brightnessComponent]>0.5) {
+        if ([color brightnessComponent]>0.81) {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]-0.3
+                                            alpha:[color alphaComponent]];
+            //                color=[color shadowWithLevel:0.2];
+        }
+        else {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]+0.3
+                                            alpha:[color alphaComponent]];
+        }
+        //            color=[color highlightWithLevel:0.2];
+    }
+    else {
+        if ([color brightnessComponent]>0.19) {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]-0.3
+                                            alpha:[color alphaComponent]];
+            //                color=[color shadowWithLevel:0.2];
+        }
+        else {
+            color=[NSColor colorWithCalibratedHue:[color hueComponent]
+                                       saturation:[color saturationComponent]
+                                       brightness:[color brightnessComponent]+0.3
+                                            alpha:[color alphaComponent]];
+            //                color=[color highlightWithLevel:0.2];
+        }
+    }
+
+    return color;
+}
+
+
 - (id) initWithWindowNibName: (NSString *) windowNibName
 {
 #if DEBUG_ALLOC
@@ -97,6 +231,16 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     singleInstance = nil;
     
+}
+
++ (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili
+{    
+    if(iTermColorTable[0][0] == nil)
+	[self initialize];
+    
+    if (index<8)
+        return iTermColorTable[hili?1:0][index];
+    else return nil;    
 }
 
 - (void) awakeFromNib
@@ -153,7 +297,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     r=0;
     while (*p) {
 	//        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
-        [adEncoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        [adEncoding addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
         if (*p==[[self preferences] encoding]) r=p-encodingList;
         p++;
     }
@@ -163,9 +307,31 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [adShortcut selectItemAtIndex:0];
     [adRow setIntValue:[[self preferences] row]];
     [adCol setIntValue:[[self preferences] col]];
-    [adForeground setColor:[[self preferences] foreground]];
-    [adBackground setColor:[[self preferences] background]];
-    [adSelection setColor:[[self preferences] selectionColor]];
+
+    // set colors
+    [colorScheme selectItemAtIndex: 0];
+    [adForeground setColor:iTermForeground];
+    [adBackground setColor:iTermBackground];
+    [adSelection setColor:iTermSelection];
+    [adBold setColor: iTermBold];
+    [ansiBlack setColor:iTermColorTable[0][0]];
+    [ansiRed setColor:iTermColorTable[0][1]];
+    [ansiGreen setColor:iTermColorTable[0][2]];
+    [ansiYellow setColor:iTermColorTable[0][3]];
+    [ansiBlue setColor:iTermColorTable[0][4]];
+    [ansiMagenta setColor:iTermColorTable[0][5]];
+    [ansiCyan setColor:iTermColorTable[0][6]];
+    [ansiWhite setColor:iTermColorTable[0][7]];
+    [ansiHiBlack setColor:iTermColorTable[1][0]];
+    [ansiHiRed setColor:iTermColorTable[1][1]];
+    [ansiHiGreen setColor:iTermColorTable[1][2]];
+    [ansiHiYellow setColor:iTermColorTable[1][3]];
+    [ansiHiBlue setColor:iTermColorTable[1][4]];
+    [ansiHiMagenta setColor:iTermColorTable[1][5]];
+    [ansiHiCyan setColor:iTermColorTable[1][6]];
+    [ansiHiWhite setColor:iTermColorTable[1][7]];
+    
+    
     [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
 
     aeFont=[[[self preferences] font] copy];
@@ -192,28 +358,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     if (r == NSRunStoppedResponse) {
         NSDictionary *ae;
 
-        ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-            [adName stringValue],@"Name",
-            [adCommand stringValue],@"Command",
-            [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
-            [adForeground color],@"Foreground",
-            [adBackground color],@"Background",
-            [adSelection color],@"SelectionColor",
-	    [adBold color],@"BoldColor",
-            [adRow stringValue],@"Row",
-            [adCol stringValue],@"Col",
-            [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
-            [adTermType stringValue],@"Term Type",
-            [adDir stringValue],@"Directory",
-            aeFont,@"Font",
-            aeNAFont,@"NAFont",
-            [NSNumber numberWithBool:([adAI state]==NSOnState)],@"AntiIdle",
-            [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
-            [NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
-            [NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
-            [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
-            [NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
-            NULL];
+        ae=[self _getUpdatedPropertyDictionary];
         [[self addressBook] addObject:ae];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
 	//        NSLog(@"%s(%d):-[Address entry added:%@]",
@@ -247,13 +392,13 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     r=0;
     while (*p) {
         //        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
-        [adEncoding addItemWithObjectValue:[NSString localizedNameOfStringEncoding:*p]];
+        [adEncoding addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
         if (*p==[[entry objectForKey:@"Encoding"] unsignedIntValue]) r=p-encodingList;
         p++;
     }
     [adEncoding selectItemAtIndex:r];
     if ([entry objectForKey:@"Term Type"])
-        [adTermType setStringValue:[entry objectForKey:@"Term Type"]];
+        [adTermType selectItemWithTitle:[entry objectForKey:@"Term Type"]];
     else
         [adTermType selectItemAtIndex:0];
     if ([entry objectForKey:@"Shortcut"]&&[[entry objectForKey:@"Shortcut"] intValue]) {
@@ -262,17 +407,84 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     else
         [adShortcut selectItemAtIndex:0];
 
+    // set the colors
+    [colorScheme selectItemAtIndex: [[entry objectForKey: @"ColorScheme"] intValue]];
     [adForeground setColor:[entry objectForKey:@"Foreground"]];
     [adBackground setColor:[entry objectForKey:@"Background"]];
     if([entry objectForKey:@"SelectionColor"])
         [adSelection setColor:[entry objectForKey:@"SelectionColor"]];
     else
-        [adSelection setColor: [[self preferences] selectionColor]];
+        [adSelection setColor: iTermSelection];
     if([entry objectForKey:@"BoldColor"])
         [adBold setColor:[entry objectForKey:@"BoldColor"]];
     else
-        [adBold setColor: [[self preferences] boldColor]];
+        [adBold setColor: iTermBold];
+    if([entry objectForKey:@"AnsiBlackColor"])
+        [ansiBlack setColor:[entry objectForKey:@"AnsiBlackColor"]];
+    else
+        [ansiBlack setColor: iTermColorTable[0][0]];
+    if([entry objectForKey:@"AnsiRedColor"])
+        [ansiRed setColor:[entry objectForKey:@"AnsiRedColor"]];
+    else
+        [ansiRed setColor: iTermColorTable[0][1]];
+    if([entry objectForKey:@"AnsiGreenColor"])
+        [ansiGreen setColor:[entry objectForKey:@"AnsiGreenColor"]];
+    else
+	[ansiGreen setColor:iTermColorTable[0][2]];
+    if([entry objectForKey:@"AnsiYellowColor"])
+        [ansiYellow setColor:[entry objectForKey:@"AnsiYellowColor"]];
+    else
+	[ansiYellow setColor:iTermColorTable[0][3]];
+    if([entry objectForKey:@"AnsiBlueColor"])
+        [ansiBlue setColor:[entry objectForKey:@"AnsiBlueColor"]];
+    else
+	[ansiBlue setColor:iTermColorTable[0][4]];
+    if([entry objectForKey:@"AnsiMagentaColor"])
+        [ansiMagenta setColor:[entry objectForKey:@"AnsiMagentaColor"]];
+    else
+	[ansiMagenta setColor:iTermColorTable[0][5]];
+    if([entry objectForKey:@"AnsiCyanColor"])
+        [ansiCyan setColor:[entry objectForKey:@"AnsiCyanColor"]];
+    else
+	[ansiCyan setColor:iTermColorTable[0][6]];
+    if([entry objectForKey:@"AnsiWhiteColor"])
+        [ansiWhite setColor:[entry objectForKey:@"AnsiWhiteColor"]];
+    else
+	[ansiWhite setColor:iTermColorTable[0][7]];
+    if([entry objectForKey:@"AnsiHiBlackColor"])
+        [ansiHiBlack setColor:[entry objectForKey:@"AnsiHiBlackColor"]];
+    else
+        [ansiHiBlack setColor: iTermColorTable[1][0]];
+    if([entry objectForKey:@"AnsiHiRedColor"])
+        [ansiHiRed setColor:[entry objectForKey:@"AnsiHiRedColor"]];
+    else
+        [ansiHiRed setColor: iTermColorTable[1][1]];
+    if([entry objectForKey:@"AnsiHiGreenColor"])
+        [ansiHiGreen setColor:[entry objectForKey:@"AnsiHiGreenColor"]];
+    else
+	[ansiHiGreen setColor:iTermColorTable[1][2]];
+    if([entry objectForKey:@"AnsiHiYellowColor"])
+        [ansiHiYellow setColor:[entry objectForKey:@"AnsiHiYellowColor"]];
+    else
+	[ansiHiYellow setColor:iTermColorTable[1][3]];
+    if([entry objectForKey:@"AnsiHiBlueColor"])
+        [ansiHiBlue setColor:[entry objectForKey:@"AnsiHiBlueColor"]];
+    else
+	[ansiHiBlue setColor:iTermColorTable[1][4]];
+    if([entry objectForKey:@"AnsiHiMagentaColor"])
+        [ansiHiMagenta setColor:[entry objectForKey:@"AnsiHiMagentaColor"]];
+    else
+	[ansiHiMagenta setColor:iTermColorTable[1][5]];
+    if([entry objectForKey:@"AnsiHiCyanColor"])
+        [ansiHiCyan setColor:[entry objectForKey:@"AnsiHiCyanColor"]];
+    else
+	[ansiHiCyan setColor:iTermColorTable[1][6]];
+    if([entry objectForKey:@"AnsiHiWhiteColor"])
+        [ansiHiWhite setColor:[entry objectForKey:@"AnsiHiWhiteColor"]];
+    else
+	[ansiHiWhite setColor:iTermColorTable[1][7]];
     
+        
     [adRow setStringValue:[entry objectForKey:@"Row"]];
     [adCol setStringValue:[entry objectForKey:@"Col"]];
     if ([entry objectForKey:@"Transparency"]) {
@@ -311,30 +523,8 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [AE_PANEL close];
     if (r == NSRunStoppedResponse) {
         NSDictionary *ae;
-        ae=[[NSDictionary alloc] initWithObjectsAndKeys:
-            [adName stringValue],@"Name",
-            [adCommand stringValue],@"Command",
-            [NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
-            [adForeground color],@"Foreground",
-            [adBackground color],@"Background",
-            [adSelection color],@"SelectionColor",
-	    [adBold color],@"BoldColor",
-            [adRow stringValue],@"Row",
-            [adCol stringValue],@"Col",
-            [NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
-            [adTermType stringValue],@"Term Type",
-            [adDir stringValue],@"Directory",
-            aeFont,@"Font",
-            aeNAFont,@"NAFont",
-            [NSNumber numberWithBool:([adAI state]==NSOnState)],@"AntiIdle",
-            [NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
-            [NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
-            [NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
-            [NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
-            [NSNumber numberWithBool:defaultEntry && [adNewEntry state]==NSOffState],@"DefaultEntry",
-            NULL];
-        if ([adNewEntry state]==NSOnState) [[self addressBook] insertObject:ae atIndex:[adTable selectedRow]];
-        else [[self addressBook] replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
+        ae=[self _getUpdatedPropertyDictionary];
+        [[self addressBook] replaceObjectAtIndex:[adTable selectedRow] withObject:ae];
 	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
 	//        NSLog(@"%s(%d):-[Address entry replaced:%@]",
  //              __FILE__, __LINE__, ae );
@@ -441,6 +631,11 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     }
 }
 
+- (IBAction) changeTab: (id) sender
+{
+    [tabView selectTabViewItemAtIndex: [sender indexOfSelectedItem]];
+}
+
 - (IBAction) executeABCommand: (id) sender
 {
 
@@ -461,6 +656,70 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         [[NSApp delegate] executeABCommandAtIndex: [adTable selectedRow] inTerminal: [[NSApp delegate] frontPseudoTerminal]];
 }
 
+- (IBAction)editColorScheme: (id) sender
+{
+    // set the color scheme to custom
+    [colorScheme selectItemAtIndex: 0];
+}
+
+- (IBAction)changeColorScheme:(id)sender
+{
+
+    switch ([sender indexOfSelectedItem]) {
+        case 0:
+            break;
+        case 1:
+	    [adBackground setColor:iTermBackground];
+	    [adForeground setColor:iTermForeground];
+	    [adSelection setColor: iTermSelection];
+	    [adBold setColor: iTermBold];
+	    [ansiBlack setColor:iTermColorTable[0][0]];
+	    [ansiRed setColor:iTermColorTable[0][1]];
+	    [ansiGreen setColor:iTermColorTable[0][2]];
+	    [ansiYellow setColor:iTermColorTable[0][3]];
+	    [ansiBlue setColor:iTermColorTable[0][4]];
+	    [ansiMagenta setColor:iTermColorTable[0][5]];
+	    [ansiCyan setColor:iTermColorTable[0][6]];
+	    [ansiWhite setColor:iTermColorTable[0][7]];
+	    [ansiHiBlack setColor:iTermColorTable[1][0]];
+	    [ansiHiRed setColor:iTermColorTable[1][1]];
+	    [ansiHiGreen setColor:iTermColorTable[1][2]];
+	    [ansiHiYellow setColor:iTermColorTable[1][3]];
+	    [ansiHiBlue setColor:iTermColorTable[1][4]];
+	    [ansiHiMagenta setColor:iTermColorTable[1][5]];
+	    [ansiHiCyan setColor:iTermColorTable[1][6]];
+	    [ansiHiWhite setColor:iTermColorTable[1][7]];	    
+	    break;
+        case 2:
+	    [adBackground setColor:xtermBackground];
+	    [adForeground setColor:xtermForeground];
+	    [adSelection setColor: xtermSelection];
+	    [adBold setColor: xtermBold];
+	    [ansiBlack setColor:xtermColorTable[0][0]];
+	    [ansiRed setColor:xtermColorTable[0][1]];
+	    [ansiGreen setColor:xtermColorTable[0][2]];
+	    [ansiYellow setColor:xtermColorTable[0][3]];
+	    [ansiBlue setColor:xtermColorTable[0][4]];
+	    [ansiMagenta setColor:xtermColorTable[0][5]];
+	    [ansiCyan setColor:xtermColorTable[0][6]];
+	    [ansiWhite setColor:xtermColorTable[0][7]];
+	    [ansiHiBlack setColor:xtermColorTable[1][0]];
+	    [ansiHiRed setColor:xtermColorTable[1][1]];
+	    [ansiHiGreen setColor:xtermColorTable[1][2]];
+	    [ansiHiYellow setColor:xtermColorTable[1][3]];
+	    [ansiHiBlue setColor:xtermColorTable[1][4]];
+	    [ansiHiMagenta setColor:xtermColorTable[1][5]];
+	    [ansiHiCyan setColor:xtermColorTable[1][6]];
+	    [ansiHiWhite setColor:xtermColorTable[1][7]];	    
+	    break;
+    }
+    [adTextExample setBackgroundColor:[adBackground color]];
+    [adNATextExample setBackgroundColor:[adBackground color]];
+    [adTextExample setTextColor:[adForeground color]];
+    [adNATextExample setTextColor:[adForeground color]];
+    
+}
+
 
 // misc
 - (void) run;
@@ -476,6 +735,8 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     [adTable setDoubleAction: @selector(executeABCommand:)];
     //r= [NSApp runModalForWindow:[self window]];
     //[[self window] close];
+    [tabSelection selectItemAtIndex: 0];
+    [tabView selectTabViewItemAtIndex: 0];
     [self showWindow: self];
 }
 
@@ -495,6 +756,56 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
     }
 }
 
+@end
 
+@implementation AddressBookWindowController (Private)
+
+- (NSDictionary *) _getUpdatedPropertyDictionary
+{
+    NSDictionary *ae;
+
+    ae = [[NSDictionary alloc] initWithObjectsAndKeys:
+	[adName stringValue],@"Name",
+	[adCommand stringValue],@"Command",
+	[NSNumber numberWithUnsignedInt:encodingList[[adEncoding indexOfSelectedItem]]],@"Encoding",
+	[NSNumber numberWithUnsignedInt: [colorScheme indexOfSelectedItem]], @"ColorScheme",
+	[adForeground color],@"Foreground",
+	[adBackground color],@"Background",
+	[adSelection color],@"SelectionColor",
+	[adBold color],@"BoldColor",
+	[ansiBlack color], @"AnsiBlackColor",
+	[ansiRed color], @"AnsiRedColor",
+	[ansiGreen color], @"AnsiGreenColor",
+	[ansiYellow color], @"AnsiYellowColor",
+	[ansiBlue color], @"AnsiBlueColor",
+	[ansiMagenta color], @"AnsiMagentaColor",
+	[ansiCyan color], @"AnsiCyanColor",
+	[ansiWhite color], @"AnsiWhiteColor",
+	[ansiHiBlack color], @"AnsiHiBlackColor",
+	[ansiHiRed color], @"AnsiHiRedColor",
+	[ansiHiGreen color], @"AnsiHiGreenColor",
+	[ansiHiYellow color], @"AnsiHiYellowColor",
+	[ansiHiBlue color], @"AnsiHiBlueColor",
+	[ansiHiMagenta color], @"AnsiHiMagentaColor",
+	[ansiHiCyan color], @"AnsiHiCyanColor",
+	[ansiHiWhite color], @"AnsiHiWhiteColor",
+	[adRow stringValue],@"Row",
+	[adCol stringValue],@"Col",
+	[NSNumber numberWithInt:[adTransparency intValue]],@"Transparency",
+	[adTermType titleOfSelectedItem],@"Term Type",
+	[adDir stringValue],@"Directory",
+	aeFont,@"Font",
+	aeNAFont,@"NAFont",
+	[NSNumber numberWithBool:([adAI state]==NSOnState)],@"AntiIdle",
+	[NSNumber numberWithUnsignedInt:[adAICode intValue]],@"AICode",
+	[NSNumber numberWithBool:([adClose state]==NSOnState)],@"AutoClose",
+	[NSNumber numberWithBool:([adDoubleWidth state]==NSOnState)],@"DoubleWidth",
+	[NSNumber numberWithUnsignedInt:[adShortcut indexOfSelectedItem]?[[adShortcut stringValue] characterAtIndex:0]:0],@"Shortcut",
+	[NSNumber numberWithBool:defaultEntry],@"DefaultEntry",
+	NULL];
+
+    return (ae);
+}
 
 @end
+

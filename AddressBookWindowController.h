@@ -37,29 +37,47 @@
     IBOutlet NSTableView *adTable;
 
     // address entry window
+    IBOutlet NSTabView *tabView;
+    IBOutlet NSPopUpButton *tabSelection;
     IBOutlet id AE_PANEL;
-    IBOutlet NSColorWell *adBackground;
     IBOutlet NSTextField *adCommand;
-    IBOutlet NSComboBox *adEncoding;
-    IBOutlet NSColorWell *adForeground;
+    IBOutlet NSPopUpButton *adEncoding;
     IBOutlet NSTextField *adName;
     IBOutlet NSTextField *adTextExample;
     IBOutlet id adRow;
     IBOutlet id adCol;
     IBOutlet id adTransparency;
     IBOutlet id adTransparency2;
-    IBOutlet id adTermType;
+    IBOutlet NSPopUpButton *adTermType;
     IBOutlet id adDir;
-    IBOutlet id adNewWindow;
     IBOutlet id adAI;
     IBOutlet id adAICode;
     IBOutlet id adClose;
     IBOutlet id adDoubleWidth;
     IBOutlet id adShortcut;
-    IBOutlet id adNewEntry;
     IBOutlet NSTextField *adNATextExample;
+    IBOutlet id colorScheme;
+    IBOutlet NSColorWell *adForeground;
+    IBOutlet NSColorWell *adBackground;
     IBOutlet NSColorWell *adSelection;
     IBOutlet NSColorWell *adBold;
+    IBOutlet NSColorWell *ansiBlack;
+    IBOutlet NSColorWell *ansiRed;
+    IBOutlet NSColorWell *ansiGreen;
+    IBOutlet NSColorWell *ansiYellow;
+    IBOutlet NSColorWell *ansiBlue;
+    IBOutlet NSColorWell *ansiMagenta;
+    IBOutlet NSColorWell *ansiCyan;
+    IBOutlet NSColorWell *ansiWhite;
+    IBOutlet NSColorWell *ansiHiBlack;
+    IBOutlet NSColorWell *ansiHiRed;
+    IBOutlet NSColorWell *ansiHiGreen;
+    IBOutlet NSColorWell *ansiHiYellow;
+    IBOutlet NSColorWell *ansiHiBlue;
+    IBOutlet NSColorWell *ansiHiMagenta;
+    IBOutlet NSColorWell *ansiHiCyan;
+    IBOutlet NSColorWell *ansiHiWhite;
+    
 
     NSFont *aeFont, *aeNAFont;
     BOOL changingNA;
@@ -77,6 +95,9 @@
 + (id) singleInstance;
 - (id) initWithWindowNibName: (NSString *)windowNibName;
 - (void) dealloc;
+
+// other class methods
++ (NSColor *) colorFromTable:(int)index highLight:(BOOL)hili;
 
 // NSWindow delegate methods
 - (void)windowWillClose:(NSNotification *)aNotification;
@@ -102,8 +123,18 @@
 - (IBAction)adEditNAFont:(id)sender;
 - (IBAction)adEditForeground:(id)sender;
 - (IBAction)adEditOK:(id)sender;
+- (IBAction) changeTab: (id) sender;
+- (IBAction)changeColorScheme:(id)sender;
+- (IBAction)editColorScheme: (id) sender;
+
 
 // misc
 - (void) run;
+
+@end
+
+@interface AddressBookWindowController (Private)
+
+- (NSDictionary *) _getUpdatedPropertyDictionary;
 
 @end

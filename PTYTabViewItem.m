@@ -48,8 +48,9 @@
     if(labelAttributes != nil)
     {
         NSAttributedString *attributedLabel;
-        
-        attributedLabel = [[NSAttributedString alloc] initWithString: [self label] attributes: labelAttributes];
+
+        attributedLabel = [[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
+	    [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes];
         [attributedLabel drawAtPoint:tabRect.origin];
         [attributedLabel release];
         
@@ -74,7 +75,8 @@
         
     if(labelAttributes != nil)
     {
-        attributedLabel = [[NSAttributedString alloc] initWithString: [self label] attributes: labelAttributes];
+        attributedLabel = [[NSAttributedString alloc] initWithString: [NSString stringWithFormat: @"%d: %@",
+	    [[self tabView] indexOfTabViewItem: self] + 1, [self label]] attributes: labelAttributes];
         aSize = [attributedLabel size];
         [attributedLabel release];
     }

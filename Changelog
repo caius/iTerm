@@ -1,3 +1,9 @@
+2003-02-06	Ujwal S. Sathyam <ujwal@setlurgroup.com>
+    
+    * Now displaying tab number in label to make it easier 
+      to switch between tabs using function keys.
+      
+
 2003-02-05	fabian
     * Fixed a bug in showCursor that causes the loss of
       attributes. That partially solves the double-width

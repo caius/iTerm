@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.106 2003-07-16 14:58:50 ujwal Exp $
+// $Id: VT100Screen.m,v 1.107 2003-07-16 15:59:51 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -201,6 +201,7 @@ static BOOL PLAYBELL = YES;
     updateIndex=minIndex=0;
     screenLock= [[NSLock alloc] init];
     screenIsLocked = NO;
+    clearingBuffer = NO;
     
     return self;
 }
@@ -760,6 +761,7 @@ static BOOL PLAYBELL = YES;
     [self clearScreen];
     [self initScreen];
     CURSOR_X = CURSOR_Y = 0;
+    clearingBuffer = YES;
 }
 
 - (void)clearScrollbackBuffer
@@ -796,7 +798,9 @@ static BOOL PLAYBELL = YES;
 - (void) restoreBuffer
 {
     if([savedBuffer length] > 0)
+    {
 	[BUFFER setAttributedString: savedBuffer];
+    }
     [savedBuffer release];
     savedBuffer = nil;
 }
@@ -1478,6 +1482,21 @@ static BOOL PLAYBELL = YES;
         y1 = 0;
         x2 = WIDTH - 1;
         y2 = HEIGHT - 1;
+
+	// move the current screen into the scrollback buffer
+	if(clearingBuffer == NO)
+	{
+	    [self setScreenLock];
+	    [STORAGE beginEditing];
+	    [STORAGE appendAttributedString: BUFFER];
+	    updateIndex += [BUFFER length];
+	    [STORAGE endEditing];
+	    [self removeScreenLock];
+	    [[SESSION TEXTVIEW] scrollEnd];
+	}
+	else
+	    clearingBuffer = NO;
+	
         break;
 
     case 0:
@@ -2479,7 +2498,7 @@ static BOOL PLAYBELL = YES;
 
     [STORAGE beginEditing];
     [STORAGE replaceCharactersInRange:NSMakeRange(updateIndex+minIndex,slen-updateIndex-minIndex)
-                 withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
+	    withAttributedString:[BUFFER attributedSubstringFromRange:NSMakeRange(minIndex,len-minIndex)]];
     [STORAGE endEditing];
     //NSLog(@"updated: %d, %d, %d, %d",updateIndex,minIndex,[STORAGE length],[BUFFER length]);
     //if ([BUFFER length]>[STORAGE length]) NSLog(@"%@",BUFFER);

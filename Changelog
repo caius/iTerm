@@ -3,6 +3,8 @@
     * Added support for ANSI 16 color sequences.
     
     * Added support for alternate screen buffer mode.
+    
+    * When display is erased, contents are stored in scrollback buffer.
 
 2003-07-09	ujwal
 

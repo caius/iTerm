@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.50 2003-05-30 02:01:12 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.51 2003-05-30 02:04:26 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -121,6 +121,7 @@ static float versionNumber;
     [silenceBell setState:defaultSilenceBell?NSOnState:NSOffState];
     [openAddressBook setState:defaultOpenAddressBook?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
+    [blinkingCursor setState: defaultBlinkingCursor?NSOnState:NSOffState];
    
     [NSApp runModalForWindow:prefPanel];
     [prefPanel close];

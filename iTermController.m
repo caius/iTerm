@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.40 2004-04-12 04:24:36 ujwal Exp $
+// $Id: iTermController.m,v 1.41 2004-04-12 04:49:32 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -41,6 +41,7 @@
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/Tree.h>
+#import <iTerm/ITConfigPanelController.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
@@ -467,9 +468,6 @@ NSString *terminalsKey = @"terminals";
 - (void) setCurrentTerminal: (PseudoTerminal *) thePseudoTerminal
 {
     FRONT = thePseudoTerminal;
-	
-	if(thePseudoTerminal == nil)
-		return;
 
     // make sure this window is the key window
     if([[thePseudoTerminal window] isKeyWindow] == NO)
@@ -511,6 +509,8 @@ NSString *terminalsKey = @"terminals";
 {
     // NSLog(@"iTerm: removeFromTerminalsAtInde %d", index);
     [terminalWindows removeObjectAtIndex: index];
+	if([terminalWindows count] == 0)
+		[ITConfigPanelController close];
 }
 
 // a class method to provide the keys for KVC:

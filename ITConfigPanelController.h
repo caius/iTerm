@@ -68,6 +68,7 @@
 }
 
 + (void)show;
++ (void)close;
 
 - (void)loadConfigWindow: (NSNotification *) aNotification;
 - (IBAction) chooseBackgroundImage: (id) sender;

@@ -67,6 +67,14 @@ static ITConfigPanelController *singleInstance = nil;
 	[[singleInstance window] makeKeyWindow];
 }
 
++ (void) close
+{
+	if(singleInstance != nil)
+	{
+		[[singleInstance window] performClose: self];
+	}
+}
+
 - (id)init;
 {
     self = [super init];

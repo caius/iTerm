@@ -1029,10 +1029,11 @@ static NSString *PWD_ENVVALUE = @"~";
 	if(anImage != nil)
 	{
 	    [SCROLLVIEW setDrawsBackground: NO];
+	    [self setBackgroundColor: [[NSColor whiteColor]  colorWithAlphaComponent: 1.0]];
 	    [imageView setImage: anImage];
 	    [imageView setTransparency: [[aePrefs objectForKey: @"Transparency"] floatValue]/100.0];
 	    [anImage release];
-	    [SCREEN initScreen];
+	    //[SCREEN initScreen];
 	}
     }
     else

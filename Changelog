@@ -8,6 +8,8 @@
     * Refactored the contextual menu code, so that the 
       text view does not have know about the address book 
       and session configuration.
+      
+    * Fixed AutoResizingMask of buttons in Address Book.
 
 
 2003-01-04	Ujwal S. Sathyam <ujwal@setlurgroup.com>

@@ -1,6 +1,8 @@
 2004-02-20  ujwal
 
 	* Minor updates to selection stuff. Re-enabled "select all".
+	* Added back print functionality. Removed "Print Selection". 
+	  Handled by "Print".
 
 2004-02-19  fabian
 

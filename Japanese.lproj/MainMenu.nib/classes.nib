@@ -14,7 +14,6 @@
                 nextSession = id; 
                 pasteSelection = id; 
                 previousSession = id; 
-                printSelection = id; 
                 saveSession = id; 
                 showConfigWindow = id; 
                 showFindPanel = id; 

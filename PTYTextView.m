@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.127 2004-02-20 08:06:59 ujwal Exp $
+// $Id: PTYTextView.m,v 1.128 2004-02-20 08:42:23 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1189,9 +1189,11 @@
     }
     else if ([item action ] == @selector(cut:))
         return NO;
-    else if ([item action]==@selector(saveDocumentAs:))
+    else if ([item action]==@selector(saveDocumentAs:) ||
+			 [item action] == @selector(selectAll:) || 
+			 [item action] == @selector(print:))
     {
-        // We always validate the "Save" command
+        // We always validate the above commands
         return (YES);
     }
     else if ([item action]==@selector(mail:) ||
@@ -1202,10 +1204,6 @@
         //        NSLog(@"selected range:%d",[self selectedRange].length);
         return (startX>=0);
     }
-	else if ([item action] == @selector(selectAll:))
-	{
-		return (YES);
-	}
     else
         return NO;
 }
@@ -1511,9 +1509,37 @@
                            contextInfo: aData];
 }
 
-- (void) print:(id)sender
+// Print
+- (void) print: (id) sender
 {
-    NSLog(@"print...");
+    NSPrintInfo *aPrintInfo;
+	    
+    aPrintInfo = [NSPrintInfo sharedPrintInfo];
+    [aPrintInfo setHorizontalPagination: NSFitPagination];
+    [aPrintInfo setVerticalPagination: NSAutoPagination];
+    [aPrintInfo setVerticallyCentered: NO];
+	
+    // create a temporary view with the contents, change to black on white, and print it
+    NSTextView *tempView;
+	NSString *aString;
+    NSMutableAttributedString *theContents;
+	
+	// We get our content of the textview or selection, if any
+	aString = (startX < 0) ? [self content] : [self selectedText];
+
+    tempView = [[NSTextView alloc] initWithFrame: [self frame]];
+    theContents = [[NSMutableAttributedString alloc] initWithString: aString];
+    [theContents addAttributes: [NSDictionary dictionaryWithObjectsAndKeys:
+		[NSColor textBackgroundColor], NSBackgroundColorAttributeName,
+		[NSColor textColor], NSForegroundColorAttributeName, 
+		[NSFont userFixedPitchFontOfSize: 0], NSFontAttributeName, NULL]
+						 range: NSMakeRange(0, [theContents length])];
+    [[tempView textStorage] setAttributedString: theContents];
+    [theContents release];
+	
+    // now print the temporary view
+    [[NSPrintOperation printOperationWithView: tempView  printInfo: aPrintInfo] runOperation];
+    [tempView release];    
 }
 
 /// NSTextInput stuff

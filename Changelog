@@ -6,6 +6,10 @@
       PseudoTerminal.m, turn on the DEBUG_USE_ARRAY 
       and turn off the DEBUG_USE_BUFFER flags in VT100Screen.m
       
+    * Fixed a problem causing huge CPU usage when displaying 
+      the bell in tab. Now displaying only if there is a 
+      change.
+      
 
 2003-02-24	Ujwal S. Sathyam <ujwal@setlurgroup.com>
 

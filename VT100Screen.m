@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.115 2003-07-20 05:41:00 ujwal Exp $
+// $Id: VT100Screen.m,v 1.116 2003-07-22 02:12:39 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1506,6 +1506,7 @@ static BOOL PLAYBELL = YES;
 	if(newLineString == nil)
 	    newLineString = [[self attrString:@"\n" ascii:YES] retain];
 	[STORAGE appendAttributedString:newLineString];
+	TOP_LINE++;
 	updateIndex = [STORAGE length];
 	// turn off the cursor
 	if(cursorIndex < [STORAGE length])
@@ -1519,6 +1520,14 @@ static BOOL PLAYBELL = YES;
 	[STORAGE endEditing];
 	[self removeScreenLock];
 	[[SESSION TEXTVIEW] scrollEnd];
+
+	// update TOP_LINE
+	for(i = 0; i < [BUFFER length]; i++)
+	{
+	    if([[BUFFER string] characterAtIndex: i] == '\n')
+		TOP_LINE++;
+	}
+	[self removeOverLine];
     }
     else
 	clearingBuffer = NO;
@@ -1827,6 +1836,10 @@ static BOOL PLAYBELL = YES;
     if(SCROLL_TOP != 0)
     {
 	[BUFFER deleteCharactersInRange:aRange];
+    }
+    else
+    {
+	TOP_LINE++;
     }
     
 #endif

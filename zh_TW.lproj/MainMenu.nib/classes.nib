@@ -104,6 +104,7 @@
         {
             ACTIONS = {
                 aboutOK = id; 
+                biggerFont = id; 
                 newSession = id; 
                 newWindow = id; 
                 nextTerminal = id; 
@@ -111,6 +112,7 @@
                 showABWindow = id; 
                 showAbout = id; 
                 showPrefWindow = id; 
+                smallerFont = id; 
             }; 
             CLASS = iTermApplicationDelegate; 
             LANGUAGE = ObjC; 

@@ -2,6 +2,11 @@
 
     * Made cmd-W behave more consistently when Find and AddressBook windows 
       are key.
+    * Added support for cmd-+ and cmd-- for increasing and decreasing font size 
+      respectively. Localizations need to be translated.
+    * Preferences shortcut is not cmd-, in line with new Apple guidelines.
+    * Overrode PTYTextView: -mouseEntered method to avoid activation of 
+      I-beam cursor.
 
 2004-01-01	ujwal
 

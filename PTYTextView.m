@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.93 2003-11-13 23:45:29 ujwal Exp $
+// $Id: PTYTextView.m,v 1.94 2004-01-20 07:34:32 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2230,6 +2230,11 @@
         [super mouseDown: theEvent]; */
     
     [self paste:nil];
+}
+
+- (void)mouseEntered:(NSEvent *)theEvent
+{
+    // no-op. Overridden to prevent I-beam cursor from activating.
 }
 
 - (void) setCursorIndex:(int) idx

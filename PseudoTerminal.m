@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.249 2003-11-06 20:46:45 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.250 2004-01-20 07:34:32 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -687,6 +687,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] setTitle:title];
 }
 
+
+// 
+// custom font support 
+// 
+
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
 {
     [FONT autorelease];
@@ -713,6 +718,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[session TEXTVIEW]  setFont:font];
 #endif
         [[session SCREEN]  setFont:font nafont:nafont];
+	[[session SCREEN] forceUpdateScreen];
+	
     }
     [FONT autorelease];
     [font retain];
@@ -721,6 +728,117 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [nafont retain];
     NAFONT=nafont;
 }
+
+- (void) changeFontSize: (BOOL) increase
+{
+
+    int i, index, length;
+    float newFontSize;
+    
+        
+    for(i=0;i<[_sessionMgr numberOfSessions]; i++) 
+    {
+	PTYSession* session = [_sessionMgr sessionAtIndex:i];
+	
+	length = [[session textStorage] length];
+	for (index = 0; index < length; index++)
+	{
+	    NSRange coverageRange;
+	    NSFont *font = [[session textStorage] attribute: NSFontAttributeName atIndex: index effectiveRange: &coverageRange];
+	    
+	    if (!font) 
+	    {
+		NSLog(@"changeFontSize: Couldn't get font information!");
+		continue;
+	    }
+	    
+	    index = index + coverageRange.length;
+	    
+	    float currentFontSize = [font pointSize];
+	    if(increase == YES)
+		newFontSize = [self largerSizeForSize: currentFontSize];
+	    else
+		newFontSize = [self smallerSizeForSize: currentFontSize];		
+	    
+	    NSFont *newFont = [NSFont fontWithName: [font fontName] size: newFontSize];
+	    
+	    
+	    [[session textStorage] removeAttribute: NSFontAttributeName range: coverageRange];
+	    [[session textStorage] addAttribute: NSFontAttributeName value: newFont range: coverageRange];
+	}	    
+    }
+    
+    float asciiFontSize = [[[[self currentSession] SCREEN] font] pointSize];
+    if(increase == YES)
+	newFontSize = [self largerSizeForSize: asciiFontSize];
+    else
+	newFontSize = [self smallerSizeForSize: asciiFontSize];	
+    NSFont *newAsciiFont = [NSFont fontWithName: [[[[self currentSession] SCREEN] font] fontName] size: newFontSize];
+    
+    float nonAsciiFontSize = [[[[self currentSession] SCREEN] nafont] pointSize];
+    if(increase == YES)
+	newFontSize = [self largerSizeForSize: nonAsciiFontSize];
+    else
+	newFontSize = [self smallerSizeForSize: nonAsciiFontSize];	    
+    NSFont *newNonAsciiFont = [NSFont fontWithName: [[[[self currentSession] SCREEN] nafont] fontName] size: newFontSize];
+    
+    if(newAsciiFont != nil && newNonAsciiFont != nil)
+    {
+	[self setAllFont: newAsciiFont nafont: newNonAsciiFont];		
+	[self resizeWindow: [self width] height: [self height]];
+    }
+    
+        
+}
+
+- (float) largerSizeForSize: (float) aSize 
+    /*" Given a font size of aSize, return the next larger size.   Uses the 
+    same list of font sizes as presented in the font panel. "*/ 
+{
+    
+    if (aSize <= 8.0) return 9.0;
+    if (aSize <= 9.0) return 10.0;
+    if (aSize <= 10.0) return 11.0;
+    if (aSize <= 11.0) return 12.0;
+    if (aSize <= 12.0) return 13.0;
+    if (aSize <= 13.0) return 14.0;
+    if (aSize <= 14.0) return 18.0;
+    if (aSize <= 18.0) return 24.0;
+    if (aSize <= 24.0) return 36.0;
+    if (aSize <= 36.0) return 48.0;
+    if (aSize <= 48.0) return 64.0;
+    if (aSize <= 64.0) return 72.0;
+    if (aSize <= 72.0) return 96.0;
+    if (aSize <= 96.0) return 144.0;
+        
+    // looks odd, but everything reasonable should have been covered above
+    return 288.0; 
+} 
+
+- (float) smallerSizeForSize: (float) aSize 
+    /*" Given a font size of aSize, return the next smaller size.   Uses 
+    the same list of font sizes as presented in the font panel. "*/
+{
+    
+    if (aSize >= 288.0) return 144.0;
+    if (aSize >= 144.0) return 96.0;
+    if (aSize >= 96.0) return 72.0;
+    if (aSize >= 72.0) return 64.0;
+    if (aSize >= 64.0) return 48.0;
+    if (aSize >= 48.0) return 36.0;
+    if (aSize >= 36.0) return 24.0;
+    if (aSize >= 24.0) return 18.0;
+    if (aSize >= 18.0) return 14.0;
+    if (aSize >= 14.0) return 13.0;
+    if (aSize >= 13.0) return 12.0;
+    if (aSize >= 12.0) return 11.0;
+    if (aSize >= 11.0) return 10.0;
+    if (aSize >= 10.0) return 9.0;
+    
+    // looks odd, but everything reasonable should have been covered above
+    return 8.0; 
+} 
+
 
 - (void)clearBuffer:(id)sender
 {
@@ -974,7 +1092,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     WIDTH=w;
     HEIGHT=h;
 
-    [self setWindowSize: NO];
+    [self setWindowSize: YES];
 }
 
 // Contextual menu

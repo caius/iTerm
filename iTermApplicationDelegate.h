@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.6 2004-01-19 18:41:32 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.7 2004-01-20 07:34:32 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -76,6 +76,10 @@
 - (void) buildAddressBookMenu: (NSNotification *) aNotification;
 - (void) resetLogMenu: (NSNotification *) aNotification;
 - (void) nonTerminalWindowBecameKey: (NSNotification *) aNotification;
+
+// font control
+- (IBAction) biggerFont: (id) sender;
+- (IBAction) smallerFont: (id) sender;
 
 @end
 

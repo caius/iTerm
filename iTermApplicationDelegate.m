@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.10 2004-01-19 18:41:32 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.11 2004-01-20 07:34:32 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -193,6 +193,18 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 {
     return [[iTermController sharedInstance] applicationDockMenu:sender];
 }
+
+// font control
+- (IBAction) biggerFont: (id) sender
+{
+    [[[iTermController sharedInstance] currentTerminal] changeFontSize: YES];
+}
+
+- (IBAction) smallerFont: (id) sender
+{
+    [[[iTermController sharedInstance] currentTerminal] changeFontSize: NO];
+}
+
 
 /// About window
 

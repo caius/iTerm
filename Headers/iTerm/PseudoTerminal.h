@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.9 2003-11-06 02:07:36 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.10 2004-01-20 07:34:33 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -83,6 +83,9 @@
 - (void)setWindowTitle: (NSString *)title;
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;
 - (void)setAllFont:(NSFont *)font nafont:(NSFont *)nafont;
+- (void) changeFontSize: (BOOL) increase;
+- (float) largerSizeForSize: (float) aSize;
+- (float) smallerSizeForSize: (float) aSize;
 - (void)setWidth:(int)width height:(int)height;
 - (int)width;
 - (int)height;

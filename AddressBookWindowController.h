@@ -33,7 +33,6 @@
 @interface AddressBookWindowController : NSWindowController {
 
     // address book window
-    IBOutlet id openInNewWindow;
     IBOutlet NSTableView *adTable;
 
     // address entry window
@@ -89,6 +88,9 @@
     // default values from preference
     PreferencePanel *preferences;
 
+    IBOutlet NSButton *openInTab;
+    IBOutlet NSButton *openInWindow;
+
 }
 
 // init
@@ -111,7 +113,7 @@
 - (void) setPreferences: (PreferencePanel *) thePreferences;
 
 // Address book window
-- (IBAction)adbAddEntry:(id)sender;
+- (IBAction)adbDuplicateEntry:(id)sender;
 - (IBAction)adbRemoveEntry:(id)sender;
 - (IBAction)adbCancel:(id)sender;
 - (IBAction)adbEditEntry:(id)sender;
@@ -132,6 +134,11 @@
 
 // misc
 - (void) run;
+
+    // Table data source
+- (int)numberOfRowsInTableView:(NSTableView*)table;
+- (id)tableView:(NSTableView*)table objectValueForTableColumn:(NSTableColumn*)col
+			  row:(int)rowIndex;
 
 @end
 

@@ -300,89 +300,30 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
 // Action methods
 
-- (IBAction)adbAddEntry:(id)sender
+- (IBAction)adbDuplicateEntry:(id)sender
 {
-    int r;
-    NSStringEncoding const *p=encodingList;
+    NSMutableDictionary *entry, *ae;
 
-    [AE_PANEL center];
-    [adName setStringValue:@""];
-    [adCommand setStringValue:[[self preferences] shell]];
-    [adEncoding removeAllItems];
-    r=0;
-    while (*p) {
-	//        NSLog(@"%@",[NSString localizedNameOfStringEncoding:*p]);
-        [adEncoding addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[[self preferences] encoding]) r=p-encodingList;
-        p++;
-    }
-    defaultEntry = false;
-    [adEncoding selectItemAtIndex:r];
-    [adTermType selectItemAtIndex:0];
-    [adShortcut selectItemAtIndex:0];
-    [adRow setIntValue:[[self preferences] row]];
-    [adCol setIntValue:[[self preferences] col]];
+    entry=[[self addressBook] objectAtIndex:[adTable selectedRow]];
 
-    // set colors
-    [colorScheme selectItemAtIndex: 0];
-    [adForeground setColor:iTermForeground];
-    [adBackground setColor:iTermBackground];
-    [adSelection setColor:iTermSelection];
-    [adBold setColor: iTermBold];
-    [ansiBlack setColor:iTermColorTable[0][0]];
-    [ansiRed setColor:iTermColorTable[0][1]];
-    [ansiGreen setColor:iTermColorTable[0][2]];
-    [ansiYellow setColor:iTermColorTable[0][3]];
-    [ansiBlue setColor:iTermColorTable[0][4]];
-    [ansiMagenta setColor:iTermColorTable[0][5]];
-    [ansiCyan setColor:iTermColorTable[0][6]];
-    [ansiWhite setColor:iTermColorTable[0][7]];
-    [ansiHiBlack setColor:iTermColorTable[1][0]];
-    [ansiHiRed setColor:iTermColorTable[1][1]];
-    [ansiHiGreen setColor:iTermColorTable[1][2]];
-    [ansiHiYellow setColor:iTermColorTable[1][3]];
-    [ansiHiBlue setColor:iTermColorTable[1][4]];
-    [ansiHiMagenta setColor:iTermColorTable[1][5]];
-    [ansiHiCyan setColor:iTermColorTable[1][6]];
-    [ansiHiWhite setColor:iTermColorTable[1][7]];
-    
-    
-    [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
-
-    aeFont=[[[self preferences] font] copy];
-    [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
-    [adTextExample setFont:aeFont];
-    [adTextExample setTextColor:[[self preferences] foreground]];
-    [adTextExample setBackgroundColor:[[self preferences] background]];
-
-    aeNAFont=[[[self preferences] nafont] copy];
-    [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
-    [adNATextExample setTextColor:[[self preferences] foreground]];
-    [adNATextExample setBackgroundColor:[[self preferences] background]];
-    [adNATextExample setFont:aeNAFont];
-    [adAI setState:[[self preferences] ai]?NSOnState:NSOffState];
-    [adAICode setIntValue:[[self preferences] aiCode]];
-    [adClose setState:[[self preferences] autoclose]?NSOnState:NSOffState];
-    [adDoubleWidth setState:[[self preferences] doubleWidth]?NSOnState:NSOffState];
-
-    [adTransparency setIntValue:[[self preferences] transparency]];
-    [adTransparency2 setIntValue:[[self preferences] transparency]];
-
-    r= [NSApp runModalForWindow:AE_PANEL];
-    [AE_PANEL close];
-    if (r == NSRunStoppedResponse) {
-        NSDictionary *ae;
-
-        ae=[self _getUpdatedPropertyDictionary];
-        [[self addressBook] addObject:ae];
-	[[self addressBook] sortUsingFunction: addressBookComparator context: nil];
-	//        NSLog(@"%s(%d):-[Address entry added:%@]",
- //              __FILE__, __LINE__, ae );
-        [adTable reloadData];
-        [ae release];
-
+    if(entry == nil)
+    {
+	NSBeep();
+	return;
     }
 
+    ae = [[NSMutableDictionary alloc] initWithDictionary: entry];
+    [ae removeObjectForKey: @"DefaultEntry"];
+    [ae setObject: [NSString stringWithFormat: @"%@ copy", [entry objectForKey: @"Name"]] forKey: @"Name"];
+    
+    [[self addressBook] addObject:ae];
+    [ae release];
+
+    [[self addressBook] sortUsingFunction: addressBookComparator context: nil];
+    //        NSLog(@"%s(%d):-[Address entry added:%@]",
+    //              __FILE__, __LINE__, ae );
+    [adTable reloadData];
+    
 }
 
 - (IBAction)adbCancel:(id)sender
@@ -665,7 +606,7 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 
     [NSApp stopModal];
 
-    if([openInNewWindow state]==NSOnState)
+    if(sender == openInWindow)
         [[NSApp delegate] executeABCommandAtIndex: [adTable selectedRow] inTerminal: nil];
     else
         [[NSApp delegate] executeABCommandAtIndex: [adTable selectedRow] inTerminal: [[NSApp delegate] frontPseudoTerminal]];
@@ -742,12 +683,13 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
 //    int r;
 
     [[self window] center];
-    [adTable setDataSource: [NSApp delegate]];
+    [adTable setDataSource: self];
     if([adTable numberOfRows] > 0){
 	[adTable selectRow: 0 byExtendingSelection: NO];
 	[[self window] makeFirstResponder: adTable];
     }
     [adTable setDoubleAction: @selector(executeABCommand:)];
+    [adTable setAllowsColumnReordering: NO];
     //r= [NSApp runModalForWindow:[self window]];
     //[[self window] close];
     [tabSelection selectItemAtIndex: 0];
@@ -770,6 +712,39 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
         [adTextExample setFont:aeFont];
     }
 }
+
+// Table data source
+- (int)numberOfRowsInTableView:(NSTableView*)table
+{
+    return [addressBook count];
+}
+
+// this message is called for each row of the table
+- (id)tableView:(NSTableView*)table objectValueForTableColumn:(NSTableColumn*)col
+	    row:(int)rowIndex
+{
+    NSDictionary *theRecord;
+    NSString *s=nil;
+
+    NSParameterAssert(rowIndex >= 0 && rowIndex < [addressBook count]);
+    theRecord = [addressBook objectAtIndex:rowIndex];
+    switch ([[col identifier] intValue]) {
+        case 0:
+            s=entryVisibleName( theRecord );
+            break;
+        case 1:
+            s=[theRecord objectForKey:@"Command"];
+            break;
+        case 2:
+	    //            NSLog(@"%@:%d",[theRecord objectForKey:@"Name"],[[theRecord objectForKey:@"Shortcut"] intValue]);
+            s=([[theRecord objectForKey:@"Shortcut"] intValue]?
+	       [NSString stringWithFormat:@"%c",[[theRecord objectForKey:@"Shortcut"] intValue]]:@"");
+    }
+
+    return s;
+}
+
+
 
 @end
 

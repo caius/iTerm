@@ -8,8 +8,8 @@
                 adEditForeground = id; 
                 adEditNAFont = id; 
                 adEditOK = id; 
-                adbAddEntry = id; 
                 adbCancel = id; 
+                adbDuplicateEntry = id; 
                 adbEditEntry = id; 
                 adbOk = id; 
                 adbRemoveEntry = id; 
@@ -60,7 +60,8 @@
                 ansiWhite = NSColorWell; 
                 ansiYellow = NSColorWell; 
                 colorScheme = id; 
-                openInNewWindow = id; 
+                openInTab = NSButton; 
+                openInWindow = NSButton; 
                 tabSelection = NSPopUpButton; 
                 tabView = NSTabView; 
             }; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.70 2003-05-19 15:41:58 ujwal Exp $
+// $Id: MainMenu.m,v 1.71 2003-05-20 06:58:17 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -296,56 +296,13 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
           __FILE__, __LINE__, sender);
 #endif
 
-//    [self initAddressBook];
+    [self initAddressBook];
 //    NSLog(@"showABWindow: %d\n%@",[addressBook count], addressBook);
 
     abWindowController = [AddressBookWindowController singleInstance];
     [abWindowController setAddressBook: addressBook];
     [abWindowController setPreferences: PREF_PANEL];
     [abWindowController run];    
-}
-
-// Table data source
-- (int)numberOfRowsInTableView:(NSTableView*)table
-{
-    return [addressBook count];
-}
-
-// this message is called for each row of the table
-- (id)tableView:(NSTableView*)table objectValueForTableColumn:(NSTableColumn*)col
-                                                          row:(int)rowIndex
-{
-    NSDictionary *theRecord;
-    NSString *s=nil;
-
-    NSParameterAssert(rowIndex >= 0 && rowIndex < [addressBook count]);
-    theRecord = [addressBook objectAtIndex:rowIndex];
-    switch ([[col identifier] intValue]) {
-        case 0:
-            s=entryVisibleName( theRecord );
-            break;
-        case 1:
-            s=[theRecord objectForKey:@"Command"];
-            break;
-        case 2:
-            // this is for compatibility with old address book
-            if ([[theRecord objectForKey:@"Encoding"] isKindOfClass:[NSString class]]) {
-                NSMutableDictionary *new=[theRecord mutableCopy]; //[NSMutableDictionary dictionaryWithDictionary:theRecord];
-                [new setObject:[NSNumber numberWithUnsignedInt:[PREF_PANEL encoding]] forKey:@"Encoding"];
-                theRecord=new;
-                [addressBook replaceObjectAtIndex:rowIndex withObject:new];
-                
-            }
-            
-            s=[NSString localizedNameOfStringEncoding:(NSStringEncoding)[[theRecord objectForKey:@"Encoding"] unsignedIntValue]];
-            break;
-        case 3:
-//            NSLog(@"%@:%d",[theRecord objectForKey:@"Name"],[[theRecord objectForKey:@"Shortcut"] intValue]);
-            s=([[theRecord objectForKey:@"Shortcut"] intValue]?
-            [NSString stringWithFormat:@"%c",[[theRecord objectForKey:@"Shortcut"] intValue]]:@"");
-    }
-            
-    return s;
 }
 
 
@@ -552,7 +509,10 @@ static NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDiction
           __FILE__, __LINE__);
 #endif
 
-    if (addressBook!=nil) return;
+    if (addressBook!=nil)
+    {
+	[addressBook release];
+    }
 
     // We have a new location for the addressbook
     NSFileManager *fileManager = [NSFileManager defaultManager];

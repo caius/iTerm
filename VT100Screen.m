@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.206 2004-04-27 00:28:17 ujwal Exp $
+// $Id: VT100Screen.m,v 1.207 2004-07-07 07:30:37 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -143,7 +143,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	[SHELL release];
     [TERMINAL release];
     [SESSION release];
-    
+	[printToAnsiString release];
+	
     [super dealloc];
 }
 
@@ -516,18 +517,16 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     NSLog(@"%s(%d):-[VT100Screen putToken:%d]",__FILE__, __LINE__, token);
 #endif
     int i,j;
-
-    // If we are in print mode, send to printer.
-    if([TERMINAL printToAnsi] == YES && token.type != ANSICSI_PRINT)
-    {
-	[TERMINAL printToken: token];
-	return;
-    }
     
     switch (token.type) {
     // our special code
     case VT100_STRING:
-        [self setString:token.u.string];
+		// check if we are in print mode
+		if([self printToAnsi] == YES)
+			[self printStringToAnsi: token.u.string];
+		// else display string on screen
+		else
+			[self setString:token.u.string];
         break;
     case VT100_UNKNOWNCHAR: break;
     case VT100_NOTSUPPORT: break;
@@ -540,7 +539,11 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     case VT100CC_LF:
     case VT100CC_VT:
     case VT100CC_FF:
-        [self setNewLine]; break;
+		if([self printToAnsi] == YES)
+			[self printStringToAnsi: @"\n"];
+		else
+			[self setNewLine]; 
+		break;
     case VT100CC_CR:  CURSOR_X = 0; break;
     case VT100CC_SO:  break;
     case VT100CC_SI:  break;
@@ -666,9 +669,22 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
     case ANSICSI_PRINT:
 		if(token.u.csi.p[0] == 4)
-			[TERMINAL setPrintToAnsi: NO];
+		{
+			// print our stuff!!
+			if([printToAnsiString length] > 0)
+				[[SESSION TEXTVIEW] printContent: printToAnsiString];
+			[printToAnsiString release];
+			printToAnsiString = nil;
+			[self setPrintToAnsi: NO];
+		}
 		else if (token.u.csi.p[0] == 5)
-			[TERMINAL setPrintToAnsi: YES];
+		{
+			// allocate a string for the stuff to be printed
+			if (printToAnsiString != nil)
+				[printToAnsiString release];
+			printToAnsiString = [[NSMutableString alloc] init];
+			[self setPrintToAnsi: YES];
+		}
 		break;
 	
     // XTERM extensions
@@ -751,6 +767,21 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	tempBuffer=NULL;
 }
 
+- (BOOL) printToAnsi
+{
+	return (printToAnsi);
+}
+
+- (void) setPrintToAnsi: (BOOL) aFlag
+{
+	printToAnsi = aFlag;
+}
+
+- (void) printStringToAnsi: (NSString *) aString
+{
+	if([aString length] > 0)
+		[printToAnsiString appendString: aString];
+}
 
 - (void)setString:(NSString *)string
 {

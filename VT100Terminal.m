@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.89 2004-03-14 06:05:37 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.90 2004-07-07 07:30:38 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1220,8 +1220,6 @@ static VT100TCC decode_string(unsigned char *datap,
 	
     strictAnsiMode = NO;
     allowColumnMode = YES;
-    printToAnsi = NO;
-    pipeFile = NULL;
 	
     streamOffset = 0;
 	
@@ -1271,37 +1269,6 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void)setAllowColumnMode: (BOOL)flag
 {
     allowColumnMode = flag;
-}
-
-- (BOOL)printToAnsi
-{
-    return (printToAnsi);
-}
-
-- (void)setPrintToAnsi: (BOOL)flag
-{
-	
-    if(flag == NO)
-    {
-		//NSLog(@"Turning off printer...");
-		if(pipeFile != NULL)
-		{
-			pclose(pipeFile);
-		}
-		pipeFile = NULL;	
-    }
-    else
-    {
-		//NSLog(@"Turning on printer...");
-		if(pipeFile != NULL)
-		{
-			pclose(pipeFile);
-		}
-		pipeFile = popen("/usr/bin/lpr", "w");	
-    }
-    
-    printToAnsi = flag;
-	
 }
 
 - (NSStringEncoding)encoding
@@ -1392,13 +1359,6 @@ static VT100TCC decode_string(unsigned char *datap,
     [self _setCharAttr:result];
 	
     return result;
-}
-
-- (void) printToken: (VT100TCC) token
-{
-    //NSLog(@"Printing token at 0x%x; length = %d", token.position, token.length);
-    if(pipeFile != NULL)
-		fwrite(token.position, token.length, 1, pipeFile);
 }
 
 - (NSData *)keyArrowUp:(unsigned int)modflag

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.12 2004-04-16 20:14:07 ujwal Exp $
+// $Id: VT100Screen.h,v 1.13 2004-07-07 07:30:41 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -76,6 +76,10 @@
 	int		bufferWrapped, lastBufferLineIndex;
 	
 	char *tempBuffer;
+	
+	// print to ansi...
+	BOOL printToAnsi;		// YES=ON, NO=OFF, default=NO;
+	NSMutableString *printToAnsiString;
 	
 	NSLock *screenLock;
 }
@@ -168,5 +172,10 @@
 
 - (void)resetDirty;
 - (void)setDirty;
+
+// print to ansi...
+- (BOOL) printToAnsi;
+- (void) setPrintToAnsi: (BOOL) aFlag;
+- (void) printStringToAnsi: (NSString *) aString;
 
 @end

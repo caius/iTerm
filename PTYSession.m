@@ -838,6 +838,8 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) timerTick:(NSTimer*)sender
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
     iIdleCount++; oIdleCount++; blink++;
     if (++output>1000) output=1000;
     
@@ -881,6 +883,8 @@ static NSString *PWD_ENVVALUE = @"~";
         else dirty=YES;
     }
 #endif
+
+    [pool release];
 
 }
 

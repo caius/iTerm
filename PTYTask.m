@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.4 2003-02-25 16:06:15 ujwal Exp $
+// $Id: PTYTask.m,v 1.5 2003-02-25 16:16:36 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -47,6 +47,8 @@
 @implementation PTYTask
 
 #define CTRLKEY(c)   ((c)-'A'+1)
+
+#define MEASURE_PROCESSING_TIME		0
 
 static void setup_tty_param(struct termios *term,
 			    struct winsize *win,
@@ -117,8 +119,10 @@ static int writep(int fds, char *buf, size_t len)
     id rootProxy;
     NSData *data = nil;
     BOOL exitf = NO;
+#if MEASURE_PROCESSING_TIME
     struct timeval tv;
     BOOL newOutput = NO;
+#endif
 
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:%@] start",
@@ -144,10 +148,15 @@ static int writep(int fds, char *buf, size_t len)
 	FD_SET(boss->FILDES, &rfds);
 	FD_SET(boss->FILDES, &efds);
 
+#if MEASURE_PROCESSING_TIME
 	tv.tv_sec = 0;
 	tv.tv_usec = 100000;
 
 	sts = select(boss->FILDES + 1, &rfds, NULL, &efds, &tv);
+#else
+	sts = select(boss->FILDES + 1, &rfds, NULL, &efds, NULL);
+#endif
+	
 	if (sts < 0) {
 	    break;
 	}
@@ -193,15 +202,18 @@ static int writep(int fds, char *buf, size_t len)
 		data = nil;
             }
 
+#if MEASURE_PROCESSING_TIME
 	    if(newOutput == NO)
 	    {
 		NSLog(@"PTYTask: Start new output");
 		newOutput = YES;
 	    }
+#endif
 
 	    if (data != nil)
 		[rootProxy readTask:data];
 	}
+#if MEASURE_PROCESSING_TIME
 	else if (sts == 0)
 	{
 	    if(newOutput == YES)
@@ -210,6 +222,7 @@ static int writep(int fds, char *buf, size_t len)
 		newOutput = NO;
 	    }	    
 	}
+#endif
 
 	[pool release];
     }

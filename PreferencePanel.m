@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.110 2004-03-28 22:03:43 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.111 2004-04-09 23:30:33 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -676,6 +676,8 @@ static BOOL editingBookmark = NO;
         [parentNode insertChildren: _draggedNodes atIndex: childIndex];
     } 
 	
+	[bookmarksView reloadData];
+
 }
 
 - (void) _reloadAddressBook: (NSNotification *) aNotification

@@ -478,7 +478,7 @@ static NSString *PWD_ENVVALUE = @"~";
 				case NSPauseFunctionKey:
 					break;
 				case NSClearLineFunctionKey:
-					if(![TERMINAL numLock] || [TERMINAL keypadMode])
+					if([TERMINAL keypadMode])
 						data = [TERMINAL keyPFn: 1];
 					break;
 			}
@@ -524,7 +524,7 @@ static NSString *PWD_ENVVALUE = @"~";
 				data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
 			
 			// Check if we are in keypad mode
-			if((modflag & NSNumericPadKeyMask) && (![TERMINAL numLock] || [TERMINAL keypadMode]))
+			if((modflag & NSNumericPadKeyMask) && [TERMINAL keypadMode])
 			{
 				switch (unicode)
 				{

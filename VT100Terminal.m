@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.87 2004-02-27 16:48:11 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.88 2004-03-03 16:07:20 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1575,16 +1575,6 @@ static VT100TCC decode_string(unsigned char *datap,
     }
 	
     return (theData);
-}
-
-- (void) toggleNumLock
-{
-    numLock = !numLock;
-}
-
-- (BOOL) numLock
-{
-    return (numLock);
 }
 
 - (NSData *) keypadData: (unichar) unicode keystr: (NSString *) keystr

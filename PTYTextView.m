@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.96 2004-01-23 00:42:33 ujwal Exp $
+// $Id: PTYTextView.m,v 1.97 2004-01-23 01:19:32 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -2231,7 +2231,7 @@
     else
         [super mouseDown: theEvent]; */
     
-    [self paste:nil];
+    [self pasteSelection:nil];
 }
 
 - (void)mouseEntered:(NSEvent *)theEvent

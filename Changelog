@@ -2,6 +2,7 @@
 
     * Added support for tab bonding, i.e. inout is sent to all tabs in 
       a window.
+	* Middle mouse button pastes selection instead of pasting from clipboard.
 
 2004-01-21	ujwal
 

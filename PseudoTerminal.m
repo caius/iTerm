@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.281 2004-03-27 21:15:41 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.282 2004-03-27 22:35:16 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -833,7 +833,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
         PTYSession* session = [_sessionMgr sessionAtIndex:i];
         [[session TEXTVIEW]  setFont:FONT nafont:NAFONT];
-		NSLog(@"char width = %f; height = %f", charWidth, charHeight);
 		[[session TEXTVIEW] setCharWidth: charWidth];
 		[[session TEXTVIEW] setLineHeight: charHeight];
 		[[self window] setResizeIncrements: NSMakeSize(charWidth, charHeight)];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.186 2004-03-25 21:24:58 ujwal Exp $
+// $Id: PTYTextView.m,v 1.187 2004-03-27 22:35:16 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -382,6 +382,15 @@ static SInt32 systemVersion;
 
 - (void) setFont:(NSFont*)aFont nafont:(NSFont *)naFont;
 {    
+	NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    NSSize sz;
+	
+    [dic setObject:aFont forKey:NSFontAttributeName];
+    sz = [@"W" sizeWithAttributes:dic];
+	
+	charWidthWithoutSpacing = sz.width;
+	charHeightWithoutSpacing = [aFont defaultLineHeightForFont];
+	
     [font release];
     [aFont retain];
     font=aFont;
@@ -641,7 +650,6 @@ static SInt32 systemVersion;
 	unsigned int bgcode, fgcode;
 	int y1, x1;
 	BOOL double_width;
-	float cursorHeight;
 	
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
@@ -842,20 +850,18 @@ static SInt32 systemVersion;
 		if(showCursor)
 		{
 			[[[self defaultCursorColor] colorWithAlphaComponent: (1 - transparency)] set];
-			
-			cursorHeight = [font defaultLineHeightForFont];
-			
+						
 			if([[self window] isKeyWindow])
 			{
 				NSRectFill(NSMakeRect(x1 * charWidth + MARGIN,
-									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-									  charWidth, cursorHeight));
+									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - charHeightWithoutSpacing),
+									  charWidthWithoutSpacing, charHeightWithoutSpacing));
 			}
 			else
 			{
 				NSFrameRect(NSMakeRect(x1 * charWidth + MARGIN,
-									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-									  charWidth, cursorHeight));
+									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - charHeightWithoutSpacing),
+									  charWidthWithoutSpacing, charHeightWithoutSpacing));
 				
 			}
 			// draw any character on cursor if we need to

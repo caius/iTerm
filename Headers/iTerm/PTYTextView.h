@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.36 2004-03-22 23:25:41 yfabian Exp $
+// $Id: PTYTextView.h,v 1.37 2004-03-27 22:35:16 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -80,6 +80,7 @@ typedef struct
 	float lineHeight;
     float lineWidth;
 	float charWidth;
+	float charWidthWithoutSpacing, charHeightWithoutSpacing;
 	int numberOfLines;
     
     NSFont *font;

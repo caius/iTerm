@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.36 2003-02-27 22:11:56 yfabian Exp $
+// $Id: PTYTextView.m,v 1.37 2003-03-04 01:20:38 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -310,7 +310,7 @@
     }
     else if ([[event characters] length]<1) {
         deadkey=YES;
-        deadKeyEvent=[[event copy] retain];
+        deadKeyEvent=[event copy];
 	[self interpretKeyEvents:[NSArray arrayWithObject:event]];
 	return;
     }    
@@ -602,40 +602,28 @@
 
 - (void) mail:(id)sender
 {
-    NSString *s=[[[self string] substringWithRange:[self selectedRange]] copy];
-    NSMutableString *s1;
+    NSString *s = [[self string] substringWithRange:[self selectedRange]];
+    NSURL *url;
+    
+    if (![s hasPrefix:@"mailto:"])
+    	url = [NSURL URLWithString:[@"mailto:" stringByAppendingString:s]];
+    else
+    	url = [NSURL URLWithString:s];
 
-    if (![s hasPrefix:@"mailto://"]) {
-        s1=[[NSMutableString alloc] initWithString:@"open \"mailto://"];
-        [s1 appendString:s];
-        [s1 appendString:@"\""];
-    }
-    else {
-        s1=[[NSMutableString alloc] initWithString:@"open \""];
-        [s1 appendString:s];
-        [s1 appendString:@"\""];
-    }
-    system([s1 cString]);
-    [s1 release];
+    [[NSWorkspace sharedWorkspace] openURL:url];
 }
 
 - (void) browse:(id)sender
 {
-    NSString *s=[[[self string] substringWithRange:[self selectedRange]] copy];
-    NSMutableString *s1;
+    NSString *s = [[self string] substringWithRange:[self selectedRange]];
+    NSURL *url;
+    
+    if (![s hasPrefix:@"http://"])
+    	url = [NSURL URLWithString:[@"http://" stringByAppendingString:s]];
+    else
+    	url = [NSURL URLWithString:s];
 
-    if (![s hasPrefix:@"http://"]) {
-        s1=[[NSMutableString alloc] initWithString:@"open \"http://"];
-        [s1 appendString:s];
-        [s1 appendString:@"\""];
-    }
-    else {
-        s1=[[NSMutableString alloc] initWithString:@"open \""];
-        [s1 appendString:s];
-        [s1 appendString:@"\""];
-    }
-    system([s1 cString]);
-    [s1 release];
+    [[NSWorkspace sharedWorkspace] openURL:url];
 }
 
 

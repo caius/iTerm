@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.124 2003-03-01 17:41:27 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.125 2003-03-04 01:20:37 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -103,7 +103,6 @@ static NSString *ConfigToolbarItem = @"Config";
     [self setCurrentSessionName:nil];
     [currentPtySession setAutoClose: [pref autoclose]];
     [currentPtySession setDoubleWidth:[pref doubleWidth]];
-
 }
 
 - (id)init
@@ -145,10 +144,10 @@ static NSString *ConfigToolbarItem = @"Config";
     
     NSParameterAssert(font != nil);
 
-    if (FONT) [FONT autorelease];
-    FONT=[[font copy] retain];
-    if (NAFONT) [NAFONT autorelease];
-    NAFONT=[[nafont copy] retain];
+    [FONT autorelease];
+    FONT=[font copy];
+    [NAFONT autorelease];
+    NAFONT=[nafont copy];
     
     // Create the tabview
     tabviewRect = [[WINDOW contentView] frame];
@@ -697,10 +696,10 @@ static NSString *ConfigToolbarItem = @"Config";
         [[[ptyList objectAtIndex:i] TEXTVIEW]  setFont:font];
         [[[ptyList objectAtIndex:i] SCREEN]  setFont:font nafont:nafont];
     }
-    if (FONT) [FONT autorelease];
-    FONT=[[font copy] retain];
-    if (NAFONT) [NAFONT autorelease];
-    NAFONT=[[nafont copy] retain];
+    [FONT autorelease];
+    FONT=[font copy];
+    [NAFONT autorelease];
+    NAFONT=[nafont copy];
 }
 
 - (void)changeFont:(id)sender

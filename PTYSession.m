@@ -87,20 +87,11 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s(%d):-[PTYSession dealloc]", __FILE__, __LINE__);
 #endif
 
-    if(parent)
-        [parent release];
-                        
-    if(TERM_VALUE)
-        [TERM_VALUE release];
-    
-    if(TEXTVIEW)
-        [TEXTVIEW release];
-
-    if(SCROLLVIEW)
-        [SCROLLVIEW release];
-        
-    if(name)
-        [name release];
+    [parent release];
+    [TERM_VALUE release];
+    [TEXTVIEW release];
+    [SCROLLVIEW release];    
+    [name release];
         
     [normalStateAttribute release];
     normalStateAttribute = nil;
@@ -211,12 +202,9 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem release];
         tabViewItem = nil;
     }
-    if(SHELL != nil)
-        [SHELL release];
-    if(TERMINAL != nil)
-        [TERMINAL release];
-    if(SCREEN != nil)
-        [SCREEN release];
+    [SHELL release];
+    [TERMINAL release];
+    [SCREEN release];
 
     if (timer) {
         [timer invalidate];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.35 2003-02-27 22:12:02 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.36 2003-03-04 01:20:42 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1146,14 +1146,14 @@ static VT100TCC decode_string(unsigned char *datap,
 
     ENCODING = NSASCIIStringEncoding;
     STREAM   = [[NSMutableData alloc] init];
-    COLOR_BLACK  = [DEFAULT_BLACK copy];
-    COLOR_RED    = [DEFAULT_RED copy];
-    COLOR_GREEN  = [DEFAULT_GREEN copy];
-    COLOR_YELLOW = [DEFAULT_YELLOW copy];
-    COLOR_BLUE   = [DEFAULT_BLUE copy];
-    COLOR_PURPLE = [DEFAULT_PURPLE copy];
-    COLOR_WATER  = [DEFAULT_WATER copy];
-    COLOR_WHITE  = [DEFAULT_WHITE copy];
+    COLOR_BLACK  = DEFAULT_BLACK;
+    COLOR_RED    = DEFAULT_RED;
+    COLOR_GREEN  = DEFAULT_GREEN;
+    COLOR_YELLOW = DEFAULT_YELLOW;
+    COLOR_BLUE   = DEFAULT_BLUE;
+    COLOR_PURPLE = DEFAULT_PURPLE;
+    COLOR_WATER  = DEFAULT_WATER;
+    COLOR_WHITE  = DEFAULT_WHITE;
 
     LINE_MODE = NO;
     CURSOR_MODE = NO;

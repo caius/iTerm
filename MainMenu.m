@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: MainMenu.m,v 1.33 2003-02-12 07:52:46 ujwal Exp $
+// $Id: MainMenu.m,v 1.34 2003-03-04 01:20:39 ujwal Exp $
 /*
  **  MainMenu.m
  **
@@ -234,13 +234,13 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
     [adSelection setColor:[PREF_PANEL selectionColor]];
     [adDir setStringValue:[@"~"  stringByExpandingTildeInPath]];
 
-    aeFont=[[[PREF_PANEL font] copy] retain];
+    aeFont=[[PREF_PANEL font] copy];
     [adTextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeFont fontName], [aeFont pointSize]]];
     [adTextExample setFont:aeFont];
     [adTextExample setTextColor:[PREF_PANEL foreground]];
     [adTextExample setBackgroundColor:[PREF_PANEL background]];
 
-    aeNAFont=[[[PREF_PANEL nafont] copy] retain];
+    aeNAFont=[[PREF_PANEL nafont] copy];
     [adNATextExample setStringValue:[NSString stringWithFormat:@"%@ %g", [aeNAFont fontName], [aeNAFont pointSize]]];
     [adNATextExample setTextColor:[PREF_PANEL foreground]];
     [adNATextExample setBackgroundColor:[PREF_PANEL background]];
@@ -657,7 +657,7 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
             else if (s[i]==' ' || s[i]=='\t' || s[i]=='\n'||s[i]==0) {
                 tmp[j]=0;
                 if (k==-1) {
-                    *cmd=[[NSString alloc] initWithCString:tmp];
+                    *cmd=[NSString stringWithCString:tmp];
                 }
                 else
                     [p addObject:[NSString stringWithCString:tmp]];
@@ -672,7 +672,8 @@ NSComparisonResult addressBookComparator (NSDictionary *entry1, NSDictionary *en
         i++;
     }
 
-    *path = [[NSArray alloc] initWithArray:p];
+    *path = [NSArray arrayWithArray:p];
+    [p release];
 }
 
 - (void) initAddressBook

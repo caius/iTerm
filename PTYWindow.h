@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.h,v 1.2 2003-02-12 07:52:47 ujwal Exp $ */
+/* $Id: PTYWindow.h,v 1.3 2003-03-04 01:20:42 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Sathyam */
 /*
  **  PTYWindow.h
@@ -32,12 +32,10 @@
 #import <Cocoa/Cocoa.h>
 
 @interface PTYWindow : NSWindow 
-{
-}
 
-- (float)_transparency;
 - initWithContentRect:(NSRect)contentRect 
             styleMask:(unsigned int)aStyle 
 	      backing:(NSBackingStoreType)bufferingType 
 		defer:(BOOL)flag;
+
 @end

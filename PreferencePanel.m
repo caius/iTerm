@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.25 2003-02-13 07:55:44 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.26 2003-03-04 01:20:38 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -113,8 +113,8 @@ static int TRANSPARENCY  =10;
 
     if(defaultTerminal != nil)
         [defaultTerminal release];
-    defaultTerminal=[[([prefs objectForKey:@"Terminal"]?[prefs objectForKey:@"Terminal"]:TERM)
-                    copy] retain];
+    defaultTerminal=[([prefs objectForKey:@"Terminal"]?[prefs objectForKey:@"Terminal"]:TERM)
+                    copy];
 
     // This is for compatibility with old pref
     if ([[prefs objectForKey:@"Encoding"] isKindOfClass:[NSString class]]) {
@@ -128,40 +128,28 @@ static int TRANSPARENCY  =10;
         defaultEncoding=[prefs objectForKey:@"Encoding"]?[[prefs objectForKey:@"Encoding"] unsignedIntValue]:CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
     }
 
-    if(defaultShell != nil)
-        [defaultShell release];    
-    defaultShell=[[([prefs objectForKey:@"Shell"]?[prefs objectForKey:@"Shell"]:SHELL)
-                 copy] retain];
+    [defaultShell release];    
+    defaultShell=[([prefs objectForKey:@"Shell"]?[prefs objectForKey:@"Shell"]:SHELL) copy];
 
-    if(defaultForeground != nil)
-        [defaultForeground release];                        
-    defaultForeground=[[([prefs objectForKey:@"Foreground"]?
-    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Foreground"]]:FOREGROUND)
-                      copy] retain];
+    [defaultForeground release];                        
+    defaultForeground=[([prefs objectForKey:@"Foreground"]?
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Foreground"]]:FOREGROUND) copy];
                       
-    if(defaultBackground != nil)
-        [defaultBackground release];                        
-    defaultBackground=[[([prefs objectForKey:@"Background"]?
-    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Background"]]:BACKGROUND)
-                      copy] retain];
+    [defaultBackground release];                        
+    defaultBackground=[([prefs objectForKey:@"Background"]?
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Background"]]:BACKGROUND) copy];
                       
-    if(defaultSelectionColor != nil)
-        [defaultSelectionColor release];                        
-    defaultSelectionColor=[[([prefs objectForKey:@"SelectionColor"]?
-    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"SelectionColor"]]:SELECTION)
-                      copy] retain];
+    [defaultSelectionColor release];                        
+    defaultSelectionColor=[([prefs objectForKey:@"SelectionColor"]?
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"SelectionColor"]]:SELECTION) copy];
                       
-    if(defaultFont != nil)
-        [defaultFont release];                        
-    defaultFont=[[([prefs objectForKey:@"Font"]?
-    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Font"]]:FONT)
-                      copy] retain];
+    [defaultFont release];                        
+    defaultFont=[([prefs objectForKey:@"Font"]?
+    [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"Font"]]:FONT) copy];
                       
-    if(defaultNAFont != nil)
-        [defaultNAFont release];                        
-    defaultNAFont=[[([prefs objectForKey:@"NAFont"]?
-                   [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"NAFont"]]:FONT)
-        copy] retain];
+    [defaultNAFont release];                        
+    defaultNAFont=[([prefs objectForKey:@"NAFont"]?
+                   [NSUnarchiver unarchiveObjectWithData:[prefs objectForKey:@"NAFont"]]:FONT) copy];
         
     defaultAutoclose=[prefs objectForKey:@"AutoClose"]?[[prefs objectForKey:@"AutoClose"] boolValue]: YES;
     defaultOption=[prefs objectForKey:@"OptionKey"]?[prefs integerForKey:@"OptionKey"]:0;
@@ -290,9 +278,9 @@ static int TRANSPARENCY  =10;
     [defaultForeground autorelease];
     [defaultSelectionColor autorelease];
     
-    defaultBackground=[[[background color] copy] retain];
-    defaultForeground=[[[foreground color] copy] retain];
-    defaultSelectionColor = [[[selectionColor color] copy] retain];
+    defaultBackground=[[background color] copy];
+    defaultForeground=[[foreground color] copy];
+    defaultSelectionColor = [[selectionColor color] copy];
 
     defaultCol=[col intValue];
     defaultRow=[row intValue];
@@ -355,16 +343,16 @@ static int TRANSPARENCY  =10;
     if (defaultForeground) [defaultForeground autorelease];
     if (defaultFont) [defaultFont autorelease];
     
-    defaultBackground=[[BACKGROUND copy] retain];
-    defaultForeground=[[FOREGROUND copy] retain];
-    defaultFont=[[FONT copy] retain];
+    defaultBackground=[BACKGROUND copy];
+    defaultForeground=[FOREGROUND copy];
+    defaultFont=[FONT copy];
 
     defaultCol=COL;
     defaultRow=ROW;
     
     defaultEncoding=CFStringConvertEncodingToNSStringEncoding(CFStringGetSystemEncoding());
-    defaultShell=[[SHELL copy] retain];
-    defaultTerminal=[[TERM copy] retain];
+    defaultShell=[SHELL copy];
+    defaultTerminal=[TERM copy];
     
     defaultTransparency=TRANSPARENCY;
     defaultAutoclose=YES;

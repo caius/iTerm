@@ -81,6 +81,7 @@
     // get the original length before edit
     int origLen = [self length];
 
+#if 0
     // if the length did not change, check what really changed
     if(range.length == [str length])
     {
@@ -122,7 +123,8 @@
 	}
 	
     }
-
+#endif
+    
     // else do the usual stuff.
     [contents replaceCharactersInRange:range withString:str];
     [self edited:NSTextStorageEditedCharacters range:range changeInLength:[self length] - origLen];

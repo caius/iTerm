@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.170 2003-05-09 23:30:15 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.171 2003-05-14 02:16:28 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -168,6 +168,7 @@ static int windowCount = 0;
 		       title: (NSString *)title
 {
     int i;
+    NSDictionary *defaultParameters;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setupSession]",
@@ -183,10 +184,11 @@ static int windowCount = 0;
     [aSession initScreen: [TABVIEW contentRect]];
 
     // set some default colors
-    [aSession setForegroundColor: [pref foreground]];
-    [aSession setBackgroundColor: [[pref background] colorWithAlphaComponent: (1.0-[pref transparency]/100.0)]];
-    [aSession setSelectionColor: [pref selectionColor]];
-    [aSession setBoldColor: [pref boldColor]];
+    defaultParameters = [MAINMENU addressBookEntry: 0];
+    [aSession setForegroundColor: [defaultParameters objectForKey: @"Foreground"]];
+    [aSession setBackgroundColor: [[defaultParameters objectForKey: @"Background"]  colorWithAlphaComponent: (1.0-[[defaultParameters objectForKey: @"Transparency"] intValue]/100.0)]];
+    [aSession setSelectionColor: [defaultParameters objectForKey: @"SelectionColor"]];
+    [aSession setBoldColor: [defaultParameters objectForKey: @"BoldColor"]];
     for(i=0;i<8;i++) {
         [aSession setColorTable:i highLight:NO color:[pref colorFromTable:i highLight:NO]];
         [aSession setColorTable:i highLight:YES color:[pref colorFromTable:i highLight:YES]];

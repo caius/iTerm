@@ -602,7 +602,6 @@ static TreeNode *defaultBookmark = nil;
 	NSEnumerator *entryEnumerator;
 	NSDictionary *dataDict;
 	TreeNode *entry;
-	BOOL foundNode = NO;
 	
 	dataDict = nil;
 	
@@ -620,17 +619,12 @@ static TreeNode *defaultBookmark = nil;
 			dataDict = [entry nodeData];
 			if([[dataDict objectForKey: KEY_NAME] isEqualToString: aName])
 			{
-				foundNode = YES;
+				return (dataDict);
 			}			
 		}
-		if(foundNode)
-			break;
 	}
 	
-	if(foundNode)
-		return (dataDict);
-	else
-		return (nil);
+	return (nil);
 }
 
 - (TreeNode *) _getRendezvousServiceTypeNode: (NSString *) aType

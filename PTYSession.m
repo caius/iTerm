@@ -95,6 +95,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [TEXTVIEW release];
     [SCROLLVIEW release];    
     [name release];
+    [windowTitle release];
         
     [normalStateAttribute release];
     normalStateAttribute = nil;
@@ -942,11 +943,15 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     return (name);
 }
+
 - (void) setName: (NSString *) theName
 {
     NSMutableString *aMutableString;
     if(name)
     {
+	// clear the window title if it is not different
+	if([self windowTitle] == nil || [name isEqualToString: [self windowTitle]])
+	    [self setWindowTitle: nil];
         [name release];
         name = nil;
     }
@@ -954,6 +959,9 @@ static NSString *PWD_ENVVALUE = @"~";
     {
         [theName retain];
         name = theName;
+	// sync the window title if it is not set to something else
+	if([self windowTitle] == nil)
+	    [self setWindowTitle: theName];
     }
     if([theName length] > 20)
     {
@@ -967,7 +975,30 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabel: theName];
         [self setBell: NO];
     }
+
 }
+
+- (NSString *) windowTitle
+{
+    return (windowTitle);
+}
+
+- (void) setWindowTitle: (NSString *) theTitle
+{
+    if(windowTitle != nil)
+    {
+	[windowTitle release];
+	windowTitle = nil;
+    }
+    if(theTitle != nil)
+    {
+	[theTitle retain];
+	windowTitle = theTitle;
+	if([[self parent] currentSession] == self)
+	    [[[self parent] window] setTitle: windowTitle];
+    }
+}
+
 
 - (PTYTask *) SHELL
 {

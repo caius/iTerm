@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.166 2003-04-29 22:54:31 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.167 2003-05-02 17:37:08 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -683,7 +683,10 @@ static int windowCount = 0;
           __FILE__, __LINE__);
 #endif
 
-    [WINDOW setTitle:[self currentSessionName]];
+    if([[self currentSession] windowTitle] == nil)
+	[WINDOW setTitle:[self currentSessionName]];
+    else
+	[WINDOW setTitle:[[self currentSession] windowTitle]];
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle: exiting]",

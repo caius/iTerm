@@ -1,3 +1,8 @@
+2003-05-02	ujwal
+
+    * Distinguising session name and windwo title. Storing window 
+      separately from session name in session.
+
 2003-05-01	fabian
     * removed scrollback settings in UI for performance reasons.
     

@@ -58,6 +58,7 @@
     
     PseudoTerminal *parent;  // parent controller
     NSString *name;
+    NSString *windowTitle;
     
     // anti-idle
     char ai_code;
@@ -137,6 +138,8 @@
 - (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem;
 - (NSString *) name;
 - (void) setName: (NSString *) theName;
+- (NSString *) windowTitle;
+- (void) setWindowTitle: (NSString *) theTitle;
 - (PTYTask *) SHELL;
 - (void) setSHELL: (PTYTask *) theSHELL;
 - (VT100Terminal *) TERMINAL;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.159 2003-09-25 06:24:50 ujwal Exp $
+// $Id: VT100Screen.m,v 1.160 2003-09-25 06:27:03 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -2618,7 +2618,7 @@ static BOOL PLAYBELL = YES;
     int len, slen;
     int idx;
     //NSRange selectedRange;
-    NSString *selectedString;
+    //NSString *selectedString;
     
     idx=[self getIndexAtX:CURSOR_X Y:CURSOR_Y withPadding:YES];
     if ([[SESSION TEXTVIEW] hasMarkedText]) {
@@ -2635,7 +2635,7 @@ static BOOL PLAYBELL = YES;
     [self setScreenLock];
 
     // cache any text selection
-    selectedRange = [[SESSION TEXTVIEW] selectedRange];
+    //selectedRange = [[SESSION TEXTVIEW] selectedRange];
     //if(selectedRange.length > 0)
 	//selectedString = [[[SESSION TEXTVIEW] string] substringWithRange: selectedRange];    
 

@@ -256,7 +256,8 @@ static iTermKeyBindingMgr *singleInstance = nil;
 		case NSHelpFunctionKey:
 			aString = NSLocalizedStringFromTableInBundle(@"help",@"iTerm", 
 														 [NSBundle bundleForClass: [self class]], 
-														 @"Key Names");			
+														 @"Key Names");	
+			break;
 		case NSHomeFunctionKey:
 			aString = NSLocalizedStringFromTableInBundle(@"home",@"iTerm", 
 														 [NSBundle bundleForClass: [self class]], 

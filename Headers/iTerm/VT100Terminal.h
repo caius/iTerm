@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.12 2004-07-07 07:30:41 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.14 2006-02-13 01:13:14 ujwal Exp $
 /*
  **  VT100Terminal.h
  **
@@ -222,12 +222,21 @@ typedef enum {
 #define DEFAULT_BG_COLOR_CODE	0x11
 #define SELECTION_MASK 0x20
 
+typedef enum {
+	MOUSE_REPORTING_NONE = -1,
+	MOUSE_REPORTING_NORMAL = 0,
+	MOUSE_REPORTING_HILITE,
+	MOUSE_REPORTING_BUTTON_MOTION,
+	MOUSE_REPORTING_ALL_MOTION,
+} mouseMode;
+
 @interface VT100Terminal : NSObject
 {
     NSStringEncoding  ENCODING;
     NSMutableData     *STREAM;
     VT100Screen       *SCREEN;
 	PseudoTerminal    *PARENT;
+	NSLock			  *streamLock;
 
     BOOL LINE_MODE;			// YES=Newline, NO=Line feed
     BOOL CURSOR_MODE;		// YES=Application, NO=Cursor
@@ -244,6 +253,7 @@ typedef enum {
     int  CHARSET;			// G0...G3
     BOOL XON;				// YES=XON, NO=XOFF
     BOOL numLock;			// YES=ON, NO=OFF, default=YES;
+	mouseMode MOUSE_MODE;
     
     int FG_COLORCODE;
     int BG_COLORCODE;
@@ -297,6 +307,10 @@ typedef enum {
 - (NSData *)keyPFn: (int) n;
 - (NSData *)keypadData: (unichar) unicode keystr: (NSString *) keystr;
 
+- (NSData *)mousePress: (int)button withModifiers: (unsigned int)modflag atX: (int)x Y: (int)y;
+- (NSData *)mouseReleaseAtX: (int)x Y: (int)y;
+- (NSData *)mouseMotion: (int)button withModifiers: (unsigned int)modflag atX: (int)x Y: (int)y;
+
 - (BOOL)lineMode;
 - (BOOL)cursorMode;
 - (BOOL)columnMode;
@@ -310,6 +324,7 @@ typedef enum {
 - (BOOL)insertMode;
 - (int)charset;
 - (BOOL)xon;
+- (mouseMode)mouseMode;
 
 - (int)foregroundColorCode;
 - (int)backgroundColorCode;

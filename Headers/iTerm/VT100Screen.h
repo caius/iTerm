@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.13 2004-07-07 07:30:41 ujwal Exp $
+// $Id: VT100Screen.h,v 1.14 2005-04-10 03:45:03 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -58,6 +58,7 @@
     int charset[4], saveCharset[4];
     BOOL blinkShow;
 	BOOL PLAYBELL;
+	BOOL SHOWBELL;
 
     
     BOOL blinkingCursor;
@@ -110,6 +111,7 @@
 - (BOOL) blinkingCursor;
 - (void) setBlinkingCursor: (BOOL) flag;
 - (void)setPlayBellFlag:(BOOL)flag;
+- (void)setShowBellFlag:(BOOL)flag;
 
 // lock
 - (void) acquireLock;
@@ -147,7 +149,7 @@
 - (void)setTopBottom:(VT100TCC)token;
 - (void)scrollUp;
 - (void)scrollDown;
-- (void)playBell;
+- (void)activateBell;
 - (void)deviceReport:(VT100TCC)token;
 - (void)deviceAttribute:(VT100TCC)token;
 - (void)insertBlank: (int)n;

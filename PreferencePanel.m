@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.122 2004-11-20 06:25:31 ujwal Exp $
+// $Id: PreferencePanel.m,v 1.127 2006-02-06 03:11:37 dnedrow Exp $
 /*
  **  PreferencePanel.m
  **
@@ -61,8 +61,8 @@ static BOOL editingBookmark = NO;
 	self = [super init];
 	
 	[self readPreferences];
-	if(defaultEnableRendezvous == YES)
-		[[ITAddressBookMgr sharedInstance] locateRendezvousServices];
+	if(defaultEnableBonjour == YES)
+		[[ITAddressBookMgr sharedInstance] locateBonjourServices];
 	
 	// get the version
 	NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
@@ -121,7 +121,7 @@ static BOOL editingBookmark = NO;
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
-	defaultEnableRendezvous = [prefs objectForKey:@"EnableRendezvous"]?[[prefs objectForKey:@"EnableRendezvous"] boolValue]: YES;
+	defaultEnableBonjour = [prefs objectForKey:@"EnableRendezvous"]?[[prefs objectForKey:@"EnableRendezvous"] boolValue]: YES;
 	defaultCmdSelection = [prefs objectForKey:@"CommandSelection"]?[[prefs objectForKey:@"CommandSelection"] boolValue]: YES;
 	defaultMaxVertically = [prefs objectForKey:@"MaxVertically"]?[[prefs objectForKey:@"MaxVertically"] boolValue]: YES;
 	[defaultWordChars release];
@@ -129,12 +129,12 @@ static BOOL editingBookmark = NO;
 	
 	// load saved profiles or default if we don't have any
 	keybindingProfiles = [prefs objectForKey: @"KeyBindings"];
-	displayProfiles = [prefs objectForKey: @"Displays"];
+	displayProfiles =  [prefs objectForKey: @"Displays"];
 	terminalProfiles = [prefs objectForKey: @"Terminals"];
 	
 	// if we got no profiles, load from our embedded plist
 	plistFile = [[NSBundle bundleForClass: [self class]] pathForResource:@"Profiles" ofType:@"plist"];
-	profilesDictionary = [NSMutableDictionary dictionaryWithContentsOfFile: plistFile];
+	profilesDictionary = [NSDictionary dictionaryWithContentsOfFile: plistFile];
 	if([keybindingProfiles count] == 0)
 		keybindingProfiles = [profilesDictionary objectForKey: @"KeyBindings"];
 	if([displayProfiles count] == 0)
@@ -161,7 +161,7 @@ static BOOL editingBookmark = NO;
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
-	[prefs setBool:defaultEnableRendezvous forKey:@"EnableRendezvous"];
+	[prefs setBool:defaultEnableBonjour forKey:@"EnableRendezvous"];
 	[prefs setBool:defaultCmdSelection forKey:@"CommandSelection"];
 	[prefs setBool:defaultMaxVertically forKey:@"MaxVertically"];
 	[prefs setObject: defaultWordChars forKey: @"WordCharacters"];
@@ -169,6 +169,7 @@ static BOOL editingBookmark = NO;
 	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
 	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
 	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+	[prefs synchronize];
 }
 
 - (void)run
@@ -186,7 +187,7 @@ static BOOL editingBookmark = NO;
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
-	[enableRendezvous setState: defaultEnableRendezvous?NSOnState:NSOffState];
+	[enableBonjour setState: defaultEnableBonjour?NSOnState:NSOffState];
 	[cmdSelection setState: defaultCmdSelection?NSOnState:NSOffState];
 	[maxVertically setState: defaultMaxVertically?NSOnState:NSOffState];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
@@ -210,7 +211,7 @@ static BOOL editingBookmark = NO;
     defaultHideTab=([hideTab state]==NSOnState);
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
-	defaultEnableRendezvous = ([enableRendezvous state] == NSOnState);
+	defaultEnableBonjour = ([enableBonjour state] == NSOnState);
 	defaultCmdSelection = ([cmdSelection state] == NSOnState);
 	defaultMaxVertically = ([maxVertically state] == NSOnState);
 	[defaultWordChars release];
@@ -570,9 +571,9 @@ static BOOL editingBookmark = NO;
     return (defaultFocusFollowsMouse);
 }
 
-- (BOOL) enableRendezvous
+- (BOOL) enableBonjour
 {
-	return (defaultEnableRendezvous);
+	return (defaultEnableBonjour);
 }
 
 - (BOOL) cmdSelection

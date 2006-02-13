@@ -68,12 +68,24 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 
 - (void) setProfiles: (NSMutableDictionary *) aDict
 {
+	NSEnumerator *keyEnumerator;
+	NSMutableDictionary *mappingDict;
+	NSString *profileName;
+	NSDictionary *sourceDict;
 	
 	// recursively copy the dictionary to ensure mutability
-	[profiles setDictionary: aDict];
-	
-	// if we don't have any profile, create a default profile
-	if([profiles count] == 0)
+	if(aDict != nil)
+	{
+		keyEnumerator = [aDict keyEnumerator];
+		while((profileName = [keyEnumerator nextObject]) != nil)
+		{
+			sourceDict = [aDict objectForKey: profileName];
+			mappingDict = [[NSMutableDictionary alloc] initWithDictionary: sourceDict];
+			[profiles setObject: mappingDict forKey: profileName];
+			[mappingDict release];
+		}		
+	}
+    else  // if we don't have any profile, create a default profile
 	{
 		NSMutableDictionary *aProfile;
 		NSString *defaultName;
@@ -88,7 +100,7 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 		
 		[aProfile setObject: @"Yes" forKey: @"Default Profile"];
 		
-		[self setType: @"vt100" forProfile: defaultName];
+		[self setType: @"ansi" forProfile: defaultName];
 		[self setEncoding: NSASCIIStringEncoding  forProfile: defaultName];
 		[self setScrollbackLines: 1000 forProfile: defaultName];
 		[self setSilenceBell: NO forProfile: defaultName];
@@ -292,6 +304,41 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	[aProfile setObject: [NSNumber numberWithBool: silent] forKey: @"Silence Bell"];	
 }
 
+- (BOOL) showBellForProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	NSNumber *showBell;
+	
+	if([profileName length] <= 0)
+		return (NO);
+	
+	aProfile = [profiles objectForKey: profileName];
+	if(aProfile == nil)
+		return (NO);
+	
+	showBell = [aProfile objectForKey: @"Show Bell"];
+	if(showBell == nil)
+		return (YES);
+	
+	return ([showBell boolValue]);	
+}
+
+- (void) setShowBell: (BOOL) showBell forProfile: (NSString *) profileName
+{
+	NSMutableDictionary *aProfile;
+	
+	if([profileName length] <= 0)
+		return;
+	
+	aProfile = [profiles objectForKey: profileName];
+	
+	if(aProfile == nil)
+		return;
+	
+	[aProfile setObject: [NSNumber numberWithBool: showBell] forKey: @"Show Bell"];	
+}
+
+
 
 - (BOOL) blinkCursorForProfile: (NSString *) profileName
 {
@@ -465,6 +512,40 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 		return;
 	
 	[aProfile setObject: [NSNumber numberWithChar: idle] forKey: @"Idle Char"];	
+}
+
+- (BOOL) xtermMouseReportingForProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	NSNumber *xtermMouseReporting;
+	
+	if([profileName length] <= 0)
+		return (YES);
+	
+	aProfile = [profiles objectForKey: profileName];
+	if(aProfile == nil)
+		return (YES);
+	
+	xtermMouseReporting = [aProfile objectForKey: @"Xterm Mouse Reporting"];
+	if(xtermMouseReporting == nil)
+		return (YES);
+	
+	return ([xtermMouseReporting boolValue]);	
+}
+
+- (void) setXtermMouseReporting: (BOOL) xtermMouseReporting forProfile: (NSString *) profileName
+{
+	NSMutableDictionary *aProfile;
+	
+	if([profileName length] <= 0)
+		return;
+	
+	aProfile = [profiles objectForKey: profileName];
+	
+	if(aProfile == nil)
+		return;
+	
+	[aProfile setObject: [NSNumber numberWithBool: xtermMouseReporting] forKey: @"Xterm Mouse Reporting"];	
 }
 
 

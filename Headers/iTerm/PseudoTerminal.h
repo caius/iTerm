@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.28 2004-11-20 23:52:58 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.29 2006-02-02 00:11:46 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -63,7 +63,7 @@
 
 - (id)init;
 - (id) initWithWindowNibName: (NSString *) windowNibName;
-- (id) initViewWithFrame: (NSRect) frame;
+- (PTYTabView*) initViewWithFrame: (NSRect) frame;
 - (void)dealloc;
 - (void)releaseObjects;
 

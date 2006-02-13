@@ -37,7 +37,7 @@
                 defaultSessionButton = NSButton; 
                 deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
-                enableRendezvous = NSButton; 
+                enableBonjour = NSButton; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
                 maxVertically = id; 
@@ -80,8 +80,10 @@
                 terminalSetDoubleWidth = id; 
                 terminalSetEncoding = id; 
                 terminalSetSendIdleChar = id; 
+                terminalSetShowBell = id; 
                 terminalSetSilenceBell = id; 
                 terminalSetType = id; 
+                terminalSetXtermMouseReporting = id; 
             }; 
             CLASS = iTermProfileWindowController; 
             LANGUAGE = ObjC; 
@@ -150,8 +152,10 @@
                 terminalProfileSelector = NSPopUpButton; 
                 terminalScrollback = NSTextField; 
                 terminalSendIdleChar = NSButton; 
+                terminalShowBell = NSButton; 
                 terminalSilenceBell = NSButton; 
                 terminalType = NSPopUpButton; 
+                xtermMouseReporting = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

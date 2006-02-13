@@ -1,3 +1,124 @@
+2006-02-13  fabian
+
+    * Removed NSConnection from PTYTask all together
+    
+2006-02-12	ujwal
+	* Fixed memory leak in PTYTask.
+	* Moved event handlers for NSMouseEntered and NSMouseExited to PTYWindow.
+	* Using separate thread in PTYSession to process data read from file descriptor in PTYTask. When data is read, the 
+	  PTYTask instance justs appends data to the STREAM in VT100Terminal. The separate thread in PTYSession now reads 
+	  the STREAM and processes data.
+
+2006-02-06  fabian
+
+    * Updated website files for the new release.
+
+2006-02-06	dnedrow
+
+	* Set default terminal type to ANSI rather than VT100. This should
+	  reduce the numerous support message re: "lack of color" support
+          in the shell (eg. ls -G).
+
+2006-02-05	dnedrow
+
+	* Updated NIB PreferencePanels to reflect Rendezvous->Bonjour namechange.
+	* Fixes for mismatched signedness warnings in PTYSession.m.
+	* Corrected an XCODE 2.2 warning re: boolean assignment used for while()
+	  in iTermApplicationDelegate.m.
+	* Disabled prebinding in default XCode project to clear linker warnings
+	  when compiling for UB targets. Can be enabled as needed for 10.2 or 
+	  10.3 builds.
+
+2006-02-05	ujwal
+
+	* Fixed outlet bug in German NIB that caused drawer not to open.
+	* Removed unnecessary code in iTermApplication.m 
+
+2006-02-03  fabian
+
+    * Fixed bugs in [VT100Screen InsertLines&DeleteLines] (#1180993), as suggested by
+      A'rpi (arpi@mplayerhq.hu)
+    * Fixed bug in Cmd-Click to start browser.
+    * Fixed bug in Shift-Click to extend selection.
+
+2006-02-02	fabian
+
+	* Fixed background color incomplete bug (#1208764).
+	
+2006-02-01	fabian
+
+	* Fixed "can't save changes" bug.
+	* Fixed a bug in [VT100Screen setString] that could cause crashes in rare occasions.
+	* Incorporated the patch submitted by Tom Emerson. Now the URL selection is trimmed 
+	  before it's sent to the browser.
+	* Updated zh_CN and zh_TW files.
+	
+2006-01-07	dnedrow
+	* Converted project to XCode 2.2.1.
+	* Set project to default to Universal Binary.
+	
+2005-09-21	fabian
+
+	* Added contribution from Damon Parker into Resource page of the website.
+
+2005-05-04	fabian
+
+	* Changes in decoding_string(). Now we do not ignore the whole line after receiving an invalid code.
+	
+2005-04-16	ujwal
+
+	* All key input is checked for mapping.
+	* Preferences are saved to disk on hitting OK.
+
+2005-04-09	ujwal
+
+	* Removed bouncing icon feature. Not a good idea for a terminal.
+	* Incorporated Geoff Reedy's patch for xterm mouse reporting with minor changes.
+	* Incorporated Rob Warner's patch to toggle transparency.
+	* Fixed "Find" and "Copy" in selecting correct text and breaking across lines.
+	* Fixed "appending of spaces and of last line coped". Bug #1068198.
+	* Added an option to "show" bell that is separate from "play" bell in terminal profile.
+	* Fixed visual representation of "help" key in keymapping editor.
+
+2005-04-06	fabian
+
+	* Updated website files
+	
+2005-4-03	ujwal
+
+	* Cancelling Rendezvous resolution after resolution or error.
+	* Re-implemented sorting of encoding list using user supplied patch.
+	* Cleaning up zombie process after terminating session.
+	* 0.8.1 release
+
+2005-04-03	ujwal
+
+	* Version number is 0.8.1.
+	* Fixed "get contents" script support.
+	* Put in a warning when enabling "Send Input to all sessions".
+	* Encoding list in drop-down menu is sorted.
+	* Added support to specify path to nested bookmark in AppleScript.
+
+2005-03-11	fabian
+
+	* Updated zh_TW locale files.
+	* Updated website files.
+	
+2004-12-18	fabian
+
+	* Updated website files for new release.
+	* Improved version of iTerm icon (still provided by sinomac.com)
+	
+2004-12-13	fabian
+
+	* Fixed the keyboard input problem that causes editing keys not working when inputing deadkeys.
+	* Updated zh_CN, zh_TW and Japanese localization files
+	
+	
+2004-11-26	fabian
+
+	* Updated German localization, provided by Felix KŸhne.
+	
 2004-11-20  ujwal
 
 	* Re-organized some of the sizing code to make it work better when iTerm is embedded 

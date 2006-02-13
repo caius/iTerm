@@ -35,7 +35,7 @@
 - (id) initWithIdentifier: (id) anIdentifier
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTabViewItem: -initWithIdentifier");
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     
     dragTarget = NO;
@@ -46,7 +46,7 @@
 - (void) dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTabViewItem: -dealloc");
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     
     [warningImage release];

@@ -24,12 +24,12 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#import <iTerm/iTermController.h>
 #import <iTerm/iTermKeyBindingMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermProfileWindowController.h>
 
-static NSStringEncoding const *encodingList = nil;
 
 @implementation iTermProfileWindowController
 
@@ -37,6 +37,8 @@ static NSStringEncoding const *encodingList = nil;
 {
 	NSEnumerator *profileEnumerator;
 	NSString *aString;
+	NSEnumerator *anEnumerator;
+	NSNumber *anEncoding;
 	
 	// load up the keyboard profiles
 	[kbProfileSelector removeAllItems];
@@ -61,13 +63,14 @@ static NSStringEncoding const *encodingList = nil;
 	while((aString = [profileEnumerator nextObject]) != nil)
 		[terminalProfileSelector addItemWithTitle: aString];
 
-	encodingList = [NSString availableStringEncodings];
-	NSStringEncoding const *p = encodingList;
+	// add list of encodings
 	[terminalEncoding removeAllItems];
-    while (*p) {
-	    [terminalEncoding addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
-        p++;
-    }	
+	anEnumerator = [[[iTermController sharedInstance] sortedEncodingList] objectEnumerator];
+	while((anEncoding = [anEnumerator nextObject]) != NULL)
+	{
+		[terminalEncoding addItemWithTitle: [NSString localizedNameOfStringEncoding: [anEncoding unsignedIntValue]]];
+		[[terminalEncoding lastItem] setTag: [anEncoding unsignedIntValue]];
+	}
 	
 	[self terminalProfileChanged: nil];
 	
@@ -577,12 +580,14 @@ static NSStringEncoding const *encodingList = nil;
 	[terminalScrollback setStringValue: [NSString stringWithFormat: @"%d",
 		[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: theProfile]]];
 	[terminalSilenceBell setState: [[iTermTerminalProfileMgr singleInstance] silenceBellForProfile: theProfile]];
+	[terminalShowBell setState: [[iTermTerminalProfileMgr singleInstance] showBellForProfile: theProfile]];
 	[terminalBlink setState: [[iTermTerminalProfileMgr singleInstance] blinkCursorForProfile: theProfile]];
 	[terminalCloseOnSessionEnd setState: [[iTermTerminalProfileMgr singleInstance] closeOnSessionEndForProfile: theProfile]];
 	[terminalDoubleWidth setState: [[iTermTerminalProfileMgr singleInstance] doubleWidthForProfile: theProfile]];
 	[terminalSendIdleChar setState: [[iTermTerminalProfileMgr singleInstance] sendIdleCharForProfile: theProfile]];
 	[terminalIdleChar setStringValue: [NSString stringWithFormat: @"%d",  
 		[[iTermTerminalProfileMgr singleInstance] idleCharForProfile: theProfile]]];
+	[xtermMouseReporting setState: [[iTermTerminalProfileMgr singleInstance] xtermMouseReportingForProfile: theProfile]];
 	
 	[terminalProfileDeleteButton setEnabled: ![[iTermTerminalProfileMgr singleInstance] isDefaultProfile: theProfile]];
 
@@ -596,7 +601,7 @@ static NSStringEncoding const *encodingList = nil;
 
 - (IBAction) terminalSetEncoding: (id) sender
 {
-	[[iTermTerminalProfileMgr singleInstance] setEncoding: encodingList[[sender indexOfSelectedItem]] 
+	[[iTermTerminalProfileMgr singleInstance] setEncoding: [[terminalEncoding selectedItem] tag] 
 											   forProfile: [terminalProfileSelector titleOfSelectedItem]];
 }
 
@@ -605,6 +610,12 @@ static NSStringEncoding const *encodingList = nil;
 	[[iTermTerminalProfileMgr singleInstance] setSilenceBell: [sender state] 
 												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
 }	
+
+- (IBAction) terminalSetShowBell: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setShowBell: [sender state] 
+												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}
 
 - (IBAction) terminalSetBlink: (id) sender
 {
@@ -628,6 +639,12 @@ static NSStringEncoding const *encodingList = nil;
 {
 	[[iTermTerminalProfileMgr singleInstance] setSendIdleChar: [sender state] 
 												   forProfile: [terminalProfileSelector titleOfSelectedItem]];
+}
+
+- (IBAction) terminalSetXtermMouseReporting: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setXtermMouseReporting: [sender state] 
+												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
 }	
 
 

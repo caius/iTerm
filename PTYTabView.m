@@ -99,7 +99,7 @@
 - (id)initWithFrame: (NSRect) aRect
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTabView: -initWithFrame");
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 
     self = [super initWithFrame: aRect];
@@ -116,7 +116,7 @@
 - (void) dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"PTYTabView: -dealloc");
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 
     if(mouseEvent != nil)

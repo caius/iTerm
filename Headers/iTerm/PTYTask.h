@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.4 2004-03-14 06:05:38 ujwal Exp $
+// $Id: PTYTask.h,v 1.5 2006-02-13 23:31:15 yfabian Exp $
 /*
  **  PTYTask.h
  **
@@ -44,9 +44,6 @@
     NSMutableData *RECVDATA;
     NSString *TTY;
     NSString *PATH;
-    NSPort *SENDPORT;
-    NSPort *RECVPORT;
-    NSConnection *CONNECTION;
 
     NSString *LOG_PATH;
     NSFileHandle *LOG_HANDLE;

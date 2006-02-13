@@ -211,7 +211,7 @@ static ITConfigPanelController *singleInstance = nil;
 
 - (IBAction) setSessionEncoding: (id) sender
 {
-	[[_pseudoTerminal currentSession] setEncoding:[[iTermController sharedInstance] encodingList][[CONFIG_ENCODING indexOfSelectedItem]]];
+	[[_pseudoTerminal currentSession] setEncoding:[[CONFIG_ENCODING selectedItem] tag]];
 }
 
 - (IBAction) setAntiIdle: (id) sender
@@ -356,8 +356,8 @@ static ITConfigPanelController *singleInstance = nil;
 // config panel sheet
 - (void)loadConfigWindow: (NSNotification *) aNotification
 {
-    int r;
-    NSStringEncoding const *p=[[iTermController sharedInstance] encodingList];
+	NSEnumerator *anEnumerator;
+	NSNumber *anEncoding;
 	
 	[self window]; // force window to load
 	
@@ -391,16 +391,16 @@ static ITConfigPanelController *singleInstance = nil;
 	[charHorizontalSpacing setFloatValue: [_pseudoTerminal charSpacingHorizontal]];
 	[charVerticalSpacing setFloatValue: [_pseudoTerminal charSpacingVertical]];
     [CONFIG_NAME setStringValue:[_pseudoTerminal currentSessionName]];
+	
     [CONFIG_ENCODING removeAllItems];
-    r=0;
-    while (*p) 
-    {
-        [CONFIG_ENCODING addItemWithTitle:[NSString localizedNameOfStringEncoding:*p]];
-        if (*p==[[currentSession TERMINAL] encoding]) 
-            r = p-[[iTermController sharedInstance] encodingList];
-        p++;
-    }
-    [CONFIG_ENCODING selectItemAtIndex:r];
+	anEnumerator = [[[iTermController sharedInstance] sortedEncodingList] objectEnumerator];
+	while((anEncoding = [anEnumerator nextObject]) != NULL)
+	{
+        [CONFIG_ENCODING addItemWithTitle: [NSString localizedNameOfStringEncoding: [anEncoding unsignedIntValue]]];
+		[[CONFIG_ENCODING lastItem] setTag: [anEncoding unsignedIntValue]];
+	}
+	[CONFIG_ENCODING selectItemAtIndex: [CONFIG_ENCODING indexOfItemWithTag: [[currentSession TERMINAL] encoding]]];
+	
     [CONFIG_TRANSPARENCY setFloatValue:([currentSession transparency]*100)];
     [CONFIG_TRANS2 setFloatValue:([currentSession transparency]*100)];
     [AI_ON setState:[currentSession antiIdle]?NSOnState:NSOffState];

@@ -63,7 +63,7 @@
 - (id) init;
 - (void) dealloc;
 
-- (NSDictionary *) profiles;
+- (NSMutableDictionary *) profiles;
 - (void) setProfiles: (NSMutableDictionary *) aDict;
 - (void) addProfileWithName: (NSString *) newProfile copyProfile: (NSString *) sourceProfile;
 - (void) deleteProfileWithName: (NSString *) profileName;

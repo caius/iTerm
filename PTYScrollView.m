@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.17 2004-03-14 06:05:36 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.18 2006-02-12 17:47:25 ujwal Exp $
 /*
  **  PTYScrollView.m
  **
@@ -93,7 +93,7 @@
 - (void) dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView dealloc]", __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
 	[backgroundImage release];
@@ -104,8 +104,8 @@
 - (id)initWithFrame:(NSRect)frame
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYScrollView initWithFrame:%d,%d,%d,%d]",
-		  __FILE__, __LINE__, 
+    NSLog(@"%s: 0x%x: initWithFrame:%d,%d,%d,%d",
+		  __PRETTY_FUNCTION__, self,
 		  frame.origin.x, frame.origin.y, 
 		  frame.size.width, frame.size.height);
 #endif

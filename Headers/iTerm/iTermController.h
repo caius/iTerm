@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.13 2004-11-15 02:09:48 ujwal Exp $
+// $Id: iTermController.h,v 1.15 2005-04-05 03:08:58 ujwal Exp $
 /*
  **  iTermController.h
  **
@@ -55,7 +55,7 @@
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
 - (PseudoTerminal *) currentTerminal;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
-- (NSStringEncoding const*) encodingList;
+- (NSArray *) sortedEncodingList;
 - (NSMenu *) buildAddressBookMenuWithTarget:(id)target withShortcuts: (BOOL) withShortcuts;
 - (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm;
 - (PTYTextView *) frontTextView;

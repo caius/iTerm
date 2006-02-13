@@ -104,11 +104,14 @@
 	IBOutlet NSPopUpButton *terminalEncoding;
 	IBOutlet NSTextField *terminalScrollback;
 	IBOutlet NSButton *terminalSilenceBell;
+	IBOutlet NSButton *terminalShowBell;
 	IBOutlet NSButton *terminalBlink;
 	IBOutlet NSButton *terminalCloseOnSessionEnd;
 	IBOutlet NSButton *terminalDoubleWidth;
 	IBOutlet NSButton *terminalSendIdleChar;
 	IBOutlet NSTextField *terminalIdleChar;
+	IBOutlet NSButton *xtermMouseReporting;
+
 }
 
 - (IBAction) showProfilesWindow: (id) sender;
@@ -148,10 +151,12 @@
 - (IBAction) terminalSetType: (id) sender;
 - (IBAction) terminalSetEncoding: (id) sender;
 - (IBAction) terminalSetSilenceBell: (id) sender;
+- (IBAction) terminalSetShowBell: (id) sender;
 - (IBAction) terminalSetBlink: (id) sender;
 - (IBAction) terminalSetCloseOnSessionEnd: (id) sender;
 - (IBAction) terminalSetDoubleWidth: (id) sender;
 - (IBAction) terminalSetSendIdleChar: (id) sender;
+- (IBAction) terminalSetXtermMouseReporting: (id) sender;
 
 
 @end

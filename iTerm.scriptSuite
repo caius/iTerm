@@ -100,21 +100,21 @@
 			</dict>
 			<key>ToOneRelationships</key>
 			<dict>
-				<key>number</key>
-				<dict>
-					<key>AppleEventCode</key>
-					<string>Snum</string>
-					<key>Type</key>
-					<string>NSNumber&lt;Int&gt;</string>
-				</dict>
-				<key>textStorage</key>
+				<key>contents</key>
 				<dict>
 					<key>AppleEventCode</key>
 					<string>ctxt</string>
 					<key>ReadOnly</key>
 					<string>YES</string>
 					<key>Type</key>
-					<string>NSTextStorage</string>
+					<string>NSString</string>
+				</dict>
+				<key>number</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Snum</string>
+					<key>Type</key>
+					<string>NSNumber&lt;Int&gt;</string>
 				</dict>
 				<key>tty</key>
 				<dict>

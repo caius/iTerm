@@ -8,7 +8,7 @@
 "Bookmarks" = "書籤";
 
 /* Close window */
-"All sessions will be closed" = "所有程序都會被關閉";
+"All sessions will be closed" = "所有程序將被關閉。";
 
 /* Cancel */
 "Cancel" = "取消";
@@ -20,51 +20,51 @@
 "Close" = "關閉";
 
 /* Toolbar Item Tip: Close */
-"Close the current session" = "關閉目前程序";
+"Close the current session" = "關閉目前的程序";
 
 /* Close window */
-"Close Window?" = "Close Window?";
+"Close Window?" = "關閉視窗？";
 
 /* Close Session */
-"The current session will be closed"="將關閉目前的程序";
-"All unsaved data will be lost"="所有沒存下的資料皆會遺失";
+"The current session will be closed"="目前的程序將被關閉";
+"All unsaved data will be lost"="所有未儲存的資料將會遺失。";
 
 /* Toolbar Item:Configure */
-"Configure" = "設置";
+"Configure" = "設定";
 
 /* Toolbar Item Tip:Configure */
-"Configure current window" = "設置這個視窗";
+"Configure current window" = "設定目前的視窗";
 
 /* Context menu */
-"Configure..." = "設置...";
+"Configure..." = "設定...";
 
 /* Context menu */
-"Copy" = "複製";
+"Copy" = "拷貝";
 
 /* Context menu */
-"New Tab" = "新分頁";
+"New Tab" = "新增標籤頁";
 
 /* Context menu */
-"New Window" = "新視窗";
+"New Window" = "新增視窗";
 
 
 /* Removal Alert */
-"Do you really want to remove this item?" = "你是真的要移除這個項目嗎？";
+"Do you really want to remove this item?" = "您是否真的想要移除這個項目？";
 
 /* Toolbar Item:New */
-"Default Session"="預設程序";
-"New" = "新";
-"Open in a new window"="於一新視窗中開啟";
-"Open a new session"="啟動新程序";
+"Default Session"="預設的程序";
+"New" = "新增";
+"Open in a new window"="以新視窗打開";
+"Open a new session"="以新程序打開";
 
 /* OK */
-"OK" = "沒問題";
+"OK" = "好";
 
 /* Toolbar Item Tip:Bookmarks */
 "Open the bookmarks" = "打開書籤";
 
 /* Context menu */
-"Paste" = "貼上 ";
+"Paste" = "貼上";
 
 /* Context menu */
 "Save" = "儲存";
@@ -76,7 +76,7 @@
 "Move to new window" = "移至新視窗";
 
 /* Anti-Idle: wrong input */
-"Please enter a valid code (0~255)" = "請輸入有效的碼(0~255)";
+"Please enter a valid code (0~255)" = "請輸入一個有效值 (0~255)";
 
 /* wrong input */
 "Please enter a valid window size" = "請輸入有效的視窗大小";
@@ -87,90 +87,85 @@
 /* Context menu */
 "Select All" = "全選";
 "Save" = "儲存";
-"Print..." = "印列...";
-"Print Selection..." = "印列所選...";
+"Print..." = "列印...";
+"Print Selection..." = "列印所選範圍...";
 
 /* Removal Alert */
-"There is no undo for this operation." = "此操作無法回手";
+"There is no undo for this operation." = "此項操作無法還原。";
 
 /* wrong input */
-"Wrong Input" = "錯誤輸入";
+"Wrong Input" = "輸入錯誤";
 
 /* Upgrade */
-"Upgrade Warning: New language encodings available!"="升級的警告：有新語言編碼了";
-"Please reset all the encoding settings in your preference and bookmarks"="請重設偏好與書籤中的所有編碼設定";
+"Upgrade Warning: New language encodings available!"="升級提醒：新的語系編碼以可取得！";
+"Please reset all the encoding settings in your preference and bookmarks"="請重設您偏好設定和書籤裡的所有編碼設定";
 
 /* Author */
 "fabian"="fabian";
 "Ujwal S. Setlur"="Ujwal S. Setlur";
 
 /* About */
-"Report A Bug"="報告臭蟲";
+"Report A Bug"="回報臭蟲";
 
 /* Config */
-"Configuration saved as a new entry in Bookmarks"="新的設置已儲存在書籤當中";
-"Configuration saved"="存好了";
+"Configuration saved as a new entry in Bookmarks"="已將設定儲存為新項目於書籤";
+"Configuration saved"="設定已經儲存";
 
 /* OS Version */
-"Minimum_OS"= "iTerm 最起碼需要 OS X 10.2 以上的版本才能執行。所以這程式現在就會關掉了";
+"Minimum_OS"="iTerm 需要 OS X 版本 10.2 或更新的作業系統以執行程式。現在這個程式將會終止。";
 
 /* Sorry */
-"Sorry"="真抱歉";
+"Sorry"="抱歉";
 
 /* Quit */
-"Quit"="關閉";
+"Quit"="結束";
 
 /* PreferencePanel */
 "Display"="顯示";
-"Shell"="外殼程式";
+"Shell"="Shell";
 "Emulation"="模擬";
-"Color"="色彩";
+"Color"="顏色";
 
 /* Script */
-"Script" = "手稿";
+"Script" = "Script";
 
 /* Key Binding Profiles */
 "Global"="全域";
 
 /* Display Profiles */
-"Default" = "預設";
+"Default" = "預設值";
 
 /* Key Binding Actions */
-"next tab"="下個分頁";
-"next window"="下個視窗";
-"previous tab"="上個分頁";
-"previous window"="上個視窗";
-"scroll end"="捲到底";
-"scroll home"="捲到頭";
-"scroll line down"="捲一行下來";
-"scroll line up"="捲一行上去";
-"scroll page down"="捲一頁下來";
-"scroll page up"="捲一頁上去";
-"send ^["="send ^[";
-"send hex code"="送出十六進位碼";
+"next tab"="下一個標籤頁";
+"next window"="下一個視窗";
+"previous tab"="上一個標籤頁";
+"previous window"="上一個視窗";
+"scroll end"="捲動至緩衝區的末端";
+"scroll home"="捲動至緩衝區的起始";
+"scroll line down"="捲動至下一行";
+"scroll line up"="捲動至上一行";
+"scroll page down"="捲動至下一頁";
+"scroll page up"="捲動至上一頁";
+"send ^["="傳送 ^[";
+"send hex code"="傳送 16 進制碼";
 "ignore"="忽略";
-"unknown action ID"="未知的行動識別碼";
+"unknown action ID"="未知的行動 ID";
 
 /* Key Names */
 "cursor down"="游標向下";
 "cursor left"="游標向左";
 "cursor right"="游標向右";
 "cursor up"="游標向上";
-"del"="del";
-"delete"="delete";
-"end"="end";
-"enter"="enter";
-"home"="home";
-"numlock"="numlock";
-"page down"="page down";
-"page up"="page up";
-"unknown key"="不認識的鍵";
+"del"="del 鍵";
+"delete"="delete 鍵";
+"end"="end 鍵";
+"home"="home 鍵";
+"numlock"="numlock 鍵";
+"page down"="page down 鍵";
+"page up"="page up 鍵";
+"unknown key"="未知的按鍵";
 
 /* Save Confirmation */
-"Display Profile Saved To: %@"="顯示設置會儲存到: %@";
-"Terminal Profile Saved To: %@"="終端機設置會儲存到: %@";
-"All bookmarks associated with this profile are effected"="所有與此設置相關的書籤全都會被影響";
-
-/* Bookmarks */
-"Show Bookmarks" = "Show Bookmarks";
-"Hide Bookmarks"="Hide Bookmarks";
+"Display Profile Saved To: %@"="顯示設定已儲存至：%@";
+"Terminal Profile Saved To: %@"="終端機設定已儲存至：%@";
+"All bookmarks associated with this profile are effected"="所有與此設定有關的書籤已經變更。";

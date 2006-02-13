@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.50 2004-11-20 23:52:58 ujwal Exp $
+// $Id: PTYTextView.h,v 1.53 2005-04-10 02:31:16 ujwal Exp $
 //
 /*
  **  PTYTextView.h
@@ -97,6 +97,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	
 	// transparency
 	float transparency;
+  BOOL useTransparency;
 	
     // data source
     VT100Screen *dataSource;
@@ -109,9 +110,11 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
     char selectMode;
 	BOOL mouseDownOnSelection;
 	NSEvent *mouseDownEvent;
-	
+		
 	//find support
 	int lastFindX, lastFindY;
+	
+	BOOL reportingMouseDown;
 	
 	//cache
 	CharCache	charImages[CACHESIZE];
@@ -144,9 +147,15 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void)mouseUp:(NSEvent *)event;
 - (void)mouseDragged:(NSEvent *)event;
 - (void) otherMouseDown: (NSEvent *) event;
-- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines;
+- (void)otherMouseUp:(NSEvent *)event;
+- (void)otherMouseDragged:(NSEvent *)event;
+- (void)rightMouseDown:(NSEvent *)event;
+- (void)rightMouseUp:(NSEvent *)event;
+- (void)rightMouseDragged:(NSEvent *)event;
+- (void)scrollWheel:(NSEvent *)event;
+- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines pad: (BOOL) pad;
 - (NSString *) selectedText;
-- (NSString *) selectedTextBreakingLines: (BOOL) breakLines;
+- (NSString *) selectedTextBreakingLines: (BOOL) breakLines pad: (BOOL) pad;
 - (NSString *) content;
 - (void)copy: (id) sender;
 - (void)paste:(id)sender;
@@ -213,6 +222,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 // transparency
 - (float) transparency;
 - (void) setTransparency: (float) fVal;
+- (BOOL) useTransparency;
+- (void) setUseTransparency: (BOOL) flag;
 
 //
 // Drag and Drop methods for our text view

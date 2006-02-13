@@ -83,7 +83,7 @@ static NSString *PWD_ENVVALUE = @"~";
     addressBookEntry=nil;
 	
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYSession init 0x%x]", __FILE__, __LINE__, self);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif    
 	
     return (self);
@@ -92,7 +92,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYSession dealloc 0x%x]", __FILE__, __LINE__, self);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
     [SHELL release];
@@ -184,24 +184,13 @@ static NSString *PWD_ENVVALUE = @"~";
                                              selector:@selector(tabViewWillRedraw:)
                                                  name:@"iTermTabViewWillRedraw"
                                                object:nil];
-	
-	//[[NSNotificationCenter defaultCenter] addObserver:self
-    //                                         selector:@selector(textViewResized:)
-    //                                             name:NSViewFrameDidChangeNotification
-    //                                           object:SCROLLVIEW];		
-	
+		
     [tabViewItem setLabelAttributes: chosenStateAttribute];
 }
 
 - (BOOL) isActiveSession
 {
     return ([[[self tabViewItem] tabView] selectedTabViewItem] == [self tabViewItem]);
-}
-
-- (void) startTimer
-{
-	[NSThread detachNewThreadSelector: @selector(updateDisplayThread:) toTarget: self withObject: nil];
-	
 }
 
 - (void)startProgram:(NSString *)program
@@ -229,21 +218,19 @@ static NSString *PWD_ENVVALUE = @"~";
 					width:[SCREEN width]
 				   height:[SCREEN height]];
 	
+	// launch a thread to process the data read from the SHELL process
+	[NSThread detachNewThreadSelector: @selector(_processReadDataThread:) toTarget: self withObject: nil];
+	
 }
 
 
 - (void) terminate
 {
-	
-#if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYSession -terminate: retainCount = %d]", __FILE__, __LINE__, [self retainCount]);
-#endif
-	
-	
+			
 	// deregister from the notification center
 	[[NSNotificationCenter defaultCenter] removeObserver:self];    
     
-	[SHELL stopNoWait];
+	[SHELL stop];
 		
     if(tabViewItem)
     {
@@ -293,7 +280,6 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void)readTask:(NSData *)data
 {
-    VT100TCC token;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, [[[NSString alloc] initWithData: data encoding: nil] autorelease] );
@@ -301,30 +287,8 @@ static NSString *PWD_ENVVALUE = @"~";
     if (data == nil)
         return;
 	
-    [TERMINAL putStreamData:data];
+    [TERMINAL putStreamData:data];	
 	
-    if (REFRESHED==NO)
-    {
-        REFRESHED=YES;
-        if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-            [tabViewItem setLabelAttributes: newOutputStateAttribute];
-    }
-	
-    while (TERMINAL&&((token = [TERMINAL getNextToken]), 
-					  token.type != VT100CC_NULL &&
-					  token.type != VT100_WAIT))
-    {
-		if (token.type != VT100_SKIP)
-			[SCREEN putToken:token];
-    }
-    
-    oIdleCount=0;
-    if (token.type == VT100_NOTSUPPORT) {
-		NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
-    }
-	
-	//    [TEXTVIEW showCursor];
-	//    [TEXTVIEW refresh];
 }
 
 - (void)brokenPipe
@@ -335,14 +299,14 @@ static NSString *PWD_ENVVALUE = @"~";
     [SHELL sendSignal:SIGKILL];
     [SHELL stop];
     EXIT = YES;
-	    
-    if (autoClose)
+	
+	if (autoClose)
         [parent closeSession:self];
     else 
     {
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
         [tabViewItem setLabelAttributes: deadStateAttribute];
-    }
+    }		
 }
 
 - (BOOL) hasKeyMappingForEvent: (NSEvent *) event
@@ -516,7 +480,7 @@ static NSString *PWD_ENVVALUE = @"~";
                 data = [TERMINAL keyFunction:unicode-NSF1FunctionKey+1];
 			
 			if (data != nil) {
-				send_str = (char *)[data bytes];
+				send_str = (unsigned char *)[data bytes];
 				send_strlen = [data length];
 			}
 		}
@@ -528,7 +492,7 @@ static NSString *PWD_ENVVALUE = @"~";
 			[unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
 			// META combination
 			if (keydat != nil) {
-				send_str = (char *)[keydat bytes];
+				send_str = (unsigned char *)[keydat bytes];
 				send_strlen = [keydat length];
 			}
             if ([self optionKey] == OPT_ESC) {
@@ -573,7 +537,7 @@ static NSString *PWD_ENVVALUE = @"~";
 			
 			
 			if (data != nil ) {
-				send_str = (char *)[data bytes];
+				send_str = (unsigned char *)[data bytes];
 				send_strlen = [data length];
 			}
 			
@@ -582,14 +546,14 @@ static NSString *PWD_ENVVALUE = @"~";
 				 send_strlen == 1 &&
 				 send_str[0] == 0x03) || keycode==52)
 			{
-				send_str = "\015";  // NumericPad or Laptop Enter -> 0x0d
+				send_str = (unsigned char*)"\015";  // NumericPad or Laptop Enter -> 0x0d
 				send_strlen = 1;
 			}
 			if (modflag & NSControlKeyMask &&
 				send_strlen == 1 &&
 				send_str[0] == '|')
 			{
-				send_str = "\034"; // control-backslash
+				send_str = (unsigned char*)"\034"; // control-backslash
 				send_strlen = 1;
 			}
 			
@@ -598,14 +562,14 @@ static NSString *PWD_ENVVALUE = @"~";
 				send_strlen == 1 &&
 				send_str[0] == '/')
 			{
-				send_str = "\177"; // control-?
+				send_str = (unsigned char*)"\177"; // control-?
 				send_strlen = 1;
 			}						
 			else if (modflag & NSControlKeyMask &&
 					 send_strlen == 1 &&
 					 send_str[0] == '/')
 			{
-				send_str = "\037"; // control-/
+				send_str = (unsigned char*)"\037"; // control-/
 				send_strlen = 1;
 			}
 			
@@ -615,7 +579,7 @@ static NSString *PWD_ENVVALUE = @"~";
         {
 			if (send_pchr >= 0) {
 				char c = send_pchr;
-				dataPtr = &c;
+				dataPtr = (unsigned char*)&c;
 				dataLength = 1;
 				[self writeTask:[NSData dataWithBytes:dataPtr length:dataLength]];
 			}
@@ -906,7 +870,9 @@ static NSString *PWD_ENVVALUE = @"~";
         if (oIdleCount>200&&!waiting) {
             waiting=YES;
             if (REFRESHED)
-                [tabViewItem setLabelAttributes: idleStateAttribute];
+			{
+				[tabViewItem setLabelAttributes: idleStateAttribute];
+			}
             else
                 [tabViewItem setLabelAttributes: normalStateAttribute];
         }
@@ -996,6 +962,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	
     // set up the rest of the preferences
     [SCREEN setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
+	[SCREEN setShowBellFlag: [terminalProfileMgr showBellForProfile: terminalProfile]];
 	[SCREEN setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
 	[TEXTVIEW setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
     [self setEncoding: [terminalProfileMgr encodingForProfile: terminalProfile]];
@@ -1004,6 +971,7 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setAntiIdle: [terminalProfileMgr sendIdleCharForProfile: terminalProfile]];
     [self setAutoClose: [terminalProfileMgr closeOnSessionEndForProfile: terminalProfile]];
     [self setDoubleWidth:[terminalProfileMgr doubleWidthForProfile: terminalProfile]];
+	[self setXtermMouseReporting:[terminalProfileMgr xtermMouseReportingForProfile: terminalProfile]];
     
 }
 
@@ -1229,6 +1197,11 @@ static NSString *PWD_ENVVALUE = @"~";
     return ([[tabViewItem tabView] indexOfTabViewItem: tabViewItem]);
 }
 
+- (NSString *) contents
+{
+	return ([TEXTVIEW content]);
+}
+
 - (NSString *) backgroundImagePath
 {
     return (backgroundImagePath);
@@ -1381,6 +1354,16 @@ static NSString *PWD_ENVVALUE = @"~";
 	
 }
 
+- (BOOL) useTransparency
+{
+  return [TEXTVIEW useTransparency];
+}
+
+- (void) setUseTransparency: (BOOL) flag
+{
+  [TEXTVIEW setUseTransparency: flag];
+}
+
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
 {
     [TEXTVIEW setColorTable:index highLight:hili color:c];
@@ -1438,6 +1421,17 @@ static NSString *PWD_ENVVALUE = @"~";
 {
     doubleWidth=set;
 }
+
+- (BOOL) xtermMouseReporting
+{
+	return xtermMouseReporting;
+}
+
+- (void) setXtermMouseReporting:(BOOL)set
+{
+	xtermMouseReporting = set;
+}
+
 
 - (BOOL) logging
 {
@@ -1523,19 +1517,6 @@ static NSString *PWD_ENVVALUE = @"~";
 - (NSDictionary *)addressBookEntry
 {
     return addressBookEntry;
-}
-
-- (void) updateDisplayThread:(void*)incoming
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	while (EXIT == NO)
-	{
-		[self updateDisplay];
-		usleep(15000);
-	}
-	
-	[pool release];
 }
 
 
@@ -1692,6 +1673,68 @@ static NSString *PWD_ENVVALUE = @"~";
 		i += 50000;
     }
     [self writeTask: data];
+}
+
+// thread to process data read from the task being run
+-(void)_processReadDataThread: (void *) arg
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSAutoreleasePool *arPool = nil;
+	int iterationCount = 0;
+	VT100TCC token;
+	
+	while(EXIT == NO)
+	{
+		
+		token = [TERMINAL getNextToken];
+		if (TERMINAL && token.type != VT100CC_NULL && token.type != VT100_WAIT)
+		{	
+			
+			if(arPool == nil)
+				arPool = [[NSAutoreleasePool alloc] init];
+			
+			if (token.type != VT100_SKIP)
+			{
+				[SCREEN putToken:token];
+				
+				if (REFRESHED==NO)
+				{
+					REFRESHED=YES;
+					if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
+						[tabViewItem setLabelAttributes: newOutputStateAttribute];
+				}
+				
+				oIdleCount=0;
+			}
+			
+			if (token.type == VT100_NOTSUPPORT) {
+				NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
+			}
+			
+			// periodically refresh autoreleasepool
+			iterationCount++;
+			if(iterationCount % 100 == 0)
+			{
+				[arPool release];
+				arPool = nil;
+				iterationCount = 0;
+			}
+		}
+		else
+			usleep(10000);
+		
+	}
+		
+	if(arPool != nil)
+	{
+		[arPool release];
+		arPool = nil;
+	}
+	
+	[pool release];
+	
+	[NSThread exit];
+	
 }
 
 

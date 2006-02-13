@@ -19,6 +19,38 @@
 <FONT SIZE="5"><STRONG>Version History:</STRONG></FONT>
 <BR><BR>
 
+<STRONG>0.8.2 released</STRONG> 2/7/2006<BR>
+iTerm is now a universal binary application! The new version also addresses 
+many bugs in the last version. WE strongly encourage everybody who uses 
+0.8.1 to upgrade.<BR>
+<UL>
+<LI>Now a Universal Binary application, iTerm runs on Intel Macs natively.</LI>
+<LI>Added support of xterm mouse reporting, code provided by Geoff Reedy.</LI>
+<LI>Fixed "can't save settings" bug in 10.4.</LI>
+<LI>Removed bouncing icon feature.</LI>
+<LI>Fixed "find" function.</LI>
+<LI>Fixed "appending of spaces" bug.</LI>
+<LI>Fixed bugs of some mouse related actions.</LI>
+<LI>Other bug fixes and GUI adjustments as usual.</LI>
+</UL>
+
+<STRONG>0.8.1 released</STRONG> 4/6/2005<BR>
+This release mainly fixes a few issues with 0.8.0. New features include:<BR>
+<UL>
+<LI>Support to show bookmarks in a drawer of terminal window.</LI>
+<LI>Added support to launch command line tools from Finder.</LI>
+<LI>Fixes for printing problems in 0.8.0.</LI>
+<LI>Added support to drag selection from terminal windows.</LI>
+<LI>Added support to specify a bookmark as a default.</LI>
+<LI>Added support for services.</LI>
+<LI>Added an option to maximize windows vertically only.</LI>
+<LI>Fixes for double/triple-click selection.</LI>
+<LI>Fixed reverse video issues on OpenVMS</LI>
+<LI>Added support to specify path to nested bookmark in AppleScript.</LI>
+<LI>Other bug fixes and GUI enhancements as usual.</LI>
+</UL>
+
+
 <STRONG>0.8.0 released</STRONG> 4/14/2004<BR>
 This is a major update of iTerm. New features include:<BR>
 <UL>
@@ -29,7 +61,6 @@ This is a major update of iTerm. New features include:<BR>
 <LI>Tab-bonding with key input sent to multiple tabs.
 <LI>Supports customizable character spacing.</LI>
 <LI>Other bug fixes and GUI enhancements as usual.</LI>
-For more detail, see <A HREF="history.shtml">Version History</A><BR>
 </UL>
 
 <STRONG>0.7.8</STRONG> 11/4/2003<BR>

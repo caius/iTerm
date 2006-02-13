@@ -87,19 +87,19 @@
 			<string>sessions</string>
 			<key>ToOneRelationships</key>
 			<dict>
+				<key>contents</key>
+				<dict>
+					<key>Description</key>
+					<string>text of the session</string>
+					<key>Name</key>
+					<string>contents</string>
+				</dict>
 				<key>number</key>
 				<dict>
 					<key>Description</key>
 					<string>index of session</string>
 					<key>Name</key>
 					<string>number</string>
-				</dict>
-				<key>textStorage</key>
-				<dict>
-					<key>Description</key>
-					<string>text of the session</string>
-					<key>Name</key>
-					<string>contents</string>
 				</dict>
 				<key>tty</key>
 				<dict>

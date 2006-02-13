@@ -118,6 +118,7 @@
                 showAbout = id; 
                 showPrefWindow = id; 
                 smallerFont = id; 
+                useTransparency = id; 
             }; 
             CLASS = iTermApplicationDelegate; 
             LANGUAGE = ObjC; 
@@ -136,6 +137,7 @@
                 selectTab = NSMenuItem; 
                 sendInputToAllSessions = NSMenuItem; 
                 toggleBookmarksView = NSMenuItem; 
+                toggleTransparency = NSMenuItem; 
             }; 
             SUPERCLASS = NSObject; 
         }

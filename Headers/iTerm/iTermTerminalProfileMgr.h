@@ -55,6 +55,8 @@
 - (void) setScrollbackLines: (int) lines forProfile: (NSString *) profileName;
 - (BOOL) silenceBellForProfile: (NSString *) profileName;
 - (void) setSilenceBell: (BOOL) silent forProfile: (NSString *) profileName;
+- (BOOL) showBellForProfile: (NSString *) profileName;
+- (void) setShowBell: (BOOL) showBell forProfile: (NSString *) profileName;
 - (BOOL) blinkCursorForProfile: (NSString *) profileName;
 - (void) setBlinkCursor: (BOOL) blink forProfile: (NSString *) profileName;
 - (BOOL) closeOnSessionEndForProfile: (NSString *) profileName;
@@ -65,6 +67,8 @@
 - (void) setSendIdleChar: (BOOL) sent forProfile: (NSString *) profileName;
 - (char) idleCharForProfile: (NSString *) profileName;
 - (void) setIdleChar: (char) idle forProfile: (NSString *) profileName;
+- (BOOL) xtermMouseReportingForProfile: (NSString *) profileName;
+- (void) setXtermMouseReporting: (BOOL) xtermMouseReporting forProfile: (NSString *) profileName;
 
 @end
 

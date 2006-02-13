@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.7 2004-10-10 07:04:12 ujwal Exp $ */
+/* $Id: PTYWindow.m,v 1.8 2006-02-12 17:51:40 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -30,6 +30,7 @@
 
 
 #import <iTerm/PTYWindow.h>
+#import <iTerm/PreferencePanel.h>
 
 #define DEBUG_METHOD_TRACE	0
 #define DEBUG_METHOD_ALLOC	0
@@ -91,6 +92,23 @@
 - (NSDrawer *) drawer
 {
 	return (drawer);
+}
+
+- (void)sendEvent:(NSEvent *)event
+{
+	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
+	
+	if([event type] == NSMouseEntered)
+	{
+		if([[PreferencePanel sharedInstance] focusFollowsMouse])
+			[self makeKeyWindow];
+	}
+	else if([event type] == NSMouseExited)
+	{
+		// no-op
+	}
+	else	
+		[super sendEvent:event];
 }
 
 @end

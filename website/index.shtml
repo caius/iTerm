@@ -69,24 +69,27 @@
   </UL>
 </UL>
 
-<FONT SIZE="5"><STRONG>What's new</STRONG></FONT><BR>
-<STRONG>0.8.0 released</STRONG> 4/14/2004<BR>
-This is a major update of iTerm. New features include:<BR>
+<FONT SIZE="5"><STRONG>What's new</STRONG></FONT><BR><BR>
+<STRONG>0.8.2 released</STRONG> 2/7/2006<BR>
+iTerm is now a universal binary application! The new version also addresses 
+many bugs in the last version. WE strongly encourage everybody who uses 
+0.8.1 to upgrade.<BR>
 <UL>
-<LI>Now supports custom key-mapping.</LI>
-<LI>New drawing code with speed enhancement up to several folds.</LI>
-<LI>New improved bookmarks organization.</LI>
-<LI>Rendezvous support.</LI>
-<LI>Supports customizable character spacing.</LI>
-<LI>Other bug fixes and GUI enhancements as usual.</LI>
-For more detail, see <A HREF="history.shtml">Version History</A><BR>
+<LI>Now a Universal Binary application, iTerm runs on Intel Macs natively.</LI>
+<LI>Added support of xterm mouse reporting, code provided by Geoff Reedy.</LI>
+<LI>Fixed "can't save settings" bug in 10.4.</LI>
+<LI>Removed bouncing icon feature.</LI>
+<LI>Fixed "find" function.</LI>
+<LI>Fixed "appending of spaces" bug.</LI>
+<LI>Fixed bugs of some mouse related actions.</LI>
+<LI>Other bug fixes and GUI adjustments as usual.</LI>
 </UL>
 
 <FONT SIZE="5"><STRONG>Notice:</STRONG></FONT><BR>
-<UL>Due a change of bookmark organizations introduced in 0.8.0, old bookmark settings are
+<UL>Due a change of bookmark organizations introduced in 0.8.0, bookmark settings for versions older than 0.8.0 are
 no longer completely recognized. Only names, commands, directories, and shortcuts are migrated. 
 Display and terminal settings are not migrated. You have to re-enter these manually into the new version.</UL>
-<UL>Version 0.8.0 comes with a few keymapping/display/terminal profiles.
+<UL>Starting from version 0.8.0, iTerm comes with a few keymapping/display/terminal profiles.
 If you do not see them, please delete your iTerm.plist file in ~/Library/Preferences and
 restart the program.</UL>
 

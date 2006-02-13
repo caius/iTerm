@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.24 2004-10-03 08:28:05 ujwal Exp $
+// $Id: PTYTask.m,v 1.27 2006-02-13 23:31:11 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -47,8 +47,6 @@
 @implementation PTYTask
 
 #define CTRLKEY(c)   ((c)-'A'+1)
-
-#define MEASURE_PROCESSING_TIME		0
 
 static void setup_tty_param(struct termios *term,
 			    struct winsize *win,
@@ -141,26 +139,16 @@ static int writep(int fds, char *buf, size_t len)
 + (void)_processReadThread:(PTYTask *)boss
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSConnection *serverConnection;
-    id rootProxy;
     NSData *data = nil;
     BOOL exitf = NO;
-    NSAutoreleasePool *arPool = nil;
-	unsigned int iterationCount;
-#if MEASURE_PROCESSING_TIME
-    struct timeval tv;
-    BOOL newOutput = NO;
-#endif
+	int iterationCount = 0;
+	NSAutoreleasePool *arPool = nil;
 
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:%@] start",
 	  __FILE__, __LINE__, [boss description]);
 #endif
 
-    serverConnection = [[NSConnection alloc] 
-               initWithReceivePort:boss->SENDPORT
-			  sendPort:boss->RECVPORT];
-    rootProxy = [serverConnection rootProxy];
 
     /*
       data receive loop
@@ -182,14 +170,7 @@ static int writep(int fds, char *buf, size_t len)
 		FD_SET(boss->FILDES, &rfds);
 		FD_SET(boss->FILDES, &efds);
 		
-#if MEASURE_PROCESSING_TIME
-		tv.tv_sec = 0;
-		tv.tv_usec = 100000;
-		
-		sts = select(boss->FILDES + 1, &rfds, NULL, &efds, &tv);
-#else
 		sts = select(boss->FILDES + 1, &rfds, NULL, &efds, NULL);
-#endif
 
 		if (sts < 0) {
 			[arPool release];
@@ -217,7 +198,7 @@ static int writep(int fds, char *buf, size_t len)
 			if (sts == 0) {
 				// session close
 				exitf = YES;
-                [rootProxy readTask: nil];
+                [boss readTask: nil];
 			}
 		}
 		else if (FD_ISSET(boss->FILDES, &rfds)) {
@@ -237,39 +218,16 @@ static int writep(int fds, char *buf, size_t len)
 			else {
 				data = nil;
             }
-			
-#if MEASURE_PROCESSING_TIME
-			// measure processing time if we want to.
-			if(newOutput == NO)
-			{
-				//NSLog(@"PTYTask: Start new output");
-				newOutput = YES;
-			}
-#endif
-			
+						
             if (data != nil) {
+				// use boss instead of rootProxy for performance
                 [boss setHasOutput: YES];
-				[rootProxy readTask:data];
+				[boss readTask:data];
             }
             else
                 [boss setHasOutput: NO];
 			
 		}
-#if MEASURE_PROCESSING_TIME
-		else if (sts == 0)
-		{
-			// time out; do some other tasks in this idle time
-            [boss setHasOutput: NO];
-			
-			// measure processing time if we want to.
-			if(newOutput == YES)
-			{
-				//NSLog(@"PTYTask: End new output");
-                [rootProxy doIdleTasks];
-				newOutput = NO;
-			}	    
-		}
-#endif
 
 		// periodically refresh our autorelease pool
 		if((iterationCount % 10) == 0)
@@ -287,10 +245,6 @@ static int writep(int fds, char *buf, size_t len)
 		arPool = nil;
 	}
 
-    [rootProxy brokenPipe];
-
-    [serverConnection release];
-
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:] finish",
 	  __FILE__, __LINE__);
@@ -303,7 +257,7 @@ static int writep(int fds, char *buf, size_t len)
 - (id)init
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYTask init]", __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     if ([super init] == nil)
 	return nil;
@@ -314,9 +268,6 @@ static int writep(int fds, char *buf, size_t len)
     RECVDATA = [[NSMutableData data] retain];
     FILDES = -1;
     TTY = nil;
-    SENDPORT = nil;
-    RECVPORT = nil;
-    CONNECTION = nil;
     LOG_PATH = nil;
     LOG_HANDLE = nil;
     hasOutput = NO;
@@ -327,7 +278,7 @@ static int writep(int fds, char *buf, size_t len)
 - (void)dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PTYTask dealloc]", __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     if (PID > 0)
 		kill(PID, SIGKILL);
@@ -338,9 +289,6 @@ static int writep(int fds, char *buf, size_t len)
     [RECVDATA release];
     [TTY release];
     [PATH release];
-    [SENDPORT release];
-    [RECVPORT release];
-    //[CONNECTION release];
 
     [super dealloc];
 }
@@ -413,21 +361,8 @@ static int writep(int fds, char *buf, size_t len)
     TTY = [[NSString stringWithCString:ttyname] retain];
     NSParameterAssert(TTY != nil);
 	
-    /*
-	 create data receive thread 
-	 */
-    SENDPORT = [NSPort port]; 
-    RECVPORT = [NSPort port];
-    CONNECTION = [[NSConnection alloc] initWithReceivePort:RECVPORT
-												  sendPort:SENDPORT];
-    [CONNECTION setRootObject:self];
-    [self release];
-	
-    NSParameterAssert(SENDPORT != nil && RECVPORT != nil);
-    NSParameterAssert(CONNECTION != nil);
-	
     [NSThread detachNewThreadSelector:@selector(_processReadThread:)
-            	             toTarget:[PTYTask class]
+            	             toTarget: [PTYTask class]
 	                   withObject:self];
 }
 
@@ -554,7 +489,7 @@ static int writep(int fds, char *buf, size_t len)
 - (int)wait
 {
     if (PID >= 0) 
-		waitpid(PID, &STATUS, 0);
+		waitpid(PID, &STATUS, WNOHANG);
 
     return STATUS;
 }
@@ -573,13 +508,14 @@ static int writep(int fds, char *buf, size_t len)
 
 - (void)stop
 {
-    [self sendSignal:SIGHUP];
+    [self sendSignal:SIGKILL];
+	usleep(10000);
     [self wait];
 }
 
 - (void)stopNoWait
 {
-    [self sendSignal:SIGHUP];
+    [self sendSignal:SIGKILL];
 }
 
 - (int)status

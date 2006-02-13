@@ -19,6 +19,7 @@
                 showConfigWindow = id; 
                 showFindPanel = id; 
                 toggleBookmarksView = id; 
+                toggleFontSizeFollowWindowSize = id; 
                 toggleInputToAllSessions = id; 
                 toggleRemapDeleteKey = id; 
             }; 
@@ -117,6 +118,7 @@
                 showAbout = id; 
                 showPrefWindow = id; 
                 smallerFont = id; 
+                useTransparency = id; 
             }; 
             CLASS = iTermApplicationDelegate; 
             LANGUAGE = ObjC; 
@@ -135,6 +137,7 @@
                 selectTab = NSMenuItem; 
                 sendInputToAllSessions = NSMenuItem; 
                 toggleBookmarksView = NSMenuItem; 
+                toggleTransparency = NSMenuItem; 
             }; 
             SUPERCLASS = NSObject; 
         }

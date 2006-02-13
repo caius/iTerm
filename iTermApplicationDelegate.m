@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.27 2004-11-15 02:09:47 ujwal Exp $
+// $Id: iTermApplicationDelegate.m,v 1.30 2006-02-06 20:59:24 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -36,6 +36,7 @@
 #import <iTerm/VT100Terminal.h>
 #import <iTerm/FindPanelWindowController.h>
 #import <iTerm/PTYWindow.h>
+
 
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
 static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
@@ -80,7 +81,7 @@ static BOOL usingAutoLaunchScript = NO;
     // populate the submenu with ascripts found in the script directory
     NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath: [SCRIPT_DIRECTORY stringByExpandingTildeInPath]];
     NSString *file;
-    while (file = [directoryEnumerator nextObject])
+    while ((file = [directoryEnumerator nextObject]))
     {
 		NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: file action: @selector(launchScript:) keyEquivalent: @""];
 		[scriptItem setTarget: [iTermController sharedInstance]];
@@ -93,7 +94,6 @@ static BOOL usingAutoLaunchScript = NO;
     [[NSApp mainMenu] insertItem: scriptMenuItem atIndex: 4];
     [scriptMenuItem release];
     [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
-     
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -217,7 +217,7 @@ static BOOL usingAutoLaunchScript = NO;
                                              selector:@selector(nonTerminalWindowBecameKey:)
                                                  name:@"nonTerminalWindowBecameKey"
                                                object:nil];    
-    
+
     return self;
 }
 
@@ -291,6 +291,13 @@ static BOOL usingAutoLaunchScript = NO;
     [[[iTermController sharedInstance] currentTerminal] changeFontSize: NO];
 }
 
+// transparency
+- (IBAction) useTransparency: (id) sender
+{
+  BOOL b = [[[[iTermController sharedInstance] currentTerminal] currentSession] useTransparency];
+  [[[[iTermController sharedInstance] currentTerminal] currentSession] setUseTransparency: !b];
+}
+
 
 /// About window
 
@@ -303,7 +310,7 @@ static BOOL usingAutoLaunchScript = NO;
 //    [NSApp orderFrontStandardAboutPanel:nil];
 
     // First Author
-    author1URL = [NSURL URLWithString: @"mailto:fabian@macvillage.net"];
+    author1URL = [NSURL URLWithString: @"mailto:yfabian@gmail.com"];
     linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: author1URL, NSLinkAttributeName,
                         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
 					    [NSColor blueColor], NSForegroundColorAttributeName,
@@ -489,6 +496,16 @@ static BOOL usingAutoLaunchScript = NO;
 
     [logStart setEnabled: ![aSession logging]];
     [logStop setEnabled: [aSession logging]];
+}
+
+- (BOOL) validateMenuItem: (NSMenuItem *) menuItem
+{
+  if ([menuItem action] == @selector(useTransparency:)) 
+  {
+    BOOL b = [[[[iTermController sharedInstance] currentTerminal] currentSession] useTransparency];
+    [menuItem setState: b == YES ? NSOnState : NSOffState];
+  }
+  return YES;
 }
 
 @end

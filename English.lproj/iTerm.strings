@@ -174,3 +174,9 @@
 /* Bookmarks */
 "Show Bookmarks" = "Show Bookmarks";
 "Hide Bookmarks"="Hide Bookmarks";
+
+/* Warning */
+"Warning!" = "Warning!";
+
+/* Keyboard Input */
+"Keyboard input will be sent to all sessions in this terminal." = "Keyboard input will be sent to all sessions in this terminal.";

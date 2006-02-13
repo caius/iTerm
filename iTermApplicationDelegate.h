@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.15 2004-10-10 07:04:12 ujwal Exp $
+// $Id: iTermApplicationDelegate.h,v 1.16 2005-04-10 00:59:29 ujwal Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -50,6 +50,7 @@
     IBOutlet NSMenuItem *sendInputToAllSessions;
 	IBOutlet NSMenuItem *fontSizeFollowWindowResize;
 	IBOutlet NSMenuItem *toggleBookmarksView;
+  IBOutlet NSMenuItem *toggleTransparency;
 
 }
 
@@ -84,6 +85,9 @@
 // font control
 - (IBAction) biggerFont: (id) sender;
 - (IBAction) smallerFont: (id) sender;
+
+// transparency
+- (IBAction) useTransparency: (id) sender;
 
 @end
 

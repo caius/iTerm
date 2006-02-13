@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.211 2004-11-20 23:52:52 ujwal Exp $
+// $Id: VT100Screen.m,v 1.217 2006-02-13 23:31:12 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -32,8 +32,6 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
-#define MAX_STRING_SIZE			1024
-
 #import <iTerm/iTerm.h>
 #import <iTerm/VT100Screen.h>
 #import <iTerm/NSStringITerm.h>
@@ -57,16 +55,23 @@ void translate(unichar *s, int len)
 /* pad the source string whenever double width character appears */
 void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 {
-    unichar sc[MAX_STRING_SIZE]; 
+    unichar *sc; 
 	int l=[s length];
 	int i,j;
 	
-	[s getCharacters:sc];
-    for(i=j=0;i<l;i++,j++) {
-		buf[j]=sc[i];
-		if (doubleWidth&&ISDOUBLEWIDTHCHARACTER(sc[i])) buf[++j]=0xffff;
+	if (doubleWidth) {
+		sc = (unichar *) malloc (l * sizeof(unichar));
+		[s getCharacters:sc];
+		for(i=j=0;i<l;i++,j++) {
+			buf[j]=sc[i];
+			if (ISDOUBLEWIDTHCHARACTER(sc[i])) buf[++j]=0xffff;
+		}
+		*len=j;
 	}
-	*len=j;
+	else {
+		[s getCharacters:buf];
+		*len=[s length];
+	}
 }
 
 @implementation VT100Screen
@@ -85,7 +90,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 - (id)init
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[VT100Screen init]", __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     if ((self = [super init]) == nil)
 	return nil;
@@ -122,7 +127,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 - (void)dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[VT100Screen dealloc]", __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	free(screenLines);
 	free(screenBGColor);
@@ -216,8 +221,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		bfg=(char*)malloc(scrollbackLines*width*sizeof(char));
 		bbg=(char*)malloc(scrollbackLines*width*sizeof(char));
 		memset(bl, 0, width*scrollbackLines*sizeof(unichar));
-		memset(bfg, DEFAULT_FG_COLOR_CODE, width*scrollbackLines*sizeof(char));
-		memset(bbg, DEFAULT_BG_COLOR_CODE, width*scrollbackLines*sizeof(char));
+		memset(bfg, [TERMINAL foregroundColorCode], width*scrollbackLines*sizeof(char));
+		memset(bbg, [TERMINAL backgroundColorCode], width*scrollbackLines*sizeof(char));
 		
 		sw=width<WIDTH?width:WIDTH;
 		for(i=0;i<scrollbackLines;i++) {
@@ -239,8 +244,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	sbg=(char*)malloc(height*width*sizeof(char));
 	
 	memset(sl, 0, width*height*sizeof(unichar));
-	memset(sfg, DEFAULT_FG_COLOR_CODE, width*height*sizeof(char));
-	memset(sbg, DEFAULT_BG_COLOR_CODE, width*height*sizeof(char));
+	memset(sfg, [TERMINAL foregroundColorCode], width*height*sizeof(char));
+	memset(sbg, [TERMINAL backgroundColorCode], width*height*sizeof(char));
 
 	// copy the screen content
 	sw=width<WIDTH?width:WIDTH;
@@ -332,8 +337,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		bfg=(char*)malloc(lines*WIDTH*sizeof(char));
 		bbg=(char*)malloc(lines*WIDTH*sizeof(char));
 		memset(bl, 0, WIDTH*lines*sizeof(unichar));
-		memset(bfg, DEFAULT_FG_COLOR_CODE, WIDTH*lines*sizeof(char));
-		memset(bbg, DEFAULT_BG_COLOR_CODE, WIDTH*lines*sizeof(char));
+		memset(bfg, [TERMINAL foregroundColorCode], WIDTH*lines*sizeof(char));
+		memset(bbg, [TERMINAL backgroundColorCode], WIDTH*lines*sizeof(char));
 		
 		if (bufferLines) {
 			if (lines<scrollbackLines) { //new buffer smaller
@@ -541,7 +546,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
     //  VT100 CC
     case VT100CC_ENQ: break;
-    case VT100CC_BEL: [self playBell]; break;
+    case VT100CC_BEL: [self activateBell]; break;
     case VT100CC_BS:  [self backSpace]; break;
     case VT100CC_HT:  [self setTab]; break;
     case VT100CC_LF:
@@ -576,8 +581,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 				screenLines[i]='E';
 		}
 		memset(dirty,1,HEIGHT*WIDTH);
-		memset(screenFGColor,DEFAULT_FG_COLOR_CODE,HEIGHT*WIDTH);
-		memset(screenBGColor,DEFAULT_BG_COLOR_CODE,HEIGHT*WIDTH);
+		memset(screenFGColor,[TERMINAL foregroundColorCode],HEIGHT*WIDTH);
+		memset(screenBGColor,[TERMINAL backgroundColorCode],HEIGHT*WIDTH);
 		break;
     case VT100CSI_DECDHL: break;
     case VT100CSI_DECDWL: break;
@@ -745,8 +750,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 	if (bufferLines) {
 		memset(bufferLines,0,scrollbackLines*WIDTH*sizeof(unichar));
-		memset(bufferFGColor,DEFAULT_FG_COLOR_CODE,scrollbackLines*WIDTH*sizeof(char));
-		memset(bufferBGColor,DEFAULT_BG_COLOR_CODE,scrollbackLines*WIDTH*sizeof(char));
+		memset(bufferFGColor,[TERMINAL foregroundColorCode],scrollbackLines*WIDTH*sizeof(char));
+		memset(bufferBGColor,[TERMINAL backgroundColorCode],scrollbackLines*WIDTH*sizeof(char));
 	}
 	
 	bufferWrapped = lastBufferLineIndex = 0;
@@ -795,16 +800,23 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 {
     int idx, screenIdx;
     int j, len, newx;
-	unichar buffer[MAX_STRING_SIZE];
+	unichar *buffer;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setString:%@ at %d]",
           __FILE__, __LINE__, string, CURSOR_X);
 #endif
 
-	if ([string length] < 1 || !string || [string length] > MAX_STRING_SIZE) 
+	if ([string length] < 1 || !string) 
 	{
 		NSLog(@"%s: invalid string '%@'", __PRETTY_FUNCTION__, string);
+		return;		
+	}
+	
+	buffer = (unichar *) malloc( 2 * [string length] * sizeof(unichar) );
+	if (!buffer)
+	{
+		NSLog(@"%s: Out of memory", __PRETTY_FUNCTION__);
 		return;		
 	}
 	
@@ -920,8 +932,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 		// set last blank line to default
 		memset(screenLines+WIDTH*(HEIGHT-1),0,WIDTH*sizeof(unichar));
-		memset(screenFGColor+WIDTH*(HEIGHT-1),DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
-		memset(screenBGColor+WIDTH*(HEIGHT-1),DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
+		memset(screenFGColor+WIDTH*(HEIGHT-1),[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
+		memset(screenBGColor+WIDTH*(HEIGHT-1),[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
 		memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
     }
     else {
@@ -980,8 +992,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     NSLog(@"%s(%d):-[VT100Screen clearScreen]", __FILE__, __LINE__);
 #endif
 	memset(screenLines,0,HEIGHT*WIDTH*sizeof(unichar));
-	memset(screenFGColor,DEFAULT_FG_COLOR_CODE,HEIGHT*WIDTH*sizeof(char));
-	memset(screenBGColor,DEFAULT_BG_COLOR_CODE,HEIGHT*WIDTH*sizeof(char));
+	memset(screenFGColor,[TERMINAL foregroundColorCode],HEIGHT*WIDTH*sizeof(char));
+	memset(screenBGColor,[TERMINAL backgroundColorCode],HEIGHT*WIDTH*sizeof(char));
 	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));
 
 	CURSOR_X = CURSOR_Y = 0;
@@ -1046,8 +1058,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	
 	memset(screenLines+idx1,0,(idx2-idx1)*sizeof(unichar));
 	// give default foreground and background colors
-	memset(screenFGColor+idx1,DEFAULT_FG_COLOR_CODE,(idx2-idx1)*sizeof(char));
-	memset(screenBGColor+idx1,DEFAULT_BG_COLOR_CODE,(idx2-idx1)*sizeof(char));
+	memset(screenFGColor+idx1,[TERMINAL foregroundColorCode],(idx2-idx1)*sizeof(char));
+	memset(screenBGColor+idx1,[TERMINAL backgroundColorCode],(idx2-idx1)*sizeof(char));
 	memset(dirty+idx1,1,(idx2-idx1)*sizeof(char));
 }
 
@@ -1078,18 +1090,22 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	}
 	idx=CURSOR_Y*WIDTH+x1;
 	memset(screenLines+idx,0,(x2-x1)*sizeof(unichar));
+	
+	// I'm commenting out the following code. I'm not sure about OpenVMS, but this code produces wrong result
+	// when I use vttest program for testing the color features. --fabian
+	
 	// if we erasing entire lines, set to default foreground and background colors. Some systems (like OpenVMS)
 	// do not send explicit video information
-	if(x1 == 0 && x2 == WIDTH)
-	{
-		fgCode = DEFAULT_FG_COLOR_CODE;
-		bgCode = DEFAULT_BG_COLOR_CODE;
-	}
-	else
-	{
+	//if(x1 == 0 && x2 == WIDTH)
+	//{
+	//	fgCode = DEFAULT_FG_COLOR_CODE;
+	//	bgCode = DEFAULT_BG_COLOR_CODE;
+	//}
+	//else
+	//{
 		fgCode = [TERMINAL foregroundColorCode];
 		bgCode = [TERMINAL backgroundColorCode];
-	}
+	//}
 	memset(screenFGColor+idx,fgCode,(x2-x1)*sizeof(char));
 	memset(screenBGColor+idx,bgCode,(x2-x1)*sizeof(char));
 	memset(dirty+idx,1,(x2-x1)*sizeof(char));
@@ -1310,8 +1326,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	}
 	// new line with default settings
 	memset(screenLines+SCROLL_BOTTOM*WIDTH,0,WIDTH*sizeof(unichar));
-	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
+	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
+	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
 }
 
@@ -1331,8 +1347,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	}
 	// new line with default settings
 	memset(screenLines+SCROLL_TOP*WIDTH,0,WIDTH*sizeof(unichar));
-	memset(screenFGColor+SCROLL_TOP*WIDTH,DEFAULT_FG_COLOR_CODE,WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_TOP*WIDTH,DEFAULT_BG_COLOR_CODE,WIDTH*sizeof(char));
+	memset(screenFGColor+SCROLL_TOP*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
+	memset(screenBGColor+SCROLL_TOP*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));    
 }
 
@@ -1369,7 +1385,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     
 //    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
 	idx1=CURSOR_Y*WIDTH;
-	if (n+CURSOR_Y<SCROLL_BOTTOM) {
+	if (n+CURSOR_Y<=SCROLL_BOTTOM) {
 		idx2=(CURSOR_Y+n)*WIDTH;
 		len=(SCROLL_BOTTOM-n-CURSOR_Y+1)*WIDTH;
 		memmove(screenLines+idx2, screenLines+idx1, len*sizeof(unichar));
@@ -1395,7 +1411,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     
 	//    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
 	idx1=CURSOR_Y*WIDTH;
-	if (n+CURSOR_Y<SCROLL_BOTTOM) {
+	if (n+CURSOR_Y<=SCROLL_BOTTOM) {
 		idx2=(CURSOR_Y+n)*WIDTH;
 		len=(SCROLL_BOTTOM-n-CURSOR_Y+1)*WIDTH;
 		memmove(screenLines+idx1, screenLines+idx2, len*sizeof(unichar));
@@ -1422,15 +1438,27 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     PLAYBELL = flag;
 }
 
-- (void)playBell
+- (void)setShowBellFlag:(BOOL)flag
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):+[VT100Screen setShowBellFlag:%s]",
+		  __FILE__, __LINE__, flag == YES ? "YES" : "NO");
+#endif
+    SHOWBELL = flag;
+}
+
+- (void)activateBell
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen playBell]",  __FILE__, __LINE__);
 #endif
     if (PLAYBELL) {
 		NSBeep();
-        [SESSION setBell];
     }
+	if (SHOWBELL)
+	{
+		[SESSION setBell];
+	}
 }
 
 - (void)deviceReport:(VT100TCC)token
@@ -1504,12 +1532,9 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
 #endif
-	int i;
 	
-	for (i=0; i<WIDTH*HEIGHT; i++) {
-		if (dirty[i]) break;
-	}
-    if (i<WIDTH*HEIGHT) [display refresh];
+    if (memchr(dirty, 1, WIDTH*HEIGHT)) [display refresh];
+	
 }
 
 - (int) cursorX

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.44 2004-11-15 02:09:47 ujwal Exp $
+// $Id: iTermController.m,v 1.46 2005-04-05 03:08:56 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -46,7 +46,15 @@
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
-static NSStringEncoding const *encodingList=nil;
+
+// Comparator for sorting encodings
+static int _compareEncodingByLocalizedName(id a, id b, void *unused)
+{
+	NSString *sa = [NSString localizedNameOfStringEncoding: [a unsignedIntValue]];
+	NSString *sb = [NSString localizedNameOfStringEncoding: [b unsignedIntValue]];
+	return [sa caseInsensitiveCompare: sb];
+}
+
 
 @implementation iTermController
 
@@ -81,7 +89,6 @@ static NSStringEncoding const *encodingList=nil;
     if([fileManager fileExistsAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath]] == NO)
         [fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
     
-    encodingList=[NSString availableStringEncodings];
     terminalWindows = [[NSMutableArray alloc] init];
 	
 	// read preferences
@@ -236,10 +243,20 @@ static NSStringEncoding const *encodingList=nil;
         [self removeFromTerminalsAtIndex: [terminalWindows indexOfObject: theTerminalWindow]];
 }
 
-- (NSStringEncoding const*) encodingList
+// Build sorted list of encodings
+- (NSArray *) sortedEncodingList
 {
-    return encodingList;
+	NSStringEncoding const *p;
+	NSMutableArray *tmp = [NSMutableArray array];
+	
+	for (p = [NSString availableStringEncodings]; *p; ++p)
+		[tmp addObject:[NSNumber numberWithUnsignedInt:*p]];
+	[tmp sortUsingFunction: _compareEncodingByLocalizedName context:NULL];
+	
+	return (tmp);
 }
+
+
 
 // Build the bookmarks menu
 - (NSMenu *) buildAddressBookMenuWithTarget:(id)target withShortcuts: (BOOL) withShortcuts

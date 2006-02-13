@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.302 2004-11-21 00:41:03 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.305 2006-02-12 17:52:24 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -95,7 +95,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[self _commonInit];
 	
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PseudoTerminal init: 0x%x]", __FILE__, __LINE__, self);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
     return self;
@@ -403,37 +403,32 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) closeSession: (PTYSession*) aSession
 {
-    int i;
-    int n=[_sessionMgr numberOfSessions];
+	NSTabViewItem *aTabViewItem;
     
     if((_sessionMgr == nil) || ![_sessionMgr containsSession:aSession])
         return;
     
-    if(n == 1 && [self windowInited])
+    if([_sessionMgr numberOfSessions] == 1 && [self windowInited])
     {
         [[self window] close];
         return;
     }
 	
-    for(i=0;i<n;i++) 
-    {
-        if ([_sessionMgr sessionAtIndex:i] == aSession)
-        {
-            // remove from tabview before terminating!! Terminating will
-            // set the internal tabview object in the session to nil.
-			[aSession retain];
-            [TABVIEW removeTabViewItem: [aSession tabViewItem]];
-            [aSession terminate];
-			[aSession release];
-			
-            // the above code removes the item and resets the currentSessionIndex
-            [self selectSessionAtIndex:[_sessionMgr currentSessionIndex]];
-			
-			[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];
-			
-            break;
-        }
-    }
+	[aSession retain];  
+	aTabViewItem = [aSession tabViewItem];
+	[aTabViewItem retain];
+	[aSession terminate];
+	[aSession release];
+	[TABVIEW removeTabViewItem: aTabViewItem];
+	[aTabViewItem release];
+	
+	
+	// the above code removes the item and resets the currentSessionIndex
+	[self selectSessionAtIndex:[_sessionMgr currentSessionIndex]];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
+	
+		
 }
 
 - (IBAction) closeCurrentSession: (id) sender
@@ -529,7 +524,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PseudoTerminal dealloc: 0x%x]", __FILE__, __LINE__, self);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [self releaseObjects];
@@ -541,7 +536,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)releaseObjects
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[PseudoTerminal releaseObjects]", __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
     // Release all our sessions
@@ -989,7 +984,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) setSendInputToAllSessions: (BOOL) flag
 {
+#if DEBUG_METHOD_TRACE
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif
+	
     sendInputToAllSessions = flag;
+	if(flag)
+		NSRunInformationalAlertPanel(NSLocalizedStringFromTableInBundle(@"Warning!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Warning"),
+									 NSLocalizedStringFromTableInBundle(@"Keyboard input will be sent to all sessions in this terminal.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Keyboard Input"), 
+									 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
+	
 }
 
 - (IBAction) toggleInputToAllSessions: (id) sender
@@ -998,7 +1002,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal toggleInputToAllSessions:%@]",
 		  __FILE__, __LINE__, sender);
 #endif
-    sendInputToAllSessions = !sendInputToAllSessions;
+	[self setSendInputToAllSessions: ![self sendInputToAllSessions]];
     
     // cause reloading of menus
     [[iTermController sharedInstance] setCurrentTerminal: self];
@@ -1062,7 +1066,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     for (i = 0; i < sessionCount; i++)
     {
         if ([[_sessionMgr sessionAtIndex: i] exited]==NO)
-            [[[_sessionMgr sessionAtIndex: i] SHELL] stopNoWait];
+            [[[_sessionMgr sessionAtIndex: i] SHELL] stop];
     }
 	
     [self releaseObjects];
@@ -1724,6 +1728,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 	int i, n, iterationCount;
 	NSAutoreleasePool *pool = nil;
+	PTYSession *aSession;
 	
 	iterationCount = 0;
 	while (EXIT == NO)
@@ -1736,7 +1741,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 		n = [_sessionMgr numberOfSessions];
 		for (i = 0; i < n; i++)
-			[[_sessionMgr sessionAtIndex: i] updateDisplay];
+		{
+			aSession = [_sessionMgr sessionAtIndex: i];
+			[aSession updateDisplay];
+		}
 		
 		// periodically create and release autorelease pools
 		if((iterationCount % 50) == 0)
@@ -1745,7 +1753,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			pool = nil;
 			iterationCount = 0;
 		}
-		
+			
 		usleep(30000);
 	}
 	

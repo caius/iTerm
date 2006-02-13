@@ -74,6 +74,7 @@
     BOOL waiting;
     BOOL autoClose;
     BOOL doubleWidth;
+	BOOL xtermMouseReporting;
     NSString *backgroundImagePath;
     //NSFont *configFont;
     NSDictionary *addressBookEntry;
@@ -89,8 +90,6 @@
 	   arguments:(NSArray *)prog_argv
 	 environment:(NSDictionary *)prog_env;
 - (void) terminate;
-- (void) updateDisplayThread: (void *) incoming;
-- (void) startTimer;
 - (BOOL) isActiveSession;
 
 // Preferences
@@ -168,10 +167,14 @@
 - (void) setAutoClose:(BOOL)set;
 - (BOOL) doubleWidth;
 - (void) setDoubleWidth:(BOOL)set;
+- (BOOL) xtermMouseReporting;
+- (void) setXtermMouseReporting:(BOOL)set;
 - (NSDictionary *) addressBookEntry;
 - (void) setAddressBookEntry:(NSDictionary*) entry;
 - (int) number;
 - (NSString *) tty;
+- (NSString *) contents;
+
 
 - (void)clearBuffer;
 - (void)clearScrollbackBuffer;
@@ -196,6 +199,8 @@
 - (void) setCursorTextColor: (NSColor *) aColor;
 - (float) transparency;
 - (void)setTransparency:(float)transparency;
+- (BOOL) useTransparency;
+- (void) setUseTransparency: (BOOL) flag;
 - (BOOL) disableBold;
 - (void) setDisableBold: (BOOL) boldFlag;
 - (BOOL) disableBold;

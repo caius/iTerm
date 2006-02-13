@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.90 2004-07-07 07:30:38 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.96 2006-02-13 23:31:13 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -123,6 +123,8 @@
 // Secondary Device Attribute: VT100
 #define REPORT_SDA			 "\033[1;0;0c"
 #define REPORT_VT52          "\033/Z"
+
+#define MOUSE_REPORT_FORMAT	"\033[M%c%c%c"
 
 #define conststr_sizeof(n)   ((sizeof(n)) - 1)
 
@@ -337,7 +339,7 @@ static size_t getCSIParam(unsigned char *datap,
 		else {
             switch (*datap) {
                 case VT100CC_ENQ: break;
-                case VT100CC_BEL: [SCREEN playBell]; break;
+                case VT100CC_BEL: [SCREEN activateBell]; break;
                 case VT100CC_BS:  [SCREEN backSpace]; break;
                 case VT100CC_HT:  [SCREEN setTab]; break;
                 case VT100CC_LF:
@@ -686,7 +688,7 @@ static VT100TCC decode_other(unsigned char *datap,
 				switch (c2) {
 					case '8': result.type=VT100CSI_DECALN; break;
 					default:
-						NSLog(@"4: Unknown token %c", c2);
+						NSLog(@"4: Unknown token ESC # %c", c2);
 						result.type = VT100_NOTSUPPORT;
 				}
 				*rmlen = 3;
@@ -886,6 +888,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
                 else break;
             }
             else {
+				NSLog(@"unknown code in UTF8: %d(%c)",*p,*p);
                 *p=UNKNOWN;
                 p++;
                 len--;
@@ -1128,7 +1131,7 @@ static VT100TCC decode_string(unsigned char *datap,
     VT100TCC result;
     NSData *data;
 	
-    *rmlen = 1;
+    *rmlen = 0;
     result.type = VT100_UNKNOWNCHAR;
     result.u.code = datap[0];
 	
@@ -1168,11 +1171,15 @@ static VT100TCC decode_string(unsigned char *datap,
                                        encoding:encoding]
             autorelease];
 		
-        if (result.u.string==nil) {
-            int i;
+		if (result.u.string==nil) {
+            /*int i;
             NSLog(@"Null:%@",data);
             for(i=0;i<*rmlen;i++) datap[i]=UNKNOWN;
-            result.u.string = [[[NSString alloc] initWithCString:datap length:*rmlen] autorelease];
+            result.u.string = [[[NSString alloc] initWithCString:datap length:*rmlen] autorelease];*/
+			NSLog(@"Null:%@",data);
+			*rmlen = 0;
+			result.type = VT100_UNKNOWNCHAR;
+			result.u.code = datap[0];
         }
     }
     return result;
@@ -1186,7 +1193,7 @@ static VT100TCC decode_string(unsigned char *datap,
 {
 	
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[VT100Terminal init 0x%x]", __FILE__, __LINE__, self);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     
     if ([super init] == nil)
@@ -1194,6 +1201,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	
     ENCODING = NSASCIIStringEncoding;
     STREAM   = [[NSMutableData alloc] init];
+	streamLock = [[NSLock alloc] init];
     
 	
 	
@@ -1215,6 +1223,7 @@ static VT100TCC decode_string(unsigned char *datap,
     highlight = saveHighlight = NO;
     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
+	MOUSE_MODE = MOUSE_REPORTING_NONE;
     
     TRACE = NO;
 	
@@ -1232,11 +1241,13 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void)dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[VT100Terminal dealloc 0x%x]", __FILE__, __LINE__, self);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     
     [STREAM release];
     [SCREEN release];
+	[streamLock unlock];
+	[streamLock release];
         
     [super dealloc];
 }
@@ -1283,15 +1294,19 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void)cleanStream
 {
+	[streamLock lock];
     [STREAM autorelease];
     STREAM = [[NSMutableData data] retain];
+	[streamLock unlock];
 }
 
 - (void)putStreamData:(NSData *)data
 {
+	[streamLock lock];
     if([STREAM length] == 0)
 		streamOffset = 0;
     [STREAM appendData:data];
+	[streamLock unlock];
 }
 
 - (VT100TCC)getNextToken
@@ -1299,11 +1314,15 @@ static VT100TCC decode_string(unsigned char *datap,
     unsigned char *datap;
     size_t datalen;
     VT100TCC result;
+
+	// acquire lock
+	[streamLock lock];
+
 	
 #if 0
     NSLog(@"buffer data = %@", STREAM);
 #endif
-	
+		
     // get our current position in the stream
     datap = (unsigned char *)[STREAM bytes] + streamOffset;
     datalen = (size_t)[STREAM length] - streamOffset;
@@ -1357,6 +1376,9 @@ static VT100TCC decode_string(unsigned char *datap,
 	
     [self _setMode:result];
     [self _setCharAttr:result];
+	
+	// release lock
+	[streamLock unlock];
 	
     return result;
 }
@@ -1598,6 +1620,45 @@ static VT100TCC decode_string(unsigned char *datap,
     return (theData);
 }
 
+- (NSData *)mousePress: (int)button withModifiers: (unsigned int)modflag atX: (int)x Y: (int)y
+{
+	static char buf[7];
+	char cb;
+	
+	cb = button % 3;
+	if (button > 3) cb += 64;
+	if (modflag & NSControlKeyMask) cb += 16;
+	if (modflag & NSShiftKeyMask) cb += 4;
+	if (modflag & NSAlternateKeyMask) cb += 8;
+	sprintf(buf, MOUSE_REPORT_FORMAT, 32 + cb, 32 + x + 1, 32 + y + 1);
+
+	return [NSData dataWithBytes: buf length: strlen(buf)];
+}
+
+- (NSData *)mouseReleaseAtX: (int)x Y: (int)y
+{
+	static char buf[7];
+	sprintf(buf, MOUSE_REPORT_FORMAT, 32 + 3, 32 + x + 1, 32 + y + 1);
+	
+	return [NSData dataWithBytes: buf length: strlen(buf)];
+}
+
+- (NSData *)mouseMotion: (int)button withModifiers: (unsigned int)modflag atX: (int)x Y: (int)y
+{
+	static char buf[7];
+	char cb;
+	
+	cb = button % 3;
+	if (button > 3) cb += 64;
+	if (modflag & NSControlKeyMask) cb += 16;
+	if (modflag & NSShiftKeyMask) cb += 4;
+	if (modflag & NSAlternateKeyMask) cb += 8;
+	sprintf(buf, MOUSE_REPORT_FORMAT, 32 + 32 + cb, 32 + x + 1, 32 + y + 1);
+	
+	return [NSData dataWithBytes: buf length: strlen(buf)];	
+}
+
+
 - (BOOL)lineMode
 {
     return LINE_MODE;
@@ -1663,6 +1724,11 @@ static VT100TCC decode_string(unsigned char *datap,
     return CHARSET;
 }
 
+- (mouseMode) mouseMode
+{
+	return MOUSE_MODE;
+}
+
 - (int)foregroundColorCode
 {
 	return (reversed?BG_COLORCODE:FG_COLORCODE+(highlight?1:bold)*8)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
@@ -1723,6 +1789,13 @@ static VT100TCC decode_string(unsigned char *datap,
                 case 9:  INTERLACE_MODE  = mode; break;
 				case 40: allowColumnMode = mode; break;
 				case 47: if(mode) [SCREEN saveBuffer]; else [SCREEN restoreBuffer]; break; // alternate screen buffer mode
+				case 1000:
+				/* case 1001: */ /* MOUSE_REPORTING_HILITE not implemented yet */
+				case 1002:
+				case 1003:
+					if (mode) MOUSE_MODE = token.u.csi.p[0] - 1000;
+					else MOUSE_MODE = MOUSE_REPORTING_NONE;
+					break;
             }
 				break;
         case VT100CSI_SM:

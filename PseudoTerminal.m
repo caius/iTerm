@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.306 2006-02-14 18:29:50 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.307 2006-02-14 21:54:10 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -318,10 +318,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[_sessionMgr currentSession] resetStatus];
     
     [_sessionMgr setCurrentSession:aSession];
-	
+    
+    	
     [self setWindowTitle];
     [[_sessionMgr currentSession] setLabelAttribute];
     [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
+
     [[TABVIEW window] setNextResponder:self];
 	
     // send a notification
@@ -1063,7 +1065,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	EXIT = YES;
     sessionCount = [_sessionMgr numberOfSessions];
-    NSLog(@"Number of sessions: %d", sessionCount);
     for (i = 0; i < sessionCount; i++)
     {
         if ([[_sessionMgr sessionAtIndex: i] exited]==NO)
@@ -1513,6 +1514,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 			[self setWindowSize: NO];
             [[aSession TEXTVIEW] scrollEnd];
+            // make sure the display is up-to-date.
+            [[aSession TEXTVIEW] setForceUpdate: YES];
+            
 		}
 		else
 		{

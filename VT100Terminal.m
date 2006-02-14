@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.96 2006-02-13 23:31:13 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.97 2006-02-14 21:54:10 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1129,8 +1129,7 @@ static VT100TCC decode_string(unsigned char *datap,
 							  NSStringEncoding encoding)
 {
     VT100TCC result;
-    NSData *data;
-	
+    
     *rmlen = 0;
     result.type = VT100_UNKNOWNCHAR;
     result.u.code = datap[0];
@@ -1165,9 +1164,14 @@ static VT100TCC decode_string(unsigned char *datap,
     }
 	
     if (result.type != VT100_WAIT) {
-        data = [NSData dataWithBytes:datap length:*rmlen];
+        /*data = [NSData dataWithBytes:datap length:*rmlen];
         result.u.string = [[[NSString alloc]
                                    initWithData:data
+                                       encoding:encoding]
+            autorelease]; */
+        result.u.string =[[[NSString alloc]
+                                   initWithBytes:datap
+                                          length:*rmlen
                                        encoding:encoding]
             autorelease];
 		
@@ -1176,7 +1180,7 @@ static VT100TCC decode_string(unsigned char *datap,
             NSLog(@"Null:%@",data);
             for(i=0;i<*rmlen;i++) datap[i]=UNKNOWN;
             result.u.string = [[[NSString alloc] initWithCString:datap length:*rmlen] autorelease];*/
-			NSLog(@"Null:%@",data);
+			NSLog(@"Null(%d bytes)",*rmlen);
 			*rmlen = 0;
 			result.type = VT100_UNKNOWNCHAR;
 			result.u.code = datap[0];

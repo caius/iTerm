@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.28 2006-02-14 18:29:50 yfabian Exp $
+// $Id: PTYTask.m,v 1.29 2006-02-14 21:54:10 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -459,7 +459,7 @@ static int writep(int fds, char *buf, size_t len)
 - (void)brokenPipe
 {
     if ([DELEGATEOBJECT respondsToSelector:@selector(brokenPipe)]) {
-	[DELEGATEOBJECT brokenPipe];
+        [DELEGATEOBJECT brokenPipe];
     }
 }
 

@@ -95,15 +95,6 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
-    [SHELL release];
-    SHELL = nil;
-	
-    [SCREEN release];
-    SCREEN = nil;
-    [TERMINAL release];
-    TERMINAL = nil;    
-	
-    
     [TERM_VALUE release];
     [view release];
     [name release];
@@ -120,6 +111,14 @@ static NSString *PWD_ENVVALUE = @"~";
     [newOutputStateAttribute release];
     newOutputStateAttribute = nil;
 	
+    [SHELL release];
+    SHELL = nil;
+	
+    [SCREEN release];
+    SCREEN = nil;
+    [TERMINAL release];
+    TERMINAL = nil;    
+    
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
     [super dealloc];    
@@ -250,7 +249,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	[TEXTVIEW setDelegate: nil];
     [TEXTVIEW removeFromSuperview];
     [self setTabViewItem: nil];    
-	
+    
         
     parent = nil;
 	
@@ -1548,7 +1547,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	{
 		if (output>(key&&iIdleCount<10?3:6)) 
 		{
-			[TEXTVIEW refresh];
+			[SCREEN updateScreen];
 			output=0;
 			dirty=NO;
 		}

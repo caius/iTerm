@@ -230,6 +230,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	// deregister from the notification center
 	[[NSNotificationCenter defaultCenter] removeObserver:self];    
     
+    EXIT = YES;
 	[SHELL stop];
 		
     if(tabViewItem)
@@ -252,7 +253,6 @@ static NSString *PWD_ENVVALUE = @"~";
 	
         
     parent = nil;
-	EXIT = YES;
 	
 }
 
@@ -296,10 +296,12 @@ static NSString *PWD_ENVVALUE = @"~";
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
 #endif
-    [SHELL sendSignal:SIGKILL];
-    [SHELL stop];
+    if (EXIT) return;
+    
     EXIT = YES;
-	
+	[SHELL sendSignal:SIGKILL];
+    [SHELL stop];
+    
 	if (autoClose)
         [parent closeSession:self];
     else 
@@ -1733,7 +1735,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	
 	[pool release];
 	
-	[NSThread exit];
+	//[NSThread exit];
 	
 }
 

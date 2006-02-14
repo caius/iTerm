@@ -43,20 +43,22 @@
 
 - (void)dealloc;
 {
-    [_threadLock lock];
     
-    int i, cnt = [_sessionList count];
-    for(i = 0; i < cnt; i++)
-        [[_sessionList objectAtIndex: i] terminate];
-    
-    [_sessionList release];
-    _sessionList = nil;
-    
-    [_threadLock unlock];
-    [_threadLock release];
+    if (_sessionList) {
+        [_threadLock lock];
+
+        int i, cnt = [_sessionList count];
+        for(i = 0; i < cnt; i++)
+            [[_sessionList objectAtIndex: i] terminate];
         
-    [_currentSession release];
-    
+        [_sessionList release];
+        _sessionList = nil;
+        
+        [_threadLock unlock];
+        [_threadLock release];
+            
+        [_currentSession release];
+    }
     [super dealloc];
 }
 

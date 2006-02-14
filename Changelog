@@ -1,3 +1,7 @@
+2006-02-14  fabian
+
+    * Bug fixes for crashes when sessions are closed.
+    
 2006-02-13  fabian
 
     * Removed NSConnection from PTYTask all together

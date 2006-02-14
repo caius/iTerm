@@ -239,6 +239,8 @@
         maxLabelSize=20;
     
     [super insertTabViewItem: tabViewItem atIndex: index];
+    NSLog(@"PTYTabView: -insertTabViewItem atIndex: %d done.", index);
+
 }
 
 // drag and drop

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.305 2006-02-12 17:52:24 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.306 2006-02-14 18:29:50 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -403,7 +403,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) closeSession: (PTYSession*) aSession
 {
-	NSTabViewItem *aTabViewItem;
+    NSTabViewItem *aTabViewItem;
     
     if((_sessionMgr == nil) || ![_sessionMgr containsSession:aSession])
         return;
@@ -1063,13 +1063,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	EXIT = YES;
     sessionCount = [_sessionMgr numberOfSessions];
+    NSLog(@"Number of sessions: %d", sessionCount);
     for (i = 0; i < sessionCount; i++)
     {
         if ([[_sessionMgr sessionAtIndex: i] exited]==NO)
-            [[[_sessionMgr sessionAtIndex: i] SHELL] stop];
+            [[_sessionMgr sessionAtIndex: i] terminate];
     }
 	
-    [self releaseObjects];
+    //[self releaseObjects];
 	
     // Release our window postion
     for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)

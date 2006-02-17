@@ -298,16 +298,15 @@ static NSString *PWD_ENVVALUE = @"~";
     if (EXIT) return;
     
     EXIT = YES;
-	[SHELL sendSignal:SIGKILL];
-    [SHELL stop];
-    
+	
 	if (autoClose)
         [parent closeSession:self];
     else 
     {
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
         [tabViewItem setLabelAttributes: deadStateAttribute];
-    }		
+    }				
+    	
 }
 
 - (BOOL) hasKeyMappingForEvent: (NSEvent *) event
@@ -1725,7 +1724,7 @@ static NSString *PWD_ENVVALUE = @"~";
 			usleep(10000);
 		
 	}
-		
+			
 	if(arPool != nil)
 	{
 		[arPool release];
@@ -1734,7 +1733,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	
 	[pool release];
 	
-	//[NSThread exit];
+	[NSThread exit];
 	
 }
 

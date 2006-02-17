@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.307 2006-02-14 21:54:10 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.308 2006-02-17 19:46:34 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -405,6 +405,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) closeSession: (PTYSession*) aSession
 {
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, aSession);
+#endif    
+	
     NSTabViewItem *aTabViewItem;
     
     if((_sessionMgr == nil) || ![_sessionMgr containsSession:aSession])
@@ -416,17 +420,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         return;
     }
 	
+	// select the next session
+	[self selectSessionAtIndex:[_sessionMgr currentSessionIndex] + 1];
+	
 	[aSession retain];  
 	aTabViewItem = [aSession tabViewItem];
 	[aTabViewItem retain];
 	[aSession terminate];
 	[aSession release];
 	[TABVIEW removeTabViewItem: aTabViewItem];
-	[aTabViewItem release];
+	[aTabViewItem release];	
 	
-	
-	// the above code removes the item and resets the currentSessionIndex
-	[self selectSessionAtIndex:[_sessionMgr currentSessionIndex]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
 	
@@ -1731,6 +1735,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) _updateDisplayThread: (void *) incoming
 {
+	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];
 	int i, n, iterationCount;
 	NSAutoreleasePool *pool = nil;
 	PTYSession *aSession;
@@ -1768,6 +1773,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		pool = nil;
 	}
 	
+	[arPool release];
+	[NSThread exit];
 }
 
 - (NSFont *) _getMaxFont:(NSFont* ) font 

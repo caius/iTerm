@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.238 2006-02-14 21:54:10 yfabian Exp $
+// $Id: PTYTextView.m,v 1.239 2006-02-17 19:46:34 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -728,7 +728,8 @@ static SInt32 systemVersion;
 		if(line >= [dataSource numberOfLines])
 		{
 			NSLog(@"%s (0x%x): illegal line index %d >= %d", __PRETTY_FUNCTION__, self, line, [dataSource numberOfLines]);
-			break;
+			[dataSource releaseLock];
+			return;
 		}
 		
 		// Check if we are drawing a line in buffer

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.29 2006-02-14 21:54:10 yfabian Exp $
+// $Id: PTYTask.m,v 1.30 2006-02-17 19:46:34 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -144,12 +144,17 @@ static int writep(int fds, char *buf, size_t len)
     int sts;
 	int iterationCount = 0;
 	NSAutoreleasePool *arPool = nil;
+	NSConnection *clientConnection;
+	id rootProxy;
 
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:%@] start",
 	  __FILE__, __LINE__, [boss description]);
 #endif
 
+	// establish a connection to the PTYTask instance
+	clientConnection = [NSConnection connectionWithReceivePort:boss->sendPort sendPort:boss->recvPort];
+	rootProxy = [clientConnection rootProxy];
 
     /*
       data receive loop
@@ -237,9 +242,12 @@ static int writep(int fds, char *buf, size_t len)
 		}
 		
     }
-	
-    [boss brokenPipe];
-	
+		
+	// use the rootProxy through the clientConnection to close session
+	// not using the clientConnection causes tab redraw problems
+	if(sts >= 0)
+		[rootProxy brokenPipe];
+		
 	if(arPool != nil)
 	{
 		[arPool release];
@@ -252,7 +260,8 @@ static int writep(int fds, char *buf, size_t len)
 #endif
 
     [pool release];
-    //[NSThread exit];
+    
+	[NSThread exit];
 }
 
 - (id)init
@@ -290,7 +299,11 @@ static int writep(int fds, char *buf, size_t len)
     [RECVDATA release];
     [TTY release];
     [PATH release];
-
+	
+	[recvPort release];
+	[sendPort release];
+	[serverConnection release];
+	
     [super dealloc];
 }
 
@@ -361,6 +374,14 @@ static int writep(int fds, char *buf, size_t len)
 	
     TTY = [[NSString stringWithCString:ttyname] retain];
     NSParameterAssert(TTY != nil);
+	
+	// establish a NSConnection for the read thread to use to talk back to us.
+	recvPort = [NSPort port];
+	[recvPort retain];
+	sendPort = [NSPort port];
+	[sendPort retain];
+	serverConnection = [[NSConnection alloc] initWithReceivePort: recvPort sendPort: sendPort];
+	[serverConnection setRootObject: self];
 	
     [NSThread detachNewThreadSelector:@selector(_processReadThread:)
             	             toTarget: [PTYTask class]
@@ -490,7 +511,7 @@ static int writep(int fds, char *buf, size_t len)
 - (int)wait
 {
     if (PID >= 0) 
-		waitpid(PID, &STATUS, WNOHANG);
+		waitpid(PID, &STATUS, 0);
 
     return STATUS;
 }
@@ -511,12 +532,11 @@ static int writep(int fds, char *buf, size_t len)
 {
     [self sendSignal:SIGKILL];
 	usleep(10000);
+	if(FILDES >= 0)
+		close(FILDES);
+	FILDES = -1;
     [self wait];
-}
-
-- (void)stopNoWait
-{
-    [self sendSignal:SIGKILL];
+	[serverConnection invalidate];
 }
 
 - (int)status

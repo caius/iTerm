@@ -1,3 +1,8 @@
+2006-02-17	ujwal
+	
+	* Rolled back some of the NSConnection code since tabview was having redraw problems when a tab was closed.
+	* Some code cleanup.
+
 2006-02-14  fabian
 
     * Bug fixes for crashes when sessions are closed.

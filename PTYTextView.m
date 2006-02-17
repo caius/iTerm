@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.239 2006-02-17 19:46:34 ujwal Exp $
+// $Id: PTYTextView.m,v 1.240 2006-02-17 22:32:04 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -875,7 +875,11 @@ static SInt32 systemVersion;
 	blinkShow = !blinkShow;
     
     // Double check if dataSource is still available
-    if (!dataSource) return;
+    if (!dataSource)
+	{
+		[dataSource releaseLock];
+		return;
+	}
 	x1=[dataSource cursorX]-1;
 	y1=[dataSource cursorY]-1;
 	

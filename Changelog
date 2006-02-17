@@ -3,6 +3,7 @@
 	* Rolled back some of the NSConnection code since tabview was having redraw problems when a tab was closed.
 	* Some code cleanup.
 	* Moved iTermNumberOfSessionsDidChange notification from closeSession to tabViewDidChangeNumberOfTabViewItems.
+	* Fixed deadlock between VT100Terminal and PTYTextView.
 
 2006-02-14  fabian
 

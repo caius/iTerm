@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.218 2006-02-14 21:54:10 yfabian Exp $
+// $Id: VT100Screen.m,v 1.219 2006-02-17 22:32:04 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -651,10 +651,13 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
     case VT100CSI_DECSET:
     case VT100CSI_DECRST:
-        if (token.u.csi.p[0]==3 && [TERMINAL allowColumnMode] == YES) {	// set the column
+        if (token.u.csi.p[0]==3 && [TERMINAL allowColumnMode] == YES) {
+			// set the column
+			[self releaseLock];
             [[SESSION parent] resizeWindow:([TERMINAL columnMode]?132:80)
                                     height:HEIGHT];
             [[SESSION TEXTVIEW] scrollEnd];
+			return;
         }
         break;
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.308 2006-02-17 19:46:34 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.309 2006-02-17 20:09:40 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -430,10 +430,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[aSession release];
 	[TABVIEW removeTabViewItem: aTabViewItem];
 	[aTabViewItem release];	
-	
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
-	
 		
 }
 
@@ -1529,6 +1525,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
 		
     }
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
     
 }
 

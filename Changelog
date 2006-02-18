@@ -1,3 +1,7 @@
+2006-02-18	ujwal
+
+	* Acquiring screenLock in VT100Screen when resizing.
+
 2006-02-17	ujwal
 	
 	* Rolled back some of the NSConnection code since tabview was having redraw problems when a tab was closed.

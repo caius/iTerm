@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.219 2006-02-17 22:32:04 ujwal Exp $
+// $Id: VT100Screen.m,v 1.220 2006-02-18 16:48:30 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -214,6 +214,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		return;
 		
 	if (width==WIDTH&&height==HEIGHT) return;
+	
+	[self acquireLock];
 		
 	if (width != WIDTH && bufferLines) {
 		//copy the buffer over
@@ -302,6 +304,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		free(tempBuffer);
 		tempBuffer=NULL;
 	}
+	
+	[self releaseLock];
 	
 }
 

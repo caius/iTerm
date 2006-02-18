@@ -55,6 +55,9 @@
     PseudoTerminal *parent;  // parent controller
     NSString *name;
     NSString *windowTitle;
+	
+	// semaphore to coordinate data read from task
+	MPSemaphoreID	dataSemaphore;
     
     // anti-idle
     char ai_code;

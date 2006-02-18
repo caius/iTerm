@@ -134,6 +134,9 @@ static NSString *PWD_ENVVALUE = @"~";
           __FILE__, __LINE__);
 #endif
 	
+	// allocate a semaphore to coordinate data processing
+	MPCreateBinarySemaphore(&dataSemaphore);
+	
     // Allocate screen, shell, and terminal objects
     SHELL = [[PTYTask alloc] init];
     TERMINAL = [[VT100Terminal alloc] init:parent];
@@ -231,6 +234,9 @@ static NSString *PWD_ENVVALUE = @"~";
     
     EXIT = YES;
 	[SHELL stop];
+	
+	// release the data processing semaphore
+	MPDeleteSemaphore(dataSemaphore);
 		
     if(tabViewItem)
     {
@@ -287,6 +293,9 @@ static NSString *PWD_ENVVALUE = @"~";
         return;
 	
     [TERMINAL putStreamData:data];	
+	
+	// signal the data processing thread
+	MPSignalSemaphore(dataSemaphore);
 	
 }
 
@@ -1686,45 +1695,60 @@ static NSString *PWD_ENVVALUE = @"~";
 	while(EXIT == NO)
 	{
 		
-		token = [TERMINAL getNextToken];
-		if (TERMINAL && token.type != VT100CC_NULL && token.type != VT100_WAIT)
-		{	
+		// wait for data
+		MPWaitOnSemaphore(dataSemaphore, kDurationForever);
+		
+		// inner while loop to process all the tokens we can get
+		while(EXIT == NO)
+		{
+			// grab next token
+			token = [TERMINAL getNextToken];
 			
-			if(arPool == nil)
-				arPool = [[NSAutoreleasePool alloc] init];
+			// if we reached end of stream, get out
+			if(token.type == VT100CC_NULL)
+				break;
 			
-			if (token.type != VT100_SKIP)
-			{
-				[SCREEN putToken:token];
+			// ok, we have a token to be processed
+			if (TERMINAL && token.type != VT100_WAIT)
+			{	
 				
-				if (REFRESHED==NO)
+				// refresh our autrelease pool
+				if(arPool == nil)
+					arPool = [[NSAutoreleasePool alloc] init];
+				
+				// process token
+				if (token.type != VT100_SKIP)
 				{
-					REFRESHED=YES;
-					if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-						[tabViewItem setLabelAttributes: newOutputStateAttribute];
+					[SCREEN putToken:token];
+					
+					if (REFRESHED==NO)
+					{
+						REFRESHED=YES;
+						if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
+							[tabViewItem setLabelAttributes: newOutputStateAttribute];
+					}
+					
+					oIdleCount=0;
 				}
 				
-				oIdleCount=0;
-			}
+				if (token.type == VT100_NOTSUPPORT) {
+					NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
+				}
+				
+				// periodically refresh autoreleasepool
+				iterationCount++;
+				if(iterationCount % 100 == 0)
+				{
+					[arPool release];
+					arPool = nil;
+					iterationCount = 0;
+				}
+			} // end token processing
 			
-			if (token.type == VT100_NOTSUPPORT) {
-				NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
-			}
-			
-			// periodically refresh autoreleasepool
-			iterationCount++;
-			if(iterationCount % 100 == 0)
-			{
-				[arPool release];
-				arPool = nil;
-				iterationCount = 0;
-			}
-		}
-		else
-			usleep(10000);
+		} // end inner while loop
 		
-	}
-			
+	} // end outer while loop
+				
 	if(arPool != nil)
 	{
 		[arPool release];

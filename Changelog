@@ -1,6 +1,7 @@
 2006-02-18	ujwal
 
 	* Acquiring screenLock in VT100Screen when resizing.
+	* Reduced idle CPU usage by about 90% by using a semaphore to signal data processing thread.
 
 2006-02-17	ujwal
 	

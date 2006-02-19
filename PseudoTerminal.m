@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.309 2006-02-17 20:09:40 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.310 2006-02-19 00:45:56 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1709,9 +1709,24 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Bookmarks
 - (IBAction) toggleBookmarksView: (id) sender
 {
+	float aWidth;
+	
+	// set the width of the bookmarks drawer based on saved value
+	aWidth = [[NSUserDefaults standardUserDefaults] floatForKey: @"BookmarksDrawerWidth"];
+	if(aWidth > 0 && [[(PTYWindow *)[self window] drawer] state] == NSDrawerClosedState)
+		[[(PTYWindow *)[self window] drawer] setContentSize: NSMakeSize(aWidth, 0)];
+	
 	[[(PTYWindow *)[self window] drawer] toggle: sender];	
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
+}
+
+- (NSSize)drawerWillResizeContents:(NSDrawer *)sender toSize:(NSSize)contentSize
+{
+	// save the width to preferences
+	[[NSUserDefaults standardUserDefaults] setFloat: contentSize.width forKey: @"BookmarksDrawerWidth"];
+	
+	return (contentSize);
 }
 
 

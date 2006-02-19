@@ -17,7 +17,7 @@
 
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
-<FONT SIZE="5"><STRONG>Current Developpers:</STRONG></FONT><BR>
+<FONT SIZE="5"><STRONG>Current Developers:</STRONG></FONT><BR>
 <UL>
 <LI><A HREF="http://sourceforge.net/users/yfabian/"><STRONG>Fabian</STRONG></A> </LI>
 <LI><A HREF="http://sourceforge.net/users/ujwal/"><STRONG>Ujwal S. Setlur</STRONG></A> </LI>
@@ -26,7 +26,7 @@
 
 <FONT SIZE="5"><STRONG>Thanks to:</STRONG></FONT><BR>
 <UL>
-<LI>Steve Gehrman: He helps us in the code reorganization.</LI>
+<LI>Steve Gehrman: He helped us in the code reorganization.</LI>
 <LI><A HREF="MAILTO:gerberad@trvnet.net">Aaron D. Gerber</A>: He made these nice help pages.</LI>
 <LI><A HREF="http://www.peter.com.au/">Peter N. Lewis</A>: Patches for enhancements and bug fixes.</LI>
 <LI><STRONG>Edward Daze</STRONG>: He made the new icons.</LI>

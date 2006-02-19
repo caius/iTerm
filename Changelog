@@ -3,6 +3,7 @@
 	* Acquiring screenLock in VT100Screen when resizing.
 	* Reduced idle CPU usage by about 90% by using a semaphore to signal data processing thread.
 	* Saving and restoring width of Bookmarks drawer.
+	* Updated Help files.
 
 2006-02-17	ujwal
 	

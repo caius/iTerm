@@ -29,7 +29,7 @@
 
 <FONT SIZE="5"><STRONG>Features:</STRONG></FONT><BR>
 <UL>
-<LI>Native Cocoa application that supports both Jaguar and Panther.</LI>
+<LI>Native Cocoa application.</LI>
   <UL>
     <LI>Native OS X user interface</LI>
 	<LI>Support of Applescript</LI>
@@ -53,6 +53,7 @@
   </UL>
 <LI>Bookmarks for storing settings of most used sessions</LI>
 <LI>Anti-idle function that avoids disconnection because of no activity</LI>
+<LI>Universal Binary that runs natively on  both PPC and Intel Macs.</LI>
 <LI>Supports all language encodings that are available with OS X</LI>
   <UL>
     <LI>User can specify a second font to display non-latin characters
@@ -70,15 +71,16 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>What's new</STRONG></FONT><BR><BR>
-<STRONG>0.8.2 released</STRONG> 2/7/2006<BR>
+<STRONG>0.8.2 released</STRONG> 2/18/2006<BR>
 iTerm is now a universal binary application! The new version also addresses 
-many bugs in the last version. WE strongly encourage everybody who uses 
+many bugs in the last version. We strongly encourage everybody who uses 
 0.8.1 to upgrade.<BR>
 <UL>
 <LI>Now a Universal Binary application, iTerm runs on Intel Macs natively.</LI>
 <LI>Added support of xterm mouse reporting, code provided by Geoff Reedy.</LI>
-<LI>Fixed "can't save settings" bug in 10.4.</LI>
 <LI>Removed bouncing icon feature.</LI>
+<LI>Some speed improvements.</LI>
+<LI>Fixed "can't save settings" bug in 10.4.</LI>
 <LI>Fixed "find" function.</LI>
 <LI>Fixed "appending of spaces" bug.</LI>
 <LI>Fixed bugs of some mouse related actions.</LI>

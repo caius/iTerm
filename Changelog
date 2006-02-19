@@ -1,3 +1,8 @@
+2006-02-19	ujwal
+
+	* _updateDisplayThread in PseudoTerminal updates only current session since
+	  other sessions are off screen anyway.
+
 2006-02-18	ujwal
 
 	* Acquiring screenLock in VT100Screen when resizing.

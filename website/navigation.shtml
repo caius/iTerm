@@ -24,6 +24,11 @@ scratch), and then create your bookmarks. There are 3 kinds of profiles associat
 each bookmark:
 <STRONG>Keyboard</STRONG>, the <STRONG>Terminal</STRONG>, and <STRONG>Display</STRONG>.
 By using profiles, you can conveniently create bookmarks that share same properties.
+<p>
+Note that when you are supplying a command in a bookmark, you must use a profile
+in which the "Close the session when it ends" option is 
+<strong>not</strong> set. Otherwise, the session will immediately close upon the
+completion of the command.
 </UL>
 
 <FONT SIZE="5"><STRONG>Keyboard</STRONG></FONT><BR>

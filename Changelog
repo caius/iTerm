@@ -2,6 +2,8 @@
 
 	* Rolled back _updateDisplayThread change in PseudoTerminal since that broke the
 	  the anti-idle processing in non-current sessions.
+	* Removed explicit session of next/previous session in PseudoTerminal:-closeSession. This 
+	  is handled by the tabview.
 
 2006-02-19	ujwal
 

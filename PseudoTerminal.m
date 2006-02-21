@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.312 2006-02-20 18:00:22 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.313 2006-02-21 03:56:48 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -419,10 +419,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[self window] close];
         return;
     }
-	
-	// select the next session
-	[self selectSessionAtIndex:[_sessionMgr currentSessionIndex] + 1];
-	
+		
 	[aSession retain];  
 	aTabViewItem = [aSession tabViewItem];
 	[aTabViewItem retain];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.241 2006-02-17 22:43:13 ujwal Exp $
+// $Id: PTYTextView.m,v 1.242 2006-02-22 00:16:58 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -1717,7 +1717,7 @@ static SInt32 systemVersion;
 						j++;
 						break; // continue to next line
 					}
-					else if(y == endy)
+					else if (endOfLine && (y == endy))
 						break;
 					else
 						temp[j] = ' '; // represent blank with space

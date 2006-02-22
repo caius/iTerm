@@ -1,3 +1,7 @@
+2006-02-21	ujwal
+
+	* Fixed bug in PTYTextView: -contentFromX...
+
 2006-02-21	dnedrow
 	* Updated doco to clarify session behavior reported as bug in #1011334.
 

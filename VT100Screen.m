@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.220 2006-02-18 16:48:30 ujwal Exp $
+// $Id: VT100Screen.m,v 1.221 2006-02-24 09:22:41 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -506,7 +506,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 	WIDTH=width;
 	HEIGHT=height;
-	CURSOR_X = CURSOR_Y = 1;
+	CURSOR_X = CURSOR_Y = 0;
 	SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
 	SCROLL_TOP = 0;
 	SCROLL_BOTTOM = HEIGHT - 1;	
@@ -523,7 +523,11 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	}
 	else bufferLines=NULL;
 	
-	[self clearBuffer];
+	memset(screenLines,0,HEIGHT*WIDTH*sizeof(unichar));
+	memset(screenFGColor,[TERMINAL foregroundColorCode],HEIGHT*WIDTH*sizeof(char));
+	memset(screenBGColor,[TERMINAL backgroundColorCode],HEIGHT*WIDTH*sizeof(char));
+	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));	
+	[self clearScrollbackBuffer];
     blinkShow=YES;
 }
 
@@ -998,14 +1002,22 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 - (void)clearScreen
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen clearScreen]", __FILE__, __LINE__);
+    NSLog(@"%s(%d):-[VT100Screen clearScreen]; CURSOR_Y = %d", __FILE__, __LINE__, CURSOR_Y);
 #endif
-	memset(screenLines,0,HEIGHT*WIDTH*sizeof(unichar));
-	memset(screenFGColor,[TERMINAL foregroundColorCode],HEIGHT*WIDTH*sizeof(char));
-	memset(screenBGColor,[TERMINAL backgroundColorCode],HEIGHT*WIDTH*sizeof(char));
-	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));
-
-	CURSOR_X = CURSOR_Y = 0;
+		
+	if(CURSOR_Y < 0)
+		return;
+	
+	
+	// make the current line the first line and clear everything else
+	memcpy(screenLines, screenLines + (CURSOR_Y*WIDTH), WIDTH*sizeof(unichar));
+	memcpy(screenFGColor, screenFGColor + (CURSOR_Y*WIDTH), WIDTH*sizeof(char));
+	memcpy(screenBGColor, screenBGColor + (CURSOR_Y*WIDTH), WIDTH*sizeof(char));
+	memset(screenLines+WIDTH,0,(HEIGHT-1)*WIDTH*sizeof(unichar));
+	memset(screenFGColor+WIDTH,[TERMINAL foregroundColorCode],(HEIGHT-1)*WIDTH*sizeof(char));
+	memset(screenBGColor+WIDTH,[TERMINAL backgroundColorCode],(HEIGHT-1)*WIDTH*sizeof(char));
+	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));	
+	CURSOR_Y = 0; // we are now the first line
 
 }
 

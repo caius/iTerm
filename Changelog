@@ -1,3 +1,8 @@
+2006-02-23	ujwal
+
+	* Tagged source tree for RC_0_8_2
+	* Clearing buffer now does NOT clear last line. Last line now becomes first line.
+
 2006-02-21	ujwal
 
 	* Fixed bug in PTYTextView: -contentFromX...

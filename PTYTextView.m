@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.242 2006-02-22 00:16:58 ujwal Exp $
+// $Id: PTYTextView.m,v 1.243 2006-03-01 07:47:59 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -662,11 +662,11 @@ static SInt32 systemVersion;
 #endif
 		
     int numLines, i, j, lineOffset, WIDTH;
-	int startScreenLineIndex,line, lineIndex;
-    unichar *buf;
+	int startScreenLineIndex,line;
+	screen_char_t *theLine;
 	NSRect bgRect;
 	NSColor *aColor;
-	char  *fg, *bg, *dirty = NULL;
+	char  *dirty = NULL;
 	BOOL need_draw;
 	int bgstart, ulstart;
     float curX, curY;
@@ -680,7 +680,9 @@ static SInt32 systemVersion;
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
     
+	// get lock on source 
     [dataSource acquireLock];
+	
 	// make sure margins are filled in
 	if (forceUpdate) {
 		if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
@@ -732,37 +734,38 @@ static SInt32 systemVersion;
 			return;
 		}
 		
-		// Check if we are drawing a line in buffer
+		// get the line
+		theLine = [dataSource getLineAtIndex:line];
+		//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
+		
+		// Check if we are drawing a line in scrollback buffer
 		if (line < startScreenLineIndex) 
 		{
-			lineIndex=startScreenLineIndex-line;
-			lineIndex=[dataSource lastBufferLineIndex]-lineIndex;
-			if (lineIndex<0) lineIndex+=[dataSource scrollbackLines];
-			buf=[dataSource bufferLines]+lineIndex*WIDTH;
-			fg=[dataSource bufferFGColor]+lineIndex*WIDTH;
-			bg=[dataSource bufferBGColor]+lineIndex*WIDTH;
-			//NSLog(@"Buffer: %d",lineIndex);
+			//NSLog(@"Buffer: %d",line);
 		}
 		else 
-		{ // on screen
-			lineIndex=line-startScreenLineIndex;
-			buf=[dataSource screenLines]+lineIndex*WIDTH;
-			fg=[dataSource screenFGColor]+lineIndex*WIDTH;
-			bg=[dataSource screenBGColor]+lineIndex*WIDTH;
-			dirty=[dataSource dirty]+lineIndex*WIDTH;
-			//NSLog(@"Screen: %d",lineIndex);
+		{ 
+			// get the dirty flags
+			dirty=[dataSource dirty]+(line-startScreenLineIndex)*WIDTH;
+			//NSLog(@"Screen: %d",(line-startScreenLineIndex));
 		}	
 		
 		//draw background and underline here
-		bgstart=ulstart=-1;
-		for(j=0;j<WIDTH;j++) {
-			if (buf[j]==0xffff) continue;
-			// Check if we need to redraw next char
-			need_draw = line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK);
+		bgstart = ulstart = -1;
+		
+		for(j = 0; j < WIDTH; j++) 
+		{
+			if (theLine[j].ch == 0xffff) 
+				continue;
+			
+			// Check if we need to redraw the char
+			need_draw = line < startScreenLineIndex || forceUpdate || dirty[j] || (theLine[j].fg_color & BLINK_MASK);
 
 			// if we don't have to update next char, finish pending jobs
-			if (!need_draw){
-				if (bgstart>=0) {
+			if (!need_draw)
+			{
+				if (bgstart >= 0) 
+				{
 					aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
 						[self colorForCode: 
 							((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
@@ -778,19 +781,23 @@ static SInt32 systemVersion;
 					}
 					
 				}						
-				if (ulstart>=0) {
+				if (ulstart >= 0) 
+				{
 					[[self colorForCode:(fgcode & 0x3f)] set];
 					NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
 				}
-				bgstart=ulstart=-1;
+				bgstart = ulstart = -1;
 			}
-			else {
+			else 
+			{
 				// find out if the current char is being selected
-				if (bgstart<0) {
+				if (bgstart < 0) {
 					bgstart = j; 
-					bgcode = bg[j] & 0xff; 
+					bgcode = theLine[j].bg_color & 0xff; 
 				}
-				else if (bg[j]!=bgcode || (ulstart>=0 && (fg[j]!=fgcode || !buf[j]))) { //background or underline property change?
+				else if (theLine[j].bg_color != bgcode || (ulstart >= 0 && (theLine[j].fg_color != fgcode || !(theLine[j].ch)))) 
+				{ 
+					//background or underline property change?
 					aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
 						[self colorForCode: 
 							((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
@@ -804,24 +811,28 @@ static SInt32 systemVersion;
 						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
 					bgstart = j; 
-					bgcode = bg[j] & 0xff; 
+					bgcode = theLine[j].bg_color & 0xff; 
 				}
 				
-				if (ulstart<0 && (fg[j]&UNDER_MASK) && buf[j]) { 
+				if (ulstart < 0 && (theLine[j].fg_color & UNDER_MASK) && theLine[j].ch) 
+				{ 
 					ulstart = j;
-					fgcode = fg[j] & 0xff; 
+					fgcode = theLine[j].fg_color & 0xff; 
 				}
-				else if ( ulstart>=0 && (fg[j]!=fgcode || !buf[j])) { //underline or fg color property change?
+				else if (ulstart >= 0 && (theLine[j].fg_color != fgcode || !(theLine[j].ch))) 
+				{ 
+					//underline or fg color property change?
 					[[self colorForCode:(fgcode & 0x3f)] set];
 					NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
-					fgcode=fg[j] & 0xff;
-					ulstart=(fg[j]&UNDER_MASK && buf[j])?j:-1;
+					fgcode = theLine[j].fg_color & 0xff;
+					ulstart = (theLine[j].fg_color & UNDER_MASK && theLine[j].ch)?j:-1;
 				}
 			}
 		}
 		
 		// finish pending jobs
-		if (bgstart>=0) {
+		if (bgstart >= 0) 
+		{
 			aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
 				[self colorForCode: 
 					((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
@@ -836,34 +847,41 @@ static SInt32 systemVersion;
 			}
 		}
 		
-		if (ulstart>=0) {
+		if (ulstart >= 0) 
+		{
 			[[self colorForCode:fgcode] set];
 			NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
 		}
 		
 		//draw all char
-		for(j=0;j<WIDTH;j++) {
-			need_draw = (buf[j] && buf[j]!=0xffff) && (line < startScreenLineIndex || forceUpdate || dirty[j] || (fg[j]&BLINK_MASK));
-			if (need_draw) { 
-				double_width = (buf[j+1] == 0xffff);
+		for(j = 0; j < WIDTH; j++) 
+		{
+			need_draw = (theLine[j].ch && theLine[j].ch != 0xffff) && 
+				(line < startScreenLineIndex || forceUpdate || dirty[j] || (theLine[j].fg_color & BLINK_MASK));
+			if (need_draw) 
+			{ 
+				double_width = (theLine[j+1].ch == 0xffff);
 				// switch colors if text is selected
-				if((bg[j] & SELECTION_MASK) && ((fg[j] & 0x1f) == DEFAULT_FG_COLOR_CODE))
-					fgcode = SELECTED_TEXT | ((fg[j] & BOLD_MASK) & 0xff); // check for bold
+				if((theLine[j].ch & SELECTION_MASK) && ((theLine[j].fg_color & 0x1f) == DEFAULT_FG_COLOR_CODE))
+					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0xff); // check for bold
 				else
-					fgcode = (reversed && fg[j] & DEFAULT_FG_COLOR_CODE) ? 
-						(DEFAULT_BG_COLOR_CODE | (fg[j] & BOLD_MASK)) : (fg[j] & 0xff);
-				if (fg[j]&BLINK_MASK) {
-					if (blinkShow) {				
-						[self _drawCharacter:buf[j] fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
+					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ? 
+						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : (theLine[j].fg_color & 0xff);
+				if (theLine[j].fg_color & BLINK_MASK) 
+				{
+					if (blinkShow) 
+					{				
+						[self _drawCharacter:theLine[j].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
 					}
 				}
-				else {
-					[self _drawCharacter:buf[j] fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
-					if(line>=startScreenLineIndex) 
+				else 
+				{
+					[self _drawCharacter:theLine[j].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
+					if(line >= startScreenLineIndex) 
 						dirty[j]=0;
 				}
 			}
-			else if(line>=startScreenLineIndex) 
+			else if(line >= startScreenLineIndex) 
 				dirty[j]=0;
 			
 			curX+=charWidth;
@@ -901,7 +919,8 @@ static SInt32 systemVersion;
 		showCursor = YES;
 	if (CURSOR) {
 		i = y1*[dataSource width]+x1;
-		fg=[dataSource screenFGColor]+y1*WIDTH;
+		// get the cursor line
+		theLine = [dataSource getLineAtScreenIndex: y1];
 		if(showCursor)
 		{			
 			[[[self defaultCursorColor] colorWithAlphaComponent: trans] set];
@@ -920,17 +939,18 @@ static SInt32 systemVersion;
 				
 			}
 			// draw any character on cursor if we need to
-			unichar aChar = [dataSource screenLines][i];
+			unichar aChar = theLine[x1].ch;
 			if (aChar)
 			{
-				if (aChar==0xffff && x1>0) {
+				if (aChar == 0xffff && x1>0) 
+				{
 					i--;
 					x1--;
-					aChar = [dataSource screenLines][i];
+					aChar = theLine[x1].ch;
 				}
-				double_width = ([dataSource screenLines][i+1] == 0xffff);
+				double_width = (theLine[x1+1].ch == 0xffff);
 				[self _drawCharacter: aChar 
-							 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(fg[x1] & 0xff)
+							 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0xff)
 								AtX: x1 * charWidth + MARGIN 
 								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
 						doubleWidth: double_width];
@@ -1672,26 +1692,20 @@ static SInt32 systemVersion;
 - (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines pad: (BOOL) pad
 {
 	unichar *temp;
-	int j, line, scline;
+	int j;
 	int width, y, x1, x2;
 	NSString *str;
-	unichar *buf;
+	screen_char_t *theLine;
 	BOOL endOfLine;
 	int i;
 	
 	width = [dataSource width];
-	scline = [dataSource numberOfLines]-[dataSource height];
 	temp = (unichar *) malloc(((endy-starty+1)*(width+1)+(endx-startx+1))*sizeof(unichar));
-	j=0;
-	for (y=starty;y<=endy;y++) {
-		if (y<scline) {
-			line=[dataSource lastBufferLineIndex]-scline+y;
-			if (line<0) line+=[dataSource scrollbackLines];
-			buf=[dataSource bufferLines]+line*width;
-		} else {
-			line=y-scline;
-			buf=[dataSource screenLines]+line*width;
-		}
+	j = 0;
+	for (y = starty; y <= endy; y++) 
+	{
+		theLine = [dataSource getLineAtIndex:y];
+
 		x1=0; 
 		x2=width - 1;
 		if (y == starty) 
@@ -1700,15 +1714,16 @@ static SInt32 systemVersion;
 			x2=endx;
 		for(; x1 <= x2; x1++) 
 		{
-			if (buf[x1]!=0xffff) {
-				temp[j]=buf[x1];
-				if(buf[x1] == 0) // end of line?
+			if (theLine[x1].ch != 0xffff) 
+			{
+				temp[j] = theLine[x1].ch;
+				if(theLine[x1].ch == 0) // end of line?
 				{
 					// if there is no text after this, insert a hard line break
 					endOfLine = YES;
 					for(i = x1+1; i <= x2; i++)
 					{
-						if(buf[i] != 0)
+						if(theLine[i].ch != 0)
 							endOfLine = NO;
 					}
 					if(endOfLine && !pad && y < endy)
@@ -2592,10 +2607,11 @@ static SInt32 systemVersion;
     NSLog(@"%s(%d):-[PTYTextView _selectFromX:%d Y:%d toX:%d Y:%d]", __FILE__, __LINE__, startx, starty, endx, endy);
 #endif
 
-	int line, bfHeight;
+	int bfHeight;
 	int width, height, x, y, idx, startIdx, endIdx;
-	char *bg, newbg;
+	char newbg;
 	char *dirty;
+	screen_char_t *theLine;
 	
 	width = [dataSource width];
 	height = [dataSource numberOfLines];
@@ -2612,23 +2628,25 @@ static SInt32 systemVersion;
 	}
 	
 	for (idx=y=0; y<height; y++) {
-		if (y < bfHeight) {
-			line = [dataSource lastBufferLineIndex] - bfHeight + y;
-			if (line<0) line += [dataSource scrollbackLines];
-			bg = [dataSource bufferBGColor] + line*width;
+		theLine = [dataSource getLineAtIndex: y];
+		
+		if (y < bfHeight) 
+		{
 			dirty = NULL;
 		} 
-		else {
-			line = y - bfHeight;
-			bg = [dataSource screenBGColor] + line * width;
-			dirty = [dataSource dirty] + line * width;
-		}
-		for(x=0; x <width; x++, idx++) 
+		else 
 		{
-			if (idx>=startIdx && idx<=endIdx) newbg = bg[x] | SELECTION_MASK;
-			else newbg = bg[x] & ~SELECTION_MASK;
-			if (newbg != bg[x]) {
-				bg[x] = newbg;
+			dirty = [dataSource dirty] + (y - bfHeight) * width;
+		}
+		for(x=0; x < width; x++, idx++) 
+		{
+			if (idx >= startIdx && idx<=endIdx) 
+				newbg = theLine[x].bg_color | SELECTION_MASK;
+			else
+				newbg = theLine[x].bg_color & ~SELECTION_MASK;
+			if (newbg != theLine[x].bg_color) 
+			{
+				theLine[x].bg_color = newbg;
 				if (dirty) dirty[x] = 1;
 			}
 		}		
@@ -3001,6 +3019,7 @@ static SInt32 systemVersion;
 	int row, col;
 	char theBackgroundAttribute;
 	BOOL result;
+	screen_char_t *theLine;
 	
 	locationInWindow = [theEvent locationInWindow];
 	
@@ -3008,7 +3027,9 @@ static SInt32 systemVersion;
 	col = (locationInView.x - MARGIN)/charWidth;
 	row = locationInView.y/lineHeight;
 	
-	theBackgroundAttribute = *([dataSource screenBGColor] + ([dataSource width] * row) + col);
+	theLine = [dataSource getLineAtScreenIndex: row];
+	
+	theBackgroundAttribute = theLine[col].bg_color;
 	
 	
 	

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.221 2006-02-24 09:22:41 ujwal Exp $
+// $Id: VT100Screen.m,v 1.222 2006-03-01 07:48:01 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -45,34 +45,64 @@
 #include <string.h>
 
 /* translates normal char into graphics char */
-void translate(unichar *s, int len)
+void translate(screen_char_t *s, int len)
 {
     int i;
 	
-    for(i=0;i<len;i++) s[i]=charmap[(int)s[i]];	
+    for(i=0;i<len;i++) s[i].ch = charmap[(int)(s[i].ch)];	
 }
 
 /* pad the source string whenever double width character appears */
-void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
+void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg, int *len)
 {
     unichar *sc; 
 	int l=[s length];
 	int i,j;
 	
-	if (doubleWidth) {
-		sc = (unichar *) malloc (l * sizeof(unichar));
-		[s getCharacters:sc];
-		for(i=j=0;i<l;i++,j++) {
-			buf[j]=sc[i];
-			if (ISDOUBLEWIDTHCHARACTER(sc[i])) buf[++j]=0xffff;
+	sc = (unichar *) malloc(l*sizeof(unichar));
+	[s getCharacters: sc];
+	for(i=j=0;i<l;i++,j++) {
+		buf[j].ch = sc[i];
+		buf[j].fg_color = fg;
+		buf[j].bg_color = bg;
+		if (doubleWidth && ISDOUBLEWIDTHCHARACTER(sc[i])) 
+		{
+			j++;
+			buf[j].ch = 0xffff;
+			buf[j].fg_color = fg;
+			buf[j].bg_color = bg;
 		}
-		*len=j;
 	}
-	else {
-		[s getCharacters:buf];
-		*len=[s length];
-	}
+	*len=j;	
 }
+
+// increments line pointer accounting for buffer wrap-around
+static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char_t *current_line, 
+								  int max_lines, int line_width, BOOL *wrap)
+{
+	screen_char_t *next_line;
+	
+	next_line = current_line + line_width;
+	if(next_line >= (buf_start + line_width*max_lines))
+	{
+		next_line = buf_start;
+		if(wrap)
+			*wrap = YES;
+	}
+	else if(wrap)
+		*wrap = NO;
+	
+	return (next_line);
+}
+
+
+@interface VT100Screen (Private)
+
+- (screen_char_t *) _getLineAtIndex: (int) anIndex fromLine: (screen_char_t *) aLine;
+- (screen_char_t *) _getDefaultLineWithWidth: (int) width;
+- (BOOL) _addLineToScrollback;
+
+@end
 
 @implementation VT100Screen
 
@@ -105,11 +135,17 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
     TERMINAL = nil;
     SHELL = nil;
+	
+	buffer_chars = NULL;
+	dirty = NULL;
+	first_buffer_line = NULL;
+	last_buffer_line = NULL;
+	screen_top = NULL;
+	scrollback_top = NULL;
+	
+	temp_buffer=NULL;
 
-	tempBuffer=NULL;
-
-    scrollbackLines = DEFAULT_SCROLLBACK;
-	bufferWrapped = lastBufferLineIndex = 0;
+    max_scrollback_lines = DEFAULT_SCROLLBACK;
     [self clearTabStop];
     
     // set initial tabs
@@ -129,18 +165,19 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
-	free(screenLines);
-	free(screenBGColor);
-	free(screenFGColor);
-	free(dirty);
-
-	if (bufferLines) {
-		free(bufferLines);
-		free(bufferBGColor);
-		free(bufferFGColor);
-	}
 	
-	if (tempBuffer) free(tempBuffer);
+	// free our character buffer
+	if(buffer_chars)
+		free(buffer_chars);
+	// free our "dirty flags" buffer
+	if(dirty)
+		free(dirty);
+	// free our default line
+	if(default_line)
+		free(default_line);
+	
+	if (temp_buffer) 
+		free(temp_buffer);
 	
 	[screenLock release];
 	
@@ -164,11 +201,57 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 #endif
     basestr = [NSString stringWithFormat:@"WIDTH %d, HEIGHT %d, CURSOR (%d,%d)",
 		   WIDTH, HEIGHT, CURSOR_X, CURSOR_Y];
-    //colstr = [STORAGE string];
     result = [NSString stringWithFormat:@"%@\n%@", basestr, @""]; //colstr];
 
     return result;
 }
+
+-(void) initScreenWithWidth:(int)width Height:(int)height
+{
+	int total_height;
+	int i;
+	screen_char_t *aDefaultLine;
+	
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen initScreenWithWidth:%d Height:%d]", __FILE__, __LINE__, width, height );
+#endif
+	
+	WIDTH=width;
+	HEIGHT=height;
+	CURSOR_X = CURSOR_Y = 0;
+	SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
+	SCROLL_TOP = 0;
+	SCROLL_BOTTOM = HEIGHT - 1;	
+	blinkShow=YES;
+	
+	// allocate our buffer to hold both scrollback and screen contents
+	total_height = HEIGHT + max_scrollback_lines;
+	buffer_chars = (screen_char_t *)malloc(total_height*WIDTH*sizeof(screen_char_t));
+	
+	// set up our pointers
+	first_buffer_line = buffer_chars;
+	last_buffer_line = buffer_chars + (total_height - 1)*WIDTH;
+	screen_top = first_buffer_line;
+	scrollback_top = first_buffer_line;
+	
+	// set all lines in buffer to default
+	default_fg_code = [TERMINAL foregroundColorCode];
+	default_bg_code = [TERMINAL backgroundColorCode];
+	default_line_width = WIDTH;
+	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
+	for(i = 0; i < HEIGHT; i++)
+		memcpy([self _getLineAtIndex: i fromLine: first_buffer_line], aDefaultLine, WIDTH*sizeof(screen_char_t));
+	
+	// set current lines in scrollback
+	current_scrollback_lines = 0;
+	
+	// set up our dirty flags buffer
+	dirty=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
+	// force a redraw
+	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));	
+		
+}
+
 
 - (void) acquireLock
 {
@@ -178,6 +261,47 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 - (void) releaseLock
 {
 	[screenLock unlock];
+}
+
+// gets line at specified index starting from scrollback_top
+- (screen_char_t *) getLineAtIndex: (int) theIndex
+{
+	
+	screen_char_t *theLinePointer;
+	
+	if(max_scrollback_lines == 0)
+		theLinePointer = screen_top;
+	else
+		theLinePointer = scrollback_top;
+	
+	return ([self _getLineAtIndex:theIndex fromLine:theLinePointer]);
+}
+
+// gets line at specified index starting from screen_top
+- (screen_char_t *) getLineAtScreenIndex: (int) theIndex
+{
+	return ([self _getLineAtIndex:theIndex fromLine:screen_top]);
+}
+
+// returns NSString representation of line
+- (NSString *) getLineString: (screen_char_t *) theLine
+{
+	unichar *char_buf;
+	NSString *theString;
+	int i;
+	
+#if DEBUG_METHOD_TRACE
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif	
+	
+	char_buf = malloc(WIDTH*sizeof(unichar));
+	
+	for(i = 0; i < WIDTH; i++)
+		char_buf[i] = theLine[i].ch;
+	
+	theString = [NSString stringWithCharacters: char_buf length: WIDTH];
+	
+	return (theString);
 }
 
 
@@ -201,225 +325,158 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (void)resizeWidth:(int)width height:(int)height
 {
-    int i, sw;
-	unichar *sl, *bl;
-	char *sfg, *sbg, *bfg, *bbg;
+    int i, sw, total_height, start_line;
+	screen_char_t *screen_lines_top, *bl, *scroll_lines_top, *aLine, *targetLine;
+	BOOL wrap = NO;
     
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen resizeWidth:%d height:%d]",
-	  __FILE__, __LINE__, width, height);
+    NSLog(@"%s:%d :%d]", __PRETTY_FUNCTION__, width, height);
 #endif
 	
 	if(WIDTH == 0 || HEIGHT == 0)
 		return;
 		
-	if (width==WIDTH&&height==HEIGHT) return;
+	if (width==WIDTH && height==HEIGHT) return;
 	
+	// get lock
 	[self acquireLock];
-		
-	if (width != WIDTH && bufferLines) {
-		//copy the buffer over
-		bl=(unichar*)malloc(scrollbackLines*width*sizeof(unichar));
-		bfg=(char*)malloc(scrollbackLines*width*sizeof(char));
-		bbg=(char*)malloc(scrollbackLines*width*sizeof(char));
-		memset(bl, 0, width*scrollbackLines*sizeof(unichar));
-		memset(bfg, [TERMINAL foregroundColorCode], width*scrollbackLines*sizeof(char));
-		memset(bbg, [TERMINAL backgroundColorCode], width*scrollbackLines*sizeof(char));
-		
-		sw=width<WIDTH?width:WIDTH;
-		for(i=0;i<scrollbackLines;i++) {
-			memcpy(bl+width*i, bufferLines+WIDTH*i, sw*sizeof(unichar));
-			memcpy(bfg+width*i, bufferFGColor+WIDTH*i, sw*sizeof(char));
-			memcpy(bbg+width*i, bufferBGColor+WIDTH*i, sw*sizeof(char));
-		}
-		
-		free(bufferLines);
-		free(bufferFGColor);
-		free(bufferBGColor);
-		bufferLines=bl;
-		bufferFGColor=bfg;
-		bufferBGColor=bbg;
-	}
-
-	sl=(unichar*)malloc(height*width*sizeof(unichar));
-	sfg=(char*)malloc(height*width*sizeof(char));
-	sbg=(char*)malloc(height*width*sizeof(char));
+					
+	// create a new buffer
+	total_height = max_scrollback_lines + height;
+	bl = (screen_char_t*)malloc(total_height*width*sizeof(screen_char_t));
+	// set to default line
+	aLine = [self _getDefaultLineWithWidth: width];
+	for(i = 0; i < total_height; i++)
+		memcpy(bl+width*i, aLine, width*sizeof(screen_char_t));
 	
-	memset(sl, 0, width*height*sizeof(unichar));
-	memset(sfg, [TERMINAL foregroundColorCode], width*height*sizeof(char));
-	memset(sbg, [TERMINAL backgroundColorCode], width*height*sizeof(char));
-
+	// set up the width we need to copy
+	sw = width<WIDTH?width:WIDTH;
+	
+	// copy over the old scrollback contents
+	for(i = 0; i < current_scrollback_lines; i++) 
+	{
+		aLine = [self getLineAtIndex: i];
+		memcpy(bl+width*i, aLine, sw*sizeof(screen_char_t));
+	}
+	scroll_lines_top = bl;
+		
 	// copy the screen content
-	sw=width<WIDTH?width:WIDTH;
-	if (HEIGHT<=height) { //new screen is larger, so copy everything over
-		for(i=0;i<HEIGHT;i++) {
-			memcpy(sl+width*i, screenLines+WIDTH*i, sw*sizeof(unichar));
-			memcpy(sfg+width*i, screenFGColor+WIDTH*i, sw*sizeof(char));
-			memcpy(sbg+width*i, screenBGColor+WIDTH*i, sw*sizeof(char));
+	screen_lines_top = bl + current_scrollback_lines*width;
+	if (HEIGHT <= height) //new screen is taller, so copy everything over
+	{ 
+		for(i = 0; i < HEIGHT; i++) 
+		{
+			aLine = [self getLineAtScreenIndex: i];
+			memcpy(screen_lines_top+width*i, aLine, sw*sizeof(screen_char_t));
 		}
 	}
-	else { //new screen smaller, so only copy the bottom part
-		for(i=HEIGHT-height;i<HEIGHT;i++) {
-			memcpy(sl+width*(i-HEIGHT+height), screenLines+WIDTH*i, sw*sizeof(unichar));
-			memcpy(sfg+width*(i-HEIGHT+height), screenFGColor+WIDTH*i, sw*sizeof(char));
-			memcpy(sbg+width*(i-HEIGHT+height), screenBGColor+WIDTH*i, sw*sizeof(char));
-		}
-		if (bufferLines && [SHELL pid] > 0) { //the top part goes into buffer if we have one
-			for(i=0;i<HEIGHT-height;i++) {
-				memcpy(bufferLines+lastBufferLineIndex*width, screenLines+WIDTH*i, sw*sizeof(unichar));
-				memcpy(bufferFGColor+lastBufferLineIndex*width, screenFGColor+WIDTH*i, sw*sizeof(char));
-				memcpy(bufferBGColor+lastBufferLineIndex*width, screenBGColor+WIDTH*i, sw*sizeof(char));
-				
-				if (++lastBufferLineIndex>=scrollbackLines) {
-					lastBufferLineIndex=0;
-					bufferWrapped=1;
-				}
+	else //new screen is shorter, so only copy the bottom part; put rest in scrollback area if we have one
+	{ 
+		targetLine = screen_lines_top;
+		if(max_scrollback_lines == 0)
+			start_line = HEIGHT-height; // we have no scrollback are, copy only bottom part
+		else
+			start_line = 0; // we have a scrollback area, copy top part into that
+		wrap = NO;
+		for(i = start_line; i < HEIGHT; i++)
+		{
+			aLine = [self getLineAtScreenIndex: i];
+			if(i == start_line)
+				targetLine = screen_lines_top;
+			else
+				targetLine = incrementLinePointer(bl, targetLine, total_height, width, &wrap);
+			memcpy(targetLine, aLine, sw*sizeof(screen_char_t));
+			
+			// adjust screen_lines_top if needed
+			if(i == (HEIGHT - height))
+				screen_lines_top = targetLine;
+			
+			
+			// increment our scrollback count if we are processing the top part
+			if(i < (HEIGHT - height))
+			{
+				[self _addLineToScrollback];
+				// adjust scroll_lines_top if needed (when scrollback area is full)
+				if(targetLine == scroll_lines_top)
+					scroll_lines_top = incrementLinePointer(bl, scroll_lines_top, total_height, width, &wrap);
 			}
 		}
-		CURSOR_Y-=HEIGHT-height;
-		if (CURSOR_Y<0) CURSOR_Y=0;
-		SAVE_CURSOR_Y-=HEIGHT-height;
-		if (SAVE_CURSOR_Y<0) SAVE_CURSOR_Y=0;
+		
+		// adjust Y coordinate of cursor
+		CURSOR_Y -= HEIGHT-height;
+		if (CURSOR_Y < 0) 
+			CURSOR_Y=0;
+		SAVE_CURSOR_Y -= HEIGHT-height;
+		if (SAVE_CURSOR_Y < 0) 
+			SAVE_CURSOR_Y=0;
 	}
 	
-	free(screenLines);
-	free(screenFGColor);
-	free(screenBGColor);
-	screenLines=sl;
-	screenFGColor=sfg;
-	screenBGColor=sbg;
+	// reassign our pointers
+	if(buffer_chars)
+		free(buffer_chars);
+	buffer_chars = bl;
+	first_buffer_line = bl;
+	last_buffer_line = bl + (total_height - 1)*width;
+	screen_top = screen_lines_top;
+	scrollback_top = scroll_lines_top;
 	
-	free(dirty);
-	dirty=(char*)malloc(height*width*sizeof(char));
-	memset(dirty, 1, width*height*sizeof(char));
-	[display setForceUpdate: YES];
 	
+	// new height and width
 	WIDTH = width;
 	HEIGHT = height;
-	if (CURSOR_X>=width) CURSOR_X=width-1;
-	if (SAVE_CURSOR_X>=width) SAVE_CURSOR_X=width-1;
+	
+	// reset terminal scroll top and bottom
 	SCROLL_TOP = 0;
 	SCROLL_BOTTOM = HEIGHT - 1;
-	if (tempBuffer) {
-		free(tempBuffer);
-		tempBuffer=NULL;
+	
+	// adjust X coordinate of cursor
+	if (CURSOR_X >= width) 
+		CURSOR_X = width-1;
+	if (SAVE_CURSOR_X >= width) 
+		SAVE_CURSOR_X = width-1;
+	
+	// if we did the resize in SAVE_BUFFER mode, too bad, get rid of it
+	if (temp_buffer) 
+	{
+		free(temp_buffer);
+		temp_buffer=NULL;
 	}
 	
+	// force a redraw
+	if(dirty)
+		free(dirty);
+	dirty=(char*)malloc(height*width*sizeof(char));
+	memset(dirty, 1, width*height*sizeof(char));
+	[display setForceUpdate: YES];	
+	
+	// release lock
 	[self releaseLock];
 	
 }
 
 - (int)width
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen width]", __FILE__, __LINE__);
-#endif
     return WIDTH;
 }
 
 - (int)height
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen height]", __FILE__, __LINE__);
-#endif
     return HEIGHT;
 }
 
 - (unsigned int)scrollbackLines
 {
-    return scrollbackLines;
+    return max_scrollback_lines;
 }
 
+// sets scrollback lines.
 - (void)setScrollback:(unsigned int)lines;
 {
-	unichar *bl;
-	char *bfg, *bbg;
+	// if we already have a buffer, don't allow this
+	if(buffer_chars != NULL)
+		return;
 	
-//    NSLog(@"Scrollback set: %d", lines);
-	if (lines) {
-		bl=(unichar*)malloc(lines*WIDTH*sizeof(unichar));
-		bfg=(char*)malloc(lines*WIDTH*sizeof(char));
-		bbg=(char*)malloc(lines*WIDTH*sizeof(char));
-		memset(bl, 0, WIDTH*lines*sizeof(unichar));
-		memset(bfg, [TERMINAL foregroundColorCode], WIDTH*lines*sizeof(char));
-		memset(bbg, [TERMINAL backgroundColorCode], WIDTH*lines*sizeof(char));
-		
-		if (bufferLines) {
-			if (lines<scrollbackLines) { //new buffer smaller
-				if (bufferWrapped) {
-					if (lastBufferLineIndex<lines) {
-						memcpy(bl+(lines-lastBufferLineIndex)*WIDTH,
-							   bufferLines,lastBufferLineIndex*WIDTH*sizeof(unichar));
-						memcpy(bfg+(lines-lastBufferLineIndex)*WIDTH,
-							   bufferFGColor,lastBufferLineIndex*WIDTH*sizeof(char));
-						memcpy(bbg+(lines-lastBufferLineIndex)*WIDTH,
-							   bufferBGColor,lastBufferLineIndex*WIDTH*sizeof(char));
-						memcpy(bl, bufferLines+(scrollbackLines-lines+lastBufferLineIndex)*WIDTH, 
-							   (lines-lastBufferLineIndex)*WIDTH*sizeof(unichar));
-						memcpy(bfg, bufferFGColor+(scrollbackLines-lines+lastBufferLineIndex)*WIDTH,
-							   (lines-lastBufferLineIndex)*WIDTH*sizeof(char));
-						memcpy(bbg, bufferBGColor+(scrollbackLines-lines+lastBufferLineIndex)*WIDTH,
-							   (lines-lastBufferLineIndex)*WIDTH*sizeof(char));
-					}
-					else {
-						memcpy(bl, bufferLines+(lastBufferLineIndex-lines)*WIDTH,(lastBufferLineIndex-lines)*WIDTH*sizeof(unichar));
-						memcpy(bfg, bufferFGColor+(lastBufferLineIndex-lines)*WIDTH,(lastBufferLineIndex-lines)*WIDTH*sizeof(char));
-						memcpy(bbg, bufferBGColor+(lastBufferLineIndex-lines)*WIDTH,(lastBufferLineIndex-lines)*WIDTH*sizeof(char));
-					}				
-					lastBufferLineIndex=0;
-					bufferWrapped=1;
-				}
-				else {
-					if (lastBufferLineIndex<lines) {
-						memcpy(bl, bufferLines,lastBufferLineIndex*WIDTH*sizeof(unichar));
-						memcpy(bfg, bufferFGColor,lastBufferLineIndex*WIDTH*sizeof(char));
-						memcpy(bbg, bufferBGColor,lastBufferLineIndex*WIDTH*sizeof(char));
-						bufferWrapped=0;
-					}
-					else {
-						memcpy(bl, bufferLines,lines*WIDTH*sizeof(unichar));
-						memcpy(bfg, bufferFGColor,lines*WIDTH*sizeof(char));
-						memcpy(bbg, bufferBGColor,lines*WIDTH*sizeof(char));
-						lastBufferLineIndex=0;
-						bufferWrapped=1;
-					}				
-				}
-			}
-			else { //new buffer larger
-				if (bufferWrapped) {
-					memcpy(bl, bufferLines+(scrollbackLines-lastBufferLineIndex)*WIDTH,(scrollbackLines-lastBufferLineIndex)*WIDTH*sizeof(unichar));
-					memcpy(bfg, bufferFGColor+(scrollbackLines-lastBufferLineIndex)*WIDTH,(scrollbackLines-lastBufferLineIndex)*WIDTH*sizeof(char));
-					memcpy(bbg, bufferBGColor+(scrollbackLines-lastBufferLineIndex)*WIDTH,(scrollbackLines-lastBufferLineIndex)*WIDTH*sizeof(char));
-					memcpy(bl+(scrollbackLines-lastBufferLineIndex)*WIDTH,bufferLines+WIDTH*lastBufferLineIndex,WIDTH*lastBufferLineIndex*sizeof(unichar));
-					memcpy(bfg+(scrollbackLines-lastBufferLineIndex)*WIDTH,bufferFGColor+WIDTH*lastBufferLineIndex,WIDTH*lastBufferLineIndex*sizeof(char));
-					memcpy(bbg+(scrollbackLines-lastBufferLineIndex)*WIDTH,bufferBGColor+WIDTH*lastBufferLineIndex,WIDTH*lastBufferLineIndex*sizeof(char));
-					lastBufferLineIndex=scrollbackLines;
-				}
-				else {
-					memcpy(bl, bufferLines,lastBufferLineIndex*WIDTH*sizeof(unichar));
-					memcpy(bfg, bufferFGColor,lastBufferLineIndex*WIDTH*sizeof(char));
-					memcpy(bbg, bufferBGColor,lastBufferLineIndex*WIDTH*sizeof(char));
-				}
-				bufferWrapped=0;
-			}
-					
-			free(bufferLines);
-			free(bufferFGColor);
-			free(bufferBGColor);
-		}
-		bufferLines=bl;
-		bufferFGColor=bfg;
-		bufferBGColor=bbg;
-	}
-	else { // no buffer
-		if (bufferLines) {
-			free(bufferLines);
-			free(bufferFGColor);
-			free(bufferBGColor);
-		}
-		bufferLines=NULL;
-	}
-    scrollbackLines=lines;
+    max_scrollback_lines = lines;
 }
 
 - (PTYSession *) session
@@ -429,6 +486,9 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (void)setSession:(PTYSession *)session
 {
+#if DEBUG_METHOD_TRACE
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif	
     [SESSION release];
     [session retain];
     SESSION=session;
@@ -448,9 +508,6 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (VT100Terminal *)terminal
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen terminal]", __FILE__, __LINE__);
-#endif
     return TERMINAL;
 }
 
@@ -498,46 +555,14 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     blinkingCursor = flag;
 }
 
--(void) initScreenWithWidth:(int)width Height:(int)height
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen initScreenWithWidth:%d Height:%d]", __FILE__, __LINE__, width, height );
-#endif
-
-	WIDTH=width;
-	HEIGHT=height;
-	CURSOR_X = CURSOR_Y = 0;
-	SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
-	SCROLL_TOP = 0;
-	SCROLL_BOTTOM = HEIGHT - 1;	
-	
-	screenLines=(unichar*)malloc(HEIGHT*WIDTH*sizeof(unichar));
-	screenFGColor=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
-	screenBGColor=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
-	dirty=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
-
-	if (scrollbackLines) {
-		bufferLines=(unichar*)malloc(scrollbackLines*WIDTH*sizeof(unichar));
-		bufferFGColor=(char*)malloc(scrollbackLines*WIDTH*sizeof(char));
-		bufferBGColor=(char*)malloc(scrollbackLines*WIDTH*sizeof(char));
-	}
-	else bufferLines=NULL;
-	
-	memset(screenLines,0,HEIGHT*WIDTH*sizeof(unichar));
-	memset(screenFGColor,[TERMINAL foregroundColorCode],HEIGHT*WIDTH*sizeof(char));
-	memset(screenBGColor,[TERMINAL backgroundColorCode],HEIGHT*WIDTH*sizeof(char));
-	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));	
-	[self clearScrollbackBuffer];
-    blinkShow=YES;
-}
-
 - (void)putToken:(VT100TCC)token
 {
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen putToken:%d]",__FILE__, __LINE__, token);
 #endif
-    int i,j;
+    int i,j,k;
+	screen_char_t *aLine;
     
     [self acquireLock];
     
@@ -587,12 +612,17 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     case VT100CSI_CUU: [self cursorUp:token.u.csi.p[0]]; break;
     case VT100CSI_DA:   [self deviceAttribute:token]; break;
     case VT100CSI_DECALN:
-		for (i=0;i<HEIGHT*WIDTH;i++) {
-				screenLines[i]='E';
+		for (i = 0; i < HEIGHT; i++) 
+		{
+			aLine = [self getLineAtScreenIndex: i];
+			for(j = 0; j < WIDTH; j++)
+			{
+				aLine[j].ch ='E';
+				aLine[j].fg_color = [TERMINAL foregroundColorCode];
+				aLine[j].bg_color = [TERMINAL backgroundColorCode];
+			}
 		}
 		memset(dirty,1,HEIGHT*WIDTH);
-		memset(screenFGColor,[TERMINAL foregroundColorCode],HEIGHT*WIDTH);
-		memset(screenBGColor,[TERMINAL backgroundColorCode],HEIGHT*WIDTH);
 		break;
     case VT100CSI_DECDHL: break;
     case VT100CSI_DECDWL: break;
@@ -682,10 +712,15 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     case ANSICSI_ECH:
 		i=WIDTH*CURSOR_Y+CURSOR_X;
 		j=token.u.csi.p[0];
-		if (j + CURSOR_X > WIDTH) j = WIDTH - CURSOR_X;
-		memset(screenLines+i,0,j*sizeof(unichar));
-		memset(screenFGColor+i,[TERMINAL foregroundColorCode],j);
-		memset(screenBGColor+i,[TERMINAL backgroundColorCode],j);
+		if (j + CURSOR_X > WIDTH) 
+			j = WIDTH - CURSOR_X;
+		aLine = [self getLineAtScreenIndex: CURSOR_Y];
+		for(k = 0; k < j; k++)
+		{
+			aLine[CURSOR_X+k].ch = 0;
+			aLine[CURSOR_X+k].fg_color = [TERMINAL foregroundColorCode];
+			aLine[CURSOR_X+k].bg_color = [TERMINAL backgroundColorCode];
+		}
 		memset(dirty+i,1,j);
 		break;
         
@@ -757,40 +792,78 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (void)clearScrollbackBuffer
 {
+	int i;
+	screen_char_t *aLine, *aDefaultLine;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen clearScrollbackBuffer]",  __FILE__, __LINE__ );
 #endif
+	
+	[self acquireLock];
 
-	if (bufferLines) {
-		memset(bufferLines,0,scrollbackLines*WIDTH*sizeof(unichar));
-		memset(bufferFGColor,[TERMINAL foregroundColorCode],scrollbackLines*WIDTH*sizeof(char));
-		memset(bufferBGColor,[TERMINAL backgroundColorCode],scrollbackLines*WIDTH*sizeof(char));
+	if (max_scrollback_lines) 
+	{
+		aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
+		for(i = 0; i < current_scrollback_lines; i++)
+		{
+			aLine = [self getLineAtIndex:i];
+			memcpy(aLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+		}
+		
+		current_scrollback_lines = 0;
+		scrollback_top = screen_top;
+		
 	}
 	
-	bufferWrapped = lastBufferLineIndex = 0;
+	[self releaseLock];
+	
 	[self updateScreen];
 }
 
 - (void) saveBuffer
 {	
-	int size=WIDTH*HEIGHT;
+	int size=WIDTH*(HEIGHT+max_scrollback_lines);
 	
-	if (tempBuffer) free(tempBuffer);
-	tempBuffer=(char*)malloc(size*(sizeof(unichar)+2*sizeof(char)));
-	memcpy(tempBuffer, screenLines, size*sizeof(unichar));
-	memcpy(tempBuffer+size*sizeof(unichar), screenFGColor, size*sizeof(char));
-	memcpy(tempBuffer+size*(sizeof(unichar)+sizeof(char)), screenBGColor, size*sizeof(char));
+#if DEBUG_METHOD_TRACE
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif	
+	
+	[self acquireLock];
+	
+	if (temp_buffer) 
+		free(temp_buffer);
+	
+	temp_buffer=(screen_char_t *)malloc(size*(sizeof(screen_char_t)));
+	memcpy(temp_buffer, first_buffer_line, size*sizeof(screen_char_t));
+	saved_screen_top = screen_top;
+	saved_scrollback_top = scrollback_top;
+	saved_scrollback_lines = current_scrollback_lines;
+		
+	[self releaseLock];
 }
 
 - (void) restoreBuffer
 {	
-	int size=WIDTH*HEIGHT;
-	if (!tempBuffer) return;
-	memcpy(screenLines, tempBuffer, WIDTH*HEIGHT*sizeof(unichar));
-	memcpy(screenFGColor, tempBuffer+size*sizeof(unichar), size*sizeof(char));
-	memcpy(screenBGColor, tempBuffer+size*(sizeof(unichar)+sizeof(char)), size*sizeof(char));
-	free(tempBuffer);
-	tempBuffer=NULL;
+	int size=WIDTH*(HEIGHT+max_scrollback_lines);
+	
+#if DEBUG_METHOD_TRACE
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif	
+	
+	if (!temp_buffer) 
+		return;
+	
+	memcpy(first_buffer_line, temp_buffer, size*sizeof(screen_char_t));
+	screen_top = saved_screen_top;
+	scrollback_top = saved_scrollback_top;
+	current_scrollback_lines = saved_scrollback_lines;
+	
+		
+	memset(dirty, 1, WIDTH*HEIGHT);
+	
+	free(temp_buffer);
+	temp_buffer = NULL;
+	
 }
 
 - (BOOL) printToAnsi
@@ -813,7 +886,8 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 {
     int idx, screenIdx;
     int j, len, newx;
-	unichar *buffer;
+	screen_char_t *buffer;
+	screen_char_t *aLine;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setString:%@ at %d]",
@@ -826,14 +900,14 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		return;		
 	}
 	
-	buffer = (unichar *) malloc( 2 * [string length] * sizeof(unichar) );
+	buffer = (screen_char_t *) malloc( 2 * [string length] * sizeof(screen_char_t) );
 	if (!buffer)
 	{
 		NSLog(@"%s: Out of memory", __PRETTY_FUNCTION__);
 		return;		
 	}
 	
-	padString(string,buffer,[SESSION doubleWidth], &len);
+	padString(string,buffer,[SESSION doubleWidth], [TERMINAL foregroundColorCode], [TERMINAL backgroundColorCode], &len);
 	
 	// check for graphical characters
 	if (charset[[TERMINAL charset]]) 
@@ -852,7 +926,6 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 			{
                 CURSOR_X=0;    
 				[self setNewLine];
-				//break;
             }
             else 
 			{
@@ -872,20 +945,19 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		}
 		
 		screenIdx = CURSOR_Y * WIDTH;
+		aLine = [self getLineAtScreenIndex: CURSOR_Y];
 		
         if ([TERMINAL insertMode]) 
 		{
 			if (CURSOR_X + j < WIDTH) 
 			{
-				memmove(screenLines+screenIdx+CURSOR_X+j,screenLines+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(unichar));
-				memmove(screenFGColor+screenIdx+CURSOR_X+j,screenFGColor+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(char));
-				memmove(screenBGColor+screenIdx+CURSOR_X+j,screenBGColor+screenIdx+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(char));
+				memmove(aLine+CURSOR_X+j,aLine+CURSOR_X,(WIDTH-CURSOR_X-j)*sizeof(screen_char_t));
 				memset(dirty+screenIdx+CURSOR_X,1,WIDTH-CURSOR_X);
 			}
 		}
-		memcpy(screenLines + screenIdx + CURSOR_X, buffer + idx, j * sizeof(unichar));
-		memset(screenFGColor + screenIdx + CURSOR_X, [TERMINAL foregroundColorCode], j);
-		memset(screenBGColor + screenIdx + CURSOR_X, [TERMINAL backgroundColorCode], j);
+		
+		// insert as many characters as we can
+		memcpy(aLine + CURSOR_X, buffer + idx, j * sizeof(screen_char_t));
 		memset(dirty+screenIdx+CURSOR_X,1,j);
 		
 		CURSOR_X = newx;
@@ -918,44 +990,44 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (void)setNewLine
 {
+	screen_char_t *aLine;
+	BOOL wrap = NO;
+	int total_height;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setNewLine](%d,%d)-[%d,%d]", __FILE__, __LINE__, CURSOR_X, CURSOR_Y, SCROLL_TOP, SCROLL_BOTTOM);
 #endif
 	
-    if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) {
+    if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) 
+	{
 		CURSOR_Y++;	
     }
-    else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) {
-		//move a line into buffer
-		if (bufferLines) {
-			memcpy(bufferLines+lastBufferLineIndex*WIDTH, screenLines, WIDTH*sizeof(unichar));
-			memcpy(bufferFGColor+lastBufferLineIndex*WIDTH, screenFGColor, WIDTH*sizeof(char));
-			memcpy(bufferBGColor+lastBufferLineIndex*WIDTH, screenBGColor, WIDTH*sizeof(char));
-			lastBufferLineIndex++;
-			if (lastBufferLineIndex>=scrollbackLines) {
-				lastBufferLineIndex=0;
-				bufferWrapped=1;
-			}
-		}
-		// move screen buffer one line up with its attributes
-		memmove(screenLines,screenLines+WIDTH,(HEIGHT-1)*WIDTH*sizeof(unichar));
-		memmove(screenFGColor,screenFGColor+WIDTH,(HEIGHT-1)*WIDTH*sizeof(char));
-		memmove(screenBGColor,screenBGColor+WIDTH,(HEIGHT-1)*WIDTH*sizeof(char));
+    else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) 
+	{
+		total_height = max_scrollback_lines + HEIGHT;
+		// move top line of current screen area into scrollback area by incrementing screen_top pointer
+		screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
+		if(max_scrollback_lines > 0)
+			[self _addLineToScrollback];
 
-		// set last blank line to default
-		memset(screenLines+WIDTH*(HEIGHT-1),0,WIDTH*sizeof(unichar));
-		memset(screenFGColor+WIDTH*(HEIGHT-1),[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
-		memset(screenBGColor+WIDTH*(HEIGHT-1),[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
+		// set last screen line default
+		aLine = [self getLineAtScreenIndex: (HEIGHT - 1)];
+		memcpy(aLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
 		memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
     }
-    else {
+    else 
+	{
         [self scrollUp];
     }
+	
+	
 }
 
 - (void)deleteCharacters:(int) n
 {
+	screen_char_t *aLine;
+	int i;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen deleteCharacter]: %d", __FILE__, __LINE__, n);
 #endif
@@ -967,14 +1039,20 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		
 		idx=CURSOR_Y*WIDTH;		
 		if (n+CURSOR_X>WIDTH) n=WIDTH-CURSOR_X;
-		if (n<WIDTH) {
-			memmove(screenLines+idx+CURSOR_X, screenLines+idx+CURSOR_X+n, (WIDTH-CURSOR_X-n)*sizeof(unichar));
-			memmove(screenFGColor+idx+CURSOR_X, screenFGColor+idx+CURSOR_X+n, (WIDTH-CURSOR_X-n)*sizeof(char));
-			memmove(screenBGColor+idx+CURSOR_X, screenBGColor+idx+CURSOR_X+n, (WIDTH-CURSOR_X-n)*sizeof(char));
+		
+		// get the appropriate screen line
+		aLine = [self getLineAtScreenIndex: CURSOR_Y];
+		
+		if (n<WIDTH) 
+		{
+			memmove(aLine + CURSOR_X, aLine + CURSOR_X + n, (WIDTH-CURSOR_X-n)*sizeof(screen_char_t));
 		}
-		memset(screenLines+idx+WIDTH-n,0,n*sizeof(unichar));
-		memset(screenFGColor+idx+WIDTH-n,[TERMINAL foregroundColorCode],n*sizeof(char));
-		memset(screenBGColor+idx+WIDTH-n,[TERMINAL backgroundColorCode],n*sizeof(char));
+		for(i = 0; i < n; i++)
+		{
+			aLine[WIDTH-n+i].ch = 0;
+			aLine[WIDTH-n+i].fg_color = [TERMINAL foregroundColorCode];
+			aLine[WIDTH-n+i].bg_color = [TERMINAL backgroundColorCode];
+		}
 		memset(dirty+idx+CURSOR_X,1,WIDTH-CURSOR_X);
     }
 }
@@ -1001,6 +1079,9 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (void)clearScreen
 {
+	screen_char_t *aLine, *aDefaultLine;
+	int i;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen clearScreen]; CURSOR_Y = %d", __FILE__, __LINE__, CURSOR_Y);
 #endif
@@ -1008,26 +1089,36 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	if(CURSOR_Y < 0)
 		return;
 	
+	[self acquireLock];
 	
 	// make the current line the first line and clear everything else
-	memcpy(screenLines, screenLines + (CURSOR_Y*WIDTH), WIDTH*sizeof(unichar));
-	memcpy(screenFGColor, screenFGColor + (CURSOR_Y*WIDTH), WIDTH*sizeof(char));
-	memcpy(screenBGColor, screenBGColor + (CURSOR_Y*WIDTH), WIDTH*sizeof(char));
-	memset(screenLines+WIDTH,0,(HEIGHT-1)*WIDTH*sizeof(unichar));
-	memset(screenFGColor+WIDTH,[TERMINAL foregroundColorCode],(HEIGHT-1)*WIDTH*sizeof(char));
-	memset(screenBGColor+WIDTH,[TERMINAL backgroundColorCode],(HEIGHT-1)*WIDTH*sizeof(char));
-	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));	
-	CURSOR_Y = 0; // we are now the first line
+	aLine = [self getLineAtScreenIndex:CURSOR_Y];
+	memcpy(screen_top, aLine, WIDTH*sizeof(screen_char_t));
+	CURSOR_Y = 0;
+	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
+	for (i = 1; i < HEIGHT; i++)
+	{
+		aLine = [self getLineAtScreenIndex:i];
+		memcpy(aLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+	}
+	
+	// all the screen is dirty
+	memset(dirty, 1, WIDTH*HEIGHT);
+	
+	[self releaseLock];
 
 }
 
 - (void)eraseInDisplay:(VT100TCC)token
 {
     int x1, y1, x2, y2;	
+	int i, total_height;
+	screen_char_t *aScreenChar;
+	BOOL wrap;
 
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen eraseInDisplay:(param=%d)]",
-          __FILE__, __LINE__, token.u.csi.p[0]);
+    NSLog(@"%s(%d):-[VT100Screen eraseInDisplay:(param=%d); X = %d; Y = %d]",
+          __FILE__, __LINE__, token.u.csi.p[0], CURSOR_X, CURSOR_Y);
 #endif
     switch (token.u.csi.p[0]) {
     case 1:
@@ -1060,39 +1151,43 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 	idx1=y1*WIDTH+x1;
 	idx2=y2*WIDTH+x2;
 	
+	total_height = max_scrollback_lines + HEIGHT;
+	
 	// If we are the top of the screen, move the contents to the scollback buffer
-	if(y1 == 0 && x1 == 0 && y2 > y1 && bufferLines)
+	if(y1 == 0 && x1 == 0 && y2 > y1 && max_scrollback_lines > 0)
 	{
-		int i;
-		
-		for(i = y1; i < y2; i++) {
-			memcpy(bufferLines+lastBufferLineIndex*WIDTH, screenLines+i*WIDTH, WIDTH*sizeof(unichar));
-			memcpy(bufferFGColor+lastBufferLineIndex*WIDTH, screenFGColor+i*WIDTH, WIDTH*sizeof(char));
-			memcpy(bufferBGColor+lastBufferLineIndex*WIDTH, screenBGColor+i*WIDTH, WIDTH*sizeof(char));
-			lastBufferLineIndex++;
-			if (lastBufferLineIndex>=scrollbackLines) {
-				lastBufferLineIndex=0;
-				bufferWrapped=1;
-			}		
+		for(i = y1; i < y2; i++) 
+		{
+			// move top line of current screen area into scrollback area by incrementing screen_top pointer
+			screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
+			[self _addLineToScrollback];
 		}
 	}
 	
-	memset(screenLines+idx1,0,(idx2-idx1)*sizeof(unichar));
-	// give default foreground and background colors
-	memset(screenFGColor+idx1,[TERMINAL foregroundColorCode],(idx2-idx1)*sizeof(char));
-	memset(screenBGColor+idx1,[TERMINAL backgroundColorCode],(idx2-idx1)*sizeof(char));
+	for(i = idx1, aScreenChar = screen_top + idx1; i < idx2; i++, aScreenChar++)
+	{
+		if(aScreenChar >= (first_buffer_line + total_height*WIDTH))
+			aScreenChar = first_buffer_line; // wrap around to top of buffer
+		aScreenChar->ch = 0;
+		aScreenChar->fg_color = [TERMINAL foregroundColorCode];
+		aScreenChar->bg_color = [TERMINAL backgroundColorCode];
+	}
+	
 	memset(dirty+idx1,1,(idx2-idx1)*sizeof(char));
 }
 
 - (void)eraseInLine:(VT100TCC)token
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen eraseInLine:(param=%d)]",
-          __FILE__, __LINE__, token.u.csi.p[0]);
-#endif
-
+	screen_char_t *aLine;
+	int i;
 	int idx, x1 ,x2;
 	int fgCode, bgCode;
+	
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen eraseInLine:(param=%d); X = %d; Y = %d]",
+          __FILE__, __LINE__, token.u.csi.p[0], CURSOR_X, CURSOR_Y);
+#endif
+
 	
 	x1 = x2 = 0;
     switch (token.u.csi.p[0]) {
@@ -1110,7 +1205,7 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		break;
 	}
 	idx=CURSOR_Y*WIDTH+x1;
-	memset(screenLines+idx,0,(x2-x1)*sizeof(unichar));
+	aLine = [self getLineAtScreenIndex: CURSOR_Y];
 	
 	// I'm commenting out the following code. I'm not sure about OpenVMS, but this code produces wrong result
 	// when I use vttest program for testing the color features. --fabian
@@ -1127,8 +1222,14 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 		fgCode = [TERMINAL foregroundColorCode];
 		bgCode = [TERMINAL backgroundColorCode];
 	//}
-	memset(screenFGColor+idx,fgCode,(x2-x1)*sizeof(char));
-	memset(screenBGColor+idx,bgCode,(x2-x1)*sizeof(char));
+		
+	
+	for(i = x1; i < x2; i++)
+	{
+		aLine[i].ch = 0;
+		aLine[i].fg_color = fgCode;
+		aLine[i].bg_color = bgCode;
+	}
 	memset(dirty+idx,1,(x2-x1)*sizeof(char));
 }
 
@@ -1318,6 +1419,11 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (void)scrollUp
 {
+	int total_height;
+	int i;
+	screen_char_t *sourceLine, *targetLine;
+	BOOL wrap;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen scrollUp]", __FILE__, __LINE__);
 #endif
@@ -1325,56 +1431,108 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
     NSParameterAssert(SCROLL_TOP >= 0 && SCROLL_TOP < HEIGHT);
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
+	
+	total_height = max_scrollback_lines + HEIGHT;
 
 
-    if ((SCROLL_BOTTOM >= HEIGHT-1 || SCROLL_TOP == 0) && bufferLines) {
-		// move a line to buffer
-		memcpy(bufferLines+lastBufferLineIndex*WIDTH,screenLines+SCROLL_TOP*WIDTH,WIDTH*sizeof(unichar));
-		memcpy(bufferFGColor+lastBufferLineIndex*WIDTH,screenFGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
-		memcpy(bufferBGColor+lastBufferLineIndex*WIDTH,screenBGColor+SCROLL_TOP*WIDTH,WIDTH*sizeof(char));
+    if (SCROLL_BOTTOM >= HEIGHT-1 || SCROLL_TOP == 0) 
+	{
+		// move top line of current screen area into scrollback area by incrementing screen_top pointer
+		screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
+		// move the line to buffer
+		if(max_scrollback_lines > 0)
+			[self _addLineToScrollback];
+		
+		// we have make room for the new line at SCROLL_BOTTOM; move all lines from SCROLL_BOTTOM and below down one line
+		for(i = HEIGHT - 2; i >= SCROLL_BOTTOM ; i--)
+		{
+			sourceLine = [self getLineAtScreenIndex:i];
+			targetLine = [self getLineAtScreenIndex:i+1];
+			memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+		}
+		
 		// this causes a scroll in the view, so we have force a refresh
 		memset(dirty,1,HEIGHT*WIDTH*sizeof(char));
-		if (++lastBufferLineIndex>=scrollbackLines) {
-			lastBufferLineIndex=0;
-			bufferWrapped=1;
+	}
+	else if (SCROLL_TOP<SCROLL_BOTTOM) 
+	{
+		// SCROLL_TOP is not top of screen; move all lines between SCROLL_TOP and SCROLL_BOTTOM one line up
+		// check if the screen area is wrapped
+		sourceLine = [self getLineAtScreenIndex: SCROLL_TOP];
+		targetLine = [self getLineAtScreenIndex: SCROLL_BOTTOM];
+		if(sourceLine < targetLine)
+		{
+			// screen area is not wrapped; direct memmove
+			memmove(screen_top+SCROLL_TOP*WIDTH, screen_top+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(screen_char_t));
+		}
+		else
+		{
+			// screen area is wrapped; copy line by line
+			for(i = SCROLL_TOP; i < SCROLL_BOTTOM; i++)
+			{
+				sourceLine = [self getLineAtScreenIndex:i+1];
+				targetLine = [self getLineAtScreenIndex: i];
+				memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+			}
 		}
 	}
+	// new line at SCROLL_BOTTOM with default settings
+	targetLine = [self getLineAtScreenIndex:SCROLL_BOTTOM];
+	memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
 
-	if (SCROLL_TOP<SCROLL_BOTTOM) {
-		memmove(screenLines+SCROLL_TOP*WIDTH, screenLines+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(unichar));
-		memmove(screenFGColor+SCROLL_TOP*WIDTH, screenFGColor+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
-		memmove(screenBGColor+SCROLL_TOP*WIDTH, screenBGColor+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
-	}
-	// new line with default settings
-	memset(screenLines+SCROLL_BOTTOM*WIDTH,0,WIDTH*sizeof(unichar));
-	memset(screenFGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_BOTTOM*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
+	// everything between SCROLL_TOP and SCROLL_BOTTOM is dirty
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
 }
 
 - (void)scrollDown
 {
+	int i;
+	screen_char_t *sourceLine, *targetLine;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen scrollDown]", __FILE__, __LINE__);
 #endif
+	
     NSParameterAssert(SCROLL_TOP >= 0 && SCROLL_TOP < HEIGHT);
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
 	
-	if (SCROLL_TOP<SCROLL_BOTTOM) {
-		memmove(screenLines+(SCROLL_TOP+1)*WIDTH, screenLines+(SCROLL_TOP)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(unichar));
-		memmove(screenFGColor+(SCROLL_TOP+1)*WIDTH, screenFGColor+(SCROLL_TOP)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
-		memmove(screenBGColor+(SCROLL_TOP+1)*WIDTH, screenBGColor+(SCROLL_TOP)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(char));
+	if (SCROLL_TOP<SCROLL_BOTTOM) 
+	{
+		// move all lines between SCROLL_TOP and SCROLL_BOTTOM one line down
+		// check if screen is wrapped
+		sourceLine = [self getLineAtScreenIndex:SCROLL_TOP];
+		targetLine = [self getLineAtScreenIndex:SCROLL_BOTTOM];
+		if(sourceLine < targetLine)
+		{
+			// screen area is not wrapped; direct memmove
+			memmove(screen_top+(SCROLL_TOP+1)*WIDTH, screen_top+SCROLL_TOP*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(screen_char_t));
+		}
+		else
+		{
+			// screen area is wrapped; move line by line
+			for(i = SCROLL_BOTTOM - 1; i >= SCROLL_TOP; i--)
+			{
+				sourceLine = [self getLineAtScreenIndex:i];
+				targetLine = [self getLineAtScreenIndex:i+1];
+				memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+			}
+		}
 	}
-	// new line with default settings
-	memset(screenLines+SCROLL_TOP*WIDTH,0,WIDTH*sizeof(unichar));
-	memset(screenFGColor+SCROLL_TOP*WIDTH,[TERMINAL foregroundColorCode],WIDTH*sizeof(char));
-	memset(screenBGColor+SCROLL_TOP*WIDTH,[TERMINAL backgroundColorCode],WIDTH*sizeof(char));
-	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));    
+	// new line at SCROLL_TOP with default settings
+	// new line at SCROLL_BOTTOM with default settings
+	targetLine = [self getLineAtScreenIndex:SCROLL_TOP];
+	memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
+	
+	// everything between SCROLL_TOP and SCROLL_BOTTOM is dirty
+	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
 }
 
 - (void) insertBlank: (int)n
 {
+	screen_char_t *aLine;
+	int i;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen insertBlank; %d]", __FILE__, __LINE__, n);
 #endif
@@ -1384,69 +1542,98 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 	int screenIdx=CURSOR_Y*WIDTH+CURSOR_X;
 	
-	memmove(screenLines+screenIdx+n,screenLines+screenIdx,(WIDTH-CURSOR_X-n)*sizeof(unichar));
-	memmove(screenFGColor+screenIdx+n,screenFGColor+screenIdx,(WIDTH-CURSOR_X-n)*sizeof(char));
-	memmove(screenBGColor+screenIdx+n,screenBGColor+screenIdx,(WIDTH-CURSOR_X-n)*sizeof(char));
-
-	memset(screenLines+screenIdx,0,n*sizeof(unichar));
-	memset(screenFGColor+screenIdx,[TERMINAL foregroundColorCode],n);
-	memset(screenBGColor+screenIdx,[TERMINAL backgroundColorCode],n);
+	// get the appropriate line
+	aLine = [self getLineAtScreenIndex:CURSOR_Y];
 	
+	memmove(aLine + CURSOR_X + n,aLine + CURSOR_X,(WIDTH-CURSOR_X-n)*sizeof(screen_char_t));
+	
+	for(i = 0; i < n; i++)
+	{
+		aLine[CURSOR_X+i].ch = 0;
+		aLine[CURSOR_X+i].fg_color = [TERMINAL foregroundColorCode];
+		aLine[CURSOR_X+i].bg_color = [TERMINAL backgroundColorCode];
+	}
+	
+	// everything from CURSOR_X to end of line is dirty
 	memset(dirty+screenIdx,1,WIDTH-CURSOR_X);
 	
 }
 
 - (void) insertLines: (int)n
 {
+	int i, num_lines_moved;
+	screen_char_t *sourceLine, *targetLine, *aDefaultLine;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen insertLines; %d]", __FILE__, __LINE__, n);
 #endif
     
-    int idx1, idx2, len;
     
 //    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
-	idx1=CURSOR_Y*WIDTH;
-	if (n+CURSOR_Y<=SCROLL_BOTTOM) {
-		idx2=(CURSOR_Y+n)*WIDTH;
-		len=(SCROLL_BOTTOM-n-CURSOR_Y+1)*WIDTH;
-		memmove(screenLines+idx2, screenLines+idx1, len*sizeof(unichar));
-		memmove(screenFGColor+idx2, screenFGColor+idx1, len*sizeof(char));
-		memmove(screenBGColor+idx2, screenBGColor+idx1, len*sizeof(char));
+	if (n+CURSOR_Y<=SCROLL_BOTTOM) 
+	{
+		
+		// number of lines we can move down by n before we hit SCROLL_BOTTOM
+		num_lines_moved = SCROLL_BOTTOM - (CURSOR_Y + n);
+		// start from lower end
+		for(i = num_lines_moved ; i >= 0; i--)
+		{
+			sourceLine = [self getLineAtScreenIndex: CURSOR_Y + i];
+			targetLine = [self getLineAtScreenIndex:CURSOR_Y + i + n];
+			memcpy(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+		}
+		
 	}
-	if (n+CURSOR_Y>SCROLL_BOTTOM) n=SCROLL_BOTTOM-CURSOR_Y+1;
-	len=n*WIDTH;
-	memset(screenLines+idx1, 0, len*sizeof(unichar));
-	memset(screenFGColor+idx1,[TERMINAL foregroundColorCode],len);
-	memset(screenBGColor+idx1,[TERMINAL backgroundColorCode],len);
+	if (n+CURSOR_Y>SCROLL_BOTTOM) 
+		n=SCROLL_BOTTOM-CURSOR_Y+1;
 	
-	memset(dirty+idx1,1,(SCROLL_BOTTOM-CURSOR_Y+1)*WIDTH);
+	// clear the n lines
+	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
+	for(i = 0; i < n; i++)
+	{
+		sourceLine = [self getLineAtScreenIndex:CURSOR_Y+i];
+		memcpy(sourceLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+	}
+	
+	// everything between CURSOR_Y and SCROLL_BOTTOM is dirty
+	memset(dirty+CURSOR_Y*WIDTH,1,(SCROLL_BOTTOM-CURSOR_Y+1)*WIDTH);
 }
 
 - (void) deleteLines: (int)n
 {
+	int i, num_lines_moved;
+	screen_char_t *sourceLine, *targetLine, *aDefaultLine;
+
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen deleteLines; %d]", __FILE__, __LINE__, n);
 #endif
-
-	int idx1, idx2, len;
     
 	//    NSLog(@"insertLines %d[%d,%d]",n, CURSOR_X,CURSOR_Y);
-	idx1=CURSOR_Y*WIDTH;
-	if (n+CURSOR_Y<=SCROLL_BOTTOM) {
-		idx2=(CURSOR_Y+n)*WIDTH;
-		len=(SCROLL_BOTTOM-n-CURSOR_Y+1)*WIDTH;
-		memmove(screenLines+idx1, screenLines+idx2, len*sizeof(unichar));
-		memmove(screenFGColor+idx1, screenFGColor+idx2, len*sizeof(char));
-		memmove(screenBGColor+idx1, screenBGColor+idx2, len*sizeof(char));
+	if (n+CURSOR_Y<=SCROLL_BOTTOM) 
+	{		
+		// number of lines we can move down by n before we hit SCROLL_BOTTOM
+		num_lines_moved = SCROLL_BOTTOM - (CURSOR_Y + n);
+		
+		for (i = 0; i <= num_lines_moved; i++)
+		{
+			sourceLine = [self getLineAtScreenIndex:CURSOR_Y + i + n];
+			targetLine = [self getLineAtScreenIndex: CURSOR_Y + i];
+			memcpy(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+		}
+		
 	}
-	if (n+CURSOR_Y>SCROLL_BOTTOM) n=SCROLL_BOTTOM-CURSOR_Y+1;
-	idx2=(SCROLL_BOTTOM-n+1)*WIDTH;
-	len=n*WIDTH;
-	memset(screenLines+idx2, 0, len*sizeof(unichar));
-	memset(screenFGColor+idx2,[TERMINAL foregroundColorCode],len);
-	memset(screenBGColor+idx2,[TERMINAL backgroundColorCode],len);
+	if (n+CURSOR_Y>SCROLL_BOTTOM) 
+		n=SCROLL_BOTTOM-CURSOR_Y+1;
+	// clear the n lines
+	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
+	for(i = 0; i < n; i++)
+	{
+		sourceLine = [self getLineAtScreenIndex:SCROLL_BOTTOM-n+1+i];
+		memcpy(sourceLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+	}
 	
-	memset(dirty+idx1,1,(SCROLL_BOTTOM-CURSOR_Y+1)*WIDTH);
+	// everything between CURSOR_Y and SCROLL_BOTTOM is dirty
+	memset(dirty+CURSOR_Y*WIDTH,1,(SCROLL_BOTTOM-CURSOR_Y+1)*WIDTH);
 	
 }
 
@@ -1550,9 +1737,6 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (void)blink
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen blink]", __FILE__, __LINE__);
-#endif
 	
     if (memchr(dirty, 1, WIDTH*HEIGHT)) {
         [self updateScreen];
@@ -1578,31 +1762,21 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 
 - (int) numberOfLines
 {
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen numberOfLines]",  __FILE__, __LINE__ );
-#endif
 	//NSLog(@"%s: lastBufferLineIndex = %d; HEIGHT = %d", __PRETTY_FUNCTION__, lastBufferLineIndex, HEIGHT);
-    return ((bufferWrapped?scrollbackLines:lastBufferLineIndex)+HEIGHT);
+    return (current_scrollback_lines+HEIGHT);
 }
 
-- (int) lastBufferLineIndex;
-{
-	return lastBufferLineIndex;
-}
 
 - (void) updateScreen
 {
     [display refresh];
 }
 
-- (unichar *)screenLines{ return screenLines; }
-- (char *)screenBGColor { return screenBGColor; }
-- (char	*)screenFGColor { return screenFGColor; }
-- (char	*)dirty			{ return dirty; }
+- (char	*)dirty			
+{
+	return dirty; 
+}
 
-- (unichar *)bufferLines{ return bufferLines; }
-- (char *)bufferBGColor { return bufferBGColor; }
-- (char	*)bufferFGColor { return bufferFGColor; }
 
 - (void)resetDirty
 {
@@ -1613,6 +1787,86 @@ void padString(NSString *s, unichar *buf, char doubleWidth, int *len)
 {
 	memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
 	[display setForceUpdate: YES];
+}
+
+@end
+
+@implementation VT100Screen (Private)
+
+// gets line offset by specified index from specified line poiner; accounts for buffer wrap
+- (screen_char_t *) _getLineAtIndex: (int) anIndex fromLine: (screen_char_t *) aLine
+{
+	screen_char_t *the_line = NULL;	
+	int pre_wrap, post_wrap;
+		
+	if(anIndex < 0)
+		return (NULL);
+	
+	// get the line offset from the specified line
+	the_line = aLine + anIndex*WIDTH;
+	
+	// check if we have gone beyond our buffer; if so, we need to wrap around to the top of buffer
+	if(the_line > last_buffer_line)
+	{
+		pre_wrap = (last_buffer_line - aLine)/WIDTH + 1; // accounting for lines at bottom
+		post_wrap = anIndex - pre_wrap; // accounting for lines at top
+		the_line = first_buffer_line + post_wrap*WIDTH;
+	}
+	
+	return (the_line);
+}
+
+// returns a line set to default character and attributes
+// released when session is closed
+- (screen_char_t *) _getDefaultLineWithWidth: (int) width
+{
+	int i;
+		
+	// check if we have to generate a new line
+	if(default_line && default_fg_code == [TERMINAL foregroundColorCode] && 
+	   default_bg_code == [TERMINAL backgroundColorCode] && default_line_width == width)
+		return (default_line);
+	
+	if(default_line)
+		free(default_line);
+	
+	default_line = (screen_char_t *)malloc(width*sizeof(screen_char_t));
+	
+	for(i = 0; i < width; i++)
+	{
+		default_line[i].ch = 0;
+		default_line[i].fg_color = [TERMINAL foregroundColorCode];
+		default_line[i].bg_color = [TERMINAL backgroundColorCode];
+	}
+	
+	default_fg_code = [TERMINAL foregroundColorCode];
+	default_bg_code = [TERMINAL backgroundColorCode];
+	default_line_width = width;
+	
+	return (default_line);
+	
+}
+
+
+// adds a line to scrollback area. Returns YES if oldest line is lost, NO otherwise
+- (BOOL) _addLineToScrollback
+{
+	BOOL lost_oldest_line = NO;
+	BOOL wrap;
+	
+#if DEBUG_METHOD_TRACE
+	NSLog(@"%s", __PRETTY_FUNCTION__);
+#endif	
+	
+	if(max_scrollback_lines && ++current_scrollback_lines > max_scrollback_lines)
+	{
+		// scrollback area is full; lose oldest line
+		scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
+		current_scrollback_lines = max_scrollback_lines;
+		lost_oldest_line = YES;
+	}
+	
+	return (lost_oldest_line);
 }
 
 @end

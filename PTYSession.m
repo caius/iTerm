@@ -86,6 +86,15 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif    
 	
+	// allocate a semaphore to coordinate data processing
+	MPCreateBinarySemaphore(&dataSemaphore);
+	
+    // Allocate screen, shell, and terminal objects
+    SHELL = [[PTYTask alloc] init];
+    TERMINAL = [[VT100Terminal alloc] init:parent];
+    SCREEN = [[VT100Screen alloc] init];
+    NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
+	
     return (self);
 }
 
@@ -134,14 +143,6 @@ static NSString *PWD_ENVVALUE = @"~";
           __FILE__, __LINE__);
 #endif
 	
-	// allocate a semaphore to coordinate data processing
-	MPCreateBinarySemaphore(&dataSemaphore);
-	
-    // Allocate screen, shell, and terminal objects
-    SHELL = [[PTYTask alloc] init];
-    TERMINAL = [[VT100Terminal alloc] init:parent];
-    SCREEN = [[VT100Screen alloc] init];
-    NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);
 	
     [SCREEN setSession:self];
 		
@@ -1555,7 +1556,7 @@ static NSString *PWD_ENVVALUE = @"~";
 	{
 		if (output>(key&&iIdleCount<10?3:6)) 
 		{
-			[SCREEN updateScreen];
+			[TEXTVIEW refresh];
 			output=0;
 			dirty=NO;
 		}
@@ -1746,6 +1747,7 @@ static NSString *PWD_ENVVALUE = @"~";
 			} // end token processing
 			
 		} // end inner while loop
+		
 		
 	} // end outer while loop
 				

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.46 2005-04-05 03:08:56 ujwal Exp $
+// $Id: iTermController.m,v 1.47 2006-03-01 07:48:00 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -325,14 +325,13 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 		
 	// Initialize a new session
     aSession = [[PTYSession alloc] init];
+	[[aSession SCREEN] setScrollback:[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: terminalProfile]];
     // set our preferences
     [aSession setAddressBookEntry: aDict];
     // Add this session to our term and make it current
     [term addInSessions: aSession];
     [aSession release];
-	
-	[[aSession SCREEN] setScrollback:[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: terminalProfile]];
-    
+	    
 	pwd = [aDict objectForKey: KEY_WORKING_DIRECTORY];
 	if([pwd length] <= 0)
 		pwd = NSHomeDirectory();

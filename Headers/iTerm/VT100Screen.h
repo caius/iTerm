@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.14 2005-04-10 03:45:03 ujwal Exp $
+// $Id: VT100Screen.h,v 1.15 2006-03-01 07:47:49 ujwal Exp $
 /*
  **  VT100Screen.h
  **
@@ -36,12 +36,19 @@
 @class PTYSession;
 @class PTYTextView;
 
+typedef struct screen_char_t
+{
+	unichar ch;    // the actual character
+	char bg_color; // background color
+	char fg_color; // foreground color
+} screen_char_t;
+
 #define TABWINDOW	300
 
 @interface VT100Screen : NSObject
 {
-    int WIDTH;
-    int HEIGHT;
+    int WIDTH; // width of screen
+    int HEIGHT; // height of screen
     int CURSOR_X;
     int CURSOR_Y;
     int SAVE_CURSOR_X;
@@ -64,19 +71,39 @@
     BOOL blinkingCursor;
     PTYTextView *display;
 	
-	unichar *screenLines;
-	char	*screenBGColor;
-	char	*screenFGColor;
-	char	*dirty;
+	// single buffer that holds both scrollback and screen contents
+	screen_char_t *buffer_chars;
+	// buffer holding flags for each char on whether it needs to be redrawn
+	char *dirty;
+	// a single default line
+	screen_char_t *default_line;
+	// temporary buffer to store main buffer in SAVE_BUFFER/RESET_BUFFER mode
+	screen_char_t *temp_buffer;
+	
+	// pointer to first buffer line;
+	screen_char_t *first_buffer_line;
+	// pointer to last line in buffer
+	screen_char_t *last_buffer_line;
+	// pointer to first screen line
+	screen_char_t *screen_top;
+	//pointer to first scrollback line
+	screen_char_t *scrollback_top;
+	
+	// saved stuff
+	screen_char_t *saved_screen_top;
+	screen_char_t *saved_scrollback_top;
+	int saved_scrollback_lines;
+	
+	// default line stuff
+	char default_bg_code;
+	char default_fg_code;
+	int default_line_width;
 
-	unichar *bufferLines;
-	char	*bufferBGColor;
-	char	*bufferFGColor;
-    unsigned int  scrollbackLines;
-	
-	int		bufferWrapped, lastBufferLineIndex;
-	
-	char *tempBuffer;
+	// max size of scrollback buffer
+    unsigned int  max_scrollback_lines;
+	// current number of lines in scrollback buffer
+	unsigned int current_scrollback_lines;
+		
 	
 	// print to ansi...
 	BOOL printToAnsi;		// YES=ON, NO=OFF, default=NO;
@@ -112,6 +139,12 @@
 - (void) setBlinkingCursor: (BOOL) flag;
 - (void)setPlayBellFlag:(BOOL)flag;
 - (void)setShowBellFlag:(BOOL)flag;
+
+// line access
+- (screen_char_t *) getLineAtIndex: (int) theIndex;
+- (screen_char_t *) getLineAtScreenIndex: (int) theIndex;
+- (char *) dirty;
+- (NSString *) getLineString: (screen_char_t *) theLine;
 
 // lock
 - (void) acquireLock;
@@ -161,16 +194,6 @@
 
 - (void)updateScreen;
 - (int) numberOfLines;
-- (int) lastBufferLineIndex;
-
-- (unichar *)screenLines;
-- (char *)screenBGColor;
-- (char	*)screenFGColor;
-- (char	*)dirty;
-
-- (unichar *)bufferLines;
-- (char *)bufferBGColor;
-- (char	*)bufferFGColor;
 
 - (void)resetDirty;
 - (void)setDirty;

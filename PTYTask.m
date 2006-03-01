@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.30 2006-02-17 19:46:34 ujwal Exp $
+// $Id: PTYTask.m,v 1.31 2006-03-01 07:48:01 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -472,9 +472,6 @@ static int writep(int fds, char *buf, size_t len)
     if (sts < 0 ) {
 	NSLog(@"%s(%d): writep() %s", __FILE__, __LINE__, strerror(errno));
     }
-    //else if (sts == 0) {
-	//[self brokenPipe];
-    //}
 }
 
 - (void)brokenPipe

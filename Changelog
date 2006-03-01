@@ -1,3 +1,10 @@
+2006-02-28	ujwal
+
+	* Rewrite of VT100Screen. Screen and scrollback contents are held in a single
+	  contiguous buffer with pointers maintaining position of screen and scrollback 
+	  tops. Defined a data type "screen_char_t" to hold unichar value, foreground 
+	  color, and background color.
+
 2006-02-23	ujwal
 
 	* Tagged source tree for RC_0_8_2

@@ -1,3 +1,7 @@
+2006-03-01	ujwal
+
+	* Fixed bug in PTYTextView:-drawRect in calculation of foreground color.
+
 2006-02-28	ujwal
 
 	* Rewrite of VT100Screen. Screen and scrollback contents are held in a single

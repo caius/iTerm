@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.243 2006-03-01 07:47:59 ujwal Exp $
+// $Id: PTYTextView.m,v 1.244 2006-03-01 17:45:18 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -862,7 +862,7 @@ static SInt32 systemVersion;
 			{ 
 				double_width = (theLine[j+1].ch == 0xffff);
 				// switch colors if text is selected
-				if((theLine[j].ch & SELECTION_MASK) && ((theLine[j].fg_color & 0x1f) == DEFAULT_FG_COLOR_CODE))
+				if((theLine[j].bg_color & SELECTION_MASK) && ((theLine[j].fg_color & 0x1f) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0xff); // check for bold
 				else
 					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ? 

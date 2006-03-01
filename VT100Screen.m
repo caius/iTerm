@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.223 2006-03-01 23:00:45 yfabian Exp $
+// $Id: VT100Screen.m,v 1.224 2006-03-01 23:22:37 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -182,11 +182,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	
 	[screenLock release];
 	
-    [display release];
-	[SHELL release];
-    [TERMINAL release];
-    [SESSION release];
-	[printToAnsiString release];
+    [printToAnsiString release];
 	
     [super dealloc];
 }
@@ -490,8 +486,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 #if DEBUG_METHOD_TRACE
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 #endif	
-    [SESSION release];
-    [session retain];
     SESSION=session;
 }
 
@@ -501,8 +495,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     NSLog(@"%s(%d):-[VT100Screen setTerminal:%@]",
 	  __FILE__, __LINE__, terminal);
 #endif
-    [TERMINAL release];
-    [terminal retain];
     TERMINAL = terminal;
     
 }
@@ -518,8 +510,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     NSLog(@"%s(%d):-[VT100Screen setShellTask:%@]",
 	  __FILE__, __LINE__, shell);
 #endif
-    [SHELL release];
-    [shell retain];
     SHELL = shell;
 }
 
@@ -538,12 +528,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (void) setDisplay: (PTYTextView *) aDisplay
 {
-    [display release];
-    if(aDisplay != nil)
-    {
-		[aDisplay retain];
-		display = aDisplay;
-	}
+    display = aDisplay;
 }
 
 - (BOOL) blinkingCursor

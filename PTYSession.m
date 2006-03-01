@@ -887,7 +887,7 @@ static NSString *PWD_ENVVALUE = @"~";
             else
                 [tabViewItem setLabelAttributes: normalStateAttribute];
         }
-        else if (waiting && now.tv_sec < lastOutput.tv_sec) {
+        else if (waiting && now.tv_sec <= lastOutput.tv_sec) {
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
         }
@@ -1532,6 +1532,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) updateDisplay
 {
     struct timeval now;
+    struct timeval lastUpdate={0,0};
     
     gettimeofday(&now, NULL);
     
@@ -1545,11 +1546,10 @@ static NSString *PWD_ENVVALUE = @"~";
 	if (now.tv_sec > lastBlink.tv_sec || now.tv_usec - lastBlink.tv_usec > 500000) {
 		lastBlink = now;
         [TEXTVIEW refresh];
-        REFRESHED = NO;
 	}
-	else if (REFRESHED) {
+	if (lastOutput.tv_sec != lastUpdate.tv_sec || lastOutput.tv_usec != lastUpdate.tv_usec ) {
         [TEXTVIEW refresh];
-        REFRESHED = NO;
+        lastUpdate = lastOutput;
     }
 	
 }

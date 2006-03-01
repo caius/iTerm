@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.31 2006-03-01 07:48:01 ujwal Exp $
+// $Id: PTYTask.m,v 1.32 2006-03-01 23:22:37 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -295,7 +295,6 @@ static int writep(int fds, char *buf, size_t len)
     if (FILDES >= 0)
 		close(FILDES);
 	
-    [DELEGATEOBJECT release];
     [RECVDATA release];
     [TTY release];
     [PATH release];
@@ -413,9 +412,7 @@ static int writep(int fds, char *buf, size_t len)
 
 - (void)setDelegate:(id)object
 {
-    [DELEGATEOBJECT release];
     DELEGATEOBJECT = object;
-    [DELEGATEOBJECT retain];
 }
 
 - (id)delegate

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.97 2006-02-14 21:54:10 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.98 2006-03-01 23:22:37 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1249,7 +1249,6 @@ static VT100TCC decode_string(unsigned char *datap,
 #endif
     
     [STREAM release];
-    [SCREEN release];
 	[streamLock unlock];
 	[streamLock release];
         
@@ -1929,8 +1928,6 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void) setScreen:(VT100Screen*) sc
 {
-    [SCREEN release];
-    [sc retain];
     SCREEN=sc;
 }
 

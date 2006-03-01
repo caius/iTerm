@@ -4,6 +4,9 @@
     * Changed the timing behavior of PTYSession and PTYTextView. Now we use
       the system clock, and the blinking is no longer associated with the
       input.
+    * Changed the alloc/dealloc code so that now VT100Screen, VT100Terminal,
+      and PTYTask objects are no longer retaining each other. All alloc and
+      dealloc of these objects is done in PTYSession.
       
 2006-03-01	ujwal
 

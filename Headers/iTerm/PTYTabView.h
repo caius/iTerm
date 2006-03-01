@@ -44,6 +44,7 @@
     float maxLabelSize;
     int dragTargetTabViewItemIndex;
     BOOL dragSessionInProgress;
+    NSLock *lock;
 }
 
 // Class methods that Apple should have provided

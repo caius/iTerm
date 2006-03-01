@@ -27,6 +27,8 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
 
+#include <sys/time.h>
+
 @class PTYTask;
 @class PTYTextView;
 @class PTYScrollView;
@@ -70,8 +72,9 @@
     NSView *view;
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
-    int	iIdleCount,oIdleCount, blink, output;
-    BOOL dirty;
+    
+    struct timeval lastInput, lastOutput, lastBlink;
+   
     BOOL REFRESHED;
     BOOL antiIdle;
     BOOL waiting;

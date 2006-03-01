@@ -29,12 +29,13 @@
 
 <FONT SIZE="5"><STRONG>Features:</STRONG></FONT><BR>
 <UL>
-<LI>Native Cocoa application.</LI>
+<LI>Native Cocoa application that runs both on Tiger and earlier Panther.</LI>
   <UL>
     <LI>Native OS X user interface</LI>
+    <LI>Support for both PowerPC and  new Intel Macs<IMG src="new.gif"></LI>
 	<LI>Support of Applescript</LI>
 	<LI>Transparent windows and custm background pictures</LI>
-    <LI>Rendezvous support<IMG src="new.gif"></LI>
+    <LI>Bonjour support</LI>
   </UL>
 <LI>Complete VT100 emulation, with additional support for most common xterm and 
 	ANSI escape sequences.</LI>

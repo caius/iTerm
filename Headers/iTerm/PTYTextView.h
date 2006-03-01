@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.53 2005-04-10 02:31:16 ujwal Exp $
+// $Id: PTYTextView.h,v 1.54 2006-03-01 23:00:49 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -30,6 +30,8 @@
 
 #import <Cocoa/Cocoa.h>
 #import <iTerm/iTerm.h>
+
+#include <sys/time.h>
 
 #define MARGIN  5
 
@@ -97,7 +99,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	
 	// transparency
 	float transparency;
-  BOOL useTransparency;
+    BOOL useTransparency;
 	
     // data source
     VT100Screen *dataSource;
@@ -123,6 +125,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	BOOL blinkingCursor;
 	BOOL showCursor;
 	BOOL blinkShow;
+    struct timeval lastBlink;
+    int oldCursorX, oldCursorY;
 	
 	// trackingRect tab
 	NSTrackingRectTag trackingRectTag;

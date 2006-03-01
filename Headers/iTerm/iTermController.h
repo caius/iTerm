@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.15 2005-04-05 03:08:58 ujwal Exp $
+// $Id: iTermController.h,v 1.16 2006-03-01 23:00:49 yfabian Exp $
 /*
  **  iTermController.h
  **
@@ -39,6 +39,7 @@
     // PseudoTerminal objects
     NSMutableArray *terminalWindows;
     id FRONT;
+    NSLock *terminalLock;
 }
 
 + (iTermController*)sharedInstance;

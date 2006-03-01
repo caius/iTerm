@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.222 2006-03-01 07:48:01 ujwal Exp $
+// $Id: VT100Screen.m,v 1.223 2006-03-01 23:00:45 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -73,7 +73,8 @@ void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg
 			buf[j].bg_color = bg;
 		}
 	}
-	*len=j;	
+	*len=j;
+	free(sc);
 }
 
 // increments line pointer accounting for buffer wrap-around
@@ -697,6 +698,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
             [[SESSION TEXTVIEW] scrollEnd];
 			return;
         }
+        
         break;
 
     // ANSI CSI

@@ -1,3 +1,10 @@
+2006-03-01  fabian
+
+    * Fixed a memory leak in VT100Screen
+    * Changed the timing behavior of PTYSession and PTYTextView. Now we use
+      the system clock, and the blinking is no longer associated with the
+      input.
+      
 2006-03-01	ujwal
 
 	* Fixed bug in PTYTextView:-drawRect in calculation of foreground color.

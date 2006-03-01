@@ -43,6 +43,7 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/time.h>
 
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
@@ -60,11 +61,8 @@ static NSString *PWD_ENVVALUE = @"~";
     if((self = [super init]) == nil)
         return (nil);
 	
-    iIdleCount=0;
-    oIdleCount=1000;
-    blink = 0;
-    output= 3;
-    dirty = NO;
+    gettimeofday(&lastInput, NULL);
+    lastOutput = lastBlink = lastInput;
     waiting=antiIdle=EXIT=NO;
     
     if (normalStateAttribute == nil) 
@@ -376,7 +374,7 @@ static NSString *PWD_ENVVALUE = @"~";
     unicode = [keystr length]>0?[keystr characterAtIndex:0]:0;
 	unmodunicode = [unmodkeystr length]>0?[unmodkeystr characterAtIndex:0]:0;
 	
-    iIdleCount=0;
+    gettimeofday(&lastInput, NULL);
     
     //NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c) <%d>", event,modflag,keycode,keystr,unmodkeystr,unicode,unicode,(modflag & NSNumericPadKeyMask));
     
@@ -873,11 +871,14 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) setLabelAttribute
 {
+    struct timeval now;
+    
+    gettimeofday(&now, NULL);
     if ([self exited])
         [tabViewItem setLabelAttributes: deadStateAttribute];
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
     {
-        if (oIdleCount>200&&!waiting) {
+        if (now.tv_sec > lastOutput.tv_sec && !waiting) {
             waiting=YES;
             if (REFRESHED)
 			{
@@ -886,7 +887,7 @@ static NSString *PWD_ENVVALUE = @"~";
             else
                 [tabViewItem setLabelAttributes: normalStateAttribute];
         }
-        else if (waiting&&oIdleCount<=200) {
+        else if (waiting && now.tv_sec < lastOutput.tv_sec) {
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
         }
@@ -1392,8 +1393,6 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setAntiIdle:(BOOL)set
 {
     antiIdle=set;
-    if (antiIdle) 
-        iIdleCount=0;
 }
 
 - (void) setAntiCode:(int)code
@@ -1532,36 +1531,26 @@ static NSString *PWD_ENVVALUE = @"~";
 
 - (void) updateDisplay
 {
-	BOOL key = [[TEXTVIEW window] isKeyWindow];
-	
-	iIdleCount++; oIdleCount++; blink++;
-	if (++output>1000) output=1000;
-	
-	if (antiIdle) 
-	{
-		if (iIdleCount>=6000)
-		{
-			[self writeTask:[NSData dataWithBytes:&ai_code length:1]];
-			iIdleCount=0;
-		}
-	}
+    struct timeval now;
+    
+    gettimeofday(&now, NULL);
+    
+	if (antiIdle && now.tv_sec > lastInput.tv_sec) {
+        [self writeTask:[NSData dataWithBytes:&ai_code length:1]];
+        lastInput = now;
+    }
 	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
 		[self setLabelAttribute];
 	
-	if (blink>30) {
-		if (key) [SCREEN blink];
-		blink=0;
+	if (now.tv_sec > lastBlink.tv_sec || now.tv_usec - lastBlink.tv_usec > 500000) {
+		lastBlink = now;
+        [TEXTVIEW refresh];
+        REFRESHED = NO;
 	}
-	if (oIdleCount<2||dirty) 
-	{
-		if (output>(key&&iIdleCount<10?3:6)) 
-		{
-			[TEXTVIEW refresh];
-			output=0;
-			dirty=NO;
-		}
-		else dirty=YES;
-	}  
+	else if (REFRESHED) {
+        [TEXTVIEW refresh];
+        REFRESHED = NO;
+    }
 	
 }
 
@@ -1729,7 +1718,7 @@ static NSString *PWD_ENVVALUE = @"~";
 							[tabViewItem setLabelAttributes: newOutputStateAttribute];
 					}
 					
-					oIdleCount=0;
+					gettimeofday(&lastOutput, NULL);
 				}
 				
 				if (token.type == VT100_NOTSUPPORT) {

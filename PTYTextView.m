@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.244 2006-03-01 17:45:18 ujwal Exp $
+// $Id: PTYTextView.m,v 1.245 2006-03-01 23:00:45 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -40,6 +40,8 @@
 #import <iTerm/PTYScrollView.h>
 #import <iTerm/PTYTask.h>
 
+#include <sys/time.h>
+
 #define  SELECT_CODE 0x40
 #define  CURSOR_CODE 0x80
 
@@ -73,6 +75,7 @@ static SInt32 systemVersion;
 	CURSOR=YES;
 	lastFindX = startX = -1;
     markedText=nil;
+    gettimeofday(&lastBlink, NULL);
 	[[self window] useOptimizedDrawing:YES];
 	    	
 	// register for drag and drop
@@ -84,6 +87,7 @@ static SInt32 systemVersion;
 	// init the cache
 	memset(charImages, 0, CACHESIZE*sizeof(CharCache));	
     charWidth = 12;
+    oldCursorX = oldCursorY = -1;
     
     [self setUseTransparency: YES];
 		
@@ -674,7 +678,8 @@ static SInt32 systemVersion;
 	int y1, x1;
 	BOOL double_width;
 	BOOL reversed = [[dataSource terminal] screenMode]; 
-	
+    struct timeval now;
+    
     float trans = useTransparency ? 1.0 - transparency : 1.0;
     
     if(lineHeight <= 0 || lineWidth <= 0)
@@ -683,6 +688,12 @@ static SInt32 systemVersion;
 	// get lock on source 
     [dataSource acquireLock];
 	
+    gettimeofday(&now, NULL);
+    if (now.tv_sec > lastBlink.tv_sec || now.tv_usec - lastBlink.tv_usec > 500000) {
+        blinkShow = !blinkShow;
+        lastBlink = now;
+    }
+    
 	// make sure margins are filled in
 	if (forceUpdate) {
 		if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
@@ -890,8 +901,7 @@ static SInt32 systemVersion;
 		curY+=lineHeight;
 	}
 	
-	blinkShow = !blinkShow;
-    
+	
     // Double check if dataSource is still available
     if (!dataSource) return;
 	
@@ -911,12 +921,13 @@ static SInt32 systemVersion;
 	else
 		cursorHeight = charHeightWithoutSpacing;
 	
-	if([self blinkingCursor])
-		showCursor = !showCursor;
+	if([self blinkingCursor] && [[self window] isKeyWindow] && x1==oldCursorX && y1==oldCursorY)
+		showCursor = blinkShow;
 	else
 		showCursor = YES;
-	if([[self window] isKeyWindow] == NO)
-		showCursor = YES;
+
+    oldCursorX = x1;
+    oldCursorY = y1;
 	if (CURSOR) {
 		i = y1*[dataSource width]+x1;
 		// get the cursor line
@@ -974,7 +985,7 @@ static SInt32 systemVersion;
 	
 
 	forceUpdate=NO;
-	[dataSource releaseLock];
+    [dataSource releaseLock];
 	
 }
 

@@ -1536,14 +1536,14 @@ static NSString *PWD_ENVVALUE = @"~";
     
     gettimeofday(&now, NULL);
     
-	if (antiIdle && now.tv_sec > lastInput.tv_sec) {
+	if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {
         [self writeTask:[NSData dataWithBytes:&ai_code length:1]];
         lastInput = now;
     }
 	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
 		[self setLabelAttribute];
 	
-	if (now.tv_sec > lastBlink.tv_sec || now.tv_usec - lastBlink.tv_usec > 500000) {
+	if (now.tv_sec*10+now.tv_sec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_sec/100000+5) {
 		lastBlink = now;
         [TEXTVIEW refresh];
 	}

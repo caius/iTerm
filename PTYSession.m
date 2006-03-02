@@ -1532,7 +1532,7 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) updateDisplay
 {
     struct timeval now;
-    struct timeval lastUpdate={0,0};
+    static struct timeval lastUpdate={0,0};
     
     gettimeofday(&now, NULL);
     
@@ -1548,7 +1548,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [TEXTVIEW refresh];
         lastUpdate = now;
 	}
-	else if (lastOutput.tv_sec != lastUpdate.tv_sec || lastOutput.tv_usec != lastUpdate.tv_usec ) {
+	else if (lastOutput.tv_sec > lastUpdate.tv_sec || (lastOutput.tv_sec == lastUpdate.tv_sec &&lastOutput.tv_usec > lastUpdate.tv_usec) ) {
         [TEXTVIEW refresh];
         lastUpdate = lastOutput;
     }
@@ -1662,18 +1662,6 @@ static NSString *PWD_ENVVALUE = @"~";
 @end
 
 @implementation PTYSession (Private)
-
--(void)_waitToWriteToTask: (NSData *) data
-{
-    int i = 0;
-    // wait here until we have had some output
-    while([SHELL hasOutput] == NO && i < 5000000)
-    {
-		usleep(50000);
-		i += 50000;
-    }
-    [self writeTask: data];
-}
 
 // thread to process data read from the task being run
 -(void)_processReadDataThread: (void *) arg

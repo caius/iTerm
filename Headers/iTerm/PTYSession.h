@@ -239,6 +239,4 @@
 
 @interface PTYSession (Private)
 
-- (void) _waitToWriteToTask: (NSData *) data;
-
 @end

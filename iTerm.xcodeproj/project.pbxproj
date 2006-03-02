@@ -92,7 +92,6 @@
 		DDF0FD66062916F70080EF74 /* iTermApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = DDF0FD64062916F70080EF74 /* iTermApplication.m */; };
 		F658C86E06054425000A13D5 /* iTermTerminalProfileMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = F658C86C06054425000A13D5 /* iTermTerminalProfileMgr.m */; };
 		F658CAFB060587A0000A13D5 /* iTermTerminalProfileMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = F658CAFA060587A0000A13D5 /* iTermTerminalProfileMgr.h */; };
-		F69D78B505FBEA6D009BC3FC /* faq.shtml in Resources */ = {isa = PBXBuildFile; fileRef = F69D78B405FBEA6D009BC3FC /* faq.shtml */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -731,7 +730,6 @@
 				8742064C0564169600CFC3F1 /* iTerm Help in Resources */,
 				8742064D0564169600CFC3F1 /* iTerm.icns in Resources */,
 				DD57633705653C5F00F1905E /* iTerm.plist in Resources */,
-				F69D78B505FBEA6D009BC3FC /* faq.shtml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

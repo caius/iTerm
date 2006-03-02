@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.314 2006-03-02 19:35:52 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.315 2006-03-02 22:31:00 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1759,7 +1759,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		if(pool == nil)
 			pool = [[NSAutoreleasePool alloc] init];
 		
-        if (iterationCount % 3 ==0) {
+        if (iterationCount % 5 ==0) {
             n = [_sessionMgr numberOfSessions];
             for (i = 0; i < n; i++)
             {
@@ -1768,7 +1768,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             }
 		}
         else {
-            [[self currentSession] updateDisplay];
+            if ([[[[self currentSession] TEXTVIEW] window] isKeyWindow] || iterationCount % 3 ==0 ) 
+                [[self currentSession] updateDisplay];
         }
 		// periodically create and release autorelease pools
 		if((iterationCount % 50) == 0)
@@ -1778,7 +1779,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			iterationCount = 0;
 		}
 			
-		usleep(50000);
+		usleep(100000);
 	}
 	
 	if(pool != nil)

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.6 2006-02-17 19:46:25 ujwal Exp $
+// $Id: PTYTask.h,v 1.7 2006-03-02 22:31:03 yfabian Exp $
 /*
  **  PTYTask.h
  **
@@ -52,6 +52,8 @@
     NSFileHandle *LOG_HANDLE;
     BOOL hasOutput;
     BOOL firstOutput;
+
+    MPSemaphoreID threadEndSemaphore;
 }
 
 - (id)init;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.32 2006-03-01 23:22:37 yfabian Exp $
+// $Id: PTYTask.m,v 1.33 2006-03-02 22:31:00 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -155,7 +155,7 @@ static int writep(int fds, char *buf, size_t len)
 	// establish a connection to the PTYTask instance
 	clientConnection = [NSConnection connectionWithReceivePort:boss->sendPort sendPort:boss->recvPort];
 	rootProxy = [clientConnection rootProxy];
-
+    
     /*
       data receive loop
     */
@@ -260,7 +260,9 @@ static int writep(int fds, char *buf, size_t len)
 #endif
 
     [pool release];
-    
+
+    MPSignalSemaphore(boss->threadEndSemaphore);
+
 	[NSThread exit];
 }
 
@@ -281,6 +283,10 @@ static int writep(int fds, char *buf, size_t len)
     LOG_PATH = nil;
     LOG_HANDLE = nil;
     hasOutput = NO;
+    
+    // allocate a semaphore to coordinate with thread
+	MPCreateBinarySemaphore(&threadEndSemaphore);
+
 
     return self;
 }
@@ -295,6 +301,9 @@ static int writep(int fds, char *buf, size_t len)
     if (FILDES >= 0)
 		close(FILDES);
 	
+    MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
+    MPDeleteSemaphore(threadEndSemaphore);
+
     [RECVDATA release];
     [TTY release];
     [PATH release];
@@ -303,6 +312,7 @@ static int writep(int fds, char *buf, size_t len)
 	[sendPort release];
 	[serverConnection release];
 	
+    
     [super dealloc];
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.225 2006-03-02 20:06:30 yfabian Exp $
+// $Id: VT100Screen.m,v 1.226 2006-03-02 22:31:00 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1101,7 +1101,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     int x1, y1, x2, y2;	
 	int i, total_height;
 	screen_char_t *aScreenChar;
-	BOOL wrap;
+	//BOOL wrap;
 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen eraseInDisplay:(param=%d); X = %d; Y = %d]",

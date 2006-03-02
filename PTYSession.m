@@ -878,7 +878,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabelAttributes: deadStateAttribute];
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
     {
-        if (now.tv_sec > lastOutput.tv_sec && !waiting) {
+        if (now.tv_sec*10+now.tv_sec/100000 >= lastOutput.tv_sec*10+lastOutput.tv_sec/100000+10 && !waiting) {
             waiting=YES;
             if (REFRESHED)
 			{
@@ -1543,11 +1543,12 @@ static NSString *PWD_ENVVALUE = @"~";
 	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
 		[self setLabelAttribute];
 	
-	if (now.tv_sec*10+now.tv_sec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_sec/100000+5) {
+	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_sec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_sec/100000+5) {
 		lastBlink = now;
         [TEXTVIEW refresh];
+        lastUpdate = now;
 	}
-	if (lastOutput.tv_sec != lastUpdate.tv_sec || lastOutput.tv_usec != lastUpdate.tv_usec ) {
+	else if (lastOutput.tv_sec != lastUpdate.tv_sec || lastOutput.tv_usec != lastUpdate.tv_usec ) {
         [TEXTVIEW refresh];
         lastUpdate = lastOutput;
     }

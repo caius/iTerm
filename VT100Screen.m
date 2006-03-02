@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.224 2006-03-01 23:22:37 yfabian Exp $
+// $Id: VT100Screen.m,v 1.225 2006-03-02 20:06:30 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1141,7 +1141,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	total_height = max_scrollback_lines + HEIGHT;
 	
 	// If we are the top of the screen, move the contents to the scollback buffer
-	if(y1 == 0 && x1 == 0 && y2 > y1 && max_scrollback_lines > 0)
+	/*if(y1 == 0 && x1 == 0 && y2 > y1 && max_scrollback_lines > 0)
 	{
 		for(i = y1; i < y2; i++) 
 		{
@@ -1149,7 +1149,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
 			[self _addLineToScrollback];
 		}
-	}
+	}*/
 	
 	for(i = idx1, aScreenChar = screen_top + idx1; i < idx2; i++, aScreenChar++)
 	{

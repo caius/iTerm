@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.228 2006-03-03 01:20:23 yfabian Exp $
+// $Id: VT100Screen.m,v 1.229 2006-03-03 04:45:45 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1143,17 +1143,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	
 	total_height = max_scrollback_lines + HEIGHT;
 	
-	// If we are the top of the screen, move the contents to the scollback buffer
-	/*if(y1 == 0 && x1 == 0 && y2 > y1 && max_scrollback_lines > 0)
-	{
-		for(i = y1; i < y2; i++) 
-		{
-			// move top line of current screen area into scrollback area by incrementing screen_top pointer
-			screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
-			[self _addLineToScrollback];
-		}
-	}*/
-	
+	// clear the contents between idx1 and idx2
 	for(i = idx1, aScreenChar = screen_top + idx1; i < idx2; i++, aScreenChar++)
 	{
 		if(aScreenChar >= (first_buffer_line + total_height*WIDTH))
@@ -1513,7 +1503,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		}
 	}
 	// new line at SCROLL_TOP with default settings
-	// new line at SCROLL_BOTTOM with default settings
 	targetLine = [self getLineAtScreenIndex:SCROLL_TOP];
 	memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
 	
@@ -1755,8 +1744,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (int) numberOfLines
 {
-	//NSLog(@"%s: lastBufferLineIndex = %d; HEIGHT = %d", __PRETTY_FUNCTION__, lastBufferLineIndex, HEIGHT);
-    return (current_scrollback_lines+HEIGHT);
+	int num_lines_in_scrollback;
+	
+	num_lines_in_scrollback = (current_scrollback_lines > max_scrollback_lines)?max_scrollback_lines:current_scrollback_lines;
+	
+    return (num_lines_in_scrollback+HEIGHT);
 }
 
 
@@ -1857,7 +1849,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
 		current_scrollback_lines = max_scrollback_lines;
 		lost_oldest_line = YES;
-        //[display scrollLineUpWithoutMoving];
 	}
 	
 	return (lost_oldest_line);

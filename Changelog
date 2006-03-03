@@ -1,3 +1,8 @@
+2006-03-02  ujwal
+
+	* Fixed VT100Screen:-numberOfLines to guarantee that it does not
+	  report more lines than it actually has.
+
 2006-03-02  fabian
 
     * Fixed VT100Screen::eraseInDisplay behavior.

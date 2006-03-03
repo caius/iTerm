@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.54 2006-03-01 23:00:49 yfabian Exp $
+// $Id: PTYTextView.h,v 1.55 2006-03-03 01:20:24 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -244,6 +244,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 
 // Scrolling control
 - (NSRect)adjustScroll:(NSRect)proposedVisibleRect;
+- (void) scrollLineUpWithoutMoving;
 - (void) scrollLineUp: (id) sender;
 - (void) scrollLineDown: (id) sender;
 - (void) scrollPageUp: (id) sender;

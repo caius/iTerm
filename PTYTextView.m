@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.248 2006-03-03 00:06:12 yfabian Exp $
+// $Id: PTYTextView.m,v 1.249 2006-03-03 01:20:23 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -559,8 +559,31 @@ static SInt32 systemVersion;
 #endif
 	//forceUpdate = YES;
 	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
+
+    NSRect currentRect;    
+    currentRect= [self visibleRect];
+    
+    int i, line;
+    int lineNum = (proposedVisibleRect.origin.y - currentRect.origin.y)/lineHeight;
+    for(i=lineNum-1; i>=0; i--) {
+        line = (currentRect.origin.y+currentRect.size.height)/lineHeight + i -[dataSource numberOfLines]+[dataSource height];
+        if (line>0) memset([dataSource dirty]+line*[dataSource width]*sizeof(char), 1, [dataSource width]*sizeof(char));
+        else break;
+    }
+    
 	return proposedVisibleRect;
 }
+
+-(void) scrollLineUpWithoutMoving
+{
+    NSRect scrollRect;
+    float yOffset = [[self enclosingScrollView] verticalLineScroll];
+    
+    scrollRect = [self visibleRect];
+    scrollRect.origin.y += yOffset;
+    //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
+    [self scrollRect: scrollRect by:NSMakeSize(0, -yOffset)];
+} 
 
 -(void) scrollLineUp: (id) sender
 {

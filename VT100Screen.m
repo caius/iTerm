@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.227 2006-03-03 00:06:12 yfabian Exp $
+// $Id: VT100Screen.m,v 1.228 2006-03-03 01:20:23 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1441,8 +1441,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
 		}
 		
-		// this causes a scroll in the view, so we have force a refresh
-		memset(dirty,1,HEIGHT*WIDTH*sizeof(char));
+		// we force a refresh at the bottom and the old cursor location
+        dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
+        memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
+        memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));
+        
 	}
 	else if (SCROLL_TOP<SCROLL_BOTTOM) 
 	{
@@ -1854,6 +1857,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
 		current_scrollback_lines = max_scrollback_lines;
 		lost_oldest_line = YES;
+        //[display scrollLineUpWithoutMoving];
 	}
 	
 	return (lost_oldest_line);

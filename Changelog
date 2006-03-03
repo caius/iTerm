@@ -2,6 +2,8 @@
 
     * Fixed VT100Screen::eraseInDisplay behavior.
     * Fixed CPU usage issue.
+    * Changed VT100Screen::setNewLine so that we are not redrawing all
+      characters in the case of a scrolling.
     
 2006-03-01  fabian
 

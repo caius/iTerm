@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.247 2006-03-01 23:36:06 yfabian Exp $
+// $Id: PTYTextView.m,v 1.248 2006-03-03 00:06:12 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -554,7 +554,10 @@ static SInt32 systemVersion;
 
 - (NSRect)adjustScroll:(NSRect)proposedVisibleRect
 {
-	forceUpdate = YES;
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView adjustScroll]", __FILE__, __LINE__ );
+#endif
+	//forceUpdate = YES;
 	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
 	return proposedVisibleRect;
 }
@@ -661,7 +664,7 @@ static SInt32 systemVersion;
 		
     int numLines, i, j, lineOffset, WIDTH;
 	int startScreenLineIndex,line;
-	screen_char_t *theLine;
+    screen_char_t *theLine;
 	NSRect bgRect;
 	NSColor *aColor;
 	char  *dirty = NULL;
@@ -714,7 +717,7 @@ static SInt32 systemVersion;
 	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
     //NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
 		
-	// [self adjustScroll] should've made sure we are at an integer multiple of a line
+    // [self adjustScroll] should've made sure we are at an integer multiple of a line
 	curY=rect.origin.y +lineHeight;
 	
 	// redraw margins if we have a background image, otherwise we can still "see" the margin
@@ -726,7 +729,7 @@ static SInt32 systemVersion;
 		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 	}
 	
-	
+      
     for(i = 0; i < numLines; i++)
     {
 		curX = MARGIN;

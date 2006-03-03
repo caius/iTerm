@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.226 2006-03-02 22:31:00 yfabian Exp $
+// $Id: VT100Screen.m,v 1.227 2006-03-03 00:06:12 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1000,7 +1000,10 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		// set last screen line default
 		aLine = [self getLineAtScreenIndex: (HEIGHT - 1)];
 		memcpy(aLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
-		memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
+        
+        dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
+        memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
+        memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));
     }
     else 
 	{

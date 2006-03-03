@@ -1,3 +1,8 @@
+2006-03-03  ujwal
+	
+	* Fixed VT100Screen:-setNewLine to redraw whole screen if buffer is full
+	* Protecting PTYTextView:-refresh with locking datasource
+
 2006-03-02  ujwal
 
 	* Fixed VT100Screen:-numberOfLines to guarantee that it does not

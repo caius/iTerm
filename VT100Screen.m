@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.229 2006-03-03 04:45:45 ujwal Exp $
+// $Id: VT100Screen.m,v 1.230 2006-03-03 08:45:20 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -992,18 +992,32 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) 
 	{
 		total_height = max_scrollback_lines + HEIGHT;
-		// move top line of current screen area into scrollback area by incrementing screen_top pointer
-		screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
+        
+		// check how much of the screen we need to redraw
+		if(current_scrollback_lines == max_scrollback_lines)
+		{
+			// we can't shove top line into scroll buffer, entire screen needs to be redrawn
+			memset(dirty, 1, HEIGHT*WIDTH*sizeof(char));
+		}
+		else
+		{
+			// top line can move into scroll area; we need to draw only bottom line
+			dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
+			memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
+			memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
+		}
+		
+		// try to add top line to scroll area
 		if(max_scrollback_lines > 0)
 			[self _addLineToScrollback];
-
+		
+		// Increment screen_top pointer
+		screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
+		
 		// set last screen line default
 		aLine = [self getLineAtScreenIndex: (HEIGHT - 1)];
 		memcpy(aLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
-        
-        dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
-        memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
-        memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));
+		
     }
     else 
 	{

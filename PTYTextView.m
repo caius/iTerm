@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.249 2006-03-03 01:20:23 yfabian Exp $
+// $Id: PTYTextView.m,v 1.250 2006-03-03 08:45:20 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -531,6 +531,8 @@ static SInt32 systemVersion;
     
     if(dataSource != nil)
     {
+		[dataSource acquireLock];
+		
         numberOfLines = [dataSource numberOfLines];
         aSize = [self frame].size;
         height = numberOfLines * lineHeight;
@@ -545,9 +547,12 @@ static SInt32 systemVersion;
             [self setFrame: aFrame];
 			if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) [self scrollEnd];
         }
+		
+		[self setNeedsDisplay: YES];
+
+		[dataSource releaseLock];
     }
 	
-	[self setNeedsDisplay: YES];
 	
 }
 

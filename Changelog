@@ -3,6 +3,7 @@
 	* Fixed VT100Screen:-setNewLine to redraw whole screen if buffer is full
 	* Protecting PTYTextView:-refresh with locking datasource
 	* Fixed memory leak in VT100Screen:-setString
+	* Not using NSData in PTYTask:+_processReadThread. Instead passing raw char buffer.
 
 2006-03-02  ujwal
 

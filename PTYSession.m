@@ -282,16 +282,17 @@ static NSString *PWD_ENVVALUE = @"~";
 	[pool release];
 }
 
-- (void)readTask:(NSData *)data
+- (void)readTask:(char *)buf length:(int)length
 {
 	
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, [[[NSString alloc] initWithData: data encoding: nil] autorelease] );
-#endif
-    if (data == nil)
+	if (buf == NULL)
         return;
 	
-    [TERMINAL putStreamData:data];	
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, [[[NSString alloc] initWithBytes: buf length:length encoding: nil] autorelease] );
+#endif
+	
+    [TERMINAL putStreamData:buf length:length];	
 	
 	// signal the data processing thread
 	MPSignalSemaphore(dataSemaphore);

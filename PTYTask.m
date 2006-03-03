@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.33 2006-03-02 22:31:00 yfabian Exp $
+// $Id: PTYTask.m,v 1.34 2006-03-03 22:30:47 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -49,18 +49,18 @@
 #define CTRLKEY(c)   ((c)-'A'+1)
 
 static void setup_tty_param(struct termios *term,
-			    struct winsize *win,
-			    int width,
-			    int height)
+							struct winsize *win,
+							int width,
+							int height)
 {
     memset(term, 0, sizeof(struct termios));
     memset(win, 0, sizeof(struct winsize));
-
+	
     term->c_iflag = ICRNL | IXON | IXANY | IMAXBEL | BRKINT;
     term->c_oflag = OPOST | ONLCR;
     term->c_cflag = CREAD | CS8 | HUPCL;
     term->c_lflag = ICANON | ISIG | IEXTEN | ECHO | ECHOE | ECHOKE | ECHOCTL;
-
+	
     term->c_cc[VEOF]      = CTRLKEY('D');
     term->c_cc[VEOL]      = -1;
     term->c_cc[VEOL2]     = -1;
@@ -79,10 +79,10 @@ static void setup_tty_param(struct termios *term,
     term->c_cc[VMIN]      = 1;
     term->c_cc[VTIME]     = 0;
     term->c_cc[VSTATUS]   = -1;
-
+	
     term->c_ispeed = B38400;
     term->c_ospeed = B38400;
-
+	
     win->ws_row = height;
     win->ws_col = width;
     win->ws_xpixel = 0;
@@ -98,73 +98,71 @@ static int writep(int fds, char *buf, size_t len)
     int chunk;
     struct timeval tv;
     fd_set wfds,efds;
-
-    while (wrtlen > 0) {
-
-	FD_ZERO(&wfds);
-	FD_ZERO(&efds);
-	FD_SET(fds, &wfds);
-	FD_SET(fds, &efds);	
 	
-	tv.tv_sec = 0;
-	tv.tv_usec = 100000;
-
-	sts = select(fds + 1, NULL, &wfds, &efds, &tv);
-
-	if (sts == 0) {
-	    NSLog(@"Write timeout!");
-	    break;
-	}	
-
-	if(wrtlen > 1024)
-	    chunk = 1024;
-	else
-	    chunk = wrtlen;
-	sts = write(fds, tmpPtr, wrtlen);
-	if (sts <= 0)
-	    break;
-
-	wrtlen -= sts;
-	tmpPtr += sts;
-
+    while (wrtlen > 0) {
+		
+		FD_ZERO(&wfds);
+		FD_ZERO(&efds);
+		FD_SET(fds, &wfds);
+		FD_SET(fds, &efds);	
+		
+		tv.tv_sec = 0;
+		tv.tv_usec = 100000;
+		
+		sts = select(fds + 1, NULL, &wfds, &efds, &tv);
+		
+		if (sts == 0) {
+			NSLog(@"Write timeout!");
+			break;
+		}	
+		
+		if(wrtlen > 1024)
+			chunk = 1024;
+		else
+			chunk = wrtlen;
+		sts = write(fds, tmpPtr, wrtlen);
+		if (sts <= 0)
+			break;
+		
+		wrtlen -= sts;
+		tmpPtr += sts;
+		
     }
     if (sts <= 0)
-	result = sts;
+		result = sts;
     else
-	result = len;
-
+		result = len;
+	
     return result;
 }
 
 + (void)_processReadThread:(PTYTask *)boss
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSData *data = nil;
     BOOL exitf = NO;
     int sts;
 	int iterationCount = 0;
 	NSAutoreleasePool *arPool = nil;
 	NSConnection *clientConnection;
 	id rootProxy;
-
+	char readbuf[4096];
+	fd_set rfds,efds;
+	
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:%@] start",
-	  __FILE__, __LINE__, [boss description]);
+		  __FILE__, __LINE__, [boss description]);
 #endif
-
+	
 	// establish a connection to the PTYTask instance
 	clientConnection = [NSConnection connectionWithReceivePort:boss->sendPort sendPort:boss->recvPort];
 	rootProxy = [clientConnection rootProxy];
     
     /*
-      data receive loop
-    */
+	 data receive loop
+	 */
 	iterationCount = 0; 
     while (exitf == NO) 
 	{
-		fd_set rfds,efds;
-		//int sts;
-		char readbuf[4096];
 		
 		// periodically refresh our autorelease pool
 		iterationCount++;
@@ -177,7 +175,7 @@ static int writep(int fds, char *buf, size_t len)
 		FD_SET(boss->FILDES, &efds);
 		
 		sts = select(boss->FILDES + 1, &rfds, NULL, &efds, NULL);
-
+		
 		if (sts < 0) {
 			break;
 		}
@@ -202,37 +200,26 @@ static int writep(int fds, char *buf, size_t len)
 			if (sts == 0) {
 				// session close
 				exitf = YES;
-                //[boss readTask: nil];
 			}
 		}
 		else if (FD_ISSET(boss->FILDES, &rfds)) {
 			sts = read(boss->FILDES, readbuf, sizeof(readbuf));
 			
-			if (sts == 1 && readbuf[0] != '\0') {
-				data = nil;
-			}
-			else if (sts > 1) {
-				data = [NSData dataWithBytes:readbuf +1 length:sts - 1];
-			}
-            else if (sts == 0) {
-                data = nil;
-				
+            if (sts == 0) 
+			{
 				exitf = YES;
             }
-			else {
-				data = nil;
-            }
-						
-            if (data != nil) {
+			
+            if (sts > 1) {
 				// use boss instead of rootProxy for performance
                 [boss setHasOutput: YES];
-				[boss readTask:data];
+				[boss readTask:readbuf+1 length:sts-1];
             }
             else
                 [boss setHasOutput: NO];
 			
 		}
-
+		
 		// periodically refresh our autorelease pool
 		if((iterationCount % 10) == 0)
 		{
@@ -242,27 +229,27 @@ static int writep(int fds, char *buf, size_t len)
 		}
 		
     }
-		
+	
 	// use the rootProxy through the clientConnection to close session
 	// not using the clientConnection causes tab redraw problems
 	if(sts >= 0)
 		[rootProxy brokenPipe];
-		
+			
 	if(arPool != nil)
 	{
 		[arPool release];
 		arPool = nil;
 	}
-
+	
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:] finish",
-	  __FILE__, __LINE__);
+		  __FILE__, __LINE__);
 #endif
-
+	
     [pool release];
-
+	
     MPSignalSemaphore(boss->threadEndSemaphore);
-
+	
 	[NSThread exit];
 }
 
@@ -272,12 +259,11 @@ static int writep(int fds, char *buf, size_t len)
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     if ([super init] == nil)
-	return nil;
-
+		return nil;
+	
     PID = (pid_t)-1;
     STATUS = 0;
     DELEGATEOBJECT = nil;
-    RECVDATA = [[NSMutableData data] retain];
     FILDES = -1;
     TTY = nil;
     LOG_PATH = nil;
@@ -286,8 +272,8 @@ static int writep(int fds, char *buf, size_t len)
     
     // allocate a semaphore to coordinate with thread
 	MPCreateBinarySemaphore(&threadEndSemaphore);
-
-
+	
+	
     return self;
 }
 
@@ -303,8 +289,7 @@ static int writep(int fds, char *buf, size_t len)
 	
     MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
     MPDeleteSemaphore(threadEndSemaphore);
-
-    [RECVDATA release];
+	
     [TTY release];
     [PATH release];
 	
@@ -317,19 +302,19 @@ static int writep(int fds, char *buf, size_t len)
 }
 
 - (void)launchWithPath:(NSString *)progpath
-	     arguments:(NSArray *)args
-	   environment:(NSDictionary *)env
-		 width:(int)width
-		height:(int)height
+			 arguments:(NSArray *)args
+		   environment:(NSDictionary *)env
+				 width:(int)width
+				height:(int)height
 {
     struct termios term;
     struct winsize win;
     char ttyname[PATH_MAX];
     int sts;
     int one = 1;
-
+	
     PATH = [progpath copy];
-
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[launchWithPath:%@ arguments:%@ environment:%@ width:%d height:%d", __FILE__, __LINE__, progpath, args, env, width, height);
 #endif    
@@ -394,7 +379,7 @@ static int writep(int fds, char *buf, size_t len)
 	
     [NSThread detachNewThreadSelector:@selector(_processReadThread:)
             	             toTarget: [PTYTask class]
-	                   withObject:self];
+						   withObject:self];
 }
 
 - (BOOL) hasOutput
@@ -406,7 +391,7 @@ static int writep(int fds, char *buf, size_t len)
 {
     hasOutput = flag;
     if([self firstOutput] == NO)
-	[self setFirstOutput: flag];
+		[self setFirstOutput: flag];
 }
 
 - (BOOL) firstOutput
@@ -433,36 +418,26 @@ static int writep(int fds, char *buf, size_t len)
 - (void) doIdleTasks
 {
     if ([DELEGATEOBJECT respondsToSelector:@selector(doIdleTasks)]) {
-	[DELEGATEOBJECT doIdleTasks];
+		[DELEGATEOBJECT doIdleTasks];
     }
 }
 
-- (NSData *)readData
+
+- (void)readTask:(char *)buf length:(int)length
 {
-    NSData *result = [NSData dataWithData:RECVDATA];
-
-    [RECVDATA release];
-    RECVDATA = [[NSMutableData data] retain];
-    NSParameterAssert(RECVDATA != nil);
-
-    return result;
-}
-
-- (void)readTask:(NSData *)data
-{
+	NSData *data;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTask readTask:%@]", __FILE__, __LINE__, data);
 #endif
-    [LOG_HANDLE writeData:data];
-
-    if (DELEGATEOBJECT == nil) {
-	[RECVDATA appendData:data];
-    }
-    else {
-	if ([DELEGATEOBJECT respondsToSelector:@selector(readTask:)]) {
-	    [DELEGATEOBJECT readTask:data];
+	if([self logging])
+	{
+		data = [[NSData alloc] initWithBytes: buf length: length];
+		[LOG_HANDLE writeData:data];
+		[data release];
 	}
-    }
+	
+	// forward the data to our delegate
+	[DELEGATEOBJECT readTask:buf length:length];
 }
 
 - (void)writeTask:(NSData *)data
@@ -474,10 +449,10 @@ static int writep(int fds, char *buf, size_t len)
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTask writeTask:%@]", __FILE__, __LINE__, data);
 #endif
-
+	
     sts = writep(FILDES, (char *)datap, len);
     if (sts < 0 ) {
-	NSLog(@"%s(%d): writep() %s", __FILE__, __LINE__, strerror(errno));
+		NSLog(@"%s(%d): writep() %s", __FILE__, __LINE__, strerror(errno));
     }
 }
 
@@ -491,16 +466,16 @@ static int writep(int fds, char *buf, size_t len)
 - (void)sendSignal:(int)signo
 {
     if (PID >= 0)
-	kill(PID, signo);
+		kill(PID, signo);
 }
 
 - (void)setWidth:(int)width height:(int)height
 {
     struct winsize winsize;
-
+	
     if(FILDES == -1)
-	return;
-
+		return;
+	
     ioctl(FILDES, TIOCGWINSZ, &winsize);
     winsize.ws_col = width;
     winsize.ws_row = height;
@@ -516,19 +491,19 @@ static int writep(int fds, char *buf, size_t len)
 {
     if (PID >= 0) 
 		waitpid(PID, &STATUS, 0);
-
+	
     return STATUS;
 }
 
 - (BOOL)exist
 {
     BOOL result;
-
+	
     if (WIFEXITED(STATUS))
 		result = YES;
     else
 		result = NO;
-
+	
     return result;
 }
 
@@ -562,26 +537,26 @@ static int writep(int fds, char *buf, size_t len)
 {
     [LOG_PATH autorelease];
     LOG_PATH = [[path stringByStandardizingPath ] copy];
-
+	
     [LOG_HANDLE autorelease];
     LOG_HANDLE = [NSFileHandle fileHandleForWritingAtPath:LOG_PATH];
     if (LOG_HANDLE == nil) {
-	NSFileManager *fm = [NSFileManager defaultManager];
-	[fm createFileAtPath:LOG_PATH
-		    contents:nil
-		  attributes:nil];
-	LOG_HANDLE = [NSFileHandle fileHandleForWritingAtPath:LOG_PATH];
+		NSFileManager *fm = [NSFileManager defaultManager];
+		[fm createFileAtPath:LOG_PATH
+					contents:nil
+				  attributes:nil];
+		LOG_HANDLE = [NSFileHandle fileHandleForWritingAtPath:LOG_PATH];
     }
     [LOG_HANDLE retain];
     [LOG_HANDLE seekToEndOfFile];
-
+	
     return LOG_HANDLE == nil ? NO:YES;
 }
 
 - (void)loggingStop
 {
     [LOG_HANDLE closeFile];
-
+	
     [LOG_PATH autorelease];
     [LOG_HANDLE autorelease];
     LOG_PATH = nil;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.7 2006-03-02 22:31:03 yfabian Exp $
+// $Id: PTYTask.h,v 1.8 2006-03-03 22:30:38 ujwal Exp $
 /*
  **  PTYTask.h
  **
@@ -41,7 +41,6 @@
     int FILDES;
     int STATUS;
     id DELEGATEOBJECT;
-    NSMutableData *RECVDATA;
     NSString *TTY;
     NSString *PATH;
 	NSPort *recvPort;
@@ -69,8 +68,7 @@
 - (id)delegate;
 
 - (void) doIdleTasks;
-- (NSData *)readData;
-- (void)readTask:(NSData *)data;
+- (void)readTask:(char *)buf length:(int)length;
 - (void)writeTask:(NSData *)data;
 - (void)brokenPipe;
 - (void)sendSignal:(int)signo;

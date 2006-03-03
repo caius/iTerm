@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.98 2006-03-01 23:22:37 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.99 2006-03-03 22:30:47 ujwal Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1303,12 +1303,12 @@ static VT100TCC decode_string(unsigned char *datap,
 	[streamLock unlock];
 }
 
-- (void)putStreamData:(NSData *)data
+- (void)putStreamData:(char *)data length: (int)length
 {
 	[streamLock lock];
     if([STREAM length] == 0)
 		streamOffset = 0;
-    [STREAM appendData:data];
+    [STREAM appendBytes:data length:length];
 	[streamLock unlock];
 }
 

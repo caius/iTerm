@@ -2,6 +2,7 @@
 	
 	* Fixed VT100Screen:-setNewLine to redraw whole screen if buffer is full
 	* Protecting PTYTextView:-refresh with locking datasource
+	* Fixed memory leak in VT100Screen:-setString
 
 2006-03-02  ujwal
 

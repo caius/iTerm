@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.230 2006-03-03 08:45:20 ujwal Exp $
+// $Id: VT100Screen.m,v 1.231 2006-03-03 19:43:51 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -950,6 +950,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		CURSOR_X = newx;
 		idx += j;
     }
+	
+	free(buffer);
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"setString done at %d", CURSOR_X);
 #endif

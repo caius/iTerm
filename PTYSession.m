@@ -1087,7 +1087,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabel: theName];
         [self setBell: NO];
     }
-    if ([[tabViewItem tabView] numberOfTabViewItems] > 1 && ![[PreferencePanel sharedInstance] hideTab])
+    if ([[tabViewItem tabView] numberOfTabViewItems] > 1 || ![[PreferencePanel sharedInstance] hideTab])
     {
         [[tabViewItem tabView] setTabViewType: NSNoTabsBezelBorder];
         [[tabViewItem tabView] setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];

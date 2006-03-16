@@ -1,6 +1,6 @@
 2006-03-15  fabian
 
-    * Added in locks to eliminate the bugs related to opening/closing sessions.
+    * Put in locks to eliminate the bugs related to opening/closing sessions.
     * Removed NSConnection once again.
     * A (not-so-elegant) fix for occassional tab label refreshing problem.
     

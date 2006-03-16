@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.47 2006-03-01 07:48:00 ujwal Exp $
+// $Id: iTermController.m,v 1.48 2006-03-16 00:41:30 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -90,7 +90,8 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
         [fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
     
     terminalWindows = [[NSMutableArray alloc] init];
-	
+	terminalLock = [[NSLock alloc] init];
+    
 	// read preferences
 	[PreferencePanel sharedInstance];
     
@@ -106,6 +107,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     
     [terminalWindows removeAllObjects];
     [terminalWindows release];
+    [terminalLock release];
     
     [super dealloc];
 }
@@ -336,11 +338,12 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	if([pwd length] <= 0)
 		pwd = NSHomeDirectory();
     NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
+
+    [term setCurrentSessionName:[aDict objectForKey: KEY_NAME]];	
     
     // Start the command        
     [term startProgram:cmd arguments:arg environment:env];
 	
-    [term setCurrentSessionName:[aDict objectForKey: KEY_NAME]];	
 	
 }
 
@@ -418,7 +421,9 @@ NSString *terminalsKey = @"terminals";
 -(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
 {
     // NSLog(@"iTerm: replaceInTerminals 0x%x atIndex %d", object, index);
+    [terminalLock lock];
     [terminalWindows replaceObjectAtIndex: index withObject: object];
+    [terminalLock unlock];
 }
 
 - (void) addInTerminals: (PseudoTerminal *) object
@@ -437,7 +442,9 @@ NSString *terminalsKey = @"terminals";
 {
     if([terminalWindows containsObject: object] == YES)
 		return;
+    [terminalLock lock];
     [terminalWindows insertObject: object atIndex: index];
+    [terminalLock unlock];
     // make sure we have a window
     [object initWindow];
 }
@@ -445,7 +452,9 @@ NSString *terminalsKey = @"terminals";
 -(void)removeFromTerminalsAtIndex:(unsigned)index
 {
     // NSLog(@"iTerm: removeFromTerminalsAtInde %d", index);
+    [terminalLock lock];
     [terminalWindows removeObjectAtIndex: index];
+    [terminalLock unlock];
 	if([terminalWindows count] == 0)
 		[ITConfigPanelController close];
 }

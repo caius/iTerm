@@ -74,6 +74,8 @@
 
 - (void)setCurrentSession:(PTYSession *)session;
 {
+    [_threadLock lock];
+    
     _currentSessionIndex = [_sessionList indexOfObject:session];
     
     if (_currentSessionIndex != NSNotFound)
@@ -81,12 +83,19 @@
         [_currentSession autorelease];
         _currentSession = [session retain];    
     }
+    [_threadLock unlock];
+    
 }
 
 - (void)setCurrentSessionIndex:(int)index;
 {
+    [_threadLock lock];
+    
     if (index >= 0 && index < [_sessionList count])
-        [self setCurrentSession:[self sessionAtIndex:index]];
+        _currentSessionIndex = index;
+    //[self setCurrentSession:[self sessionAtIndex:index]];
+    [_threadLock unlock];
+    
 }
 
 - (NSArray*)sessionList;
@@ -96,36 +105,41 @@
 
 - (void)removeSession:(PTYSession*)session;
 {
+    [_threadLock lock];
     int removeIndex = [_sessionList indexOfObject:session];
     if (removeIndex != NSNotFound)
     {
-        [_threadLock lock];
         [_sessionList removeObjectAtIndex:removeIndex];
-        [_threadLock unlock];
 
         if (removeIndex >= [_sessionList count])
             removeIndex = [_sessionList count] - 1;
         
-        [self setCurrentSessionIndex:removeIndex];
+        _currentSessionIndex = removeIndex;
     }
+    [_threadLock unlock];
 }
 
 - (void)insertSession:(PTYSession*)session atIndex:(int)index
 {
+    [_threadLock lock];
     if (index > [_sessionList count])
         index = [_sessionList count];
     
-    [_threadLock lock];
     [_sessionList insertObject:session atIndex:index];
-    [_threadLock unlock];
 
     if (_currentSessionIndex >= index)
-        [self setCurrentSessionIndex:_currentSessionIndex+1];
+        _currentSessionIndex = _currentSessionIndex+1;
+    
+    [_threadLock unlock];
 }
 
 - (unsigned)numberOfSessions;
 {
-    return [_sessionList count];
+    [_threadLock lock];
+    int n = [_sessionList count];
+    [_threadLock unlock];
+    
+    return n;
 }
 
 - (void)replaceSessionAtIndex:(int)index withSession:(PTYSession*)session;

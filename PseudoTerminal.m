@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.315 2006-03-02 22:31:00 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.316 2006-03-16 00:41:30 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -103,6 +103,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (id)init
 {
+    PTLock = [[NSLock alloc] init];
     return ([self initWithWindowNibName: @"PseudoTerminal"]);
 }
 
@@ -299,6 +300,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [self setWindowTitle: title];
         [aSession setName: title];
     }
+
+
 }
 
 - (void) switchSession: (id) sender
@@ -381,7 +384,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[aTabViewItem setView: [aSession view]];
 		[[aSession SCROLLVIEW] setLineScroll: charHeight];
         [[aSession SCROLLVIEW] setPageScroll: HEIGHT*charHeight/2];
-		[TABVIEW insertTabViewItem: aTabViewItem atIndex: index];
+        [TABVIEW insertTabViewItem: aTabViewItem atIndex: index];
 		
         [aTabViewItem release];
 		[aSession setTabViewItem: aTabViewItem];
@@ -414,6 +417,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if((_sessionMgr == nil) || ![_sessionMgr containsSession:aSession])
         return;
     
+    [PTLock lock];
+
     if([_sessionMgr numberOfSessions] == 1 && [self windowInited])
     {
         [[self window] close];
@@ -422,11 +427,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 	[aSession retain];  
 	aTabViewItem = [aSession tabViewItem];
-	[aTabViewItem retain];
 	[aSession terminate];
 	[aSession release];
-	[TABVIEW removeTabViewItem: aTabViewItem];
-	[aTabViewItem release];	
+    [TABVIEW removeTabViewItem: aTabViewItem];
+    [PTLock unlock];
 		
 }
 
@@ -529,6 +533,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self releaseObjects];
     [_toolbarController release];
 	
+    [PTLock release];
+    
     [super dealloc];
 }
 
@@ -1457,8 +1463,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		return;
     
     PTYSession *aSession = [tabViewItem identifier];
-	
-    if(![_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
+	if(![_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
     {
 		[aSession setParent: self];
 		
@@ -1501,27 +1506,24 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		return;
     
     [_sessionMgr setCurrentSessionIndex:[TABVIEW indexOfTabViewItem: [TABVIEW selectedTabViewItem]]];
+    [TABVIEW setTabViewType: NSNoTabsBezelBorder];
 	
-    if ([TABVIEW numberOfTabViewItems] == 1)
+    if ([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
     {
-		if([[PreferencePanel sharedInstance] hideTab])
-		{
-            PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
-			
-            [TABVIEW setTabViewType: NSNoTabsBezelBorder];
-			[self setWindowSize: NO];
-            [[aSession TEXTVIEW] scrollEnd];
-            // make sure the display is up-to-date.
-            [[aSession TEXTVIEW] setForceUpdate: YES];
-            
-		}
-		else
-		{
-			[TABVIEW setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
-			[self setWindowSize: NO];
-		}
-		
+        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
+        [self setWindowSize: NO];
+        [[aSession TEXTVIEW] scrollEnd];
+        // make sure the display is up-to-date.
+        [[aSession TEXTVIEW] setForceUpdate: YES];
+        
     }
+    else
+    {
+        [TABVIEW setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
+        [self setWindowSize: NO];
+    }
+		
+    //[[TABVIEW selectedTabViewItem] setLabel: [[[[TABVIEW selectedTabViewItem] label] copy] autorelease]];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
     
@@ -1764,11 +1766,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             for (i = 0; i < n; i++)
             {
                 aSession = [_sessionMgr sessionAtIndex: i];
-                [aSession updateDisplay];
+                if (![aSession exited]) [aSession updateDisplay];
             }
 		}
         else {
-            if ([[[[self currentSession] TEXTVIEW] window] isKeyWindow] || iterationCount % 3 ==0 ) 
+            if (![[self currentSession] exited] &&[[[[self currentSession] TEXTVIEW] window] isKeyWindow] || iterationCount % 3 ==0 ) 
                 [[self currentSession] updateDisplay];
         }
 		// periodically create and release autorelease pools
@@ -1929,7 +1931,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(void)insertInSessions:(PTYSession *)object
 {
     // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x", object);
+    [PTLock lock];
     [self insertInSessions: object atIndex:[_sessionMgr numberOfSessions]];
+    [PTLock unlock];
 }
 
 -(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index

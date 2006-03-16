@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.34 2006-03-03 22:30:47 ujwal Exp $
+// $Id: PTYTask.m,v 1.35 2006-03-16 00:41:29 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -143,8 +143,8 @@ static int writep(int fds, char *buf, size_t len)
     int sts;
 	int iterationCount = 0;
 	NSAutoreleasePool *arPool = nil;
-	NSConnection *clientConnection;
-	id rootProxy;
+	//NSConnection *clientConnection;
+	//id rootProxy;
 	char readbuf[4096];
 	fd_set rfds,efds;
 	
@@ -154,8 +154,8 @@ static int writep(int fds, char *buf, size_t len)
 #endif
 	
 	// establish a connection to the PTYTask instance
-	clientConnection = [NSConnection connectionWithReceivePort:boss->sendPort sendPort:boss->recvPort];
-	rootProxy = [clientConnection rootProxy];
+	//clientConnection = [NSConnection connectionWithReceivePort:boss->sendPort sendPort:boss->recvPort];
+	//rootProxy = [clientConnection rootProxy];
     
     /*
 	 data receive loop
@@ -232,8 +232,9 @@ static int writep(int fds, char *buf, size_t len)
 	
 	// use the rootProxy through the clientConnection to close session
 	// not using the clientConnection causes tab redraw problems
-	if(sts >= 0)
-		[rootProxy brokenPipe];
+	if(sts >= 0) 
+        [boss brokenPipe];
+		//[rootProxy brokenPipe];
 			
 	if(arPool != nil)
 	{
@@ -299,6 +300,9 @@ static int writep(int fds, char *buf, size_t len)
 	
     
     [super dealloc];
+#if DEBUG_ALLOC
+    NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
+#endif
 }
 
 - (void)launchWithPath:(NSString *)progpath

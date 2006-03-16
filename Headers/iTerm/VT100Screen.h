@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.15 2006-03-01 07:47:49 ujwal Exp $
+// $Id: VT100Screen.h,v 1.16 2006-03-16 00:41:31 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -149,6 +149,7 @@ typedef struct screen_char_t
 // lock
 - (void) acquireLock;
 - (void) releaseLock;
+- (BOOL) tryLock;
 
 // edit screen buffer
 - (void)putToken:(VT100TCC)token;

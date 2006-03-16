@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.231 2006-03-03 19:43:51 ujwal Exp $
+// $Id: VT100Screen.m,v 1.232 2006-03-16 00:41:30 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -166,7 +166,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
-	
+    
 	// free our character buffer
 	if(buffer_chars)
 		free(buffer_chars);
@@ -185,6 +185,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     [printToAnsiString release];
 	
     [super dealloc];
+#if DEBUG_ALLOC
+    NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
+#endif
 }
 
 - (NSString *)description
@@ -259,6 +262,13 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 {
 	[screenLock unlock];
 }
+
+- (BOOL) tryLock
+{
+	return [screenLock tryLock];
+}
+
+
 
 // gets line at specified index starting from scrollback_top
 - (screen_char_t *) getLineAtIndex: (int) theIndex
@@ -1448,11 +1458,20 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
 		}
 		
-		// we force a refresh at the bottom and the old cursor location
-        dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
-        memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
-        memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));
-        
+        // check how much of the screen we need to redraw
+		if(current_scrollback_lines == max_scrollback_lines)
+		{
+			// we can't shove top line into scroll buffer, entire screen needs to be redrawn
+			memset(dirty, 1, HEIGHT*WIDTH*sizeof(char));
+		}
+		else
+		{
+			// top line can move into scroll area; we need to draw only bottom line
+			dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
+			memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
+			memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
+		}
+		
 	}
 	else if (SCROLL_TOP<SCROLL_BOTTOM) 
 	{
@@ -1866,6 +1885,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
 		current_scrollback_lines = max_scrollback_lines;
 		lost_oldest_line = YES;
+        // [display scrollLineUpWithoutMoving];
 	}
 	
 	return (lost_oldest_line);

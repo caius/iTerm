@@ -129,6 +129,9 @@ static NSString *PWD_ENVVALUE = @"~";
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
     [super dealloc];    
+#if DEBUG_ALLOC
+    NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
+#endif
 }
 
 // Session specific methods
@@ -245,14 +248,15 @@ static NSString *PWD_ENVVALUE = @"~";
     [addressBookEntry release];
     addressBookEntry = nil;
 	
+    [TEXTVIEW setDataSource: nil];
+	[TEXTVIEW setDelegate: nil];
+    [TEXTVIEW removeFromSuperview];
+
     [SHELL setDelegate:nil];
     [SCREEN setShellTask:nil];
     [SCREEN setSession: nil];
     [SCREEN setTerminal: nil];
     [TERMINAL setScreen: nil];
-    [TEXTVIEW setDataSource: nil];
-	[TEXTVIEW setDelegate: nil];
-    [TEXTVIEW removeFromSuperview];
     [self setTabViewItem: nil];    
     
         
@@ -1082,6 +1086,11 @@ static NSString *PWD_ENVVALUE = @"~";
     else {
         [tabViewItem setLabel: theName];
         [self setBell: NO];
+    }
+    if ([[tabViewItem tabView] numberOfTabViewItems] > 1 && ![[PreferencePanel sharedInstance] hideTab])
+    {
+        [[tabViewItem tabView] setTabViewType: NSNoTabsBezelBorder];
+        [[tabViewItem tabView] setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
     }
 	
     // get the session submenu to be rebuilt

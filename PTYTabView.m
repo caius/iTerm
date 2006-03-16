@@ -109,6 +109,7 @@
     [self registerForDraggedTypes: typeArray];
     dragSessionInProgress = NO;
     dragTargetTabViewItemIndex = -1;
+    lock = [[NSLock alloc] init];
     
     return self;
 }
@@ -124,6 +125,8 @@
 	[mouseEvent release];
 	mouseEvent = nil;
     }    
+
+    [lock release];
         
     [super dealloc];
 }
@@ -192,6 +195,7 @@
 
     // Let our delegate know
     id delegate = [self delegate];
+    [lock lock];
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
 	[delegate tabView: self willAddTabViewItem: aTabViewItem];
     
@@ -201,6 +205,7 @@
         maxLabelSize=20;
     
     [super addTabViewItem: aTabViewItem];
+    [lock unlock];
 }
 
 - (void) removeTabViewItem: (NSTabViewItem *) aTabViewItem
@@ -211,6 +216,8 @@
 
     // Let our delegate know
     id delegate = [self delegate];
+    
+    [lock lock];
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
 	[delegate tabView: self willRemoveTabViewItem: aTabViewItem];
     
@@ -220,6 +227,7 @@
         maxLabelSize=20;
     
     [super removeTabViewItem: aTabViewItem];
+    [lock unlock];
 }
 
 - (void) insertTabViewItem: (NSTabViewItem *) tabViewItem atIndex: (int) index
@@ -230,8 +238,17 @@
 
     // Let our delegate know
     id delegate = [self delegate];
+
+    [lock lock];
+    
+    // Check the boundary
+    if (index>[super numberOfTabViewItems]) {
+        NSLog(@"Warning: index(%d) > numberOfTabViewItems(%d)", index, [super numberOfTabViewItems]);
+        index = [super numberOfTabViewItems];
+    }
+    
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[delegate tabView: self willInsertTabViewItem: tabViewItem atIndex: index];    
+        [delegate tabView: self willInsertTabViewItem: tabViewItem atIndex: index];    
 
     // insert the item
     maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]+1)-17;
@@ -239,7 +256,10 @@
         maxLabelSize=20;
     
     [super insertTabViewItem: tabViewItem atIndex: index];
-
+    [lock unlock];
+#if DEBUG_METHOD_TRACE
+    NSLog(@"PTYTabView: -insertTabViewItem atIndex: %d, done", index);
+#endif
 }
 
 // drag and drop

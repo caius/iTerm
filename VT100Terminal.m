@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.99 2006-03-03 22:30:47 ujwal Exp $
+// $Id: VT100Terminal.m,v 1.100 2006-03-16 00:41:30 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1253,6 +1253,9 @@ static VT100TCC decode_string(unsigned char *datap,
 	[streamLock release];
         
     [super dealloc];
+#if DEBUG_ALLOC
+    NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
+#endif
 }
 
 - (BOOL)trace

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.250 2006-03-03 08:45:20 ujwal Exp $
+// $Id: PTYTextView.m,v 1.251 2006-03-16 00:41:29 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -129,8 +129,7 @@ static SInt32 systemVersion;
 		[mouseDownEvent release];
 		mouseDownEvent = nil;
     }
-	
-	
+	    
     [[NSNotificationCenter defaultCenter] removeObserver:self];    
     for(i=0;i<16;i++) {
         [colorTable[i] release];
@@ -148,6 +147,10 @@ static SInt32 systemVersion;
 	
     [self resetCharCache];
     [super dealloc];
+    
+#if DEBUG_ALLOC
+    NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
+#endif
 }
 
 - (BOOL)shouldDrawInsertionPoint
@@ -455,7 +458,11 @@ static SInt32 systemVersion;
 
 - (void) setDataSource: (id) aDataSource
 {
+    id temp = dataSource;
+    
+    [temp acquireLock];
     dataSource = aDataSource;
+    [temp releaseLock];
 }
 
 - (id) delegate
@@ -711,7 +718,7 @@ static SInt32 systemVersion;
         return;
     
 	// get lock on source 
-    [dataSource acquireLock];
+    if (![dataSource tryLock]) return;
 	
     gettimeofday(&now, NULL);
     if (now.tv_sec*10+now.tv_sec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_sec/100000+5) {

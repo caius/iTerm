@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.29 2006-02-02 00:11:46 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.30 2006-03-16 00:41:31 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -55,7 +55,9 @@
 	BOOL sendInputToAllSessions;
 	BOOL fontSizeFollowWindowResize;
 	BOOL suppressContextualMenu;
-	
+    
+    NSLock *PTLock;
+
 	BOOL EXIT;
 }
 

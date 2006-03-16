@@ -71,7 +71,14 @@
   </UL>
 </UL>
 
-<FONT SIZE="5"><STRONG>What's new</STRONG></FONT><BR><BR>
+<FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
+<STRONG>Recent CVS build</STRONG> 3/3/2006<BR>
+We decide to start regularly putting 
+<A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">binary build</A> 
+from the latest CVS. These packages address the bugs and issues that popped 
+up after our last release. Try them to see if it fixes the 
+crashes/memory leaks/GUI quirks/etc that you experience.<BR><BR>
+
 <STRONG>0.8.2 released</STRONG> 2/18/2006<BR>
 iTerm is now a universal binary application! The new version also addresses 
 many bugs in the last version. We strongly encourage everybody who uses 

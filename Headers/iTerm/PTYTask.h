@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.8 2006-03-03 22:30:38 ujwal Exp $
+// $Id: PTYTask.h,v 1.9 2006-03-17 19:08:32 ujwal Exp $
 /*
  **  PTYTask.h
  **
@@ -43,9 +43,6 @@
     id DELEGATEOBJECT;
     NSString *TTY;
     NSString *PATH;
-	NSPort *recvPort;
-	NSPort *sendPort;
-	NSConnection *serverConnection;
 
     NSString *LOG_PATH;
     NSFileHandle *LOG_HANDLE;

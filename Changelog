@@ -2,6 +2,7 @@
 	
 	* PTYTextView:-refresh selects only dirty regions to refresh before 
 	  calling drawRect.
+	* Removed all NSConnection related stuff from PTYTask.
 
 2006-03-15  fabian
 

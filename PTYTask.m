@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.35 2006-03-16 00:41:29 yfabian Exp $
+// $Id: PTYTask.m,v 1.36 2006-03-17 19:08:39 ujwal Exp $
 //
 /*
  **  PTYTask.m
@@ -143,8 +143,6 @@ static int writep(int fds, char *buf, size_t len)
     int sts;
 	int iterationCount = 0;
 	NSAutoreleasePool *arPool = nil;
-	//NSConnection *clientConnection;
-	//id rootProxy;
 	char readbuf[4096];
 	fd_set rfds,efds;
 	
@@ -153,9 +151,6 @@ static int writep(int fds, char *buf, size_t len)
 		  __FILE__, __LINE__, [boss description]);
 #endif
 	
-	// establish a connection to the PTYTask instance
-	//clientConnection = [NSConnection connectionWithReceivePort:boss->sendPort sendPort:boss->recvPort];
-	//rootProxy = [clientConnection rootProxy];
     
     /*
 	 data receive loop
@@ -211,7 +206,6 @@ static int writep(int fds, char *buf, size_t len)
             }
 			
             if (sts > 1) {
-				// use boss instead of rootProxy for performance
                 [boss setHasOutput: YES];
 				[boss readTask:readbuf+1 length:sts-1];
             }
@@ -230,11 +224,8 @@ static int writep(int fds, char *buf, size_t len)
 		
     }
 	
-	// use the rootProxy through the clientConnection to close session
-	// not using the clientConnection causes tab redraw problems
 	if(sts >= 0) 
         [boss brokenPipe];
-		//[rootProxy brokenPipe];
 			
 	if(arPool != nil)
 	{
@@ -294,9 +285,6 @@ static int writep(int fds, char *buf, size_t len)
     [TTY release];
     [PATH release];
 	
-	[recvPort release];
-	[sendPort release];
-	[serverConnection release];
 	
     
     [super dealloc];
@@ -373,14 +361,7 @@ static int writep(int fds, char *buf, size_t len)
     TTY = [[NSString stringWithCString:ttyname] retain];
     NSParameterAssert(TTY != nil);
 	
-	// establish a NSConnection for the read thread to use to talk back to us.
-	recvPort = [NSPort port];
-	[recvPort retain];
-	sendPort = [NSPort port];
-	[sendPort retain];
-	serverConnection = [[NSConnection alloc] initWithReceivePort: recvPort sendPort: sendPort];
-	[serverConnection setRootObject: self];
-	
+	// spawn a thread to do the read task
     [NSThread detachNewThreadSelector:@selector(_processReadThread:)
             	             toTarget: [PTYTask class]
 						   withObject:self];
@@ -519,7 +500,6 @@ static int writep(int fds, char *buf, size_t len)
 		close(FILDES);
 	FILDES = -1;
     [self wait];
-	[serverConnection invalidate];
 }
 
 - (int)status

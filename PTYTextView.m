@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.251 2006-03-16 00:41:29 yfabian Exp $
+// $Id: PTYTextView.m,v 1.252 2006-03-17 19:02:29 ujwal Exp $
 /*
  **  PTYTextView.m
  **
@@ -532,31 +532,67 @@ static SInt32 systemVersion;
 - (void) refresh
 {
 	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
-
-    NSSize aSize;
-	int height;
+	NSRect aFrame;
+	int i, height, screen_height, screen_width, first_dirty_row, last_dirty_row;
+	char *dirty, *dirty_row;
     
     if(dataSource != nil)
     {
 		[dataSource acquireLock];
 		
         numberOfLines = [dataSource numberOfLines];
-        aSize = [self frame].size;
         height = numberOfLines * lineHeight;
-        if(height != [self frame].size.height)
+		screen_height = [dataSource height];
+		screen_width = [dataSource width];
+		dirty = [dataSource dirty];
+		
+		// get the first and last rows that are dirty and need to be repainted
+		first_dirty_row = 0;
+		last_dirty_row = screen_height - 1;
+		
+		// find the first dirty row
+		dirty_row = memchr(dirty, 1, screen_width*screen_height*sizeof(char));
+		if(dirty_row)
+		{
+			// find the last dirty row
+			first_dirty_row = (dirty_row - dirty)/(screen_width*sizeof(char));
+			for (i = first_dirty_row; i < screen_height; i++)
+			{
+				dirty_row = memchr(dirty+i*screen_width, 1, screen_width*sizeof(char));
+				if(dirty_row)
+					last_dirty_row = (dirty_row - dirty)/(screen_width*sizeof(char));
+			}
+		}
+		
+		aFrame = [self frame];
+
+        if(height != aFrame.size.height)
         {
-            NSRect aFrame;
             
 			//NSLog(@"%s: 0x%x; new number of lines = %d; resizing height from %f to %d", 
 			//	  __PRETTY_FUNCTION__, self, numberOfLines, [self frame].size.height, height);
-            aFrame = [self frame];
             aFrame.size.height = height;
             [self setFrame: aFrame];
-			if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) [self scrollEnd];
+			if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) 
+			{
+				[self scrollEnd];
+				[self setNeedsDisplay: NO];
+				aFrame.origin.y += (numberOfLines - screen_height + first_dirty_row) * lineHeight;
+				aFrame.size.height = (last_dirty_row - first_dirty_row + 1) * lineHeight;
+				[self setNeedsDisplayInRect: aFrame];
+			}
+			else
+				[self setNeedsDisplay: YES];
         }
-		
-		[self setNeedsDisplay: YES];
-
+		else if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll])
+		{
+			aFrame.origin.y += (numberOfLines - screen_height + first_dirty_row) * lineHeight;
+			aFrame.size.height = (last_dirty_row - first_dirty_row + 1) * lineHeight;
+			[self setNeedsDisplayInRect: aFrame];
+		}
+		else
+			[self setNeedsDisplay: YES];
+				
 		[dataSource releaseLock];
     }
 	

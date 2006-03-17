@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.232 2006-03-16 00:41:30 yfabian Exp $
+// $Id: VT100Screen.m,v 1.233 2006-03-17 19:02:29 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1001,6 +1001,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) 
 	{
 		CURSOR_Y++;	
+		dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) 
 	{
@@ -1252,7 +1253,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 - (void)cursorLeft:(int)n
 {
     int x = CURSOR_X - (n>0?n:1);
-
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorLeft:%d]", 
 	  __FILE__, __LINE__, n);
@@ -1261,12 +1262,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		x = 0;
     if (x >= 0 && x < WIDTH)
 		CURSOR_X = x;
+	
+	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
 }
 
 - (void)cursorRight:(int)n
 {
     int x = CURSOR_X + (n>0?n:1);
-	
+		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorRight:%d]", 
 		  __FILE__, __LINE__, n);
@@ -1275,12 +1278,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		x =  WIDTH - 1;
     if (x >= 0 && x < WIDTH)
 		CURSOR_X = x;
+	
+	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
 }
 
 - (void)cursorUp:(int)n
 {
     int y = CURSOR_Y - (n>0?n:1);
-	
+		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorUp:%d]", 
 		  __FILE__, __LINE__, n);
@@ -1289,12 +1294,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		CURSOR_Y=y<SCROLL_TOP?SCROLL_TOP:y;
     else
 		CURSOR_Y = y;
+	
+	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
 }
 
 - (void)cursorDown:(int)n
 {
     int y = CURSOR_Y + (n>0?n:1);
-	
+		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorDown:%d, Y = %d; SCROLL_BOTTOM = %d]", 
 		  __FILE__, __LINE__, n, CURSOR_Y, SCROLL_BOTTOM);
@@ -1303,11 +1310,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		CURSOR_Y=y>SCROLL_BOTTOM?SCROLL_BOTTOM:y;
     else
 		CURSOR_Y = y;
+	
+	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
 }
 
 - (void) cursorToX: (int) x
 {
     int x_pos;
+	
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen cursorToX:%d]",
@@ -1322,6 +1332,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	
     CURSOR_X = x_pos;
 	
+	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
 }
 
 - (void)cursorToX:(int)x Y:(int)y
@@ -1331,7 +1342,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		  __FILE__, __LINE__, x, y);
 #endif
     int x_pos, y_pos;
-	
+		
 	
     x_pos = x - 1;
     y_pos = y - 1;
@@ -1350,6 +1361,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     CURSOR_X = x_pos;
     CURSOR_Y = y_pos;
 	
+	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
     
 	//    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
 	

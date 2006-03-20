@@ -46,6 +46,7 @@
 
 - (unsigned)numberOfSessions;
 - (PTYSession*)sessionAtIndex:(unsigned)index;
+- (int)indexOfSession: (PTYSession *)aSession;;
 - (BOOL)containsSession:(PTYSession *)session;
 
 - (void)removeSession:(PTYSession*)session;

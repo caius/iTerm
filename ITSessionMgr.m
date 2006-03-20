@@ -159,6 +159,12 @@
     return nil;
 }
 
+- (int)indexOfSession: (PTYSession *)aSession;
+{
+	return ([_sessionList indexOfObject: aSession]);
+}
+
+
 - (BOOL)containsSession:(PTYSession *)session;
 {
     return [_sessionList containsObject:session];

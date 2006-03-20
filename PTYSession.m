@@ -92,7 +92,7 @@ static NSString *PWD_ENVVALUE = @"~";
     TERMINAL = [[VT100Terminal alloc] init:parent];
     SCREEN = [[VT100Screen alloc] init];
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
-	
+		
     return (self);
 }
 
@@ -880,25 +880,40 @@ static NSString *PWD_ENVVALUE = @"~";
     
     gettimeofday(&now, NULL);
     if ([self exited])
+	{
         [tabViewItem setLabelAttributes: deadStateAttribute];
+		if(isProcessing)
+			[self setIsProcessing: NO];
+	}
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
     {
-        if (now.tv_sec*10+now.tv_sec/100000 >= lastOutput.tv_sec*10+lastOutput.tv_sec/100000+10 && !waiting) {
+        if (now.tv_sec - lastOutput.tv_sec > 1) {
             waiting=YES;
             if (REFRESHED)
 			{
 				[tabViewItem setLabelAttributes: idleStateAttribute];
+				if(isProcessing)
+					[self setIsProcessing: NO];
 			}
             else
-                [tabViewItem setLabelAttributes: normalStateAttribute];
+			{
+				[tabViewItem setLabelAttributes: normalStateAttribute];
+				if(isProcessing)
+					[self setIsProcessing: NO];
+			}
         }
-        else if (waiting && now.tv_sec <= lastOutput.tv_sec) {
+        else 
+		{
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
+			if(isProcessing == NO)
+				[self setIsProcessing: YES];
         }
     }
     else {
         [tabViewItem setLabelAttributes: chosenStateAttribute];
+		if(isProcessing)
+			[self setIsProcessing: NO];
     }
     [self setBell:NO];
 }
@@ -911,6 +926,16 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void) setBell: (BOOL) flag
 {
     [tabViewItem setBell:flag];
+}
+
+- (BOOL) isProcessing
+{
+	return (isProcessing);
+}
+
+- (void) setIsProcessing: (BOOL) aFlag
+{
+	isProcessing = aFlag;
 }
 
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs
@@ -1087,11 +1112,6 @@ static NSString *PWD_ENVVALUE = @"~";
         [tabViewItem setLabel: theName];
         [self setBell: NO];
     }
-    if ([[tabViewItem tabView] numberOfTabViewItems] > 1 || ![[PreferencePanel sharedInstance] hideTab])
-    {
-        [[tabViewItem tabView] setTabViewType: NSNoTabsBezelBorder];
-        [[tabViewItem tabView] setTabViewType: [[PreferencePanel sharedInstance] tabViewType]];
-    }
 	
     // get the session submenu to be rebuilt
     if([[iTermController sharedInstance] currentTerminal] == [self parent])
@@ -1208,14 +1228,36 @@ static NSString *PWD_ENVVALUE = @"~";
     [TERMINAL setEncoding:encoding];
 }
 
+- (NSObjectController *) controller
+{
+	return (controller);
+}
+
+- (void) setController: (NSObjectController *) aController
+{
+	controller = aController;
+}
+
+
 - (NSString *) tty
 {
     return ([SHELL tty]);
 }
 
+// I think Applescript needs this method; need to check
 - (int) number
 {
     return ([[tabViewItem tabView] indexOfTabViewItem: tabViewItem]);
+}
+
+- (int) objectCount
+{
+    return (objectCount);
+}
+
+- (void)setObjectCount:(int)value
+{
+    objectCount = value;
 }
 
 - (NSString *) contents
@@ -1550,6 +1592,7 @@ static NSString *PWD_ENVVALUE = @"~";
         [self writeTask:[NSData dataWithBytes:&ai_code length:1]];
         lastInput = now;
     }
+	
 	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
 		[self setLabelAttribute];
 	

@@ -1,3 +1,9 @@
+2006-03-20	ujwal
+
+	* Initial checkin of new tabs provided by PSMTabBarControl. Not complete
+	  or stable yet.
+	* Rolled back the PTYTextView:-refresh change. Too many problems.
+
 2006-03-17	ujwal
 	
 	* PTYTextView:-refresh selects only dirty regions to refresh before 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.30 2006-03-16 00:41:31 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.31 2006-03-20 17:25:33 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -31,13 +31,14 @@
 #import <iTerm/PTYTabView.h>
 #import <iTerm/PTYWindow.h>
 
-@class ITSessionMgr, PTYSession, iTermController, PTToolbarController;
+@class ITSessionMgr, PTYSession, iTermController, PTToolbarController, PSMTabBarControl;
 
 @interface PseudoTerminal : NSWindowController <PTYTabViewDelegateProtocol, PTYWindowDelegateProtocol>
 {
 	IBOutlet NSOutlineView *bookmarksView;
     /// tab view
     PTYTabView *TABVIEW;
+	IBOutlet PSMTabBarControl *tabBarControl;
     PTToolbarController* _toolbarController;
 
     ITSessionMgr* _sessionMgr;

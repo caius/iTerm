@@ -165,7 +165,7 @@
     {
         aMenuItem = [[NSMenuItem alloc] initWithTitle:[[self tabViewItemAtIndex: i] label]
                             action:@selector(selectTab:) keyEquivalent:@""];
-        [aMenuItem setRepresentedObject: [[self tabViewItemAtIndex: i] identifier]];
+        [aMenuItem setRepresentedObject: [[[self tabViewItemAtIndex: i] identifier] content]];
         [aMenu addItem: aMenuItem];
         [aMenuItem release];
     }
@@ -175,7 +175,7 @@
     // Ask our delegate if it has anything to add
     id delegate = [self delegate];
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[delegate tabViewContextualMenu: theEvent menu: cMenu];
+		[delegate tabViewContextualMenu: theEvent menu: cMenu];
 
     return (cMenu);
 }
@@ -195,9 +195,10 @@
 
     // Let our delegate know
     id delegate = [self delegate];
+
     [lock lock];
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[delegate tabView: self willAddTabViewItem: aTabViewItem];
+		[delegate tabView: self willAddTabViewItem: aTabViewItem];
     
     // add the item
     maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]+1)-17;
@@ -219,7 +220,7 @@
     
     [lock lock];
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[delegate tabView: self willRemoveTabViewItem: aTabViewItem];
+		[delegate tabView: self willRemoveTabViewItem: aTabViewItem];
     
     // remove the item
     maxLabelSize=(([self tabViewType]==NSLeftTabsBezelBorder||[self tabViewType]==NSRightTabsBezelBorder)?[self frame].size.height-20:[self frame].size.width-20)/([self numberOfTabViewItems]-1)-17;
@@ -649,9 +650,9 @@
     sourceDelegate = [aTabView delegate];
     targetDelegate = [self delegate];
     if([sourceDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[sourceDelegate tabViewWillPerformDragOperation: aTabView];
+		[sourceDelegate tabViewWillPerformDragOperation: aTabView];
     if((targetDelegate != sourceDelegate) && [targetDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[targetDelegate tabViewWillPerformDragOperation: self];    
+		[targetDelegate tabViewWillPerformDragOperation: self];    
     
     // temporarily retain the tabViewItem
     [aTabViewItem retain];    
@@ -672,9 +673,9 @@
 
     // inform the delegates that we are done performing a drag operation
     if([sourceDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[sourceDelegate tabViewDidPerformDragOperation: aTabView];
+		[sourceDelegate tabViewDidPerformDragOperation: aTabView];
     if((targetDelegate != sourceDelegate) && [targetDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-	[targetDelegate tabViewDidPerformDragOperation: self];
+		[targetDelegate tabViewDidPerformDragOperation: self];
     
     return (YES);    
 }

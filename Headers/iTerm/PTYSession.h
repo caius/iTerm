@@ -43,6 +43,9 @@
 {        
     // Owning tab view item
     PTYTabViewItem *tabViewItem;
+	
+	// controller: is identifier for PTYTabView
+	NSObjectController *controller;
 
     // tty device
     NSString *tty;
@@ -57,6 +60,7 @@
     PseudoTerminal *parent;  // parent controller
     NSString *name;
     NSString *windowTitle;
+	int objectCount;
 	
 	// semaphore to coordinate data read from task
 	MPSemaphoreID	dataSemaphore;
@@ -75,6 +79,7 @@
     
     struct timeval lastInput, lastOutput, lastBlink;
    
+	BOOL isProcessing;
     BOOL REFRESHED;
     BOOL antiIdle;
     BOOL waiting;
@@ -178,8 +183,12 @@
 - (NSDictionary *) addressBookEntry;
 - (void) setAddressBookEntry:(NSDictionary*) entry;
 - (int) number;
+- (int) objectCount;
+- (void)setObjectCount:(int)value;
 - (NSString *) tty;
 - (NSString *) contents;
+- (NSObjectController *) controller;
+- (void) setController: (NSObjectController *) aController;
 
 
 - (void)clearBuffer;
@@ -221,6 +230,8 @@
 - (void)setLabelAttribute;
 - (void)setBell;
 - (void)setBell: (BOOL) flag;
+- (BOOL) isProcessing;
+- (void) setIsProcessing: (BOOL) aFlag;
 
 - (void) updateDisplay;
 

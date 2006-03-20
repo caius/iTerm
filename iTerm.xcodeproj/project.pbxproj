@@ -79,6 +79,43 @@
 		8742069F0564170000CFC3F1 /* iTerm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 874206430564168A00CFC3F1 /* iTerm.framework */; };
 		8787B0DA05FD160F00901149 /* iTermProfileWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787B0D805FD160F00901149 /* iTermProfileWindowController.m */; };
 		8787B14005FD191400901149 /* iTermProfileWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8787B13F05FD191400901149 /* iTermProfileWindowController.h */; };
+		DD02573F09CB9399008F320C /* PSMAquaTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02572409CB9398008F320C /* PSMAquaTabStyle.h */; };
+		DD02574009CB9399008F320C /* PSMAquaTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02572509CB9398008F320C /* PSMAquaTabStyle.m */; };
+		DD02574109CB9399008F320C /* PSMMetalTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02572609CB9398008F320C /* PSMMetalTabStyle.h */; };
+		DD02574209CB9399008F320C /* PSMMetalTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02572709CB9398008F320C /* PSMMetalTabStyle.m */; };
+		DD02574309CB9399008F320C /* PSMOverflowPopUpButton.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02572809CB9398008F320C /* PSMOverflowPopUpButton.h */; };
+		DD02574509CB9399008F320C /* PSMOverflowPopUpButton.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02572A09CB9398008F320C /* PSMOverflowPopUpButton.m */; };
+		DD02574709CB9399008F320C /* PSMProgressIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02572C09CB9398008F320C /* PSMProgressIndicator.h */; };
+		DD02574809CB9399008F320C /* PSMProgressIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02572D09CB9398008F320C /* PSMProgressIndicator.m */; };
+		DD02574909CB9399008F320C /* PSMRolloverButton.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02572E09CB9398008F320C /* PSMRolloverButton.h */; };
+		DD02574A09CB9399008F320C /* PSMRolloverButton.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02572F09CB9398008F320C /* PSMRolloverButton.m */; };
+		DD02574B09CB9399008F320C /* PSMTabBarCell.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02573009CB9398008F320C /* PSMTabBarCell.h */; };
+		DD02574C09CB9399008F320C /* PSMTabBarCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02573109CB9398008F320C /* PSMTabBarCell.m */; };
+		DD02574D09CB9399008F320C /* PSMTabBarControl.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02573209CB9398008F320C /* PSMTabBarControl.h */; };
+		DD02574E09CB9399008F320C /* PSMTabBarControl.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02573309CB9398008F320C /* PSMTabBarControl.m */; };
+		DD02575409CB9399008F320C /* PSMTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02573909CB9398008F320C /* PSMTabStyle.h */; };
+		DD02577409CB93C2008F320C /* AquaTabClose_Front.tif in Resources */ = {isa = PBXBuildFile; fileRef = DD02575809CB93C2008F320C /* AquaTabClose_Front.tif */; };
+		DD02577509CB93C2008F320C /* AquaTabClose_Front_Pressed.tif in Resources */ = {isa = PBXBuildFile; fileRef = DD02575909CB93C2008F320C /* AquaTabClose_Front_Pressed.tif */; };
+		DD02577609CB93C2008F320C /* AquaTabClose_Front_Rollover.tif in Resources */ = {isa = PBXBuildFile; fileRef = DD02575A09CB93C2008F320C /* AquaTabClose_Front_Rollover.tif */; };
+		DD02577709CB93C2008F320C /* AquaTabNew.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02575B09CB93C2008F320C /* AquaTabNew.png */; };
+		DD02577809CB93C2008F320C /* AquaTabNewPressed.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02575C09CB93C2008F320C /* AquaTabNewPressed.png */; };
+		DD02577909CB93C2008F320C /* AquaTabNewRollover.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02575D09CB93C2008F320C /* AquaTabNewRollover.png */; };
+		DD02577A09CB93C2008F320C /* AquaTabsBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02575E09CB93C2008F320C /* AquaTabsBackground.png */; };
+		DD02577B09CB93C2008F320C /* AquaTabsDown.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02575F09CB93C2008F320C /* AquaTabsDown.png */; };
+		DD02577C09CB93C2008F320C /* AquaTabsDownGraphite.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02576009CB93C2008F320C /* AquaTabsDownGraphite.png */; };
+		DD02577D09CB93C2008F320C /* AquaTabsDownNonKey.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02576109CB93C2008F320C /* AquaTabsDownNonKey.png */; };
+		DD02577E09CB93C2008F320C /* AquaTabsSeparator.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02576209CB93C2008F320C /* AquaTabsSeparator.png */; };
+		DD02577F09CB93C2008F320C /* AquaTabsSeparatorDown.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02576309CB93C2008F320C /* AquaTabsSeparatorDown.png */; };
+		DD02578209CB93C2008F320C /* overflowImage.tiff in Resources */ = {isa = PBXBuildFile; fileRef = DD02576609CB93C2008F320C /* overflowImage.tiff */; };
+		DD02578309CB93C2008F320C /* overflowImagePressed.tif in Resources */ = {isa = PBXBuildFile; fileRef = DD02576709CB93C2008F320C /* overflowImagePressed.tif */; };
+		DD02578409CB93C2008F320C /* pi.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02576809CB93C2008F320C /* pi.png */; };
+		DD02578509CB93C2008F320C /* TabClose_Front.tif in Resources */ = {isa = PBXBuildFile; fileRef = DD02576909CB93C2008F320C /* TabClose_Front.tif */; };
+		DD02578609CB93C2008F320C /* TabClose_Front_Pressed.tif in Resources */ = {isa = PBXBuildFile; fileRef = DD02576A09CB93C2008F320C /* TabClose_Front_Pressed.tif */; };
+		DD02578709CB93C2008F320C /* TabClose_Front_Rollover.tif in Resources */ = {isa = PBXBuildFile; fileRef = DD02576B09CB93C2008F320C /* TabClose_Front_Rollover.tif */; };
+		DD02578A09CB93C2008F320C /* TabNewMetal.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02576E09CB93C2008F320C /* TabNewMetal.png */; };
+		DD02578B09CB93C2008F320C /* TabNewMetalPressed.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02576F09CB93C2008F320C /* TabNewMetalPressed.png */; };
+		DD02578C09CB93C2008F320C /* TabNewMetalRollover.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02577009CB93C2008F320C /* TabNewMetalRollover.png */; };
+		DD02578D09CB93C2008F320C /* Warning.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02577109CB93C2008F320C /* Warning.png */; };
 		DD46BAC605FD689F00027283 /* iTermDisplayProfileMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = DD46BAC405FD689F00027283 /* iTermDisplayProfileMgr.m */; };
 		DD46BB5505FD6B9B00027283 /* iTermDisplayProfileMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = DD46BB5405FD6B9B00027283 /* iTermDisplayProfileMgr.h */; };
 		DD57633105653C2E00F1905E /* iTerm_Framework.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD57633005653C2E00F1905E /* iTerm_Framework.plist */; };
@@ -212,6 +249,43 @@
 		87898DDD0444F9070073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		87898DDF0444F93C0073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
 		87898DE00444F94E0073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
+		DD02572409CB9398008F320C /* PSMAquaTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMAquaTabStyle.h; sourceTree = "<group>"; };
+		DD02572509CB9398008F320C /* PSMAquaTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMAquaTabStyle.m; sourceTree = "<group>"; };
+		DD02572609CB9398008F320C /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
+		DD02572709CB9398008F320C /* PSMMetalTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMMetalTabStyle.m; sourceTree = "<group>"; };
+		DD02572809CB9398008F320C /* PSMOverflowPopUpButton.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMOverflowPopUpButton.h; sourceTree = "<group>"; };
+		DD02572A09CB9398008F320C /* PSMOverflowPopUpButton.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMOverflowPopUpButton.m; sourceTree = "<group>"; };
+		DD02572C09CB9398008F320C /* PSMProgressIndicator.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMProgressIndicator.h; sourceTree = "<group>"; };
+		DD02572D09CB9398008F320C /* PSMProgressIndicator.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMProgressIndicator.m; sourceTree = "<group>"; };
+		DD02572E09CB9398008F320C /* PSMRolloverButton.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMRolloverButton.h; sourceTree = "<group>"; };
+		DD02572F09CB9398008F320C /* PSMRolloverButton.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMRolloverButton.m; sourceTree = "<group>"; };
+		DD02573009CB9398008F320C /* PSMTabBarCell.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMTabBarCell.h; sourceTree = "<group>"; };
+		DD02573109CB9398008F320C /* PSMTabBarCell.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMTabBarCell.m; sourceTree = "<group>"; };
+		DD02573209CB9398008F320C /* PSMTabBarControl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMTabBarControl.h; sourceTree = "<group>"; };
+		DD02573309CB9398008F320C /* PSMTabBarControl.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMTabBarControl.m; sourceTree = "<group>"; };
+		DD02573909CB9398008F320C /* PSMTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMTabStyle.h; sourceTree = "<group>"; };
+		DD02575809CB93C2008F320C /* AquaTabClose_Front.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = AquaTabClose_Front.tif; sourceTree = "<group>"; };
+		DD02575909CB93C2008F320C /* AquaTabClose_Front_Pressed.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = AquaTabClose_Front_Pressed.tif; sourceTree = "<group>"; };
+		DD02575A09CB93C2008F320C /* AquaTabClose_Front_Rollover.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = AquaTabClose_Front_Rollover.tif; sourceTree = "<group>"; };
+		DD02575B09CB93C2008F320C /* AquaTabNew.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabNew.png; sourceTree = "<group>"; };
+		DD02575C09CB93C2008F320C /* AquaTabNewPressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabNewPressed.png; sourceTree = "<group>"; };
+		DD02575D09CB93C2008F320C /* AquaTabNewRollover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabNewRollover.png; sourceTree = "<group>"; };
+		DD02575E09CB93C2008F320C /* AquaTabsBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabsBackground.png; sourceTree = "<group>"; };
+		DD02575F09CB93C2008F320C /* AquaTabsDown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabsDown.png; sourceTree = "<group>"; };
+		DD02576009CB93C2008F320C /* AquaTabsDownGraphite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabsDownGraphite.png; sourceTree = "<group>"; };
+		DD02576109CB93C2008F320C /* AquaTabsDownNonKey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabsDownNonKey.png; sourceTree = "<group>"; };
+		DD02576209CB93C2008F320C /* AquaTabsSeparator.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabsSeparator.png; sourceTree = "<group>"; };
+		DD02576309CB93C2008F320C /* AquaTabsSeparatorDown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AquaTabsSeparatorDown.png; sourceTree = "<group>"; };
+		DD02576609CB93C2008F320C /* overflowImage.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = overflowImage.tiff; sourceTree = "<group>"; };
+		DD02576709CB93C2008F320C /* overflowImagePressed.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = overflowImagePressed.tif; sourceTree = "<group>"; };
+		DD02576809CB93C2008F320C /* pi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pi.png; sourceTree = "<group>"; };
+		DD02576909CB93C2008F320C /* TabClose_Front.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Front.tif; sourceTree = "<group>"; };
+		DD02576A09CB93C2008F320C /* TabClose_Front_Pressed.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Front_Pressed.tif; sourceTree = "<group>"; };
+		DD02576B09CB93C2008F320C /* TabClose_Front_Rollover.tif */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Front_Rollover.tif; sourceTree = "<group>"; };
+		DD02576E09CB93C2008F320C /* TabNewMetal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TabNewMetal.png; sourceTree = "<group>"; };
+		DD02576F09CB93C2008F320C /* TabNewMetalPressed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TabNewMetalPressed.png; sourceTree = "<group>"; };
+		DD02577009CB93C2008F320C /* TabNewMetalRollover.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TabNewMetalRollover.png; sourceTree = "<group>"; };
+		DD02577109CB93C2008F320C /* Warning.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Warning.png; sourceTree = "<group>"; };
 		DD46BAC405FD689F00027283 /* iTermDisplayProfileMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermDisplayProfileMgr.m; sourceTree = "<group>"; };
 		DD46BB5405FD6B9B00027283 /* iTermDisplayProfileMgr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTermDisplayProfileMgr.h; path = Headers/iTerm/iTermDisplayProfileMgr.h; sourceTree = "<group>"; };
 		DD48F1C703EBB1C400A8A065 /* iTerm.scriptSuite */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = iTerm.scriptSuite; sourceTree = "<group>"; };
@@ -338,6 +412,7 @@
 				0464AB0E006CD2EC7F000001 /* Classes */,
 				0464AB15006CD2EC7F000001 /* Headers */,
 				0464AB1F006CD2EC7F000001 /* Other Sources */,
+				DD02571D09CB9363008F320C /* PSMTabBarControl */,
 				0464AB22006CD2EC7F000001 /* Interfaces */,
 				0464AB27006CD2EC7F000001 /* Supporting Files */,
 				0464AB2E006CD2EC7F000001 /* External Frameworks and Libraries */,
@@ -481,6 +556,68 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		DD02571D09CB9363008F320C /* PSMTabBarControl */ = {
+			isa = PBXGroup;
+			children = (
+				DD02571E09CB9398008F320C /* source */,
+				DD02575509CB93C2008F320C /* images */,
+			);
+			name = PSMTabBarControl;
+			sourceTree = "<group>";
+		};
+		DD02571E09CB9398008F320C /* source */ = {
+			isa = PBXGroup;
+			children = (
+				DD02572409CB9398008F320C /* PSMAquaTabStyle.h */,
+				DD02572509CB9398008F320C /* PSMAquaTabStyle.m */,
+				DD02572609CB9398008F320C /* PSMMetalTabStyle.h */,
+				DD02572709CB9398008F320C /* PSMMetalTabStyle.m */,
+				DD02572809CB9398008F320C /* PSMOverflowPopUpButton.h */,
+				DD02572A09CB9398008F320C /* PSMOverflowPopUpButton.m */,
+				DD02572C09CB9398008F320C /* PSMProgressIndicator.h */,
+				DD02572D09CB9398008F320C /* PSMProgressIndicator.m */,
+				DD02572E09CB9398008F320C /* PSMRolloverButton.h */,
+				DD02572F09CB9398008F320C /* PSMRolloverButton.m */,
+				DD02573009CB9398008F320C /* PSMTabBarCell.h */,
+				DD02573109CB9398008F320C /* PSMTabBarCell.m */,
+				DD02573209CB9398008F320C /* PSMTabBarControl.h */,
+				DD02573309CB9398008F320C /* PSMTabBarControl.m */,
+				DD02573909CB9398008F320C /* PSMTabStyle.h */,
+			);
+			name = source;
+			path = PSMTabBarControl/source;
+			sourceTree = "<group>";
+		};
+		DD02575509CB93C2008F320C /* images */ = {
+			isa = PBXGroup;
+			children = (
+				DD02575809CB93C2008F320C /* AquaTabClose_Front.tif */,
+				DD02575909CB93C2008F320C /* AquaTabClose_Front_Pressed.tif */,
+				DD02575A09CB93C2008F320C /* AquaTabClose_Front_Rollover.tif */,
+				DD02575B09CB93C2008F320C /* AquaTabNew.png */,
+				DD02575C09CB93C2008F320C /* AquaTabNewPressed.png */,
+				DD02575D09CB93C2008F320C /* AquaTabNewRollover.png */,
+				DD02575E09CB93C2008F320C /* AquaTabsBackground.png */,
+				DD02575F09CB93C2008F320C /* AquaTabsDown.png */,
+				DD02576009CB93C2008F320C /* AquaTabsDownGraphite.png */,
+				DD02576109CB93C2008F320C /* AquaTabsDownNonKey.png */,
+				DD02576209CB93C2008F320C /* AquaTabsSeparator.png */,
+				DD02576309CB93C2008F320C /* AquaTabsSeparatorDown.png */,
+				DD02576609CB93C2008F320C /* overflowImage.tiff */,
+				DD02576709CB93C2008F320C /* overflowImagePressed.tif */,
+				DD02576809CB93C2008F320C /* pi.png */,
+				DD02576909CB93C2008F320C /* TabClose_Front.tif */,
+				DD02576A09CB93C2008F320C /* TabClose_Front_Pressed.tif */,
+				DD02576B09CB93C2008F320C /* TabClose_Front_Rollover.tif */,
+				DD02576E09CB93C2008F320C /* TabNewMetal.png */,
+				DD02576F09CB93C2008F320C /* TabNewMetalPressed.png */,
+				DD02577009CB93C2008F320C /* TabNewMetalRollover.png */,
+				DD02577109CB93C2008F320C /* Warning.png */,
+			);
+			name = images;
+			path = PSMTabBarControl/images;
+			sourceTree = "<group>";
+		};
 		FBDF6B63042A6B3101F955DB /* website */ = {
 			isa = PBXGroup;
 			children = (
@@ -550,6 +687,14 @@
 				DD46BB5505FD6B9B00027283 /* iTermDisplayProfileMgr.h in Headers */,
 				F658CAFB060587A0000A13D5 /* iTermTerminalProfileMgr.h in Headers */,
 				DD8EC959060980C90085A27D /* Tree.h in Headers */,
+				DD02573F09CB9399008F320C /* PSMAquaTabStyle.h in Headers */,
+				DD02574109CB9399008F320C /* PSMMetalTabStyle.h in Headers */,
+				DD02574309CB9399008F320C /* PSMOverflowPopUpButton.h in Headers */,
+				DD02574709CB9399008F320C /* PSMProgressIndicator.h in Headers */,
+				DD02574909CB9399008F320C /* PSMRolloverButton.h in Headers */,
+				DD02574B09CB9399008F320C /* PSMTabBarCell.h in Headers */,
+				DD02574D09CB9399008F320C /* PSMTabBarControl.h in Headers */,
+				DD02575409CB9399008F320C /* PSMTabStyle.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -719,6 +864,28 @@
 				8742061E0564168A00CFC3F1 /* iTerm-Aqua.jpg in Resources */,
 				DD57633105653C2E00F1905E /* iTerm_Framework.plist in Resources */,
 				DDB79A9B0612BBBF00EAE159 /* Profiles.plist in Resources */,
+				DD02577409CB93C2008F320C /* AquaTabClose_Front.tif in Resources */,
+				DD02577509CB93C2008F320C /* AquaTabClose_Front_Pressed.tif in Resources */,
+				DD02577609CB93C2008F320C /* AquaTabClose_Front_Rollover.tif in Resources */,
+				DD02577709CB93C2008F320C /* AquaTabNew.png in Resources */,
+				DD02577809CB93C2008F320C /* AquaTabNewPressed.png in Resources */,
+				DD02577909CB93C2008F320C /* AquaTabNewRollover.png in Resources */,
+				DD02577A09CB93C2008F320C /* AquaTabsBackground.png in Resources */,
+				DD02577B09CB93C2008F320C /* AquaTabsDown.png in Resources */,
+				DD02577C09CB93C2008F320C /* AquaTabsDownGraphite.png in Resources */,
+				DD02577D09CB93C2008F320C /* AquaTabsDownNonKey.png in Resources */,
+				DD02577E09CB93C2008F320C /* AquaTabsSeparator.png in Resources */,
+				DD02577F09CB93C2008F320C /* AquaTabsSeparatorDown.png in Resources */,
+				DD02578209CB93C2008F320C /* overflowImage.tiff in Resources */,
+				DD02578309CB93C2008F320C /* overflowImagePressed.tif in Resources */,
+				DD02578409CB93C2008F320C /* pi.png in Resources */,
+				DD02578509CB93C2008F320C /* TabClose_Front.tif in Resources */,
+				DD02578609CB93C2008F320C /* TabClose_Front_Pressed.tif in Resources */,
+				DD02578709CB93C2008F320C /* TabClose_Front_Rollover.tif in Resources */,
+				DD02578A09CB93C2008F320C /* TabNewMetal.png in Resources */,
+				DD02578B09CB93C2008F320C /* TabNewMetalPressed.png in Resources */,
+				DD02578C09CB93C2008F320C /* TabNewMetalRollover.png in Resources */,
+				DD02578D09CB93C2008F320C /* Warning.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -781,6 +948,13 @@
 				DD46BAC605FD689F00027283 /* iTermDisplayProfileMgr.m in Sources */,
 				F658C86E06054425000A13D5 /* iTermTerminalProfileMgr.m in Sources */,
 				DD8EC83106095CDA0085A27D /* Tree.m in Sources */,
+				DD02574009CB9399008F320C /* PSMAquaTabStyle.m in Sources */,
+				DD02574209CB9399008F320C /* PSMMetalTabStyle.m in Sources */,
+				DD02574509CB9399008F320C /* PSMOverflowPopUpButton.m in Sources */,
+				DD02574809CB9399008F320C /* PSMProgressIndicator.m in Sources */,
+				DD02574A09CB9399008F320C /* PSMRolloverButton.m in Sources */,
+				DD02574C09CB9399008F320C /* PSMTabBarCell.m in Sources */,
+				DD02574E09CB9399008F320C /* PSMTabBarControl.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

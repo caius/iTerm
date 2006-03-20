@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.317 2006-03-20 17:25:32 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.318 2006-03-20 18:01:50 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1372,7 +1372,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		{
 			aMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
 												   action:@selector(selectTab:) keyEquivalent:@""];
-			[aMenuItem setRepresentedObject: [[[TABVIEW tabViewItemAtIndex: i] identifier] content]];
+			[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
 			[aMenuItem setTarget: TABVIEW];
 			[tabMenu addItem: aMenuItem];
 			[aMenuItem release];

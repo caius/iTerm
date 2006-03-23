@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.318 2006-03-20 18:01:50 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.319 2006-03-23 09:38:00 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -196,12 +196,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		return;
 	
     _toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
+	
+	if ([[self window] respondsToSelector:@selector(setBottomCornerRounded:)])
+		[[self window] setBottomCornerRounded:NO];
     
 	// create the tab bar control
 	aRect = [[[self window] contentView] bounds];
 	aRect.size.height = 22;
 	tabBarControl = [[PSMTabBarControl alloc] initWithFrame: aRect];
-	[tabBarControl setAutoresizingMask: NSViewWidthSizable];
+	[tabBarControl setAutoresizingMask: (NSViewWidthSizable | NSViewMinYMargin)];
 	[[[self window] contentView] addSubview: tabBarControl];
 	[tabBarControl release];	
 	
@@ -228,11 +231,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// position the tabview and control
 	aRect = [TABVIEW frame];
 	aRect.origin.x = 0;
-	aRect.origin.y = [tabBarControl frame].size.height;
+	aRect.origin.y = 0;
 	[TABVIEW setFrame: aRect];		
 	aRect = [tabBarControl frame];
 	aRect.origin.x = 0;
-	aRect.origin.y = 0;
+	aRect.origin.y = [TABVIEW frame].size.height;
 	aRect.size.width = [[[self window] contentView] bounds].size.width;
 	[tabBarControl setFrame: aRect];	
 	
@@ -705,9 +708,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSSize size, vsize, winSize, tabViewSize;
     NSWindow *thisWindow;
     NSRect oldFrame;
-	//NSRect tabRect;
     NSPoint topLeft;
-	
+		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
 #endif
@@ -735,27 +737,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// desired size of window content
 	winSize = tabViewSize;
 	winSize.height += [tabBarControl frame].size.height;
-#if 0
-	if([TABVIEW numberOfTabViewItems] > 1 || [[PreferencePanel sharedInstance] hideTab] == NO)
-	{
-		tabRect = [TABVIEW frame];
-		tabRect.origin.y = [tabBarControl frame].size.height;
-		tabRect.size = tabViewSize;
-		[tabBarControl setHidden: NO];
-		winSize.height += [tabBarControl frame].size.height;
-		[TABVIEW setFrame: tabRect];
-		[TABVIEW setFrameSize: tabViewSize];
-	}
-	else if ([[PreferencePanel sharedInstance] hideTab] == YES)
-	{
-		tabRect = [TABVIEW frame];
-		tabRect.origin.y = 0;
-		tabRect.size = tabViewSize;
-		[tabBarControl setHidden: YES];
-		[TABVIEW setFrame: tabRect];
-		[TABVIEW setFrameSize: tabViewSize];
-	}
-#endif
 	
 	
 	thisWindow = [self window];

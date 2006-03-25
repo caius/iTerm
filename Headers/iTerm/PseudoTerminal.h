@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.31 2006-03-20 17:25:33 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.32 2006-03-25 22:31:36 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -91,7 +91,7 @@
 - (void)startProgram:(NSString *)program
                   arguments:(NSArray *)prog_argv
                 environment:(NSDictionary *)prog_env;
-- (void)setWindowSize: (BOOL) resizeContentFrames;
+- (void)setWindowSize;
 - (void)setWindowTitle;
 - (void)setWindowTitle: (NSString *)title;
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont;

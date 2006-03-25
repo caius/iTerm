@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.319 2006-03-23 09:38:00 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.320 2006-03-25 22:31:49 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -210,9 +210,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     // create the tabview
 	aRect = [[[self window] contentView] bounds];
-	aRect.size.height -= [tabBarControl frame].size.height;
+	//aRect.size.height -= [tabBarControl frame].size.height;
     TABVIEW = [[PTYTabView alloc] initWithFrame: aRect];
     [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+	[TABVIEW setAutoresizesSubviews: YES];
     [TABVIEW setAllowsTruncatedLabels: NO];
     [TABVIEW setControlSize: NSSmallControlSize];
 	[TABVIEW setTabViewType: NSNoTabsNoBorder];
@@ -428,16 +429,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
         [aTabViewItem release];
 		[self selectSessionAtIndex:index];
-		
-		if ([TABVIEW numberOfTabViewItems] == 1)
-		{
-            [[aSession TEXTVIEW] scrollEnd];
-		}
-		else if ([TABVIEW numberOfTabViewItems] == 2)
-		{
-			[self windowDidResize: nil];
-		}
-			
+					
 		if([self windowInited])
 			[[self window] makeKeyAndOrderFront: self];
 		[[iTermController sharedInstance] setCurrentTerminal: self];
@@ -703,11 +695,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 }
 
 
-- (void)setWindowSize: (BOOL) resizeContentFrames
+- (void)setWindowSize
 {    
     NSSize size, vsize, winSize, tabViewSize;
     NSWindow *thisWindow;
-    NSRect oldFrame;
+    NSRect aRect;
     NSPoint topLeft;
 		
 #if DEBUG_METHOD_TRACE
@@ -716,7 +708,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     if([self windowInited] == NO)
 		return;
-	
+		
 	// desired size of textview
     vsize.width = charWidth * WIDTH + MARGIN * 2;
 	vsize.height = charHeight * HEIGHT;
@@ -727,29 +719,64 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 							hasHorizontalScroller:NO
 							  hasVerticalScroller:YES
 									   borderType:NSNoBorder];
+#if 0
+    NSLog(@"%s: scrollview content size %.1f, %.1f", __PRETTY_FUNCTION__,
+		  size.width, size.height);
+#endif
+	
 	
 	// desired size of tabview
 	tabViewSize = [PTYTabView frameSizeForContentSize:size 
 										  tabViewType:[TABVIEW tabViewType] 
 										  controlSize:[TABVIEW controlSize]];
+#if 0
+    NSLog(@"%s: tabview content size %.1f, %.1f", __PRETTY_FUNCTION__,
+		  tabViewSize.width, tabViewSize.height);
+#endif
 	
 	
 	// desired size of window content
 	winSize = tabViewSize;
-	winSize.height += [tabBarControl frame].size.height;
+
+	if([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
+	{
+		[tabBarControl setHidden: YES];
+		aRect.origin.x = 0;
+		aRect.origin.y = 0;
+		aRect.size = tabViewSize;
+		[TABVIEW setFrame: aRect];		
+	}
+	else
+	{
+		[tabBarControl setHidden: NO];
+		winSize.height += [tabBarControl frame].size.height;
+		aRect.origin.x = 0;
+		aRect.origin.y = 0;
+		aRect.size = tabViewSize;
+		[TABVIEW setFrame: aRect];
+		aRect.origin.y = aRect.size.height;
+		aRect.size.height = 22;
+		[tabBarControl setFrame: aRect];
+	}
+	
+#if 0
+    NSLog(@"%s: window content size %.1f, %.1f", __PRETTY_FUNCTION__,
+		  winSize.width, winSize.height);
+#endif
 	
 	
 	thisWindow = [self window];
-	//if([[thisWindow toolbar] isVisible] == YES)
-	//	winSize.height += TOOLBAR_OFFSET;
 
 	
     // preserve the top left corner of the frame
-    oldFrame = [thisWindow frame];
-    topLeft.x = oldFrame.origin.x;
-    topLeft.y = oldFrame.origin.y + oldFrame.size.height;
-    
+    aRect = [thisWindow frame];
+    topLeft.x = aRect.origin.x;
+    topLeft.y = aRect.origin.y + aRect.size.height;
+	
+	
+	[[[self window] contentView] setAutoresizesSubviews: NO];
     [thisWindow setContentSize:winSize];
+	[[[self window] contentView] setAutoresizesSubviews: YES];	
 	
     [thisWindow setFrameTopLeftPoint: topLeft];
 }
@@ -1128,10 +1155,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
 {
-#if DEBUG_METHOD_TRACE
+//#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 		  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
-#endif
+//#endif
 
 	if (fontSizeFollowWindowResize) {
 		//scale = defaultFrame.size.height / [sender frame].size.height;
@@ -1150,6 +1177,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     NSRect frame;
     int i, w, h;
+	
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowDidResize: width = %f, height = %f]",
@@ -1296,7 +1324,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     WIDTH=w;
     HEIGHT=h;
 	
-    [self setWindowSize: YES];
+    [self setWindowSize];
 }
 
 // Contextual menu
@@ -1502,27 +1530,23 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     if(tabViewDragOperationInProgress == YES)
 		return;
-	
-	[[self window] recalculateKeyViewLoop];
-    
+	    
     [_sessionMgr setCurrentSessionIndex:[TABVIEW indexOfTabViewItem: [TABVIEW selectedTabViewItem]]];
+	
+	// check window size in case tabs have to be hidden or shown
+	if ([TABVIEW numberOfTabViewItems] <= 2)
+		[self setWindowSize];
 	
     if ([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
     {
         PTYSession *aSession = [[[TABVIEW tabViewItemAtIndex: 0] identifier] content];
-        [self setWindowSize: NO];
+        [self setWindowSize];
         [[aSession TEXTVIEW] scrollEnd];
         // make sure the display is up-to-date.
         [[aSession TEXTVIEW] setForceUpdate: YES];
         
     }
-    else
-    {
-        [self setWindowSize: NO];
-    }
-		
-    //[[TABVIEW selectedTabViewItem] setLabel: [[[[TABVIEW selectedTabViewItem] label] copy] autorelease]];
-	
+			
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
     
 }
@@ -1838,7 +1862,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 		WIDTH = columns;
 		if([_sessionMgr numberOfSessions] > 0)
-			[self setWindowSize: NO];
+			[self setWindowSize];
     }
 }
 
@@ -1855,7 +1879,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 		HEIGHT = rows;
 		if([_sessionMgr numberOfSessions] > 0)
-			[self setWindowSize: NO];
+			[self setWindowSize];
     }
 }
 

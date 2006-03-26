@@ -61,6 +61,7 @@
     NSString *name;
     NSString *windowTitle;
 	int objectCount;
+	NSImage *icon;
 	
 	// semaphore to coordinate data read from task
 	MPSemaphoreID	dataSemaphore;
@@ -189,6 +190,8 @@
 - (NSString *) contents;
 - (NSObjectController *) controller;
 - (void) setController: (NSObjectController *) aController;
+- (NSImage *) icon;
+- (void) setIcon: (NSImage *) anIcon;
 
 
 - (void)clearBuffer;
@@ -228,7 +231,6 @@
 - (void)resetStatus;
 - (BOOL)exited;
 - (void)setLabelAttribute;
-- (void)setBell;
 - (void)setBell: (BOOL) flag;
 - (BOOL) isProcessing;
 - (void) setIsProcessing: (BOOL) aFlag;

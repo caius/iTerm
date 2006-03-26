@@ -55,9 +55,22 @@ static NSString *TERM_ENVNAME = @"TERM";
 static NSString *PWD_ENVNAME = @"PWD";
 static NSString *PWD_ENVVALUE = @"~";
 
+static NSImage *warningImage;
+
++ (void) initialize
+{
+	NSBundle *thisBundle;
+	NSString *imagePath;
+
+	thisBundle = [NSBundle bundleForClass: [self class]];
+	imagePath = [thisBundle pathForResource:@"important" ofType:@"png"];
+	warningImage = [[NSImage alloc] initByReferencingFile: imagePath];	
+}
+
 // init/dealloc
 - (id) init
 {
+	
     if((self = [super init]) == nil)
         return (nil);
 	
@@ -92,7 +105,8 @@ static NSString *PWD_ENVVALUE = @"~";
     TERMINAL = [[VT100Terminal alloc] init:parent];
     SCREEN = [[VT100Screen alloc] init];
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
-		
+
+	
     return (self);
 }
 
@@ -102,6 +116,7 @@ static NSString *PWD_ENVVALUE = @"~";
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
+	[icon release];
     [TERM_VALUE release];
     [view release];
     [name release];
@@ -918,13 +933,13 @@ static NSString *PWD_ENVVALUE = @"~";
     [self setBell:NO];
 }
 
-- (void) setBell
-{
-    [self setBell:YES];
-}
-
 - (void) setBell: (BOOL) flag
 {
+	if(flag)
+		[self setIcon: warningImage];
+	else
+		[self setIcon: nil];
+	
     [tabViewItem setBell:flag];
 }
 
@@ -1258,6 +1273,18 @@ static NSString *PWD_ENVVALUE = @"~";
 - (void)setObjectCount:(int)value
 {
     objectCount = value;
+}
+
+- (NSImage *) icon
+{
+	return (icon);
+}
+
+- (void) setIcon: (NSImage *) anIcon
+{
+	[anIcon retain];
+	[icon release];
+	icon = anIcon;
 }
 
 - (NSString *) contents

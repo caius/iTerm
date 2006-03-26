@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.234 2006-03-23 09:38:00 ujwal Exp $
+// $Id: VT100Screen.m,v 1.235 2006-03-26 20:33:43 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1698,7 +1698,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     }
 	if (SHOWBELL)
 	{
-		[SESSION setBell];
+		[SESSION setBell: YES];
 	}
 }
 

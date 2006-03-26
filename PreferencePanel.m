@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.127 2006-02-06 03:11:37 dnedrow Exp $
+// $Id: PreferencePanel.m,v 1.128 2006-03-26 19:50:59 ujwal Exp $
 /*
  **  PreferencePanel.m
  **
@@ -115,6 +115,7 @@ static BOOL editingBookmark = NO;
 		
     prefs = [NSUserDefaults standardUserDefaults];
          
+	defaultWindowStyle=[prefs objectForKey:@"WindowStyle"]?[prefs integerForKey:@"WindowStyle"]:0;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
 	defaultPasteFromClipboard=[[prefs objectForKey:@"PasteFromClipboard"] boolValue];
@@ -158,6 +159,7 @@ static BOOL editingBookmark = NO;
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
 	[prefs setBool:defaultPasteFromClipboard forKey:@"PasteFromClipboard"];
     [prefs setBool:defaultHideTab forKey:@"HideTab"];
+	[prefs setInteger:defaultWindowStyle forKey:@"WindowStyle"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
@@ -181,6 +183,7 @@ static BOOL editingBookmark = NO;
 			    
 	[[self window] setDelegate: self]; // also forces window to load
 	
+	[windowStyle selectItemAtIndex: defaultWindowStyle];
 	[tabPosition selectItemAtIndex: defaultTabViewType];
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
 	[middleButtonPastesFromClipboard setState:defaultPasteFromClipboard?NSOnState:NSOffState];
@@ -205,6 +208,7 @@ static BOOL editingBookmark = NO;
 - (IBAction)ok:(id)sender
 {    
 
+	defaultWindowStyle = [windowStyle indexOfSelectedItem];
     defaultTabViewType=[tabPosition indexOfSelectedItem];
     defaultCopySelection=([selectionCopiesText state]==NSOnState);
 	defaultPasteFromClipboard=([middleButtonPastesFromClipboard state]==NSOnState);
@@ -285,7 +289,8 @@ static BOOL editingBookmark = NO;
 
 - (int)outlineView:(NSOutlineView *)ov numberOfChildrenOfItem:(id)item
 {
-    //NSLog(@"%s", __PRETTY_FUNCTION__);
+    //NSLog(@"%s: ov = 0x%x; item = 0x%x; numChildren: %d", __PRETTY_FUNCTION__, ov, item,
+	//	  [[ITAddressBookMgr sharedInstance] numberOfChildrenOfItem: item]);
     return [[ITAddressBookMgr sharedInstance] numberOfChildrenOfItem: item];
 }
 
@@ -559,6 +564,11 @@ static BOOL editingBookmark = NO;
 - (NSTabViewType) tabViewType
 {
     return (defaultTabViewType);
+}
+
+- (int) windowStyle
+{
+	return (defaultWindowStyle);
 }
 
 - (BOOL)promptOnClose

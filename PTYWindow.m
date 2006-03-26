@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.9 2006-03-20 17:25:32 ujwal Exp $ */
+/* $Id: PTYWindow.m,v 1.10 2006-03-26 19:50:59 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -32,18 +32,19 @@
 #import <iTerm/PTYWindow.h>
 #import <iTerm/PreferencePanel.h>
 
-#define DEBUG_METHOD_TRACE	0
 #define DEBUG_METHOD_ALLOC	0
+#define DEBUG_METHOD_TRACE	0
 
 @implementation PTYWindow
 
 - (void) dealloc
 {
 #if DEBUG_METHOD_ALLOC
-    NSLog(@"%s(%d):+[PTYWindow dealloc]",
-          __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 
+	[drawer release];
+	
     [super dealloc];
     
 }
@@ -54,10 +55,9 @@
 		defer:(BOOL)flag
 {
 #if DEBUG_METHOD_ALLOC
-    NSLog(@"%s(%d):-[PTYWindow initWithContentRect]",
-          __FILE__, __LINE__);
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
-
+	
     if ((self = [super initWithContentRect:contentRect
 				 styleMask:aStyle
 				   backing:bufferingType 
@@ -92,6 +92,13 @@
 - (NSDrawer *) drawer
 {
 	return (drawer);
+}
+
+- (void) setDrawer: (NSDrawer *) aDrawer
+{
+	[aDrawer retain];
+	[drawer release];
+	drawer = aDrawer;
 }
 
 - (void)sendEvent:(NSEvent *)event

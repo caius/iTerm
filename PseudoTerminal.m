@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.320 2006-03-25 22:31:49 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.321 2006-03-26 19:50:59 ujwal Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -78,9 +78,66 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (id)initWithWindowNibName: (NSString *) windowNibName
 {
     int i;
+	NSScrollView *aScrollView;
+	NSTableColumn *aTableColumn;
+	NSSize aSize;
+	NSRect aRect;
+	unsigned int styleMask;
+	PTYWindow *myWindow;
+	NSDrawer	*myDrawer;
+	
     
     if ((self = [super initWithWindowNibName: windowNibName]) == nil)
 		return nil;
+	
+	// create the window programmatically with appropriate style mask
+	styleMask = NSTitledWindowMask | 
+		NSClosableWindowMask | 
+		NSMiniaturizableWindowMask | 
+		NSResizableWindowMask;
+	
+	// set the window style according to preference
+	if([[PreferencePanel sharedInstance] windowStyle] == 0)
+		styleMask |= NSTexturedBackgroundWindowMask;
+	
+	myWindow = [[PTYWindow alloc] initWithContentRect: NSMakeRect(0,0,100,100) 
+											styleMask: styleMask 
+											  backing: NSBackingStoreBuffered 
+												defer: YES];
+	[self setWindow: myWindow];
+	[myWindow release];
+	
+	// create and set up drawer
+	myDrawer = [[NSDrawer alloc] initWithContentSize: NSMakeSize(20, 100) preferredEdge: NSMinXEdge];
+	[myDrawer setParentWindow: myWindow];
+	[myWindow setDrawer: myDrawer];
+	[myDrawer release];
+	aScrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 20, 100)];
+	[aScrollView setBorderType:NSBezelBorder];
+	[aScrollView setHasHorizontalScroller: NO];
+	[aScrollView setHasVerticalScroller: YES];
+	[[aScrollView verticalScroller] setControlSize:NSSmallControlSize];
+	[aScrollView setAutohidesScrollers: YES];
+	aSize = [aScrollView contentSize];
+	aRect = NSZeroRect;
+	aRect.size = aSize;
+	
+	bookmarksView = [[NSOutlineView alloc] initWithFrame:aRect];
+	aTableColumn = [[NSTableColumn alloc] initWithIdentifier: @"Name"];
+	[[aTableColumn headerCell] setStringValue: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+	[bookmarksView addTableColumn: aTableColumn];
+	[aTableColumn release];
+	[bookmarksView setOutlineTableColumn: aTableColumn];
+	[bookmarksView setDelegate: self];
+	[bookmarksView setTarget: self];
+	[bookmarksView setDoubleAction: @selector(doubleClickedOnBookmarksView:)];	
+	[bookmarksView setDataSource: [PreferencePanel sharedInstance]];
+	
+	[aScrollView setDocumentView:bookmarksView];
+	[bookmarksView release];
+	[myDrawer setContentView: aScrollView];
+	[aScrollView release];
+	
     
     // Look for an available window position
     for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
@@ -106,37 +163,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     PTLock = [[NSLock alloc] init];
     return ([self initWithWindowNibName: @"PseudoTerminal"]);
-}
-
-+ (NSSize) viewSizeForColumns: (int) columns andRows: (int) rows withFont: (NSFont *) aFont
-{
-	NSParameterAssert(aFont != nil);
-	NSParameterAssert (columns != 0);
-	NSParameterAssert (rows != 0);
-	
-	int cw, ch;
-	NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-    NSSize sz, textViewSize, scrollViewSize, tabViewSize;
-	
-    [dic setObject:aFont forKey:NSFontAttributeName];
-    sz = [@"W" sizeWithAttributes:dic];
-	
-	cw = sz.width;
-	ch = [aFont defaultLineHeightForFont];
-	
-	textViewSize.width = cw * columns + MARGIN * 2;
-	textViewSize.height = ch * rows;
-	
-	scrollViewSize = [PTYScrollView frameSizeForContentSize:textViewSize
-									  hasHorizontalScroller:NO
-										hasVerticalScroller:YES
-												 borderType:NSNoBorder];
-	
-	tabViewSize = scrollViewSize;
-	tabViewSize.height = scrollViewSize.height + 20;
-	
-	return (tabViewSize);
-	
 }
 
 
@@ -226,7 +252,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[TABVIEW setDelegate: tabBarControl];
 	[tabBarControl setDelegate: self];
 	[tabBarControl setHideForSingleTab: NO];
-	[tabBarControl setStyleNamed:@"Metal"];
+	
+	// set the style of tabs to match window style
+	if([[PreferencePanel sharedInstance] windowStyle] == 0)
+		[tabBarControl setStyleNamed:@"Metal"];
+	else
+		[tabBarControl setStyleNamed:@"Aqua"];
 
 	
 	// position the tabview and control
@@ -245,16 +276,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 	
     [[self window] setDelegate: self];
-	
+		
 	[[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(_reloadAddressBook:)
                                                  name: @"iTermReloadAddressBook"
                                                object: nil];	
 	
-	[bookmarksView setDataSource: [PreferencePanel sharedInstance]];
-	[bookmarksView setDelegate: self];
-	[bookmarksView setTarget: self];
-	[bookmarksView setDoubleAction: @selector(doubleClickedOnBookmarksView:)];
     
     [self setWindowInited: YES];
 }
@@ -576,23 +603,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self releaseObjects];
+    // Release all our sessions
+    [_sessionMgr release];
+    _sessionMgr = nil;
     [_toolbarController release];
 	
     [PTLock release];
     
     [super dealloc];
-}
-
-- (void)releaseObjects
-{
-#if DEBUG_ALLOC
-    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
-#endif
-	
-    // Release all our sessions
-    [_sessionMgr release];
-    _sessionMgr = nil;
 }
 
 - (void)startProgram:(NSString *)program
@@ -1101,7 +1119,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [[_sessionMgr sessionAtIndex: i] terminate];
     }
 	
-    //[self releaseObjects];
+	// tabBarControl is holding on to us, so we have to tell it to let go
+	[tabBarControl setDelegate: nil];
 	
     // Release our window postion
     for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
@@ -1114,6 +1133,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 	
     [[iTermController sharedInstance] terminalWillClose: self];
+	
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
@@ -1736,7 +1756,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (IBAction) toggleBookmarksView: (id) sender
 {
 	float aWidth;
-	
+		
 	// set the width of the bookmarks drawer based on saved value
 	aWidth = [[NSUserDefaults standardUserDefaults] floatForKey: @"BookmarksDrawerWidth"];
 	if(aWidth > 0 && [[(PTYWindow *)[self window] drawer] state] == NSDrawerClosedState)

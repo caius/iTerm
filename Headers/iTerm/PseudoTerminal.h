@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.32 2006-03-25 22:31:36 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.33 2006-03-26 19:50:48 ujwal Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -35,10 +35,12 @@
 
 @interface PseudoTerminal : NSWindowController <PTYTabViewDelegateProtocol, PTYWindowDelegateProtocol>
 {
-	IBOutlet NSOutlineView *bookmarksView;
+	
+	NSOutlineView *bookmarksView;
+	
     /// tab view
     PTYTabView *TABVIEW;
-	IBOutlet PSMTabBarControl *tabBarControl;
+	PSMTabBarControl *tabBarControl;
     PTToolbarController* _toolbarController;
 
     ITSessionMgr* _sessionMgr;
@@ -62,13 +64,11 @@
 	BOOL EXIT;
 }
 
-+ (NSSize) viewSizeForColumns: (int) columns andRows: (int) rows withFont: (NSFont *) aFont;
 
 - (id)init;
 - (id) initWithWindowNibName: (NSString *) windowNibName;
 - (PTYTabView*) initViewWithFrame: (NSRect) frame;
 - (void)dealloc;
-- (void)releaseObjects;
 
 - (void)initWindow;
 - (void)setupSession: (PTYSession *) aSession title: (NSString *)title;

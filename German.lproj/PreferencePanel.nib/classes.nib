@@ -40,12 +40,13 @@
                 enableBonjour = NSButton; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
-                maxVertically = id; 
+                maxVertically = NSButton; 
                 middleButtonPastesFromClipboard = NSButton; 
                 profilesWindow = NSWindow; 
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 
                 tabPosition = NSPopUpButton; 
+                windowStyle = NSPopUpButton; 
                 wordChars = NSTextField; 
             }; 
             SUPERCLASS = NSWindowController; 

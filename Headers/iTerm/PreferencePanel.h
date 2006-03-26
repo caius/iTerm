@@ -35,6 +35,7 @@
 
 @interface PreferencePanel : NSWindowController
 {
+	IBOutlet NSPopUpButton *windowStyle;
 	IBOutlet NSPopUpButton *tabPosition;
     IBOutlet NSButton *selectionCopiesText;
 	IBOutlet NSButton *middleButtonPastesFromClipboard;
@@ -68,7 +69,8 @@
     
     NSUserDefaults *prefs;
 
-
+	
+	int defaultWindowStyle;
     BOOL defaultCopySelection;
 	BOOL defaultPasteFromClipboard;
     BOOL defaultHideTab;
@@ -113,6 +115,7 @@
 - (void) setPasteFromClipboard: (BOOL) flag;
 - (BOOL) hideTab;
 - (NSTabViewType) tabViewType;
+- (int) windowStyle;
 - (void) setTabViewType: (NSTabViewType) type;
 - (BOOL) promptOnClose;
 - (BOOL) focusFollowsMouse;

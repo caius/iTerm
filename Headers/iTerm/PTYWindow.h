@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.h,v 1.4 2004-10-10 07:04:17 ujwal Exp $ */
+/* $Id: PTYWindow.h,v 1.5 2006-03-26 19:50:48 ujwal Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.h
@@ -50,4 +50,5 @@
 - (void)toggleToolbarShown:(id)sender;
 
 - (NSDrawer *) drawer;
+- (void) setDrawer: (NSDrawer *) aDrawer;
 @end

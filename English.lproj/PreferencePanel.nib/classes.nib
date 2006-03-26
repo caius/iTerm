@@ -45,6 +45,7 @@
                 promptOnClose = id; 
                 selectionCopiesText = NSButton; 
                 tabPosition = NSPopUpButton; 
+                windowStyle = NSPopUpButton; 
                 wordChars = NSTextField; 
             }; 
             SUPERCLASS = NSWindowController; 

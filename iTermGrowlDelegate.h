@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermGrowlDelegate.h,v 1.1 2006-08-03 01:49:15 dnedrow Exp $
+// $Id: iTermGrowlDelegate.h,v 1.2 2006-08-03 20:21:54 dnedrow Exp $
 //
 /*
  **  iTermGrowlDelegate.h
@@ -34,11 +34,14 @@
 #define DefaultNotificationName @"Miscellaneous"
 
 @interface iTermGrowlDelegate : NSObject <GrowlApplicationBridgeDelegate> {
+	BOOL enabled;
 	NSArray * notifications;
 }
 
 + (id) sharedInstance;
 
+- (BOOL) enabled;
+- (void) setEnabled: (BOOL) newState;
 - (void) growlNotify: (NSString *) title;
 - (void) growlNotify: (NSString *) title withDescription: (NSString *) description;
 - (void) growlNotify: (NSString *) title withDescription: (NSString *) description andNotification: (NSString *) notification;

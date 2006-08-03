@@ -45,6 +45,7 @@
 	IBOutlet NSTextField *wordChars;
 	IBOutlet NSWindow *profilesWindow;
 	IBOutlet NSButton *enableBonjour;
+	IBOutlet NSButton *enableGrowl;
 	IBOutlet NSButton *cmdSelection;
 	IBOutlet NSButton *maxVertically;
 	
@@ -78,6 +79,7 @@
     BOOL defaultPromptOnClose;
     BOOL defaultFocusFollowsMouse;
 	BOOL defaultEnableBonjour;
+	BOOL defaultEnableGrowl;
 	BOOL defaultCmdSelection;
 	BOOL defaultMaxVertically;
 	NSString *defaultWordChars;
@@ -120,6 +122,7 @@
 - (BOOL) promptOnClose;
 - (BOOL) focusFollowsMouse;
 - (BOOL) enableBonjour;
+- (BOOL) enableGrowl;
 - (BOOL) cmdSelection;
 - (BOOL) maxVertically;
 - (NSString *) wordChars;

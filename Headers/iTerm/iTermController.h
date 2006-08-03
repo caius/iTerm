@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.16 2006-03-01 23:00:49 yfabian Exp $
+// $Id: iTermController.h,v 1.17 2006-08-03 01:50:54 dnedrow Exp $
 /*
  **  iTermController.h
  **
@@ -32,6 +32,7 @@
 @class PseudoTerminal;
 @class PTYTextView;
 @class TreeNode;
+@class ItermGrowlDelegate;
 
 @interface iTermController : NSObject
 {
@@ -40,6 +41,7 @@
     NSMutableArray *terminalWindows;
     id FRONT;
     NSLock *terminalLock;
+	ItermGrowlDelegate *gd;
 }
 
 + (iTermController*)sharedInstance;

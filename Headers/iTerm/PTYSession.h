@@ -38,6 +38,7 @@
 @class PseudoTerminal;
 @class iTermController;
 @class PTYTabViewItem;
+@class iTermGrowlDelegate;
 
 @interface PTYSession : NSResponder
 {        
@@ -90,6 +91,9 @@
     NSString *backgroundImagePath;
     //NSFont *configFont;
     NSDictionary *addressBookEntry;
+
+	// Growl stuff
+	iTermGrowlDelegate* gd;
 }
 
 // init/dealloc

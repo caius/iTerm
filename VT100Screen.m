@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.235 2006-03-26 20:33:43 ujwal Exp $
+// $Id: VT100Screen.m,v 1.236 2006-08-03 01:51:11 dnedrow Exp $
 //
 /*
  **  VT100Screen.m
@@ -43,6 +43,7 @@
 #import <iTerm/PTYTask.h>
 #import <iTerm/PreferencePanel.h>
 #include <string.h>
+#import "iTermGrowlDelegate.h"
 
 /* translates normal char into graphics char */
 void translate(screen_char_t *s, int len)
@@ -157,6 +158,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
 	
 	screenLock = [[NSLock alloc] init];
+	
+	// Need Growl plist stuff
+	gd = [iTermGrowlDelegate sharedInstance];
      
     return self;
 }
@@ -1698,6 +1702,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     }
 	if (SHOWBELL)
 	{
+		// Need to check for Growl plist stuff.
+		// Should this also be GROWBELL'd ?
+		[gd growlNotify:@"Bell"
+		withDescription:[@"A bell sounded in " stringByAppendingString:[SESSION name]] 
+		andNotification:@"Bells"];
+		
 		[SESSION setBell: YES];
 	}
 }

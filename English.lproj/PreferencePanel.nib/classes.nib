@@ -37,6 +37,7 @@
                 deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
                 enableBonjour = NSButton; 
+                enableGrowl = id; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
                 maxVertically = NSButton; 

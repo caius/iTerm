@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.16 2006-03-16 00:41:31 yfabian Exp $
+// $Id: VT100Screen.h,v 1.17 2006-08-03 01:50:54 dnedrow Exp $
 /*
  **  VT100Screen.h
  **
@@ -35,6 +35,7 @@
 @class PTYTask;
 @class PTYSession;
 @class PTYTextView;
+@class iTermGrowlDelegate;
 
 typedef struct screen_char_t
 {
@@ -110,6 +111,9 @@ typedef struct screen_char_t
 	NSMutableString *printToAnsiString;
 	
 	NSLock *screenLock;
+	
+	// Growl stuff
+	iTermGrowlDelegate* gd;
 }
 
 

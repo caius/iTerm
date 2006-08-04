@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermGrowlDelegate.h,v 1.2 2006-08-03 20:21:54 dnedrow Exp $
+// $Id: iTermGrowlDelegate.h,v 1.3 2006-08-04 15:58:14 dnedrow Exp $
 //
 /*
  **  iTermGrowlDelegate.h
@@ -30,8 +30,8 @@
 #import <Cocoa/Cocoa.h>
 #import <Growl/Growl.h>
 
-#define GrowlAppName  @"iTerm"
-#define DefaultNotificationName @"Miscellaneous"
+#define OURGROWLAPPNAME  @"iTerm"
+#define DEFAULTNOTIFICATION @"Miscellaneous"
 
 @interface iTermGrowlDelegate : NSObject <GrowlApplicationBridgeDelegate> {
 	BOOL enabled;
@@ -40,10 +40,33 @@
 
 + (id) sharedInstance;
 
-- (BOOL) enabled;
+  /**
+   **  Used by the class to indicate the current status of the Growl preference
+   **  in iTerm.
+   **  This is generally only for use with the class.
+   **/
+- (BOOL) isEnabled;
+
+  /**
+   **  Used by the prefs class to toggle the Growl state when the user makes
+   **  changes to the iTerm prefs that impact Growl.
+   **/
 - (void) setEnabled: (BOOL) newState;
+
+  /**
+   **  Generate a Growl message with no description and a notification type
+   **  of "Miscellaneous".
+   **/
 - (void) growlNotify: (NSString *) title;
+
+  /**
+   **  Generate a Growl message with a notification type of "Miscellaneous".
+   **/
 - (void) growlNotify: (NSString *) title withDescription: (NSString *) description;
+
+  /**
+   **  Generate a 'full' Growl message with a specified notification type.
+   **/
 - (void) growlNotify: (NSString *) title withDescription: (NSString *) description andNotification: (NSString *) notification;
 
 @end

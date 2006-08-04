@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermGrowlDelegate.m,v 1.2 2006-08-03 20:21:54 dnedrow Exp $
+// $Id: iTermGrowlDelegate.m,v 1.3 2006-08-04 15:58:14 dnedrow Exp $
 //
 /*
  **  iTermGrowlDelegate.m
@@ -34,9 +34,9 @@
  **
  **      Example usage:
  **
- **          [gd growlNotify:@"Bell"
- **          withDescription:@"This is the description"
- **          andNotification:@"Bells"];
+ **          [gd growlNotify: @"Bell"
+ **          withDescription: @"This is the description"
+ **          andNotification: @"Bells"];
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -55,6 +55,19 @@
 
 #import "iTermGrowlDelegate.h"
 
+/**
+ **  The category is used to extend iTermGrowlDelegate with private methods.
+ **
+ **  Any methods that should not be exposed to the 'outside world' by being
+ **  included in the class header file should be declared here and implemented
+ **  in @implementation.
+ */
+@interface
+	iTermGrowlDelegate (PrivateMethods )
+
+  // - (void) examplePrivateMethodDeclaration;
+@end
+
 @implementation iTermGrowlDelegate
 
 + (id) sharedInstance {
@@ -67,14 +80,14 @@
 - (id) init {
 	if ((self = [super init])) {
 		
-		notifications = [NSArray arrayWithObjects:@"Bells",
+		notifications = [NSArray arrayWithObjects: @"Bells",
 			@"Broken Pipes",
 			@"Miscellaneous",
 			@"Idle",
 			@"New Output",
 			nil];
 		
-		[GrowlApplicationBridge setGrowlDelegate:self];
+		[GrowlApplicationBridge setGrowlDelegate: self];
 		[self registrationDictionaryForGrowl];
 		[self setEnabled: YES];
 
@@ -88,7 +101,7 @@
 	[super dealloc];
 }
 
-- (BOOL) enabled {
+- (BOOL) isEnabled {
 	return enabled;
 }
 
@@ -98,62 +111,62 @@
 
 - (void) growlNotify: (NSString *) title {
 
-	if(![self enabled]) {
+	if(![self isEnabled]) {
 		NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
 		return;
 	}
 
 	[GrowlApplicationBridge 
-		notifyWithTitle:title
-			description:nil
-	   notificationName:DefaultNotificationName
-			   iconData:nil
-			   priority:0
-			   isSticky:NO
-		   clickContext:nil];
+		notifyWithTitle: title
+			description: nil
+	   notificationName: DEFAULTNOTIFICATION
+			   iconData: nil
+			   priority: 0
+			   isSticky: NO
+		   clickContext: nil];
 }
 
 - (void) growlNotify: (NSString *) title 
 	 withDescription: (NSString *) description {
 
-	if(![self enabled]) {
+	if(![self isEnabled]) {
 		NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
 		return;
 	}
 	
 	[GrowlApplicationBridge 
-		notifyWithTitle:title
-			description:description
-	   notificationName:DefaultNotificationName
-			   iconData:nil
-			   priority:0
-			   isSticky:NO
-		   clickContext:nil];
+		notifyWithTitle: title
+			description: description
+	   notificationName: DEFAULTNOTIFICATION
+			   iconData: nil
+			   priority: 0
+			   isSticky: NO
+		   clickContext: nil];
 }
 
 - (void) growlNotify: (NSString *) title 
 	 withDescription: (NSString *) description 
 	 andNotification: (NSString *) notification {
 
-	if(![self enabled]) {
+	if(![self isEnabled]) {
 		NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
 		return;
 	}
 	
 	[GrowlApplicationBridge 
-		notifyWithTitle:title
-			description:description
-	   notificationName:notification
-			   iconData:nil
-			   priority:0
-			   isSticky:NO
-		   clickContext:nil];
+		notifyWithTitle: title
+			description: description
+	   notificationName: notification
+			   iconData: nil
+			   priority: 0
+			   isSticky: NO
+		   clickContext: nil];
 }
 
 - (NSDictionary *) registrationDictionaryForGrowl {
 	
 	NSDictionary *regDict = [NSDictionary dictionaryWithObjectsAndKeys:
-		GrowlAppName, GROWL_APP_NAME,
+		OURGROWLAPPNAME, GROWL_APP_NAME,
 		notifications, GROWL_NOTIFICATIONS_ALL,
 		notifications, GROWL_NOTIFICATIONS_DEFAULT,
 		nil];

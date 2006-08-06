@@ -1,5 +1,5 @@
-// -*- mode:objc -*-
-// $Id: iTermGrowlDelegate.m,v 1.3 2006-08-04 15:58:14 dnedrow Exp $
+// -*- mode:objc -*- vim: filetype=objcpp
+// $Id: iTermGrowlDelegate.m,v 1.4 2006-08-06 16:34:30 dnedrow Exp $
 //
 /*
  **  iTermGrowlDelegate.m
@@ -11,32 +11,7 @@
  **  Project: iTerm
  **
  **  Description: Implements the delegate for Growl notifications.
- **
- **  Usage:
- **      In your class header file, add the following @class directive
- **
- **          @class iTermGrowlDelegate;
- **
- **      and declare an iTermGrowlDelegate variable in the @interface
- **
- **          iTermGrowlDelegate* gd;
- **
- **      In your class implementation file, add the following import
- **
- **          #import "iTermGrowlDelegate.h"
- **
- **      In the class init, get a copy of the shared delegate
- **
- **          gd = [iTermGrowlDelegate sharedInstance];
- **
- **      There are several growlNotify methods in iTermGrowlDelegate.
- **      See the header file for details.
- **
- **      Example usage:
- **
- **          [gd growlNotify: @"Bell"
- **          withDescription: @"This is the description"
- **          andNotification: @"Bells"];
+ **               See iTermGrowlDelegate.h for usage information.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by

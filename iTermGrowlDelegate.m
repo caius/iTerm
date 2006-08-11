@@ -1,5 +1,5 @@
 // -*- mode:objc -*- vim: filetype=objcpp
-// $Id: iTermGrowlDelegate.m,v 1.4 2006-08-06 16:34:30 dnedrow Exp $
+// $Id: iTermGrowlDelegate.m,v 1.5 2006-08-11 23:59:14 dnedrow Exp $
 //
 /*
  **  iTermGrowlDelegate.m
@@ -65,7 +65,7 @@
 		[GrowlApplicationBridge setGrowlDelegate: self];
 		[self registrationDictionaryForGrowl];
 		[self setEnabled: YES];
-
+		
 		return self;
 	} else {
 		return nil;
@@ -77,7 +77,11 @@
 }
 
 - (BOOL) isEnabled {
-	return enabled;
+	if ([GrowlApplicationBridge isGrowlInstalled]) {
+		return enabled;
+	} else {
+		return NO;
+	}
 }
 
 - (void) setEnabled: (BOOL) newState {

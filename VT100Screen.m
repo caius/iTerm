@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.236 2006-08-03 01:51:11 dnedrow Exp $
+// $Id: VT100Screen.m,v 1.237 2006-08-12 00:02:28 dnedrow Exp $
 //
 /*
  **  VT100Screen.m
@@ -1692,6 +1692,15 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     SHOWBELL = flag;
 }
 
+- (void)setGrowlFlag:(BOOL)flag
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):+[VT100Screen setGrowlFlag:%s]",
+		  __FILE__, __LINE__, flag == YES ? "YES" : "NO");
+#endif
+    GROWL = flag;
+}
+
 - (void)activateBell
 {
 #if DEBUG_METHOD_TRACE
@@ -1700,15 +1709,13 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     if (PLAYBELL) {
 		NSBeep();
     }
-	if (SHOWBELL)
-	{
-		// Need to check for Growl plist stuff.
-		// Should this also be GROWBELL'd ?
+	if (SHOWBELL) {
+		[SESSION setBell: YES];
+	}
+	if (GROWL) {
 		[gd growlNotify:@"Bell"
 		withDescription:[@"A bell sounded in " stringByAppendingString:[SESSION name]] 
 		andNotification:@"Bells"];
-		
-		[SESSION setBell: YES];
 	}
 }
 

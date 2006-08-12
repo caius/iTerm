@@ -337,8 +337,6 @@ static NSImage *warningImage;
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
         [tabViewItem setLabelAttributes: deadStateAttribute];
 
-		// Need to check for Growl plist stuff.
-		// Should this also be GROWBELL'd ?
 		[gd growlNotify:@"Broken Pipe"
 		withDescription:[@"Broken Pipe in " stringByAppendingString:[self name]] 
 		andNotification:@"Broken Pipes"];
@@ -917,8 +915,6 @@ static NSImage *warningImage;
 			{
 				[tabViewItem setLabelAttributes: idleStateAttribute];
 
-				// Need to check for Growl plist stuff.
-				// Should this also be GROWBELL'd ?
 				[gd growlNotify:@"Idle"
 				withDescription:[@"Idle in " stringByAppendingString:[self name]] 
 				andNotification:@"Idle"];
@@ -938,8 +934,6 @@ static NSImage *warningImage;
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
 
-			// Need to check for Growl plist stuff.
-			// Should this also be GROWBELL'd ?
 			[gd growlNotify:@"New Output"
 			withDescription:[@"New Output in " stringByAppendingString:[self name]] 
 			andNotification:@"New Output"];
@@ -1042,6 +1036,7 @@ static NSImage *warningImage;
     // set up the rest of the preferences
     [SCREEN setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
 	[SCREEN setShowBellFlag: [terminalProfileMgr showBellForProfile: terminalProfile]];
+	[SCREEN setGrowlFlag: [terminalProfileMgr growlForProfile: terminalProfile]];
 	[SCREEN setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
 	[TEXTVIEW setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
     [self setEncoding: [terminalProfileMgr encodingForProfile: terminalProfile]];

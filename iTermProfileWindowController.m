@@ -581,7 +581,6 @@
 		[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: theProfile]]];
 	[terminalSilenceBell setState: [[iTermTerminalProfileMgr singleInstance] silenceBellForProfile: theProfile]];
 	[terminalShowBell setState: [[iTermTerminalProfileMgr singleInstance] showBellForProfile: theProfile]];
-	[terminalEnableGrowl setState: [[iTermTerminalProfileMgr singleInstance] growlForProfile: theProfile]];
 	[terminalBlink setState: [[iTermTerminalProfileMgr singleInstance] blinkCursorForProfile: theProfile]];
 	[terminalCloseOnSessionEnd setState: [[iTermTerminalProfileMgr singleInstance] closeOnSessionEndForProfile: theProfile]];
 	[terminalDoubleWidth setState: [[iTermTerminalProfileMgr singleInstance] doubleWidthForProfile: theProfile]];
@@ -617,12 +616,6 @@
 	[[iTermTerminalProfileMgr singleInstance] setShowBell: [sender state] 
 												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
 }
-
-- (IBAction) terminalSetEnableGrowl: (id) sender
-{
-	[[iTermTerminalProfileMgr singleInstance] setGrowl: [sender state] 
-												  forProfile: [terminalProfileSelector titleOfSelectedItem]];
-}	
 
 - (IBAction) terminalSetBlink: (id) sender
 {

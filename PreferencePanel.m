@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.129 2006-08-03 01:51:11 dnedrow Exp $
+// $Id: PreferencePanel.m,v 1.130 2006-08-13 20:00:48 dnedrow Exp $
 /*
  **  PreferencePanel.m
  **
@@ -123,7 +123,6 @@ static BOOL editingBookmark = NO;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: YES;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 	defaultEnableBonjour = [prefs objectForKey:@"EnableRendezvous"]?[[prefs objectForKey:@"EnableRendezvous"] boolValue]: YES;
-	defaultEnableGrowl = [prefs objectForKey:@"EnableGrowl"]?[[prefs objectForKey:@"EnableGrowl"] boolValue]: NO;
 	defaultCmdSelection = [prefs objectForKey:@"CommandSelection"]?[[prefs objectForKey:@"CommandSelection"] boolValue]: YES;
 	defaultMaxVertically = [prefs objectForKey:@"MaxVertically"]?[[prefs objectForKey:@"MaxVertically"] boolValue]: YES;
 	[defaultWordChars release];
@@ -165,7 +164,6 @@ static BOOL editingBookmark = NO;
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
 	[prefs setBool:defaultEnableBonjour forKey:@"EnableRendezvous"];
-	[prefs setBool:defaultEnableGrowl forKey:@"EnableGrowl"];
 	[prefs setBool:defaultCmdSelection forKey:@"CommandSelection"];
 	[prefs setBool:defaultMaxVertically forKey:@"MaxVertically"];
 	[prefs setObject: defaultWordChars forKey: @"WordCharacters"];
@@ -193,7 +191,6 @@ static BOOL editingBookmark = NO;
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
 	[enableBonjour setState: defaultEnableBonjour?NSOnState:NSOffState];
-	[enableGrowl setState: defaultEnableGrowl?NSOnState:NSOffState];
 	[cmdSelection setState: defaultCmdSelection?NSOnState:NSOffState];
 	[maxVertically setState: defaultMaxVertically?NSOnState:NSOffState];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
@@ -219,7 +216,6 @@ static BOOL editingBookmark = NO;
     defaultPromptOnClose = ([promptOnClose state] == NSOnState);
     defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
 	defaultEnableBonjour = ([enableBonjour state] == NSOnState);
-	defaultEnableGrowl = ([enableGrowl state] == NSOnState);
 	defaultCmdSelection = ([cmdSelection state] == NSOnState);
 	defaultMaxVertically = ([maxVertically state] == NSOnState);
 	[defaultWordChars release];
@@ -588,11 +584,6 @@ static BOOL editingBookmark = NO;
 - (BOOL) enableBonjour
 {
 	return (defaultEnableBonjour);
-}
-
-- (BOOL) enableGrowl
-{
-	return (defaultEnableGrowl);
 }
 
 - (BOOL) cmdSelection

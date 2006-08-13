@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.237 2006-08-12 00:02:28 dnedrow Exp $
+// $Id: VT100Screen.m,v 1.238 2006-08-13 20:00:48 dnedrow Exp $
 //
 /*
  **  VT100Screen.m
@@ -43,7 +43,6 @@
 #import <iTerm/PTYTask.h>
 #import <iTerm/PreferencePanel.h>
 #include <string.h>
-#import "iTermGrowlDelegate.h"
 
 /* translates normal char into graphics char */
 void translate(screen_char_t *s, int len)
@@ -158,9 +157,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
 	
 	screenLock = [[NSLock alloc] init];
-	
-	// Need Growl plist stuff
-	gd = [iTermGrowlDelegate sharedInstance];
      
     return self;
 }
@@ -1692,15 +1688,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     SHOWBELL = flag;
 }
 
-- (void)setGrowlFlag:(BOOL)flag
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):+[VT100Screen setGrowlFlag:%s]",
-		  __FILE__, __LINE__, flag == YES ? "YES" : "NO");
-#endif
-    GROWL = flag;
-}
-
 - (void)activateBell
 {
 #if DEBUG_METHOD_TRACE
@@ -1709,13 +1696,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     if (PLAYBELL) {
 		NSBeep();
     }
-	if (SHOWBELL) {
+	if (SHOWBELL)
+	{
 		[SESSION setBell: YES];
-	}
-	if (GROWL) {
-		[gd growlNotify:@"Bell"
-		withDescription:[@"A bell sounded in " stringByAppendingString:[SESSION name]] 
-		andNotification:@"Bells"];
 	}
 }
 

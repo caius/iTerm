@@ -40,7 +40,6 @@
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
-#import "iTermGrowlDelegate.h"
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -107,8 +106,6 @@ static NSImage *warningImage;
     SCREEN = [[VT100Screen alloc] init];
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
 
-	// Need Growl plist stuff
-	gd = [iTermGrowlDelegate sharedInstance];
 	
     return (self);
 }
@@ -336,10 +333,6 @@ static NSImage *warningImage;
     {
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
         [tabViewItem setLabelAttributes: deadStateAttribute];
-
-		[gd growlNotify:@"Broken Pipe"
-		withDescription:[@"Broken Pipe in " stringByAppendingString:[self name]] 
-		andNotification:@"Broken Pipes"];
     }				
     	
 }
@@ -914,11 +907,6 @@ static NSImage *warningImage;
             if (REFRESHED)
 			{
 				[tabViewItem setLabelAttributes: idleStateAttribute];
-
-				[gd growlNotify:@"Idle"
-				withDescription:[@"Idle in " stringByAppendingString:[self name]] 
-				andNotification:@"Idle"];
-				
 				if(isProcessing)
 					[self setIsProcessing: NO];
 			}
@@ -933,11 +921,6 @@ static NSImage *warningImage;
 		{
             waiting=NO;
             [tabViewItem setLabelAttributes: newOutputStateAttribute];
-
-			[gd growlNotify:@"New Output"
-			withDescription:[@"New Output in " stringByAppendingString:[self name]] 
-			andNotification:@"New Output"];
-
 			if(isProcessing == NO)
 				[self setIsProcessing: YES];
         }
@@ -1036,7 +1019,6 @@ static NSImage *warningImage;
     // set up the rest of the preferences
     [SCREEN setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
 	[SCREEN setShowBellFlag: [terminalProfileMgr showBellForProfile: terminalProfile]];
-	[SCREEN setGrowlFlag: [terminalProfileMgr growlForProfile: terminalProfile]];
 	[SCREEN setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
 	[TEXTVIEW setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
     [self setEncoding: [terminalProfileMgr encodingForProfile: terminalProfile]];

@@ -105,7 +105,6 @@
 	IBOutlet NSTextField *terminalScrollback;
 	IBOutlet NSButton *terminalSilenceBell;
 	IBOutlet NSButton *terminalShowBell;
-	IBOutlet NSButton *terminalEnableGrowl;
 	IBOutlet NSButton *terminalBlink;
 	IBOutlet NSButton *terminalCloseOnSessionEnd;
 	IBOutlet NSButton *terminalDoubleWidth;
@@ -153,7 +152,6 @@
 - (IBAction) terminalSetEncoding: (id) sender;
 - (IBAction) terminalSetSilenceBell: (id) sender;
 - (IBAction) terminalSetShowBell: (id) sender;
-- (IBAction) terminalSetEnableGrowl: (id) sender;
 - (IBAction) terminalSetBlink: (id) sender;
 - (IBAction) terminalSetCloseOnSessionEnd: (id) sender;
 - (IBAction) terminalSetDoubleWidth: (id) sender;

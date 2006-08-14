@@ -37,6 +37,7 @@
                 deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
                 enableBonjour = NSButton; 
+                enableGrowl = id; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
                 maxVertically = NSButton; 
@@ -78,6 +79,7 @@
                 terminalSetBlink = id; 
                 terminalSetCloseOnSessionEnd = id; 
                 terminalSetDoubleWidth = id; 
+                terminalSetEnableGrowl = id; 
                 terminalSetEncoding = id; 
                 terminalSetSendIdleChar = id; 
                 terminalSetShowBell = id; 
@@ -146,6 +148,7 @@
                 terminalBlink = NSButton; 
                 terminalCloseOnSessionEnd = NSButton; 
                 terminalDoubleWidth = NSButton; 
+                terminalEnableGrowl = id; 
                 terminalEncoding = NSPopUpButton; 
                 terminalIdleChar = NSTextField; 
                 terminalProfileDeleteButton = NSButton; 

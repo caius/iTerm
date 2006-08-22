@@ -1,3 +1,7 @@
+2006-08-22  fabian
+
+    * Tweaked PTYTextView to enhance text display, especially with small fonts.
+    
 2006-03-26	ujwal
 
 	* Added preference to choose between Metal and Aqua style window and tabs.

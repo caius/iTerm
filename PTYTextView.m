@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.253 2006-03-20 17:25:32 ujwal Exp $
+// $Id: PTYTextView.m,v 1.254 2006-08-22 23:01:49 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2489,34 +2489,36 @@ static SInt32 systemVersion;
 	NSAttributedString  *crap;
 	NSDictionary *attrib;
 	NSFont *theFont;
-	float strokeWidth = 0;
+	float strokeWidth;
 	BOOL renderBold;
 	
 	//NSLog(@"%s: drawing char %c", __PRETTY_FUNCTION__, carac);
 	//NSLog(@"%@",NSStrokeWidthAttributeName);
 	
 	theFont = aFont;
-	renderBold = bold;
-	if([self disableBold])
-		renderBold = NO;
+	renderBold = bold && ![self disableBold];
 	
-	// Check if there is native bold support
 	if(renderBold)
 	{
 		theFont = [[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask];
 		
-		// check if conversion was successful, else use our own methods to convert to bold
+        // Check if there is native bold support
+		// if conversion was successful, else use our own methods to convert to bold
 		if([[NSFontManager sharedFontManager] fontNamed: [theFont fontName] hasTraits: NSBoldFontMask] == YES)
 		{
-			strokeWidth = 0;
+			strokeWidth = antiAlias ? -3:0;
 			renderBold = NO;
 		}
 		else
 		{
-			strokeWidth = antiAlias?(float)bold*(-0.1):0;
+			strokeWidth = antiAlias?-5:0;
 			theFont = aFont;
 		}
 	}
+    else 
+    {
+        strokeWidth = antiAlias ? -3:0;
+    }
 	
 	if (systemVersion >= 0x00001030)
 	{

@@ -135,11 +135,16 @@ static NSImage *warningImage;
 	
     [SHELL release];
     SHELL = nil;
-	
-    [SCREEN release];
+	[SCREEN release];
     SCREEN = nil;
     [TERMINAL release];
     TERMINAL = nil;    
+    
+    if (tabViewItem)
+    {
+        [tabViewItem release];
+        tabViewItem = nil;
+    }
     
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
@@ -255,11 +260,6 @@ static NSImage *warningImage;
 	// release the data processing semaphore
 	MPDeleteSemaphore(dataSemaphore);
 		
-    if(tabViewItem)
-    {
-        [tabViewItem release];
-        tabViewItem = nil;
-    }
     [addressBookEntry release];
     addressBookEntry = nil;
 	
@@ -272,8 +272,6 @@ static NSImage *warningImage;
     [SCREEN setSession: nil];
     [SCREEN setTerminal: nil];
     [TERMINAL setScreen: nil];
-    [self setTabViewItem: nil];    
-    
         
     parent = nil;
 	
@@ -328,7 +326,17 @@ static NSImage *warningImage;
     EXIT = YES;
 	
 	if (autoClose)
-        [parent closeSession:self];
+    {
+        id p = parent;
+        [p acquireLock];
+        if ([[p sessions] count]==1)
+            [p closeSession:self];
+        else 
+        {
+            [p closeSession:self];
+            [p releaseLock];
+        }
+    }
     else 
     {
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
@@ -1684,7 +1692,7 @@ static NSImage *warningImage;
     NSString *cmd;
     NSArray *arg;
 	
-    [iTermController breakDown:command cmdPath:&cmd cmdArgs:&arg];
+    [PseudoTerminal breakDown:command cmdPath:&cmd cmdArgs:&arg];
 	
     [self startProgram:cmd arguments:arg environment:[NSDictionary dictionary]];
     
@@ -1736,7 +1744,9 @@ static NSImage *warningImage;
 
 -(void)handleTerminateScriptCommand: (NSScriptCommand *)command
 {
-    [[self parent] closeSession: self];
+    [parent acquireLock];
+    [parent closeSession: self];
+    [parent releaseLock];
 }
 
 @end

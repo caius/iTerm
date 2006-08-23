@@ -48,8 +48,10 @@
         [_threadLock lock];
 
         int i, cnt = [_sessionList count];
+        
         for(i = 0; i < cnt; i++)
-            [[_sessionList objectAtIndex: i] terminate];
+            if ([[_sessionList objectAtIndex: i] exited]==NO)
+                [[_sessionList objectAtIndex: i] terminate];
         
         [_sessionList release];
         _sessionList = nil;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.321 2006-03-26 19:50:59 ujwal Exp $
+// $Id: PseudoTerminal.m,v 1.322 2006-08-23 21:18:34 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -74,6 +74,55 @@ NSString *sessionsKey = @"sessions";
 static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];  
 
 @implementation PseudoTerminal
+
+// Utility
++ (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path
+{
+    int i,j,k,qf;
+    char tmp[100];
+    const char *s;
+    NSMutableArray *p;
+    
+    p=[[NSMutableArray alloc] init];
+    
+    s=[cmdl cString];
+    
+    i=j=qf=0;
+    k=-1;
+    while (i<=strlen(s)) {
+        if (qf) {
+            if (s[i]=='\"') {
+                qf=0;
+            }
+            else {
+                tmp[j++]=s[i];
+            }
+        }
+        else {
+            if (s[i]=='\"') {
+                qf=1;
+            }
+            else if (s[i]==' ' || s[i]=='\t' || s[i]=='\n'||s[i]==0) {
+                tmp[j]=0;
+                if (k==-1) {
+                    *cmd=[NSString stringWithCString:tmp];
+                }
+                else
+                    [p addObject:[NSString stringWithCString:tmp]];
+                j=0;
+                k++;
+                while (s[i+1]==' '||s[i+1]=='\t'||s[i+1]=='\n'||s[i+1]==0) i++;
+            }
+            else {
+                tmp[j++]=s[i];
+            }
+        }
+        i++;
+    }
+    
+    *path = [NSArray arrayWithArray:p];
+    [p release];
+}
 
 - (id)initWithWindowNibName: (NSString *) windowNibName
 {
@@ -214,7 +263,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 }
 
 // Do not use both initViewWithFrame and initWindow
-- (void)initWindow
+- (void)initWindowWithAddressbook:(NSDictionary *)entry;
 {
 	NSRect aRect;
 	// sanity check
@@ -284,6 +333,26 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     
     [self setWindowInited: YES];
+    
+    if (entry) {
+        NSString *displayProfile;
+        iTermDisplayProfileMgr *displayProfileMgr;
+        
+        displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+        
+        // grab the profiles
+        displayProfile = [entry objectForKey: KEY_DISPLAY_PROFILE];
+        if(displayProfile == nil)
+            displayProfile = [displayProfileMgr defaultProfileName];
+        
+ 		[self setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
+		[self setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
+		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
+		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
+			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
+		[self setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
+                                   vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
+    }
 }
 
 - (ITSessionMgr*)sessionMgr;
@@ -408,7 +477,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) newSessionInTabAtIndex: (id) sender
 {
-    [[iTermController sharedInstance] launchBookmark: [sender representedObject] inTerminal:self];
+    [self addNewSession: [sender representedObject]];
+    //[[iTermController sharedInstance] launchBookmark: [sender representedObject] inTerminal:self];
 }
 
 - (void) selectSessionAtIndex: (int) sessionIndex
@@ -475,11 +545,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if((_sessionMgr == nil) || ![_sessionMgr containsSession:aSession])
         return;
     
-    [PTLock lock];
-
-	numberOfSessions = [_sessionMgr numberOfSessions]; 
+    numberOfSessions = [_sessionMgr numberOfSessions]; 
     if(numberOfSessions == 1 && [self windowInited])
     {
+        [aSession terminate];
+        [aSession release];
         [[self window] close];
         return;
     }
@@ -498,13 +568,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 		
 	// now get rid of this session
-	[aSession retain];  
+	//[aSession retain];  
 	aTabViewItem = [aSession tabViewItem];
-	[aSession terminate];
+    [aSession terminate];
 	[aSession release];
     [TABVIEW removeTabViewItem: aTabViewItem];
-    [PTLock unlock];
-		
 }
 
 - (IBAction) closeCurrentSession: (id) sender
@@ -527,7 +595,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 							,nil) == 0) return;
     }
 	
+    [self acquireLock];
     [self closeSession:[_sessionMgr currentSession]];
+    [self releaseLock];
 }
 
 - (IBAction)previousSession:(id)sender
@@ -607,8 +677,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [_sessionMgr release];
     _sessionMgr = nil;
     [_toolbarController release];
-	
-    [PTLock release];
+	[PTLock release];
+    PTLock = nil;
     
     [super dealloc];
 }
@@ -1105,19 +1175,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-    int i,sessionCount;
+    int i;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowWillClose:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-	EXIT = YES;
-    sessionCount = [_sessionMgr numberOfSessions];
-    for (i = 0; i < sessionCount; i++)
-    {
-        if ([[_sessionMgr sessionAtIndex: i] exited]==NO)
-            [[_sessionMgr sessionAtIndex: i] terminate];
-    }
 	
 	// tabBarControl is holding on to us, so we have to tell it to let go
 	[tabBarControl setDelegate: nil];
@@ -1131,7 +1194,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			break;
 		}
     }
-	
+	EXIT = YES;
     [[iTermController sharedInstance] terminalWillClose: self];
 	
 }
@@ -1607,12 +1670,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // closes a tab
 - (void) closeTabContextualMenuAction: (id) sender
 {
+    [self acquireLock];
     [self closeSession: [sender representedObject]];
+    [self releaseLock];
 }
 
 - (void) closeTabWithIdentifier: (id) identifier
 {
-	[self closeSession: [identifier content]];
+	[self acquireLock];
+    [self closeSession: [identifier content]];
+    [self releaseLock];
 }
 
 // moves a tab with its session to a new window
@@ -1636,7 +1703,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 		[term setWidth: WIDTH height: HEIGHT];
 		[term setFont: FONT nafont: NAFONT];
-		[term initWindow];
+		[term initWindowWithAddressbook:NULL];
     }	
 	
     [[iTermController sharedInstance] addInTerminals: term];
@@ -1775,7 +1842,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return (contentSize);
 }
 
+- (void) acquireLock
+{
+    [PTLock lock];
+}
 
+- (void) releaseLock;
+{
+    [PTLock unlock];
+}
 
 @end
 
@@ -1804,6 +1879,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	{
 		iterationCount++;
 		
+        [self acquireLock];
+        if (EXIT) break;
 		// periodically create and release autorelease pools
 		if(pool == nil)
 			pool = [[NSAutoreleasePool alloc] init];
@@ -1827,7 +1904,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			pool = nil;
 			iterationCount = 0;
 		}
-					
+        
+        [self releaseLock];
 		usleep(100000);
 	}
 	
@@ -1969,35 +2047,65 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [_sessionMgr replaceSessionAtIndex: index withSession: object];
 }
 
--(void)addInSessions:(PTYSession *)object
+-(void)addNewSession:(NSDictionary *) addressbookEntry
 {
     // NSLog(@"PseudoTerminal: -addInSessions: 0x%x", object);
-    [self insertInSessions: object];
+    PTYSession *aSession;
+    NSString *terminalProfile;
+    
+    terminalProfile = [addressbookEntry objectForKey: KEY_TERMINAL_PROFILE];
+	if(terminalProfile == nil)
+		terminalProfile = [[iTermTerminalProfileMgr singleInstance] defaultProfileName];	
+	
+    // Initialize a new session
+    aSession = [[PTYSession alloc] init];
+	[[aSession SCREEN] setScrollback:[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: [addressbookEntry objectForKey: KEY_TERMINAL_PROFILE]]];
+    // set our preferences
+    [aSession setAddressBookEntry: addressbookEntry];
+    // Add this session to our term and make it current
+    [self appendSession: aSession];
+    
+    
+    NSString *cmd;
+    NSArray *arg;
+    NSString *pwd;
+	
+    // Grab the addressbook command
+	cmd = [addressbookEntry objectForKey: KEY_COMMAND];
+    [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
+    
+	pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
+	if([pwd length] <= 0)
+		pwd = NSHomeDirectory();
+    NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
+    
+    [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+    
+    // Start the command        
+    [self startProgram:cmd arguments:arg environment:env];
+	
+    [aSession release];
 }
 
--(void)insertInSessions:(PTYSession *)object
+-(void)appendSession:(PTYSession *)object
 {
-    // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x", object);
-    [PTLock lock];
-    [self insertInSessions: object atIndex:[_sessionMgr numberOfSessions]];
-    [PTLock unlock];
-}
-
--(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index
-{
-    // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x atIndex: %d", object, index);
+    // NSLog(@"PseudoTerminal: -appendSession: 0x%x", object);
+    [self acquireLock];
     [self setupSession: object title: nil];
-    [self insertSession: object atIndex: index];
+    [self insertSession: object atIndex:[_sessionMgr numberOfSessions]];
+    [self releaseLock];
 }
 
 -(void)removeFromSessionsAtIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -removeFromSessionsAtIndex: %d", index);
+    [self acquireLock];
     if(index < [_sessionMgr numberOfSessions])
     {
 		PTYSession *aSession = [_sessionMgr sessionAtIndex: index];
 		[self closeSession: aSession];
     }
+    [self releaseLock];
 }
 
 - (BOOL)windowInited
@@ -2009,6 +2117,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     windowInited = flag;
 }
+
 
 // a class method to provide the keys for KVC:
 +(NSArray*)kvcKeys
@@ -2062,23 +2171,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSDictionary *args = [command evaluatedArguments];
     NSString *session = [args objectForKey:@"session"];
     NSDictionary *abEntry;
-	NSString *displayProfile;
-	iTermDisplayProfileMgr *displayProfileMgr;
 
 	abEntry = [[ITAddressBookMgr sharedInstance] dataForBookmarkWithName: session];
 	if(abEntry == nil)
 		abEntry = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
     	
-	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
-	displayProfile = [abEntry objectForKey: KEY_DISPLAY_PROFILE];
     // If we have not set up a window, do it now
     if([self windowInited] == NO)
     {
-		[self setWidth: [displayProfileMgr windowColumnsForProfile: displayProfile] 
-				height: [displayProfileMgr windowRowsForProfile: displayProfile]];
-		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
-			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
-		[self initWindow];
+		[self initWindowWithAddressbook:abEntry];
     }
 	
     // launch the session!

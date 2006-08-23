@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.33 2006-03-26 19:50:48 ujwal Exp $
+// $Id: PseudoTerminal.h,v 1.34 2006-08-23 21:18:36 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -70,7 +70,7 @@
 - (PTYTabView*) initViewWithFrame: (NSRect) frame;
 - (void)dealloc;
 
-- (void)initWindow;
+- (void)initWindowWithAddressbook:(NSDictionary *)entry;
 - (void)setupSession: (PTYSession *) aSession title: (NSString *)title;
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index;
 - (void) switchSession: (id) sender;
@@ -162,6 +162,11 @@
 // Bookmarks
 - (IBAction) toggleBookmarksView: (id) sender;
 
+// Utility methods
++ (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
+- (void) acquireLock;
+- (void) releaseLock;
+
 @end
 
 @interface PseudoTerminal (KeyValueCoding)
@@ -182,9 +187,8 @@
 -(id)valueWithName: (NSString *)uniqueName inPropertyWithKey: (NSString*)propertyKey;
 -(id)valueWithID: (NSString *)uniqueID inPropertyWithKey: (NSString*)propertyKey;
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index;
--(void)addInSessions:(PTYSession *)object;
--(void)insertInSessions:(PTYSession *)object;
--(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index;
+-(void)addNewSession:(NSDictionary *)addressbookEntry;
+-(void)appendSession:(PTYSession *)object;
 -(void)removeFromSessionsAtIndex:(unsigned)index;
 
 - (BOOL)windowInited;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.50 2006-08-13 20:00:48 dnedrow Exp $
+// $Id: iTermController.m,v 1.51 2006-08-23 21:18:34 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -38,8 +38,6 @@
 #import <iTerm/VT100Screen.h>
 #import <iTerm/NSStringITerm.h>
 #import <iTerm/ITAddressBookMgr.h>
-#import <iTerm/iTermTerminalProfileMgr.h>
-#import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/Tree.h>
 #import <iTerm/ITConfigPanelController.h>
 
@@ -182,55 +180,6 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
 }
 
-// Utility
-+ (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path
-{
-    int i,j,k,qf;
-    char tmp[100];
-    const char *s;
-    NSMutableArray *p;
-
-    p=[[NSMutableArray alloc] init];
-
-    s=[cmdl cString];
-
-    i=j=qf=0;
-    k=-1;
-    while (i<=strlen(s)) {
-        if (qf) {
-            if (s[i]=='\"') {
-                qf=0;
-            }
-            else {
-                tmp[j++]=s[i];
-            }
-        }
-        else {
-            if (s[i]=='\"') {
-                qf=1;
-            }
-            else if (s[i]==' ' || s[i]=='\t' || s[i]=='\n'||s[i]==0) {
-                tmp[j]=0;
-                if (k==-1) {
-                    *cmd=[NSString stringWithCString:tmp];
-                }
-                else
-                    [p addObject:[NSString stringWithCString:tmp]];
-                j=0;
-                k++;
-                while (s[i+1]==' '||s[i+1]=='\t'||s[i+1]=='\n'||s[i+1]==0) i++;
-            }
-            else {
-                tmp[j++]=s[i];
-            }
-        }
-        i++;
-    }
-
-    *path = [NSArray arrayWithArray:p];
-    [p release];
-}
-
 - (PseudoTerminal *) currentTerminal
 {
     return (FRONT);
@@ -280,71 +229,25 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 - (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm
 {
     PseudoTerminal *term;
-    PTYSession *aSession;
-    NSString *cmd;
-    NSArray *arg;
     NSDictionary *aDict;
-	NSString *displayProfile, *terminalProfile;
-	iTermDisplayProfileMgr *displayProfileMgr;
-	NSString *pwd;
 	
 	aDict = bookmarkData;
 	if(aDict == nil)
 		aDict = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
-	
-	// Grab the addressbook command
-	cmd = [aDict objectForKey: KEY_COMMAND];
-    [iTermController breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
-	
-	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
-	
-	// grab the profiles
-	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
-	if(displayProfile == nil)
-		displayProfile = [displayProfileMgr defaultProfileName];
-	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
-	if(terminalProfile == nil)
-		terminalProfile = [displayProfileMgr defaultProfileName];	
-	
+		
 	// Where do we execute this command?
     if(theTerm == nil)
     {
         term = [[PseudoTerminal alloc] init];
-		[term initWindow];
+		[term initWindowWithAddressbook: aDict];
 		[self addInTerminals: term];
 		[term release];
 		
-		[term setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
-		[term setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
-		[term setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
-		[term setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
-			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
-		[term setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
-							  vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
     }
     else
         term = theTerm;
 		
-	// Initialize a new session
-    aSession = [[PTYSession alloc] init];
-	[[aSession SCREEN] setScrollback:[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: terminalProfile]];
-    // set our preferences
-    [aSession setAddressBookEntry: aDict];
-    // Add this session to our term and make it current
-    [term addInSessions: aSession];
-    [aSession release];
-	    
-	pwd = [aDict objectForKey: KEY_WORKING_DIRECTORY];
-	if([pwd length] <= 0)
-		pwd = NSHomeDirectory();
-    NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
-
-    [term setCurrentSessionName:[aDict objectForKey: KEY_NAME]];	
-    
-    // Start the command        
-    [term startProgram:cmd arguments:arg environment:env];
-	
-	
+	[term addNewSession: aDict];
 }
 
 - (void) launchScript: (id) sender
@@ -446,7 +349,7 @@ NSString *terminalsKey = @"terminals";
     [terminalWindows insertObject: object atIndex: index];
     [terminalLock unlock];
     // make sure we have a window
-    [object initWindow];
+    [object initWindowWithAddressbook:NULL];
 }
 
 -(void)removeFromTerminalsAtIndex:(unsigned)index

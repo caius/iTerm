@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.18 2006-08-13 20:12:02 dnedrow Exp $
+// $Id: iTermController.h,v 1.19 2006-08-23 21:18:36 yfabian Exp $
 /*
  **  iTermController.h
  **
@@ -52,8 +52,6 @@
 - (void)newSessionInTabAtIndex: (id) sender;
 - (void)newSessionInWindowAtIndex: (id) sender;
 
-// Utility methods
-+ (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
 - (PseudoTerminal *) currentTerminal;
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSArray *) sortedEncodingList;

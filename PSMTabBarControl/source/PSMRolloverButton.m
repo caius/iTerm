@@ -64,11 +64,19 @@
     [[self superview] setNeedsDisplay:YES]; // eliminates a drawing artifact
 }
 
+- (void)mouseDown:(NSEvent *)theEvent
+{
+    // eliminates drawing artifact
+    [[NSRunLoop currentRunLoop] performSelector:@selector(display) target:[self superview] argument:nil order:1 modes:[NSArray arrayWithObjects:@"NSEventTrackingRunLoopMode", @"NSDefaultRunLoopMode", nil]];
+    [super mouseDown:theEvent];
+}
+
 - (void)resetCursorRects
 {
     // called when the button rect has been changed
     [self removeTrackingRect];
     [self addTrackingRect];
+    [[self superview] setNeedsDisplay:YES]; // eliminates a drawing artifact
 }
 
 #pragma mark -

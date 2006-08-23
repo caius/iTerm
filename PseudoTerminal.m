@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.322 2006-08-23 21:18:34 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.323 2006-08-23 23:37:21 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -303,10 +303,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[tabBarControl setHideForSingleTab: NO];
 	
 	// set the style of tabs to match window style
-	if([[PreferencePanel sharedInstance] windowStyle] == 0)
-		[tabBarControl setStyleNamed:@"Metal"];
-	else
-		[tabBarControl setStyleNamed:@"Aqua"];
+	switch ([[PreferencePanel sharedInstance] windowStyle]) {
+        case 0:
+            [tabBarControl setStyleNamed:@"Metal"];
+            break;
+        case 1:
+            [tabBarControl setStyleNamed:@"Aqua"];
+            break;
+        default:
+            [tabBarControl setStyleNamed:@"Unified"];
+            break;
+    }
 
 	
 	// position the tabview and control
@@ -331,7 +338,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                                                  name: @"iTermReloadAddressBook"
                                                object: nil];	
 	
-    
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(_refreshTerminal:)
+                                                 name: @"iTermRefreshTerminal"
+                                               object: nil];	
+	
     [self setWindowInited: YES];
     
     if (entry) {
@@ -837,14 +848,26 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	else
 	{
 		[tabBarControl setHidden: NO];
-		winSize.height += [tabBarControl frame].size.height;
-		aRect.origin.x = 0;
-		aRect.origin.y = 0;
-		aRect.size = tabViewSize;
-		[TABVIEW setFrame: aRect];
-		aRect.origin.y = aRect.size.height;
-		aRect.size.height = 22;
-		[tabBarControl setFrame: aRect];
+        winSize.height += [tabBarControl frame].size.height;
+		if ([[PreferencePanel sharedInstance] tabViewType] == 0) {
+            aRect.origin.x = 0;
+            aRect.origin.y = 0;
+            aRect.size = tabViewSize;
+            [TABVIEW setFrame: aRect];
+            aRect.origin.y = aRect.size.height;
+            aRect.size.height = 22;
+            [tabBarControl setFrame: aRect];
+        }
+        else {
+            aRect.origin.x = 0;
+            aRect.origin.y = 0;
+            aRect.size.width = tabViewSize.width;
+            aRect.size.height = 22;
+            [tabBarControl setFrame: aRect];
+            aRect.origin.y = 22;
+            aRect.size.height = tabViewSize.height;
+            [TABVIEW setFrame: aRect];
+        }
 	}
 	
 #if 0
@@ -1939,6 +1962,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) _reloadAddressBook: (NSNotification *) aNotification
 {
 	[bookmarksView reloadData];
+}
+
+- (void) _refreshTerminal: (NSNotification *) aNotification
+{
+	[self setWindowSize];
 }
 
 @end

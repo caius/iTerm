@@ -129,6 +129,12 @@
 		DDF0FD66062916F70080EF74 /* iTermApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = DDF0FD64062916F70080EF74 /* iTermApplication.m */; };
 		F658C86E06054425000A13D5 /* iTermTerminalProfileMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = F658C86C06054425000A13D5 /* iTermTerminalProfileMgr.m */; };
 		F658CAFB060587A0000A13D5 /* iTermTerminalProfileMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = F658CAFA060587A0000A13D5 /* iTermTerminalProfileMgr.h */; };
+		F6E708BB0A9D0EA400D0C4EF /* NSBezierPath_AMShading.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E708B50A9D0EA400D0C4EF /* NSBezierPath_AMShading.h */; };
+		F6E708BC0A9D0EA400D0C4EF /* NSBezierPath_AMShading.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708B60A9D0EA400D0C4EF /* NSBezierPath_AMShading.m */; };
+		F6E708BD0A9D0EA400D0C4EF /* PSMTabDragAssistant.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E708B70A9D0EA400D0C4EF /* PSMTabDragAssistant.h */; };
+		F6E708BE0A9D0EA400D0C4EF /* PSMTabDragAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708B80A9D0EA400D0C4EF /* PSMTabDragAssistant.m */; };
+		F6E708BF0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E708B90A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h */; };
+		F6E708C00A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -341,6 +347,12 @@
 		F65CCFFA05F7EB0700F04CFF /* screenshot2-m.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "screenshot2-m.jpg"; path = "website/screenshot2-m.jpg"; sourceTree = "<group>"; };
 		F65CCFFB05F7EB0700F04CFF /* screenshot2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = screenshot2.jpg; path = website/screenshot2.jpg; sourceTree = "<group>"; };
 		F69D78B405FBEA6D009BC3FC /* faq.shtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.other; name = faq.shtml; path = website/faq.shtml; sourceTree = "<group>"; };
+		F6E708B50A9D0EA400D0C4EF /* NSBezierPath_AMShading.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NSBezierPath_AMShading.h; sourceTree = "<group>"; };
+		F6E708B60A9D0EA400D0C4EF /* NSBezierPath_AMShading.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = NSBezierPath_AMShading.m; sourceTree = "<group>"; };
+		F6E708B70A9D0EA400D0C4EF /* PSMTabDragAssistant.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMTabDragAssistant.h; sourceTree = "<group>"; };
+		F6E708B80A9D0EA400D0C4EF /* PSMTabDragAssistant.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMTabDragAssistant.m; sourceTree = "<group>"; };
+		F6E708B90A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMUnifiedTabStyle.h; sourceTree = "<group>"; };
+		F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMUnifiedTabStyle.m; sourceTree = "<group>"; };
 		F6FAFD99050E90C300EA4EE7 /* contrib.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contrib.png; path = website/contrib.png; sourceTree = "<group>"; };
 		F6FAFD9A050E90C300EA4EE7 /* iTerm-orig.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iTerm-orig.png"; path = "website/iTerm-orig.png"; sourceTree = "<group>"; };
 		FB019DE103670C6501F955DB /* PreferencePanel.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PreferencePanel.m; sourceTree = "<group>"; };
@@ -568,6 +580,12 @@
 		DD02571E09CB9398008F320C /* source */ = {
 			isa = PBXGroup;
 			children = (
+				F6E708B50A9D0EA400D0C4EF /* NSBezierPath_AMShading.h */,
+				F6E708B60A9D0EA400D0C4EF /* NSBezierPath_AMShading.m */,
+				F6E708B70A9D0EA400D0C4EF /* PSMTabDragAssistant.h */,
+				F6E708B80A9D0EA400D0C4EF /* PSMTabDragAssistant.m */,
+				F6E708B90A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h */,
+				F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */,
 				DD02572409CB9398008F320C /* PSMAquaTabStyle.h */,
 				DD02572509CB9398008F320C /* PSMAquaTabStyle.m */,
 				DD02572609CB9398008F320C /* PSMMetalTabStyle.h */,
@@ -695,6 +713,9 @@
 				DD02574B09CB9399008F320C /* PSMTabBarCell.h in Headers */,
 				DD02574D09CB9399008F320C /* PSMTabBarControl.h in Headers */,
 				DD02575409CB9399008F320C /* PSMTabStyle.h in Headers */,
+				F6E708BB0A9D0EA400D0C4EF /* NSBezierPath_AMShading.h in Headers */,
+				F6E708BD0A9D0EA400D0C4EF /* PSMTabDragAssistant.h in Headers */,
+				F6E708BF0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -955,6 +976,9 @@
 				DD02574A09CB9399008F320C /* PSMRolloverButton.m in Sources */,
 				DD02574C09CB9399008F320C /* PSMTabBarCell.m in Sources */,
 				DD02574E09CB9399008F320C /* PSMTabBarControl.m in Sources */,
+				F6E708BC0A9D0EA400D0C4EF /* NSBezierPath_AMShading.m in Sources */,
+				F6E708BE0A9D0EA400D0C4EF /* PSMTabDragAssistant.m in Sources */,
+				F6E708C00A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

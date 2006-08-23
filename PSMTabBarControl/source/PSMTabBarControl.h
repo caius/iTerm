@@ -20,15 +20,14 @@
 #define kPSMTabBarCellPadding 4
 // fixed size objects
 #define kPSMMinimumTitleWidth 30
-#define kPSMTabBarIndicatorWidth 16
-#define kPSMTabBarIconWidth 16
+#define kPSMTabBarIndicatorWidth 16.0
+#define kPSMTabBarIconWidth 16.0
 #define kPSMHideAnimationSteps 2.0
 
 @class PSMOverflowPopUpButton;
 @class PSMRolloverButton;
 @class PSMTabBarCell;
 @protocol PSMTabStyle;
-@protocol PTYTabViewDelegateProtocol;
 
 enum {
     PSMTab_SelectedMask                 = 1 << 1,
@@ -40,8 +39,7 @@ enum {
     PSMTab_PositionSingleMask		= 1 << 7
 };
 
-@interface PSMTabBarControl : NSControl <PTYTabViewDelegateProtocol>
-{
+@interface PSMTabBarControl : NSControl {
     
     // control basics
     NSMutableArray              *_cells;                    // the cells that draw the tabs
@@ -64,22 +62,16 @@ enum {
     // animation for hide/show
     int                         _currentStep;
     BOOL                        _isHidden;
+    BOOL                        _hideIndicators;
     IBOutlet id                 partnerView;                // gets resized when hide/show
     BOOL                        _awakenedFromNib;
     
     // drag and drop
-    PSMTabBarCell               *_draggedCell;
-    PSMTabBarCell               *_draggedCellPlaceholder;
-    NSEvent                     *_lastMouseDownEvent;      // keep this for dragging reference      
-    BOOL                        _drawForDrop;              // alter drawing if about to get dropped on
-    NSTimer                     *_animationTimer;
+    NSEvent                     *_lastMouseDownEvent;      // keep this for dragging reference   
+    BOOL			_allowsDragBetweenWindows;
     
     // MVC help
     IBOutlet id                 delegate;
-	
-	// what to do when close button is pressed
-	id closeTarget;
-	SEL closeAction;
 }
 
 // control characteristics
@@ -102,6 +94,8 @@ enum {
 - (void)setCellOptimumWidth:(int)value;
 - (BOOL)sizeCellsToFit;
 - (void)setSizeCellsToFit:(BOOL)value;
+- (BOOL)allowsDragBetweenWindows;
+- (void)setAllowsDragBetweenWindows:(BOOL)flag;
 
 // accessors
 - (NSTabView *)tabView;
@@ -111,10 +105,19 @@ enum {
 - (id)partnerView;
 - (void)setPartnerView:(id)view;
 
-// the add tab button
+// the buttons
 - (PSMRolloverButton *)addTabButton;
+- (PSMOverflowPopUpButton *)overflowPopUpButton;
+- (NSMutableArray *)representedTabViewItems;
 
 // special effects
 - (void)hideTabBar:(BOOL)hide animate:(BOOL)animate;
 
+@end
+
+
+@interface NSObject (TabBarControlDelegateMethods)
+- (BOOL)tabView:(NSTabView *)aTabView shouldCloseTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)aTabView willCloseTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)aTabView didCloseTabViewItem:(NSTabViewItem *)tabViewItem;
 @end

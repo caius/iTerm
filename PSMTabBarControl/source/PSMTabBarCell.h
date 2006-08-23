@@ -9,10 +9,6 @@
 #import <Cocoa/Cocoa.h>
 #import "PSMTabBarControl.h"
 
-#define kPSMTabDragAnimationSteps 6
-// an old friend
-#define PI 3.1417
-
 @class PSMTabBarControl;
 @class PSMProgressIndicator;
 
@@ -20,8 +16,8 @@
     // sizing
     NSRect              _frame;
     NSSize              _stringSize;
-    NSMutableArray      *_sineCurveWidths;
     int                 _currentStep;
+    BOOL                _isPlaceholder;
     
     // state
     int                 _tabState;
@@ -35,17 +31,16 @@
     BOOL                _isCloseButtonSuppressed;
     BOOL                _hasIcon;
     int                 _count;
-    BOOL                _isPlaceholder;
-    BOOL                _isShrinking;
 }
 
 // creation/destruction
 - (id)initWithControlView:(PSMTabBarControl *)controlView;
-- (id)initPlaceholderWithFrame:(NSRect)frame isShrinking:(BOOL)value inControlView:(PSMTabBarControl *)controlView;
+- (id)initPlaceholderWithFrame:(NSRect)frame expanded:(BOOL)value inControlView:(PSMTabBarControl *)controlView;
 - (void)dealloc;
 
 // accessors
 - (id)controlView;
+- (void)setControlView:(id)view;
 - (NSTrackingRectTag)closeButtonTrackingTag;
 - (void)setCloseButtonTrackingTag:(NSTrackingRectTag)tag;
 - (NSTrackingRectTag)cellTrackingTag;
@@ -75,8 +70,6 @@
 - (void)setCount:(int)value;
 - (BOOL)isPlaceholder;
 - (void)setIsPlaceholder:(BOOL)value;
-- (BOOL)isShrinking;
-- (void)setIsShrinking:(BOOL)value;
 - (int)currentStep;
 - (void)setCurrentStep:(int)value;
 

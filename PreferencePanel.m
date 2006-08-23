@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.130 2006-08-13 20:00:48 dnedrow Exp $
+// $Id: PreferencePanel.m,v 1.131 2006-08-23 23:37:21 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -117,6 +117,7 @@ static BOOL editingBookmark = NO;
          
 	defaultWindowStyle=[prefs objectForKey:@"WindowStyle"]?[prefs integerForKey:@"WindowStyle"]:0;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;
+    if (defaultTabViewType>1) defaultTabViewType = 0;
     defaultCopySelection=[[prefs objectForKey:@"CopySelection"] boolValue];
 	defaultPasteFromClipboard=[[prefs objectForKey:@"PasteFromClipboard"] boolValue];
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
@@ -524,6 +525,7 @@ static BOOL editingBookmark = NO;
 - (void)windowWillClose:(NSNotification *)aNotification
 {
 	[self savePreferences];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermRefreshTerminal" object: nil userInfo: nil];    
 	[profilesWindow performClose: self];
 }
 

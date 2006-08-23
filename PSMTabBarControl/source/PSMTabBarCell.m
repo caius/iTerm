@@ -10,6 +10,7 @@
 #import "PSMTabBarControl.h"
 #import "PSMTabStyle.h"
 #import "PSMProgressIndicator.h"
+#import "PSMTabDragAssistant.h"
 
 
 @implementation PSMTabBarCell
@@ -25,7 +26,7 @@
         _cellTrackingTag = 0;
         _closeButtonOver = NO;
         _closeButtonPressed = NO;
-        _indicator = [[PSMProgressIndicator alloc] initWithFrame:NSZeroRect];
+        _indicator = [[PSMProgressIndicator alloc] initWithFrame:NSMakeRect(0.0,0.0,kPSMTabBarIndicatorWidth,kPSMTabBarIndicatorWidth)];
         [_indicator setStyle:NSProgressIndicatorSpinningStyle];
         [_indicator setAutoresizingMask:NSViewMinYMargin];
         _hasCloseButton = YES;
@@ -36,27 +37,15 @@
     return self;
 }
 
-- (id)initPlaceholderWithFrame:(NSRect)frame isShrinking:(BOOL)value inControlView:(PSMTabBarControl *)controlView
+- (id)initPlaceholderWithFrame:(NSRect)frame expanded:(BOOL)value inControlView:(PSMTabBarControl *)controlView
 {
     self = [super init];
     if(self){
         _controlView = controlView;
         _isPlaceholder = YES;
-        _isShrinking = value;
-        _sineCurveWidths = [[NSMutableArray alloc] initWithCapacity:kPSMTabDragAnimationSteps];
-        int i;
-        float cellWidth = frame.size.width;
-        for(i = 0; i < kPSMTabDragAnimationSteps; i++){
-            float thisWidth;
-            thisWidth = cellWidth - ((cellWidth/2.0) + ((sin((3.1417/2.0) + ((float)i/(float)kPSMTabDragAnimationSteps)*3.1417) * cellWidth) / 2.0));
-            [_sineCurveWidths addObject:[NSNumber numberWithFloat:thisWidth]];
-        }
-        if(!_isShrinking)
+        if(!value)
             frame.size.width = 0.0;
         [self setFrame:frame];
-        _currentStep = kPSMTabDragAnimationSteps - 1;
-        if(!_isShrinking)
-            _currentStep = 0;
         _closeButtonTrackingTag = 0;
         _cellTrackingTag = 0;
         _closeButtonOver = NO;
@@ -65,6 +54,13 @@
         _hasCloseButton = YES;
         _isCloseButtonSuppressed = NO;
         _count = 0;
+        
+        if(value){
+            [self setCurrentStep:(kPSMTabDragAnimationSteps - 1)];
+        } else {
+            [self setCurrentStep:0];
+        }
+        
     }
     
     return self;
@@ -73,7 +69,6 @@
 - (void)dealloc
 {
     [_indicator release];
-    [_sineCurveWidths release];
     [super dealloc];
 }
 
@@ -83,6 +78,12 @@
 - (id)controlView
 {
     return _controlView;
+}
+
+- (void)setControlView:(id)view
+{
+    // no retain release pattern, as this simply switches a tab to another view.
+    _controlView = view;
 }
 
 - (NSTrackingRectTag)closeButtonTrackingTag
@@ -235,16 +236,6 @@
     _isPlaceholder = value;
 }
 
-- (BOOL)isShrinking
-{
-    return _isShrinking;
-}
-
-- (void)setIsShrinking:(BOOL)value
-{
-    _isShrinking = value;
-}
-
 - (int)currentStep
 {
     return _currentStep;
@@ -252,9 +243,8 @@
 
 - (void)setCurrentStep:(int)value
 {
-    if(value <= 0){
+    if(value < 0)
         value = 0;
-    }
     
     if(value > (kPSMTabDragAnimationSteps - 1))
         value = (kPSMTabDragAnimationSteps - 1);
@@ -282,9 +272,6 @@
 
 - (float)desiredWidthOfCell
 {
-    if(_isPlaceholder)
-        return [[_sineCurveWidths objectAtIndex:_currentStep] floatValue];
-    
     return [(id <PSMTabStyle>)[_controlView style] desiredWidthOfTabCell:self];
 }  
 
@@ -341,17 +328,21 @@
     [_controlView unlockFocus];
     NSImage *image = [[[NSImage alloc] initWithSize:[rep size]] autorelease];
     [image addRepresentation:rep];
+    NSImage *returnImage = [[[NSImage alloc] initWithSize:[rep size]] autorelease];
+    [returnImage lockFocus];
+    [image compositeToPoint:NSMakePoint(0.0, 0.0) operation:NSCompositeSourceOver fraction:0.7];
+    [returnImage unlockFocus];
     if(![[self indicator] isHidden]){
         NSImage *pi = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"pi"]];
-        [image lockFocus];
+        [returnImage lockFocus];
         NSPoint indicatorPoint = NSMakePoint([self frame].size.width - MARGIN_X - kPSMTabBarIndicatorWidth, MARGIN_Y);
         if(([self state] == NSOnState) && ([[_controlView styleName] isEqualToString:@"Metal"]))
             indicatorPoint.y += 1.0;
-        [pi compositeToPoint:indicatorPoint operation:NSCompositeSourceOver];
-        [image unlockFocus];
+        [pi compositeToPoint:indicatorPoint operation:NSCompositeSourceOver fraction:0.7];
+        [returnImage unlockFocus];
         [pi release];
     }
-    return image;
+    return returnImage;
 }
 
 #pragma mark -
@@ -362,8 +353,8 @@
     if ([aCoder allowsKeyedCoding]) {
         [aCoder encodeRect:_frame forKey:@"frame"];
         [aCoder encodeSize:_stringSize forKey:@"stringSize"];
-        [aCoder encodeObject:_sineCurveWidths forKey:@"sineCurveWidths"];
         [aCoder encodeInt:_currentStep forKey:@"currentStep"];
+        [aCoder encodeBool:_isPlaceholder forKey:@"isPlaceholder"];
         [aCoder encodeInt:_tabState forKey:@"tabState"];
         [aCoder encodeInt:_closeButtonTrackingTag forKey:@"closeButtonTrackingTag"];
         [aCoder encodeInt:_cellTrackingTag forKey:@"cellTrackingTag"];
@@ -375,8 +366,6 @@
         [aCoder encodeBool:_isCloseButtonSuppressed forKey:@"isCloseButtonSuppressed"];
         [aCoder encodeBool:_hasIcon forKey:@"hasIcon"];
         [aCoder encodeInt:_count forKey:@"count"];
-        [aCoder encodeBool:_isPlaceholder forKey:@"isPlaceholder"];
-        [aCoder encodeBool:_isShrinking forKey:@"isShrinking"];
     }
 }
 
@@ -385,9 +374,10 @@
     if (self) {
         if ([aDecoder allowsKeyedCoding]) {
             _frame = [aDecoder decodeRectForKey:@"frame"];
+            NSLog(@"decoding cell");
             _stringSize = [aDecoder decodeSizeForKey:@"stringSize"];
-            _sineCurveWidths = [[aDecoder decodeObjectForKey:@"sineCurveWidths"] retain];
             _currentStep = [aDecoder decodeIntForKey:@"currentStep"];
+            _isPlaceholder = [aDecoder decodeBoolForKey:@"isPlaceholder"];
             _tabState = [aDecoder decodeIntForKey:@"tabState"];
             _closeButtonTrackingTag = [aDecoder decodeIntForKey:@"closeButtonTrackingTag"];
             _cellTrackingTag = [aDecoder decodeIntForKey:@"cellTrackingTag"];
@@ -399,8 +389,6 @@
             _isCloseButtonSuppressed = [aDecoder decodeBoolForKey:@"isCloseButtonSuppressed"];
             _hasIcon = [aDecoder decodeBoolForKey:@"hasIcon"];
             _count = [aDecoder decodeIntForKey:@"count"];
-            _isPlaceholder = [aDecoder decodeBoolForKey:@"isPlaceholder"];
-            _isShrinking = [aDecoder decodeBoolForKey:@"isShrinking"];
         }
     }
     return self;

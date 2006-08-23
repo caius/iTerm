@@ -13,9 +13,8 @@
 #import "PSMTabStyle.h"
 #import "PSMMetalTabStyle.h"
 #import "PSMAquaTabStyle.h"
-#import "iTerm/PTYTabView.h"
-
-NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
+#import "PSMUnifiedTabStyle.h"
+#import "PSMTabDragAssistant.h"
 
 @interface PSMTabBarControl (Private)
 // characteristics
@@ -29,9 +28,6 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     // accessors
 - (NSEvent *)lastMouseDownEvent;
 - (void)setLastMouseDownEvent:(NSEvent *)event;
-- (PSMTabBarCell *)draggedCell;
-- (void)setDraggedCell:(PSMTabBarCell *)cell;
-- (void)setDrawForDrop:(BOOL)value;
 
     // contents
 - (void)addTabViewItem:(NSTabViewItem *)item;
@@ -46,6 +42,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 - (void)tabClick:(id)sender;
 - (void)tabNothing:(id)sender;
 - (void)frameDidChange:(NSNotification *)notification;
+- (void)windowDidMove:(NSNotification *)aNotification;
 - (void)windowStatusDidChange:(NSNotification *)notification;
 
     // NSTabView delegate
@@ -59,11 +56,9 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 - (id)initWithCoder:(NSCoder *)aDecoder;
 
     // convenience
-- (NSMutableArray *)representedTabViewItems;
 - (id)cellForPoint:(NSPoint)point cellFrame:(NSRectPointer)outFrame;
-- (void)removeAllPlaceholders;
-- (void)shrinkAllPlaceholders;
 - (PSMTabBarCell *)lastVisibleTab;
+- (int)numberOfVisibleTabs;
 
 @end
 
@@ -102,11 +97,13 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     _cells = [[NSMutableArray alloc] initWithCapacity:10];
     
     // default config
+    _allowsDragBetweenWindows = YES;
     _canCloseOnlyTab = NO;
     _showAddTabButton = NO;
     _hideForSingleTab = NO;
     _sizeCellsToFit = NO;
     _isHidden = NO;
+    _hideIndicators = NO;
     _awakenedFromNib = NO;
     _cellMinWidth = 100;
     _cellMaxWidth = 280;
@@ -146,10 +143,6 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
         }
         [_addTabButton setNeedsDisplay:YES];
     }
-    
-    // drag and drop
-    _drawForDrop = NO;
-    _draggedCell = nil;
 }
     
 - (id)initWithFrame:(NSRect)frame
@@ -158,7 +151,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     if (self) {
         // Initialization
         [self initAddedProperties];
-        [self registerForDraggedTypes:[NSArray arrayWithObjects: PSMTabBarControlItemPBType, nil]];
+        [self registerForDraggedTypes:[NSArray arrayWithObjects: @"PSMTabBarControlItemPBType", nil]];
     }
     [self setTarget:self];
     return self;
@@ -173,10 +166,9 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     [partnerView release];
     [_lastMouseDownEvent release];
     [style release];
-    [_draggedCell release];
-    [_draggedCellPlaceholder release];
-    [_animationTimer release];
     [delegate release];
+    
+    [self unregisterDraggedTypes];
     
     [super dealloc];
 }
@@ -199,6 +191,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     // window status
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowStatusDidChange:) name:NSWindowDidBecomeKeyNotification object:[self window]];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowStatusDidChange:) name:NSWindowDidResignKeyNotification object:[self window]];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidMove:) name:NSWindowDidMoveNotification object:[self window]];
 }
 
 
@@ -220,16 +213,6 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     [event retain];
     [_lastMouseDownEvent release];
     _lastMouseDownEvent = event;
-}
-
-- (BOOL)drawForDrop
-{
-    return _drawForDrop;
-}
-
-- (void)setDrawForDrop:(BOOL)value
-{
-    _drawForDrop = value;
 }
 
 - (id)delegate
@@ -271,7 +254,11 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     [style release];
     if([name isEqualToString:@"Aqua"]){
         style = [[PSMAquaTabStyle alloc] init];
-    } else {
+    }
+	else if ([name isEqualToString:@"Unified"]){
+		style = [[PSMUnifiedTabStyle alloc] init];
+	}
+	else {
         style = [[PSMMetalTabStyle alloc] init];
     }
    
@@ -302,6 +289,16 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     if ([_cells count] == 1) {
         [self update];
     }
+}
+
+- (BOOL)allowsDragBetweenWindows
+{
+	return _allowsDragBetweenWindows;
+}
+
+- (void)setAllowsDragBetweenWindows:(BOOL)flag
+{
+	_allowsDragBetweenWindows = flag;
 }
 
 - (BOOL)hideForSingleTab
@@ -375,28 +372,9 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     return _addTabButton;
 }
 
-- (PSMTabBarCell *)draggedCell
+- (PSMOverflowPopUpButton *)overflowPopUpButton
 {
-    return _draggedCell;
-}
-
-- (void)setDraggedCell:(PSMTabBarCell *)cell
-{
-    [cell retain];
-    [_draggedCell release];
-    _draggedCell = cell;
-}
-
-- (PSMTabBarCell *)draggedCellPlaceholder
-{
-    return _draggedCellPlaceholder;
-}
-
-- (void)setDraggedCellPlaceholder:(PSMTabBarCell *)cell
-{
-    [cell retain];
-    [_draggedCellPlaceholder release];
-    _draggedCellPlaceholder = cell;
+    return _overflowPopUpButton;
 }
 
 #pragma mark -
@@ -500,7 +478,10 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
         return;
     if(!_isHidden && !hide)
         return;
-	    
+    
+    [[self subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    _hideIndicators = YES;
+    
     NSTimer *animationTimer;
     _isHidden = hide;
     _currentStep = 0;
@@ -601,10 +582,11 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     _currentStep++;
     if(_currentStep == kPSMHideAnimationSteps + 1){
         [timer invalidate];
-        [[self window] display];
+        [self viewDidEndLiveResize];
+        _hideIndicators = NO;
+        [self update];
     }
-    // display
-    [self setNeedsDisplay:YES];
+    [[self window] display];
 }
 
 - (id)partnerView
@@ -635,36 +617,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 - (void)update
 {
     // abandon hope, all ye who enter here :-)
-    // this method handles all of the cell layout, and is called when something changes to require the refresh
-
-    // we must return quickly if we are drag/drop
-    if(_drawForDrop){
-        // no size changes - simply increment animation, and get out
-        int i, cellCount = [_cells count];
-        float xPos = [style leftMarginForTabBarControl];
-        for(i = 0; i < cellCount; i++){
-            PSMTabBarCell *cell = [_cells objectAtIndex:i];
-            NSRect newRect = [cell frame];
-            if(![cell isInOverflowMenu]){
-                if([cell isPlaceholder]){
-                    if([cell isShrinking]){
-                        [cell setCurrentStep:([cell currentStep] - 1)];
-                    } else {
-                        [cell setCurrentStep:([cell currentStep] + 1)];
-                    }
-                    newRect.size.width = [cell desiredWidthOfCell];
-                }
-            } else {
-                break;
-            }
-            newRect.origin.x = xPos;
-            [cell setFrame:newRect];
-            if([cell indicator])
-                [[cell indicator] setFrame:[style indicatorRectForTabCell:cell]];
-            xPos += newRect.size.width;
-        }
-        return;
-    }
+    // this method handles all of the cell layout, and is called when something changes to require the refresh.  This method is not called during drag and drop; see the PSMTabDragAssistant's calculateDragAnimationForTabBar: method, which does layout in that case.
    
     // make sure all of our tabs are accounted for before updating
     if ([tabView numberOfTabViewItems] != [_cells count]) {
@@ -760,7 +713,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
                 }
                 break; // done assigning widths; remaining cells go in overflow menu
             } else {
-                float revisedWidth = availableWidth/(i + 1);
+                int revisedWidth = availableWidth/(i + 1);
                 if(revisedWidth >= _cellMinWidth){
                     int q;
                     totalOccupiedWidth = 0;
@@ -835,7 +788,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
             [cell setIsInOverflowMenu:NO];
             
             // indicator
-            if(![[cell indicator] isHidden]){
+            if(![[cell indicator] isHidden] && !_hideIndicators){
                 [[cell indicator] setFrame:[cell indicatorRectForFrame:cellRect]];
                 if(![[self subviews] containsObject:[cell indicator]]){
                     [self addSubview:[cell indicator]];
@@ -903,7 +856,6 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     }
     
     [self setNeedsDisplay:YES];
-    [self display];
 }
 
 #pragma mark -
@@ -912,6 +864,11 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 - (BOOL)mouseDownCanMoveWindow
 {
     return NO;
+}
+
+- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+{
+    return YES;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
@@ -929,6 +886,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
         } else {
             [cell setCloseButtonPressed:NO];
         }
+        [self setNeedsDisplay:YES];
     }
 }
 
@@ -955,49 +913,12 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     if (distance < 10)
         return;
     
-    if(!_drawForDrop){
-        _drawForDrop = YES;
-        if(_overflowPopUpButton)
-            [_overflowPopUpButton setHidden:YES];
-        
-        if(_addTabButton)
-            [_addTabButton setHidden:YES];
-        
-        [[NSCursor closedHandCursor] set];
-        
-        _animationTimer = [NSTimer scheduledTimerWithTimeInterval:(1.0/30.0) target:self selector:@selector(animateDrag:) userInfo:nil repeats:YES];
-        [[NSRunLoop currentRunLoop] addTimer:_animationTimer forMode:NSEventTrackingRunLoopMode];
-        
-        [self setDraggedCell:cell];
-        
-        NSPasteboard *pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
-        NSImage *dragImage = [cell dragImageForRect:cellFrame];
-        
-        // placeholder config
-        PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[cell frame] isShrinking:YES inControlView:self] autorelease];    
-        [_cells replaceObjectAtIndex:[_cells indexOfObject:cell] withObject:pc];
-        [self setDraggedCellPlaceholder:pc];
-        [[cell indicator] removeFromSuperview];
-        
-        
-        if([self isFlipped]){
-            cellFrame.origin.y += cellFrame.size.height;
-        }
-        [cell setHighlighted:NO];
-        NSSize offset = NSZeroSize;
-        [pboard declareTypes:[NSArray arrayWithObjects:PSMTabBarControlItemPBType, nil] owner: nil];
-        [pboard setString:[[NSNumber numberWithInt:[_cells indexOfObject:cell]] stringValue] forType:PSMTabBarControlItemPBType];
-        [self dragImage:dragImage at:cellFrame.origin offset:offset event:[self lastMouseDownEvent] pasteboard:pboard source:self slideBack:YES];
-    }
+    if(![[PSMTabDragAssistant sharedDragAssistant] isDragging])
+        [[PSMTabDragAssistant sharedDragAssistant] startDraggingCell:cell fromTabBar:self withMouseDownEvent:[self lastMouseDownEvent]];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-    if([_animationTimer isValid]){
-        [_animationTimer invalidate];
-        _animationTimer = nil;
-    }
-    
     // what cell?
     NSPoint mousePt = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     NSRect cellFrame, mouseDownCellFrame;
@@ -1028,7 +949,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 // NSDraggingSource
 - (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
 {
-    return NSDragOperationMove;
+    return (isLocal ? NSDragOperationMove : NSDragOperationNone);
 }
 
 - (BOOL)ignoreModifierKeysWhileDragging
@@ -1038,184 +959,36 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 
 // NSDraggingDestination
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
-{
-    if ([[[sender draggingPasteboard] types] indexOfObject:PSMTabBarControlItemPBType] != NSNotFound) {
-        // determine the cell I am over
-        NSPoint mouseLoc = [self convertPoint:[sender draggingLocation] fromView:nil];
-        
-        // mouse at beginning of tabs
-        if(mouseLoc.x < [style leftMarginForTabBarControl]){
-            // placeholder at far left end
-            PSMTabBarCell *firstCell = [_cells objectAtIndex:0];
-            if(![firstCell isPlaceholder]){
-                PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                [_cells insertObject:pc atIndex:0];
-            } else {
-                [firstCell setIsShrinking:NO];
-            }
-            return NSDragOperationMove;
-        }
-        
-        NSRect overCellRect;
-        PSMTabBarCell *overCell = [self cellForPoint:mouseLoc cellFrame:&overCellRect];
-        if(overCell){
-            // mouse among cells - placeholder
-            if([overCell isPlaceholder]){
-                [overCell setIsShrinking:NO];
-                return NSDragOperationMove;
-            }
-            
-            // non-placeholders
-            if(mouseLoc.x < (overCellRect.origin.x + (overCellRect.size.width / 2.0))){
-                // mouse on left side of cell
-                int placeholderIndex = [_cells indexOfObject:overCell] - 1;
-                if(placeholderIndex < 0){
-                    PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                    [_cells insertObject:pc atIndex:0];
-                    return NSDragOperationMove;
-                } else {
-                    PSMTabBarCell *potentialCell = [_cells objectAtIndex:placeholderIndex];
-                    if([potentialCell isPlaceholder]){
-                        [potentialCell setIsShrinking:NO];
-                        return NSDragOperationMove;
-                    } else {
-                        PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                        [_cells insertObject:pc atIndex:(placeholderIndex + 1)];
-                        return NSDragOperationMove;
-                    }
-                }
-            } else {
-                // mouse on right side of cell
-                int placeholderIndex = [_cells indexOfObject:overCell] + 1;
-                if(placeholderIndex == [_cells count]){
-                    PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                    [_cells addObject:pc];
-                    return NSDragOperationMove;
-                } else {
-                    PSMTabBarCell *potentialCell = [_cells objectAtIndex:placeholderIndex];
-                    if([potentialCell isPlaceholder]){
-                        [potentialCell setIsShrinking:NO];
-                        return NSDragOperationMove;
-                    } else {
-                        PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                        [_cells insertObject:pc atIndex:(placeholderIndex)];
-                        return NSDragOperationMove;
-                    }
-                }
-            }
-        } else {
-            // out at end - must find proper cell (could be more in overflow menu)
-            PSMTabBarCell *lastTab = [self lastVisibleTab];
-            if([lastTab isPlaceholder]){
-                [lastTab setIsShrinking:NO];
-                return NSDragOperationMove;
-            } else {
-                PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                if([_cells lastObject] == lastTab){
-                    [_cells addObject:pc];
-                } else {
-                    [_cells insertObject:pc atIndex:([_cells indexOfObject:lastTab] + 1)];
-                }
-                return NSDragOperationMove;
-            }
-        }
-    } else {
-        return NSDragOperationNone;
+{	
+    if([[[sender draggingPasteboard] types] indexOfObject:@"PSMTabBarControlItemPBType"] != NSNotFound) {
+		
+		if ([sender draggingSource] != self && ![self allowsDragBetweenWindows])
+			return NSDragOperationNone;
+		
+        [[PSMTabDragAssistant sharedDragAssistant] draggingEnteredTabBar:self atPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
+        return NSDragOperationMove;
     }
+        
+    return NSDragOperationNone;
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
-    if ([[[sender draggingPasteboard] types] indexOfObject:PSMTabBarControlItemPBType] != NSNotFound) {
-        [self shrinkAllPlaceholders];
-        
-        // determine the cell I am over
-        NSPoint mouseLoc = [self convertPoint:[sender draggingLocation] fromView:nil];
-        
-        // mouse at beginning of tabs
-        if(mouseLoc.x < [style leftMarginForTabBarControl]){
-            // placeholder at far left end
-            PSMTabBarCell *firstCell = [_cells objectAtIndex:0];
-            if(![firstCell isPlaceholder]){
-                PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                [_cells insertObject:pc atIndex:0];
-            } else {
-                [firstCell setIsShrinking:NO];
-            }
-            return NSDragOperationMove;
-        }
-        
-        NSRect overCellRect;
-        PSMTabBarCell *overCell = [self cellForPoint:mouseLoc cellFrame:&overCellRect];
-        if(overCell){
-            // mouse among cells - placeholder
-            if([overCell isPlaceholder]){
-                [overCell setIsShrinking:NO];
-                return NSDragOperationMove;
-            }
-            
-            // non-placeholders
-            if(mouseLoc.x < (overCellRect.origin.x + (overCellRect.size.width / 2.0))){
-                // mouse on left side of cell
-                int placeholderIndex = [_cells indexOfObject:overCell] - 1;
-                if(placeholderIndex < 0){
-                    PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                    [_cells insertObject:pc atIndex:0];
-                    return NSDragOperationMove;
-                } else {
-                    PSMTabBarCell *potentialCell = [_cells objectAtIndex:placeholderIndex];
-                    if([potentialCell isPlaceholder]){
-                        [potentialCell setIsShrinking:NO];
-                        return NSDragOperationMove;
-                    } else {
-                        PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                        [_cells insertObject:pc atIndex:(placeholderIndex + 1)];
-                        return NSDragOperationMove;
-                    }
-                }
-            } else {
-                // mouse on right side of cell
-                int placeholderIndex = [_cells indexOfObject:overCell] + 1;
-                if(placeholderIndex == [_cells count]){
-                    PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                    [_cells addObject:pc];
-                    return NSDragOperationMove;
-                } else {
-                    PSMTabBarCell *potentialCell = [_cells objectAtIndex:placeholderIndex];
-                    if([potentialCell isPlaceholder]){
-                        [potentialCell setIsShrinking:NO];
-                        return NSDragOperationMove;
-                    } else {
-                        PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                        [_cells insertObject:pc atIndex:(placeholderIndex)];
-                        return NSDragOperationMove;
-                    }
-                }
-            }
-        } else {
-            // out at end - must find proper cell (could be more in overflow menu)
-            PSMTabBarCell *lastTab = [self lastVisibleTab];
-            if([lastTab isPlaceholder]){
-                [lastTab setIsShrinking:NO];
-                return NSDragOperationMove;
-            } else {
-                PSMTabBarCell *pc = [[[PSMTabBarCell alloc] initPlaceholderWithFrame:[_draggedCell frame] isShrinking:NO inControlView:self] autorelease]; 
-                if([_cells lastObject] == lastTab){
-                    [_cells addObject:pc];
-                } else {
-                    [_cells insertObject:pc atIndex:([_cells indexOfObject:lastTab] + 1)];
-                }
-                return NSDragOperationMove;
-            }
-        }
-    } else {
-        return NSDragOperationNone;
+    if ([[[sender draggingPasteboard] types] indexOfObject:@"PSMTabBarControlItemPBType"] != NSNotFound) {
+		
+		if ([sender draggingSource] != self && ![self allowsDragBetweenWindows])
+			return NSDragOperationNone;
+		
+        [[PSMTabDragAssistant sharedDragAssistant] draggingUpdatedInTabBar:self atPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
+        return NSDragOperationMove;
     }
+        
+    return NSDragOperationNone;
 }
 
 - (void)draggingExited:(id <NSDraggingInfo>)sender
 {
-    [self shrinkAllPlaceholders];
+    [[PSMTabDragAssistant sharedDragAssistant] draggingExitedTabBar:self];
 }
 
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
@@ -1223,57 +996,21 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     return YES;
 }
 
-- (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
-{
-    if([_animationTimer isValid]){
-        [_animationTimer invalidate];
-        _animationTimer = nil;
-    }
-    
-    _drawForDrop = NO;
-    
-    if(operation == NSDragOperationNone){
-        [_cells replaceObjectAtIndex:[_cells indexOfObject:_draggedCellPlaceholder] withObject:_draggedCell];
-        [self removeAllPlaceholders];
-        [self update];
-    }
-}
-
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
-    // We only accept drags from ourself
-    if ([sender draggingSource] != self)
-        return NO;
-    
-    // find the grown placeholder - put dragged cell there
-    int i, cellCount = [_cells count];
-    for(i = 0; i < cellCount; i++){
-        PSMTabBarCell *cell = [_cells objectAtIndex:i];
-        if([cell isPlaceholder] && ![cell isShrinking]){
-            [_cells replaceObjectAtIndex:[_cells indexOfObject:cell] withObject:_draggedCell];
-        }
-    }
-    
-    [self removeAllPlaceholders];
-    [self update];
+    [[PSMTabDragAssistant sharedDragAssistant] performDragOperation];
     return YES;
+}
+
+- (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
+{
+    [[PSMTabDragAssistant sharedDragAssistant] draggedImageEndedAt:aPoint operation:operation];
 }
 
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender
 {
-    _drawForDrop = NO;
-    [_animationTimer invalidate];
-    _animationTimer = nil;
-    [self update];
+
 }
-
-- (void)animateDrag:(NSTimer *)timer
-{
-    [[NSRunLoop currentRunLoop] performSelector:@selector(update) target:self argument:nil order:1 modes:[NSArray arrayWithObjects:@"NSEventTrackingRunLoopMode", @"NSDefaultRunLoopMode", nil]];
-    [[NSRunLoop currentRunLoop] performSelector:@selector(display) target:self argument:nil order:1 modes:[NSArray arrayWithObjects:@"NSEventTrackingRunLoopMode", @"NSDefaultRunLoopMode", nil]];
-}
-
-
 
 #pragma mark -
 #pragma mark Actions
@@ -1286,13 +1023,30 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 
 - (void)closeTabClick:(id)sender
 {
-    if(!(([_cells count] == 1) && (![self canCloseOnlyTab])))
-	{
-		if([self delegate] && [[self delegate] respondsToSelector:@selector(closeTabWithIdentifier:)])
-			[[self delegate] performSelector:@selector(closeTabWithIdentifier:) withObject:[[sender representedObject] identifier]];
-		else
-			[tabView removeTabViewItem:[sender representedObject]];
-	}
+    [sender retain];
+    if(([_cells count] == 1) && (![self canCloseOnlyTab]))
+        return;
+    
+    if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:shouldCloseTabViewItem:)])){
+        if(![[self delegate] tabView:tabView shouldCloseTabViewItem:[sender representedObject]]){
+            // fix mouse downed close button
+            [sender setCloseButtonPressed:NO];
+            return;
+        }
+    }
+    
+    if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:willCloseTabViewItem:)])){
+        [[self delegate] tabView:tabView willCloseTabViewItem:[sender representedObject]];
+    }
+    
+    [[sender representedObject] retain];
+    [tabView removeTabViewItem:[sender representedObject]];
+    
+    if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:didCloseTabViewItem:)])){
+        [[self delegate] tabView:tabView didCloseTabViewItem:[sender representedObject]];
+    }
+    [[sender representedObject] release];
+    [sender release];
 }
 
 - (void)tabClick:(id)sender
@@ -1340,6 +1094,11 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     [self setNeedsDisplay:YES];
 }
 
+- (void)windowDidMove:(NSNotification *)aNotification
+{
+    [self setNeedsDisplay:YES];
+}
+
 - (void)windowStatusDidChange:(NSNotification *)notification
 {
     // hide? must readjust things if I'm not supposed to be showing
@@ -1369,7 +1128,7 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
         }
         _isHidden = YES;
         [self setNeedsDisplay:YES];
-        [[self window] display];
+        //[[self window] display];
     }
      _awakenedFromNib = YES;
     [self update];
@@ -1377,33 +1136,6 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
 
 #pragma mark -
 #pragma mark NSTabView Delegate
-
-- (void)tabView:(NSTabView *)aTabView willAddTabViewItem:(NSTabViewItem *)tabViewItem
-{
-    if([self delegate]){
-        if([[self delegate] respondsToSelector:@selector(tabView:willAddTabViewItem:)]){
-            [[self delegate] performSelector:@selector(tabView:willAddTabViewItem:) withObject:aTabView withObject:tabViewItem];
-        }
-    }
-}
-
-- (void)tabView:(NSTabView *)aTabView willInsertTabViewItem:(NSTabViewItem *)tabViewItem atIndex: (int) anIndex
-{
-    if([self delegate]){
-        if([[self delegate] respondsToSelector:@selector(tabView:willInsertTabViewItem:atIndex:)]){
-            [[self delegate] tabView: aTabView willInsertTabViewItem: tabViewItem atIndex: anIndex];
-        }
-    }
-}
-
-- (void)tabView:(NSTabView *)aTabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem
-{
-    if([self delegate]){
-        if([[self delegate] respondsToSelector:@selector(tabView:willRemoveTabViewItem:)]){
-            [[self delegate] performSelector:@selector(tabView:willRemoveTabViewItem:) withObject:aTabView withObject:tabViewItem];
-        }
-    }
-}
 
 - (void)tabView:(NSTabView *)aTabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {
@@ -1470,20 +1202,6 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     }
 }
 
-- (void)tabViewWillPerformDragOperation:(NSTabView *)tabView
-{
-	
-}
-- (void)tabViewDidPerformDragOperation:(NSTabView *)tabView
-{
-	
-}
-- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
-{
-	
-}
-
-
 #pragma mark -
 #pragma mark Archiving
 
@@ -1505,13 +1223,10 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
         [aCoder encodeInt:_cellOptimumWidth forKey:@"PSMcellOptimumWidth"];
         [aCoder encodeInt:_currentStep forKey:@"PSMcurrentStep"];
         [aCoder encodeBool:_isHidden forKey:@"PSMisHidden"];
+        [aCoder encodeBool:_hideIndicators forKey:@"PSMhideIndicators"];
         [aCoder encodeObject:partnerView forKey:@"PSMpartnerView"];
         [aCoder encodeBool:_awakenedFromNib forKey:@"PSMawakenedFromNib"];
-        [aCoder encodeObject:_draggedCell forKey:@"PSMdraggedCell"];
-        [aCoder encodeObject:_draggedCellPlaceholder forKey:@"PSMdraggedCellPlaceholder"];
         [aCoder encodeObject:_lastMouseDownEvent forKey:@"PSMlastMouseDownEvent"];
-        [aCoder encodeBool:_drawForDrop forKey:@"PSMdrawForDrop"];
-        [aCoder encodeObject:_animationTimer forKey:@"PSManimationTimer"];
         [aCoder encodeObject:delegate forKey:@"PSMdelegate"];
         
     }
@@ -1536,13 +1251,10 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
             _cellOptimumWidth = [aDecoder decodeIntForKey:@"PSMcellOptimumWidth"];
             _currentStep = [aDecoder decodeIntForKey:@"PSMcurrentStep"];
             _isHidden = [aDecoder decodeBoolForKey:@"PSMisHidden"];
+            _hideIndicators = [aDecoder decodeBoolForKey:@"PSMhideIndicators"];
             partnerView = [[aDecoder decodeObjectForKey:@"PSMpartnerView"] retain];
             _awakenedFromNib = [aDecoder decodeBoolForKey:@"PSMawakenedFromNib"];
-            _draggedCell = [[aDecoder decodeObjectForKey:@"PSMdraggedCell"] retain];
-            _draggedCellPlaceholder = [[aDecoder decodeObjectForKey:@"PSMdraggedCellPlaceholder"] retain];
             _lastMouseDownEvent = [[aDecoder decodeObjectForKey:@"PSMlastMouseDownEvent"] retain];
-            _drawForDrop = [aDecoder decodeBoolForKey:@"PSMdrawForDrop"];
-            _animationTimer = [[aDecoder decodeObjectForKey:@"PSManimationTimer"] retain];
             delegate = [[aDecoder decodeObjectForKey:@"PSMdelegate"] retain];
         }
     }
@@ -1608,30 +1320,6 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     return nil;
 }
 
-- (void)removeAllPlaceholders
-{
-    // remove all placeholders
-    int i, cellCount = [_cells count];
-    for(i = (cellCount - 1); i >= 0; i--){
-        PSMTabBarCell *cell = [_cells objectAtIndex:i];
-        if([cell isPlaceholder])
-            [_cells removeObject:cell];
-    }
-}
-
-- (void)shrinkAllPlaceholders
-{
-    NSEnumerator *e = [_cells objectEnumerator];
-    PSMTabBarCell *cell;
-    while(cell = [e nextObject]){
-        if([cell isInOverflowMenu])
-            break;
-        
-        if([cell isPlaceholder])
-            [cell setIsShrinking:YES];
-    }
-}
-
 - (PSMTabBarCell *)lastVisibleTab
 {
     int i, cellCount = [_cells count];
@@ -1641,5 +1329,16 @@ NSString* PSMTabBarControlItemPBType = @"PSMTabBarControlItemPBType";
     }
     return [_cells objectAtIndex:(cellCount - 1)];
 }
+
+- (int)numberOfVisibleTabs
+{
+    int i, cellCount = [_cells count];
+    for(i = 0; i < cellCount; i++){
+        if([[_cells objectAtIndex:i] isInOverflowMenu])
+            return i+1;
+    }
+    return cellCount;
+}
+    
 
 @end

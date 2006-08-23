@@ -2,6 +2,8 @@
 
     * Cleaned up iTermController.m, moved profile related code to PseudoTerminal.m
     * Cleaned up PseudoTerminal.m, to make it more robust to session addition/removal.
+    * Updated PSMTabBarControl to the latest version 1.3
+    * Fixed PreferencePanel so now the tab location works (only top and bottom though).
     
 2006-08-22  fabian
 

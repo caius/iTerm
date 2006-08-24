@@ -37,25 +37,17 @@
 @class PreferencePanel;
 @class PseudoTerminal;
 @class iTermController;
-@class PTYTabViewItem;
 
 @interface PTYSession : NSResponder
 {        
     // Owning tab view item
-    PTYTabViewItem *tabViewItem;
+    NSTabViewItem *tabViewItem;
 	
 	// controller: is identifier for PTYTabView
 	NSObjectController *controller;
 
     // tty device
     NSString *tty;
-    
-    // tab label attributes
-    NSDictionary *normalStateAttribute;
-    NSDictionary *chosenStateAttribute;
-    NSDictionary *idleStateAttribute;
-    NSDictionary *newOutputStateAttribute;
-    NSDictionary *deadStateAttribute;
     
     PseudoTerminal *parent;  // parent controller
     NSString *name;
@@ -147,8 +139,8 @@
 // get/set methods
 - (PseudoTerminal *) parent;
 - (void) setParent: (PseudoTerminal *) theParent;
-- (PTYTabViewItem *) tabViewItem;
-- (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem;
+- (NSTabViewItem *) tabViewItem;
+- (void) setTabViewItem: (NSTabViewItem *) theTabViewItem;
 - (NSString *) name;
 - (void) setName: (NSString *) theName;
 - (NSString *) uniqueID;

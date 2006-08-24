@@ -1,3 +1,9 @@
+2006-08-24  fabian
+
+    * Fixed a few bugs related to the upgrade to new PSMTabBarControl.
+    * Removed now redundant PTYTabViemItem
+    * Cleaned up related PTYSession code
+    
 2006-08-23  fabian
 
     * Cleaned up iTermController.m, moved profile related code to PseudoTerminal.m

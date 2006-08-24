@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.323 2006-08-23 23:37:21 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.324 2006-08-24 23:21:38 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -39,7 +39,6 @@
 #import <iTerm/PTYSession.h>
 #import <iTerm/VT100Screen.h>
 #import <iTerm/PTYTabView.h>
-#import <iTerm/PTYTabViewItem.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/iTermController.h>
 #import <iTerm/PTYTask.h>
@@ -301,6 +300,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[TABVIEW setDelegate: tabBarControl];
 	[tabBarControl setDelegate: self];
 	[tabBarControl setHideForSingleTab: NO];
+    //[tabBarControl setAllowsDragBetweenWindows: YES];
+    
 	
 	// set the style of tabs to match window style
 	switch ([[PreferencePanel sharedInstance] windowStyle]) {
@@ -506,7 +507,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index
 {
-    PTYTabViewItem *aTabViewItem;
+    NSTabViewItem *aTabViewItem;
 	NSObjectController *controller;
 	
 #if DEBUG_METHOD_TRACE
@@ -519,16 +520,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     if (![_sessionMgr containsSession:aSession])
     {
-		[aSession setParent:self];
+        [aSession setParent:self];
         		
 		// create a new tab
 		controller = [[NSObjectController alloc] initWithContent:aSession];
 		[aSession setController: controller];
-		aTabViewItem = [[PTYTabViewItem alloc] initWithIdentifier: controller];
+		aTabViewItem = [[NSTabViewItem alloc] initWithIdentifier: controller];
 		[controller release];
 		[aSession setTabViewItem: aTabViewItem];
 		[aSession setObjectCount: index + 1];
-		NSParameterAssert(aTabViewItem != nil);
+        NSParameterAssert(aTabViewItem != nil);
 		[aTabViewItem setLabel: [aSession name]];
 		[aTabViewItem setView: [aSession view]];
 		[[aSession SCROLLVIEW] setLineScroll: charHeight];
@@ -537,7 +538,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
         [aTabViewItem release];
 		[self selectSessionAtIndex:index];
-					
+		
 		if([self windowInited])
 			[[self window] makeKeyAndOrderFront: self];
 		[[iTermController sharedInstance] setCurrentTerminal: self];
@@ -581,9 +582,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// now get rid of this session
 	//[aSession retain];  
 	aTabViewItem = [aSession tabViewItem];
+    [TABVIEW removeTabViewItem: aTabViewItem];
+
     [aSession terminate];
 	[aSession release];
-    [TABVIEW removeTabViewItem: aTabViewItem];
 }
 
 - (IBAction) closeCurrentSession: (id) sender
@@ -898,7 +900,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle]",
           __FILE__, __LINE__);
 #endif
-		
+    
     if([[self currentSession] windowTitle] == nil)
 		[[self window] setTitle:[self currentSessionName]];
     else
@@ -1602,9 +1604,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     PTYSession *aSession = [[tabViewItem identifier] content];
 	if(![_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
     {
-		[aSession setParent: self];
+        [aSession setParent: self];
 		
         [_sessionMgr insertSession: aSession atIndex: index];
+        
+        int i;
+        int numberOfSessions = [_sessionMgr numberOfSessions];
+        
+		for(i = 0; i < numberOfSessions; i++)
+        {
+            aSession = [_sessionMgr sessionAtIndex: i];
+            [aSession setObjectCount: i+1];
+        }
     }
 	
 }
@@ -1710,7 +1721,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     PseudoTerminal *term;
     PTYSession *aSession;
-    PTYTabViewItem *aTabViewItem;
+    NSTabViewItem *aTabViewItem;
 	
     // grab the referenced session
     aSession = [sender representedObject];

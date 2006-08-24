@@ -28,6 +28,7 @@
 @class PSMRolloverButton;
 @class PSMTabBarCell;
 @protocol PSMTabStyle;
+@protocol PTYTabViewDelegateProtocol;
 
 enum {
     PSMTab_SelectedMask                 = 1 << 1,
@@ -39,7 +40,13 @@ enum {
     PSMTab_PositionSingleMask		= 1 << 7
 };
 
-@interface PSMTabBarControl : NSControl {
+enum {
+    PSMTab_TopTab           = 0,
+    PSMTab_BottomTab		= 1
+};
+
+@interface PSMTabBarControl : NSControl <PTYTabViewDelegateProtocol>
+{
     
     // control basics
     NSMutableArray              *_cells;                    // the cells that draw the tabs
@@ -72,6 +79,9 @@ enum {
     
     // MVC help
     IBOutlet id                 delegate;
+    
+    // orientation, top or bottom
+    int                         _tabLocation;
 }
 
 // control characteristics
@@ -96,6 +106,8 @@ enum {
 - (void)setSizeCellsToFit:(BOOL)value;
 - (BOOL)allowsDragBetweenWindows;
 - (void)setAllowsDragBetweenWindows:(BOOL)flag;
+- (int)tabLocation;
+- (void)setTabLocation:(int)value;
 
 // accessors
 - (NSTabView *)tabView;

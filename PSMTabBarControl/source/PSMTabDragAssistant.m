@@ -207,14 +207,39 @@ static PSMTabDragAssistant *sharedDragAssistant = nil;
 
 - (void)performDragOperation
 {
+    id sourceDelegate, targetDelegate;
+    
+    sourceDelegate = [[self sourceTabBar] delegate];
+    targetDelegate = [[self destinationTabBar] delegate];
+
+    // inform the delegates that we are performing a drag operation
+    if([sourceDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
+        [sourceDelegate tabViewWillPerformDragOperation: [self sourceTabBar]];
+
     // move cell
     [[[self destinationTabBar] cells] replaceObjectAtIndex:[[[self destinationTabBar] cells] indexOfObject:[self targetCell]] withObject:[self draggedCell]];
     [[self draggedCell] setControlView:[self destinationTabBar]];
     // move actual NSTabViewItem
     if([self sourceTabBar] != [self destinationTabBar]){
+        
+        // inform the delegates that we are done performing a drag operation
+        if([targetDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
+            [targetDelegate tabViewWillPerformDragOperation: [self destinationTabBar]];    
+            
+        // do the move
         [[[self sourceTabBar] tabView] removeTabViewItem:[[self draggedCell] representedObject]];
         [[[self destinationTabBar] tabView] addTabViewItem:[[self draggedCell] representedObject]];
+        
+        // inform the delegates that we are done performing a drag operation
+        if([targetDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
+            [targetDelegate tabViewDidPerformDragOperation: [self destinationTabBar]];
+        
     }
+    
+    // inform the delegates that we are done performing a drag operation
+   if([sourceDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
+        [sourceDelegate tabViewDidPerformDragOperation: [self sourceTabBar]];
+
     [self finishDrag];
 }
 

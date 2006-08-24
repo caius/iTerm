@@ -35,7 +35,6 @@
 #import <iTerm/PseudoTerminal.h>
 #import <iTerm/iTermController.h>
 #import <iTerm/NSStringITerm.h>
-#import <iTerm/PTYTabViewitem.h>
 #import <iTerm/iTermKeyBindingMgr.h>
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
@@ -78,19 +77,6 @@ static NSImage *warningImage;
     lastOutput = lastBlink = lastInput;
     waiting=antiIdle=EXIT=NO;
     
-    if (normalStateAttribute == nil) 
-    {
-        normalStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
-        chosenStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor blackColor],NSForegroundColorAttributeName,nil] retain];
-        idleStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor redColor],NSForegroundColorAttributeName,nil] retain];
-        newOutputStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor purpleColor],NSForegroundColorAttributeName,nil] retain];
-        deadStateAttribute=[[NSDictionary dictionaryWithObjectsAndKeys:
-            [NSColor grayColor],NSForegroundColorAttributeName,nil] retain];
-    }
     addressBookEntry=nil;
 	
 #if DEBUG_ALLOC
@@ -124,14 +110,6 @@ static NSImage *warningImage;
     [addressBookEntry release];
     [backgroundImagePath release];
 	
-    [normalStateAttribute release];
-    normalStateAttribute = nil;
-    [chosenStateAttribute release];
-    chosenStateAttribute = nil;
-    [idleStateAttribute release];
-    idleStateAttribute = nil;
-    [newOutputStateAttribute release];
-    newOutputStateAttribute = nil;
 	
     [SHELL release];
     SHELL = nil;
@@ -209,7 +187,6 @@ static NSImage *warningImage;
                                                  name:@"iTermTabViewWillRedraw"
                                                object:nil];
 		
-    [tabViewItem setLabelAttributes: chosenStateAttribute];
 }
 
 - (BOOL) isActiveSession
@@ -340,7 +317,6 @@ static NSImage *warningImage;
     else 
     {
         [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
-        [tabViewItem setLabelAttributes: deadStateAttribute];
     }				
     	
 }
@@ -904,8 +880,8 @@ static NSImage *warningImage;
     gettimeofday(&now, NULL);
     if ([self exited])
 	{
-        [tabViewItem setLabelAttributes: deadStateAttribute];
-		if(isProcessing)
+        // dead
+        if(isProcessing)
 			[self setIsProcessing: NO];
 	}
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
@@ -914,13 +890,13 @@ static NSImage *warningImage;
             waiting=YES;
             if (REFRESHED)
 			{
-				[tabViewItem setLabelAttributes: idleStateAttribute];
-				if(isProcessing)
+				// Idle state
+                if(isProcessing)
 					[self setIsProcessing: NO];
 			}
             else
 			{
-				[tabViewItem setLabelAttributes: normalStateAttribute];
+				// normal state
 				if(isProcessing)
 					[self setIsProcessing: NO];
 			}
@@ -928,14 +904,13 @@ static NSImage *warningImage;
         else 
 		{
             waiting=NO;
-            [tabViewItem setLabelAttributes: newOutputStateAttribute];
-			if(isProcessing == NO)
+            if(isProcessing == NO)
 				[self setIsProcessing: YES];
         }
     }
     else {
-        [tabViewItem setLabelAttributes: chosenStateAttribute];
-		if(isProcessing)
+        // front tab
+        if(isProcessing)
 			[self setIsProcessing: NO];
     }
     [self setBell:NO];
@@ -948,7 +923,6 @@ static NSImage *warningImage;
 	else
 		[self setIcon: nil];
 	
-    [tabViewItem setBell:flag];
 }
 
 - (BOOL) isProcessing
@@ -1069,12 +1043,12 @@ static NSImage *warningImage;
     parent = theParent; // don't retain parent. parent retains self.
 }
 
-- (PTYTabViewItem *) tabViewItem
+- (NSTabViewItem *) tabViewItem
 {
     return (tabViewItem);
 }
 
-- (void) setTabViewItem: (PTYTabViewItem *) theTabViewItem
+- (void) setTabViewItem: (NSTabViewItem *) theTabViewItem
 {
     [tabViewItem release];
     tabViewItem = [theTabViewItem retain];
@@ -1793,8 +1767,9 @@ static NSImage *warningImage;
 					if (REFRESHED==NO)
 					{
 						REFRESHED=YES;
-						if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-							[tabViewItem setLabelAttributes: newOutputStateAttribute];
+                        //if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
+                        //    [self setIcon: newOutputImage];
+
 					}
 					
 					gettimeofday(&lastOutput, NULL);

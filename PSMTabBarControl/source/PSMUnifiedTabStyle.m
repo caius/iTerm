@@ -281,7 +281,7 @@
 #pragma mark -
 #pragma mark ---- drawing ----
 
-- (void)drawTabCell:(PSMTabBarCell *)cell
+- (void)drawTabCell:(PSMTabBarCell *)cell //inTabBar:(PSMTabBarControl *)bar
 {
     NSRect cellFrame = [cell frame];	
     NSColor * lineColor = nil;
@@ -300,10 +300,19 @@
 		float radius = MIN(6.0, 0.5f * MIN(NSWidth(aRect), NSHeight(aRect)));
 		NSRect rect = NSInsetRect(aRect, radius, radius);
 		
-		[bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect), NSMinY(rect)) radius:radius startAngle:180.0 endAngle:270.0];
-		
-		[bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMaxX(rect), NSMinY(rect)) radius:radius startAngle:270.0 endAngle:360.0];
-		
+        /*if ([bar tabLocation] == PSMTab_TopTab) 
+        {*/
+            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect), NSMinY(rect)) radius:radius startAngle:180.0 endAngle:270.0];
+            
+            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMaxX(rect), NSMinY(rect)) radius:radius startAngle:270.0 endAngle:360.0];
+        /*}		
+        else
+        {
+            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect), NSMinY(rect)) radius:radius startAngle:90.0 endAngle:180.0];
+            
+            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMaxX(rect), NSMinY(rect)) radius:radius startAngle:0.0 endAngle:90.0];
+        }*/		
+        
 		NSPoint cornerPoint = NSMakePoint(NSMaxX(aRect), NSMaxY(aRect));
 		[bezier appendBezierPathWithPoints:&cornerPoint count:1];
 		

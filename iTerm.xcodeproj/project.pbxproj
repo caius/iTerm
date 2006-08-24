@@ -13,7 +13,6 @@
 		874205F40564168A00CFC3F1 /* PTYTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 872EBC5804E42E320073D10E /* PTYTask.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		874205F60564168A00CFC3F1 /* VT100Screen.h in Headers */ = {isa = PBXBuildFile; fileRef = 872EBC5A04E42E320073D10E /* VT100Screen.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		874205F70564168A00CFC3F1 /* PTYWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 872EBC5B04E42E320073D10E /* PTYWindow.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		874205F90564168A00CFC3F1 /* PTYTabViewItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 872EBC5F04E42E320073D10E /* PTYTabViewItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		874205FA0564168A00CFC3F1 /* PTYScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 872EBC6004E42E320073D10E /* PTYScrollView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		874205FB0564168A00CFC3F1 /* VT100Terminal.h in Headers */ = {isa = PBXBuildFile; fileRef = 872EBC6104E42E320073D10E /* VT100Terminal.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		874205FC0564168A00CFC3F1 /* iTermController.h in Headers */ = {isa = PBXBuildFile; fileRef = 872EBC6204E42E320073D10E /* iTermController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -57,7 +56,6 @@
 		874206280564168A00CFC3F1 /* PreferencePanel.m in Sources */ = {isa = PBXBuildFile; fileRef = FB019DE103670C6501F955DB /* PreferencePanel.m */; };
 		874206290564168A00CFC3F1 /* PTYSession.m in Sources */ = {isa = PBXBuildFile; fileRef = F52ED8DD037F0A7D01A8A066 /* PTYSession.m */; };
 		8742062A0564168A00CFC3F1 /* PTYTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = F5E533B403B2959201A8A066 /* PTYTabView.m */; };
-		8742062B0564168A00CFC3F1 /* PTYTabViewItem.m in Sources */ = {isa = PBXBuildFile; fileRef = F5E533B303B2959201A8A066 /* PTYTabViewItem.m */; };
 		8742062C0564168A00CFC3F1 /* PTYWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F56B230B03A1B36701A8A066 /* PTYWindow.m */; };
 		8742062E0564168A00CFC3F1 /* FindPanelWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = DD4BAB7C0470C44C00A8A065 /* FindPanelWindowController.m */; };
 		874206320564168A00CFC3F1 /* PTToolbarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2076B15804E8817300000106 /* PTToolbarController.m */; };
@@ -233,7 +231,6 @@
 		872EBC5804E42E320073D10E /* PTYTask.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYTask.h; path = Headers/iTerm/PTYTask.h; sourceTree = "<group>"; };
 		872EBC5A04E42E320073D10E /* VT100Screen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VT100Screen.h; path = Headers/iTerm/VT100Screen.h; sourceTree = "<group>"; };
 		872EBC5B04E42E320073D10E /* PTYWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYWindow.h; path = Headers/iTerm/PTYWindow.h; sourceTree = "<group>"; };
-		872EBC5F04E42E320073D10E /* PTYTabViewItem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYTabViewItem.h; path = Headers/iTerm/PTYTabViewItem.h; sourceTree = "<group>"; };
 		872EBC6004E42E320073D10E /* PTYScrollView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYScrollView.h; path = Headers/iTerm/PTYScrollView.h; sourceTree = "<group>"; };
 		872EBC6104E42E320073D10E /* VT100Terminal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VT100Terminal.h; path = Headers/iTerm/VT100Terminal.h; sourceTree = "<group>"; };
 		872EBC6204E42E320073D10E /* iTermController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTermController.h; path = Headers/iTerm/iTermController.h; sourceTree = "<group>"; };
@@ -325,7 +322,6 @@
 		F500A65D0395269C01A8A066 /* Changelog */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Changelog; sourceTree = "<group>"; };
 		F52ED8DD037F0A7D01A8A066 /* PTYSession.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYSession.m; sourceTree = "<group>"; };
 		F56B230B03A1B36701A8A066 /* PTYWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYWindow.m; sourceTree = "<group>"; };
-		F5E533B303B2959201A8A066 /* PTYTabViewItem.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYTabViewItem.m; sourceTree = "<group>"; };
 		F5E533B403B2959201A8A066 /* PTYTabView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYTabView.m; sourceTree = "<group>"; };
 		F61DBB350557A72A005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = German.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		F61DBB360557A754005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = German.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
@@ -455,7 +451,6 @@
 				E8CF755F026DDA6303A80106 /* PTYScrollView.m */,
 				F52ED8DD037F0A7D01A8A066 /* PTYSession.m */,
 				F5E533B403B2959201A8A066 /* PTYTabView.m */,
-				F5E533B303B2959201A8A066 /* PTYTabViewItem.m */,
 				E8CF7561026DDA6303A80106 /* PTYTextView.m */,
 				E8CF7560026DDA6303A80106 /* PTYTask.m */,
 				F56B230B03A1B36701A8A066 /* PTYWindow.m */,
@@ -489,7 +484,6 @@
 				872EBC6004E42E320073D10E /* PTYScrollView.h */,
 				872EBC6604E42E320073D10E /* PTYSession.h */,
 				872EBC5704E42E320073D10E /* PTYTabView.h */,
-				872EBC5F04E42E320073D10E /* PTYTabViewItem.h */,
 				872EBC5804E42E320073D10E /* PTYTask.h */,
 				872EBC5404E42E320073D10E /* PTYTextView.h */,
 				872EBC5B04E42E320073D10E /* PTYWindow.h */,
@@ -685,7 +679,6 @@
 				874205F40564168A00CFC3F1 /* PTYTask.h in Headers */,
 				874205F60564168A00CFC3F1 /* VT100Screen.h in Headers */,
 				874205F70564168A00CFC3F1 /* PTYWindow.h in Headers */,
-				874205F90564168A00CFC3F1 /* PTYTabViewItem.h in Headers */,
 				874205FA0564168A00CFC3F1 /* PTYScrollView.h in Headers */,
 				874205FB0564168A00CFC3F1 /* VT100Terminal.h in Headers */,
 				874205FC0564168A00CFC3F1 /* iTermController.h in Headers */,
@@ -956,7 +949,6 @@
 				874206280564168A00CFC3F1 /* PreferencePanel.m in Sources */,
 				874206290564168A00CFC3F1 /* PTYSession.m in Sources */,
 				8742062A0564168A00CFC3F1 /* PTYTabView.m in Sources */,
-				8742062B0564168A00CFC3F1 /* PTYTabViewItem.m in Sources */,
 				8742062C0564168A00CFC3F1 /* PTYWindow.m in Sources */,
 				8742062E0564168A00CFC3F1 /* FindPanelWindowController.m in Sources */,
 				874206320564168A00CFC3F1 /* PTToolbarController.m in Sources */,

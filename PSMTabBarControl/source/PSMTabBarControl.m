@@ -108,6 +108,7 @@
     _cellMinWidth = 100;
     _cellMaxWidth = 280;
     _cellOptimumWidth = 130;
+    _tabLocation = PSMTab_TopTab;
     style = [[PSMMetalTabStyle alloc] init];
     
     // the overflow button/menu
@@ -375,6 +376,16 @@
 - (PSMOverflowPopUpButton *)overflowPopUpButton
 {
     return _overflowPopUpButton;
+}
+
+- (int)tabLocation
+{
+    return _tabLocation;
+}
+
+- (void)setTabLocation:(int)value
+{
+    _tabLocation = value;
 }
 
 #pragma mark -
@@ -961,7 +972,6 @@
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {	
     if([[[sender draggingPasteboard] types] indexOfObject:@"PSMTabBarControlItemPBType"] != NSNotFound) {
-		
 		if ([sender draggingSource] != self && ![self allowsDragBetweenWindows])
 			return NSDragOperationNone;
 		
@@ -1137,6 +1147,46 @@
 #pragma mark -
 #pragma mark NSTabView Delegate
 
+- (void)tabView:(NSTabView *)aTabView willAddTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    if([self delegate]){
+        if([[self delegate] respondsToSelector:@selector(tabView:willAddTabViewItem:)]){
+            [[self delegate] performSelector:@selector(tabView:willAddTabViewItem:) withObject:aTabView withObject:tabViewItem];
+        }
+    }
+}
+
+- (void)tabView:(NSTabView *)aTabView willInsertTabViewItem:(NSTabViewItem *)tabViewItem atIndex: (int) anIndex
+{
+    if([self delegate]){
+        if([[self delegate] respondsToSelector:@selector(tabView:willInsertTabViewItem:atIndex:)]){
+            [[self delegate] tabView: aTabView willInsertTabViewItem: tabViewItem atIndex: anIndex];
+        }
+    }
+}
+
+- (void)tabView:(NSTabView *)aTabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    if([self delegate]){
+        if([[self delegate] respondsToSelector:@selector(tabView:willRemoveTabViewItem:)]){
+            [[self delegate] performSelector:@selector(tabView:willRemoveTabViewItem:) withObject:aTabView withObject:tabViewItem];
+        }
+    }
+}
+
+- (void)tabViewWillPerformDragOperation:(NSTabView *)tabView
+{
+	
+}
+- (void)tabViewDidPerformDragOperation:(NSTabView *)tabView
+{
+	
+}
+- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
+{
+	
+}
+
 - (void)tabView:(NSTabView *)aTabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {
     // here's a weird one - this message is sent before the "tabViewDidChangeNumberOfTabViewItems"
@@ -1163,6 +1213,7 @@
         return YES;
     }
 }
+
 - (void)tabView:(NSTabView *)aTabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {
     if([self delegate]){

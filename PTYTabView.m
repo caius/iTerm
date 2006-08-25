@@ -134,45 +134,6 @@
 	
 }
 
-// build a conextual menu displaying the current tabs
-- (NSMenu *) menuForEvent: (NSEvent *) theEvent
-{
-    int i;
-    NSMenuItem *aMenuItem, *anotherMenuItem;
-    NSMenu *cMenu, *aMenu;
-
-    // Create a menu with a submenu to navigate between tabs
-    cMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
-    anotherMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Select",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@""];
-    [cMenu addItem: anotherMenuItem];
-    [anotherMenuItem release];
-
-    aMenu = [[NSMenu alloc] initWithTitle:@""];
-    
-    for (i = 0; i < [self numberOfTabViewItems]; i++)
-    {
-        aMenuItem = [[NSMenuItem alloc] initWithTitle:[[self tabViewItemAtIndex: i] label]
-                            action:@selector(selectTab:) keyEquivalent:@""];
-        [aMenuItem setRepresentedObject: [[[self tabViewItemAtIndex: i] identifier] content]];
-        [aMenu addItem: aMenuItem];
-        [aMenuItem release];
-    }
-    [anotherMenuItem setSubmenu: aMenu];
-    [aMenu release];
-    
-    // Ask our delegate if it has anything to add
-    id delegate = [self delegate];
-    if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
-		[delegate tabViewContextualMenu: theEvent menu: cMenu];
-
-    return (cMenu);
-}
-
-// selects a tab from the contextual menu
-- (void) selectTab: (id) sender
-{
-    [self selectTabViewItemWithIdentifier: [sender representedObject]];
-}
 
 // NSTabView methods overridden
 - (void) addTabViewItem: (NSTabViewItem *) aTabViewItem

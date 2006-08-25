@@ -75,7 +75,7 @@ enum {
     
     // drag and drop
     NSEvent                     *_lastMouseDownEvent;      // keep this for dragging reference   
-    BOOL			_allowsDragBetweenWindows;
+    BOOL                        _allowsDragBetweenWindows;
     
     // MVC help
     IBOutlet id                 delegate;
@@ -125,11 +125,22 @@ enum {
 // special effects
 - (void)hideTabBar:(BOOL)hide animate:(BOOL)animate;
 
+// contextual menu
+- (NSMenu *) menuForEvent: (NSEvent *) theEvent;
+- (void) selectTab: (id) sender;
+
 @end
 
 
 @interface NSObject (TabBarControlDelegateMethods)
 - (BOOL)tabView:(NSTabView *)aTabView shouldCloseTabViewItem:(NSTabViewItem *)tabViewItem;
-- (void)tabView:(NSTabView *)aTabView willCloseTabViewItem:(NSTabViewItem *)tabViewItem;
-- (void)tabView:(NSTabView *)aTabView didCloseTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem;
+- (void)tabView:(NSTabView *)tabView willInsertTabViewItem:(NSTabViewItem *)tabViewItem atIndex:(int) index;
+- (void)tabViewDidChangeNumberOfTabViewItems:(NSTabView *)tabView;
+- (void)tabViewWillPerformDragOperation:(NSTabView *)tabView;
+- (void)tabViewDidPerformDragOperation:(NSTabView *)tabView;
+- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu;
 @end

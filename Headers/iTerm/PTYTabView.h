@@ -53,10 +53,6 @@
 - (BOOL)acceptsFirstResponder;
 - (void) drawRect: (NSRect) rect;
 
-// contextual menu
-- (NSMenu *) menuForEvent: (NSEvent *) theEvent;
-- (void) selectTab: (id) sender;
-
 // NSTabView methods overridden
 - (void) addTabViewItem: (NSTabViewItem *) aTabViewItem;
 - (void) removeTabViewItem: (NSTabViewItem *) aTabViewItem;

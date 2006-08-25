@@ -79,6 +79,8 @@
     BOOL autoClose;
     BOOL doubleWidth;
 	BOOL xtermMouseReporting;
+    int bell;
+
     NSString *backgroundImagePath;
     //NSFont *configFont;
     NSDictionary *addressBookEntry;
@@ -223,6 +225,7 @@
 - (void)resetStatus;
 - (BOOL)exited;
 - (void)setLabelAttribute;
+- (BOOL)bell;
 - (void)setBell: (BOOL) flag;
 - (BOOL) isProcessing;
 - (void) setIsProcessing: (BOOL) aFlag;

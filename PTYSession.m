@@ -916,13 +916,20 @@ static NSImage *warningImage;
     [self setBell:NO];
 }
 
+- (BOOL) bell
+{
+    return bell;
+}
+
 - (void) setBell: (BOOL) flag
 {
-	if(flag)
-		[self setIcon: warningImage];
-	else
-		[self setIcon: nil];
-	
+	if(flag!=bell) {
+        bell = flag;
+        if (bell)
+            [self setIcon: warningImage];
+        else
+            [self setIcon: nil];
+    }
 }
 
 - (BOOL) isProcessing

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.324 2006-08-24 23:21:38 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.325 2006-08-25 20:35:07 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1671,7 +1671,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
 {
     NSMenuItem *aMenuItem;
-    NSPoint windowPoint, localPoint;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabViewContextualMenu]", __FILE__, __LINE__);
 #endif    
@@ -1679,23 +1678,24 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if((theEvent == nil) || (theMenu == nil))
 		return;
 	
+    /*    NSPoint windowPoint, localPoint;
     windowPoint = [[TABVIEW window] convertScreenToBase: [NSEvent mouseLocation]];
     localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
 	
     if([TABVIEW tabViewItemAtPoint:localPoint] == nil)
-		return;
+		return; */
 	
     [theMenu addItem: [NSMenuItem separatorItem]];
 	
     // add tasks
-    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
-    [aMenuItem setRepresentedObject: [[[TABVIEW tabViewItemAtPoint:localPoint] identifier] content]];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close current tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close current tab") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
+    //[aMenuItem setRepresentedObject: [[[TABVIEW tabViewItemAtPoint:localPoint] identifier] content]];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
     if([_sessionMgr numberOfSessions] > 1)
     {
-		aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move session to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
-		[aMenuItem setRepresentedObject: [[[TABVIEW tabViewItemAtPoint:localPoint] identifier] content]];
+		aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move current tab to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move current tab to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
+		//[aMenuItem setRepresentedObject: [[[TABVIEW tabViewItemAtPoint:localPoint] identifier] content]];
 		[theMenu addItem: aMenuItem];
 		[aMenuItem release];
     }
@@ -1704,16 +1704,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // closes a tab
 - (void) closeTabContextualMenuAction: (id) sender
 {
-    [self acquireLock];
-    [self closeSession: [sender representedObject]];
-    [self releaseLock];
+    [self closeCurrentSession: sender];
 }
 
 - (void) closeTabWithIdentifier: (id) identifier
 {
-	[self acquireLock];
     [self closeSession: [identifier content]];
-    [self releaseLock];
 }
 
 // moves a tab with its session to a new window
@@ -1724,7 +1720,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSTabViewItem *aTabViewItem;
 	
     // grab the referenced session
-    aSession = [sender representedObject];
+    aSession = [self currentSession];
     if(aSession == nil)
 		return;
 	

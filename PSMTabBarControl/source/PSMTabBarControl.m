@@ -478,6 +478,12 @@
     [self update];
 }
 
+// selects a tab from the contextual menu
+- (void) selectTab: (id) sender
+{
+    [tabView selectTabViewItemAtIndex: [[sender representedObject] intValue]];
+}
+
 #pragma mark -
 #pragma mark Hide/Show
 
@@ -949,6 +955,38 @@
     }
 }
 
+- (NSMenu *) menuForEvent: (NSEvent *) theEvent
+{
+    int i;
+    NSMenuItem *aMenuItem, *anotherMenuItem;
+    NSMenu *cMenu, *aMenu;
+    NSTabView *tabview = [self tabView];
+    
+    // Create a menu with a submenu to navigate between tabs
+    cMenu = [[[NSMenu alloc] initWithTitle:@""] autorelease];
+    anotherMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Select",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@""];
+    [cMenu addItem: anotherMenuItem];
+    [anotherMenuItem release];
+    
+    aMenu = [[NSMenu alloc] initWithTitle:@""];
+    
+    for (i = 0; i < [tabview numberOfTabViewItems]; i++)
+    {
+        aMenuItem = [[NSMenuItem alloc] initWithTitle:[[tabview tabViewItemAtIndex: i] label]
+                                               action:@selector(selectTab:) keyEquivalent:@""];
+        [aMenuItem setRepresentedObject: [NSNumber numberWithInt: i]];
+        [aMenu addItem: aMenuItem];
+        [aMenuItem release];
+    }
+    [anotherMenuItem setSubmenu: aMenu];
+    [aMenu release];
+    
+    // Ask our delegate if it has anything to add
+    if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
+		[delegate tabViewContextualMenu: theEvent menu: cMenu];
+    
+    return (cMenu);
+}
 #pragma mark -
 #pragma mark Drag and Drop
 

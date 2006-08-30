@@ -40,7 +40,6 @@
 @end
 
 @interface PTYTabView : NSTabView {
-    float maxLabelSize;
     NSLock *lock;
 }
 
@@ -58,5 +57,4 @@
 - (void) removeTabViewItem: (NSTabViewItem *) aTabViewItem;
 - (void) insertTabViewItem: (NSTabViewItem *) tabViewItem atIndex: (int) index;
 
-- (float) maxLabelSize;
 @end

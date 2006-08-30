@@ -230,6 +230,9 @@ static PSMTabDragAssistant *sharedDragAssistant = nil;
         [[[self sourceTabBar] tabView] removeTabViewItem:[[self draggedCell] representedObject]];
         [[[self destinationTabBar] tabView] addTabViewItem:[[self draggedCell] representedObject]];
         
+        // set the PTYSession's parent
+        [[[[[self draggedCell] representedObject] identifier] content] setParent:[[self destinationTabBar] delegate]];
+        
         // inform the delegates that we are done performing a drag operation
         if([targetDelegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
             [targetDelegate tabViewDidPerformDragOperation: [self destinationTabBar]];

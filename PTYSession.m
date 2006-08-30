@@ -88,7 +88,7 @@ static NSImage *warningImage;
 	
     // Allocate screen, shell, and terminal objects
     SHELL = [[PTYTask alloc] init];
-    TERMINAL = [[VT100Terminal alloc] init:parent];
+    TERMINAL = [[VT100Terminal alloc] init];
     SCREEN = [[VT100Screen alloc] init];
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
 

@@ -1072,13 +1072,16 @@
 - (void)closeTabClick:(id)sender
 {
     [sender retain];
-    if(([_cells count] == 1) && (![self canCloseOnlyTab]))
+    if(([_cells count] == 1) && (![self canCloseOnlyTab])) {
+        [sender release];
         return;
+    }
     
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:shouldCloseTabViewItem:)])){
         if(![[self delegate] tabView:tabView shouldCloseTabViewItem:[sender representedObject]]){
             // fix mouse downed close button
             [sender setCloseButtonPressed:NO];
+            [sender release];
             return;
         }
     }
@@ -1088,7 +1091,9 @@
     }
     
     [[sender representedObject] retain];
-    [tabView removeTabViewItem:[sender representedObject]];
+    //[tabView removeTabViewItem:[sender representedObject]];
+    [[self delegate] closeSession: [[[sender representedObject] identifier] content]];
+    
     
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:didCloseTabViewItem:)])){
         [[self delegate] tabView:tabView didCloseTabViewItem:[sender representedObject]];
@@ -1189,7 +1194,7 @@
 {
     if([self delegate]){
         if([[self delegate] respondsToSelector:@selector(tabView:willAddTabViewItem:)]){
-            [[self delegate] performSelector:@selector(tabView:willAddTabViewItem:) withObject:aTabView withObject:tabViewItem];
+            [[self delegate] tabView: aTabView willAddTabViewItem: tabViewItem];
         }
     }
 }
@@ -1207,7 +1212,8 @@
 {
     if([self delegate]){
         if([[self delegate] respondsToSelector:@selector(tabView:willRemoveTabViewItem:)]){
-            [[self delegate] performSelector:@selector(tabView:willRemoveTabViewItem:) withObject:aTabView withObject:tabViewItem];
+            [[self delegate] tabView: aTabView willRemoveTabViewItem: tabViewItem];
+            
         }
     }
 }
@@ -1234,7 +1240,7 @@
     }
     if([self delegate]){
         if([[self delegate] respondsToSelector:@selector(tabView:didSelectTabViewItem:)]){
-            [[self delegate] performSelector:@selector(tabView:didSelectTabViewItem:) withObject:aTabView withObject:tabViewItem];
+            [[self delegate] tabView: aTabView didSelectTabViewItem: tabViewItem];
         }
     }
 }
@@ -1243,7 +1249,7 @@
 {
     if([self delegate]){
         if([[self delegate] respondsToSelector:@selector(tabView:shouldSelectTabViewItem:)]){
-            return (int)[[self delegate] performSelector:@selector(tabView:shouldSelectTabViewItem:) withObject:aTabView withObject:tabViewItem];
+            return (int)[[self delegate] tabView: aTabView shouldSelectTabViewItem: tabViewItem];
         } else {
             return YES;
         }
@@ -1256,7 +1262,7 @@
 {
     if([self delegate]){
         if([[self delegate] respondsToSelector:@selector(tabView:willSelectTabViewItem:)]){
-            [[self delegate] performSelector:@selector(tabView:willSelectTabViewItem:) withObject:aTabView withObject:tabViewItem];
+            [[self delegate] tabView: aTabView willSelectTabViewItem: tabViewItem];
         }
     }
 }
@@ -1286,7 +1292,7 @@
     // pass along for other delegate responses
     if([self delegate]){
         if([[self delegate] respondsToSelector:@selector(tabViewDidChangeNumberOfTabViewItems:)]){
-            [[self delegate] performSelector:@selector(tabViewDidChangeNumberOfTabViewItems:) withObject:aTabView];
+            [[self delegate] tabViewDidChangeNumberOfTabViewItems: aTabView];
         }
     }
 }

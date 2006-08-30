@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.15 2006-03-03 22:30:38 ujwal Exp $
+// $Id: VT100Terminal.h,v 1.16 2006-08-30 04:25:15 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -235,7 +235,6 @@ typedef enum {
     NSStringEncoding  ENCODING;
     NSMutableData     *STREAM;
     VT100Screen       *SCREEN;
-	PseudoTerminal    *PARENT;
 	NSLock			  *streamLock;
 
     BOOL LINE_MODE;			// YES=Newline, NO=Line feed
@@ -273,7 +272,7 @@ typedef enum {
 
 + (void)initialize;
 
-- (id)init:(PseudoTerminal *) parent;
+- (id)init;
 - (void)dealloc;
 
 - (BOOL)trace;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.100 2006-03-16 00:41:30 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.101 2006-08-30 04:25:14 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1193,7 +1193,7 @@ static VT100TCC decode_string(unsigned char *datap,
 {
 }
 
-- (id)init:(PseudoTerminal *) parent
+- (id)init
 {
 	
 #if DEBUG_ALLOC
@@ -1237,8 +1237,7 @@ static VT100TCC decode_string(unsigned char *datap,
     streamOffset = 0;
 	
     numLock = YES;
-	PARENT=parent;
-    
+	
     return self;
 }
 

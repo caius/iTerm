@@ -1,3 +1,10 @@
+2006-08-29  fabian
+
+    * Fixed a bug related to close-tab button.
+    * Added tabLocation property to PSMTabBarControl so that Unified looks correct both
+      when the tab is at the top and the tab is at the bottom.
+    * Fixed a display bug so that new settings of tab location will be shown in opened windows.
+    
 2006-08-25  fabian
 
     * Fixed the overflow menu bug where the 1st item isn't updated correctly.

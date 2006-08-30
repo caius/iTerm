@@ -290,34 +290,42 @@
 
     if ([cell state] == NSOnState)
 	{
-        // selected tab
-        NSRect aRect = NSMakeRect(cellFrame.origin.x+0.5, cellFrame.origin.y-0.5, cellFrame.size.width-1.0, cellFrame.size.height);
-        aRect.size.height -= 0.5;
-        
-        aRect.size.height+=0.5;
-        
-        // frame
-		float radius = MIN(6.0, 0.5f * MIN(NSWidth(aRect), NSHeight(aRect)));
-		NSRect rect = NSInsetRect(aRect, radius, radius);
-		
-        /*if ([bar tabLocation] == PSMTab_TopTab) 
-        {*/
+        if ([[cell controlView] tabLocation] == PSMTab_TopTab) 
+        {
+            // selected tab
+            NSRect aRect = NSMakeRect(cellFrame.origin.x+0.5, cellFrame.origin.y, cellFrame.size.width-1.0, cellFrame.size.height+0.5);
+             
+            // frame
+            float radius = MIN(6.0, 0.5f * MIN(NSWidth(aRect), NSHeight(aRect)));
+            NSRect rect = NSInsetRect(aRect, radius, radius);
+            
             [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect), NSMinY(rect)) radius:radius startAngle:180.0 endAngle:270.0];
             
             [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMaxX(rect), NSMinY(rect)) radius:radius startAngle:270.0 endAngle:360.0];
-        /*}		
+            
+            NSPoint cornerPoint = NSMakePoint(NSMaxX(aRect), NSMaxY(aRect));
+            [bezier appendBezierPathWithPoints:&cornerPoint count:1];
+            
+            cornerPoint = NSMakePoint(NSMinX(aRect), NSMaxY(aRect));
+            [bezier appendBezierPathWithPoints:&cornerPoint count:1];
+        }
         else
         {
-            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect), NSMinY(rect)) radius:radius startAngle:90.0 endAngle:180.0];
+            // selected tab
+            NSRect aRect = NSMakeRect(cellFrame.origin.x+0.5, cellFrame.origin.y-0.5, cellFrame.size.width-1.0, cellFrame.size.height-1.0);
             
-            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMaxX(rect), NSMinY(rect)) radius:radius startAngle:0.0 endAngle:90.0];
-        }*/		
+            // frame
+            float radius = MIN(6.0, 0.5f * MIN(NSWidth(aRect), NSHeight(aRect)));
+            NSRect rect = NSInsetRect(aRect, radius, radius);
+            
+            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMinX(rect), NSMaxY(rect)) radius:radius startAngle:90.0 endAngle:180.0];
+            NSPoint cornerPoint = NSMakePoint(NSMinX(aRect), NSMinY(aRect));
+            [bezier appendBezierPathWithPoints:&cornerPoint count:1];
+            cornerPoint = NSMakePoint(NSMaxX(aRect), NSMinY(aRect));
+            [bezier appendBezierPathWithPoints:&cornerPoint count:1];
+            [bezier appendBezierPathWithArcWithCenter:NSMakePoint(NSMaxX(rect), NSMaxY(rect)) radius:radius startAngle:0.0 endAngle:90.0];
+		}		
         
-		NSPoint cornerPoint = NSMakePoint(NSMaxX(aRect), NSMaxY(aRect));
-		[bezier appendBezierPathWithPoints:&cornerPoint count:1];
-		
-		cornerPoint = NSMakePoint(NSMinX(aRect), NSMaxY(aRect));
-		[bezier appendBezierPathWithPoints:&cornerPoint count:1];
 		
 		[bezier closePath];
 		

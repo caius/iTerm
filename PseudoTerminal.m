@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.325 2006-08-25 20:35:07 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.326 2006-08-30 04:25:14 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -300,7 +300,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[TABVIEW setDelegate: tabBarControl];
 	[tabBarControl setDelegate: self];
 	[tabBarControl setHideForSingleTab: NO];
-    //[tabBarControl setAllowsDragBetweenWindows: YES];
+    [tabBarControl setAllowsDragBetweenWindows: YES];
     
 	
 	// set the style of tabs to match window style
@@ -850,8 +850,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	else
 	{
 		[tabBarControl setHidden: NO];
+        [tabBarControl setTabLocation: [[PreferencePanel sharedInstance] tabViewType]];
         winSize.height += [tabBarControl frame].size.height;
-		if ([[PreferencePanel sharedInstance] tabViewType] == 0) {
+		if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
             aRect.origin.x = 0;
             aRect.origin.y = 0;
             aRect.size = tabViewSize;
@@ -870,6 +871,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             aRect.size.height = tabViewSize.height;
             [TABVIEW setFrame: aRect];
         }
+        [tabBarControl update];
 	}
 	
 #if 0
@@ -892,6 +894,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[[self window] contentView] setAutoresizesSubviews: YES];	
 	
     [thisWindow setFrameTopLeftPoint: topLeft];
+    [[[_sessionMgr currentSession] TEXTVIEW] setForceUpdate: YES];
+    
 }
 
 - (void)setWindowTitle

@@ -87,7 +87,7 @@
 - (void)mouseExited:(NSEvent *)theEvent;
 
 // drag support
-- (NSImage*)dragImageForRect:(NSRect)cellFrame;
+- (NSImage *)dragImage;
 
 // archiving
 - (void)encodeWithCoder:(NSCoder *)aCoder;

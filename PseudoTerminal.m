@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.326 2006-08-30 04:25:14 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.327 2006-08-31 03:09:59 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -55,6 +55,7 @@
 #import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/Tree.h>
 #import <PSMTabBarControl.h>
+#import <PSMTabStyle.h>
 #include <unistd.h>
 
 // keys for attributes:
@@ -300,7 +301,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[TABVIEW setDelegate: tabBarControl];
 	[tabBarControl setDelegate: self];
 	[tabBarControl setHideForSingleTab: NO];
-    [tabBarControl setAllowsDragBetweenWindows: YES];
     
 	
 	// set the style of tabs to match window style
@@ -311,8 +311,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         case 1:
             [tabBarControl setStyleNamed:@"Aqua"];
             break;
-        default:
+        case 2:
             [tabBarControl setStyleNamed:@"Unified"];
+        default:
+            [tabBarControl setStyleNamed:@"Adium"];
             break;
     }
 
@@ -475,7 +477,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self setWindowTitle];
     [[_sessionMgr currentSession] setLabelAttribute];
     [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
-
+    
     //[[TABVIEW window] setNextResponder:self];
 	
     // send a notification
@@ -871,7 +873,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             aRect.size.height = tabViewSize.height;
             [TABVIEW setFrame: aRect];
         }
-        [tabBarControl update];
+        [tabBarControl update: NO];
 	}
 	
 #if 0
@@ -1549,6 +1551,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     [self setWindowTitle];
     [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
+    
     //[[TABVIEW window] setNextResponder:self];
 }
 
@@ -1563,7 +1566,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
 	// do this to set up mouse tracking rects again
 	[[[_sessionMgr currentSession] TEXTVIEW] becomeFirstResponder];
-	
+    
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: self userInfo: nil];    
 }
@@ -1624,6 +1627,70 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 }
 
+- (BOOL)tabView:(NSTabView*)aTabView shouldDragTabViewItem:(NSTabViewItem *)tabViewItem fromTabBar:(PSMTabBarControl *)tabBarControl
+{
+    return [_sessionMgr numberOfSessions]>1;
+}
+
+- (BOOL)tabView:(NSTabView*)aTabView shouldDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)tabBarControl
+{
+	return YES;
+}
+
+- (void)tabView:(NSTabView*)aTabView didDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)aTabBarControl
+{
+	//NSLog(@"didDropTabViewItem: %@ inTabBar: %@", [tabViewItem label], aTabBarControl);
+}
+
+- (NSImage *)tabView:(NSTabView *)aTabView imageForTabViewItem:(NSTabViewItem *)tabViewItem offset:(NSSize *)offset styleMask:(unsigned int *)styleMask
+{
+	// grabs whole window image
+	NSImage *viewImage = [[[NSImage alloc] init] autorelease];
+	NSRect contentFrame = [[[self window] contentView] frame];
+	[[[self window] contentView] lockFocus];
+	NSBitmapImageRep *viewRep = [[[NSBitmapImageRep alloc] initWithFocusedViewRect:contentFrame] autorelease];
+	[viewImage addRepresentation:viewRep];
+	[[[self window] contentView] unlockFocus];
+	
+    // grabs snapshot of dragged tabViewItem's view (represents content being dragged)
+	NSView *viewForImage = [[self currentSession] TEXTVIEW];
+	NSRect viewRect = [viewForImage frame];
+	NSImage *tabViewImage = [[[NSImage alloc] initWithSize:viewRect.size] autorelease];
+	[tabViewImage lockFocus];
+	[viewForImage drawRect:[viewForImage bounds]];
+	[tabViewImage unlockFocus];
+	
+	[viewImage lockFocus];
+	NSPoint tabOrigin = [aTabView frame].origin;
+	tabOrigin.x += 10;
+	tabOrigin.y += 13;
+	[tabViewImage compositeToPoint:tabOrigin operation:NSCompositeSourceOver];
+	[viewImage unlockFocus];
+	
+	//draw over where the tab bar would usually be
+	NSRect tabFrame = [tabBarControl frame];
+	[viewImage lockFocus];
+	[[NSColor windowBackgroundColor] set];
+	NSRectFill(tabFrame);
+	//draw the background flipped, which is actually the right way up
+	NSAffineTransform *transform = [NSAffineTransform transform];
+	[transform scaleXBy:1.0 yBy:-1.0];
+	[transform concat];
+	tabFrame.origin.y = -tabFrame.origin.y - tabFrame.size.height;
+	[(id <PSMTabStyle>)[[aTabView delegate] style] drawBackgroundInRect:tabFrame];
+	[transform invert];
+	[transform concat];
+	
+	[viewImage unlockFocus];
+	
+    offset->width = [(id <PSMTabStyle>)[tabBarControl style] leftMarginForTabBarControl];
+    offset->height = 22;
+
+	*styleMask = NSTitledWindowMask | NSTexturedBackgroundWindowMask;
+	
+	return viewImage;
+}
+
 - (void)tabViewWillPerformDragOperation:(NSTabView *)tabView
 {
 #if DEBUG_METHOD_TRACE
@@ -1640,6 +1707,24 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	
     tabViewDragOperationInProgress = NO;
+    [self setFont:FONT nafont:NAFONT];
+    [self setAntiAlias: antiAlias];
+    
+    VT100Screen *aScreen;
+    PTYSession *aSession;
+    int i;
+    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
+        aSession = [_sessionMgr sessionAtIndex:i];
+        aScreen = [aSession SCREEN];
+        if ([aScreen width]!=WIDTH || [aScreen height]!=HEIGHT) {
+            [self setWindowSize];
+//            [aSession SCROLLVIEW]
+//            [[aSession TEXTVIEW] setFrameSize:[[aSession SCROLLVIEW] contentSize]];
+            [aScreen resizeWidth:WIDTH height:HEIGHT];
+            [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:WIDTH  height:HEIGHT];
+            break;
+        }
+    }
     [self tabViewDidChangeNumberOfTabViewItems: tabView];
 }
 

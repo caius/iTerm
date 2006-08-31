@@ -16,6 +16,7 @@
 @class PSMTabDragWindow;
 
 #define kPSMTabDragAnimationSteps 8
+#define kPSMTabDragWindowAlpha 0.75
 #define PI 3.1417
 
 @interface PSMTabDragAssistant : NSObject {
@@ -25,7 +26,12 @@
     PSMTabBarCell               *_draggedCell;
     int                         _draggedCellIndex;   // for snap back
     BOOL                        _isDragging;
-    
+	
+	// Support for dragging into new windows
+	PSMTabDragWindow			*_dragTabWindow, *_dragViewWindow;
+	NSSize						_dragWindowOffset;
+	NSTimer						*_fadeTimer;
+	
     // Animation
     NSTimer                     *_animationTimer;
     NSMutableArray              *_sineCurveWidths;
@@ -60,6 +66,9 @@
 - (void)performDragOperation;
 - (void)draggedImageEndedAt:(NSPoint)aPoint operation:(NSDragOperation)operation;
 - (void)finishDrag;
+
+- (void)draggingBeganAt:(NSPoint)aPoint;
+- (void)draggingMovedTo:(NSPoint)aPoint;
 
 // Animation
 - (void)animateDrag:(NSTimer *)timer;

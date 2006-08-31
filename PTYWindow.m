@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.10 2006-03-26 19:50:59 ujwal Exp $ */
+/* $Id: PTYWindow.m,v 1.11 2006-08-31 03:09:59 yfabian Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -111,8 +111,7 @@
 			[self makeKeyWindow];
 	}
 	
-	[super sendEvent:event];
-		
+	if (super) [super sendEvent:event];
 }
 
 @end

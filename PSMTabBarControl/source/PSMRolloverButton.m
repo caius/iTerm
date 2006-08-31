@@ -44,7 +44,10 @@
 
 - (void)removeTrackingRect
 {
-    [self removeTrackingRect:_myTrackingRectTag];
+	if (_myTrackingRectTag) {
+		[self removeTrackingRect:_myTrackingRectTag];
+	}
+	_myTrackingRectTag = 0;
 }
 
 // override for rollover effect

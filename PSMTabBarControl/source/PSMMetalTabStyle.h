@@ -16,6 +16,11 @@
     NSImage *_addTabButtonImage;
     NSImage *_addTabButtonPressedImage;
     NSImage *_addTabButtonRolloverImage;
+	
+	NSDictionary *_objectCountStringAttributes;
+	
+	PSMTabBarOrientation orientation;
+	PSMTabBarControl *tabBar;
 }
 
 - (void)drawInteriorWithTabCell:(PSMTabBarCell *)cell inView:(NSView*)controlView;

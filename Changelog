@@ -1,3 +1,7 @@
+2006-08-30  fabian
+
+    * Updated PSMTabBarControl to the latest CVS version. That fixed a frequent crash.
+    
 2006-08-29  fabian
 
     * Fixed a bug related to close-tab button.

@@ -25,8 +25,7 @@
 
 - (id) init
 {
-    if((self = [super init]))
-    {
+    if( (self = [super init]) ) {
         metalCloseButton = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"TabClose_Front"]];
         metalCloseButtonDown = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"TabClose_Front_Pressed"]];
         metalCloseButtonOver = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"TabClose_Front_Rollover"]];
@@ -34,6 +33,10 @@
         _addTabButtonImage = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"TabNewMetal"]];
         _addTabButtonPressedImage = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"TabNewMetalPressed"]];
         _addTabButtonRolloverImage = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"TabNewMetalRollover"]];
+		
+		_objectCountStringAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:[[NSFontManager sharedFontManager] convertFont:[NSFont fontWithName:@"Helvetica" size:11.0] toHaveTrait:NSBoldFontMask], NSFontAttributeName,
+																					[[NSColor whiteColor] colorWithAlphaComponent:0.85], NSForegroundColorAttributeName,
+																					nil, nil];
     }
     return self;
 }
@@ -47,6 +50,8 @@
     [_addTabButtonPressedImage release];
     [_addTabButtonRolloverImage release];
     
+	[_objectCountStringAttributes release];
+	
     [super dealloc];
 }
 
@@ -61,6 +66,11 @@
 - (float)rightMarginForTabBarControl
 {
     return 24.0f;
+}
+
+- (float)topMarginForTabBarControl
+{
+	return 10.0f;
 }
 
 #pragma mark -
@@ -84,7 +94,28 @@
 #pragma mark -
 #pragma mark Cell Specific
 
-- (NSRect) closeButtonRectForTabCell:(PSMTabBarCell *)cell
+- (NSRect)dragRectForTabCell:(PSMTabBarCell *)cell orientation:(PSMTabBarOrientation)tabOrientation
+{
+	NSRect dragRect = [cell frame];
+	dragRect.size.width++;
+	
+	if ([cell tabState] & PSMTab_SelectedMask) {
+		if (tabOrientation == PSMTabBarHorizontalOrientation) {
+			dragRect.size.height -= 2.0;
+		} else {
+			dragRect.size.height += 1.0;
+			dragRect.origin.y -= 1.0;
+			dragRect.origin.x += 2.0;
+			dragRect.size.width -= 3.0;
+		}
+	} else if (tabOrientation == PSMTabBarVerticalOrientation) {
+		dragRect.origin.x--;
+	}
+	
+	return dragRect;
+}
+
+- (NSRect)closeButtonRectForTabCell:(PSMTabBarCell *)cell
 {
     NSRect cellFrame = [cell frame];
     
@@ -115,15 +146,15 @@
     NSRect result;
     result.size = NSMakeSize(kPSMTabBarIconWidth, kPSMTabBarIconWidth);
     result.origin.x = cellFrame.origin.x + MARGIN_X;
-    result.origin.y = cellFrame.origin.y + MARGIN_Y;
+	result.origin.y = cellFrame.origin.y + MARGIN_Y;
     
     if([cell hasCloseButton] && ![cell isCloseButtonSuppressed])
         result.origin.x += [metalCloseButton size].width + kPSMTabBarCellPadding;
     
     if([cell state] == NSOnState){
-        result.origin.y += 1;
+        result.origin.y -= 1;
     }
-    
+	
     return result;
 }
 
@@ -143,7 +174,7 @@
     if([cell state] == NSOnState){
         result.origin.y -= 1;
     }
-    
+	
     return result;
 }
 
@@ -241,21 +272,12 @@
 
 - (NSAttributedString *)attributedObjectCountValueForTabCell:(PSMTabBarCell *)cell
 {
-    NSMutableAttributedString *attrStr;
-    NSFontManager *fm = [NSFontManager sharedFontManager];
     NSNumberFormatter *nf = [[[NSNumberFormatter alloc] init] autorelease];
     [nf setLocalizesFormat:YES];
     [nf setFormat:@"0"];
     [nf setHasThousandSeparators:YES];
     NSString *contents = [nf stringFromNumber:[NSNumber numberWithInt:[cell count]]];
-    attrStr = [[[NSMutableAttributedString alloc] initWithString:contents] autorelease];
-    NSRange range = NSMakeRange(0, [contents length]);
-    
-    // Add font attribute
-    [attrStr addAttribute:NSFontAttributeName value:[fm convertFont:[NSFont fontWithName:@"Helvetica" size:11.0] toHaveTrait:NSBoldFontMask] range:range];
-    [attrStr addAttribute:NSForegroundColorAttributeName value:[[NSColor whiteColor] colorWithAlphaComponent:0.85] range:range];
-    
-    return attrStr;
+    return [[[NSMutableAttributedString alloc] initWithString:contents attributes:_objectCountStringAttributes] autorelease];
 }
 
 - (NSAttributedString *)attributedStringValueForTabCell:(PSMTabBarCell *)cell
@@ -301,34 +323,63 @@
 - (void)drawTabCell:(PSMTabBarCell *)cell
 {
     NSRect cellFrame = [cell frame];	
-    NSColor * lineColor = nil;
-    NSBezierPath* bezier = [NSBezierPath bezierPath];
+    NSColor *lineColor = nil;
+    NSBezierPath *bezier = [NSBezierPath bezierPath];
     lineColor = [NSColor darkGrayColor];
-
+	
+	//disable antialiasing of bezier paths
+	[NSGraphicsContext saveGraphicsState];
+	[[NSGraphicsContext currentContext] setShouldAntialias:NO];
+	
     if ([cell state] == NSOnState) {
         // selected tab
-        NSRect aRect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, cellFrame.size.height-2.5);
-        aRect.size.height -= 0.5;
-        
-        // background
-        NSDrawWindowBackground(aRect);
-        
-        aRect.size.height+=0.5;
-        
-        // frame
-        aRect.origin.x += 0.5;
-        [lineColor set];
-        [bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y)];
-        [bezier lineToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y+aRect.size.height-1.5)];
-        [bezier lineToPoint:NSMakePoint(aRect.origin.x+1.5, aRect.origin.y+aRect.size.height)];
-        [bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width-1.5, aRect.origin.y+aRect.size.height)];
-        [bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y+aRect.size.height-1.5)];
-        [bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y)];
-        if([[cell controlView] frame].size.height < 2){
-            // special case of hidden control; need line across top of cell
-            [bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y+0.5)];
-            [bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y+0.5)];
-        }
+		if (orientation == PSMTabBarHorizontalOrientation) {
+			NSRect aRect = NSMakeRect(cellFrame.origin.x, cellFrame.origin.y, cellFrame.size.width, cellFrame.size.height-2.5);
+			
+			// background
+			aRect.origin.x += 1.0;
+			aRect.size.width--;
+			aRect.size.height -= 0.5;
+			NSDrawWindowBackground(aRect);
+			aRect.size.width++;
+			aRect.size.height += 0.5;
+			
+			// frame
+			aRect.origin.x -= 0.5;
+			[lineColor set];
+			[bezier setLineWidth:1.0];
+			[bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y+aRect.size.height-1.5)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x+1.5, aRect.origin.y+aRect.size.height)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width-2.5, aRect.origin.y+aRect.size.height)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y+aRect.size.height-1.5)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y)];
+			if ([[cell controlView] frame].size.height < 2) {
+				// special case of hidden control; need line across top of cell
+				[bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y+0.5)];
+				[bezier lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y+0.5)];
+			}
+		} else {
+			NSRect aRect = NSMakeRect(cellFrame.origin.x + 2, cellFrame.origin.y, cellFrame.size.width - 2, cellFrame.size.height);
+			
+			// background
+			aRect.origin.x++;
+			aRect.size.height--;
+			NSDrawWindowBackground(aRect);
+			aRect.origin.x--;
+			aRect.size.height++;
+			
+			// frame
+			[lineColor set];
+			[bezier setLineWidth:1.0];
+			[bezier moveToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x + 2, aRect.origin.y)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x + 0.5, aRect.origin.y + 2)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x + 0.5, aRect.origin.y + aRect.size.height - 3)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x + 3, aRect.origin.y + aRect.size.height)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y + aRect.size.height)];
+		}
+		
         [bezier stroke];
     } else {
         
@@ -344,22 +395,36 @@
             NSRectFillUsingOperation(aRect, NSCompositeSourceAtop);
         }
         
-        aRect.origin.x -= 1;
-        aRect.size.width += 1;
-        
-        // frame
-        [lineColor set];
-        [bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y)];
-        [bezier lineToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y)];
-        if(!([cell tabState] & PSMTab_RightIsSelectedMask)){
-            [bezier lineToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y + aRect.size.height)];
-        }
-        [bezier stroke];
+		[lineColor set];
+		
+		if (orientation == PSMTabBarHorizontalOrientation) {
+			aRect.origin.x -= 1;
+			aRect.size.width += 1;
+			
+			// frame
+			[bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y)];
+			[bezier lineToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y)];
+			if (!([cell tabState] & PSMTab_RightIsSelectedMask)) {
+				[bezier lineToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y + aRect.size.height)];
+			}
+		} else {
+			if (!([cell tabState] & PSMTab_LeftIsSelectedMask)) {
+				[bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y)];
+				[bezier lineToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y)];
+			}
+			
+			if (!([cell tabState] & PSMTab_RightIsSelectedMask)) {
+				[bezier moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y + aRect.size.height)];
+				[bezier lineToPoint:NSMakePoint(aRect.origin.x + aRect.size.width, aRect.origin.y + aRect.size.height)];
+			}
+		}
+		[bezier stroke];
     }
     
+	[NSGraphicsContext restoreGraphicsState];
+	
     [self drawInteriorWithTabCell:cell inView:[cell controlView]];
 }
-
 
 
 - (void)drawInteriorWithTabCell:(PSMTabBarCell *)cell inView:(NSView*)controlView
@@ -391,11 +456,19 @@
     // icon
     if([cell hasIcon]){
         NSRect iconRect = [self iconRectForTabCell:cell];
-        NSImage *icon = [[[[cell representedObject] identifier] content] icon];
-        if ([controlView isFlipped]) {
-            iconRect.origin.y = cellFrame.size.height - iconRect.origin.y;
+        NSImage *icon = [[[cell representedObject] identifier] icon];
+        
+		if ([controlView isFlipped]) {
+			iconRect.origin.y += iconRect.size.height;
         }
-        [icon compositeToPoint:iconRect.origin operation:NSCompositeSourceOver fraction:1.0];
+                
+                // center in available space (in case icon image is smaller than kPSMTabBarIconWidth)
+                if([icon size].width < kPSMTabBarIconWidth)
+                    iconRect.origin.x += (kPSMTabBarIconWidth - [icon size].width)/2.0;
+                if([icon size].height < kPSMTabBarIconWidth)
+                    iconRect.origin.y -= (kPSMTabBarIconWidth - [icon size].height)/2.0;
+        
+		[icon compositeToPoint:iconRect.origin operation:NSCompositeSourceOver fraction:1.0];
         
         // scoot label over
         labelPosition += iconRect.size.width + kPSMTabBarCellPadding;
@@ -445,16 +518,43 @@
     [[cell attributedStringValue] drawInRect:labelRect];
 }
 
-- (void)drawTabBar:(PSMTabBarControl *)bar inRect:(NSRect)rect
+- (void)drawBackgroundInRect:(NSRect)rect
 {
-    NSDrawWindowBackground(rect);
+	if (orientation == PSMTabBarVerticalOrientation && [tabBar frame].size.width < 2) {
+		return;
+	}
+	
+	[NSGraphicsContext saveGraphicsState];
+	[[NSGraphicsContext currentContext] setShouldAntialias:NO];
+	
     [[NSColor colorWithCalibratedWhite:0.0 alpha:0.2] set];
     NSRectFillUsingOperation(rect, NSCompositeSourceAtop);
-    [[NSColor darkGrayColor] set];
-    [NSBezierPath strokeLineFromPoint:NSMakePoint(rect.origin.x,rect.origin.y+0.5) toPoint:NSMakePoint(rect.origin.x+rect.size.width,rect.origin.y+0.5)];
-    [NSBezierPath strokeLineFromPoint:NSMakePoint(rect.origin.x,rect.origin.y+rect.size.height-0.5) toPoint:NSMakePoint(rect.origin.x+rect.size.width,rect.origin.y+rect.size.height-0.5)];
-    
-    // no tab view == not connected
+	[[NSColor darkGrayColor] set];
+	
+	if (orientation == PSMTabBarHorizontalOrientation) {
+		[NSBezierPath strokeLineFromPoint:NSMakePoint(rect.origin.x, rect.origin.y + 0.5) toPoint:NSMakePoint(rect.origin.x + rect.size.width, rect.origin.y + 0.5)];
+		[NSBezierPath strokeLineFromPoint:NSMakePoint(rect.origin.x, rect.origin.y + rect.size.height - 0.5) toPoint:NSMakePoint(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height - 0.5)];
+	} else {
+		[NSBezierPath strokeLineFromPoint:NSMakePoint(rect.origin.x, rect.origin.y + 0.5) toPoint:NSMakePoint(rect.origin.x, rect.origin.y + rect.size.height + 0.5)];
+		[NSBezierPath strokeLineFromPoint:NSMakePoint(rect.origin.x + rect.size.width, rect.origin.y + 0.5) toPoint:NSMakePoint(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height + 0.5)];
+	}
+	
+	[NSGraphicsContext restoreGraphicsState];
+}
+
+- (void)drawTabBar:(PSMTabBarControl *)bar inRect:(NSRect)rect
+{
+	if (orientation != [bar orientation]) {
+		orientation = [bar orientation];
+	}
+	
+	if (tabBar != bar) {
+		tabBar = bar;
+	}
+	
+	[self drawBackgroundInRect:rect];
+	
+	// no tab view == not connected
     if(![bar tabView]){
         NSRect labelRect = rect;
         labelRect.size.height -= 4.0;
@@ -477,8 +577,8 @@
     // draw cells
     NSEnumerator *e = [[bar cells] objectEnumerator];
     PSMTabBarCell *cell;
-    while(cell = [e nextObject]){
-        if(![cell isInOverflowMenu]){
+    while ( (cell = [e nextObject]) ) {
+        if (![cell isInOverflowMenu] && NSIntersectsRect([cell frame], rect)) {
             [cell drawWithFrame:[cell frame] inView:bar];
         }
     }

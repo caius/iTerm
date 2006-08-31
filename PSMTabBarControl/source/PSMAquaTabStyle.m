@@ -91,6 +91,11 @@
     return 24.0f;
 }
 
+- (float)topMarginForTabBarControl
+{
+	return 0.0f;
+}
+
 #pragma mark -
 #pragma mark Add Tab Button
 
@@ -111,6 +116,11 @@
 
 #pragma mark -
 #pragma mark Cell Specifics
+
+- (NSRect)dragRectForTabCell:(PSMTabBarCell *)cell orientation:(PSMTabBarOrientation)orientation
+{
+	return [cell frame];
+}
 
 - (NSRect)closeButtonRectForTabCell:(PSMTabBarCell *)cell
 {
@@ -357,9 +367,14 @@
     [self drawInteriorWithTabCell:cell inView:[cell controlView]];
 }
 
+- (void)drawBackgroundInRect:(NSRect)rect
+{
+	[aquaTabBg drawInRect:rect fromRect:NSMakeRect(0.0, 0.0, 1.0, 22.0) operation:NSCompositeSourceOver fraction:1.0];
+}
+
 - (void)drawTabBar:(PSMTabBarControl *)bar inRect:(NSRect)rect
 {
-    [aquaTabBg drawInRect:rect fromRect:NSMakeRect(0.0, 0.0, 1.0, 22.0) operation:NSCompositeSourceOver fraction:1.0];
+	[self drawBackgroundInRect:rect];
     
     // no tab view == not connected
     if(![bar tabView]){
@@ -384,8 +399,8 @@
     // Draw cells
     NSEnumerator *e = [[bar cells] objectEnumerator];
     PSMTabBarCell *cell;
-    while(cell = [e nextObject]){
-        if(![cell isInOverflowMenu]){
+    while ( (cell = [e nextObject]) ) {
+        if (![cell isInOverflowMenu] && NSIntersectsRect([cell frame], rect)) {
             [cell drawWithFrame:[cell frame] inView:bar];
         }
     }
@@ -420,10 +435,17 @@
     // icon
     if([cell hasIcon]){
         NSRect iconRect = [self iconRectForTabCell:cell];
-        NSImage *icon = [[[[cell representedObject] identifier] content] icon];
+        NSImage *icon = [[[cell representedObject] identifier] icon];
         if ([controlView isFlipped]) {
-            iconRect.origin.y = cellFrame.size.height - iconRect.origin.y;
+            iconRect.origin.y += iconRect.size.height;
         }
+        
+        // center in available space (in case icon image is smaller than kPSMTabBarIconWidth)
+        if([icon size].width < kPSMTabBarIconWidth)
+            iconRect.origin.x += (kPSMTabBarIconWidth - [icon size].width)/2.0;
+        if([icon size].height < kPSMTabBarIconWidth)
+            iconRect.origin.y -= (kPSMTabBarIconWidth - [icon size].height)/2.0;
+        
         [icon compositeToPoint:iconRect.origin operation:NSCompositeSourceOver fraction:1.0];
         
         // scoot label over

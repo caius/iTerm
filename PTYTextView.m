@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.254 2006-08-22 23:01:49 yfabian Exp $
+// $Id: PTYTextView.m,v 1.255 2006-08-31 03:09:58 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1673,7 +1673,7 @@ static SInt32 systemVersion;
     }
     
 	// if we are on an empty line, we select the current line to the end
-	if([self _isBlankLine: y] && y >= 0)
+	if(y>=0 && [self _isBlankLine: y])
 		x = width - 1;
 	
 	if(locationInTextView.x < MARGIN && startY < y)

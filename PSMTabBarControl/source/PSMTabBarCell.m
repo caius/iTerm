@@ -12,6 +12,10 @@
 #import "PSMProgressIndicator.h"
 #import "PSMTabDragAssistant.h"
 
+@interface PSMTabBarControl (Private)
+- (void)update;
+- (void)update:(BOOL)animate;
+@end
 
 @implementation PSMTabBarCell
 
@@ -19,8 +23,7 @@
 #pragma mark Creation/Destruction
 - (id)initWithControlView:(PSMTabBarControl *)controlView
 {
-    self = [super init];
-    if(self){
+    if ( (self = [super init]) ) {
         _controlView = controlView;
         _closeButtonTrackingTag = 0;
         _cellTrackingTag = 0;
@@ -39,12 +42,16 @@
 
 - (id)initPlaceholderWithFrame:(NSRect)frame expanded:(BOOL)value inControlView:(PSMTabBarControl *)controlView
 {
-    self = [super init];
-    if(self){
+    if ( (self = [super init]) ) {
         _controlView = controlView;
         _isPlaceholder = YES;
-        if(!value)
-            frame.size.width = 0.0;
+        if (!value) {
+			if ([controlView orientation] == PSMTabBarHorizontalOrientation) {
+				frame.size.width = 0.0;
+			} else {
+				frame.size.height = 0.0;
+			}
+		}
         [self setFrame:frame];
         _closeButtonTrackingTag = 0;
         _cellTrackingTag = 0;
@@ -55,14 +62,12 @@
         _isCloseButtonSuppressed = NO;
         _count = 0;
         
-        if(value){
+        if (value) {
             [self setCurrentStep:(kPSMTabDragAnimationSteps - 1)];
         } else {
             [self setCurrentStep:0];
         }
-        
     }
-    
     return self;
 }
 
@@ -126,7 +131,7 @@
     [super setStringValue:aString];
     _stringSize = [[self attributedStringValue] size];
     // need to redisplay now - binding observation was too quick.
-    [_controlView update];
+    [_controlView update:[[self controlView] automaticallyAnimates]];
 }
 
 - (NSSize)stringSize
@@ -212,7 +217,7 @@
 - (void)setHasIcon:(BOOL)value
 {
     _hasIcon = value;
-    [_controlView update]; // binding notice is too fast
+    [_controlView update:[[self controlView] automaticallyAnimates]]; // binding notice is too fast
 }
 
 - (int)count
@@ -223,7 +228,7 @@
 - (void)setCount:(int)value
 {
     _count = value;
-    [_controlView update]; // binding notice is too fast
+    [_controlView update:[[self controlView] automaticallyAnimates]]; // binding notice is too fast
 }
 
 - (BOOL)isPlaceholder
@@ -250,6 +255,15 @@
         value = (kPSMTabDragAnimationSteps - 1);
     
     _currentStep = value;
+}
+
+#pragma mark -
+#pragma mark Bindings
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    // the progress indicator, label, icon, or count has changed - redraw the control view
+    [_controlView update:[[self controlView] automaticallyAnimates]];
 }
 
 #pragma mark -
@@ -295,34 +309,42 @@
 - (void)mouseEntered:(NSEvent *)theEvent
 {
     // check for which tag
-    if([theEvent trackingNumber] == _closeButtonTrackingTag){
+    if ([theEvent trackingNumber] == _closeButtonTrackingTag) {
         _closeButtonOver = YES;
     }
-    if([theEvent trackingNumber] == _cellTrackingTag){
+    if ([theEvent trackingNumber] == _cellTrackingTag) {
         [self setHighlighted:YES];
+		[_controlView setNeedsDisplay:NO];
     }
-    [_controlView setNeedsDisplay];
+	
+	//tell the control we only need to redraw the affected tab
+	[_controlView setNeedsDisplayInRect:NSInsetRect([self frame], -2, -2)];
 }
 
 - (void)mouseExited:(NSEvent *)theEvent
 {
     // check for which tag
-    if([theEvent trackingNumber] == _closeButtonTrackingTag){
+    if ([theEvent trackingNumber] == _closeButtonTrackingTag) {
         _closeButtonOver = NO;
     }
-    if([theEvent trackingNumber] == _cellTrackingTag){
+	
+    if ([theEvent trackingNumber] == _cellTrackingTag) {
         [self setHighlighted:NO];
+		[_controlView setNeedsDisplay:NO];
     }
-    [_controlView setNeedsDisplay];
+	
+	//tell the control we only need to redraw the affected tab
+	[_controlView setNeedsDisplayInRect:NSInsetRect([self frame], -2, -2)];
 }
 
 #pragma mark -
 #pragma mark Drag Support
 
-- (NSImage*)dragImageForRect:(NSRect)cellFrame
+- (NSImage *)dragImage
 {
-    if(([self state] == NSOnState) && ([[_controlView styleName] isEqualToString:@"Metal"]))
-        cellFrame.size.width += 1.0;
+	NSRect cellFrame = [(id <PSMTabStyle>)[_controlView style] dragRectForTabCell:self orientation:[_controlView orientation]];
+	//NSRect cellFrame = [self frame];
+	
     [_controlView lockFocus];
     NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:cellFrame];
     [_controlView unlockFocus];
@@ -330,15 +352,13 @@
     [image addRepresentation:rep];
     NSImage *returnImage = [[[NSImage alloc] initWithSize:[rep size]] autorelease];
     [returnImage lockFocus];
-    [image compositeToPoint:NSMakePoint(0.0, 0.0) operation:NSCompositeSourceOver fraction:0.7];
+    [image compositeToPoint:NSMakePoint(0.0, 0.0) operation:NSCompositeSourceOver fraction:1.0];
     [returnImage unlockFocus];
     if(![[self indicator] isHidden]){
         NSImage *pi = [[NSImage alloc] initByReferencingFile:[[PSMTabBarControl bundle] pathForImageResource:@"pi"]];
         [returnImage lockFocus];
         NSPoint indicatorPoint = NSMakePoint([self frame].size.width - MARGIN_X - kPSMTabBarIndicatorWidth, MARGIN_Y);
-        if(([self state] == NSOnState) && ([[_controlView styleName] isEqualToString:@"Metal"]))
-            indicatorPoint.y += 1.0;
-        [pi compositeToPoint:indicatorPoint operation:NSCompositeSourceOver fraction:0.7];
+        [pi compositeToPoint:indicatorPoint operation:NSCompositeSourceOver fraction:1.0];
         [returnImage unlockFocus];
         [pi release];
     }
@@ -392,6 +412,65 @@
         }
     }
     return self;
+}
+
+#pragma mark -
+#pragma mark Accessibility
+
+-(BOOL)accessibilityIsIgnored {
+	return NO;
+}
+
+- (id)accessibilityAttributeValue:(NSString *)attribute {
+	id attributeValue = nil;
+
+	if ([attribute isEqualToString: NSAccessibilityRoleAttribute]) {
+		attributeValue = NSAccessibilityButtonRole;
+	} else if ([attribute isEqualToString: NSAccessibilityHelpAttribute]) {
+		if ([[[self controlView] delegate] respondsToSelector:@selector(accessibilityStringForTabView:objectCount:)]) {
+			attributeValue = [NSString stringWithFormat:@"%@, %i %@", [self stringValue],
+																		[self count],
+																		[[[self controlView] delegate] accessibilityStringForTabView:[[self controlView] tabView] objectCount:[self count]]];
+		} else {
+			attributeValue = [self stringValue];
+		}
+	} else if ([attribute isEqualToString: NSAccessibilityFocusedAttribute]) {
+		attributeValue = [NSNumber numberWithBool:([self tabState] == 2)];
+	} else {
+        attributeValue = [super accessibilityAttributeValue:attribute];
+    }
+
+	return attributeValue;
+}
+
+- (NSArray *)accessibilityActionNames
+{
+	static NSArray *actions;
+	
+	if (!actions) {
+		actions = [[NSArray alloc] initWithObjects:NSAccessibilityPressAction, nil];
+	}
+	return actions;
+}
+
+- (NSString *)accessibilityActionDescription:(NSString *)action
+{
+	return NSAccessibilityActionDescription(action);
+}
+	
+- (void)accessibilityPerformAction:(NSString *)action {
+	if ([action isEqualToString:NSAccessibilityPressAction]) {
+		// this tab was selected
+		[_controlView performSelector:@selector(tabClick:) withObject:self];
+	}
+}
+
+- (id)accessibilityHitTest:(NSPoint)point {
+	return NSAccessibilityUnignoredAncestor(self);
+}
+
+- (id)accessibilityFocusedUIElement:(NSPoint)point {
+	return NSAccessibilityUnignoredAncestor(self);
 }
 
 @end

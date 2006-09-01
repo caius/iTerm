@@ -118,12 +118,6 @@ static NSImage *warningImage;
     [TERMINAL release];
     TERMINAL = nil;    
     
-    if (tabViewItem)
-    {
-        [tabViewItem release];
-        tabViewItem = nil;
-    }
-    
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 	
     [super dealloc];    
@@ -249,7 +243,14 @@ static NSImage *warningImage;
     [SCREEN setSession: nil];
     [SCREEN setTerminal: nil];
     [TERMINAL setScreen: nil];
-        
+
+    if (tabViewItem)
+    {
+        [tabViewItem release];
+        tabViewItem = nil;
+    }
+    
+    
     parent = nil;
 	
 }

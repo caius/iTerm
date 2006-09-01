@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.327 2006-08-31 03:09:59 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.328 2006-09-01 21:53:39 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -313,6 +313,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             break;
         case 2:
             [tabBarControl setStyleNamed:@"Unified"];
+            break;
         default:
             [tabBarControl setStyleNamed:@"Adium"];
             break;
@@ -561,33 +562,30 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     numberOfSessions = [_sessionMgr numberOfSessions]; 
     if(numberOfSessions == 1 && [self windowInited])
-    {
+    {   
+        [[self window] close];
+    }
+	else {
+        // if we are closing the current session, select another session before closing this one
+        if(aSession == [self currentSession])
+        {
+            indexOfSession = [_sessionMgr indexOfSession: aSession];
+            if(indexOfSession < 0)
+                return;
+            if(indexOfSession == numberOfSessions - 1)
+                indexOfSession--;
+            else
+                indexOfSession++;
+            [self selectSessionAtIndex:indexOfSession];
+        }
+        
+        // now get rid of this session
+        [aSession retain];  
+        aTabViewItem = [aSession tabViewItem];
         [aSession terminate];
         [aSession release];
-        [[self window] close];
-        return;
+        [TABVIEW removeTabViewItem: aTabViewItem];
     }
-	
-	// if we are closing the current session, select another session before closing this one
-	if(aSession == [self currentSession])
-	{
-		indexOfSession = [_sessionMgr indexOfSession: aSession];
-		if(indexOfSession < 0)
-			return;
-		if(indexOfSession == numberOfSessions - 1)
-			indexOfSession--;
-		else
-			indexOfSession++;
-		[self selectSessionAtIndex:indexOfSession];
-	}
-		
-	// now get rid of this session
-	//[aSession retain];  
-	aTabViewItem = [aSession tabViewItem];
-    [TABVIEW removeTabViewItem: aTabViewItem];
-
-    [aSession terminate];
-	[aSession release];
 }
 
 - (IBAction) closeCurrentSession: (id) sender
@@ -841,6 +839,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// desired size of window content
 	winSize = tabViewSize;
 
+    // set the style of tabs to match window style
+	switch ([[PreferencePanel sharedInstance] windowStyle]) {
+        case 0:
+            [tabBarControl setStyleNamed:@"Metal"];
+            break;
+        case 1:
+            [tabBarControl setStyleNamed:@"Aqua"];
+            break;
+        case 2:
+            [tabBarControl setStyleNamed:@"Unified"];
+            break;
+        default:
+            [tabBarControl setStyleNamed:@"Adium"];
+            break;
+    }
 	if([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
 	{
 		[tabBarControl setHidden: YES];

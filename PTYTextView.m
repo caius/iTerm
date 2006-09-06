@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.255 2006-08-31 03:09:58 yfabian Exp $
+// $Id: PTYTextView.m,v 1.256 2006-09-06 23:54:22 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -721,7 +721,7 @@ static SInt32 systemVersion;
     if (![dataSource tryLock]) return;
 	
     gettimeofday(&now, NULL);
-    if (now.tv_sec*10+now.tv_sec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_sec/100000+5) {
+    if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+5) {
         blinkShow = !blinkShow;
         lastBlink = now;
     }

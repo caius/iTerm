@@ -112,6 +112,8 @@ enum {
     
     // orientation, top or bottom
     int                         _tabLocation;
+    
+    NSLock                      *_lock;
 }
 
 // control characteristics

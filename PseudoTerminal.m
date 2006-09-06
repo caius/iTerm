@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.328 2006-09-01 21:53:39 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.329 2006-09-06 23:54:22 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -523,9 +523,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     if (![_sessionMgr containsSession:aSession])
     {
-        [aSession setParent:self];
-        		
-		// create a new tab
+        // create a new tab
 		controller = [[NSObjectController alloc] initWithContent:aSession];
 		[aSession setController: controller];
 		aTabViewItem = [[NSTabViewItem alloc] initWithIdentifier: controller];
@@ -653,7 +651,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(theSessionName != nil)
     {
         [[_sessionMgr currentSession] setName: theSessionName];
-        [[[_sessionMgr currentSession] tabViewItem] setLabel: theSessionName];
     }
     else {
         NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[[[_sessionMgr currentSession] SHELL] path] pathComponents] lastObject], [_sessionMgr currentSessionIndex]];
@@ -664,10 +661,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [title appendString:progpath];
 		
         [[_sessionMgr currentSession] setName: title];
-        [[[_sessionMgr currentSession] tabViewItem] setLabel: title];
 		
     }
-    [self setWindowTitle];
 }
 
 - (PTYSession *) currentSession
@@ -1811,7 +1806,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) closeTabWithIdentifier: (id) identifier
 {
+    [self acquireLock];
     [self closeSession: [identifier content]];
+    [self releaseLock];
 }
 
 // moves a tab with its session to a new window
@@ -2023,6 +2020,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             {
                 aSession = [_sessionMgr sessionAtIndex: i];
                 if (![aSession exited]) [aSession updateDisplay];
+                else {
+                    if ([aSession autoClose]) {
+                        [self closeSession:aSession];
+                        i--;
+                        n--;
+                        if (!n) {
+                            [self releaseLock];
+                            goto end_thread;
+                        }
+                    }
+                }
             }
 		}
         else {
@@ -2032,7 +2040,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		// periodically create and release autorelease pools
 		if((iterationCount % 50) == 0)
 		{
-			[pool release];
+            [pool release];
 			pool = nil;
 			iterationCount = 0;
 		}
@@ -2041,6 +2049,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		usleep(100000);
 	}
 	
+end_thread:
 	if(pool != nil)
 	{
 		[pool release];
@@ -2200,6 +2209,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // set our preferences
     [aSession setAddressBookEntry: addressbookEntry];
     // Add this session to our term and make it current
+    [self acquireLock];
     [self appendSession: aSession];
     
     
@@ -2222,15 +2232,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self startProgram:cmd arguments:arg environment:env];
 	
     [aSession release];
+    [self releaseLock];
 }
 
 -(void)appendSession:(PTYSession *)object
 {
     // NSLog(@"PseudoTerminal: -appendSession: 0x%x", object);
-    [self acquireLock];
     [self setupSession: object title: nil];
     [self insertSession: object atIndex:[_sessionMgr numberOfSessions]];
-    [self releaseLock];
 }
 
 -(void)removeFromSessionsAtIndex:(unsigned)index

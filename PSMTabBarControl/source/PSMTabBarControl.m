@@ -124,6 +124,7 @@
     _cellOptimumWidth = 130;
     _tabLocation = PSMTab_TopTab;
     style = [[PSMMetalTabStyle alloc] init];
+    _lock = [[NSLock alloc] init];
     
     // the overflow button/menu
     NSRect overflowButtonRect = NSMakeRect([self frame].size.width - [style rightMarginForTabBarControl] + 1, 0, [style rightMarginForTabBarControl] - 1, [self frame].size.height);
@@ -200,6 +201,7 @@
     [partnerView release];
     [_lastMouseDownEvent release];
     [style release];
+    [_lock release];
     
     [self unregisterDraggedTypes];
 	
@@ -512,17 +514,19 @@
     [self bindPropertiesForCell:cell andTabViewItem:item];
 	
     // add to collection
+    [_lock lock];
     [_cells addObject:cell];
     [cell release];
-    if([_cells count] == [tabView numberOfTabViewItems]){
-        [self update]; // don't update unless all are accounted for!
-    }
+    [_lock unlock];
+    [self update]; 
 }
 
 - (void)removeTabForCell:(PSMTabBarCell *)cell
 {
 	NSTabViewItem *item = [cell representedObject];
 	
+    [_lock lock];
+
     // unbind
     [[cell indicator] unbind:@"animate"];
     [[cell indicator] unbind:@"hidden"];
@@ -566,11 +570,14 @@
         [self removeTrackingRect:[cell cellTrackingTag]];
 		[cell setCellTrackingTag:0];
     }
+    [self removeAllToolTips];
 
     // pull from collection
     [_cells removeObject:cell];
+    [_lock unlock];
 
     [self update];
+
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -829,7 +836,9 @@
 
 - (void)drawRect:(NSRect)rect 
 {
+    [_lock lock];
     [style drawTabBar:self inRect:rect];
+    [_lock unlock];
 }
 
 - (void)update
@@ -844,9 +853,12 @@
    
     // make sure all of our tabs are accounted for before updating
     if ([tabView numberOfTabViewItems] != [_cells count]) {
+        NSLog(@"numberOfTabViewItems Inconsistency!");
         return;
     }
 	
+    [_lock lock];
+
     // hide/show? (these return if already in desired state)
     if((_hideForSingleTab) && ([_cells count] <= 1)){
         [self hideTabBar:YES animate:YES];
@@ -1036,8 +1048,10 @@
 		_animationTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 / 30.0 target:self selector:@selector(_animateCells:) userInfo:newWidths repeats:YES];
 	} else {
 		[self _finishCellUpdate:newWidths];
-		[self setNeedsDisplay:YES];
+        [self setNeedsDisplay:YES];
 	}
+    
+    [_lock unlock];
 }
 
 - (void)_removeCellTrackingRects
@@ -2020,7 +2034,9 @@
     NSEnumerator *e = [_cells objectEnumerator];
     PSMTabBarCell *cell;
     while ( (cell = [e nextObject])) {
-        [temp addObject:[cell representedObject]];
+        if ([cell representedObject]) {
+			[temp addObject:[cell representedObject]];
+		}
     }
     return temp;
 }

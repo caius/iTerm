@@ -303,23 +303,7 @@ static NSImage *warningImage;
     
     EXIT = YES;
 	
-	if (autoClose)
-    {
-        id p = parent;
-        [p acquireLock];
-        if ([[p sessions] count]==1)
-            [p closeSession:self];
-        else 
-        {
-            [p closeSession:self];
-            [p releaseLock];
-        }
-    }
-    else 
-    {
-        [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
-    }				
-    	
+    [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
 }
 
 - (BOOL) hasKeyMappingForEvent: (NSEvent *) event
@@ -1613,7 +1597,7 @@ static NSImage *warningImage;
 	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
 		[self setLabelAttribute];
 	
-	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_sec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_sec/100000+5) {
+	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+5) {
 		lastBlink = now;
         [TEXTVIEW refresh];
         lastUpdate = now;

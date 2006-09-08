@@ -248,6 +248,7 @@ static PSMTabDragAssistant *sharedDragAssistant = nil;
 				NSPoint drawPoint;
 				_dragWindowOffset = NSZeroSize;
 				viewImage = [[control delegate] tabView:[control tabView] imageForTabViewItem:[[self draggedCell] representedObject] offset:&_dragWindowOffset styleMask:&styleMask];
+                                
 				[viewImage lockFocus];
 				
 				//draw the tab into the returned window, that way we don't have two windows being dragged (this assumes the tab will be on the window)

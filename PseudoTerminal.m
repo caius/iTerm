@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.330 2006-09-08 00:18:15 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.331 2006-09-08 04:18:24 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1648,58 +1648,117 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSImage *)tabView:(NSTabView *)aTabView imageForTabViewItem:(NSTabViewItem *)tabViewItem offset:(NSSize *)offset styleMask:(unsigned int *)styleMask
 {
-	NSView *textview = [tabViewItem view];
-    NSRect tabFrame = [tabBarControl frame];
-	int tabHeight = tabFrame.size.height;
-
-    NSRect contentFrame, viewRect;
-    contentFrame = viewRect = [textview frame];
-    contentFrame.size.height += tabHeight;
-
-    // grabs whole tabview image
-	NSImage *viewImage = [[[NSImage alloc] initWithSize:contentFrame.size] autorelease];
-    NSImage *tabViewImage = [[[NSImage alloc] init] autorelease];
+    NSImage *viewImage;
     
-	[textview lockFocus];
-	NSBitmapImageRep *tabviewRep = [[[NSBitmapImageRep alloc] initWithFocusedViewRect:viewRect] autorelease];
-	[tabViewImage addRepresentation:tabviewRep];
-	[textview unlockFocus];
-	
-	[viewImage lockFocus];
-	//viewRect.origin.x += 10;
- 	if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_BottomTab) {
-        viewRect.origin.y += tabHeight;
-    }
-    [tabViewImage compositeToPoint:viewRect.origin operation:NSCompositeSourceOver];
-	[viewImage unlockFocus];
-	
-	//draw over where the tab bar would usually be
-	[viewImage lockFocus];
-	[[NSColor windowBackgroundColor] set];
-    if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
-        tabFrame.origin.y += viewRect.size.height;
-    }
-	NSRectFill(tabFrame);
-	//draw the background flipped, which is actually the right way up
-	NSAffineTransform *transform = [NSAffineTransform transform];
-	[transform scaleXBy:1.0 yBy:-1.0];
-	[transform concat];
-	tabFrame.origin.y = -tabFrame.origin.y - tabFrame.size.height;
-	[(id <PSMTabStyle>)[[aTabView delegate] style] drawBackgroundInRect:tabFrame];
-	[transform invert];
-	[transform concat];
-	
-	[viewImage unlockFocus];
-	
-    offset->width = [(id <PSMTabStyle>)[tabBarControl style] leftMarginForTabBarControl];
-    if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
-        offset->height = 22;
-    }
+    if (tabViewItem == [aTabView selectedTabViewItem]) { 
+        NSView *textview = [tabViewItem view];
+        NSRect tabFrame = [tabBarControl frame];
+        int tabHeight = tabFrame.size.height;
+
+        NSRect contentFrame, viewRect;
+        contentFrame = viewRect = [textview frame];
+        contentFrame.size.height += tabHeight;
+
+        // grabs whole tabview image
+        viewImage = [[[NSImage alloc] initWithSize:contentFrame.size] autorelease];
+        NSImage *tabViewImage = [[[NSImage alloc] init] autorelease];
+
+        [textview lockFocus];
+        NSBitmapImageRep *tabviewRep = [[[NSBitmapImageRep alloc] initWithFocusedViewRect:viewRect] autorelease];
+        [tabViewImage addRepresentation:tabviewRep];
+        [textview unlockFocus];
+
+        [viewImage lockFocus];
+        //viewRect.origin.x += 10;
+        if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_BottomTab) {
+            viewRect.origin.y += tabHeight;
+        }
+        [tabViewImage compositeToPoint:viewRect.origin operation:NSCompositeSourceOver];
+        [viewImage unlockFocus];
+
+        //draw over where the tab bar would usually be
+        [viewImage lockFocus];
+        [[NSColor windowBackgroundColor] set];
+        if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+            tabFrame.origin.y += viewRect.size.height;
+        }
+        NSRectFill(tabFrame);
+        //draw the background flipped, which is actually the right way up
+        NSAffineTransform *transform = [NSAffineTransform transform];
+        [transform scaleXBy:1.0 yBy:-1.0];
+        [transform concat];
+        tabFrame.origin.y = -tabFrame.origin.y - tabFrame.size.height;
+        [(id <PSMTabStyle>)[[aTabView delegate] style] drawBackgroundInRect:tabFrame];
+        [transform invert];
+        [transform concat];
+
+        [viewImage unlockFocus];
+
+        offset->width = [(id <PSMTabStyle>)[tabBarControl style] leftMarginForTabBarControl];
+        if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+            offset->height = 22;
+        }
+        else {
+            offset->height = viewRect.size.height + 22;
+        }
+        *styleMask = NSBorderlessWindowMask;
+	}
     else {
-        offset->height = viewRect.size.height + 22;
+        NSView *textview = [tabViewItem view];
+        NSRect tabFrame = [tabBarControl frame];
+        int tabHeight = tabFrame.size.height;
+        
+        NSRect contentFrame, viewRect;
+        contentFrame = viewRect = [textview frame];
+        contentFrame.size.height += tabHeight;
+        
+        // grabs whole tabview image
+        viewImage = [[[NSImage alloc] initWithSize:contentFrame.size] autorelease];
+        NSImage *textviewImage = [[[NSImage alloc] initWithSize:viewRect.size] autorelease];
+        
+        [textviewImage setFlipped: YES];
+        [textviewImage lockFocus];
+        //draw the background flipped, which is actually the right way up
+        [[[tabViewItem identifier] TEXTVIEW] setForceUpdate: YES];
+        [[[tabViewItem identifier] TEXTVIEW] drawRect: viewRect];
+        [textviewImage unlockFocus];
+        
+        [viewImage lockFocus];
+        //viewRect.origin.x += 10;
+        if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_BottomTab) {
+            viewRect.origin.y += tabHeight;
+        }
+        [textviewImage compositeToPoint:viewRect.origin operation:NSCompositeSourceOver];
+        [viewImage unlockFocus];
+        
+        //draw over where the tab bar would usually be
+        [viewImage lockFocus];
+        [[NSColor windowBackgroundColor] set];
+        if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+            tabFrame.origin.y += viewRect.size.height;
+        }
+        NSRectFill(tabFrame);
+        //draw the background flipped, which is actually the right way up
+        NSAffineTransform *transform = [NSAffineTransform transform];
+        [transform scaleXBy:1.0 yBy:-1.0];
+        [transform concat];
+        tabFrame.origin.y = -tabFrame.origin.y - tabFrame.size.height;
+        [(id <PSMTabStyle>)[[aTabView delegate] style] drawBackgroundInRect:tabFrame];
+        [transform invert];
+        [transform concat];
+        
+        [viewImage unlockFocus];
+        
+        offset->width = [(id <PSMTabStyle>)[tabBarControl style] leftMarginForTabBarControl];
+        if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+            offset->height = 22;
+        }
+        else {
+            offset->height = viewRect.size.height + 22;
+        }
+        *styleMask = NSBorderlessWindowMask;
     }
-	*styleMask = NSBorderlessWindowMask;
-	
+        
 	return viewImage;
 }
 

@@ -50,8 +50,7 @@
         int i, cnt = [_sessionList count];
         
         for(i = 0; i < cnt; i++)
-            if ([[_sessionList objectAtIndex: i] exited]==NO)
-                [[_sessionList objectAtIndex: i] terminate];
+            [[_sessionList objectAtIndex: i] terminate];
         
         [_sessionList release];
         _sessionList = nil;

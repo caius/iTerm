@@ -4,6 +4,7 @@
       This is because PSMTabBarControl works this way.
     * Fixed tab images when dragging.
     * Re-implemented contentual menu for the tab.
+    * Fixed a memory leak.
     
 2006-09-06  fabian
 

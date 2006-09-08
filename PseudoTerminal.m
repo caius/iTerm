@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.329 2006-09-06 23:54:22 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.330 2006-09-08 00:18:15 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -468,7 +468,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__, aSession);
 #endif
     
-    [TABVIEW selectTabViewItemWithIdentifier: [aSession controller]];
+    [TABVIEW selectTabViewItemWithIdentifier: aSession];
     if ([_sessionMgr currentSession]) 
         [[_sessionMgr currentSession] resetStatus];
     
@@ -511,7 +511,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index
 {
     NSTabViewItem *aTabViewItem;
-	NSObjectController *controller;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal insertSession: 0x%x atIndex: %d]",
@@ -524,10 +523,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if (![_sessionMgr containsSession:aSession])
     {
         // create a new tab
-		controller = [[NSObjectController alloc] initWithContent:aSession];
-		[aSession setController: controller];
-		aTabViewItem = [[NSTabViewItem alloc] initWithIdentifier: controller];
-		[controller release];
+		aTabViewItem = [[NSTabViewItem alloc] initWithIdentifier: aSession];
 		[aSession setTabViewItem: aTabViewItem];
 		[aSession setObjectCount: index + 1];
         NSParameterAssert(aTabViewItem != nil);
@@ -1550,7 +1546,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     
-    aSession = [[tabViewItem identifier] content];
+    aSession = [tabViewItem identifier];
     
     if ([_sessionMgr currentSession]) 
         [[_sessionMgr currentSession] resetStatus];
@@ -1584,7 +1580,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willRemoveTabViewItem]", __FILE__, __LINE__);
 #endif
-    PTYSession *aSession = [[tabViewItem identifier] content];
+    PTYSession *aSession = [tabViewItem identifier];
 	int i, numberOfSessions;
 	
     if([_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
@@ -1616,7 +1612,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(tabView == nil || tabViewItem == nil || index < 0)
 		return;
     
-    PTYSession *aSession = [[tabViewItem identifier] content];
+    PTYSession *aSession = [tabViewItem identifier];
 	if(![_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
     {
         [aSession setParent: self];
@@ -1652,33 +1648,37 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSImage *)tabView:(NSTabView *)aTabView imageForTabViewItem:(NSTabViewItem *)tabViewItem offset:(NSSize *)offset styleMask:(unsigned int *)styleMask
 {
-	// grabs whole window image
-	NSImage *viewImage = [[[NSImage alloc] init] autorelease];
-	NSRect contentFrame = [[[self window] contentView] frame];
-	[[[self window] contentView] lockFocus];
-	NSBitmapImageRep *viewRep = [[[NSBitmapImageRep alloc] initWithFocusedViewRect:contentFrame] autorelease];
-	[viewImage addRepresentation:viewRep];
-	[[[self window] contentView] unlockFocus];
-	
-    // grabs snapshot of dragged tabViewItem's view (represents content being dragged)
-	NSView *viewForImage = [[self currentSession] TEXTVIEW];
-	NSRect viewRect = [viewForImage frame];
-	NSImage *tabViewImage = [[[NSImage alloc] initWithSize:viewRect.size] autorelease];
-	[tabViewImage lockFocus];
-	[viewForImage drawRect:[viewForImage bounds]];
-	[tabViewImage unlockFocus];
+	NSView *textview = [tabViewItem view];
+    NSRect tabFrame = [tabBarControl frame];
+	int tabHeight = tabFrame.size.height;
+
+    NSRect contentFrame, viewRect;
+    contentFrame = viewRect = [textview frame];
+    contentFrame.size.height += tabHeight;
+
+    // grabs whole tabview image
+	NSImage *viewImage = [[[NSImage alloc] initWithSize:contentFrame.size] autorelease];
+    NSImage *tabViewImage = [[[NSImage alloc] init] autorelease];
+    
+	[textview lockFocus];
+	NSBitmapImageRep *tabviewRep = [[[NSBitmapImageRep alloc] initWithFocusedViewRect:viewRect] autorelease];
+	[tabViewImage addRepresentation:tabviewRep];
+	[textview unlockFocus];
 	
 	[viewImage lockFocus];
-	NSPoint tabOrigin = [aTabView frame].origin;
-	tabOrigin.x += 10;
-	tabOrigin.y += 13;
-	[tabViewImage compositeToPoint:tabOrigin operation:NSCompositeSourceOver];
+	//viewRect.origin.x += 10;
+ 	if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_BottomTab) {
+        viewRect.origin.y += tabHeight;
+    }
+    [tabViewImage compositeToPoint:viewRect.origin operation:NSCompositeSourceOver];
 	[viewImage unlockFocus];
 	
 	//draw over where the tab bar would usually be
-	NSRect tabFrame = [tabBarControl frame];
 	[viewImage lockFocus];
 	[[NSColor windowBackgroundColor] set];
+    if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+        tabFrame.origin.y += viewRect.size.height;
+    }
 	NSRectFill(tabFrame);
 	//draw the background flipped, which is actually the right way up
 	NSAffineTransform *transform = [NSAffineTransform transform];
@@ -1692,9 +1692,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[viewImage unlockFocus];
 	
     offset->width = [(id <PSMTabStyle>)[tabBarControl style] leftMarginForTabBarControl];
-    offset->height = 22;
-
-	*styleMask = NSTitledWindowMask | NSTexturedBackgroundWindowMask;
+    if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+        offset->height = 22;
+    }
+    else {
+        offset->height = viewRect.size.height + 22;
+    }
+	*styleMask = NSBorderlessWindowMask;
 	
 	return viewImage;
 }
@@ -1753,7 +1757,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     if ([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
     {
-        PTYSession *aSession = [[[TABVIEW tabViewItemAtIndex: 0] identifier] content];
+        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
         [self setWindowSize];
         [[aSession TEXTVIEW] scrollEnd];
         // make sure the display is up-to-date.
@@ -1765,49 +1769,66 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
 }
 
-- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
+- (NSMenu *)tabView:(NSTabView *)aTabView menuForTabViewItem:(NSTabViewItem *)tabViewItem
 {
     NSMenuItem *aMenuItem;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabViewContextualMenu]", __FILE__, __LINE__);
 #endif    
 	
-    if((theEvent == nil) || (theMenu == nil))
-		return;
+    NSMenu *theMenu = [[[NSMenu alloc] init] autorelease];
 	
-    /*    NSPoint windowPoint, localPoint;
-    windowPoint = [[TABVIEW window] convertScreenToBase: [NSEvent mouseLocation]];
-    localPoint = [TABVIEW convertPoint: windowPoint fromView: nil];
-	
-    if([TABVIEW tabViewItemAtPoint:localPoint] == nil)
-		return; */
-	
-    [theMenu addItem: [NSMenuItem separatorItem]];
-	
+    // Create a menu with a submenu to navigate between tabs if there are more than one
+    if([TABVIEW numberOfTabViewItems] > 1)
+    {	
+        int nextIndex = 0;
+        int i;
+		
+		[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"Select",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: nextIndex];
+		NSMenu *tabMenu = [[NSMenu alloc] initWithTitle:@""];
+		
+		for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
+		{
+			aMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
+												   action:@selector(selectTab:) keyEquivalent:@""];
+			[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
+			[aMenuItem setTarget: TABVIEW];
+			[tabMenu addItem: aMenuItem];
+			[aMenuItem release];
+		}
+		[theMenu setSubmenu: tabMenu forItem: [theMenu itemAtIndex: nextIndex]];
+		[tabMenu release];
+		nextIndex++;
+        [theMenu addItem: [NSMenuItem separatorItem]];
+   }
+    
+ 	
     // add tasks
-    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close current tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close current tab") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
-    //[aMenuItem setRepresentedObject: [[[TABVIEW tabViewItemAtPoint:localPoint] identifier] content]];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close tab") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
+    [aMenuItem setRepresentedObject: tabViewItem];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
     if([_sessionMgr numberOfSessions] > 1)
     {
-		aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move current tab to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move current tab to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
-		//[aMenuItem setRepresentedObject: [[[TABVIEW tabViewItemAtPoint:localPoint] identifier] content]];
+		aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move tab to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move tab to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
+		[aMenuItem setRepresentedObject: tabViewItem];
 		[theMenu addItem: aMenuItem];
 		[aMenuItem release];
     }
+    
+    return theMenu;
 }
 
 // closes a tab
 - (void) closeTabContextualMenuAction: (id) sender
 {
-    [self closeCurrentSession: sender];
+    [self closeCurrentSession: [[sender representedObject] identifier]];
 }
 
 - (void) closeTabWithIdentifier: (id) identifier
 {
     [self acquireLock];
-    [self closeSession: [identifier content]];
+    [self closeSession: identifier];
     [self releaseLock];
 }
 
@@ -1815,11 +1836,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) moveTabToNewWindowContextualMenuAction: (id) sender
 {
     PseudoTerminal *term;
-    PTYSession *aSession;
-    NSTabViewItem *aTabViewItem;
+    NSTabViewItem *aTabViewItem = [sender representedObject];
+    PTYSession *aSession = [aTabViewItem identifier];
 	
-    // grab the referenced session
-    aSession = [self currentSession];
     if(aSession == nil)
 		return;
 	
@@ -1842,8 +1861,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // If this is the current session, make previous one active.
     if(aSession == [_sessionMgr currentSession])
 		[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
-	
-    aTabViewItem = [aSession tabViewItem];
 	
     // temporarily retain the tabViewItem
     [aTabViewItem retain];

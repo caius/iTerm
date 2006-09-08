@@ -200,5 +200,10 @@
 #endif
 }
 
+// selects a tab from the contextual menu
+- (void) selectTab: (id) sender
+{
+    [self selectTabViewItemWithIdentifier: [sender representedObject]];
+}
 
 @end

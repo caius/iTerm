@@ -43,9 +43,6 @@
     // Owning tab view item
     NSTabViewItem *tabViewItem;
 	
-	// controller: is identifier for PTYTabView
-	NSObjectController *controller;
-
     // tty device
     NSString *tty;
     
@@ -182,8 +179,6 @@
 - (void)setObjectCount:(int)value;
 - (NSString *) tty;
 - (NSString *) contents;
-- (NSObjectController *) controller;
-- (void) setController: (NSObjectController *) aController;
 - (NSImage *) icon;
 - (void) setIcon: (NSImage *) anIcon;
 

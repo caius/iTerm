@@ -36,7 +36,6 @@
 - (void)tabViewDidChangeNumberOfTabViewItems:(NSTabView *)tabView;
 - (void)tabViewWillPerformDragOperation:(NSTabView *)tabView;
 - (void)tabViewDidPerformDragOperation:(NSTabView *)tabView;
-- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu;
 @end
 
 @interface PTYTabView : NSTabView {
@@ -56,5 +55,8 @@
 - (void) addTabViewItem: (NSTabViewItem *) aTabViewItem;
 - (void) removeTabViewItem: (NSTabViewItem *) aTabViewItem;
 - (void) insertTabViewItem: (NSTabViewItem *) tabViewItem atIndex: (int) index;
+
+// selects a tab from the contextual menu
+- (void) selectTab: (id) sender;
 
 @end

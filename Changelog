@@ -1,3 +1,10 @@
+2006-09-07  fabian
+
+    * removed controller in PTYSession. Now a PTYSession is directly binded to NSTabViewItem objects.
+      This is because PSMTabBarControl works this way.
+    * Fixed tab images when dragging.
+    * Re-implemented contentual menu for the tab.
+    
 2006-09-06  fabian
 
     * Added a lock to PSMTabBarControl to avoid crashes.

@@ -1217,16 +1217,6 @@ static NSImage *warningImage;
     [TERMINAL setEncoding:encoding];
 }
 
-- (NSObjectController *) controller
-{
-	return (controller);
-}
-
-- (void) setController: (NSObjectController *) aController
-{
-	controller = aController;
-}
-
 
 - (NSString *) tty
 {

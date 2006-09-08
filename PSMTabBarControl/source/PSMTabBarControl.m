@@ -510,20 +510,22 @@
     PSMTabBarCell *cell = [[PSMTabBarCell alloc] initWithControlView:self];
     [cell setRepresentedObject:item];
     
+    [_lock lock];
+        
+    // add to collection
+    [_cells addObject:cell];
+    
     // bind it up
     [self bindPropertiesForCell:cell andTabViewItem:item];
-	
-    // add to collection
-    [_lock lock];
-    [_cells addObject:cell];
-    [cell release];
+	[cell release];
+    
     [_lock unlock];
     [self update]; 
 }
 
 - (void)removeTabForCell:(PSMTabBarCell *)cell
 {
-	NSTabViewItem *item = [cell representedObject];
+	NSObjectController *item = [[cell representedObject] identifier];
 	
     [_lock lock];
 
@@ -534,26 +536,21 @@
     [cell unbind:@"title"];
     [cell unbind:@"count"];
 	
-	if ([item identifier] != nil) {
-		if ([[[cell representedObject] identifier] respondsToSelector:@selector(isProcessing)]) {
-			[[[cell representedObject] identifier] removeObserver:cell forKeyPath:@"isProcessing"];
+	if (item != nil) {
+        
+		if ([item respondsToSelector:@selector(isProcessing)]) {
+			[item removeObserver:cell forKeyPath:@"isProcessing"];
 		}
-	}
-	
-	if ([item identifier] != nil) {
-		if ([[[cell representedObject] identifier] respondsToSelector:@selector(icon)]) {
-			[[item identifier] removeObserver:cell forKeyPath:@"icon"];
+		if ([item respondsToSelector:@selector(icon)]) {
+			[item removeObserver:cell forKeyPath:@"icon"];
 		}
-	}
-	
-	if ([item identifier] != nil) {
-		if ([[[cell representedObject] identifier] respondsToSelector:@selector(objectCount)]) {
-			[[item identifier] removeObserver:cell forKeyPath:@"objectCount"];
+		if ([item respondsToSelector:@selector(objectCount)]) {
+			[item removeObserver:cell forKeyPath:@"objectCount"];
 		}
 	}
 	
     // stop watching identifier
-    [item removeObserver:self forKeyPath:@"identifier"];
+    [[cell representedObject] removeObserver:self forKeyPath:@"identifier"];
     
     // remove indicator
     if([[self subviews] containsObject:[cell indicator]]){
@@ -836,9 +833,10 @@
 
 - (void)drawRect:(NSRect)rect 
 {
-    [_lock lock];
-    [style drawTabBar:self inRect:rect];
-    [_lock unlock];
+    if ([_lock tryLock]) {
+        [style drawTabBar:self inRect:rect];
+        [_lock unlock];
+    }
 }
 
 - (void)update
@@ -851,14 +849,15 @@
     // abandon hope, all ye who enter here :-)
     // this method handles all of the cell layout, and is called when something changes to require the refresh.  This method is not called during drag and drop; see the PSMTabDragAssistant's calculateDragAnimationForTabBar: method, which does layout in that case.
    
+    
+    if (![_lock tryLock]) return;
+    
     // make sure all of our tabs are accounted for before updating
     if ([tabView numberOfTabViewItems] != [_cells count]) {
-        NSLog(@"numberOfTabViewItems Inconsistency!");
+        [_lock unlock];
         return;
     }
 	
-    [_lock lock];
-
     // hide/show? (these return if already in desired state)
     if((_hideForSingleTab) && ([_cells count] <= 1)){
         [self hideTabBar:YES animate:YES];
@@ -1794,18 +1793,6 @@
     }
 }
 
-/*- (void)tabViewWillPerformDragOperation:(NSTabView *)tabView
-{
-	
-}
-- (void)tabViewDidPerformDragOperation:(NSTabView *)tabView
-{
-	
-}*/
-- (void)tabViewContextualMenu: (NSEvent *)theEvent menu: (NSMenu *)theMenu
-{
-	
-}
 
 - (void)tabView:(NSTabView *)aTabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {

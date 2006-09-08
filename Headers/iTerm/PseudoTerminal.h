@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.34 2006-08-23 21:18:36 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.35 2006-09-08 00:18:15 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -147,6 +147,8 @@
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;
 - (BOOL) suppressContextualMenu;
 - (void) setSuppressContextualMenu: (BOOL) aBool;
+- (NSMenu *)tabView:(NSTabView *)aTabView menuForTabViewItem:(NSTabViewItem *)tabViewItem;
+
 
 // Close Window
 - (BOOL)showCloseWindow;

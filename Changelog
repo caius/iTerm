@@ -1,3 +1,7 @@
+2006-09-11  fabian
+
+    * Fixed a bug that fails to refresh background windows when TAB settings are changed.
+    
 2006-09-07  fabian
 
     * removed controller in PTYSession. Now a PTYSession is directly binded to NSTabViewItem objects.

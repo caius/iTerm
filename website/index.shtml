@@ -32,7 +32,7 @@
 <LI>Native Cocoa application that runs both on Tiger and earlier Panther.</LI>
   <UL>
     <LI>Native OS X user interface</LI>
-    <LI>Support for both PowerPC and  new Intel Macs<IMG src="new.gif"></LI>
+    <LI>Support for both PowerPC and  new Intel Macs</LI>
 	<LI>Support of Applescript</LI>
 	<LI>Transparent windows and custm background pictures</LI>
     <LI>Bonjour support</LI>
@@ -40,9 +40,9 @@
 <LI>Complete VT100 emulation, with additional support for most common xterm and 
 	ANSI escape sequences.</LI>
   <UL>
-    <LI>Custom key-mapping<IMG src="new.gif"></LI>
+    <LI>Custom key-mapping</LI>
 	<LI>Supports select-to-copy and mid-button paste</LI>
-	<LI>Supports focus follow mouse<IMG src="new.gif"></LI>
+	<LI>Supports focus follow mouse</LI>
 	<LI>Supports xterm titling sequence to change tab label</LI>
 	<LI>Supports ANSI 16 colors, which are also fully customizable</LI>
   </UL>
@@ -72,6 +72,11 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
+<STRONG>New Look</STRONG> 9/12/2006<BR><IMG src="new.gif">
+We are experimenting with a new tab control (PSMTabBarControl) that can mimic Safari-like tabs. Download the
+<A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">binary build</A> 
+from the latest CVS and check it out.<BR><BR>
+
 <STRONG>Recent CVS build</STRONG> 3/3/2006<BR>
 We decide to start regularly putting 
 <A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">binary build</A> 

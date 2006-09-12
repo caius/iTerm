@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.331 2006-09-08 04:18:24 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.332 2006-09-12 21:37:37 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -901,6 +901,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     [thisWindow setFrameTopLeftPoint: topLeft];
     [[[_sessionMgr currentSession] TEXTVIEW] setForceUpdate: YES];
+    [[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
+    
     
 }
 

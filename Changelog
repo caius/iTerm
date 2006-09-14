@@ -1,3 +1,12 @@
+2006-9-13   fabian
+
+    * Incorporated Growl branch into the main branch
+    * Added support for a new iTerm-specific escape sequence:
+        ESC ]9;string^G
+      This sends an alert with specified string via Growl.
+    * Added growl related strings into iTerm.string for future translations.
+    * A temporary fix to the window resize bug.
+
 2006-09-11  fabian
 
     * Fixed a bug that fails to refresh background windows when TAB settings are changed.

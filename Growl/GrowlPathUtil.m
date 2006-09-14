@@ -154,7 +154,8 @@ static NSBundle *prefPaneBundle;
 		[directoryContents addObject:existingFilename];
 	}
 
-	for (unsigned long i = 1UL; i < ULONG_MAX; ++i) {
+    unsigned long i;
+	for (i = 1UL; i < ULONG_MAX; ++i) {
 		[filename release];
 		filename = [[NSString alloc] initWithFormat:@"Screenshot %lu", i];
 		NSString *path = [directory stringByAppendingPathComponent:filename];

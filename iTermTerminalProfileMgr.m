@@ -338,6 +338,39 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	[aProfile setObject: [NSNumber numberWithBool: showBell] forKey: @"Show Bell"];	
 }
 
+- (BOOL) growlForProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	NSNumber *growl;
+	
+	if([profileName length] <= 0)
+		return (NO);
+	
+	aProfile = [profiles objectForKey: profileName];
+	if(aProfile == nil)
+		return (NO);
+	
+	growl = [aProfile objectForKey: @"Growl"];
+	if(growl == nil)
+		return (YES);
+	
+	return ([growl boolValue]);	
+}
+
+- (void) setGrowl: (BOOL) growl forProfile: (NSString *) profileName
+{
+	NSMutableDictionary *aProfile;
+	
+	if([profileName length] <= 0)
+		return;
+	
+	aProfile = [profiles objectForKey: profileName];
+	
+	if(aProfile == nil)
+		return;
+	
+	[aProfile setObject: [NSNumber numberWithBool: growl] forKey: @"Growl"];	
+}
 
 
 - (BOOL) blinkCursorForProfile: (NSString *) profileName

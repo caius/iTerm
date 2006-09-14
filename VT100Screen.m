@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.239 2006-09-06 23:54:22 yfabian Exp $
+// $Id: VT100Screen.m,v 1.240 2006-09-14 08:09:14 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -42,6 +42,7 @@
 #import <iTerm/PTYSession.h>
 #import <iTerm/PTYTask.h>
 #import <iTerm/PreferencePanel.h>
+#import <iTerm/iTermGrowlDelegate.h>
 #include <string.h>
 
 /* translates normal char into graphics char */
@@ -157,7 +158,10 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
 	
 	screenLock = [[NSLock alloc] init];
-     
+
+    // Need Growl plist stuff
+	gd = [iTermGrowlDelegate sharedInstance];
+
     return self;
 }
 
@@ -334,10 +338,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (void)resizeWidth:(int)width height:(int)height
 {
-    int i, sw, total_height, start_line;
-	screen_char_t *screen_lines_top, *bl, *scroll_lines_top, *aLine, *targetLine;
-	BOOL wrap = NO;
-    
+/*    int i, sw, total_height, skip_lines;
+	screen_char_t *screen_lines_top, *bl, *aLine;
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s:%d :%d]", __PRETTY_FUNCTION__, width, height);
 #endif
@@ -348,9 +351,121 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if (width==WIDTH && height==HEIGHT) return;
 	
 	// get lock
-    if (![self tryLock])
+    if (![self tryLock]) {
+        NSLog(@"Fail to lock!");
         return;	
-					
+    }
+    
+    total_height = max_scrollback_lines + HEIGHT;
+
+    // Try to determine how many empty trailing lines there are on screen
+    for(;HEIGHT>0;HEIGHT--) {
+        aLine = [self getLineAtScreenIndex: HEIGHT-1];
+        for (i=0;i<WIDTH;i++)
+            if (aLine[i].ch) break;
+        if (i<WIDTH) break;
+    }
+    
+    
+    // if new screen is short, we need to move some lines into scrollback
+    if (max_scrollback_lines>0) {
+        for(; HEIGHT>height; HEIGHT--) {
+            [self _addLineToScrollback];
+            screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, NULL);
+            CURSOR_Y--;
+            SAVE_CURSOR_Y--;
+        }
+        if (CURSOR_Y<0) CURSOR_Y=0;
+        if (SAVE_CURSOR_Y<0) SAVE_CURSOR_Y=0;
+        skip_lines = 0;
+    }
+    else { // we have to scrollback, we just need to skip several lines
+        skip_lines = HEIGHT - height;
+        if (skip_lines<0) skip_lines = 0;
+    }
+    
+	// create a new buffer
+	total_height = max_scrollback_lines + height;
+	bl = (screen_char_t*)malloc(total_height*width*sizeof(screen_char_t));
+	// set to default line
+	aLine = [self _getDefaultLineWithWidth: width];
+	for(i = 0; i < total_height; i++)
+		memcpy(bl+width*i, aLine, width*sizeof(screen_char_t));
+	
+	// set up the width we need to copy
+	sw = width<WIDTH?width:WIDTH;
+	
+	// copy over the old scrollback contents
+	for(i = 0; i < current_scrollback_lines; i++) 
+	{
+		aLine = [self getLineAtIndex: i];
+		memcpy(bl+width*i, aLine, sw*sizeof(screen_char_t));
+	}
+		
+	// copy the screen content
+	screen_lines_top = bl + current_scrollback_lines*width;
+    for(i = 0; i < HEIGHT; i++) 
+    {
+        aLine = [self getLineAtScreenIndex: i+skip_lines];
+        memcpy(screen_lines_top+width*i, aLine, sw*sizeof(screen_char_t));
+    }
+    	
+	// reassign our pointers
+	if(buffer_chars)
+		free(buffer_chars);
+	buffer_chars = scrollback_top = first_buffer_line = bl;
+	last_buffer_line = bl + (total_height - 1)*width;
+	screen_top = screen_lines_top;
+	
+	
+	// new height and width
+	WIDTH = width;
+	HEIGHT = height;
+	
+	// reset terminal scroll top and bottom
+	SCROLL_TOP = 0;
+	SCROLL_BOTTOM = HEIGHT - 1;
+	
+	// adjust X coordinate of cursor
+	if (CURSOR_X >= width) 
+		CURSOR_X = width-1;
+	if (SAVE_CURSOR_X >= width) 
+		SAVE_CURSOR_X = width-1;
+	
+	// if we did the resize in SAVE_BUFFER mode, too bad, get rid of it
+	if (temp_buffer) 
+	{
+		free(temp_buffer);
+		temp_buffer=NULL;
+	}
+	
+	// force a redraw
+	if(dirty)
+		free(dirty);
+	dirty=(char*)malloc(height*width*sizeof(char));
+	memset(dirty, 1, width*height*sizeof(char));
+	
+	// release lock
+	[self releaseLock];
+	
+	[display setForceUpdate: YES];	
+*/
+    int i, sw, total_height, start_line;
+	screen_char_t *screen_lines_top, *bl, *scroll_lines_top, *aLine, *targetLine;
+	BOOL wrap = NO;
+    
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s:%d :%d]", __PRETTY_FUNCTION__, width, height);
+#endif
+	
+	if(WIDTH == 0 || HEIGHT == 0)
+		return;
+    
+	if (width==WIDTH && height==HEIGHT) return;
+	
+	// get lock
+	[self acquireLock];
+    
 	// create a new buffer
 	total_height = max_scrollback_lines + height;
 	bl = (screen_char_t*)malloc(total_height*width*sizeof(screen_char_t));
@@ -369,7 +484,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		memcpy(bl+width*i, aLine, sw*sizeof(screen_char_t));
 	}
 	scroll_lines_top = bl;
-		
+    
 	// copy the screen content
 	screen_lines_top = bl + current_scrollback_lines*width;
 	if (HEIGHT <= height) //new screen is taller, so copy everything over
@@ -462,7 +577,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	[self releaseLock];
 	
 	[display setForceUpdate: YES];	
-	
+    
 }
 
 - (int)width
@@ -760,17 +875,25 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	    [SESSION setWindowTitle: token.u.string];
         }
         if (token.type==XTERMCC_ICON_TITLE||token.type==XTERMCC_WINICON_TITLE)
-	{
-	    //NSLog(@"setting session title to %@", token.u.string);
-	    [SESSION setName:token.u.string];
-	}
+        {
+            //NSLog(@"setting session title to %@", token.u.string);
+            [SESSION setName:token.u.string];
+        }
         break;
     case XTERMCC_INSBLNK: [self insertBlank:token.u.csi.p[0]]; break;
     case XTERMCC_INSLN: [self insertLines:token.u.csi.p[0]]; break;
     case XTERMCC_DELCH: [self deleteCharacters:token.u.csi.p[0]]; break;
     case XTERMCC_DELLN: [self deleteLines:token.u.csi.p[0]]; break;
-        
 
+    // Our iTerm specific codes    
+    case ITERM_GROWL:
+        if (GROWL) {
+            [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Alert",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+            withDescription:[NSString stringWithFormat:@"Session %@ #%d: %@", [SESSION name], [SESSION objectCount], token.u.string]
+            andNotification:@"Bells"];
+        }
+        break;
+        
     default:
 		NSLog(@"%s(%d): bug?? token.type = %d", 
 			__FILE__, __LINE__, token.type);
@@ -1701,6 +1824,20 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	{
 		[SESSION setBell: YES];
 	}
+	if (GROWL) {
+		[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Bell",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+		withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just rang a bell!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[SESSION name],[SESSION objectCount]] 
+		andNotification:@"Bells"];
+	}
+}
+
+- (void)setGrowlFlag:(BOOL)flag
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):+[VT100Screen setGrowlFlag:%s]",
+		  __FILE__, __LINE__, flag == YES ? "YES" : "NO");
+#endif
+    GROWL = flag;
 }
 
 - (void)deviceReport:(VT100TCC)token

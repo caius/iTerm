@@ -39,6 +39,7 @@
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
+#import <iTerm/iTermGrowlDelegate.h>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -75,7 +76,7 @@ static NSImage *warningImage;
 	
     gettimeofday(&lastInput, NULL);
     lastOutput = lastBlink = lastInput;
-    waiting=antiIdle=EXIT=NO;
+    antiIdle=EXIT=NO;
     
     addressBookEntry=nil;
 	
@@ -92,6 +93,8 @@ static NSImage *warningImage;
     SCREEN = [[VT100Screen alloc] init];
     NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
 
+	// Need Growl plist stuff
+	gd = [iTermGrowlDelegate sharedInstance];
 	
     return (self);
 }
@@ -173,7 +176,7 @@ static NSImage *warningImage;
 
     ai_code=0;
     antiIdle = NO;
-    REFRESHED = NO;
+    newOutput = NO;
 	
 	// register for some notifications	
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -302,7 +305,11 @@ static NSImage *warningImage;
     if (EXIT) return;
     
     EXIT = YES;
-	
+
+    [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]] 
+    andNotification:@"Broken Pipes"];
+    
     [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
 }
 
@@ -861,6 +868,7 @@ static NSImage *warningImage;
 - (void) setLabelAttribute
 {
     struct timeval now;
+    static BOOL growlIdle=NO, growlNewOutput=NO;
     
     gettimeofday(&now, NULL);
     if ([self exited])
@@ -872,31 +880,43 @@ static NSImage *warningImage;
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
     {
         if (now.tv_sec - lastOutput.tv_sec > 1) {
-            waiting=YES;
-            if (REFRESHED)
+            if(isProcessing)
+                [self setIsProcessing: NO];
+
+            if (newOutput)
 			{
-				// Idle state
-                if(isProcessing)
-					[self setIsProcessing: NO];
+				// Idle after new output
+                if (now.tv_sec - lastOutput.tv_sec > 60 && !growlIdle) {
+                    [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Idle",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+                    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d becomes idle.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]]  
+                    andNotification:@"Idle"];
+                    growlIdle = YES;
+                    growlNewOutput = NO;
+                }
 			}
             else
 			{
 				// normal state
-				if(isProcessing)
-					[self setIsProcessing: NO];
 			}
         }
         else 
 		{
-            waiting=NO;
             if(isProcessing == NO)
 				[self setIsProcessing: YES];
+
+            if (!growlNewOutput) {
+                [gd growlNotify:NSLocalizedStringFromTableInBundle(@"New Output",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+                withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"New Output was received in %@ #%d.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]] 
+                andNotification:@"New Output"];
+                growlNewOutput=YES;
+            }
         }
     }
     else {
         // front tab
         if(isProcessing)
 			[self setIsProcessing: NO];
+        growlNewOutput=NO;
     }
     [self setBell:NO];
 }
@@ -993,6 +1013,7 @@ static NSImage *warningImage;
     // set up the rest of the preferences
     [SCREEN setPlayBellFlag: ![terminalProfileMgr silenceBellForProfile: terminalProfile]];
 	[SCREEN setShowBellFlag: [terminalProfileMgr showBellForProfile: terminalProfile]];
+	[SCREEN setGrowlFlag: [terminalProfileMgr growlForProfile: terminalProfile]];
 	[SCREEN setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
 	[TEXTVIEW setBlinkingCursor: [terminalProfileMgr blinkCursorForProfile: terminalProfile]];
     [self setEncoding: [terminalProfileMgr encodingForProfile: terminalProfile]];
@@ -1535,14 +1556,9 @@ static NSImage *warningImage;
     [SCREEN clearScrollbackBuffer];
 }
 
-- (BOOL)refreshed
-{
-    return REFRESHED;
-}
-
 - (void) resetStatus;
 {
-    waiting = REFRESHED = NO;
+    newOutput = NO;
 }
 
 - (BOOL)exited
@@ -1746,12 +1762,9 @@ static NSImage *warningImage;
 				{
 					[SCREEN putToken:token];
 					
-					if (REFRESHED==NO)
+					if (newOutput==NO)
 					{
-						REFRESHED=YES;
-                        //if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem)
-                        //    [self setIcon: newOutputImage];
-
+						newOutput=YES;
 					}
 					
 					gettimeofday(&lastOutput, NULL);

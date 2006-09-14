@@ -180,3 +180,15 @@
 
 /* Keyboard Input */
 "Keyboard input will be sent to all sessions in this terminal." = "Keyboard input will be sent to all sessions in this terminal.";
+
+/* Growl Alerts */
+"Alert" = "Alert";
+"Session %@ #%d: %@" = "Session %@ #%d: %@";
+"Bell" = "Bell";
+"Session %@ #%d just rang a bell!" = "Session %@ #%d just rang a bell!";
+"Broken Pipe" = "Broken Pipe";
+"Session %@ #%d just terminated." = "Session %@ #%d just terminated.";
+"Idle" = "Idle";
+"Session %@ #%d becomes idle." = "Session %@ #%d becomes idle.";
+"New Output" = "New Output";
+"New Output was received in %@ #%d." = "New Output was received in %@ #%d.";

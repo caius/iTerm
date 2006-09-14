@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.332 2006-09-12 21:37:37 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.333 2006-09-14 08:09:14 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1279,17 +1279,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 		  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 //#endif
+    float nch = [sender frame].size.height - [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect].size.height;
 
 	if (fontSizeFollowWindowResize) {
 		//scale = defaultFrame.size.height / [sender frame].size.height;
-		float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] frame].size.height;
 		float scale = (proposedFrameSize.height - nch) / HEIGHT / charHeight;
 		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
 		font = [self _getMaxFont:font height:proposedFrameSize.height - nch lines:HEIGHT];
 		proposedFrameSize.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
-		//NSLog(@"actual height: %f\t scale: %f\t new size:%f\told:%f",proposedFrameSize.height,scale, [font pointSize], [FONT pointSize]);
 	}
-	
+    else {
+		int new_height = (proposedFrameSize.height - nch) / charHeight;
+		proposedFrameSize.height = charHeight * new_height + nch;
+		NSLog(@"actual height: %f",proposedFrameSize.height);
+    }
+    
     return (proposedFrameSize);
 }
 
@@ -1352,9 +1356,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[_sessionMgr currentSession] name], WIDTH, HEIGHT];
 		[self setWindowTitle: aTitle];    
 	}	
-	// Reset the scrollbar to the bottom
+    
+    // Reset the scrollbar to the bottom
     [[[_sessionMgr currentSession] TEXTVIEW] scrollEnd];
 	
+    
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
 	
@@ -1371,14 +1377,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame
 {
-#if DEBUG_METHOD_TRACE
+//#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowWillUseStandardFrame: defaultFramewidth = %f, height = %f]",
 		  __FILE__, __LINE__, defaultFrame.size.width, defaultFrame.size.height);
-#endif
-	float height, width, scale;
+//#endif
+	float scale;
 	
-	if (fontSizeFollowWindowResize) {
-		float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] frame].size.height;
+    float nch = [sender frame].size.height - [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect].size.height;
+	
+    defaultFrame.origin.x = [sender frame].origin.x;
+    
+    if (fontSizeFollowWindowResize) {
 		scale = (defaultFrame.size.height - nch) / HEIGHT / charHeight;
 		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
 		font = [self _getMaxFont:font height:defaultFrame.size.height - nch lines:HEIGHT];
@@ -1388,20 +1397,19 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		sz = [@"W" sizeWithAttributes:dic];
 		
 		
-		height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
-		width = sz.width * charHorizontalSpacingMultiplier * WIDTH;
-		NSLog(@"proposed height: %f\t actual height: %f\t (nch=%f) scale: %f\t new font:%f\told:%f",defaultFrame.size.height,height,nch,scale, [font pointSize], [FONT pointSize]);
-		defaultFrame.size.height = height;
-		defaultFrame.size.width = width;
+		defaultFrame.size.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
+		defaultFrame.size.width = sz.width * charHorizontalSpacingMultiplier * WIDTH;
+		NSLog(@"actual height: %f\t (nch=%f) scale: %f\t new font:%f\told:%f",defaultFrame.size.height,nch,scale, [font pointSize], [FONT pointSize]);
 	}
 	else {
-		width = [sender frame].size.width;
-		height = defaultFrame.size.height;
+        int new_height = (defaultFrame.size.height -nch) / charHeight;
+		defaultFrame.size.height = charHeight * new_height + nch;
+		defaultFrame.size.width = ([[PreferencePanel sharedInstance] maxVertically] ? [sender frame].size.width : defaultFrame.size.width);
+		NSLog(@"actual width: %f, height: %f",defaultFrame.size.width,defaultFrame.size.height);
 	}
 	
-	return [[PreferencePanel sharedInstance] maxVertically] ? 
-		  NSMakeRect([sender frame].origin.x, defaultFrame.origin.y, width, height)
-	     :defaultFrame;
+    
+	return defaultFrame;
 }
 	
 // Close Window

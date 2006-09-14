@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.51 2006-08-23 21:18:34 yfabian Exp $
+// $Id: iTermController.m,v 1.52 2006-09-14 08:09:14 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -40,6 +40,7 @@
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/Tree.h>
 #import <iTerm/ITConfigPanelController.h>
+#import <iTerm/iTermGrowlDelegate.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
@@ -92,6 +93,13 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     
 	// read preferences
 	[PreferencePanel sharedInstance];
+
+    // Activate Growl
+	/*
+	 * Need to add routine in iTerm prefs for Growl support and
+	 * PLIST check here.
+	 */
+    gd = [iTermGrowlDelegate sharedInstance];
     
     return (self);
 }
@@ -102,6 +110,10 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     NSLog(@"%s(%d):-[iTermController dealloc]",
           __FILE__, __LINE__);
 #endif
+
+    // Release the GrowlDelegate
+	if( gd )
+		[gd release];
     
     [terminalWindows removeAllObjects];
     [terminalWindows release];

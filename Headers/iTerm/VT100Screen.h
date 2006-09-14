@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.19 2006-08-13 20:12:02 dnedrow Exp $
+// $Id: VT100Screen.h,v 1.20 2006-09-14 08:09:15 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -35,6 +35,7 @@
 @class PTYTask;
 @class PTYSession;
 @class PTYTextView;
+@class iTermGrowlDelegate;
 
 typedef struct screen_char_t
 {
@@ -66,6 +67,7 @@ typedef struct screen_char_t
     BOOL blinkShow;
 	BOOL PLAYBELL;
 	BOOL SHOWBELL;
+	BOOL GROWL;
 
     
     BOOL blinkingCursor;
@@ -110,6 +112,9 @@ typedef struct screen_char_t
 	NSMutableString *printToAnsiString;
 	
 	NSLock *screenLock;
+
+	// Growl stuff
+	iTermGrowlDelegate* gd;
 }
 
 
@@ -139,6 +144,7 @@ typedef struct screen_char_t
 - (void) setBlinkingCursor: (BOOL) flag;
 - (void)setPlayBellFlag:(BOOL)flag;
 - (void)setShowBellFlag:(BOOL)flag;
+- (void)setGrowlFlag:(BOOL)flag;
 
 // line access
 - (screen_char_t *) getLineAtIndex: (int) theIndex;

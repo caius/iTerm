@@ -37,6 +37,7 @@
 @class PreferencePanel;
 @class PseudoTerminal;
 @class iTermController;
+@class iTermGrowlDelegate;
 
 @interface PTYSession : NSResponder
 {        
@@ -70,17 +71,18 @@
     struct timeval lastInput, lastOutput, lastBlink;
    
 	BOOL isProcessing;
-    BOOL REFRESHED;
+    BOOL newOutput;
     BOOL antiIdle;
-    BOOL waiting;
     BOOL autoClose;
     BOOL doubleWidth;
 	BOOL xtermMouseReporting;
     int bell;
 
     NSString *backgroundImagePath;
-    //NSFont *configFont;
     NSDictionary *addressBookEntry;
+
+	// Growl stuff
+	iTermGrowlDelegate* gd;
 }
 
 // init/dealloc

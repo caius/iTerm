@@ -441,7 +441,6 @@
 		F69E77270AB78C26001EC0FF /* NSURLAdditions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = NSURLAdditions.m; path = Growl/NSURLAdditions.m; sourceTree = "<group>"; };
 		F69E77280AB78C26001EC0FF /* README */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = README; path = Growl/README; sourceTree = "<group>"; };
 		F69E774A0AB78CDB001EC0FF /* Growl-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Growl-Info.plist"; sourceTree = "<group>"; };
-		F69E778F0AB78E28001EC0FF /* Growl Carbon-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Growl Carbon-Info.plist"; sourceTree = "<group>"; };
 		F69E788C0AB7AC6D001EC0FF /* iTermGrowlDelegate.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = iTermGrowlDelegate.m; sourceTree = "<group>"; };
 		F69E78910AB7AC85001EC0FF /* iTermGrowlDelegate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = iTermGrowlDelegate.h; sourceTree = "<group>"; };
 		F69E79110AB8CDB3001EC0FF /* Growl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Growl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -538,7 +537,6 @@
 				0464AB2E006CD2EC7F000001 /* External Frameworks and Libraries */,
 				0464AB32006CD2EC7F000001 /* Products */,
 				F69E774A0AB78CDB001EC0FF /* Growl-Info.plist */,
-				F69E778F0AB78E28001EC0FF /* Growl Carbon-Info.plist */,
 			);
 			name = JTerminal;
 			sourceTree = "<group>";

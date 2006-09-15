@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.257 2006-09-12 21:37:36 yfabian Exp $
+// $Id: PTYTextView.m,v 1.258 2006-09-15 00:54:10 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -515,7 +515,7 @@ static SInt32 systemVersion;
 // So we do not allow the size to be set larger than what the data source can fill
 - (void) setFrameSize: (NSSize) aSize
 {
-	//NSLog(@"%s (0x%x): setFrameSize to (%f,%f)", __PRETTY_FUNCTION__, self, aSize.width, aSize.height);
+//	NSLog(@"%s (0x%x): setFrameSize to (%f,%f)", __PRETTY_FUNCTION__, self, aSize.width, aSize.height);
 
 	NSSize anotherSize = aSize;
 	

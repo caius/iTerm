@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.333 2006-09-14 08:09:14 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.334 2006-09-15 00:54:10 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -794,9 +794,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSRect aRect;
     NSPoint topLeft;
 		
-#if DEBUG_METHOD_TRACE
+//#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
-#endif
+//#endif
     
     if([self windowInited] == NO)
 		return;
@@ -1436,10 +1436,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     int i;
     NSSize vsize;
 	
-#if DEBUG_METHOD_TRACE
+//#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal resizeWindow:%d,%d]",
           __FILE__, __LINE__, w, h);
-#endif
+//#endif
     
     vsize.width = charWidth * w + MARGIN *2;
 	vsize.height = charHeight * h;

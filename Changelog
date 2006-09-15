@@ -1,3 +1,8 @@
+2006-9-14   fabian
+
+    * Partly fixed the window resize bug. Now the cursor will be at the location. But the frame size
+      isn't entirely correct under all conditions yet.
+      
 2006-9-13   fabian
 
     * Incorporated Growl branch into the main branch

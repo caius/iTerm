@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.240 2006-09-14 08:09:14 yfabian Exp $
+// $Id: VT100Screen.m,v 1.241 2006-09-15 00:54:10 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -338,7 +338,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (void)resizeWidth:(int)width height:(int)height
 {
-/*    int i, sw, total_height, skip_lines;
+    int i, sw, total_height, skip_lines;
 	screen_char_t *screen_lines_top, *bl, *aLine;
 	
 #if DEBUG_METHOD_TRACE
@@ -379,7 +379,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
         if (SAVE_CURSOR_Y<0) SAVE_CURSOR_Y=0;
         skip_lines = 0;
     }
-    else { // we have to scrollback, we just need to skip several lines
+    else { // we have no scrollback, we just need to skip several lines
         skip_lines = HEIGHT - height;
         if (skip_lines<0) skip_lines = 0;
     }
@@ -447,137 +447,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	
 	// release lock
 	[self releaseLock];
-	
+    
+    // An immediate refresh is needed so that the size of TEXTVIEW can be adjusted to fit the new size
 	[display setForceUpdate: YES];	
-*/
-    int i, sw, total_height, start_line;
-	screen_char_t *screen_lines_top, *bl, *scroll_lines_top, *aLine, *targetLine;
-	BOOL wrap = NO;
-    
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s:%d :%d]", __PRETTY_FUNCTION__, width, height);
-#endif
-	
-	if(WIDTH == 0 || HEIGHT == 0)
-		return;
-    
-	if (width==WIDTH && height==HEIGHT) return;
-	
-	// get lock
-	[self acquireLock];
-    
-	// create a new buffer
-	total_height = max_scrollback_lines + height;
-	bl = (screen_char_t*)malloc(total_height*width*sizeof(screen_char_t));
-	// set to default line
-	aLine = [self _getDefaultLineWithWidth: width];
-	for(i = 0; i < total_height; i++)
-		memcpy(bl+width*i, aLine, width*sizeof(screen_char_t));
-	
-	// set up the width we need to copy
-	sw = width<WIDTH?width:WIDTH;
-	
-	// copy over the old scrollback contents
-	for(i = 0; i < current_scrollback_lines; i++) 
-	{
-		aLine = [self getLineAtIndex: i];
-		memcpy(bl+width*i, aLine, sw*sizeof(screen_char_t));
-	}
-	scroll_lines_top = bl;
-    
-	// copy the screen content
-	screen_lines_top = bl + current_scrollback_lines*width;
-	if (HEIGHT <= height) //new screen is taller, so copy everything over
-	{ 
-		for(i = 0; i < HEIGHT; i++) 
-		{
-			aLine = [self getLineAtScreenIndex: i];
-			memcpy(screen_lines_top+width*i, aLine, sw*sizeof(screen_char_t));
-		}
-	}
-	else //new screen is shorter, so only copy the bottom part; put rest in scrollback area if we have one
-	{ 
-		targetLine = screen_lines_top;
-		if(max_scrollback_lines == 0)
-			start_line = HEIGHT-height; // we have no scrollback are, copy only bottom part
-		else
-			start_line = 0; // we have a scrollback area, copy top part into that
-		wrap = NO;
-		for(i = start_line; i < HEIGHT; i++)
-		{
-			aLine = [self getLineAtScreenIndex: i];
-			if(i == start_line)
-				targetLine = screen_lines_top;
-			else
-				targetLine = incrementLinePointer(bl, targetLine, total_height, width, &wrap);
-			memcpy(targetLine, aLine, sw*sizeof(screen_char_t));
-			
-			// adjust screen_lines_top if needed
-			if(i == (HEIGHT - height))
-				screen_lines_top = targetLine;
-			
-			
-			// increment our scrollback count if we are processing the top part
-			if(i < (HEIGHT - height))
-			{
-				[self _addLineToScrollback];
-				// adjust scroll_lines_top if needed (when scrollback area is full)
-				if(targetLine == scroll_lines_top)
-					scroll_lines_top = incrementLinePointer(bl, scroll_lines_top, total_height, width, &wrap);
-			}
-		}
-		
-		// adjust Y coordinate of cursor
-		CURSOR_Y -= HEIGHT-height;
-		if (CURSOR_Y < 0) 
-			CURSOR_Y=0;
-		SAVE_CURSOR_Y -= HEIGHT-height;
-		if (SAVE_CURSOR_Y < 0) 
-			SAVE_CURSOR_Y=0;
-	}
-	
-	// reassign our pointers
-	if(buffer_chars)
-		free(buffer_chars);
-	buffer_chars = bl;
-	first_buffer_line = bl;
-	last_buffer_line = bl + (total_height - 1)*width;
-	screen_top = screen_lines_top;
-	scrollback_top = scroll_lines_top;
-	
-	
-	// new height and width
-	WIDTH = width;
-	HEIGHT = height;
-	
-	// reset terminal scroll top and bottom
-	SCROLL_TOP = 0;
-	SCROLL_BOTTOM = HEIGHT - 1;
-	
-	// adjust X coordinate of cursor
-	if (CURSOR_X >= width) 
-		CURSOR_X = width-1;
-	if (SAVE_CURSOR_X >= width) 
-		SAVE_CURSOR_X = width-1;
-	
-	// if we did the resize in SAVE_BUFFER mode, too bad, get rid of it
-	if (temp_buffer) 
-	{
-		free(temp_buffer);
-		temp_buffer=NULL;
-	}
-	
-	// force a redraw
-	if(dirty)
-		free(dirty);
-	dirty=(char*)malloc(height*width*sizeof(char));
-	memset(dirty, 1, width*height*sizeof(char));
-	
-	// release lock
-	[self releaseLock];
-	
-	[display setForceUpdate: YES];	
-    
+    [display refresh];
+ 
 }
 
 - (int)width

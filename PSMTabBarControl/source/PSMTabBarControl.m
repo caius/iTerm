@@ -1615,8 +1615,9 @@
     }
     
     [item retain];
-    //[tabView removeTabViewItem:item];
-    [[self delegate] closeSession: [[item identifier] content]];
+    if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(closeSession:)])){
+        [[self delegate] closeSession: [item identifier]];
+    }
     
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:didCloseTabViewItem:)])){
         [[self delegate] tabView:tabView didCloseTabViewItem:item];

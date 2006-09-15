@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.258 2006-09-15 00:54:10 yfabian Exp $
+// $Id: PTYTextView.m,v 1.259 2006-09-15 20:17:36 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -523,6 +523,11 @@ static SInt32 systemVersion;
 	
 	[super setFrameSize: anotherSize];
 	
+    if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) 
+    {
+        [self scrollEnd];
+    }
+    
 	// reset tracking rect
 	if(trackingRectTag)
 		[self removeTrackingRect:trackingRectTag];

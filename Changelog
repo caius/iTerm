@@ -1,3 +1,8 @@
+2006-9-15   fabian
+
+    * Fixed the close button not working bug.
+    * Fixed the wrong tab location after resizing bug.
+    
 2006-9-14   fabian
 
     * Partly fixed the window resize bug. Now the cursor will be at the location. But the frame size

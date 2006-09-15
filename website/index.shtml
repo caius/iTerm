@@ -72,7 +72,18 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
-<STRONG>New Look</STRONG> 9/12/2006<BR><IMG src="new.gif">
+<STRONG>iTerm Growling</STRONG> 9/15/2006<BR><IMG src="new.gif">
+We are happily announcing that iTerm now integrates the support for Growl. You need to have 
+<a href="http://www.growl.info">Growl</a> installed. Besides a few tab status related
+messages (you can choose which one you need from Growl's preference setting), iTerm now also
+supports an escape sequence that sends message via Growl: ESC ]9;string^G. <BR><BR>
+For example, if you would like to get an alert from a long make, do this under bash will help:<BR>
+<ul>make;  echo $'\e]9;make done\007'</ul><BR>
+Go to the  
+<A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check out the nightly build.<BR><BR>
+
+<STRONG>New Look</STRONG> 9/12/2006<BR>
 We are experimenting with a new tab control (PSMTabBarControl) that can mimic Safari-like tabs. Download the
 <A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">binary build</A> 
 from the latest CVS and check it out.<BR><BR>

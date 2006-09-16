@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.337 2006-09-16 07:57:35 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.338 2006-09-16 23:21:14 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -876,7 +876,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [tabBarControl setFrame: aRect];
             aRect.origin.y = [tabBarControl frame].size.height;
             aRect.size.height = tabViewSize.height;
+            [TABVIEW setAutoresizesSubviews: NO];
             [TABVIEW setFrame: aRect];
+            [TABVIEW setAutoresizesSubviews: YES];
         }
         [tabBarControl update: NO];
 	}
@@ -1435,24 +1437,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) resizeWindow:(int) w height:(int)h
 {
     int i;
-    NSSize vsize;
 	
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal resizeWindow:%d,%d]",
           __FILE__, __LINE__, w, h);
-//#endif
-    
-    vsize.width = charWidth * w + MARGIN *2;
-	vsize.height = charHeight * h;
+#endif
     
     for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
         [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
         [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w height:h];
-        [[[_sessionMgr sessionAtIndex:i] TEXTVIEW] setFrameSize:vsize];
     }
     WIDTH=w;
     HEIGHT=h;
-	
+
+	// resize the TABVIEW and TEXTVIEW
     [self setWindowSize];
 }
 

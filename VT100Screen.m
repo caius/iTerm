@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.241 2006-09-15 00:54:10 yfabian Exp $
+// $Id: VT100Screen.m,v 1.242 2006-09-16 23:21:14 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1439,10 +1439,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (void)scrollUp
 {
-	int total_height;
 	int i;
 	screen_char_t *sourceLine, *targetLine;
-	BOOL wrap;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen scrollUp]", __FILE__, __LINE__);
@@ -1452,39 +1450,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);
     NSParameterAssert(SCROLL_TOP <= SCROLL_BOTTOM );
 	
-	total_height = max_scrollback_lines + HEIGHT;
-
-
-    if (SCROLL_BOTTOM >= HEIGHT-1 || SCROLL_TOP == 0) 
+	if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT -1)
 	{
-		// move top line of current screen area into scrollback area by incrementing screen_top pointer
-		screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
-		// move the line to buffer
-		if(max_scrollback_lines > 0)
-			[self _addLineToScrollback];
-		
-		// we have make room for the new line at SCROLL_BOTTOM; move all lines from SCROLL_BOTTOM and below down one line
-		for(i = HEIGHT - 2; i >= SCROLL_BOTTOM ; i--)
-		{
-			sourceLine = [self getLineAtScreenIndex:i];
-			targetLine = [self getLineAtScreenIndex:i+1];
-			memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
-		}
-		
-        // check how much of the screen we need to redraw
-		if(current_scrollback_lines == max_scrollback_lines)
-		{
-			// we can't shove top line into scroll buffer, entire screen needs to be redrawn
-			memset(dirty, 1, HEIGHT*WIDTH*sizeof(char));
-		}
-		else
-		{
-			// top line can move into scroll area; we need to draw only bottom line
-			dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
-			memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
-			memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
-		}
-		
+        [self setNewLine];
 	}
 	else if (SCROLL_TOP<SCROLL_BOTTOM) 
 	{

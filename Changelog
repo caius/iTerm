@@ -3,6 +3,7 @@
     * Fixed the close button not working bug.
     * Fixed the wrong tab location after resizing bug.
     * Added support for dragging a tab outside of a window to create a new window.
+    * Now allows tab size to be changed dynamically.
     
 2006-9-14   fabian
 

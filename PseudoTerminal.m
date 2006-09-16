@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.336 2006-09-16 07:45:54 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.337 2006-09-16 07:57:35 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -330,6 +330,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	aRect.origin.y = [TABVIEW frame].size.height;
 	aRect.size.width = [[[self window] contentView] bounds].size.width;
 	[tabBarControl setFrame: aRect];	
+    [tabBarControl setSizeCellsToFit:YES];
 	
 	
     [[[self window] contentView] setAutoresizesSubviews: YES];

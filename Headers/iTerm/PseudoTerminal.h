@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.35 2006-09-08 00:18:15 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.36 2006-09-16 07:45:54 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -156,6 +156,7 @@
 // NSTabView
 - (void) closeTabContextualMenuAction: (id) sender;
 - (void) moveTabToNewWindowContextualMenuAction: (id) sender;
+- (PSMTabBarControl*) tabBarControl;
 
 // Profiles
 - (IBAction) saveDisplayProfile: (id) sender;

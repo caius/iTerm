@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.335 2006-09-15 20:17:36 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.336 2006-09-16 07:45:54 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -794,9 +794,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSRect aRect;
     NSPoint topLeft;
 		
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize]", __FILE__, __LINE__ );
-//#endif
+#endif
     
     if([self windowInited] == NO)
 		return;
@@ -864,16 +864,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             aRect.size = tabViewSize;
             [TABVIEW setFrame: aRect];
             aRect.origin.y = aRect.size.height;
-            aRect.size.height = 22;
+            aRect.size.height = [tabBarControl frame].size.height;
             [tabBarControl setFrame: aRect];
         }
         else {
             aRect.origin.x = 0;
             aRect.origin.y = 0;
             aRect.size.width = tabViewSize.width;
-            aRect.size.height = 22;
+            aRect.size.height = [tabBarControl frame].size.height;
             [tabBarControl setFrame: aRect];
-            aRect.origin.y = 22;
+            aRect.origin.y = [tabBarControl frame].size.height;
             aRect.size.height = tabViewSize.height;
             [TABVIEW setFrame: aRect];
         }
@@ -1275,10 +1275,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
 {
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 		  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
-//#endif
+#endif
     float nch = [sender frame].size.height - [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect].size.height;
 
 	if (fontSizeFollowWindowResize) {
@@ -1359,7 +1359,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     // Reset the scrollbar to the bottom
     //[[[_sessionMgr currentSession] TEXTVIEW] scrollEnd];
-	[self setWindowSize];
+    [self setWindowSize];
     
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
@@ -1377,10 +1377,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame
 {
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal windowWillUseStandardFrame: defaultFramewidth = %f, height = %f]",
 		  __FILE__, __LINE__, defaultFrame.size.width, defaultFrame.size.height);
-//#endif
+#endif
 	float scale;
 	
     float nch = [sender frame].size.height - [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect].size.height;
@@ -1887,6 +1887,50 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     return theMenu;
 }
+
+- (PSMTabBarControl *)tabView:(NSTabView *)aTabView newTabBarForDraggedTabViewItem:(NSTabViewItem *)tabViewItem atPoint:(NSPoint)point
+{
+    PseudoTerminal *term;
+    PTYSession *aSession = [tabViewItem identifier];
+	
+    if(aSession == nil)
+		return nil;
+	
+    // create a new terminal window
+    term = [[PseudoTerminal alloc] init];
+    if(term == nil)
+		return nil;
+	
+	if([term windowInited] == NO)
+    {
+		[term setWidth: WIDTH height: HEIGHT];
+		[term setFont: FONT nafont: NAFONT];
+		[term initWindowWithAddressbook:[aSession addressBookEntry]];
+    }	
+	
+    [[iTermController sharedInstance] addInTerminals: term];
+	[term release];
+	
+	
+    // If this is the current session, make previous one active.
+    if(aSession == [_sessionMgr currentSession])
+		[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
+	
+    if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+        [[term window] setFrameTopLeftPoint:point];
+    }
+    else {
+        [[term window] setFrameOrigin:point];
+    }
+    
+    return [term tabBarControl];
+}
+
+- (PSMTabBarControl*) tabBarControl
+{
+    return tabBarControl;
+}
+
 
 // closes a tab
 - (void) closeTabContextualMenuAction: (id) sender

@@ -2,6 +2,8 @@
 
     * Fixed another resize bug
     * Fixed a scrolling bug
+    * Added support for escape codes that changes window size (Crashes in the vttest xterm resizing
+      test because of the fast resizing request).
     
 2006-9-15   fabian
 

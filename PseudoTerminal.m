@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.338 2006-09-16 23:21:14 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.339 2006-09-17 04:56:26 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1408,7 +1408,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         int new_height = (defaultFrame.size.height -nch) / charHeight;
 		defaultFrame.size.height = charHeight * new_height + nch;
 		defaultFrame.size.width = ([[PreferencePanel sharedInstance] maxVertically] ? [sender frame].size.width : defaultFrame.size.width);
-		NSLog(@"actual width: %f, height: %f",defaultFrame.size.width,defaultFrame.size.height);
+		//NSLog(@"actual width: %f, height: %f",defaultFrame.size.width,defaultFrame.size.height);
 	}
 	
     

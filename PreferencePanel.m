@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.133 2006-09-18 20:25:05 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.134 2006-09-18 20:27:50 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -127,7 +127,7 @@ static BOOL editingBookmark = NO;
 	defaultEnableGrowl = [prefs objectForKey:@"EnableGrowl"]?[[prefs objectForKey:@"EnableGrowl"] boolValue]: NO;
 	defaultCmdSelection = [prefs objectForKey:@"CommandSelection"]?[[prefs objectForKey:@"CommandSelection"] boolValue]: YES;
 	defaultMaxVertically = [prefs objectForKey:@"MaxVertically"]?[[prefs objectForKey:@"MaxVertically"] boolValue]: YES;
-	defaultRefreshRate = [prefs objectForKey:@"RefreshRate"]?[[prefs objectForKey:@"RefreshRate"] intValue]: 50;
+	defaultRefreshRate = [prefs objectForKey:@"RefreshRate"]?[[prefs objectForKey:@"RefreshRate"] intValue]: 25;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
 	

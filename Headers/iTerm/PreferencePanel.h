@@ -48,6 +48,7 @@
     IBOutlet NSButton *enableGrowl;
     IBOutlet NSButton *cmdSelection;
 	IBOutlet NSButton *maxVertically;
+    IBOutlet NSSlider *refreshRate;
 	
 	// Bookmark stuff
 	IBOutlet NSOutlineView *bookmarksView;
@@ -82,6 +83,7 @@
 	BOOL defaultEnableGrowl;
 	BOOL defaultCmdSelection;
 	BOOL defaultMaxVertically;
+    int  defaultRefreshRate;
 	NSString *defaultWordChars;
 }
 
@@ -125,6 +127,7 @@
 - (BOOL) enableGrowl;
 - (BOOL) cmdSelection;
 - (BOOL) maxVertically;
+- (int)  refreshRate;
 - (NSString *) wordChars;
 
 @end

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.17 2006-09-14 08:09:15 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.18 2006-09-18 20:25:06 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -103,11 +103,13 @@
 // some xterm extension
 #define XTERMCC_WIN_TITLE	     86	      // Set window title
 #define XTERMCC_ICON_TITLE	     91
-#define XTERMCC_WINICON_TITLE	     92
+#define XTERMCC_WINICON_TITLE	 92
 #define XTERMCC_INSBLNK	     87       // Insert blank
 #define XTERMCC_INSLN	     88	      // Insert lines
 #define XTERMCC_DELCH	     89       // delete blank
 #define XTERMCC_DELLN	     90	      // delete lines
+#define XTERMCC_WINDOWSIZE	 93       // (8,H,W) NK: added for Vim resizing window
+#define XTERMCC_WINDOWPOS	 95       // (3,Y,X) NK: added for Vim positioning window
 
 // Some ansi stuff
 #define ANSICSI_CHA	     3000	// Cursor Horizontal Absolute

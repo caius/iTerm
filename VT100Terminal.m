@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.102 2006-09-14 08:09:14 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.103 2006-09-18 20:25:05 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -512,7 +512,17 @@ static VT100TCC decode_csi(unsigned char *datap,
                     result.type = XTERMCC_DELLN;
                     SET_PARAM_DEFAULT(param,0,1);
                     break;
-					
+				case 't':
+                    if (param.count == 3) {
+                        if (param.p[0] == 8)
+                            result.type = XTERMCC_WINDOWSIZE;
+                        else if (param.p[0] == 3)
+                            result.type = XTERMCC_WINDOWPOS;
+                        SET_PARAM_DEFAULT(param, 1, 0);		// columns or Y
+                        SET_PARAM_DEFAULT(param, 2, 0);		// rows or X
+                    }
+                    break;
+                    
 					// ANSI
 				case 'G':
 					result.type = ANSICSI_CHA;

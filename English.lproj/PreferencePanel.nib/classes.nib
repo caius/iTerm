@@ -44,6 +44,7 @@
                 middleButtonPastesFromClipboard = NSButton; 
                 profilesWindow = NSWindow; 
                 promptOnClose = id; 
+                refreshRate = NSSlider; 
                 selectionCopiesText = NSButton; 
                 tabPosition = NSPopUpButton; 
                 windowStyle = NSPopUpButton; 

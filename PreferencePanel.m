@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.132 2006-09-14 08:09:14 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.133 2006-09-18 20:25:05 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -127,6 +127,7 @@ static BOOL editingBookmark = NO;
 	defaultEnableGrowl = [prefs objectForKey:@"EnableGrowl"]?[[prefs objectForKey:@"EnableGrowl"] boolValue]: NO;
 	defaultCmdSelection = [prefs objectForKey:@"CommandSelection"]?[[prefs objectForKey:@"CommandSelection"] boolValue]: YES;
 	defaultMaxVertically = [prefs objectForKey:@"MaxVertically"]?[[prefs objectForKey:@"MaxVertically"] boolValue]: YES;
+	defaultRefreshRate = [prefs objectForKey:@"RefreshRate"]?[[prefs objectForKey:@"RefreshRate"] intValue]: 50;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
 	
@@ -169,6 +170,7 @@ static BOOL editingBookmark = NO;
 	[prefs setBool:defaultEnableGrowl forKey:@"EnableGrowl"];
 	[prefs setBool:defaultCmdSelection forKey:@"CommandSelection"];
 	[prefs setBool:defaultMaxVertically forKey:@"MaxVertically"];
+	[prefs setInteger:defaultRefreshRate forKey:@"RefreshRate"];
 	[prefs setObject: defaultWordChars forKey: @"WordCharacters"];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
 	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
@@ -197,6 +199,7 @@ static BOOL editingBookmark = NO;
 	[enableGrowl setState: defaultEnableGrowl?NSOnState:NSOffState];
 	[cmdSelection setState: defaultCmdSelection?NSOnState:NSOffState];
 	[maxVertically setState: defaultMaxVertically?NSOnState:NSOffState];
+	[refreshRate setIntValue: defaultRefreshRate];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
 	
 	[self showWindow: self];
@@ -223,7 +226,8 @@ static BOOL editingBookmark = NO;
 	defaultEnableGrowl = ([enableGrowl state] == NSOnState);
 	defaultCmdSelection = ([cmdSelection state] == NSOnState);
 	defaultMaxVertically = ([maxVertically state] == NSOnState);
-	[defaultWordChars release];
+	defaultRefreshRate = [refreshRate intValue];
+    [defaultWordChars release];
 	defaultWordChars = [[wordChars stringValue] retain];
 
     [[self window] performClose: self];
@@ -605,6 +609,11 @@ static BOOL editingBookmark = NO;
 - (BOOL) maxVertically
 {
 	return (defaultMaxVertically);
+}
+
+- (int) refreshRate
+{
+	return (defaultRefreshRate);
 }
 
 - (NSString *) wordChars

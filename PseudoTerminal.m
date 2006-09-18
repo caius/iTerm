@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.339 2006-09-17 04:56:26 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.340 2006-09-18 20:25:05 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -802,10 +802,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if([self windowInited] == NO)
 		return;
 		
-	// desired size of textview
+    // desired size of textview
     vsize.width = charWidth * WIDTH + MARGIN * 2;
 	vsize.height = charHeight * HEIGHT;
-   // NSLog(@"width=%d,height=%d",[[[_sessionMgr currentSession] SCREEN] width],[[[_sessionMgr currentSession] SCREEN] height]);
+    // NSLog(@"width=%d,height=%d",[[[_sessionMgr currentSession] SCREEN] width],[[[_sessionMgr currentSession] SCREEN] height]);
     
 	// desired size of scrollview
 	size = [PTYScrollView frameSizeForContentSize:vsize
@@ -1294,7 +1294,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     else {
 		int new_height = (proposedFrameSize.height - nch) / charHeight + 0.5;
 		proposedFrameSize.height = charHeight * new_height + nch;
-		NSLog(@"actual height: %f",proposedFrameSize.height);
+		//NSLog(@"actual height: %f",proposedFrameSize.height);
     }
     
     return (proposedFrameSize);
@@ -2175,7 +2175,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
         
         [self releaseLock];
-		usleep(100000);
+		usleep(2000*[[PreferencePanel sharedInstance] refreshRate]);
 	}
 	
 end_thread:

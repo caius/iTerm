@@ -72,6 +72,21 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
+<STRONG>Display Responsiveness</STRONG> 9/18/2006<BR><IMG src="new.gif">
+Many people have complaints about the refreshing rate and the overall
+responsiveness of iTerm. We have been trying to strike a balance between CPU
+usage and program responsiveness. As this balance very much depends on
+the user hardware as well as software configurations, it should be configurable.
+So I think many of you would be glad to know that we have added a UI to allow
+the adujstion of this setting. It's in the preference menu. Use a small
+number for a faster refreshing rate and better responsiveness, for example,
+when you are editing a file using vi. On the other hand, if you have a lot
+things scrolling by quickly that you don't really care, set it to a larger
+number. This allows CPU to rest a little bit more. The original setting corresponds
+to the middle of the sliding bar. <BR><BR>
+Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check out the recent CVS build.<BR><BR>
+
 <STRONG>iTerm Growling</STRONG> 9/15/2006<BR><IMG src="new.gif">
 We are happily announcing that iTerm now integrates the support for Growl. You need to have 
 <a href="http://www.growl.info">Growl</a> installed. Besides a few tab status related

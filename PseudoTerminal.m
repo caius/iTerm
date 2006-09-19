@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.340 2006-09-18 20:25:05 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.341 2006-09-19 06:18:58 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -159,8 +159,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// create and set up drawer
 	myDrawer = [[NSDrawer alloc] initWithContentSize: NSMakeSize(20, 100) preferredEdge: NSMinXEdge];
 	[myDrawer setParentWindow: myWindow];
+    [myDrawer setDelegate:self];
 	[myWindow setDrawer: myDrawer];
-	[myDrawer release];
+	float aWidth = [[NSUserDefaults standardUserDefaults] floatForKey: @"BookmarksDrawerWidth"];
+    if (aWidth<=0) aWidth = 150.0;
+    [myDrawer setContentSize: NSMakeSize(aWidth, 0)];
+    [myDrawer release];
+    
 	aScrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 0, 20, 100)];
 	[aScrollView setBorderType:NSBezelBorder];
 	[aScrollView setHasHorizontalScroller: NO];
@@ -488,13 +493,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void)selectSessionAtIndexAction:(id)sender
 {
-    [self selectSessionAtIndex:[sender tag]];
+    [TABVIEW selectTabViewItemAtIndex:[sender tag]];
 }
 
 - (void) newSessionInTabAtIndex: (id) sender
 {
     [self addNewSession: [sender representedObject]];
-    //[[iTermController sharedInstance] launchBookmark: [sender representedObject] inTerminal:self];
 }
 
 - (void) selectSessionAtIndex: (int) sessionIndex
@@ -506,7 +510,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if (sessionIndex < 0 || sessionIndex >= [_sessionMgr numberOfSessions]) 
         return;
 	
-    [self setCurrentSession:[_sessionMgr sessionAtIndex:sessionIndex]];
+    [TABVIEW selectTabViewItemAtIndex: sessionIndex];
 }
 
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index
@@ -526,8 +530,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         // create a new tab
 		aTabViewItem = [[NSTabViewItem alloc] initWithIdentifier: aSession];
 		[aSession setTabViewItem: aTabViewItem];
-		[aSession setObjectCount: index + 1];
-        NSParameterAssert(aTabViewItem != nil);
+		NSParameterAssert(aTabViewItem != nil);
 		[aTabViewItem setLabel: [aSession name]];
 		[aTabViewItem setView: [aSession view]];
 		[[aSession SCROLLVIEW] setLineScroll: charHeight];
@@ -610,26 +613,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)previousSession:(id)sender
 {
-    int theIndex;
-    
-    if ([_sessionMgr currentSessionIndex] == 0)
-        theIndex = [_sessionMgr numberOfSessions] - 1;
-    else
-        theIndex = [_sessionMgr currentSessionIndex] - 1;
-    
-    [self selectSessionAtIndex: theIndex];    
+    [TABVIEW selectPreviousTabViewItem: sender];
 }
 
 - (IBAction) nextSession:(id)sender
 {
-    int theIndex;
-	
-    if ([_sessionMgr currentSessionIndex] == ([_sessionMgr numberOfSessions] - 1))
-        theIndex = 0;
-    else
-        theIndex = [_sessionMgr currentSessionIndex] + 1;
-    
-    [self selectSessionAtIndex: theIndex];
+    [TABVIEW selectNextTabViewItem: sender];
 }
 
 - (NSString *) currentSessionName
@@ -1246,7 +1235,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  __FILE__, __LINE__, aNotification);
 #endif
 	
-    [self selectSessionAtIndex: [self currentSessionIndex]];
+    //[self selectSessionAtIndex: [self currentSessionIndex]];
     
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
@@ -1507,7 +1496,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
 		{
 			aMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
-												   action:@selector(selectTab:) keyEquivalent:@""];
+												   action:@selector(selectTab:) keyEquivalent:[NSString stringWithFormat:@"%d", i+1]];
 			[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
 			[aMenuItem setTarget: TABVIEW];
 			[tabMenu addItem: aMenuItem];
@@ -1590,17 +1579,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willRemoveTabViewItem]", __FILE__, __LINE__);
 #endif
     PTYSession *aSession = [tabViewItem identifier];
-	int i, numberOfSessions;
 	
     if([_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
 		[_sessionMgr removeSession: aSession];
-	
-	numberOfSessions = [_sessionMgr numberOfSessions];
-	for(i = 0; i < numberOfSessions; i++)
-	{
-		aSession = [_sessionMgr sessionAtIndex: i];
-		[aSession setObjectCount: i+1];
-	}
 }
 
 - (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1627,22 +1608,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [aSession setParent: self];
 		
         [_sessionMgr insertSession: aSession atIndex: index];
-        
-        int i;
-        int numberOfSessions = [_sessionMgr numberOfSessions];
-        
-		for(i = 0; i < numberOfSessions; i++)
-        {
-            aSession = [_sessionMgr sessionAtIndex: i];
-            [aSession setObjectCount: i+1];
-        }
     }
 	
 }
 
 - (BOOL)tabView:(NSTabView*)aTabView shouldDragTabViewItem:(NSTabViewItem *)tabViewItem fromTabBar:(PSMTabBarControl *)tabBarControl
 {
-    return [_sessionMgr numberOfSessions]>1;
+    return YES; //[_sessionMgr numberOfSessions]>1;
 }
 
 - (BOOL)tabView:(NSTabView*)aTabView shouldDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)tabBarControl
@@ -1653,6 +1625,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)tabView:(NSTabView*)aTabView didDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)aTabBarControl
 {
 	//NSLog(@"didDropTabViewItem: %@ inTabBar: %@", [tabViewItem label], aTabBarControl);
+    int i;
+    for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
+    {
+        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+        [aSession setObjectCount:i+1];
+    }        
+}
+
+- (void)tabView:(NSTabView *)aTabView closeWindowForLastTabViewItem:(NSTabViewItem *)tabViewItem
+{
+	//NSLog(@"closeWindowForLastTabViewItem: %@", [tabViewItem label]);
+	[[self window] close];
 }
 
 - (NSImage *)tabView:(NSTabView *)aTabView imageForTabViewItem:(NSTabViewItem *)tabViewItem offset:(NSSize *)offset styleMask:(unsigned int *)styleMask
@@ -1832,6 +1816,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[aSession TEXTVIEW] setForceUpdate: YES];
         
     }
+    
+    int i;
+    for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
+    {
+        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+        [aSession setObjectCount:i+1];
+    }        
 			
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
     
@@ -1858,7 +1849,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
 		{
 			aMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
-												   action:@selector(selectTab:) keyEquivalent:@""];
+												   action:@selector(selectTab:) keyEquivalent:[NSString stringWithFormat:@"%d", i+1]];
 			[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
 			[aMenuItem setTarget: TABVIEW];
 			[tabMenu addItem: aMenuItem];
@@ -2082,11 +2073,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 	float aWidth;
 		
-	// set the width of the bookmarks drawer based on saved value
-	aWidth = [[NSUserDefaults standardUserDefaults] floatForKey: @"BookmarksDrawerWidth"];
-	if(aWidth > 0 && [[(PTYWindow *)[self window] drawer] state] == NSDrawerClosedState)
-		[[(PTYWindow *)[self window] drawer] setContentSize: NSMakeSize(aWidth, 0)];
-	
 	[[(PTYWindow *)[self window] drawer] toggle: sender];	
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    

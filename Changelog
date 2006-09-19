@@ -1,12 +1,15 @@
-2006-9-17   fabian
+2006-9-18   fabian
 
     * Added UI for allowing users to adjust the display refreshing rate.
-    
+    * Added supprot for dragging a window's only tab to join another window.
+    * Changed tab ordering behavior. Now the tabs are no longer sorted by the order of their creation.
+    * Fixed wrong bookmark draw bug.
+        
 2006-9-16   fabian
 
     * Fixed another resize bug
     * Fixed a scrolling bug
-    * Added support for escape codes that changes window size (Crashes in the vttest xterm resizing
+    * Added support for escape codes that changes window size (Crashes in the vttest's xterm resizing
       test because of the fast resizing request).
     
 2006-9-15   fabian

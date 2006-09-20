@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.341 2006-09-19 06:18:58 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.342 2006-09-20 21:29:01 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -50,7 +50,6 @@
 #import <iTerm/FindPanelWindowController.h>
 #import <iTerm/ITAddressBookMgr.h>
 #import <iTerm/ITConfigPanelController.h>
-#import <iTerm/ITSessionMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/Tree.h>
@@ -376,10 +375,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 }
 
-- (ITSessionMgr*)sessionMgr;
-{
-    return _sessionMgr;
-}
 
 - (void)setupSession: (PTYSession *) aSession
 		       title: (NSString *)title
@@ -474,19 +469,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__, aSession);
 #endif
     
-    [TABVIEW selectTabViewItemWithIdentifier: aSession];
-    if ([_sessionMgr currentSession]) 
-        [[_sessionMgr currentSession] resetStatus];
+    if ([[TABVIEW selectedTabViewItem] identifier] != aSession)
+        [TABVIEW selectTabViewItemWithIdentifier: aSession];
+    [aSession resetStatus];
+    [aSession setLabelAttribute];
     
-    [_sessionMgr setCurrentSession:aSession];
-    
-    	
     [self setWindowTitle];
-    [[_sessionMgr currentSession] setLabelAttribute];
-    [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
-    
-    //[[TABVIEW window] setNextResponder:self];
-	
+    [[TABVIEW window] makeFirstResponder:[aSession TEXTVIEW]];
+    	
     // send a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: aSession];
 }
@@ -507,9 +497,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal selectSessionAtIndex:%d]",
           __FILE__, __LINE__, sessionIndex);
 #endif
-    if (sessionIndex < 0 || sessionIndex >= [_sessionMgr numberOfSessions]) 
-        return;
-	
+
     [TABVIEW selectTabViewItemAtIndex: sessionIndex];
 }
 
@@ -525,7 +513,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(aSession == nil)
 		return;
 	
-    if (![_sessionMgr containsSession:aSession])
+    if ([TABVIEW indexOfTabViewItemWithIdentifier: aSession] == NSNotFound)
     {
         // create a new tab
 		aTabViewItem = [[NSTabViewItem alloc] initWithIdentifier: aSession];
@@ -553,35 +541,25 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif    
 	
     NSTabViewItem *aTabViewItem;
-	int numberOfSessions, indexOfSession;
+	int numberOfSessions;
     
-    if((_sessionMgr == nil) || ![_sessionMgr containsSession:aSession])
+    if([TABVIEW indexOfTabViewItemWithIdentifier: aSession] == NSNotFound)
         return;
     
-    numberOfSessions = [_sessionMgr numberOfSessions]; 
+    numberOfSessions = [TABVIEW numberOfTabViewItems]; 
     if(numberOfSessions == 1 && [self windowInited])
     {   
         [[self window] close];
     }
 	else {
         // if we are closing the current session, select another session before closing this one
-        if(aSession == [self currentSession])
-        {
-            indexOfSession = [_sessionMgr indexOfSession: aSession];
-            if(indexOfSession < 0)
-                return;
-            if(indexOfSession == numberOfSessions - 1)
-                indexOfSession--;
-            else
-                indexOfSession++;
-            [self selectSessionAtIndex:indexOfSession];
-        }
+        
         
         // now get rid of this session
-        [aSession retain];  
+        //[aSession retain];  
         aTabViewItem = [aSession tabViewItem];
         [aSession terminate];
-        [aSession release];
+        //[aSession release];
         [TABVIEW removeTabViewItem: aTabViewItem];
     }
 }
@@ -593,10 +571,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__);
 #endif
 	
-    if(_sessionMgr == nil)
-        return;
-	
-    if (![[_sessionMgr currentSession] exited])
+ 	
+    if (![[[TABVIEW selectedTabViewItem] identifier] exited])
     {
 		if ([[PreferencePanel sharedInstance] promptOnClose] &&
 			NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"The current session will be closed",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
@@ -607,7 +583,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 	
     [self acquireLock];
-    [self closeSession:[_sessionMgr currentSession]];
+    [self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
     [self releaseLock];
 }
 
@@ -623,7 +599,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSString *) currentSessionName
 {
-    return ([[_sessionMgr currentSession] name]);
+    return ([[[TABVIEW selectedTabViewItem] identifier] name]);
 }
 
 - (void) setCurrentSessionName: (NSString *) theSessionName
@@ -633,32 +609,33 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__);
 #endif
     NSMutableString *title = [NSMutableString string];
+    PTYSession *aSession = [[TABVIEW selectedTabViewItem] identifier];
     
     if(theSessionName != nil)
     {
-        [[_sessionMgr currentSession] setName: theSessionName];
+        [aSession setName: theSessionName];
     }
     else {
-        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[[[_sessionMgr currentSession] SHELL] path] pathComponents] lastObject], [_sessionMgr currentSessionIndex]];
+        NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[[aSession SHELL] path] pathComponents] lastObject], [TABVIEW indexOfTabViewItem:[TABVIEW selectedTabViewItem]]];
 		
-        if ([[_sessionMgr currentSession] exited])
+        if ([aSession exited])
             [title appendString:@"Finish"];
         else
             [title appendString:progpath];
 		
-        [[_sessionMgr currentSession] setName: title];
+        [aSession setName: title];
 		
     }
 }
 
 - (PTYSession *) currentSession
 {
-    return [_sessionMgr currentSession];
+    return [[TABVIEW selectedTabViewItem] identifier];
 }
 
 - (int) currentSessionIndex
 {
-    return ([_sessionMgr currentSessionIndex]);
+    return ([TABVIEW indexOfTabViewItem:[TABVIEW selectedTabViewItem]]);
 }
 
 - (void)dealloc
@@ -668,8 +645,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
     // Release all our sessions
-    [_sessionMgr release];
-    _sessionMgr = nil;
+    NSTabViewItem *aTabViewItem;
+    for(;[TABVIEW numberOfTabViewItems];) 
+    {
+        aTabViewItem = [TABVIEW tabViewItemAtIndex:0];
+        [[aTabViewItem identifier] terminate];
+        [TABVIEW removeTabViewItem: aTabViewItem];
+    }
+	
     [_toolbarController release];
 	[PTLock release];
     PTLock = nil;
@@ -683,7 +666,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@]",
 		  __FILE__, __LINE__, program );
 #endif
-    [[_sessionMgr currentSession] startProgram:program
+    [[self currentSession] startProgram:program
 									 arguments:[NSArray array]
 								   environment:[NSDictionary dictionary]];
 		
@@ -695,7 +678,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@ arguments:%@]",
           __FILE__, __LINE__, program, prog_argv );
 #endif
-    [[_sessionMgr currentSession] startProgram:program
+    [[self currentSession] startProgram:program
 									 arguments:prog_argv
 								   environment:[NSDictionary dictionary]];
 		
@@ -709,7 +692,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal startProgram:%@ arguments:%@]",
           __FILE__, __LINE__, program, prog_argv );
 #endif
-    [[_sessionMgr currentSession] startProgram:program
+    [[self currentSession] startProgram:program
 									 arguments:prog_argv
 								   environment:prog_env];
 	
@@ -745,9 +728,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	charWidth = (sz.width * charHorizontalSpacingMultiplier);
 	charHeight = ([font defaultLineHeightForFont] * charVerticalSpacingMultiplier);
 
-	for(i=0;i<[_sessionMgr numberOfSessions]; i++) 
+	for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) 
     {
-        PTYSession* session = [_sessionMgr sessionAtIndex:i];
+        PTYSession* session = [[TABVIEW tabViewItemAtIndex:i] identifier];
 		[[session TEXTVIEW] setCharWidth: charWidth];
 		[[session TEXTVIEW] setLineHeight: charHeight];
     }
@@ -892,8 +875,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[[self window] contentView] setAutoresizesSubviews: YES];	
 	
     [thisWindow setFrameTopLeftPoint: topLeft];
-    [[[_sessionMgr currentSession] TEXTVIEW] setForceUpdate: YES];
-    [[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
+    [[[self currentSession] TEXTVIEW] setForceUpdate: YES];
+    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
     
     
 }
@@ -1013,13 +996,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) setAntiAlias: (BOOL) bAntiAlias
 {
 	PTYSession *aSession;
-	int i, cnt = [_sessionMgr numberOfSessions];
+	int i, cnt = [TABVIEW numberOfTabViewItems];
 	
 	antiAlias = bAntiAlias;
 	
 	for(i=0; i<cnt; i++)
 	{
-		aSession = [_sessionMgr sessionAtIndex: i];
+		aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
 		[[aSession TEXTVIEW] setAntiAlias: antiAlias];
 	}
 	
@@ -1038,9 +1021,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [nafont retain];
     NAFONT=nafont;
 	[self setCharSizeUsingFont: FONT];
-    for(i=0;i<[_sessionMgr numberOfSessions]; i++) 
+    for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) 
     {
-        PTYSession* session = [_sessionMgr sessionAtIndex:i];
+        PTYSession* session = [[TABVIEW tabViewItemAtIndex: i] identifier];
         [[session TEXTVIEW]  setFont:FONT nafont:NAFONT];
     }
 }
@@ -1057,31 +1040,31 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void)clearBuffer:(id)sender
 {
-    [[_sessionMgr currentSession] clearBuffer];
+    [[self currentSession] clearBuffer];
 }
 
 - (void)clearScrollbackBuffer:(id)sender
 {
-    [[_sessionMgr currentSession] clearScrollbackBuffer];
+    [[self currentSession] clearScrollbackBuffer];
 }
 
 - (IBAction)logStart:(id)sender
 {
-    if (![[_sessionMgr currentSession] logging]) [[_sessionMgr currentSession] logStart];
+    if (![[self currentSession] logging]) [[self currentSession] logStart];
     // send a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [_sessionMgr currentSession]];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [self currentSession]];
 }
 
 - (IBAction)logStop:(id)sender
 {
-    if ([[_sessionMgr currentSession] logging]) [[_sessionMgr currentSession] logStop];
+    if ([[self currentSession] logging]) [[self currentSession] logStop];
     // send a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [_sessionMgr currentSession]];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [self currentSession]];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
-    BOOL logging = [[_sessionMgr currentSession] logging];
+    BOOL logging = [[self currentSession] logging];
     BOOL result = YES;
 	
 #if DEBUG_METHOD_TRACE
@@ -1105,14 +1088,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  __FILE__, __LINE__);
 #endif
 	// could be called from a thread
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-    NSArray *sessionList = [_sessionMgr sessionList];
-    NSEnumerator *sessionEnumerator = [sessionList objectEnumerator];
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];	
     PTYSession *aSession;
+    int i;
     
-    while ((aSession = [sessionEnumerator nextObject]) != nil)
+    [self acquireLock];
+    int n = [TABVIEW numberOfTabViewItems];    
+    for (i=0; i<n; i++)
     {
+        aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
 		PTYScroller *ptys=(PTYScroller *)[[aSession SCROLLVIEW] verticalScroller];
 		
 		[[aSession SHELL] writeTask:data];
@@ -1120,9 +1104,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		// Make sure we scroll down to the end
 		[[aSession TEXTVIEW] scrollEnd];
 		[ptys setUserScroll: NO];		
-		
     }    
-	
+	[self releaseLock];
 	[pool release];
 }
 
@@ -1240,7 +1223,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
     // update the cursor
-    [[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
+    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
@@ -1253,7 +1236,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self windowDidResignMain: aNotification];
 	
     // update the cursor
-    [[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
+    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 	
 }
 
@@ -1271,7 +1254,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 		  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
-    float nch = [sender frame].size.height - [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect].size.height;
+    float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
 
 	if (fontSizeFollowWindowResize) {
 		//scale = defaultFrame.size.height / [sender frame].size.height;
@@ -1301,7 +1284,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 		
 	
-    frame = [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect];
+    frame = [[[self currentSession] SCROLLVIEW] documentVisibleRect];
 #if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 		  frame.origin.x, frame.origin.y,
@@ -1320,32 +1303,39 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			nafont = [self _getMaxFont:nafont height:frame.size.height lines:HEIGHT];
 			
 			[self setFont:font nafont:nafont];
-			NSString *aTitle = [NSString stringWithFormat:@"%@ (@%.0f)", [[_sessionMgr currentSession] name], [font pointSize]];
+			NSString *aTitle = [NSString stringWithFormat:@"%@ (@%.0f)", [[self currentSession] name], [font pointSize]];
 			[self setWindowTitle: aTitle];    
 
 		}
+        
+        PTYSession *aSession;
+
 		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
 		h = (int)(frame.size.height/charHeight);
 		if (w!=WIDTH || h!=HEIGHT) {
-			for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
-				[[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
-				[[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
+			for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
+                aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+				[[aSession SCREEN] resizeWidth:w height:h];
+				[[aSession SHELL] setWidth:w  height:h];
 			}
 		}
 	}
 	else {	    
-		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
+		PTYSession *aSession;
+        
+        w = (int)((frame.size.width - MARGIN * 2)/charWidth);
 		h = (int)(frame.size.height/charHeight);
 
-		for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
-			[[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
-			[[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w  height:h];
-		}
+		for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
+            aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+            [[aSession SCREEN] resizeWidth:w height:h];
+            [[aSession SHELL] setWidth:w  height:h];
+        }
 		
 		WIDTH = w;
 		HEIGHT = h;
 		// Display the new size in the window title.
-		NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[_sessionMgr currentSession] name], WIDTH, HEIGHT];
+		NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[self currentSession] name], WIDTH, HEIGHT];
 		[self setWindowTitle: aTitle];    
 	}	
     
@@ -1375,7 +1365,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	float scale;
 	
-    float nch = [sender frame].size.height - [[[_sessionMgr currentSession] SCROLLVIEW] documentVisibleRect].size.height;
+    float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
 	
     defaultFrame.origin.x = [sender frame].origin.x;
     
@@ -1431,11 +1421,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal resizeWindow:%d,%d]",
           __FILE__, __LINE__, w, h);
 #endif
+    PTYSession *aSession;
     
-    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
-        [[[_sessionMgr sessionAtIndex:i] SCREEN] resizeWidth:w height:h];
-        [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:w height:h];
+    for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
+        aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+        [[aSession SCREEN] resizeWidth:w height:h];
+        [[aSession SHELL] setWidth:w  height:h];
     }
+    
     WIDTH=w;
     HEIGHT=h;
 
@@ -1539,22 +1532,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // NSTabView
 - (void)tabView:(NSTabView *)tabView willSelectTabViewItem:(NSTabViewItem *)tabViewItem
 {
-    PTYSession *aSession;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
 #endif
+    [[self currentSession] resetStatus];
+    [[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
     
-    aSession = [tabViewItem identifier];
-    
-    if ([_sessionMgr currentSession]) 
-        [[_sessionMgr currentSession] resetStatus];
-    
-    [_sessionMgr setCurrentSession:aSession];
-    
-    [self setWindowTitle];
-    [[TABVIEW window] makeFirstResponder:[[_sessionMgr currentSession] TEXTVIEW]];
-    
-    //[[TABVIEW window] setNextResponder:self];
 }
 
 - (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1563,14 +1546,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: didSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     
-    [[_sessionMgr currentSession] setLabelAttribute];
-	[[[_sessionMgr currentSession] SCREEN] setDirty];
-	[[[_sessionMgr currentSession] TEXTVIEW] setNeedsDisplay: YES];
+    [[tabViewItem identifier] setLabelAttribute];
+	[[[tabViewItem identifier] SCREEN] setDirty];
+	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
 	// do this to set up mouse tracking rects again
-	[[[_sessionMgr currentSession] TEXTVIEW] becomeFirstResponder];
-    
-	// Post a notification
+    [self setWindowTitle];
+
+	// Post notifications
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: self userInfo: nil];    
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [tabViewItem identifier]];
 }
 
 - (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1578,10 +1562,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willRemoveTabViewItem]", __FILE__, __LINE__);
 #endif
-    PTYSession *aSession = [tabViewItem identifier];
-	
-    if([_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
-		[_sessionMgr removeSession: aSession];
 }
 
 - (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1599,22 +1579,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willInsertTabViewItem: atIndex: %d]", __FILE__, __LINE__, index);
 #endif
 	
-    if(tabView == nil || tabViewItem == nil || index < 0)
-		return;
-    
-    PTYSession *aSession = [tabViewItem identifier];
-	if(![_sessionMgr containsSession: aSession] && [aSession isKindOfClass: [PTYSession class]])
-    {
-        [aSession setParent: self];
-		
-        [_sessionMgr insertSession: aSession atIndex: index];
-    }
-	
 }
 
 - (BOOL)tabView:(NSTabView*)aTabView shouldDragTabViewItem:(NSTabViewItem *)tabViewItem fromTabBar:(PSMTabBarControl *)tabBarControl
 {
-    return YES; //[_sessionMgr numberOfSessions]>1;
+    return YES;
 }
 
 - (BOOL)tabView:(NSTabView*)aTabView shouldDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)tabBarControl
@@ -1777,15 +1746,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     VT100Screen *aScreen;
     PTYSession *aSession;
     int i;
-    for(i=0;i<[_sessionMgr numberOfSessions]; i++) {
-        aSession = [_sessionMgr sessionAtIndex:i];
+    
+    for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
+        aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
         aScreen = [aSession SCREEN];
         if ([aScreen width]!=WIDTH || [aScreen height]!=HEIGHT) {
             [self setWindowSize];
 //            [aSession SCROLLVIEW]
 //            [[aSession TEXTVIEW] setFrameSize:[[aSession SCROLLVIEW] contentSize]];
             [aScreen resizeWidth:WIDTH height:HEIGHT];
-            [[[_sessionMgr sessionAtIndex:i] SHELL] setWidth:WIDTH  height:HEIGHT];
+            [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
             break;
         }
     }
@@ -1801,8 +1771,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(tabViewDragOperationInProgress == YES)
 		return;
 	    
-    [_sessionMgr setCurrentSessionIndex:[TABVIEW indexOfTabViewItem: [TABVIEW selectedTabViewItem]]];
-	
 	// check window size in case tabs have to be hidden or shown
 	if ([TABVIEW numberOfTabViewItems] <= 2)
 		[self setWindowSize];
@@ -1867,7 +1835,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aMenuItem setRepresentedObject: tabViewItem];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
-    if([_sessionMgr numberOfSessions] > 1)
+    if([TABVIEW numberOfTabViewItems] > 1)
     {
 		aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move tab to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move tab to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
 		[aMenuItem setRepresentedObject: tabViewItem];
@@ -1903,8 +1871,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	
     // If this is the current session, make previous one active.
-    if(aSession == [_sessionMgr currentSession])
-		[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
+//    if(aSession == [self currentSession])
+//		[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
 	
     if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
         [[term window] setFrameTopLeftPoint:point];
@@ -1920,6 +1888,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     return tabBarControl;
 }
+
+- (PTYTabView *) tabView
+{
+    return TABVIEW;
+}
+
 
 
 // closes a tab
@@ -1962,8 +1936,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	
     // If this is the current session, make previous one active.
-    if(aSession == [_sessionMgr currentSession])
-		[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
+   // if(aSession == [_sessionMgr currentSession])
+	//	[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
 	
     // temporarily retain the tabViewItem
     [aTabViewItem retain];
@@ -2071,8 +2045,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Bookmarks
 - (IBAction) toggleBookmarksView: (id) sender
 {
-	float aWidth;
-		
 	[[(PTYWindow *)[self window] drawer] toggle: sender];	
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
@@ -2102,7 +2074,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) _commonInit
 {
-	_sessionMgr = [[ITSessionMgr alloc] init];
 	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
 	
     tabViewDragOperationInProgress = NO;
@@ -2130,10 +2101,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			pool = [[NSAutoreleasePool alloc] init];
 		
         if (iterationCount % 5 ==0) {
-            n = [_sessionMgr numberOfSessions];
+            n = [TABVIEW numberOfTabViewItems];
             for (i = 0; i < n; i++)
             {
-                aSession = [_sessionMgr sessionAtIndex: i];
+                aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
                 if (![aSession exited]) [aSession updateDisplay];
                 else {
                     if ([aSession autoClose]) {
@@ -2220,7 +2191,7 @@ end_thread:
     if(columns > 0)
     {
 		WIDTH = columns;
-		if([_sessionMgr numberOfSessions] > 0)
+		if([TABVIEW numberOfTabViewItems] > 0)
 			[self setWindowSize];
     }
 }
@@ -2237,28 +2208,18 @@ end_thread:
     if(rows > 0)
     {
 		HEIGHT = rows;
-		if([_sessionMgr numberOfSessions] > 0)
+		if([TABVIEW numberOfTabViewItems] > 0)
 			[self setWindowSize];
     }
 }
 
-// accessors for to-many relationships:
--(NSArray*)sessions
-{
-    return [_sessionMgr sessionList];
-}
-
--(void)setSessions: (NSArray*)sessions
-{
-    // no-op
-}
 
 // accessors for to-many relationships:
 // (See NSScriptKeyValueCoding.h)
 -(id)valueInSessionsAtIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -valueInSessionsAtIndex: %d", index);
-    return ([_sessionMgr sessionAtIndex: index]);
+    return ([[TABVIEW tabViewItemAtIndex:index] identifier]);
 }
 
 -(id)valueWithName: (NSString *)uniqueName inPropertyWithKey: (NSString*)propertyKey
@@ -2270,9 +2231,9 @@ end_thread:
     {
 		PTYSession *aSession;
 		
-		for (i= 0; i < [_sessionMgr numberOfSessions]; i++)
+		for (i= 0; i < [TABVIEW numberOfTabViewItems]; i++)
 		{
-			aSession = [_sessionMgr sessionAtIndex: i];
+			aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
 			if([[aSession name] isEqualToString: uniqueName] == YES)
 				return (aSession);
 		}
@@ -2291,21 +2252,15 @@ end_thread:
     {
 		PTYSession *aSession;
 		
-		for (i= 0; i < [_sessionMgr numberOfSessions]; i++)
+		for (i= 0; i < [TABVIEW numberOfTabViewItems]; i++)
 		{
-			aSession = [_sessionMgr sessionAtIndex: i];
+			aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
 			if([[aSession tty] isEqualToString: uniqueID] == YES)
 				return (aSession);
 		}
     }
     
     return result;
-}
-
--(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index
-{
-    // NSLog(@"PseudoTerminal: -replaceInSessions: 0x%x atIndex: %d", object, index);
-    [_sessionMgr replaceSessionAtIndex: index withSession: object];
 }
 
 -(void)addNewSession:(NSDictionary *) addressbookEntry
@@ -2354,16 +2309,16 @@ end_thread:
 {
     // NSLog(@"PseudoTerminal: -appendSession: 0x%x", object);
     [self setupSession: object title: nil];
-    [self insertSession: object atIndex:[_sessionMgr numberOfSessions]];
+    [self insertSession: object atIndex:[TABVIEW numberOfTabViewItems]];
 }
 
 -(void)removeFromSessionsAtIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -removeFromSessionsAtIndex: %d", index);
     [self acquireLock];
-    if(index < [_sessionMgr numberOfSessions])
+    if(index < [TABVIEW numberOfTabViewItems])
     {
-		PTYSession *aSession = [_sessionMgr sessionAtIndex: index];
+		PTYSession *aSession = [[TABVIEW tabViewItemAtIndex:index] identifier];
 		[self closeSession: aSession];
     }
     [self releaseLock];

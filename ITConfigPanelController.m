@@ -34,7 +34,6 @@
 #import "VT100Screen.h"
 #import "PTYTextView.h"
 #import "PTYScrollView.h"
-#import "ITSessionMgr.h"
 
 static ITConfigPanelController *singleInstance = nil;
 

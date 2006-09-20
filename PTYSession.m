@@ -247,12 +247,6 @@ static NSImage *warningImage;
     [SCREEN setTerminal: nil];
     [TERMINAL setScreen: nil];
 
-    if (tabViewItem)
-    {
-        [tabViewItem release];
-        tabViewItem = nil;
-    }
-    
     
     parent = nil;
 	
@@ -901,14 +895,16 @@ static NSImage *warningImage;
         }
         else 
 		{
-            if(isProcessing == NO)
-				[self setIsProcessing: YES];
+            if (newOutput) {
+                if(isProcessing == NO)
+                    [self setIsProcessing: YES];
 
-            if (!growlNewOutput) {
-                [gd growlNotify:NSLocalizedStringFromTableInBundle(@"New Output",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-                withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"New Output was received in %@ #%d.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]] 
-                andNotification:@"New Output"];
-                growlNewOutput=YES;
+                if (!growlNewOutput) {
+                    [gd growlNotify:NSLocalizedStringFromTableInBundle(@"New Output",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+                    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"New Output was received in %@ #%d.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]] 
+                    andNotification:@"New Output"];
+                    growlNewOutput=YES;
+                }
             }
         }
     }
@@ -1063,8 +1059,7 @@ static NSImage *warningImage;
 
 - (void) setTabViewItem: (NSTabViewItem *) theTabViewItem
 {
-    [tabViewItem release];
-    tabViewItem = [theTabViewItem retain];
+    tabViewItem = theTabViewItem;
 }
 
 - (void) tabViewWillRedraw: (NSNotification *) aNotification
@@ -1628,8 +1623,8 @@ static NSImage *warningImage;
 	
     NSScriptObjectSpecifier *containerRef = nil;
 	
-    NSArray *recipients = [[self parent] sessions];
-    index = [recipients indexOfObjectIdenticalTo:self];
+    index = [[[self parent] tabView] indexOfTabViewItem: [self tabViewItem]];
+    
     if (index != NSNotFound)
     {
 		containerRef     = [[self parent] objectSpecifier];

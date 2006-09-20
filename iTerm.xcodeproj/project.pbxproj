@@ -26,7 +26,6 @@
 		874206060564168A00CFC3F1 /* ITAddressBookMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E74F4804E9089700000106 /* ITAddressBookMgr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		874206070564168A00CFC3F1 /* ITViewLocalizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20B8892A04E9342100000106 /* ITViewLocalizer.h */; };
 		874206080564168A00CFC3F1 /* ITConfigPanelController.h in Headers */ = {isa = PBXBuildFile; fileRef = 20B8891904E924CD00000106 /* ITConfigPanelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		874206090564168A00CFC3F1 /* ITSessionMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = 20B88B6004E948FA00000106 /* ITSessionMgr.h */; };
 		8742060C0564168A00CFC3F1 /* PseudoTerminal.nib in Resources */ = {isa = PBXBuildFile; fileRef = E813FB86029754BB03A80106 /* PseudoTerminal.nib */; };
 		8742060D0564168A00CFC3F1 /* iTerm.png in Resources */ = {isa = PBXBuildFile; fileRef = FBBB8B60039FC04E01F955DB /* iTerm.png */; };
 		8742060E0564168A00CFC3F1 /* addressbook.png in Resources */ = {isa = PBXBuildFile; fileRef = FB094A14033D58AE01F955DB /* addressbook.png */; };
@@ -62,7 +61,6 @@
 		874206330564168A00CFC3F1 /* ITAddressBookMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 20E74F4904E9089700000106 /* ITAddressBookMgr.m */; };
 		874206340564168A00CFC3F1 /* ITViewLocalizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B8892B04E9342100000106 /* ITViewLocalizer.m */; };
 		874206350564168A00CFC3F1 /* ITConfigPanelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B8891A04E924CD00000106 /* ITConfigPanelController.m */; };
-		874206360564168A00CFC3F1 /* ITSessionMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = 20B88B6104E948FA00000106 /* ITSessionMgr.m */; };
 		874206390564168A00CFC3F1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0464AB2F006CD2EC7F000001 /* AppKit.framework */; };
 		8742063A0564168A00CFC3F1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0464AB30006CD2EC7F000001 /* Foundation.framework */; };
 		874206490564169600CFC3F1 /* iTermApplicationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D5CC6304E7AA0500000106 /* iTermApplicationDelegate.h */; };
@@ -251,8 +249,6 @@
 		20B8891A04E924CD00000106 /* ITConfigPanelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITConfigPanelController.m; sourceTree = "<group>"; };
 		20B8892A04E9342100000106 /* ITViewLocalizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITViewLocalizer.h; sourceTree = "<group>"; };
 		20B8892B04E9342100000106 /* ITViewLocalizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITViewLocalizer.m; sourceTree = "<group>"; };
-		20B88B6004E948FA00000106 /* ITSessionMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITSessionMgr.h; sourceTree = "<group>"; };
-		20B88B6104E948FA00000106 /* ITSessionMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITSessionMgr.m; sourceTree = "<group>"; };
 		20D5CC6304E7AA0500000106 /* iTermApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermApplicationDelegate.h; sourceTree = "<group>"; };
 		20D5CC6404E7AA0500000106 /* iTermApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermApplicationDelegate.m; sourceTree = "<group>"; };
 		20E74F4804E9089700000106 /* ITAddressBookMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITAddressBookMgr.h; sourceTree = "<group>"; };
@@ -530,7 +526,6 @@
 				F658C86C06054425000A13D5 /* iTermTerminalProfileMgr.m */,
 				20E74F4904E9089700000106 /* ITAddressBookMgr.m */,
 				20B8891A04E924CD00000106 /* ITConfigPanelController.m */,
-				20B88B6104E948FA00000106 /* ITSessionMgr.m */,
 				20B8892B04E9342100000106 /* ITViewLocalizer.m */,
 				E8E901A202743CA303A80106 /* NSStringITerm.m */,
 				FB019DE103670C6501F955DB /* PreferencePanel.m */,
@@ -565,7 +560,6 @@
 				F658CAFA060587A0000A13D5 /* iTermTerminalProfileMgr.h */,
 				20E74F4804E9089700000106 /* ITAddressBookMgr.h */,
 				20B8891904E924CD00000106 /* ITConfigPanelController.h */,
-				20B88B6004E948FA00000106 /* ITSessionMgr.h */,
 				20B8892A04E9342100000106 /* ITViewLocalizer.h */,
 				872EBC5304E42E320073D10E /* NSStringITerm.h */,
 				872EBC6504E42E320073D10E /* PreferencePanel.h */,
@@ -839,7 +833,6 @@
 				874206060564168A00CFC3F1 /* ITAddressBookMgr.h in Headers */,
 				874206070564168A00CFC3F1 /* ITViewLocalizer.h in Headers */,
 				874206080564168A00CFC3F1 /* ITConfigPanelController.h in Headers */,
-				874206090564168A00CFC3F1 /* ITSessionMgr.h in Headers */,
 				DDDB7AD705D773B400E197C2 /* iTermKeyBindingMgr.h in Headers */,
 				8787B14005FD191400901149 /* iTermProfileWindowController.h in Headers */,
 				DD46BB5505FD6B9B00027283 /* iTermDisplayProfileMgr.h in Headers */,
@@ -1192,7 +1185,6 @@
 				874206330564168A00CFC3F1 /* ITAddressBookMgr.m in Sources */,
 				874206340564168A00CFC3F1 /* ITViewLocalizer.m in Sources */,
 				874206350564168A00CFC3F1 /* ITConfigPanelController.m in Sources */,
-				874206360564168A00CFC3F1 /* ITSessionMgr.m in Sources */,
 				DDDB7ABF05D7736600E197C2 /* iTermKeyBindingMgr.m in Sources */,
 				8787B0DA05FD160F00901149 /* iTermProfileWindowController.m in Sources */,
 				DD46BAC605FD689F00027283 /* iTermDisplayProfileMgr.m in Sources */,

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.36 2006-09-16 07:45:54 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.37 2006-09-20 21:29:01 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -31,7 +31,7 @@
 #import <iTerm/PTYTabView.h>
 #import <iTerm/PTYWindow.h>
 
-@class ITSessionMgr, PTYSession, iTermController, PTToolbarController, PSMTabBarControl;
+@class PTYSession, iTermController, PTToolbarController, PSMTabBarControl;
 
 @interface PseudoTerminal : NSWindowController <PTYTabViewDelegateProtocol, PTYWindowDelegateProtocol>
 {
@@ -43,7 +43,6 @@
 	PSMTabBarControl *tabBarControl;
     PTToolbarController* _toolbarController;
 
-    ITSessionMgr* _sessionMgr;
     
     /////////////////////////////////////////////////////////////////////////
     int WIDTH,HEIGHT;
@@ -112,8 +111,6 @@
 - (float) charSpacingVertical;
 - (float) charSpacingHorizontal;
 
-- (ITSessionMgr*)sessionMgr;
-
 // controls which sessions see key events
 - (BOOL) sendInputToAllSessions;
 - (void) setSendInputToAllSessions: (BOOL) flag;
@@ -154,6 +151,7 @@
 - (BOOL)showCloseWindow;
 
 // NSTabView
+- (PTYTabView *) tabView;
 - (void) closeTabContextualMenuAction: (id) sender;
 - (void) moveTabToNewWindowContextualMenuAction: (id) sender;
 - (PSMTabBarControl*) tabBarControl;
@@ -181,15 +179,10 @@
 -(void)setRows: (int)rows;
 
 // accessors for to-many relationships:
--(NSArray*)sessions;
--(void)setSessions: (NSArray*)sessions;
-
-// accessors for to-many relationships:
 // (See NSScriptKeyValueCoding.h)
 -(id)valueInSessionsAtIndex:(unsigned)index;
 -(id)valueWithName: (NSString *)uniqueName inPropertyWithKey: (NSString*)propertyKey;
 -(id)valueWithID: (NSString *)uniqueID inPropertyWithKey: (NSString*)propertyKey;
--(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index;
 -(void)addNewSession:(NSDictionary *)addressbookEntry;
 -(void)appendSession:(PTYSession *)object;
 -(void)removeFromSessionsAtIndex:(unsigned)index;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.31 2006-09-20 21:29:01 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.32 2006-09-20 21:39:47 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -453,8 +453,8 @@ static BOOL usingAutoLaunchScript = NO;
 
         if(i < 10)
         {
-            aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(selectSessionAtIndexAction:) keyEquivalent: [NSString stringWithFormat: @"%d", i]];
-            [aMenuItem setTag: i-1];
+            aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(selectSessionAtIndexAction:) keyEquivalent: [NSString stringWithFormat: @"%d", i+1]];
+            [aMenuItem setTag: i];
 
             [aMenu addItem: aMenuItem];
             [aMenuItem release];

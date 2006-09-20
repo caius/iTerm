@@ -1,6 +1,7 @@
 2006-9-20   fabian
 
     * Cleaned the code. Removed ITSessionMgr class. Improved stability.
+    * Made "close session" warning dialog available upon clicking the close button.
     
 2006-9-18   fabian
 

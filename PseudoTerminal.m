@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.342 2006-09-20 21:29:01 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.343 2006-09-20 23:07:48 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -570,18 +570,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal closeCurrentSession]",
           __FILE__, __LINE__);
 #endif
-	
- 	
-    if (![[[TABVIEW selectedTabViewItem] identifier] exited])
+	PTYSession *aSession = [[TABVIEW selectedTabViewItem] identifier];
+    
+    if (![aSession exited])
     {
 		if ([[PreferencePanel sharedInstance] promptOnClose] &&
-			NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"The current session will be closed",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
-							NSLocalizedStringFromTableInBundle(@"All unsaved data will be lost",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
+			NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession objectCount]],
+							NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
 							NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
 							NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
 							,nil) == 0) return;
     }
-	
+    
     [self acquireLock];
     [self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
     [self releaseLock];
@@ -1579,6 +1579,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willInsertTabViewItem: atIndex: %d]", __FILE__, __LINE__, index);
 #endif
 	
+}
+
+- (BOOL)tabView:(NSTabView*)tabView shouldCloseTabViewItem:(NSTabViewItem *)tabViewItem
+{
+    PTYSession *aSession = [tabViewItem identifier];
+    
+    return [aSession exited] ||		
+        ![[PreferencePanel sharedInstance] promptOnClose] ||
+        NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession objectCount]],
+                        NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
+                        NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
+                        NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
+                        ,nil);
+    
 }
 
 - (BOOL)tabView:(NSTabView*)aTabView shouldDragTabViewItem:(NSTabViewItem *)tabViewItem fromTabBar:(PSMTabBarControl *)tabBarControl

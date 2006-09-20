@@ -26,7 +26,7 @@
 "Close Window?" = "Close Window?";
 
 /* Close Session */
-"The current session will be closed"="The current session will be closed";
+"This session will be closed."="This session will be closed.";
 "All unsaved data will be lost"="All unsaved data will be lost";
 
 /* Toolbar Item:Configure */

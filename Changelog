@@ -1,3 +1,7 @@
+2006-9-20   fabian
+
+    * Cleaned the code. Removed ITSessionMgr class. Improved stability.
+    
 2006-9-18   fabian
 
     * Added UI for allowing users to adjust the display refreshing rate.

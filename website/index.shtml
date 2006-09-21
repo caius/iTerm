@@ -72,6 +72,20 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
+<STRONG>Localizations</STRONG> 9/21/2006<BR>
+Up to today, we have Chinese, French, German, Japanese and Korean localizations. 
+We do not speak most of these languages, at least not well enough to create a 
+complete translation. Our users offered us their help. However, iTerm is still
+under active developping, and there are lots of changes. It is difficult to keep 
+the translations up to date. Therefore, we would like to adopt a different model 
+for localization. Starting from the coming new release, we will only provide
+a slim version of iTerm that only includes the resource for English. We will provide
+downloads for other languages if we receive localization packages from our users.
+That way, we can focus on creating a bug-free user interface. It will also take some
+burden off our translators. Whoever would like to help can download an existing 
+localization package, update it and send it back to us.<br><br>
+
+Many thanks to those who have made their contributions!<br>
 <STRONG>Display Responsiveness</STRONG> 9/18/2006<BR><IMG src="new.gif">
 Many people have complaints about the refreshing rate and the overall
 responsiveness of iTerm. We have been trying to strike a balance between CPU

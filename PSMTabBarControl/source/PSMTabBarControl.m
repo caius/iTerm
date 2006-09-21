@@ -1616,7 +1616,9 @@
     
     [item retain];
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(closeSession:)])){
+        [[self delegate] acquireLock];
         [[self delegate] closeSession: [item identifier]];
+        [[self delegate] releaseLock];
     }
     
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:didCloseTabViewItem:)])){

@@ -1,5 +1,5 @@
 // -*- mode:objc -*- vim: filetype=objcpp:
-// $Id: iTermGrowlDelegate.h,v 1.6 2006-09-14 08:15:21 yfabian Exp $
+// $Id: iTermGrowlDelegate.h,v 1.7 2006-09-21 00:55:10 yfabian Exp $
 //
 /*
  **  iTermGrowlDelegate.h
@@ -62,7 +62,8 @@
 							@"Broken Pipes",	\
 							@"Miscellaneous",	\
 							@"Idle",			\
-							@"New Output"
+							@"New Output",      \
+                            @"Customized Message"
 
 @interface iTermGrowlDelegate : NSObject <GrowlApplicationBridgeDelegate> {
 	BOOL enabled;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.243 2006-09-18 20:25:05 yfabian Exp $
+// $Id: VT100Screen.m,v 1.244 2006-09-21 00:55:10 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -775,7 +775,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
         if (GROWL) {
             [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Alert",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
             withDescription:[NSString stringWithFormat:@"Session %@ #%d: %@", [SESSION name], [SESSION objectCount], token.u.string]
-            andNotification:@"Bells"];
+            andNotification:@"Customized Message"];
         }
         break;
         

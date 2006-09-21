@@ -2,6 +2,7 @@
 
     * Cleaned the code. Removed ITSessionMgr class. Improved stability.
     * Made "close session" warning dialog available upon clicking the close button.
+    * Fixed a bug in Growl that causes crashes.
     
 2006-9-18   fabian
 

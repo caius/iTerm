@@ -1,5 +1,5 @@
 // -*- mode:objc -*- vim: filetype=objcpp
-// $Id: iTermGrowlDelegate.m,v 1.7 2006-09-14 08:15:22 yfabian Exp $
+// $Id: iTermGrowlDelegate.m,v 1.8 2006-09-21 00:55:10 yfabian Exp $
 //
 /*
  **  iTermGrowlDelegate.m
@@ -54,15 +54,15 @@
 
 - (id) init {
 	if ((self = [super init])) {
-		
-		notifications = [NSArray arrayWithObjects: 
+
+		notifications = [[NSArray arrayWithObjects: 
 			OURNOTIFICATIONS,
-			nil];
+			nil] retain];
 
 		[GrowlApplicationBridge setGrowlDelegate: self];
 		[self registrationDictionaryForGrowl];
 		[self setEnabled: YES];
-		
+        
 		return self;
 	} else {
 		return nil;
@@ -70,6 +70,7 @@
 }
 
 - (void) dealloc {
+    [notifications release];
 	[super dealloc];
 }
 
@@ -128,7 +129,7 @@
 		NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
 		return;
 	}
-	
+    
 	[GrowlApplicationBridge 
 		notifyWithTitle: title
 			description: description

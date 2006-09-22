@@ -1,6 +1,12 @@
 2006-9-21   fabian
 
     * Fixed another bug that makes program crash when one clicks close tab button too fast.
+    * Fixed a bug that causes incorrect tab status reports.
+    * Fixed a bug that happens when one clears scrollback buffer.
+    * Changed the version to 0.9.0 pre-release
+    * Fixed a timing bug in [PTYSession updateDisplay]
+    * Fixed a display bug when one searches for a string in scrollback buffer.
+    * Fixed Cmd-Click to open URL
     
 2006-9-20   fabian
 

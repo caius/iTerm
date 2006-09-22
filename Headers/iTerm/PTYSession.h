@@ -50,14 +50,10 @@
     PseudoTerminal *parent;  // parent controller
     NSString *name;
     NSString *windowTitle;
-	int objectCount;
-	NSImage *icon;
 	
 	// semaphore to coordinate data read from task
 	MPSemaphoreID	dataSemaphore;
     
-    // anti-idle
-    char ai_code;
 
     PTYTask *SHELL;
     VT100Terminal *TERMINAL;
@@ -68,11 +64,10 @@
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
     
-    struct timeval lastInput, lastOutput, lastBlink;
-   
-	BOOL isProcessing;
-    BOOL newOutput;
+    // anti-idle
     BOOL antiIdle;
+    char ai_code;
+
     BOOL autoClose;
     BOOL doubleWidth;
 	BOOL xtermMouseReporting;
@@ -83,6 +78,14 @@
 
 	// Growl stuff
 	iTermGrowlDelegate* gd;
+    
+    // Status reporting
+    struct timeval lastInput, lastOutput, lastUpdate, lastBlink;
+    int objectCount;
+	NSImage *icon;
+	BOOL isProcessing;
+    BOOL newOutput;
+    BOOL growlIdle, growlNewOutput;
 }
 
 // init/dealloc

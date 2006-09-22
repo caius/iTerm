@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.244 2006-09-21 00:55:10 yfabian Exp $
+// $Id: VT100Screen.m,v 1.245 2006-09-22 23:21:07 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -825,7 +825,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	}
 	
 	[self releaseLock];
-	
+	[self setDirty];
 	[self updateScreen];
 }
 
@@ -1812,7 +1812,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (void)setDirty
 {
-	memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
+//	memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
 	[display setForceUpdate: YES];
 }
 

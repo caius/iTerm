@@ -72,7 +72,15 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
-<STRONG>Localizations</STRONG> 9/21/2006<BR>
+<STRONG>Pre-Release</STRONG> 9/22/06<BR>
+We are almost ready to put out a new release. The latest CVS build is therefore
+called Pre-Release. Since we do not think a little bump of number after the 2nd 
+decimal point justifies the change in the release, we are moving to the 0.9.x era.
+The latest change include a fix of CMD-click to open a URL. Happy clicking!<BR>
+Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check it out.<BR><BR>
+
+<STRONG>Localizations</STRONG> 9/22/2006<BR>
 Up to today, we have Chinese, French, German, Japanese and Korean localizations. 
 We do not speak most of these languages, at least not well enough to create a 
 complete translation. Our users offered us their help. However, iTerm is still

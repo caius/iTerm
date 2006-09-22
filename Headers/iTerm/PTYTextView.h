@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.55 2006-03-03 01:20:24 yfabian Exp $
+// $Id: PTYTextView.h,v 1.56 2006-09-22 23:21:09 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -300,7 +300,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 			   startY: (int *) starty 
 				 endX: (int *) endx 
 				 endY: (int *) endy;
-
+- (NSString *) _getURLForX: (int) x y: (int) y;
 - (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold;
 - (NSImage *) _getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw;
 - (void) _drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;

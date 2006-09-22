@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.32 2006-09-20 21:39:47 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.33 2006-09-22 23:21:07 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -351,7 +351,7 @@ static BOOL usingAutoLaunchScript = NO;
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
     [tmpAttrString initWithString: versionString];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [tmpAttrString initWithString: @"\n"];
+    [tmpAttrString initWithString: @"\n\n"];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: author1];
     tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];

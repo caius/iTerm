@@ -75,7 +75,7 @@ static NSImage *warningImage;
         return (nil);
 	
     gettimeofday(&lastInput, NULL);
-    lastOutput = lastBlink = lastInput;
+    lastOutput = lastBlink = lastUpdate = lastInput;
     antiIdle=EXIT=NO;
     
     addressBookEntry=nil;
@@ -95,6 +95,7 @@ static NSImage *warningImage;
 
 	// Need Growl plist stuff
 	gd = [iTermGrowlDelegate sharedInstance];
+    growlIdle = growlNewOutput = NO;
 	
     return (self);
 }
@@ -862,7 +863,7 @@ static NSImage *warningImage;
 - (void) setLabelAttribute
 {
     struct timeval now;
-    static BOOL growlIdle=NO, growlNewOutput=NO;
+    
     
     gettimeofday(&now, NULL);
     if ([self exited])
@@ -873,14 +874,14 @@ static NSImage *warningImage;
 	}
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
     {
-        if (now.tv_sec - lastOutput.tv_sec > 1) {
+        if (now.tv_sec - lastOutput.tv_sec > 2) {
             if(isProcessing)
                 [self setIsProcessing: NO];
 
             if (newOutput)
 			{
 				// Idle after new output
-                if (now.tv_sec - lastOutput.tv_sec > 60 && !growlIdle) {
+                if (!growlIdle && now.tv_sec - lastOutput.tv_sec > 60) {
                     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Idle",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
                     withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d becomes idle.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]]  
                     andNotification:@"Idle"];
@@ -899,7 +900,7 @@ static NSImage *warningImage;
                 if(isProcessing == NO)
                     [self setIsProcessing: YES];
 
-                if (!growlNewOutput) {
+                if (!growlNewOutput && ![parent sendInputToAllSessions]) {
                     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"New Output",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
                     withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"New Output was received in %@ #%d.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]] 
                     andNotification:@"New Output"];
@@ -1586,11 +1587,10 @@ static NSImage *warningImage;
 - (void) updateDisplay
 {
     struct timeval now;
-    static struct timeval lastUpdate={0,0};
     
     gettimeofday(&now, NULL);
-    
-	if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {
+
+    if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {
         [self writeTask:[NSData dataWithBytes:&ai_code length:1]];
         lastInput = now;
     }
@@ -1599,13 +1599,12 @@ static NSImage *warningImage;
 		[self setLabelAttribute];
 	
 	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+5) {
-		lastBlink = now;
         [TEXTVIEW refresh];
-        lastUpdate = now;
+        lastUpdate = lastBlink = now;
 	}
 	else if (lastOutput.tv_sec > lastUpdate.tv_sec || (lastOutput.tv_sec == lastUpdate.tv_sec &&lastOutput.tv_usec > lastUpdate.tv_usec) ) {
         [TEXTVIEW refresh];
-        lastUpdate = lastOutput;
+        lastUpdate = now;
     }
 	
 }
@@ -1756,12 +1755,7 @@ static NSImage *warningImage;
 				if (token.type != VT100_SKIP)
 				{
 					[SCREEN putToken:token];
-					
-					if (newOutput==NO)
-					{
-						newOutput=YES;
-					}
-					
+					newOutput=YES;
 					gettimeofday(&lastOutput, NULL);
 				}
 				

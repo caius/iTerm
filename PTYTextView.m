@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.259 2006-09-15 20:17:36 yfabian Exp $
+// $Id: PTYTextView.m,v 1.260 2006-09-22 23:21:06 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1578,11 +1578,18 @@ static SInt32 systemVersion;
     }
     else if ([mouseDownEvent locationInWindow].x == [event locationInWindow].x &&
 			 [mouseDownEvent locationInWindow].y == [event locationInWindow].y && 
-			 !([event modifierFlags] & NSCommandKeyMask) && 
-             !([event modifierFlags] & NSShiftKeyMask) &&
+			 !([event modifierFlags] & NSShiftKeyMask) &&
 			 [event clickCount] < 2 && !mouseDragged) 
 	{		
 		startX=-1;
+        
+        if(([event modifierFlags] & NSCommandKeyMask) && [[PreferencePanel sharedInstance] cmdSelection] &&
+           [mouseDownEvent locationInWindow].x == [event locationInWindow].x &&
+           [mouseDownEvent locationInWindow].y == [event locationInWindow].y)
+        {
+            //[self _openURL: [self selectedText]];
+            [self _openURL: [self _getURLForX:x y:y]];
+        }
 	}
 	
 	// if we are on an empty line, we select the current line to the end
@@ -1596,12 +1603,6 @@ static SInt32 systemVersion;
         if([[PreferencePanel sharedInstance] copySelection])
             [self copy: self];
         // handle command click on URL
-        if(([event modifierFlags] & NSCommandKeyMask) && [[PreferencePanel sharedInstance] cmdSelection] &&
-		   [mouseDownEvent locationInWindow].x == [event locationInWindow].x &&
-		   [mouseDownEvent locationInWindow].y == [event locationInWindow].y)
-        {
-            [self _openURL: [self selectedText]];
-        }
     }
 	
     selectMode = SELECT_CHAR;
@@ -2576,13 +2577,11 @@ static SInt32 systemVersion;
 	}
 	if (!code) return nil;
 	width = dw?2:1;
-	seed = code;
-	seed <<= 8;
-	srand( seed + c );
-	i = rand() % (CACHESIZE-CELLSIZE);
-    /*seed = code * (c%10);
-    i = seed % (CACHESIZE-CELLSIZE);*/
-	for(j = 0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
+    seed = code;
+    seed <<= 8;
+    srand( seed + c );
+    i = rand() % (CACHESIZE-CELLSIZE);
+    for(j = 0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
 		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
@@ -2706,15 +2705,15 @@ static SInt32 systemVersion;
 }
 
 - (NSString *) _getWordForX: (int) x 
-					y: (int) y 
-			   startX: (int *) startx 
-			   startY: (int *) starty 
-				 endX: (int *) endx 
-				 endY: (int *) endy
+                          y: (int) y 
+                     startX: (int *) startx 
+                     startY: (int *) starty 
+                       endX: (int *) endx 
+                       endY: (int *) endy
 {
 	NSString *aString,*wordChars;
 	int tmpX, tmpY, x1, y1, x2, y2;
-
+    
 	// grab our preference for extra characters to be included in a word
 	wordChars = [[PreferencePanel sharedInstance] wordChars];
 	if(wordChars == nil)
@@ -2796,8 +2795,33 @@ static SInt32 systemVersion;
 	
 	x2 = tmpX;
 	y2 = tmpY;
-
+    
 	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2 breakLines: NO pad: YES]);
+	
+}
+
+- (NSString *) _getURLForX: (int) x 
+					y: (int) y 
+{
+	static NSCharacterSet *urlSet = nil;
+	int x1=x, x2=x;
+    NSString *c;
+    
+    if (!urlSet) urlSet = [[NSCharacterSet characterSetWithCharactersInString:@".?/:;%=&_-"] retain]; 
+    
+    for (;x1>=0;x1--) {
+        c = [self contentFromX:x1 Y:y ToX:x1 Y:y breakLines: NO pad: YES];
+        if ([c rangeOfCharacterFromSet:urlSet].length == 0 && [c rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) break;
+    }
+    x1++;
+    
+    for (;x2<[dataSource width];x2++) {
+        c = [self contentFromX:x2 Y:y ToX:x2 Y:y breakLines: NO pad: YES];
+        if ([c rangeOfCharacterFromSet:urlSet].length == 0 && [c rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) break;
+    }
+    x2--;
+    
+	return ([self contentFromX:x1 Y:y ToX:x2 Y:y breakLines: NO pad: YES]);
 	
 }
 
@@ -3005,8 +3029,9 @@ static SInt32 systemVersion;
 		
 		
 		[self _selectFromX:startX Y:startY toX:endX Y:endY];
-		[self setNeedsDisplay:YES];
 		[self _scrollToLine:endY];
+        [self setForceUpdate:YES];
+		[self setNeedsDisplay:YES];
 		
 		return (YES);
 	}

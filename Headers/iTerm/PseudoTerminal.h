@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.38 2006-09-24 05:10:51 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.39 2006-09-24 06:09:16 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -188,6 +188,10 @@
 -(void)removeFromSessionsAtIndex:(unsigned)index;
 -(NSArray*)sessions;
 -(void)setSessions: (NSArray*)sessions;
+-(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index;
+-(void)addInSessions:(PTYSession *)object;
+-(void)insertInSessions:(PTYSession *)object;
+-(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index;
 
 - (BOOL)windowInited;
 - (void) setWindowInited: (BOOL) flag;

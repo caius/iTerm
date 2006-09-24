@@ -1710,9 +1710,11 @@ static NSImage *warningImage;
 
 -(void)handleTerminateScriptCommand: (NSScriptCommand *)command
 {
+    id p = parent;
+    int n = [[p tabView] numberOfTabViewItems];
     [parent acquireLock];
     [parent closeSession: self];
-    [parent releaseLock];
+    if (n>1) [p releaseLock];
 }
 
 @end

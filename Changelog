@@ -1,6 +1,6 @@
 2006-9-23   fabian 
 
-    * Re-implemented missing [PseudoTerminal sessions/setSessions] methods for Applescript.
+    * Re-implemented missing PseudoTerminal methods for Applescript.
     
 2006-9-21   fabian
 

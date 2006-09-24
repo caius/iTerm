@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.52 2006-09-14 08:09:14 yfabian Exp $
+// $Id: iTermController.m,v 1.53 2006-09-24 05:10:51 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -316,7 +316,7 @@ NSString *terminalsKey = @"terminals";
 // (See NSScriptKeyValueCoding.h)
 -(id)valueInTerminalsAtIndex:(unsigned)index
 {
-    // NSLog(@"iTerm: valueInTerminalsAtIndex %d", index);
+    //NSLog(@"iTerm: valueInTerminalsAtIndex %d: %@", index, [terminalWindows objectAtIndex: index]);
     return ([terminalWindows objectAtIndex: index]);
 }
 

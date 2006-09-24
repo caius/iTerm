@@ -1,3 +1,7 @@
+2006-9-23   fabian 
+
+    * Re-implemented missing [PseudoTerminal sessions/setSessions] methods for Applescript.
+    
 2006-9-21   fabian
 
     * Fixed another bug that makes program crash when one clicks close tab button too fast.

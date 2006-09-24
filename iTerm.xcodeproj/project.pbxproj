@@ -33,8 +33,6 @@
 		874206100564168A00CFC3F1 /* config.png in Resources */ = {isa = PBXBuildFile; fileRef = FB754C5F036EFC5301F955DB /* config.png */; };
 		874206110564168A00CFC3F1 /* exec.png in Resources */ = {isa = PBXBuildFile; fileRef = FB47BCC403686CAC01F955DB /* exec.png */; };
 		874206120564168A00CFC3F1 /* important.png in Resources */ = {isa = PBXBuildFile; fileRef = FBB2EBCD040AC7C201F955DB /* important.png */; };
-		874206130564168A00CFC3F1 /* important_l.png in Resources */ = {isa = PBXBuildFile; fileRef = DD6ACB0204112FB700A8A065 /* important_l.png */; };
-		874206140564168A00CFC3F1 /* important_r.png in Resources */ = {isa = PBXBuildFile; fileRef = DD6ACB0304112FB700A8A065 /* important_r.png */; };
 		874206150564168A00CFC3F1 /* new.png in Resources */ = {isa = PBXBuildFile; fileRef = FB094A18033D58BD01F955DB /* new.png */; };
 		874206160564168A00CFC3F1 /* newwin.png in Resources */ = {isa = PBXBuildFile; fileRef = FB896717038D935801F955DB /* newwin.png */; };
 		874206170564168A00CFC3F1 /* iTerm.scriptSuite in Resources */ = {isa = PBXBuildFile; fileRef = DD48F1C703EBB1C400A8A065 /* iTerm.scriptSuite */; };
@@ -337,8 +335,6 @@
 		DD4BAB7C0470C44C00A8A065 /* FindPanelWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindPanelWindowController.m; sourceTree = "<group>"; };
 		DD57633005653C2E00F1905E /* iTerm_Framework.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist; path = iTerm_Framework.plist; sourceTree = "<group>"; };
 		DD57633605653C5F00F1905E /* iTerm.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist; path = iTerm.plist; sourceTree = "<group>"; };
-		DD6ACB0204112FB700A8A065 /* important_l.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = important_l.png; path = images/important_l.png; sourceTree = "<group>"; };
-		DD6ACB0304112FB700A8A065 /* important_r.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = important_r.png; path = images/important_r.png; sourceTree = "<group>"; };
 		DD8CF2DE03CDD34C00A8A065 /* iTerm Help */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = "iTerm Help"; path = "English.lproj/iTerm Help"; sourceTree = "<group>"; };
 		DD8EC82F06095CDA0085A27D /* Tree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tree.m; sourceTree = "<group>"; };
 		DD8EC958060980C90085A27D /* Tree.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Tree.h; path = Headers/iTerm/Tree.h; sourceTree = "<group>"; };
@@ -602,8 +598,6 @@
 				FB754C5F036EFC5301F955DB /* config.png */,
 				FB47BCC403686CAC01F955DB /* exec.png */,
 				FBB2EBCD040AC7C201F955DB /* important.png */,
-				DD6ACB0204112FB700A8A065 /* important_l.png */,
-				DD6ACB0304112FB700A8A065 /* important_r.png */,
 				FB094A18033D58BD01F955DB /* new.png */,
 				FB896717038D935801F955DB /* newwin.png */,
 				8786A96E052CEC220073D10E /* script.png */,
@@ -1088,8 +1082,6 @@
 				874206100564168A00CFC3F1 /* config.png in Resources */,
 				874206110564168A00CFC3F1 /* exec.png in Resources */,
 				874206120564168A00CFC3F1 /* important.png in Resources */,
-				874206130564168A00CFC3F1 /* important_l.png in Resources */,
-				874206140564168A00CFC3F1 /* important_r.png in Resources */,
 				874206150564168A00CFC3F1 /* new.png in Resources */,
 				874206160564168A00CFC3F1 /* newwin.png in Resources */,
 				874206170564168A00CFC3F1 /* iTerm.scriptSuite in Resources */,

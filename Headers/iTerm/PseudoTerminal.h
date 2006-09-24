@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.37 2006-09-20 21:29:01 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.38 2006-09-24 05:10:51 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -186,6 +186,8 @@
 -(void)addNewSession:(NSDictionary *)addressbookEntry;
 -(void)appendSession:(PTYSession *)object;
 -(void)removeFromSessionsAtIndex:(unsigned)index;
+-(NSArray*)sessions;
+-(void)setSessions: (NSArray*)sessions;
 
 - (BOOL)windowInited;
 - (void) setWindowInited: (BOOL) flag;

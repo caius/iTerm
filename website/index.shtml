@@ -72,11 +72,11 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
-<STRONG>Pre-Release</STRONG> 9/22/06<BR>
+<STRONG>Pre-Release</STRONG> 9/22/06<BR><IMG src="new.gif">
 We are almost ready to put out a new release. The latest CVS build is therefore
 called Pre-Release. Since we do not think a little bump of number after the 2nd 
 decimal point justifies the change in the release, we are moving to the 0.9.x era.
-The latest change include a fix of CMD-click to open a URL. Happy clicking!<BR>
+The latest change include a fix of CMD-click to open a URL. Happy clicking!<BR><br>
 Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
 and check it out.<BR><BR>
 
@@ -93,8 +93,9 @@ That way, we can focus on creating a bug-free user interface. It will also take 
 burden off our translators. Whoever would like to help can download an existing 
 localization package, update it and send it back to us.<br><br>
 
-Many thanks to those who have made their contributions!<br>
-<STRONG>Display Responsiveness</STRONG> 9/18/2006<BR><IMG src="new.gif">
+Many thanks to those who have made their contributions!<br><br>
+
+<STRONG>Display Responsiveness</STRONG> 9/18/2006<BR>
 Many people have complaints about the refreshing rate and the overall
 responsiveness of iTerm. We have been trying to strike a balance between CPU
 usage and program responsiveness. As this balance very much depends on
@@ -109,7 +110,7 @@ to the middle of the sliding bar. <BR><BR>
 Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
 and check out the recent CVS build.<BR><BR>
 
-<STRONG>iTerm Growling</STRONG> 9/15/2006<BR><IMG src="new.gif">
+<STRONG>iTerm Growling</STRONG> 9/15/2006<BR>
 We are happily announcing that iTerm now integrates the support for Growl. You need to have 
 <a href="http://www.growl.info">Growl</a> installed. Besides a few tab status related
 messages (you can choose which one you need from Growl's preference setting), iTerm now also
@@ -123,29 +124,6 @@ and check out the recent CVS build.<BR><BR>
 We are experimenting with a new tab control (PSMTabBarControl) that can mimic Safari-like tabs. Download the
 <A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">binary build</A> 
 from the latest CVS and check it out.<BR><BR>
-
-<STRONG>Recent CVS build</STRONG> 3/3/2006<BR>
-We decide to start regularly putting 
-<A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">binary build</A> 
-from the latest CVS. These packages address the bugs and issues that popped 
-up after our last release. Try them to see if it fixes the 
-crashes/memory leaks/GUI quirks/etc that you experience.<BR><BR>
-
-<STRONG>0.8.2 released</STRONG> 2/18/2006<BR>
-iTerm is now a universal binary application! The new version also addresses 
-many bugs in the last version. We strongly encourage everybody who uses 
-0.8.1 to upgrade.<BR>
-<UL>
-<LI>Now a Universal Binary application, iTerm runs on Intel Macs natively.</LI>
-<LI>Added support of xterm mouse reporting, code provided by Geoff Reedy.</LI>
-<LI>Removed bouncing icon feature.</LI>
-<LI>Some speed improvements.</LI>
-<LI>Fixed "can't save settings" bug in 10.4.</LI>
-<LI>Fixed "find" function.</LI>
-<LI>Fixed "appending of spaces" bug.</LI>
-<LI>Fixed bugs of some mouse related actions.</LI>
-<LI>Other bug fixes and GUI adjustments as usual.</LI>
-</UL>
 
 <FONT SIZE="5"><STRONG>Notice:</STRONG></FONT><BR>
 <UL>Due a change of bookmark organizations introduced in 0.8.0, bookmark settings for versions older than 0.8.0 are

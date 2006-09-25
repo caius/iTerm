@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.346 2006-09-24 06:09:15 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.347 2006-09-25 07:10:02 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1265,6 +1265,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
     else {
 		int new_height = (proposedFrameSize.height - nch) / charHeight + 0.5;
+        if (!new_height) new_height = 1;
 		proposedFrameSize.height = charHeight * new_height + nch;
 		//NSLog(@"actual height: %f",proposedFrameSize.height);
     }
@@ -1326,6 +1327,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         w = (int)((frame.size.width - MARGIN * 2)/charWidth);
 		h = (int)(frame.size.height/charHeight);
 
+        if (w<1) w=1;
+        if (h<1) h=1;
 		for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
             aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
             [[aSession SCREEN] resizeWidth:w height:h];
@@ -1576,7 +1579,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willInsertTabViewItem: atIndex: %d]", __FILE__, __LINE__, index);
 #endif
-	
+    [[tabViewItem identifier] setParent: self];
 }
 
 - (BOOL)tabView:(NSTabView*)tabView shouldCloseTabViewItem:(NSTabViewItem *)tabViewItem

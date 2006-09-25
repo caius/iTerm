@@ -1,3 +1,9 @@
+2006-09-24  fabian
+
+    * Fixed a bug is PTYSession that causes crashes when a tab is dragged across window.
+    * Added support for xterm's iconify/deiconify escape sequences.
+    * Added support for xterm's window position escape sequences.
+    
 2006-9-23   fabian 
 
     * Re-implemented missing PseudoTerminal methods for Applescript.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.245 2006-09-22 23:21:07 yfabian Exp $
+// $Id: VT100Screen.m,v 1.246 2006-09-25 07:10:02 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -552,6 +552,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 #endif
     int i,j,k;
 	screen_char_t *aLine;
+    NSRect frm;
     
     [self acquireLock];
     
@@ -692,7 +693,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     // ANSI CSI
     case ANSICSI_CHA:
         [self cursorToX: token.u.csi.p[0]];
-	break;
+        break;
     case ANSICSI_VPA:
         [self cursorToX: CURSOR_X+1 Y: token.u.csi.p[0]];
         break;
@@ -759,17 +760,32 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case XTERMCC_DELCH: [self deleteCharacters:token.u.csi.p[0]]; break;
     case XTERMCC_DELLN: [self deleteLines:token.u.csi.p[0]]; break;
     case XTERMCC_WINDOWSIZE:
-        NSLog(@"setting window size to H=%d, W=%d", token.u.csi.p[1], token.u.csi.p[2]);
+        NSLog(@"setting window size from (%d, %d) to (%d, %d)", WIDTH, HEIGHT, token.u.csi.p[1], token.u.csi.p[2]);
         [self releaseLock];
         [[SESSION parent] resizeWindow: token.u.csi.p[2]
                                 height: token.u.csi.p[1]];
         [[SESSION TEXTVIEW] scrollEnd];
         return;
+    case XTERMCC_WINDOWSIZE_PIXEL:
+        frm = [[[SESSION parent] window] frame];
+        if (token.u.csi.p[1]) frm.size.height = token.u.csi.p[1];
+        if (token.u.csi.p[2]) frm.size.width = token.u.csi.p[2];
+        [self releaseLock];
+        frm.size = [[SESSION parent] windowWillResize:[[SESSION parent] window] toSize:frm.size];
+        [[[SESSION parent] window] setFrame: frm display:YES];
+        [[SESSION parent] windowDidResize: nil];
+        return;
     case XTERMCC_WINDOWPOS:
         NSLog(@"setting window position to Y=%d, X=%d", token.u.csi.p[1], token.u.csi.p[2]);
-        // ?? what to do here?
+        [[[SESSION parent] window] setFrameTopLeftPoint: NSMakePoint(token.u.csi.p[2], [[[[SESSION parent] window] screen] frame].size.height - token.u.csi.p[1])];
         break;
-            
+    case XTERMCC_ICONIFY:
+        [[[SESSION parent] window] performMiniaturize: nil];
+        break;
+    case XTERMCC_DEICONIFY:
+        [[[SESSION parent] window] deminiaturize: nil];
+        break;
+        
     // Our iTerm specific codes    
     case ITERM_GROWL:
         if (GROWL) {

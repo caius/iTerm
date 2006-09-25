@@ -914,6 +914,7 @@ static NSImage *warningImage;
         if(isProcessing)
 			[self setIsProcessing: NO];
         growlNewOutput=NO;
+        newOutput = NO;
     }
     [self setBell:NO];
 }

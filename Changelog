@@ -1,3 +1,8 @@
+2006-09-25  fabian
+
+    * Added an option to disable close tab button and tab number.
+    * Fixed support for xterm's resize CSI sequence support.
+    
 2006-09-24  fabian
 
     * Fixed a bug is PTYSession that causes crashes when a tab is dragged across window.

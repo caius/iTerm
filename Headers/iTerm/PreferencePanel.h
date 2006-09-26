@@ -48,6 +48,7 @@
     IBOutlet NSButton *enableGrowl;
     IBOutlet NSButton *cmdSelection;
 	IBOutlet NSButton *maxVertically;
+	IBOutlet NSButton *useCompactLabel;
     IBOutlet NSSlider *refreshRate;
 	
 	// Bookmark stuff
@@ -83,6 +84,7 @@
 	BOOL defaultEnableGrowl;
 	BOOL defaultCmdSelection;
 	BOOL defaultMaxVertically;
+    BOOL defaultUseCompactLabel;
     int  defaultRefreshRate;
 	NSString *defaultWordChars;
 }
@@ -127,6 +129,7 @@
 - (BOOL) enableGrowl;
 - (BOOL) cmdSelection;
 - (BOOL) maxVertically;
+- (BOOL) useCompactLabel;
 - (int)  refreshRate;
 - (NSString *) wordChars;
 

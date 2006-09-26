@@ -1251,7 +1251,7 @@
                 overflowMenu = [[[NSMenu alloc] initWithTitle:@"TITLE"] autorelease];
                 [overflowMenu insertItemWithTitle:@"FIRST" action:nil keyEquivalent:@"" atIndex:0]; // Because the overflowPupUpButton is a pull down menu
             }
-            menuItem = [[[NSMenuItem alloc] initWithTitle:[[cell attributedStringValue] string] action:@selector(overflowMenuAction:) keyEquivalent:@""] autorelease];
+            menuItem = [[NSMenuItem alloc] initWithTitle:[[cell attributedStringValue] string] action:@selector(overflowMenuAction:) keyEquivalent:@""];
             [menuItem setTarget:self];
             [menuItem setRepresentedObject:[cell representedObject]];
             [cell setIsInOverflowMenu:YES];
@@ -1269,6 +1269,7 @@
 			}
 			
             [overflowMenu addItem:menuItem];
+            [menuItem release];
         }
     }
 	

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.134 2006-09-18 20:27:50 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.135 2006-09-26 07:54:39 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -127,6 +127,7 @@ static BOOL editingBookmark = NO;
 	defaultEnableGrowl = [prefs objectForKey:@"EnableGrowl"]?[[prefs objectForKey:@"EnableGrowl"] boolValue]: NO;
 	defaultCmdSelection = [prefs objectForKey:@"CommandSelection"]?[[prefs objectForKey:@"CommandSelection"] boolValue]: YES;
 	defaultMaxVertically = [prefs objectForKey:@"MaxVertically"]?[[prefs objectForKey:@"MaxVertically"] boolValue]: YES;
+	defaultUseCompactLabel = [prefs objectForKey:@"UseCompactLabel"]?[[prefs objectForKey:@"UseCompactLabel"] boolValue]: NO;
 	defaultRefreshRate = [prefs objectForKey:@"RefreshRate"]?[[prefs objectForKey:@"RefreshRate"] intValue]: 25;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
@@ -170,6 +171,7 @@ static BOOL editingBookmark = NO;
 	[prefs setBool:defaultEnableGrowl forKey:@"EnableGrowl"];
 	[prefs setBool:defaultCmdSelection forKey:@"CommandSelection"];
 	[prefs setBool:defaultMaxVertically forKey:@"MaxVertically"];
+	[prefs setBool:defaultUseCompactLabel forKey:@"UseCompactLabel"];
 	[prefs setInteger:defaultRefreshRate forKey:@"RefreshRate"];
 	[prefs setObject: defaultWordChars forKey: @"WordCharacters"];
 	[prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
@@ -199,6 +201,7 @@ static BOOL editingBookmark = NO;
 	[enableGrowl setState: defaultEnableGrowl?NSOnState:NSOffState];
 	[cmdSelection setState: defaultCmdSelection?NSOnState:NSOffState];
 	[maxVertically setState: defaultMaxVertically?NSOnState:NSOffState];
+	[useCompactLabel setState: defaultUseCompactLabel?NSOnState:NSOffState];
 	[refreshRate setIntValue: defaultRefreshRate];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
 	
@@ -226,6 +229,7 @@ static BOOL editingBookmark = NO;
 	defaultEnableGrowl = ([enableGrowl state] == NSOnState);
 	defaultCmdSelection = ([cmdSelection state] == NSOnState);
 	defaultMaxVertically = ([maxVertically state] == NSOnState);
+	defaultUseCompactLabel = ([useCompactLabel state] == NSOnState);
 	defaultRefreshRate = [refreshRate intValue];
     [defaultWordChars release];
 	defaultWordChars = [[wordChars stringValue] retain];
@@ -609,6 +613,11 @@ static BOOL editingBookmark = NO;
 - (BOOL) maxVertically
 {
 	return (defaultMaxVertically);
+}
+
+- (BOOL) useCompactLabel
+{
+	return (defaultUseCompactLabel);
 }
 
 - (int) refreshRate

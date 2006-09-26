@@ -302,7 +302,7 @@ static NSImage *warningImage;
     EXIT = YES;
 
     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]] 
+    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
     andNotification:@"Broken Pipes"];
     
     [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
@@ -883,7 +883,7 @@ static NSImage *warningImage;
 				// Idle after new output
                 if (!growlIdle && now.tv_sec - lastOutput.tv_sec > 60) {
                     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Idle",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-                    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d becomes idle.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]]  
+                    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d becomes idle.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]]  
                     andNotification:@"Idle"];
                     growlIdle = YES;
                     growlNewOutput = NO;
@@ -902,7 +902,7 @@ static NSImage *warningImage;
 
                 if (!growlNewOutput && ![parent sendInputToAllSessions]) {
                     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"New Output",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-                    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"New Output was received in %@ #%d.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self objectCount]] 
+                    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"New Output was received in %@ #%d.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
                     andNotification:@"New Output"];
                     growlNewOutput=YES;
                 }
@@ -1248,6 +1248,12 @@ static NSImage *warningImage;
 }
 
 - (int) objectCount
+{
+    return ([[PreferencePanel sharedInstance] useCompactLabel]?0:objectCount);
+}
+
+// This one is for purposes other than PSMTabBarControl
+- (int) realObjectCount
 {
     return (objectCount);
 }

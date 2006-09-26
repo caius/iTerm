@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.347 2006-09-25 07:10:02 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.348 2006-09-26 07:54:39 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -575,7 +575,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if (![aSession exited])
     {
 		if ([[PreferencePanel sharedInstance] promptOnClose] &&
-			NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession objectCount]],
+			NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession realObjectCount]],
 							NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
 							NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
 							NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
@@ -803,22 +803,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// desired size of window content
 	winSize = tabViewSize;
 
-    // set the style of tabs to match window style
-	switch ([[PreferencePanel sharedInstance] windowStyle]) {
-        case 0:
-            [tabBarControl setStyleNamed:@"Metal"];
-            break;
-        case 1:
-            [tabBarControl setStyleNamed:@"Aqua"];
-            break;
-        case 2:
-            [tabBarControl setStyleNamed:@"Unified"];
-            break;
-        default:
-            [tabBarControl setStyleNamed:@"Adium"];
-            break;
-    }
-	if([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
+    if([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
 	{
 		[tabBarControl setHidden: YES];
 		aRect.origin.x = 0;
@@ -855,6 +840,30 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [tabBarControl update: NO];
 	}
 	
+    // set the style of tabs to match window style
+	switch ([[PreferencePanel sharedInstance] windowStyle]) {
+        case 0:
+            [tabBarControl setStyleNamed:@"Metal"];
+            break;
+        case 1:
+            [tabBarControl setStyleNamed:@"Aqua"];
+            break;
+        case 2:
+            [tabBarControl setStyleNamed:@"Unified"];
+            break;
+        default:
+            [tabBarControl setStyleNamed:@"Adium"];
+            break;
+    }
+    
+    [tabBarControl setDisableTabClose:[[PreferencePanel sharedInstance] useCompactLabel]];
+    int i;
+    for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
+    {
+        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+        [aSession setObjectCount:i+1];
+    }
+    
 #if 0
     NSLog(@"%s: window content size %.1f, %.1f", __PRETTY_FUNCTION__,
 		  winSize.width, winSize.height);
@@ -1219,7 +1228,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	
     //[self selectSessionAtIndex: [self currentSessionIndex]];
-    
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
     // update the cursor
@@ -1254,7 +1262,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 		  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
+    [self acquireLock];
+    
     float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
+    float wch = [sender frame].size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
 
 	if (fontSizeFollowWindowResize) {
 		//scale = defaultFrame.size.height / [sender frame].size.height;
@@ -1265,8 +1276,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
     else {
 		int new_height = (proposedFrameSize.height - nch) / charHeight + 0.5;
+        int new_width = (proposedFrameSize.width - wch) / charWidth + 0.5;
         if (!new_height) new_height = 1;
 		proposedFrameSize.height = charHeight * new_height + nch;
+		proposedFrameSize.width = charWidth * new_width + wch;
 		//NSLog(@"actual height: %f",proposedFrameSize.height);
     }
     
@@ -1346,7 +1359,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
-	
+	[self releaseLock];
 }
 
 // PTYWindowDelegateProtocol
@@ -1435,6 +1448,32 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 	// resize the TABVIEW and TEXTVIEW
     [self setWindowSize];
+}
+
+// Resize the window so that the text display area has pixel size of w*h
+- (void) resizeWindowToPixelsWidth:(int)w height:(int)h
+{
+    [self acquireLock];
+    
+    NSRect frm = [[self window] frame];
+    float rh = frm.size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
+    float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
+	
+    frm.origin.y += frm.size.height;
+    if (h) {
+        int n = h / charHeight + 0.5;
+        frm.size.height = n*charHeight + rh;
+    }
+    if (w) {
+        int n = w / charWidth + 0.5;
+        frm.size.width = n*charWidth + rw;
+    }
+    frm.origin.y -= frm.size.height; //keep the top left point the same
+    
+    [[self window] setFrame:frm display:NO];
+    [self windowDidResize:nil];
+	
+    
 }
 
 // Contextual menu
@@ -1537,6 +1576,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     if (![[self currentSession] exited]) [[self currentSession] resetStatus];
+    //[[[self currentSession] TEXTVIEW] resignFirstResponder];
     [[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
     
 }
@@ -1551,6 +1591,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[[tabViewItem identifier] SCREEN] setDirty];
 	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
 	// do this to set up mouse tracking rects again
+    //[[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
     [self setWindowTitle];
 
 	// Post notifications
@@ -1588,7 +1629,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     return [aSession exited] ||		
         ![[PreferencePanel sharedInstance] promptOnClose] ||
-        NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession objectCount]],
+        NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession realObjectCount]],
                         NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")

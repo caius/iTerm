@@ -181,6 +181,7 @@
 - (void) setAddressBookEntry:(NSDictionary*) entry;
 - (int) number;
 - (int) objectCount;
+- (int) realObjectCount;
 - (void)setObjectCount:(int)value;
 - (NSString *) tty;
 - (NSString *) contents;

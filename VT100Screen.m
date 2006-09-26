@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.246 2006-09-25 07:10:02 yfabian Exp $
+// $Id: VT100Screen.m,v 1.247 2006-09-26 07:54:39 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -552,7 +552,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 #endif
     int i,j,k;
 	screen_char_t *aLine;
-    NSRect frm;
     
     [self acquireLock];
     
@@ -767,13 +766,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
         [[SESSION TEXTVIEW] scrollEnd];
         return;
     case XTERMCC_WINDOWSIZE_PIXEL:
-        frm = [[[SESSION parent] window] frame];
-        if (token.u.csi.p[1]) frm.size.height = token.u.csi.p[1];
-        if (token.u.csi.p[2]) frm.size.width = token.u.csi.p[2];
         [self releaseLock];
-        frm.size = [[SESSION parent] windowWillResize:[[SESSION parent] window] toSize:frm.size];
-        [[[SESSION parent] window] setFrame: frm display:YES];
-        [[SESSION parent] windowDidResize: nil];
+        [[SESSION parent] resizeWindowToPixelsWidth: token.u.csi.p[2] height:token.u.csi.p[1]];
         return;
     case XTERMCC_WINDOWPOS:
         NSLog(@"setting window position to Y=%d, X=%d", token.u.csi.p[1], token.u.csi.p[2]);
@@ -790,7 +784,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case ITERM_GROWL:
         if (GROWL) {
             [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Alert",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-            withDescription:[NSString stringWithFormat:@"Session %@ #%d: %@", [SESSION name], [SESSION objectCount], token.u.string]
+            withDescription:[NSString stringWithFormat:@"Session %@ #%d: %@", [SESSION name], [SESSION realObjectCount], token.u.string]
             andNotification:@"Customized Message"];
         }
         break;
@@ -1695,7 +1689,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	}
 	if (GROWL) {
 		[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Bell",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-		withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just rang a bell!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[SESSION name],[SESSION objectCount]] 
+		withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just rang a bell!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[SESSION name],[SESSION realObjectCount]] 
 		andNotification:@"Bells"];
 	}
 }

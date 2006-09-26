@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.11 2006-08-31 03:09:59 yfabian Exp $ */
+/* $Id: PTYWindow.m,v 1.12 2006-09-26 07:54:39 yfabian Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -107,6 +107,7 @@
 	
 	if([event type] == NSMouseEntered)
 	{		
+        //NSLog(@"window mouse entered");
 		if([[PreferencePanel sharedInstance] focusFollowsMouse])
 			[self makeKeyWindow];
 	}

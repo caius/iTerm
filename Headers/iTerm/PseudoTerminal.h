@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.39 2006-09-24 06:09:16 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.40 2006-09-26 07:54:41 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -137,7 +137,8 @@
 - (void)windowDidResignMain:(NSNotification *)aNotification;
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize;
 - (void)windowDidResize:(NSNotification *)aNotification;
-- (void) resizeWindow:(int) w height:(int)h;
+- (void) resizeWindow:(int)w height:(int)h;
+- (void) resizeWindowToPixelsWidth:(int)w height:(int)h;
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame;
 
 // Contextual menu

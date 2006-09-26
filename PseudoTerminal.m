@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.348 2006-09-26 07:54:39 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.349 2006-09-26 18:31:22 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1576,7 +1576,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     if (![[self currentSession] exited]) [[self currentSession] resetStatus];
-    //[[[self currentSession] TEXTVIEW] resignFirstResponder];
     [[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
     
 }
@@ -1590,9 +1589,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[tabViewItem identifier] setLabelAttribute];
 	[[[tabViewItem identifier] SCREEN] setDirty];
 	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
-	// do this to set up mouse tracking rects again
-    //[[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
-    [self setWindowTitle];
+	[self setWindowTitle];
 
 	// Post notifications
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: self userInfo: nil];    

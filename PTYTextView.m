@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.261 2006-09-26 07:54:39 yfabian Exp $
+// $Id: PTYTextView.m,v 1.262 2006-09-26 18:31:22 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -98,9 +98,6 @@ static SInt32 systemVersion;
 {
 	
 	//NSLog(@"0x%x: %s", self, __PRETTY_FUNCTION__);
-	if(trackingRectTag)
-		[self removeTrackingRect:trackingRectTag];
-	trackingRectTag = 0;
 		
 	return (YES);
 }
@@ -109,12 +106,30 @@ static SInt32 systemVersion;
 {
 	
 	//NSLog(@"0x%x: %s", self, __PRETTY_FUNCTION__);
-	// reset tracking rect
-	if(trackingRectTag)
-		[self removeTrackingRect:trackingRectTag];
-	trackingRectTag = [self addTrackingRect:[self frame] owner: self userData: nil assumeInside: NO];
 		
 	return (YES);
+}
+
+- (void)viewWillMoveToWindow:(NSWindow *)win 
+{
+    
+    //NSLog(@"0x%x: %s, %@, %@", self, __PRETTY_FUNCTION__, win, [self window]);
+    if (!win && [self window] && trackingRectTag) {
+        //NSLog(@"remove tracking");
+        [self removeTrackingRect:trackingRectTag];
+        trackingRectTag = 0;
+    }
+    [super viewWillMoveToWindow:win];
+}
+
+- (void)viewDidMoveToWindow
+{
+    //NSLog(@"0x%x: %s, %@", self, __PRETTY_FUNCTION__, [self window]);
+    if ([self window]) {
+        //NSLog(@"add tracking");
+        trackingRectTag = [self addTrackingRect:[self frame] owner: self userData: nil assumeInside: NO];
+    }
+    
 }
 
 - (void) dealloc
@@ -130,6 +145,7 @@ static SInt32 systemVersion;
 		mouseDownEvent = nil;
     }
 	 
+    //NSLog(@"remove tracking");
     if(trackingRectTag)
 		[self removeTrackingRect:trackingRectTag];
 	
@@ -518,7 +534,7 @@ static SInt32 systemVersion;
 // So we do not allow the size to be set larger than what the data source can fill
 - (void) setFrameSize: (NSSize) aSize
 {
-//	NSLog(@"%s (0x%x): setFrameSize to (%f,%f)", __PRETTY_FUNCTION__, self, aSize.width, aSize.height);
+	//NSLog(@"%s (0x%x): setFrameSize to (%f,%f)", __PRETTY_FUNCTION__, self, aSize.width, aSize.height);
 
 	NSSize anotherSize = aSize;
 	

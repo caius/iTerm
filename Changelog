@@ -1,3 +1,7 @@
+2006-09-26  fabian
+
+    * Fixed a trackRect bug of our textview. Now the focus-follow-mouse is working again.
+    
 2006-09-25  fabian
 
     * Added an option to disable close tab button and tab number.

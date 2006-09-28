@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.262 2006-09-26 18:31:22 yfabian Exp $
+// $Id: PTYTextView.m,v 1.263 2006-09-28 07:02:47 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2129,17 +2129,17 @@ static SInt32 systemVersion;
                         [aMutableString replaceOccurrencesOfString: @"(" withString: @"\\(" options: 0 range: NSMakeRange(0, [aMutableString length])];
                         [aMutableString replaceOccurrencesOfString: @")" withString: @"\\)" options: 0 range: NSMakeRange(0, [aMutableString length])];
                         [aMutableString replaceOccurrencesOfString: @"\"" withString: @"\\\"" options: 0 range: NSMakeRange(0, [aMutableString length])];
-    [aMutableString replaceOccurrencesOfString: @"&" withString: @"\\&" options: 0 range: NSMakeRange(0, [aMutableString length])];
-    [aMutableString replaceOccurrencesOfString: @"'" withString: @"\\'" options: 0 range: NSMakeRange(0, [aMutableString length])];
+                        [aMutableString replaceOccurrencesOfString: @"&" withString: @"\\&" options: 0 range: NSMakeRange(0, [aMutableString length])];
+                        [aMutableString replaceOccurrencesOfString: @"'" withString: @"\\'" options: 0 range: NSMakeRange(0, [aMutableString length])];
 
-    [delegate pasteString: aMutableString];
-    [delegate pasteString: @" "];
-    [aMutableString release];
+                        [delegate pasteString: aMutableString];
+                        [delegate pasteString: @" "];
+                        [aMutableString release];
                     }
 
                 }
-    bResult = YES;
-    break;				
+                bResult = YES;
+                break;				
         }
 
     }
@@ -2168,7 +2168,7 @@ static SInt32 systemVersion;
 {
     static NSCursor *cursor=nil;
 	//    NSLog(@"Setting mouse here");
-    if (!cursor) cursor=[[NSCursor alloc] initWithImage:[[NSCursor arrowCursor] image] hotSpot:NSMakePoint(0,0)];
+    if (!cursor) cursor=[NSCursor IBeamCursor];
     [self addCursorRect:[self bounds] cursor:cursor];
     [cursor setOnMouseEntered:YES];
 }

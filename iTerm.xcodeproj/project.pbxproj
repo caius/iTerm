@@ -410,6 +410,10 @@
 		F69E788C0AB7AC6D001EC0FF /* iTermGrowlDelegate.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = iTermGrowlDelegate.m; sourceTree = "<group>"; };
 		F69E78910AB7AC85001EC0FF /* iTermGrowlDelegate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = iTermGrowlDelegate.h; sourceTree = "<group>"; };
 		F69E79110AB8CDB3001EC0FF /* Growl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Growl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6A32ABA0ACB278B00525F86 /* localization.shtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.other; name = localization.shtml; path = website/localization.shtml; sourceTree = "<group>"; };
+		F6A32AC50ACB2A2100525F86 /* screenshot.shtml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.other; name = screenshot.shtml; path = website/screenshot.shtml; sourceTree = "<group>"; };
+		F6A32ACF0ACB2BD000525F86 /* vi_090_m.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = vi_090_m.jpg; path = website/vi_090_m.jpg; sourceTree = "<group>"; };
+		F6A32AD00ACB2BD000525F86 /* vi_090.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = vi_090.jpg; path = website/vi_090.jpg; sourceTree = "<group>"; };
 		F6E708B50A9D0EA400D0C4EF /* NSBezierPath_AMShading.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NSBezierPath_AMShading.h; sourceTree = "<group>"; };
 		F6E708B60A9D0EA400D0C4EF /* NSBezierPath_AMShading.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = NSBezierPath_AMShading.m; sourceTree = "<group>"; };
 		F6E708B70A9D0EA400D0C4EF /* PSMTabDragAssistant.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMTabDragAssistant.h; sourceTree = "<group>"; };
@@ -772,6 +776,8 @@
 				FBDF6B90042A6BD801F955DB /* index.shtml */,
 				F63C15F806139B3800C79EBB /* download.shtml */,
 				FBDF6B91042A6BD801F955DB /* install.shtml */,
+				F6A32ABA0ACB278B00525F86 /* localization.shtml */,
+				F6A32AC50ACB2A2100525F86 /* screenshot.shtml */,
 				FBDF6B92042A6BD801F955DB /* iTerm_icon.gif */,
 				FBDF6B93042A6BD801F955DB /* iTerm.png */,
 				FBDF6B94042A6BD801F955DB /* misc.shtml */,
@@ -790,6 +796,8 @@
 				FBDF6B9A042A6BD801F955DB /* screenshot.jpg */,
 				F65CCFFA05F7EB0700F04CFF /* screenshot2-m.jpg */,
 				F65CCFFB05F7EB0700F04CFF /* screenshot2.jpg */,
+				F6A32ACF0ACB2BD000525F86 /* vi_090_m.jpg */,
+				F6A32AD00ACB2BD000525F86 /* vi_090.jpg */,
 				FBDF6B9B042A6BD801F955DB /* scripting.shtml */,
 				FBDF6B9C042A6BD801F955DB /* styles.css */,
 				FBDF6B9D042A6BD801F955DB /* upload.sh */,

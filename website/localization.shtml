@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>iTerm : Localizations</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" LINK="#696969" ALINK="#696969" VLINK="#696969">
+<LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
+<CENTER>
+<!--#include virtual="/header.html" -->
+<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<TR>
+<TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF">
+<!--#include virtual="/sidebar.html" -->
+</TD>
+
+
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<FONT SIZE="5"><STRONG>Available Localizations</STRONG></FONT>
+<BR><BR>
+
+<STRONG>Simplified Chinese (简体中文) for 0.9.0</STRONG> 9/29/2006<BR>
+Download Link: <a href="localizations/zh_CN.zip">here</a>
+<BR><BR>
+
+<STRONG>How to install localization packages</STRONG><BR>
+Download the localization package you need and unzip it. Quit iTerm if you are running it.
+Open the iTerm.app package by CTRL-clicking iTerm.app and choose "Show Package Contents". 
+Put the localization files within the iTerm directory into the iTerm.app/Contents/Resources, 
+and the files within the iTerm Framework directory into 
+iTerm.Contents/Frameworks/iTerm.framework/Vesrions/A/Resources.
+
+<TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<script type="text/javascript"><!--
+google_ad_client = "pub-5743532873543938";
+google_ad_width = 120;
+google_ad_height = 600;
+google_ad_format = "120x600_as";
+google_color_border = "B0E0E6";
+google_color_bg = "ffffff";
+google_color_link = "000000";
+google_color_url = "336699";
+google_color_text = "333333";
+//--></script>
+<script type="text/javascript"
+  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</TD>
+
+</TR>
+</TABLE>
+<!--#include virtual="/footer.html" -->
+
+
+</CENTER>
+</BODY>
+</HTML>

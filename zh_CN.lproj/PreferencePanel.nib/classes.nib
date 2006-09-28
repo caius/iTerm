@@ -38,14 +38,17 @@
                 deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
                 enableBonjour = NSButton; 
+                enableGrowl = NSButton; 
                 focusFollowsMouse = NSButton; 
                 hideTab = id; 
                 maxVertically = NSButton; 
                 middleButtonPastesFromClipboard = NSButton; 
                 profilesWindow = NSWindow; 
                 promptOnClose = id; 
+                refreshRate = NSSlider; 
                 selectionCopiesText = NSButton; 
                 tabPosition = NSPopUpButton; 
+                useCompactLabel = NSButton; 
                 windowStyle = NSPopUpButton; 
                 wordChars = NSTextField; 
             }; 

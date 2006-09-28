@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.349 2006-09-26 18:31:22 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.350 2006-09-28 07:01:32 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -77,7 +77,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Utility
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path
 {
-    int i,j,k,qf;
+    int i,j,k,qf,slen;
     char tmp[100];
     const char *s;
     NSMutableArray *p;
@@ -85,10 +85,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     p=[[NSMutableArray alloc] init];
     
     s=[cmdl cString];
+    slen = strlen(s);
     
     i=j=qf=0;
     k=-1;
-    while (i<=strlen(s)) {
+    while (i<=slen) {
         if (qf) {
             if (s[i]=='\"') {
                 qf=0;
@@ -110,7 +111,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                     [p addObject:[NSString stringWithCString:tmp]];
                 j=0;
                 k++;
-                while (s[i+1]==' '||s[i+1]=='\t'||s[i+1]=='\n'||s[i+1]==0) i++;
+                while (i<slen&&s[i+1]==' '||s[i+1]=='\t'||s[i+1]=='\n'||s[i+1]==0) i++;
             }
             else {
                 tmp[j++]=s[i];

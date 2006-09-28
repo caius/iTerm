@@ -173,7 +173,7 @@ static NSImage *warningImage;
     [TEXTVIEW setDelegate: self];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
     [TEXTVIEW release];
-    [SCROLLVIEW setDocumentCursor: [NSCursor arrowCursor]];
+    [SCROLLVIEW setDocumentCursor: [NSCursor IBeamCursor]];
 
     ai_code=0;
     antiIdle = NO;

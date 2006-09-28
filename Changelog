@@ -1,6 +1,14 @@
+2006-09-27  fabian
+
+    * Reorganized Preference panel's UI
+    * Updated websites
+    * Incorporated the patch by Joseph Ates.
+    
 2006-09-26  fabian
 
     * Fixed a trackRect bug of our textview. Now the focus-follow-mouse is working again.
+    * Fixed a bug of ignoring "Enable Growl" option.
+    * Changed cursor to I-Beam.
     
 2006-09-25  fabian
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.350 2006-09-28 07:01:32 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.351 2006-09-29 23:21:08 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -366,8 +366,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         if(displayProfile == nil)
             displayProfile = [displayProfileMgr defaultProfileName];
         
- 		[self setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
-		[self setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
+ 		WIDTH = [displayProfileMgr windowColumnsForProfile: displayProfile];
+		HEIGHT = [displayProfileMgr windowRowsForProfile: displayProfile];
 		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
 		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
 			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
@@ -421,8 +421,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     if(WIDTH == 0 && HEIGHT == 0)
     {
-		[self setColumns: [displayProfileMgr windowColumnsForProfile: displayProfile]];
-		[self setRows: [displayProfileMgr windowRowsForProfile: displayProfile]];
+		WIDTH = [displayProfileMgr windowColumnsForProfile: displayProfile];
+		HEIGHT = [displayProfileMgr windowRowsForProfile: displayProfile];
 		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
     }
     [aSession initScreen: [TABVIEW contentRect] width:WIDTH height:HEIGHT];
@@ -775,6 +775,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if([self windowInited] == NO)
 		return;
 		
+    if (WIDTH<20) WIDTH=20;
+    if (HEIGHT<2) HEIGHT=2;
     // desired size of textview
     vsize.width = charWidth * WIDTH + MARGIN * 2;
 	vsize.height = charHeight * HEIGHT;
@@ -834,12 +836,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [tabBarControl setFrame: aRect];
             aRect.origin.y = [tabBarControl frame].size.height;
             aRect.size.height = tabViewSize.height;
-            [TABVIEW setAutoresizesSubviews: NO];
+            //[TABVIEW setAutoresizesSubviews: NO];
             [TABVIEW setFrame: aRect];
-            [TABVIEW setAutoresizesSubviews: YES];
+            //[TABVIEW setAutoresizesSubviews: YES];
         }
-        [tabBarControl update: NO];
-	}
+ 	}
 	
     // set the style of tabs to match window style
 	switch ([[PreferencePanel sharedInstance] windowStyle]) {
@@ -863,6 +864,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
         PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
         [aSession setObjectCount:i+1];
+        [[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
+        [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
     }
     
 #if 0
@@ -880,16 +883,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     topLeft.y = aRect.origin.y + aRect.size.height;
 	
 	
-	[[[self window] contentView] setAutoresizesSubviews: NO];
+	[[thisWindow contentView] setAutoresizesSubviews: NO];
     [thisWindow setContentSize:winSize];
-	[[[self window] contentView] setAutoresizesSubviews: YES];	
-	
-    [thisWindow setFrameTopLeftPoint: topLeft];
-    [[[self currentSession] TEXTVIEW] setForceUpdate: YES];
-    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+	[[thisWindow contentView] setAutoresizesSubviews: YES]; 
+	[thisWindow setFrameTopLeftPoint: topLeft];
     
+    [[[self currentSession] TEXTVIEW] setForceUpdate: YES];
+//    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+    [[[self currentSession] SCROLLVIEW] setNeedsDisplay: YES];
+    [tabBarControl update:NO];
     
 }
+
 
 - (void)setWindowTitle
 {
@@ -1263,7 +1268,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillResize: proposedFrameSize width = %f; height = %f]",
 		  __FILE__, __LINE__, proposedFrameSize.width, proposedFrameSize.height);
 #endif
-    [self acquireLock];
+    if (sender!=[self window]) {
+        NSLog(@"Aha!");
+        return proposedFrameSize;
+    }
     
     float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
     float wch = [sender frame].size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
@@ -1273,12 +1281,19 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		float scale = (proposedFrameSize.height - nch) / HEIGHT / charHeight;
 		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
 		font = [self _getMaxFont:font height:proposedFrameSize.height - nch lines:HEIGHT];
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+		NSSize sz;
+		[dic setObject:font forKey:NSFontAttributeName];
+		sz = [@"W" sizeWithAttributes:dic];
+		
 		proposedFrameSize.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
+        proposedFrameSize.width = sz.width * charHorizontalSpacingMultiplier * WIDTH + wch;
 	}
     else {
 		int new_height = (proposedFrameSize.height - nch) / charHeight + 0.5;
         int new_width = (proposedFrameSize.width - wch) / charWidth + 0.5;
-        if (!new_height) new_height = 1;
+        if (new_height<2) new_height = 2;
+        if (new_width<20) new_width = 20;
 		proposedFrameSize.height = charHeight * new_height + nch;
 		proposedFrameSize.width = charWidth * new_width + wch;
 		//NSLog(@"actual height: %f",proposedFrameSize.height);
@@ -1290,7 +1305,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)windowDidResize:(NSNotification *)aNotification
 {
     NSRect frame;
-    int i, w, h;
+    int w, h;
 	
 	
 #if DEBUG_METHOD_TRACE
@@ -1300,6 +1315,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 	
     frame = [[[self currentSession] SCROLLVIEW] documentVisibleRect];
+    
 #if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",
 		  frame.origin.x, frame.origin.y,
@@ -1323,44 +1339,29 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 		}
         
-        PTYSession *aSession;
-
+        WIDTH = (int)((frame.size.width - MARGIN * 2)/charWidth + 0.5);
+		HEIGHT = (int)(frame.size.height/charHeight + 0.5);
+        [self setWindowSize];
+    }
+	else {	    
 		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
 		h = (int)(frame.size.height/charHeight);
-		if (w!=WIDTH || h!=HEIGHT) {
-			for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
-                aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-				[[aSession SCREEN] resizeWidth:w height:h];
-				[[aSession SHELL] setWidth:w  height:h];
-			}
-		}
-	}
-	else {	    
-		PTYSession *aSession;
-        
-        w = (int)((frame.size.width - MARGIN * 2)/charWidth);
-		h = (int)(frame.size.height/charHeight);
 
-        if (w<1) w=1;
-        if (h<1) h=1;
-		for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
-            aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-            [[aSession SCREEN] resizeWidth:w height:h];
-            [[aSession SHELL] setWidth:w  height:h];
-        }
-		
-		WIDTH = w;
-		HEIGHT = h;
-		// Display the new size in the window title.
-		NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[self currentSession] name], WIDTH, HEIGHT];
-		[self setWindowTitle: aTitle];    
+        if (w<20) w=20;
+        if (h<2) h=2;
+        if (w!=WIDTH || h!=HEIGHT) {
+            WIDTH = w;
+            HEIGHT = h;
+            // Display the new size in the window title.
+            NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[self currentSession] name], WIDTH, HEIGHT];
+            [self setWindowTitle: aTitle];
+            [self setWindowSize];
+    	}
 	}	
     
-    [self setWindowSize];
     
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
-	[self releaseLock];
 }
 
 // PTYWindowDelegateProtocol
@@ -1381,7 +1382,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	float scale;
 	
     float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
-	
+	float wch = [sender frame].size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
+    
     defaultFrame.origin.x = [sender frame].origin.x;
     
     if (fontSizeFollowWindowResize) {
@@ -1393,15 +1395,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[dic setObject:font forKey:NSFontAttributeName];
 		sz = [@"W" sizeWithAttributes:dic];
 		
-		
 		defaultFrame.size.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
-		defaultFrame.size.width = sz.width * charHorizontalSpacingMultiplier * WIDTH;
+		defaultFrame.size.width = sz.width * charHorizontalSpacingMultiplier * WIDTH + wch;
 		NSLog(@"actual height: %f\t (nch=%f) scale: %f\t new font:%f\told:%f",defaultFrame.size.height,nch,scale, [font pointSize], [FONT pointSize]);
 	}
 	else {
         int new_height = (defaultFrame.size.height -nch) / charHeight;
+        int new_width =  (defaultFrame.size.width - wch) /charWidth;
+        
 		defaultFrame.size.height = charHeight * new_height + nch;
-		defaultFrame.size.width = ([[PreferencePanel sharedInstance] maxVertically] ? [sender frame].size.width : defaultFrame.size.width);
+		defaultFrame.size.width = ([[PreferencePanel sharedInstance] maxVertically] ? [sender frame].size.width : new_width*charWidth+wch);
 		//NSLog(@"actual width: %f, height: %f",defaultFrame.size.width,defaultFrame.size.height);
 	}
 	
@@ -1430,25 +1433,22 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) resizeWindow:(int) w height:(int)h
 {
-    int i;
-	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal resizeWindow:%d,%d]",
           __FILE__, __LINE__, w, h);
 #endif
-    PTYSession *aSession;
+    [self acquireLock];
+    NSRect frm = [[self window] frame];
+    float rh = frm.size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
+    float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
     
-    for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
-        aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-        [[aSession SCREEN] resizeWidth:w height:h];
-        [[aSession SHELL] setWidth:w  height:h];
-    }
-    
-    WIDTH=w;
-    HEIGHT=h;
+    HEIGHT=h?h:(([[[self window] screen] frame].size.height - rh)/charHeight + 0.5);
+    WIDTH=w?w:(([[[self window] screen] frame].size.width - rw)/charWidth + 0.5); 
 
 	// resize the TABVIEW and TEXTVIEW
     [self setWindowSize];
+    [self releaseLock];
+    
 }
 
 // Resize the window so that the text display area has pixel size of w*h
@@ -1461,19 +1461,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
 	
     frm.origin.y += frm.size.height;
-    if (h) {
-        int n = h / charHeight + 0.5;
-        frm.size.height = n*charHeight + rh;
-    }
-    if (w) {
-        int n = w / charWidth + 0.5;
-        frm.size.width = n*charWidth + rw;
-    }
+    if (!h) h= [[[self window] screen] frame].size.height - rh;
+    
+    int n = h / charHeight + 0.5;
+    frm.size.height = n*charHeight + rh;
+        
+    if (!w) w= [[[self window] screen] frame].size.width - rw;
+    n = w / charWidth + 0.5;
+    frm.size.width = n*charWidth + rw;
+    
     frm.origin.y -= frm.size.height; //keep the top left point the same
     
     [[self window] setFrame:frm display:NO];
     [self windowDidResize:nil];
-	
+	[self releaseLock];
     
 }
 
@@ -2245,9 +2246,10 @@ end_thread:
     // NSLog(@"PseudoTerminal: setColumns: %d", columns);
     if(columns > 0)
     {
-		WIDTH = columns;
-		if([TABVIEW numberOfTabViewItems] > 0)
-			[self setWindowSize];
+        WIDTH = columns;
+		if([TABVIEW numberOfTabViewItems] > 0) {
+            [self setWindowSize];
+        }
     }
 }
 
@@ -2262,9 +2264,10 @@ end_thread:
     // NSLog(@"PseudoTerminal: setRows: %d", rows);
     if(rows > 0)
     {
-		HEIGHT = rows;
-		if([TABVIEW numberOfTabViewItems] > 0)
-			[self setWindowSize];
+        HEIGHT = rows;
+        if([TABVIEW numberOfTabViewItems] > 0) {
+            [self setWindowSize];
+        }
     }
 }
 
@@ -2279,7 +2282,7 @@ end_thread:
 
 -(NSArray*)sessions
 {
-    //[self acquireLock];
+    [self acquireLock];
     
     int n = [TABVIEW numberOfTabViewItems];
     NSMutableArray *sessions = [NSMutableArray arrayWithCapacity: n];
@@ -2290,7 +2293,7 @@ end_thread:
         [sessions addObject: [[TABVIEW tabViewItemAtIndex:i] identifier]];
     } 
     
-    //[self releaseLock];
+    [self releaseLock];
 
     return sessions;
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.20 2006-09-14 08:09:15 yfabian Exp $
+// $Id: VT100Screen.h,v 1.21 2006-09-29 23:21:10 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -54,12 +54,10 @@ typedef struct screen_char_t
     int CURSOR_Y;
     int SAVE_CURSOR_X;
     int SAVE_CURSOR_Y;
-    int cursorIndex;
     int SCROLL_TOP;
     int SCROLL_BOTTOM;
     BOOL tabStop[TABWINDOW];
-    BOOL CURSOR_IN_MIDDLE;
-
+    
     VT100Terminal *TERMINAL;
     PTYTask *SHELL;
     PTYSession *SESSION;

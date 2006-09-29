@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.19 2006-09-25 07:10:02 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.20 2006-09-29 23:21:10 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -113,6 +113,8 @@
 #define XTERMCC_WINDOWPOS	 95       // (3,Y,X) NK: added for Vim positioning window
 #define XTERMCC_ICONIFY      96
 #define XTERMCC_DEICONIFY    97
+#define XTERMCC_RAISE        98
+#define XTERMCC_LOWER        99
 
 // Some ansi stuff
 #define ANSICSI_CHA	     3000	// Cursor Horizontal Absolute

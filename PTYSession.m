@@ -1769,7 +1769,7 @@ static NSImage *warningImage;
 				}
 				
 				if (token.type == VT100_NOTSUPPORT) {
-					NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
+					//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
 				}
 				
 				// periodically refresh autoreleasepool

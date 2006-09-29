@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.104 2006-09-25 07:10:02 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.105 2006-09-29 23:21:09 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -35,6 +35,7 @@
 #import <iTerm/NSStringITerm.h>
 
 #define DEBUG_ALLOC		0
+#define LOG_UNKNOWN     0
 
 /*
  Traditional Chinese (Big5)
@@ -448,7 +449,9 @@ static VT100TCC decode_csi(unsigned char *datap,
                         result.type = VT100CSI_DECTST;
                     else
 					{
-						NSLog(@"1: Unknown token %c", param.cmd);
+#if LOG_UNKNOWN
+                        NSLog(@"1: Unknown token %c", param.cmd);
+#endif
 						result.type = VT100_NOTSUPPORT;
 					}
 						break;
@@ -513,27 +516,34 @@ static VT100TCC decode_csi(unsigned char *datap,
                     SET_PARAM_DEFAULT(param,0,1);
                     break;
 				case 't':
-                    if (param.count == 3) {
-                        switch (param.p[0]) {
-                            case 8:
-                                result.type = XTERMCC_WINDOWSIZE;
-                                break;
-                            case 3:
-                                result.type = XTERMCC_WINDOWPOS;
-                                break;
-                            case 4:
-                                result.type = XTERMCC_WINDOWSIZE_PIXEL;
-                                break;
-                        }     
-                        
-                        SET_PARAM_DEFAULT(param, 1, 0);		// columns or Y
-                        SET_PARAM_DEFAULT(param, 2, 0);		// rows or X
-                    }
-                    else {
-                        if (param.p[0] == 2)
+                    switch (param.p[0]) {
+                        case 8:
+                            result.type = XTERMCC_WINDOWSIZE;
+                            SET_PARAM_DEFAULT(param, 1, 0);		// columns or Y
+                            SET_PARAM_DEFAULT(param, 2, 0);		// rows or X
+                            break;
+                        case 3:
+                            result.type = XTERMCC_WINDOWPOS;
+                            SET_PARAM_DEFAULT(param, 1, 0);		// columns or Y
+                            SET_PARAM_DEFAULT(param, 2, 0);		// rows or X
+                            break;
+                        case 4:
+                            result.type = XTERMCC_WINDOWSIZE_PIXEL;
+                            SET_PARAM_DEFAULT(param, 1, 0);		// columns or Y
+                            SET_PARAM_DEFAULT(param, 2, 0);		// rows or X
+                            break;
+                        case 2:
                             result.type = XTERMCC_ICONIFY;
-                        else
+                            break;
+                        case 1:
                             result.type = XTERMCC_DEICONIFY;
+                            break;
+                        case 5:
+                            result.type = XTERMCC_RAISE;
+                            break;
+                        case 6:
+                            result.type = XTERMCC_LOWER;
+                            break;
                     }
                     break;
                     
@@ -559,7 +569,9 @@ static VT100TCC decode_csi(unsigned char *datap,
 					SET_PARAM_DEFAULT(param,0,0);
 					break;
                 default:
-					NSLog(@"2: Unknown token (%c); %s", param.cmd, datap);
+#if LOG_UNKNOWN
+                    NSLog(@"2: Unknown token (%c); %s", param.cmd, datap);
+#endif
                     result.type = VT100_NOTSUPPORT;
                     break;
             }
@@ -575,7 +587,9 @@ static VT100TCC decode_csi(unsigned char *datap,
                     SET_PARAM_DEFAULT(param, 0, 0);
                     break;
                 default:
+#if LOG_UNKNOWN
 					NSLog(@"3: Unknown token %c", param.cmd);
+#endif
                     result.type = VT100_NOTSUPPORT;
                     break;
                     
@@ -715,7 +729,9 @@ static VT100TCC decode_other(unsigned char *datap,
 				switch (c2) {
 					case '8': result.type=VT100CSI_DECALN; break;
 					default:
+#if LOG_UNKNOWN
 						NSLog(@"4: Unknown token ESC # %c", c2);
+#endif
 						result.type = VT100_NOTSUPPORT;
 				}
 				*rmlen = 3;
@@ -819,7 +835,9 @@ static VT100TCC decode_other(unsigned char *datap,
 			break;
 			
 		default:
-			NSLog(@"5: Unknown token %c(%x)", c1, c1);
+#if LOG_UNKNOWN
+            NSLog(@"5: Unknown token %c(%x)", c1, c1);
+#endif
 			result.type = VT100_NOTSUPPORT;
 			*rmlen = 2;
 			break;

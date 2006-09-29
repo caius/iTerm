@@ -1,3 +1,12 @@
+2006-09-29  fabian
+
+    * Removed excessive NSLog info
+    * Fixed a possible deadlock during resizing.
+    * Fixed a bug in [VT100Screen resizeWidth:height:].
+    * Fixed a bug in [VT100Screen setTab].
+    * Added support for xterm's raise/lower window sequencies.
+    * Cleaned outdated variables of VT100Screen.
+    
 2006-09-27  fabian
 
     * Reorganized Preference panel's UI

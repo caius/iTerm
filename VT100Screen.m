@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.247 2006-09-26 07:54:39 yfabian Exp $
+// $Id: VT100Screen.m,v 1.248 2006-09-29 23:21:09 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -359,7 +359,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     total_height = max_scrollback_lines + HEIGHT;
 
     // Try to determine how many empty trailing lines there are on screen
-    for(;HEIGHT>0;HEIGHT--) {
+    for(;HEIGHT>1;HEIGHT--) {
         aLine = [self getLineAtScreenIndex: HEIGHT-1];
         for (i=0;i<WIDTH;i++)
             if (aLine[i].ch) break;
@@ -431,6 +431,10 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		CURSOR_X = width-1;
 	if (SAVE_CURSOR_X >= width) 
 		SAVE_CURSOR_X = width-1;
+	if (CURSOR_Y >= height) 
+		CURSOR_Y = height-1;
+	if (SAVE_CURSOR_Y >= height) 
+		SAVE_CURSOR_Y = height-1;
 	
 	// if we did the resize in SAVE_BUFFER mode, too bad, get rid of it
 	if (temp_buffer) 
@@ -759,7 +763,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case XTERMCC_DELCH: [self deleteCharacters:token.u.csi.p[0]]; break;
     case XTERMCC_DELLN: [self deleteLines:token.u.csi.p[0]]; break;
     case XTERMCC_WINDOWSIZE:
-        NSLog(@"setting window size from (%d, %d) to (%d, %d)", WIDTH, HEIGHT, token.u.csi.p[1], token.u.csi.p[2]);
+        //NSLog(@"setting window size from (%d, %d) to (%d, %d)", WIDTH, HEIGHT, token.u.csi.p[1], token.u.csi.p[2]);
         [self releaseLock];
         [[SESSION parent] resizeWindow: token.u.csi.p[2]
                                 height: token.u.csi.p[1]];
@@ -770,7 +774,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
         [[SESSION parent] resizeWindowToPixelsWidth: token.u.csi.p[2] height:token.u.csi.p[1]];
         return;
     case XTERMCC_WINDOWPOS:
-        NSLog(@"setting window position to Y=%d, X=%d", token.u.csi.p[1], token.u.csi.p[2]);
+        //NSLog(@"setting window position to Y=%d, X=%d", token.u.csi.p[1], token.u.csi.p[2]);
         [[[SESSION parent] window] setFrameTopLeftPoint: NSMakePoint(token.u.csi.p[2], [[[[SESSION parent] window] screen] frame].size.height - token.u.csi.p[1])];
         break;
     case XTERMCC_ICONIFY:
@@ -778,6 +782,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
         break;
     case XTERMCC_DEICONIFY:
         [[[SESSION parent] window] deminiaturize: nil];
+        break;
+    case XTERMCC_RAISE:
+        [[[SESSION parent] window] orderFront: nil];
+        break;
+    case XTERMCC_LOWER:
+        [[[SESSION parent] window] orderBack: nil];
         break;
         
     // Our iTerm specific codes    
@@ -1115,6 +1125,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
     CURSOR_X++; // ensure we go to the next tab in case we are already on one
     for(;!tabStop[CURSOR_X]&&CURSOR_X<WIDTH; CURSOR_X++);
+    if (CURSOR_X >= WIDTH)
+		CURSOR_X =  WIDTH - 1;
 }
 
 - (void)clearScreen

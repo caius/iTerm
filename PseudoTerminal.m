@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.351 2006-09-29 23:21:08 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.352 2006-10-01 05:02:26 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -764,7 +764,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)setWindowSize
 {    
     NSSize size, vsize, winSize, tabViewSize;
-    NSWindow *thisWindow;
+    NSWindow *thisWindow = [self window];
     NSRect aRect;
     NSPoint topLeft;
 		
@@ -780,6 +780,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // desired size of textview
     vsize.width = charWidth * WIDTH + MARGIN * 2;
 	vsize.height = charHeight * HEIGHT;
+    
     // NSLog(@"width=%d,height=%d",[[[_sessionMgr currentSession] SCREEN] width],[[[_sessionMgr currentSession] SCREEN] height]);
     
 	// desired size of scrollview
@@ -801,7 +802,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s: tabview content size %.1f, %.1f", __PRETTY_FUNCTION__,
 		  tabViewSize.width, tabViewSize.height);
 #endif
-	
 	
 	// desired size of window content
 	winSize = tabViewSize;
@@ -874,10 +874,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	
 	
-	thisWindow = [self window];
-
-	
-    // preserve the top left corner of the frame
+	    // preserve the top left corner of the frame
     aRect = [thisWindow frame];
     topLeft.x = aRect.origin.x;
     topLeft.y = aRect.origin.y + aRect.size.height;
@@ -1315,6 +1312,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 	
     frame = [[[self currentSession] SCROLLVIEW] documentVisibleRect];
+    if (frame.size.height > [[[self window] contentView] frame].size.height) {
+        frame.size.height = [[[self window] contentView] frame].size.height;
+    }
     
 #if 0
     NSLog(@"scrollview content size %.1f, %.1f, %.1f, %.1f",

@@ -1,3 +1,7 @@
+2006-09-30  fabian
+
+    * Fixed a display bug when window size is set to larger than screen.
+    
 2006-09-29  fabian
 
     * Removed excessive NSLog info

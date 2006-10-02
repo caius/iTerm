@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.263 2006-09-28 07:02:47 yfabian Exp $
+// $Id: PTYTextView.m,v 1.264 2006-10-02 22:57:39 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -46,6 +46,7 @@
 #define  CURSOR_CODE 0x80
 
 static SInt32 systemVersion;
+static NSCursor* textViewCursor =  nil;
 
 @implementation PTYTextView
 
@@ -54,6 +55,25 @@ static SInt32 systemVersion;
 	// get system version number
 	// get the system version since there is a useful call in 10.3 and up for getting a blod stroke
 	Gestalt(gestaltSystemVersion,&systemVersion);
+    
+    NSImage *ibeamImage = [[NSCursor IBeamCursor] image];
+    NSPoint hotspot = [[NSCursor IBeamCursor] hotSpot];
+    NSImage *aCursorImage = [ibeamImage copy];
+    NSImage *reverseCursorImage = [ibeamImage copy];
+    [reverseCursorImage lockFocus];
+    [[NSColor whiteColor] set];
+    NSRectFill(NSMakeRect(0,0,[reverseCursorImage size].width,[reverseCursorImage size].height));
+    [ibeamImage compositeToPoint:NSMakePoint(0,0) operation:NSCompositeDestinationIn];
+    [reverseCursorImage unlockFocus];
+    [aCursorImage lockFocus];
+    [reverseCursorImage compositeToPoint:NSMakePoint(1,0) operation:NSCompositePlusLighter];
+    [aCursorImage unlockFocus];
+    textViewCursor = [[NSCursor alloc] initWithImage:aCursorImage hotSpot:hotspot];
+}
+
++ (NSCursor *) textViewCursor
+{
+    return textViewCursor;
 }
 
 - (id)initWithFrame: (NSRect) aRect
@@ -2166,11 +2186,8 @@ static SInt32 systemVersion;
 
 - (void)resetCursorRects
 {
-    static NSCursor *cursor=nil;
-	//    NSLog(@"Setting mouse here");
-    if (!cursor) cursor=[NSCursor IBeamCursor];
-    [self addCursorRect:[self bounds] cursor:cursor];
-    [cursor setOnMouseEntered:YES];
+    [self addCursorRect:[self bounds] cursor:textViewCursor];
+    [textViewCursor setOnMouseEntered:YES];
 }
 
 // Save method

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.40 2006-09-26 07:54:41 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.41 2006-10-02 22:57:40 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -156,6 +156,7 @@
 - (void) closeTabContextualMenuAction: (id) sender;
 - (void) moveTabToNewWindowContextualMenuAction: (id) sender;
 - (PSMTabBarControl*) tabBarControl;
+- (void) setLabelColor: (NSColor *) color forTabViewItem: tabViewItem;
 
 // Profiles
 - (IBAction) saveDisplayProfile: (id) sender;

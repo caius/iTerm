@@ -2111,4 +2111,28 @@
 	return hitTestResult;
 }
 
+#pragma mark -
+#pragma mark iTerm Add On
+
+- (void)setLabelColor:(NSColor *)aColor forTabViewItem:(NSTabViewItem *) tabViewItem
+{
+    BOOL updated = NO;
+
+    [_lock lock];
+    
+    NSEnumerator *e = [_cells objectEnumerator];
+    PSMTabBarCell *cell;
+    while ( (cell = [e nextObject])) {
+        if ([cell representedObject] == tabViewItem) {
+			if ([cell labelColor] != aColor) {
+                updated = YES; 
+                [cell setLabelColor: aColor];
+            }
+		}
+    }
+    [_lock unlock];
+    
+    if (updated) [self update: NO];
+}
+
 @end

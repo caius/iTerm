@@ -227,4 +227,7 @@ enum {
 - (void)tabViewWillPerformDragOperation:(NSTabView *)tabView;
 - (void)tabViewDidPerformDragOperation:(NSTabView *)tabView;
 
+// iTerm add-on
+- (void)setLabelColor:(NSColor *)aColor forTabViewItem:(NSTabViewItem *) tabViewItem;
+
 @end

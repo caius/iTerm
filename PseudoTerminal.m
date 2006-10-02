@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.352 2006-10-01 05:02:26 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.353 2006-10-02 22:57:39 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -590,12 +590,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)previousSession:(id)sender
 {
+    NSTabViewItem *tvi=[TABVIEW selectedTabViewItem];
     [TABVIEW selectPreviousTabViewItem: sender];
+    if (tvi==[TABVIEW selectedTabViewItem]) [TABVIEW selectTabViewItemAtIndex: [TABVIEW numberOfTabViewItems]-1];
 }
 
 - (IBAction) nextSession:(id)sender
 {
+    NSTabViewItem *tvi=[TABVIEW selectedTabViewItem];
     [TABVIEW selectNextTabViewItem: sender];
+    if (tvi==[TABVIEW selectedTabViewItem]) [TABVIEW selectTabViewItemAtIndex: 0];
 }
 
 - (NSString *) currentSessionName
@@ -1530,8 +1534,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 		for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
 		{
-			aMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
-												   action:@selector(selectTab:) keyEquivalent:[NSString stringWithFormat:@"%d", i+1]];
+			aMenuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ #%d", [[TABVIEW tabViewItemAtIndex: i] label], i+1]
+												   action:@selector(selectTab:) keyEquivalent:@""];
 			[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
 			[aMenuItem setTarget: TABVIEW];
 			[tabMenu addItem: aMenuItem];
@@ -1871,8 +1875,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 		for (i = 0; i < [TABVIEW numberOfTabViewItems]; i++)
 		{
-			aMenuItem = [[NSMenuItem alloc] initWithTitle:[[TABVIEW tabViewItemAtIndex: i] label]
-												   action:@selector(selectTab:) keyEquivalent:[NSString stringWithFormat:@"%d", i+1]];
+			aMenuItem = [[NSMenuItem alloc] initWithTitle:[NSString stringWithFormat:@"%@ #%d", [[TABVIEW tabViewItemAtIndex: i] label], i+1]
+												   action:@selector(selectTab:) keyEquivalent:@""];
 			[aMenuItem setRepresentedObject: [[TABVIEW tabViewItemAtIndex: i] identifier]];
 			[aMenuItem setTarget: TABVIEW];
 			[tabMenu addItem: aMenuItem];
@@ -1937,6 +1941,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     
     return [term tabBarControl];
+}
+
+- (void) setLabelColor: (NSColor *) color forTabViewItem: tabViewItem
+{
+    [tabBarControl setLabelColor: color forTabViewItem:tabViewItem];
 }
 
 - (PSMTabBarControl*) tabBarControl

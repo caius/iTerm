@@ -31,6 +31,9 @@
     BOOL                _isCloseButtonSuppressed;
     BOOL                _hasIcon;
     int                 _count;
+
+    //iTerm add-on
+    NSColor             *_labelColor;
 }
 
 // creation/destruction
@@ -92,6 +95,10 @@
 // archiving
 - (void)encodeWithCoder:(NSCoder *)aCoder;
 - (id)initWithCoder:(NSCoder *)aDecoder;
+
+// iTerm add-on
+- (NSColor *)labelColor;
+- (void)setLabelColor:(NSColor *)aColor;
 
 @end
 

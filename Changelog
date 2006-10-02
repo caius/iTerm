@@ -1,3 +1,10 @@
+2006-10-02  fabian
+
+    * Changed the PTYTextView's cursor so that it looks more obvious with both black and white
+      backgrounds.
+    * Now selecting previous/next tab loops around.
+    * Re-implemented the color-coding of tab state.
+
 2006-09-30  fabian
 
     * Fixed a display bug when window size is set to larger than screen.

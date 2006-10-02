@@ -36,6 +36,7 @@
         _isCloseButtonSuppressed = NO;
         _count = 0;
         _isPlaceholder = NO;
+        _labelColor = nil;
     }
     return self;
 }
@@ -61,6 +62,7 @@
         _hasCloseButton = YES;
         _isCloseButtonSuppressed = NO;
         _count = 0;
+        _labelColor = nil;
         
         if (value) {
             [self setCurrentStep:(kPSMTabDragAnimationSteps - 1)];
@@ -74,6 +76,9 @@
 - (void)dealloc
 {
     [_indicator release];
+    if (_labelColor)
+        [_labelColor release];
+    
     [super dealloc];
 }
 
@@ -141,7 +146,13 @@
 
 - (NSAttributedString *)attributedStringValue
 {
-    return [(id <PSMTabStyle>)[_controlView style] attributedStringValueForTabCell:self];
+    NSMutableAttributedString *aString = [[NSMutableAttributedString alloc] initWithAttributedString:[(id <PSMTabStyle>)[_controlView style] attributedStringValueForTabCell:self]];
+    
+    if (_labelColor) {
+        [aString addAttribute:NSForegroundColorAttributeName value:_labelColor range:NSMakeRange(0, [aString length])];
+    }
+    
+    return aString;
 }
 
 - (int)tabState
@@ -471,6 +482,24 @@
 
 - (id)accessibilityFocusedUIElement:(NSPoint)point {
 	return NSAccessibilityUnignoredAncestor(self);
+}
+
+#pragma mark -
+#pragma mark iTerm Add-on
+
+- (NSColor *)labelColor
+{
+    return _labelColor;
+}
+
+- (void)setLabelColor:(NSColor *)aColor
+{
+    if (_labelColor != aColor) {
+        if (_labelColor) {
+            [_labelColor release];
+        }
+        _labelColor = aColor ? [aColor retain] : nil;
+    }
 }
 
 @end

@@ -55,6 +55,13 @@ static NSString *TERM_ENVNAME = @"TERM";
 static NSString *PWD_ENVNAME = @"PWD";
 static NSString *PWD_ENVVALUE = @"~";
 
+// tab label attributes
+static NSColor *normalStateColor;
+static NSColor *chosenStateColor;
+static NSColor *idleStateColor;
+static NSColor *newOutputStateColor;
+static NSColor *deadStateColor;
+
 static NSImage *warningImage;
 
 + (void) initialize
@@ -65,6 +72,13 @@ static NSImage *warningImage;
 	thisBundle = [NSBundle bundleForClass: [self class]];
 	imagePath = [thisBundle pathForResource:@"important" ofType:@"png"];
 	warningImage = [[NSImage alloc] initByReferencingFile: imagePath];	
+
+    normalStateColor = [NSColor blackColor];
+    chosenStateColor = [NSColor blackColor];
+    idleStateColor = [NSColor redColor];
+    newOutputStateColor = [NSColor purpleColor];
+    deadStateColor = [NSColor grayColor];
+    
 }
 
 // init/dealloc
@@ -173,7 +187,7 @@ static NSImage *warningImage;
     [TEXTVIEW setDelegate: self];
     [SCROLLVIEW setDocumentView:TEXTVIEW];
     [TEXTVIEW release];
-    [SCROLLVIEW setDocumentCursor: [NSCursor IBeamCursor]];
+    [SCROLLVIEW setDocumentCursor: [PTYTextView textViewCursor]];
 
     ai_code=0;
     antiIdle = NO;
@@ -869,6 +883,7 @@ static NSImage *warningImage;
     if ([self exited])
 	{
         // dead
+        [parent setLabelColor: deadStateColor forTabViewItem: tabViewItem];
         if(isProcessing)
 			[self setIsProcessing: NO];
 	}
@@ -888,16 +903,18 @@ static NSImage *warningImage;
                     growlIdle = YES;
                     growlNewOutput = NO;
                 }
+                [parent setLabelColor: idleStateColor forTabViewItem: tabViewItem];
 			}
             else
 			{
 				// normal state
+                [parent setLabelColor: normalStateColor forTabViewItem: tabViewItem];
 			}
         }
         else 
 		{
             if (newOutput) {
-                if(isProcessing == NO)
+                if(isProcessing == NO && ![[PreferencePanel sharedInstance] useCompactLabel])
                     [self setIsProcessing: YES];
 
                 if (!growlNewOutput && ![parent sendInputToAllSessions]) {
@@ -906,6 +923,8 @@ static NSImage *warningImage;
                     andNotification:@"New Output"];
                     growlNewOutput=YES;
                 }
+                
+                [parent setLabelColor: newOutputStateColor forTabViewItem: tabViewItem];
             }
         }
     }
@@ -915,6 +934,7 @@ static NSImage *warningImage;
 			[self setIsProcessing: NO];
         growlNewOutput=NO;
         newOutput = NO;
+        [parent setLabelColor: chosenStateColor forTabViewItem: tabViewItem];
     }
     [self setBell:NO];
 }

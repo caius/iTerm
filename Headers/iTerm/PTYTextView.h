@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.56 2006-09-22 23:21:09 yfabian Exp $
+// $Id: PTYTextView.h,v 1.57 2006-10-02 22:57:40 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -132,9 +132,10 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	NSTrackingRectTag trackingRectTag;
 	
 	BOOL keyIsARepeat;
-	
+    
 }
 
++ (NSCursor *) textViewCursor;
 - (id)initWithFrame: (NSRect) aRect;
 - (void)dealloc;
 - (BOOL) becomeFirstResponder;

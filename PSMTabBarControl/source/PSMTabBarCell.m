@@ -146,7 +146,7 @@
 
 - (NSAttributedString *)attributedStringValue
 {
-    NSMutableAttributedString *aString = [[NSMutableAttributedString alloc] initWithAttributedString:[(id <PSMTabStyle>)[_controlView style] attributedStringValueForTabCell:self]];
+    NSMutableAttributedString *aString = [[[NSMutableAttributedString alloc] initWithAttributedString:[(id <PSMTabStyle>)[_controlView style] attributedStringValueForTabCell:self]] autorelease];
     
     if (_labelColor) {
         [aString addAttribute:NSForegroundColorAttributeName value:_labelColor range:NSMakeRange(0, [aString length])];

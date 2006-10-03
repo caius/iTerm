@@ -1611,21 +1611,13 @@
         }
     }
 	
-    if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:willCloseTabViewItem:)])){
-        [[self delegate] tabView:tabView willCloseTabViewItem:item];
-    }
-    
     [item retain];
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(closeSession:)])){
         [[self delegate] acquireLock];
         [[self delegate] closeSession: [item identifier]];
         [[self delegate] releaseLock];
-    }
-    
-    if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:didCloseTabViewItem:)])){
-        [[self delegate] tabView:tabView didCloseTabViewItem:item];
-    }
-
+    } 
+        
     [item release];
     [sender release];
 }

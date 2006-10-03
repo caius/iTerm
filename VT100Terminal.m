@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.105 2006-09-29 23:21:09 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.106 2006-10-03 05:24:46 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -380,12 +380,14 @@ static VT100TCC decode_csi(unsigned char *datap,
 						   size_t *rmlen,VT100Screen *SCREEN)
 {
     VT100TCC result;
-    CSIParam param;
+    CSIParam param={{0},0};
     size_t paramlen;
     int i;
 	
     paramlen = getCSIParam(datap, datalen, &param, SCREEN);
-	// Check for unkown
+    result.type = VT100_WAIT;
+    
+    // Check for unkown
 	if(param.cmd == 0xff)
 	{
 		result.type = VT100_UNKNOWNCHAR;
@@ -605,9 +607,7 @@ static VT100TCC decode_csi(unsigned char *datap,
 		
 		*rmlen = paramlen;
     }
-    else {
-		result.type = VT100_WAIT;
-    }
+
     return result;
 }
 

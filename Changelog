@@ -4,6 +4,7 @@
       backgrounds.
     * Now selecting previous/next tab loops around.
     * Re-implemented the color-coding of tab state.
+    * Reversed code for tab sizing. Now using a Safari-like behavior.
 
 2006-09-30  fabian
 

@@ -36,5 +36,9 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>iTermApplication</string>
+	<key>SmartCrashReports_CompanyName</key>
+	<string>iTerm</string>
+	<key>SmartCrashReports_EmailTicket</key>
+	<string>SCR-8B63DF54C9</string>
 </dict>
 </plist>

@@ -1614,8 +1614,9 @@
     [item retain];
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(closeSession:)])){
         [[self delegate] acquireLock];
+        int n = [tabView numberOfTabViewItems];
         [[self delegate] closeSession: [item identifier]];
-        [[self delegate] releaseLock];
+        if (n>1) [[self delegate] releaseLock];
     } 
         
     [item release];

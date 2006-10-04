@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.354 2006-10-03 05:24:46 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.355 2006-10-04 00:00:44 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -586,8 +586,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     
     [self acquireLock];
+    int n = [TABVIEW numberOfTabViewItems];
     [self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
-    [self releaseLock];
+    if (n>1) [self releaseLock];
 }
 
 - (IBAction)previousSession:(id)sender
@@ -1609,7 +1610,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willRemoveTabViewItem]", __FILE__, __LINE__);
 #endif
-    [[tabViewItem identifier] terminate];
 }
 
 - (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1972,8 +1972,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) closeTabWithIdentifier: (id) identifier
 {
     [self acquireLock];
+    int n = [TABVIEW numberOfTabViewItems];
     [self closeSession: identifier];
-    [self releaseLock];
+    if (n>1) [self releaseLock];
 }
 
 // moves a tab with its session to a new window
@@ -2180,7 +2181,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                         i--;
                         n--;
                         if (!n) {
-                            [self releaseLock];
+                            //[self releaseLock];
                             goto end_thread;
                         }
                     }
@@ -2431,12 +2432,13 @@ end_thread:
 {
     // NSLog(@"PseudoTerminal: -removeFromSessionsAtIndex: %d", index);
     [self acquireLock];
+    int n = [TABVIEW numberOfTabViewItems];
     if(index < [TABVIEW numberOfTabViewItems])
     {
 		PTYSession *aSession = [[TABVIEW tabViewItemAtIndex:index] identifier];
 		[self closeSession: aSession];
     }
-    [self releaseLock];
+    if (n>1) [self releaseLock];
 }
 
 - (BOOL)windowInited

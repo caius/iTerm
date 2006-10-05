@@ -1,3 +1,10 @@
+2006-10-04  fabian
+
+    * Made minimum tab width smaller when compact tab option is set.
+    * Fixed a bug in [VT100Screen setString] that might be the cause of bug #1545337.
+    * Added a copy-fille phase to include iTerm.string for adding localizations outside
+      of the iTerm Framework.
+    
 2006-10-03  fabian
 
     * Fixed a bug that crashes iTerm when last tab of window is closed.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.355 2006-10-04 00:00:44 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.356 2006-10-05 00:08:47 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -866,6 +866,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     
     [tabBarControl setDisableTabClose:[[PreferencePanel sharedInstance] useCompactLabel]];
+    [tabBarControl setCellMinWidth: [[PreferencePanel sharedInstance] useCompactLabel]?60:75];
+    
     int i;
     for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
     {
@@ -1893,13 +1895,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
  	
     // add tasks
-    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close tab") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context Menu") action:@selector(closeTabContextualMenuAction:) keyEquivalent:@""];
     [aMenuItem setRepresentedObject: tabViewItem];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
     if([TABVIEW numberOfTabViewItems] > 1)
     {
-		aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move tab to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Move tab to new window") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
+		aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Move to new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context Menu") action:@selector(moveTabToNewWindowContextualMenuAction:) keyEquivalent:@""];
 		[aMenuItem setRepresentedObject: tabViewItem];
 		[theMenu addItem: aMenuItem];
 		[aMenuItem release];

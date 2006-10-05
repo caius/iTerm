@@ -125,6 +125,7 @@
 		F62D15F30AA64B2F0075A287 /* PSMAdiumTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F62D15EF0AA64B2F0075A287 /* PSMAdiumTabStyle.m */; };
 		F62D15F40AA64B2F0075A287 /* PSMTabDragWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = F62D15F00AA64B2F0075A287 /* PSMTabDragWindow.h */; };
 		F62D15F50AA64B2F0075A287 /* PSMTabDragWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F62D15F10AA64B2F0075A287 /* PSMTabDragWindow.m */; };
+		F638C2620AD483BF00BEE23D /* iTerm.strings in Resources */ = {isa = PBXBuildFile; fileRef = FB151F2903648AC401F955DB /* iTerm.strings */; };
 		F658C86E06054425000A13D5 /* iTermTerminalProfileMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = F658C86C06054425000A13D5 /* iTermTerminalProfileMgr.m */; };
 		F658CAFB060587A0000A13D5 /* iTermTerminalProfileMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = F658CAFA060587A0000A13D5 /* iTermTerminalProfileMgr.h */; };
 		F69E788D0AB7AC6D001EC0FF /* iTermGrowlDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F69E788C0AB7AC6D001EC0FF /* iTermGrowlDelegate.m */; };
@@ -1130,6 +1131,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F638C2620AD483BF00BEE23D /* iTerm.strings in Resources */,
 				8742064B0564169600CFC3F1 /* MainMenu.nib in Resources */,
 				8742064C0564169600CFC3F1 /* iTerm Help in Resources */,
 				8742064D0564169600CFC3F1 /* iTerm.icns in Resources */,

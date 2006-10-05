@@ -1,15 +1,7 @@
-2006-10-04  fabian
+2006-10-04	dnedrow
 
-    * Made minimum tab width smaller when compact tab option is set.
-    * Fixed a bug in [VT100Screen setString] that might be the cause of bug #1545337.
-    * Added a copy-fille phase to include iTerm.string for adding localizations outside
-      of the iTerm Framework.
-    
-2006-10-03  fabian
+	* Added plist entries to hook into Unsanity's Smart Crash Reporter.
 
-    * Fixed a bug that crashes iTerm when last tab of window is closed.
-    * Fixed a bug that crashes iTerm when one tears off a tab.
-    
 2006-10-02  fabian
 
     * Changed the PTYTextView's cursor so that it looks more obvious with both black and white

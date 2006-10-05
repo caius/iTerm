@@ -18,6 +18,21 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Version History:</STRONG></FONT>
 <BR><BR>
+<STRONG>0.9.0 Released!!!</STRONG> 10/5/06<BR><IMG src="new.gif">
+We made the transition to the new PSMTabBarControl. The new control gives iTerm
+a Safari-looking tab system, as well as 3 other tab styles. This is a major 
+upgrade from 0.8.2. The changes include:<BR>
+<UL>
+<LI></LI>
+<LI>Now uses PSMTabBarControl for tabs.</LI>
+<LI>Growl support.</LI>
+<LI>Support for Unsanity's Smart Crash Reporter.</LI>
+<LI>Added support for many xterm's window size/position escape sequences.</LI>
+<LI>Enhanced stability.</LI>
+<LI>Improved resize behavior.</LI>
+<LI>Fixed cmd-click URL selection.</LI>
+<LI>Many many other bug fixes and GUI enhancements.</LI>
+</UL>
 
 <STRONG>0.8.2 released</STRONG> 2/18/2006<BR>
 iTerm is now a universal binary application! The new version also addresses 

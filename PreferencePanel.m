@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.135 2006-09-26 07:54:39 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.136 2006-10-05 21:15:23 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -632,6 +632,44 @@ static BOOL editingBookmark = NO;
 	return (defaultWordChars);
 }
 
+// The following are preferences with no UI, but accessible via "defaults read/write"
+// examples:
+//  defaults write iTerm UseUnevenTabs -bool true
+//  defaults write iTerm MinTabWidth -int 100        
+//  defaults write iTerm MinCompactTabWidth -int 120
+//  defaults write iTerm OptimumTabWidth -int 100
+//  defaults write iTerm StrokeWidth -float -1
+//  defaults write iTerm BoldStrokeWidth -float -3
+
+- (BOOL) useUnevenTabs
+{
+    return [prefs objectForKey:@"UseUnevenTabs"]?[[prefs objectForKey:@"UseUnevenTabs"] boolValue]:NO;
+}
+
+- (int) minTabWidth
+{
+    return [prefs objectForKey:@"MinTabWidth"]?[[prefs objectForKey:@"MinTabWidth"] intValue]:75;
+}
+
+- (int) minCompactTabWidth
+{
+    return [prefs objectForKey:@"MinCompactTabWidth"]?[[prefs objectForKey:@"MinCompactTabWidth"] intValue]:60;
+}
+
+- (int) optimumTabWidth
+{
+    return [prefs objectForKey:@"OptimumTabWidth"]?[[prefs objectForKey:@"OptimumTabWidth"] intValue]:175;
+}
+
+- (float) strokeWidth
+{
+    return [prefs objectForKey:@"StrokeWidth"]?[[prefs objectForKey:@"StrokeWidth"] floatValue]:-3;
+}
+
+- (float) boldStrokeWidth
+{
+    return [prefs objectForKey:@"BoldStrokeWidth"]?[[prefs objectForKey:@"BoldStrokeWidth"] floatValue]:-5;
+}
 
 @end
 

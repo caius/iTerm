@@ -133,6 +133,14 @@
 - (int)  refreshRate;
 - (NSString *) wordChars;
 
+// Hidden preferences
+- (BOOL) useUnevenTabs;
+- (int) minTabWidth;
+- (int) minCompactTabWidth;
+- (int) optimumTabWidth;
+- (float) strokeWidth;
+- (float) boldStrokeWidth;
+
 @end
 
 @interface PreferencePanel (Private)

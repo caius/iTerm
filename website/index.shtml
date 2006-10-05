@@ -60,19 +60,30 @@
     <LI>User can specify a second font to display non-latin characters
 		to achieve best look</LI>
 	<LI>Supports double-width characters, as used in eastern Asia languages</LI>
-	<LI>Localized user interface for:</LI>
-	  <UL>
-		<LI>Chinese (Simplified and Traditional)</LI>
-		<LI>French</LI>
-		<LI>German</LI>
-		<LI>Japanese</LI>
-		<LI>Korean</LI>
-	  </UL>
   </UL>
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
-<STRONG>Pre-Release</STRONG> 9/22/06<BR><IMG src="new.gif">
+<STRONG>Release 0.9.0!!!</STRONG> 9/22/06<BR><IMG src="new.gif">
+Thanks to all the people who sent in their suggestion, feedback and bug reports.
+iTerm 0.9.0 is finally here. We have made the transistion to the new PSMTabBarControl.
+It gives iTerm a Safari-looking tab system. Further more, it supports drag and drop. 
+This is a major upgrade from 0.8.2. The changes include:<BR>
+<UL>
+<LI>A brand new Safari-like tab look.</LI>
+<LI>Growl support.</LI>
+<LI>Support for Unsanity's Smart Crash Reporter.</LI>
+<LI>Added support for many xterm's window size/position escape sequences.</LI>
+<LI>Enhanced stability.</LI>
+<LI>Fixes for cmd-click URL selection.</LI>
+<LI>Many many bug fixes and GUI enhancements.</LI>
+</UL>
+
+You can find out more details in the ChangeLog. Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check it out.<BR><BR>
+
+
+<STRONG>Pre-Release</STRONG> 9/22/06<BR>
 We are almost ready to put out a new release. The latest CVS build is therefore
 called Pre-Release. Since we do not think a little bump of number after the 2nd 
 decimal point justifies the change in the release, we are moving to the 0.9.x era.

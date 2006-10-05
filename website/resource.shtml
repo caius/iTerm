@@ -18,6 +18,27 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Additional Resource:</STRONG></FONT><BR>
 <BR>
+<FONT SIZE="4"><STRONG>Hidden Settings</STRONG></FONT><BR>
+<BR>
+There are a few settings that you cannot access via iTerm's own
+Preferences panel. However, you can use 'defaults" command to
+change them to your taste. For example:<BR>
+<ul>
+  defaults write iTerm UseUnevenTabs -bool false<BR>
+  defaults write iTerm MinTabWidth -int 75        <BR>
+  defaults write iTerm MinCompactTabWidth -int 60<BR>
+  defaults write iTerm OptimumTabWidth -int 175<BR>
+  defaults write iTerm StrokeWidth -float -3<BR>
+  defaults write iTerm BoldStrokeWidth -float -5<BR>
+</ul>
+The first four are for setting the tab size. And the last 2 are for setting the stroke width
+of fonts rendering. The numbers in the example are all default settings. Experiment with
+different numbers. For example, for a less bold font look, type these commands:
+<ul>
+  defaults write iTerm StrokeWidth -float -1<BR>
+  defaults write iTerm BoldStrokeWidth -float -3<BR>
+</ul>
+
 <FONT SIZE="4"><STRONG>Fonts:</STRONG></FONT> <BR><BR>
 Starting from 0.8.0, iTerm no longer requires monospace fonts. For older versions, you
 need a monospace font for correct display. In Addition, the font

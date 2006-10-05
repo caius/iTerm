@@ -1,3 +1,9 @@
+2006-10-05  fabian
+
+    * Added a few hidden preferences for more user control. (use defaults write... to change
+      these settings, see PreferencePanel.m)
+    * Fixed building problem for the pre-tiger version.
+      
 2006-10-04  fabian
 
     * Made minimum tab width smaller when compact tab option is set.

@@ -1,3 +1,13 @@
+2006-10-04  fabian
+
+    * Made minimum tab width smaller when compact tab option is set.
+    * Fixed a bug in [VT100Screen setString] that might be the cause of bug #1545337.
+    * Added a copy-fille phase to include iTerm.string for adding localizations outside
+      of the iTerm Framework.
+    * Further fix for the wrapping bug.
+    * Removed a few NSLog messages.
+    * Changed version number to 0.9.0.
+    
 2006-10-04	dnedrow
 
 	* Added plist entries to hook into Unsanity's Smart Crash Reporter.

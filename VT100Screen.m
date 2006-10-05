@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.249 2006-10-05 00:08:47 yfabian Exp $
+// $Id: VT100Screen.m,v 1.250 2006-10-05 06:27:56 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -633,7 +633,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case VT100CSI_DSR:  [self deviceReport:token]; break;
     case VT100CSI_ED:   [self eraseInDisplay:token]; break;
     case VT100CSI_EL:   [self eraseInLine:token]; break;
-    case VT100CSI_HTS: tabStop[CURSOR_X]=YES; break;
+    case VT100CSI_HTS: if (CURSOR_X<WIDTH) tabStop[CURSOR_X]=YES; break;
     case VT100CSI_HVP: [self cursorToX:token.u.csi.p[1]
                                      Y:token.u.csi.p[0]];
         break;
@@ -676,7 +676,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case VT100CSI_TBC:
         switch (token.u.csi.p[0]) {
             case 3: [self clearTabStop]; break;
-            case 0: tabStop[CURSOR_X]=NO;
+            case 0: if (CURSOR_X<WIDTH) tabStop[CURSOR_X]=NO;
         }
         break;
 
@@ -704,18 +704,20 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
         [self cursorToX: CURSOR_X+1 Y: token.u.csi.p[0]+CURSOR_Y+1];
         break;
     case ANSICSI_ECH:
-		i=WIDTH*CURSOR_Y+CURSOR_X;
-		j=token.u.csi.p[0];
-		if (j + CURSOR_X > WIDTH) 
-			j = WIDTH - CURSOR_X;
-		aLine = [self getLineAtScreenIndex: CURSOR_Y];
-		for(k = 0; k < j; k++)
-		{
-			aLine[CURSOR_X+k].ch = 0;
-			aLine[CURSOR_X+k].fg_color = [TERMINAL foregroundColorCode];
-			aLine[CURSOR_X+k].bg_color = [TERMINAL backgroundColorCode];
-		}
-		memset(dirty+i,1,j);
+        if (CURSOR_X<WIDTH) {
+            i=WIDTH*CURSOR_Y+CURSOR_X;
+            j=token.u.csi.p[0];
+            if (j + CURSOR_X > WIDTH) 
+                j = WIDTH - CURSOR_X;
+            aLine = [self getLineAtScreenIndex: CURSOR_Y];
+            for(k = 0; k < j; k++)
+            {
+                aLine[CURSOR_X+k].ch = 0;
+                aLine[CURSOR_X+k].fg_color = [TERMINAL foregroundColorCode];
+                aLine[CURSOR_X+k].bg_color = [TERMINAL backgroundColorCode];
+            }
+            memset(dirty+i,1,j);
+        }
 		break;
         
     case STRICT_ANSI_MODE:
@@ -800,9 +802,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
         break;
         
     default:
-		NSLog(@"%s(%d): bug?? token.type = %d", 
-			__FILE__, __LINE__, token.type);
-	break;
+		/*NSLog(@"%s(%d): bug?? token.type = %d", 
+			__FILE__, __LINE__, token.type);*/
+        break;
     }
 //    NSLog(@"Done");
     [self releaseLock];
@@ -925,7 +927,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 	if ([string length] < 1 || !string) 
 	{
-		NSLog(@"%s: invalid string '%@'", __PRETTY_FUNCTION__, string);
+		//NSLog(@"%s: invalid string '%@'", __PRETTY_FUNCTION__, string);
 		return;		
 	}
 	
@@ -992,20 +994,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		CURSOR_X = newx;
 		idx += j;
     }
-    
-    if (CURSOR_X >= WIDTH) 
-    {
-        if ([TERMINAL wraparoundMode]) 
-        {
-            CURSOR_X=0;    
-            [self setNewLine];
-        }
-        else 
-        {
-            CURSOR_X=WIDTH-1;
-        }
-    }
-    
 	
 	free(buffer);
 	
@@ -1047,7 +1035,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     if (CURSOR_Y  < SCROLL_BOTTOM || (CURSOR_Y < (HEIGHT - 1) && CURSOR_Y > SCROLL_BOTTOM)) 
 	{
 		CURSOR_Y++;	
-		dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
+		if (CURSOR_X < WIDTH) dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
     }
     else if (SCROLL_TOP == 0 && SCROLL_BOTTOM == HEIGHT - 1) 
 	{
@@ -1062,7 +1050,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		else
 		{
 			// top line can move into scroll area; we need to draw only bottom line
-			dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
+			//dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
 			memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
 			memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
 		}
@@ -1190,7 +1178,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case 1:
         x1 = 0;
         y1 = 0;
-        x2 = CURSOR_X+1;
+        x2 = CURSOR_X<WIDTH?CURSOR_X+1:WIDTH;
         y2 = CURSOR_Y;
         break;
 
@@ -1249,7 +1237,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     switch (token.u.csi.p[0]) {
     case 1:
 		x1=0;
-		x2=CURSOR_X+1;
+		x2=CURSOR_X<WIDTH?CURSOR_X+1:WIDTH;
         break;
     case 2:
 		x1 = 0;
@@ -1343,7 +1331,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     else
 		CURSOR_Y = y;
 	
-	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
+	if (CURSOR_X<WIDTH) dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
 }
 
 - (void)cursorDown:(int)n
@@ -1359,7 +1347,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     else
 		CURSOR_Y = y;
 	
-	dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
+	if (CURSOR_X<WIDTH) dirty[CURSOR_Y*WIDTH+CURSOR_X] = 1;
 }
 
 - (void) cursorToX: (int) x
@@ -1586,6 +1574,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
  
 //    NSLog(@"insertBlank[%d@(%d,%d)]",n,CURSOR_X,CURSOR_Y);
 
+    if (CURSOR_X>=WIDTH) return;
+    
 	int screenIdx=CURSOR_Y*WIDTH+CURSOR_X;
 	
 	// get the appropriate line

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.20 2006-09-29 23:21:10 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.21 2006-10-09 22:24:54 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -231,6 +231,15 @@ typedef enum {
 #define DEFAULT_BG_COLOR_CODE	0x11
 #define SELECTION_MASK 0x20
 
+// termcap stuff
+enum {
+    TERMCAP_KEY_LEFT, TERMCAP_KEY_RIGHT, TERMCAP_KEY_UP, TERMCAP_KEY_DOWN, TERMCAP_KEY_HOME,
+    TERMCAP_KEY_F10, TERMCAP_KEY_F1, TERMCAP_KEY_F2, TERMCAP_KEY_F3, TERMCAP_KEY_F4, TERMCAP_KEY_F5,
+    TERMCAP_KEY_F6, TERMCAP_KEY_F7, TERMCAP_KEY_F8, TERMCAP_KEY_F9, TERMCAP_KEY_BACKSPACE,
+    TERMCAP_KEY_CLEAR, TERMCAP_KEY_DEL, TERMCAP_KEY_INS, TERMCAP_KEY_PAGEDOWN, TERMCAP_KEY_PAGEUP,
+    TERMCAP_KEYS
+};
+    
 typedef enum {
 	MOUSE_REPORTING_NONE = -1,
 	MOUSE_REPORTING_NORMAL = 0,
@@ -241,6 +250,7 @@ typedef enum {
 
 @interface VT100Terminal : NSObject
 {
+    NSString          *termType;
     NSStringEncoding  ENCODING;
     NSMutableData     *STREAM;
     VT100Screen       *SCREEN;
@@ -276,13 +286,18 @@ typedef enum {
     BOOL allowColumnMode;
     
     unsigned int streamOffset;
-
+    
+    //termcap
+    char  *key_strings[TERMCAP_KEYS];
 }
 
 + (void)initialize;
 
 - (id)init;
 - (void)dealloc;
+
+- (NSString *)termtype;
+- (void)setTermType:(NSString *)termtype;
 
 - (BOOL)trace;
 - (void)setTrace:(BOOL)flag;

@@ -272,11 +272,15 @@
 
 - (NSAttributedString *)attributedObjectCountValueForTabCell:(PSMTabBarCell *)cell
 {
+#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION >= MAC_OS_X_VERSION_10_4)
     NSNumberFormatter *nf = [[[NSNumberFormatter alloc] init] autorelease];
     [nf setLocalizesFormat:YES];
     [nf setFormat:@"0"];
     [nf setHasThousandSeparators:YES];
     NSString *contents = [nf stringFromNumber:[NSNumber numberWithInt:[cell count]]];
+#else
+    NSString *contents = [NSString stringWithFormat:@"%d", [cell count]];
+#endif
     return [[[NSMutableAttributedString alloc] initWithString:contents attributes:_objectCountStringAttributes] autorelease];
 }
 

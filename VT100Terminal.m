@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.107 2006-10-05 06:27:56 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.108 2006-10-09 22:24:52 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -27,6 +27,8 @@
  **  along with this program; if not, write to the Free Software
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+#include <termcap.h>
 
 #import <iTerm/VT100Terminal.h>
 #import <iTerm/PseudoTerminal.h>
@@ -153,6 +155,11 @@ static VT100TCC decode_euccn(unsigned char *, size_t, size_t *);
 static VT100TCC decode_big5(unsigned char *,size_t, size_t *);
 static VT100TCC decode_string(unsigned char *, size_t, size_t *,
 							  NSStringEncoding);
+
+static char *key_names[] = {
+    "kl", "kr", "ku", "kd", "kh", "k0", "k1", "k2", "k3",  
+    "k4", "k5", "k6", "k7", "k8", "k9", "kb", "kC", "kD",
+    "kI", "kN", "kP"};
 
 
 static BOOL isCSI(unsigned char *code, size_t len)
@@ -1244,6 +1251,7 @@ static VT100TCC decode_string(unsigned char *datap,
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
+    int i;
     
     if ([super init] == nil)
 		return nil;
@@ -1252,7 +1260,11 @@ static VT100TCC decode_string(unsigned char *datap,
     STREAM   = [[NSMutableData alloc] init];
 	streamLock = [[NSLock alloc] init];
     
-	
+    termType = nil;
+    for(i = 0; i < TERMCAP_KEYS; i ++) {
+        key_strings[i]=NULL;
+    }
+    
 	
     LINE_MODE = NO;
     CURSOR_MODE = NO;
@@ -1295,12 +1307,43 @@ static VT100TCC decode_string(unsigned char *datap,
     [STREAM release];
 	[streamLock unlock];
 	[streamLock release];
+    [termType release];
         
     [super dealloc];
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
 #endif
 }
+
+- (NSString *)termtype
+{
+    return termType;
+}
+
+- (void)setTermType:(NSString *)termtype
+{
+    if (termType) [termType release];
+    termType = [termtype retain];
+    
+    
+    int i;
+    int r;
+    
+    if (!(r=tgetent(NULL,[termtype cString]))) {
+        NSLog(@"Terminal type %s is not defined.\n",[termtype cString]);
+        for(i = 0; i < TERMCAP_KEYS; i ++) {
+            if (key_strings[i]) free(key_strings[i]);
+            key_strings[i]=NULL;
+        }
+    }
+    else {
+        for(i = 0; i < TERMCAP_KEYS; i ++) {
+            if (key_strings[i]) free(key_strings[i]);
+            key_strings[i] = tgetstr(key_names[i], 0);
+        }
+    }
+}
+
 
 - (BOOL)trace
 {
@@ -1435,51 +1478,68 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowUp:(unsigned int)modflag
 {
-    int mod=0;
-    static char buf[20];
-	
-    if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
-    else if (modflag&NSControlKeyMask) mod=5;
-    else if (modflag&NSShiftKeyMask) mod=2;
-    if (mod) {
-        sprintf(buf,CURSOR_MOD_UP,mod);
-        return [NSData dataWithBytes:buf length:strlen(buf)];
+    if (key_strings[TERMCAP_KEY_UP]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_UP]
+                       length:strlen(key_strings[TERMCAP_KEY_UP])];
     }
     else {
-        if (CURSOR_MODE)
-            return [NSData dataWithBytes:CURSOR_SET_UP
-								  length:conststr_sizeof(CURSOR_SET_UP)];
-        else
-            return [NSData dataWithBytes:CURSOR_RESET_UP
-								  length:conststr_sizeof(CURSOR_RESET_UP)];
+        int mod=0;
+        static char buf[20];
+        
+        if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+        else if (modflag&NSControlKeyMask) mod=5;
+        else if (modflag&NSShiftKeyMask) mod=2;
+        if (mod) {
+            sprintf(buf,CURSOR_MOD_UP,mod);
+            return [NSData dataWithBytes:buf length:strlen(buf)];
+        }
+        else {
+            if (CURSOR_MODE)
+                return [NSData dataWithBytes:CURSOR_SET_UP
+                                      length:conststr_sizeof(CURSOR_SET_UP)];
+            else
+                return [NSData dataWithBytes:CURSOR_RESET_UP
+                                      length:conststr_sizeof(CURSOR_RESET_UP)];
+        }
     }
 }
 
 - (NSData *)keyArrowDown:(unsigned int)modflag
 {
-    int mod=0;
-    static char buf[20];
-	
-    if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
-    else if (modflag&NSControlKeyMask) mod=5;
-    else if (modflag&NSShiftKeyMask) mod=2;
-    if (mod) {
-        sprintf(buf,CURSOR_MOD_DOWN,mod);
-        return [NSData dataWithBytes:buf length:strlen(buf)];
+    if (key_strings[TERMCAP_KEY_DOWN]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_DOWN]
+                              length:strlen(key_strings[TERMCAP_KEY_DOWN])];
     }
     else {
-        if (CURSOR_MODE)
-            return [NSData dataWithBytes:CURSOR_SET_DOWN
-                                  length:conststr_sizeof(CURSOR_SET_DOWN)];
-        else
-            return [NSData dataWithBytes:CURSOR_RESET_DOWN
-                                  length:conststr_sizeof(CURSOR_RESET_DOWN)];
+        int mod=0;
+        static char buf[20];
+        
+        if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+        else if (modflag&NSControlKeyMask) mod=5;
+        else if (modflag&NSShiftKeyMask) mod=2;
+        if (mod) {
+            sprintf(buf,CURSOR_MOD_DOWN,mod);
+            return [NSData dataWithBytes:buf length:strlen(buf)];
+        }
+        else {
+            if (CURSOR_MODE)
+                return [NSData dataWithBytes:CURSOR_SET_DOWN
+                                      length:conststr_sizeof(CURSOR_SET_DOWN)];
+            else
+                return [NSData dataWithBytes:CURSOR_RESET_DOWN
+                                      length:conststr_sizeof(CURSOR_RESET_DOWN)];
+        }
     }
 }
 
 - (NSData *)keyArrowLeft:(unsigned int)modflag
 {
-    int mod=0;
+    if (key_strings[TERMCAP_KEY_LEFT]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_LEFT]
+                              length:strlen(key_strings[TERMCAP_KEY_LEFT])];
+    }
+    else {
+        int mod=0;
     static char buf[20];
 	
     if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
@@ -1497,11 +1557,17 @@ static VT100TCC decode_string(unsigned char *datap,
             return [NSData dataWithBytes:CURSOR_RESET_LEFT
 								  length:conststr_sizeof(CURSOR_RESET_LEFT)];
     }
+    }
 }
 
 - (NSData *)keyArrowRight:(unsigned int)modflag
 {
-    int mod=0;
+    if (key_strings[TERMCAP_KEY_RIGHT]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_RIGHT]
+                              length:strlen(key_strings[TERMCAP_KEY_RIGHT])];
+    }
+    else {
+        int mod=0;
     static char buf[20];
 	
     if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
@@ -1519,28 +1585,52 @@ static VT100TCC decode_string(unsigned char *datap,
             return [NSData dataWithBytes:CURSOR_RESET_RIGHT
 								  length:conststr_sizeof(CURSOR_RESET_RIGHT)];
     }
+    }
 }
 
 - (NSData *)keyInsert
-{
+{    if (key_strings[TERMCAP_KEY_INS]) {
+    return [NSData dataWithBytes:key_strings[TERMCAP_KEY_INS]
+                          length:strlen(key_strings[TERMCAP_KEY_INS])];
+}
+else {
     return [NSData dataWithBytes:KEY_INSERT length:conststr_sizeof(KEY_INSERT)];
+}
 }
 
 - (NSData *)keyHome
 {
-    return [NSData dataWithBytes:KEY_HOME length:conststr_sizeof(KEY_HOME)];
+    if (key_strings[TERMCAP_KEY_HOME]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_HOME]
+                              length:strlen(key_strings[TERMCAP_KEY_HOME])];
+    }
+    else {
+        return [NSData dataWithBytes:KEY_HOME length:conststr_sizeof(KEY_HOME)];
+    }
 }
 
 - (NSData *)keyDelete
 {
     //    unsigned char del = 0x7f;
     //    return [NSData dataWithBytes:&del length:1];
-    return [NSData dataWithBytes:KEY_DEL length:conststr_sizeof(KEY_DEL)];
+    if (key_strings[TERMCAP_KEY_DEL]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_DEL]
+                              length:strlen(key_strings[TERMCAP_KEY_DEL])];
+    }
+    else {
+        return [NSData dataWithBytes:KEY_DEL length:conststr_sizeof(KEY_DEL)];
+    }
 }
 
 - (NSData *)keyBackspace
 {
-    return [NSData dataWithBytes:KEY_BACKSPACE length:conststr_sizeof(KEY_BACKSPACE)];
+    if (key_strings[TERMCAP_KEY_BACKSPACE]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_BACKSPACE]
+                              length:strlen(key_strings[TERMCAP_KEY_BACKSPACE])];
+    }
+    else {
+        return [NSData dataWithBytes:KEY_BACKSPACE length:conststr_sizeof(KEY_BACKSPACE)];
+    }
 }
 
 - (NSData *)keyEnd
@@ -1550,14 +1640,26 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyPageUp
 {
-    return [NSData dataWithBytes:KEY_PAGE_UP
+    if (key_strings[TERMCAP_KEY_PAGEUP]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_PAGEUP]
+                              length:strlen(key_strings[TERMCAP_KEY_PAGEUP])];
+    }
+    else {
+        return [NSData dataWithBytes:KEY_PAGE_UP
 						  length:conststr_sizeof(KEY_PAGE_UP)];
+    }
 }
 
 - (NSData *)keyPageDown
 {
-    return [NSData dataWithBytes:KEY_PAGE_DOWN 
+    if (key_strings[TERMCAP_KEY_PAGEDOWN]) {
+        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_PAGEDOWN]
+                              length:strlen(key_strings[TERMCAP_KEY_PAGEDOWN])];
+    }
+    else {
+        return [NSData dataWithBytes:KEY_PAGE_DOWN 
 						  length:conststr_sizeof(KEY_PAGE_DOWN)];
+    }
 }
 
 // Reference: http://www.utexas.edu/cc/faqs/unix/VT200-function-keys.html
@@ -1568,10 +1670,32 @@ static VT100TCC decode_string(unsigned char *datap,
     size_t len;
 	
     if (no <= 5) {
-		sprintf(str, KEY_FUNCTION_FORMAT, no + 10);
+        if (key_strings[TERMCAP_KEY_F10+no]) {
+            return [NSData dataWithBytes:key_strings[TERMCAP_KEY_F10+no]
+                                  length:strlen(key_strings[TERMCAP_KEY_F10+no])];
+        }
+        else {
+            sprintf(str, KEY_FUNCTION_FORMAT, no + 10);
+        }
     }
-    else if (no <= 10)
-		sprintf(str, KEY_FUNCTION_FORMAT, no + 11);
+    else if (no < 10) {
+        if (key_strings[TERMCAP_KEY_F10+no]) {
+            return [NSData dataWithBytes:key_strings[TERMCAP_KEY_F10+no]
+                                  length:strlen(key_strings[TERMCAP_KEY_F10+no])];
+        }
+        else {
+            sprintf(str, KEY_FUNCTION_FORMAT, no + 11);
+        }
+    }
+    else if (no == 10) {
+        if (key_strings[TERMCAP_KEY_F10]) {
+            return [NSData dataWithBytes:key_strings[TERMCAP_KEY_F10]
+                                  length:strlen(key_strings[TERMCAP_KEY_F10])];
+        }
+        else {
+            sprintf(str, KEY_FUNCTION_FORMAT, 21);
+        }
+    }
     else if (no <= 14)
 		sprintf(str, KEY_FUNCTION_FORMAT, no + 12);
     else if (no <= 16)

@@ -1,5 +1,5 @@
 // -*- mode:objc -*- vim: filetype=objcpp
-// $Id: iTermGrowlDelegate.m,v 1.9 2006-09-28 07:02:47 yfabian Exp $
+// $Id: iTermGrowlDelegate.m,v 1.10 2006-10-09 22:24:52 yfabian Exp $
 //
 /*
  **  iTermGrowlDelegate.m
@@ -90,7 +90,7 @@
 - (void) growlNotify: (NSString *) title {
 
 	if(![self isEnabled]) {
-		NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
+		//NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
 		return;
 	}
 
@@ -109,7 +109,7 @@
 	 withDescription: (NSString *) description {
 
 	if(![self isEnabled]) {
-		NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
+		//NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
 		return;
 	}
 	
@@ -129,7 +129,7 @@
 	 andNotification: (NSString *) notification {
 
 	if(![self isEnabled]) {
-		NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
+		//NSLog(@"%s(%d):-[Growl not enabled.]",  __FILE__, __LINE__);
 		return;
 	}
     

@@ -1,3 +1,12 @@
+2006-10-09  fabian
+
+    * Initial attempt to incorporate the termcap for keyboard input. Now when a key is 
+      pressed, iTerm will first check keyboard profile, if it doesn't find anything, it 
+      checks termcap. If the key is defined in termcap, use the termcap definition. 
+      Otherwise, the standard vt100/xterm definition is used.
+    * Fixed a few building problems for pre-tiger OSes.
+    * Removed excessive NSLog warnings about growl.
+    
 2006-10-05  fabian
 
     * Added a few hidden preferences for more user control. (use defaults write... to change

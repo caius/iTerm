@@ -1196,6 +1196,7 @@ static NSImage *warningImage;
 {
     [TERM_VALUE autorelease];
     TERM_VALUE = [theTERM_VALUE retain];
+    [TERMINAL setTermType: theTERM_VALUE];
 }
 
 - (VT100Screen *) SCREEN

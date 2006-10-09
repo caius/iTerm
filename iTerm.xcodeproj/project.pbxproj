@@ -334,8 +334,8 @@
 		DD48F1C703EBB1C400A8A065 /* iTerm.scriptSuite */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = iTerm.scriptSuite; sourceTree = "<group>"; };
 		DD48F1CD03EBB20500A8A065 /* English */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = English; path = English.lproj/iTerm.scriptTerminology; sourceTree = "<group>"; };
 		DD4BAB7C0470C44C00A8A065 /* FindPanelWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FindPanelWindowController.m; sourceTree = "<group>"; };
-		DD57633005653C2E00F1905E /* iTerm_Framework.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist; path = iTerm_Framework.plist; sourceTree = "<group>"; };
-		DD57633605653C5F00F1905E /* iTerm.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist; path = iTerm.plist; sourceTree = "<group>"; };
+		DD57633005653C2E00F1905E /* iTerm_Framework.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = iTerm_Framework.plist; sourceTree = "<group>"; };
+		DD57633605653C5F00F1905E /* iTerm.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = iTerm.plist; sourceTree = "<group>"; };
 		DD8CF2DE03CDD34C00A8A065 /* iTerm Help */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; name = "iTerm Help"; path = "English.lproj/iTerm Help"; sourceTree = "<group>"; };
 		DD8EC82F06095CDA0085A27D /* Tree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tree.m; sourceTree = "<group>"; };
 		DD8EC958060980C90085A27D /* Tree.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Tree.h; path = Headers/iTerm/Tree.h; sourceTree = "<group>"; };
@@ -1381,6 +1381,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
+					"-ltermcap",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1416,6 +1417,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
+					"-ltermcap",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1448,6 +1450,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
+					"-ltermcap",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1483,9 +1486,10 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = Headers/iTerm/;
 				INFOPLIST_FILE = iTerm.plist;
+				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACOSX_DEPLOYMENT_TARGET = "";
 				OPTIMIZATION_CFLAGS = "-O0";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-ltermcap";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = iTerm;
 				REZ_EXECUTABLE = YES;
@@ -1650,6 +1654,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
+					"-ltermcap",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";

@@ -19,16 +19,29 @@
 <FONT SIZE="5"><STRONG>Available Localizations</STRONG></FONT>
 <BR><BR>
 
-<STRONG>Simplified Chinese (简体中文) for 0.9.0</STRONG> 10/4/2006<BR>
-Download Link: <a href="localizations/zh_CN.zip">here</a>
+<STRONG>Simplified Chinese (简体中文) for 0.9.0</STRONG> 10/12/2006<BR>
+Download Link: <a href="localizations/zh_CN-0.9.0.zip">here</a><br><br>
 <BR><BR>
 
-<STRONG>How to install localization packages</STRONG><BR>
-Download the localization package you need and unzip it. Quit iTerm if you are running it.
-Open the iTerm.app package by CTRL-clicking iTerm.app and choose "Show Package Contents". 
-Put the localization files within the iTerm directory into the iTerm.app/Contents/Resources, 
-and the files within the iTerm Framework directory into 
-iTerm.Contents/Frameworks/iTerm.framework/Vesrions/A/Resources.
+<STRONG>Japanese package for 0.9.0</STRONG> 10/11/2006<BR>
+Download Link: <a href="localizations/Japanese-0.9.0.zip">here</a><br><br>
+Contributed by: <a href="mailto:wkagawa at jota.gsc.riken.go.jp no spam">Wataru Kagawa</a><br>
+<BR><BR>
+
+<STRONG>Guide for localization package</STRONG><BR>
+Willing to contribute your translation? Wonderful. Wataru Kagawa wrote an excellent
+guide about how to make your localization files into an easy-to-install package:<br><br>
+<a href="http://iterm.sourceforge.net/localizations/package_guide.html">
+A guide to package localization files using PackageMaker</a><br><br>
+
+
+<STRONG>Further information</STRONG> <BR>
+If you would like to contribute, please contact us. For further information, discussion and
+bug reports that are related, please go to
+<a href="http://sourceforge.net/forum/forum.php?forum_id=621764">our forum</a>
+<BR><BR>
+
+
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <script type="text/javascript"><!--

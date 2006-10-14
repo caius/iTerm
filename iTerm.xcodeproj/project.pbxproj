@@ -164,7 +164,6 @@
 		F6E708BE0A9D0EA400D0C4EF /* PSMTabDragAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708B80A9D0EA400D0C4EF /* PSMTabDragAssistant.m */; };
 		F6E708BF0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E708B90A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h */; };
 		F6E708C00A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */; };
-		F6FC5E8D0ADB5FA100B3FCEC /* allsession.png in Resources */ = {isa = PBXBuildFile; fileRef = F6FC5E8C0ADB5FA100B3FCEC /* allsession.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -432,7 +431,6 @@
 		F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMUnifiedTabStyle.m; sourceTree = "<group>"; };
 		F6FAFD99050E90C300EA4EE7 /* contrib.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contrib.png; path = website/contrib.png; sourceTree = "<group>"; };
 		F6FAFD9A050E90C300EA4EE7 /* iTerm-orig.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iTerm-orig.png"; path = "website/iTerm-orig.png"; sourceTree = "<group>"; };
-		F6FC5E8C0ADB5FA100B3FCEC /* allsession.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = allsession.png; path = images/allsession.png; sourceTree = "<group>"; };
 		FB019DE103670C6501F955DB /* PreferencePanel.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PreferencePanel.m; sourceTree = "<group>"; };
 		FB01DCDE04433DFB01F955DB /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = French.lproj/iTerm.strings; sourceTree = "<group>"; };
 		FB094A14033D58AE01F955DB /* addressbook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = addressbook.png; path = images/addressbook.png; sourceTree = "<group>"; };
@@ -609,7 +607,6 @@
 				8723EDEC04EAADBB0073D10E /* ITConfigPanel.nib */,
 				F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */,
 				F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */,
-				F6FC5E8C0ADB5FA100B3FCEC /* allsession.png */,
 				E8EDCE69015E0A5703000001 /* iTerm.icns */,
 				FBBB8B60039FC04E01F955DB /* iTerm.png */,
 				DD9C1AE2051F45C000A8A065 /* iTerm-Aqua.jpg */,
@@ -1140,7 +1137,6 @@
 				DD02578B09CB93C2008F320C /* TabNewMetalPressed.png in Resources */,
 				DD02578C09CB93C2008F320C /* TabNewMetalRollover.png in Resources */,
 				DD02578D09CB93C2008F320C /* Warning.png in Resources */,
-				F6FC5E8D0ADB5FA100B3FCEC /* allsession.png in Resources */,
 				F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */,
 				F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */,
 			);

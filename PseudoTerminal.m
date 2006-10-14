@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.357 2006-10-05 21:15:23 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.358 2006-10-14 16:35:31 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -55,6 +55,7 @@
 #import <iTerm/Tree.h>
 #import <PSMTabBarControl.h>
 #import <PSMTabStyle.h>
+#import <iTermBookmarkController.h>
 #include <unistd.h>
 
 // keys for attributes:
@@ -185,7 +186,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[bookmarksView setDelegate: self];
 	[bookmarksView setTarget: self];
 	[bookmarksView setDoubleAction: @selector(doubleClickedOnBookmarksView:)];	
-	[bookmarksView setDataSource: [PreferencePanel sharedInstance]];
+	[bookmarksView setDataSource: [iTermBookmarkController sharedInstance]];
 	
 	[aScrollView setDocumentView:bookmarksView];
 	[bookmarksView release];
@@ -1147,9 +1148,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     sendInputToAllSessions = flag;
 	if(flag)
-		NSRunInformationalAlertPanel(NSLocalizedStringFromTableInBundle(@"Warning!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Warning"),
+		sendInputToAllSessions = (NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Warning!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Warning"),
 									 NSLocalizedStringFromTableInBundle(@"Keyboard input will be sent to all sessions in this terminal.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Keyboard Input"), 
-									 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
+									 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
+                                     NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"), nil) == 1);
 	
 }
 
@@ -1441,7 +1443,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (IBAction)showConfigWindow:(id)sender;
 {
-    [ITConfigPanelController show];
+    if ([ITConfigPanelController onScreen])
+        [ITConfigPanelController close];
+    else
+        [ITConfigPanelController show];
 }
 
 - (void) resizeWindow:(int) w height:(int)h
@@ -1571,17 +1576,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // Separator
     [theMenu addItem:[NSMenuItem separatorItem]];
 	
+    // Info
+    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Info...",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:@selector(showConfigWindow:) keyEquivalent:@""];
+    [aMenuItem setTarget: self];
+    [theMenu addItem: aMenuItem];
+    [aMenuItem release];
+
+    // Separator
+    [theMenu addItem:[NSMenuItem separatorItem]];
+
     // Close current session
     aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Close",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:@selector(closeCurrentSession:) keyEquivalent:@""];
     [aMenuItem setTarget: self];
     [theMenu addItem: aMenuItem];
     [aMenuItem release];
 	
-    // Configure
-    aMenuItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedStringFromTableInBundle(@"Configure...",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:@selector(showConfigWindow:) keyEquivalent:@""];
-    [aMenuItem setTarget: self];
-    [theMenu addItem: aMenuItem];
-    [aMenuItem release];
 }
 
 // NSTabView

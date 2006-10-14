@@ -1161,7 +1161,8 @@ static NSImage *warningImage;
     {
 		windowTitle = [theTitle retain];
 		if([[self parent] currentSession] == self)
-			[[[self parent] window] setTitle: windowTitle];
+			//[[[self parent] window] setTitle: windowTitle];
+            [[self parent] setWindowTitle: theTitle];
     }
 }
 

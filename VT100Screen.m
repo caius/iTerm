@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.250 2006-10-05 06:27:56 yfabian Exp $
+// $Id: VT100Screen.m,v 1.251 2006-10-14 16:35:31 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -44,6 +44,8 @@
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/iTermGrowlDelegate.h>
 #include <string.h>
+
+#define MAX_SCROLLBACK_LINES 1000000
 
 /* translates normal char into graphics char */
 void translate(screen_char_t *s, int len)
@@ -480,7 +482,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if(buffer_chars != NULL)
 		return;
 	
-    max_scrollback_lines = lines;
+    max_scrollback_lines = lines<MAX_SCROLLBACK_LINES?lines:MAX_SCROLLBACK_LINES;
 }
 
 - (PTYSession *) session

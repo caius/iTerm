@@ -154,12 +154,17 @@
 		F69E796C0AB8CF25001EC0FF /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F69E79110AB8CDB3001EC0FF /* Growl.framework */; };
 		F69E80E70ABB46F2001EC0FF /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F69E79110AB8CDB3001EC0FF /* Growl.framework */; };
 		F69E816F0ABB4A2B001EC0FF /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F69E79110AB8CDB3001EC0FF /* Growl.framework */; };
+		F6B077100ADDB7D400F4BB37 /* iTermBookmarkController.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B0770E0ADDB7D400F4BB37 /* iTermBookmarkController.h */; };
+		F6B077110ADDB7D400F4BB37 /* iTermBookmarkController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */; };
+		F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */; };
+		F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */; };
 		F6E708BB0A9D0EA400D0C4EF /* NSBezierPath_AMShading.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E708B50A9D0EA400D0C4EF /* NSBezierPath_AMShading.h */; };
 		F6E708BC0A9D0EA400D0C4EF /* NSBezierPath_AMShading.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708B60A9D0EA400D0C4EF /* NSBezierPath_AMShading.m */; };
 		F6E708BD0A9D0EA400D0C4EF /* PSMTabDragAssistant.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E708B70A9D0EA400D0C4EF /* PSMTabDragAssistant.h */; };
 		F6E708BE0A9D0EA400D0C4EF /* PSMTabDragAssistant.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708B80A9D0EA400D0C4EF /* PSMTabDragAssistant.m */; };
 		F6E708BF0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = F6E708B90A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h */; };
 		F6E708C00A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */; };
+		F6FC5E8D0ADB5FA100B3FCEC /* allsession.png in Resources */ = {isa = PBXBuildFile; fileRef = F6FC5E8C0ADB5FA100B3FCEC /* allsession.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -415,6 +420,10 @@
 		F6A32AC50ACB2A2100525F86 /* screenshot.shtml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.other; name = screenshot.shtml; path = website/screenshot.shtml; sourceTree = "<group>"; };
 		F6A32ACF0ACB2BD000525F86 /* vi_090_m.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = vi_090_m.jpg; path = website/vi_090_m.jpg; sourceTree = "<group>"; };
 		F6A32AD00ACB2BD000525F86 /* vi_090.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = vi_090.jpg; path = website/vi_090.jpg; sourceTree = "<group>"; };
+		F6B0770E0ADDB7D400F4BB37 /* iTermBookmarkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermBookmarkController.h; sourceTree = "<group>"; };
+		F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermBookmarkController.m; sourceTree = "<group>"; };
+		F6B0788F0ADDF1BE00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Bookmarks.nib; sourceTree = "<group>"; };
+		F6B07D980ADE1B9B00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/ProfilesWindow.nib; sourceTree = "<group>"; };
 		F6E708B50A9D0EA400D0C4EF /* NSBezierPath_AMShading.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NSBezierPath_AMShading.h; sourceTree = "<group>"; };
 		F6E708B60A9D0EA400D0C4EF /* NSBezierPath_AMShading.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = NSBezierPath_AMShading.m; sourceTree = "<group>"; };
 		F6E708B70A9D0EA400D0C4EF /* PSMTabDragAssistant.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMTabDragAssistant.h; sourceTree = "<group>"; };
@@ -423,6 +432,7 @@
 		F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMUnifiedTabStyle.m; sourceTree = "<group>"; };
 		F6FAFD99050E90C300EA4EE7 /* contrib.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contrib.png; path = website/contrib.png; sourceTree = "<group>"; };
 		F6FAFD9A050E90C300EA4EE7 /* iTerm-orig.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iTerm-orig.png"; path = "website/iTerm-orig.png"; sourceTree = "<group>"; };
+		F6FC5E8C0ADB5FA100B3FCEC /* allsession.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = allsession.png; path = images/allsession.png; sourceTree = "<group>"; };
 		FB019DE103670C6501F955DB /* PreferencePanel.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PreferencePanel.m; sourceTree = "<group>"; };
 		FB01DCDE04433DFB01F955DB /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = French.lproj/iTerm.strings; sourceTree = "<group>"; };
 		FB094A14033D58AE01F955DB /* addressbook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = addressbook.png; path = images/addressbook.png; sourceTree = "<group>"; };
@@ -521,6 +531,7 @@
 				20D5CC6404E7AA0500000106 /* iTermApplicationDelegate.m */,
 				E8A66F030272453F03A80106 /* iTermController.m */,
 				DD46BAC405FD689F00027283 /* iTermDisplayProfileMgr.m */,
+				F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */,
 				F69E788C0AB7AC6D001EC0FF /* iTermGrowlDelegate.m */,
 				DDDB7ABD05D7736600E197C2 /* iTermKeyBindingMgr.m */,
 				8787B0D805FD160F00901149 /* iTermProfileWindowController.m */,
@@ -553,6 +564,7 @@
 				872EBC6A04E42E320073D10E /* iTerm.h */,
 				DDF0FD63062916F70080EF74 /* iTermApplication.h */,
 				20D5CC6304E7AA0500000106 /* iTermApplicationDelegate.h */,
+				F6B0770E0ADDB7D400F4BB37 /* iTermBookmarkController.h */,
 				872EBC6204E42E320073D10E /* iTermController.h */,
 				DD46BB5405FD6B9B00027283 /* iTermDisplayProfileMgr.h */,
 				F69E78910AB7AC85001EC0FF /* iTermGrowlDelegate.h */,
@@ -595,6 +607,9 @@
 				870EAAB504325A880073D10E /* PreferencePanel.nib */,
 				870BCD83047070AC0073D10E /* FindPanel.nib */,
 				8723EDEC04EAADBB0073D10E /* ITConfigPanel.nib */,
+				F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */,
+				F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */,
+				F6FC5E8C0ADB5FA100B3FCEC /* allsession.png */,
 				E8EDCE69015E0A5703000001 /* iTerm.icns */,
 				FBBB8B60039FC04E01F955DB /* iTerm.png */,
 				DD9C1AE2051F45C000A8A065 /* iTerm-Aqua.jpg */,
@@ -855,6 +870,7 @@
 				F62D15F20AA64B2F0075A287 /* PSMAdiumTabStyle.h in Headers */,
 				F62D15F40AA64B2F0075A287 /* PSMTabDragWindow.h in Headers */,
 				F69E78920AB7AC85001EC0FF /* iTermGrowlDelegate.h in Headers */,
+				F6B077100ADDB7D400F4BB37 /* iTermBookmarkController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1124,6 +1140,9 @@
 				DD02578B09CB93C2008F320C /* TabNewMetalPressed.png in Resources */,
 				DD02578C09CB93C2008F320C /* TabNewMetalRollover.png in Resources */,
 				DD02578D09CB93C2008F320C /* Warning.png in Resources */,
+				F6FC5E8D0ADB5FA100B3FCEC /* allsession.png in Resources */,
+				F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */,
+				F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1205,6 +1224,7 @@
 				F62D15F30AA64B2F0075A287 /* PSMAdiumTabStyle.m in Sources */,
 				F62D15F50AA64B2F0075A287 /* PSMTabDragWindow.m in Sources */,
 				F69E788D0AB7AC6D001EC0FF /* iTermGrowlDelegate.m in Sources */,
+				F6B077110ADDB7D400F4BB37 /* iTermBookmarkController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1337,6 +1357,22 @@
 				F61DBB360557A754005F354A /* German */,
 			);
 			name = PseudoTerminal.nib;
+			sourceTree = "<group>";
+		};
+		F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F6B0788F0ADDF1BE00F4BB37 /* English */,
+			);
+			name = Bookmarks.nib;
+			sourceTree = "<group>";
+		};
+		F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F6B07D980ADE1B9B00F4BB37 /* English */,
+			);
+			name = ProfilesWindow.nib;
 			sourceTree = "<group>";
 		};
 		FB151F2903648AC401F955DB /* iTerm.strings */ = {

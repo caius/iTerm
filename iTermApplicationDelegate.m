@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.33 2006-09-22 23:21:07 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.34 2006-10-14 16:35:31 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -36,6 +36,8 @@
 #import <iTerm/VT100Terminal.h>
 #import <iTerm/FindPanelWindowController.h>
 #import <iTerm/PTYWindow.h>
+#import <iTermProfileWindowController.h>
+#import <iTermBookmarkController.h>
 
 
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
@@ -168,7 +170,10 @@ static BOOL usingAutoLaunchScript = NO;
 		return (YES);
     }
 	
-	[self newWindow:nil];
+	if ([[PreferencePanel sharedInstance] openBookmark])
+        [self showBookmarkWindow:nil];
+    else
+        [self newWindow:nil];
     
     return YES;
 }
@@ -214,6 +219,11 @@ static BOOL usingAutoLaunchScript = NO;
                                                object: nil];    
     
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadMenus:)
+                                                 name:@"iTermSessionDidBecomeActive"
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(nonTerminalWindowBecameKey:)
                                                  name:@"nonTerminalWindowBecameKey"
                                                object:nil];    
@@ -253,6 +263,16 @@ static BOOL usingAutoLaunchScript = NO;
 - (IBAction)showPrefWindow:(id)sender
 {
     [[PreferencePanel sharedInstance] run];
+}
+
+- (IBAction)showBookmarkWindow:(id)sender
+{
+    [[iTermBookmarkController sharedInstance] showWindow];
+}
+
+- (IBAction)showProfileWindow:(id)sender
+{
+    [[iTermProfileWindowController sharedInstance] showProfilesWindow: nil];
 }
 
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
@@ -296,6 +316,9 @@ static BOOL usingAutoLaunchScript = NO;
 {
   BOOL b = [[[[iTermController sharedInstance] currentTerminal] currentSession] useTransparency];
   [[[[iTermController sharedInstance] currentTerminal] currentSession] setUseTransparency: !b];
+
+  // Post a notification
+  [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
 }
 
 
@@ -399,28 +422,46 @@ static BOOL usingAutoLaunchScript = NO;
     [closeWindow setKeyEquivalentModifierMask: NSCommandKeyMask];
     
     // set some menu item states
-    if([frontTerminal sendInputToAllSessions] == YES)
-	[sendInputToAllSessions setState: NSOnState];
-    else
-	[sendInputToAllSessions setState: NSOffState];
+    if (frontTerminal && [[frontTerminal tabView] numberOfTabViewItems]) {
+        [toggleBookmarksView setEnabled:YES];
+        [toggleTransparency setEnabled:YES];
+        [fontSizeFollowWindowResize setEnabled:YES];
+        [sendInputToAllSessions setEnabled:YES];
 
-	if([frontTerminal fontSizeFollowWindowResize] == YES)
-		[fontSizeFollowWindowResize setState: NSOnState];
-    else
-		[fontSizeFollowWindowResize setState: NSOffState];
-	
-	// reword some menu items
- 	drawerState = [[(PTYWindow *)[frontTerminal window] drawer] state];
-	if(drawerState == NSDrawerClosedState || drawerState == NSDrawerClosingState)
-	{
-		[toggleBookmarksView setTitle: 
-			NSLocalizedStringFromTableInBundle(@"Show Bookmarks", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
-	}
-	else
-	{
-		[toggleBookmarksView setTitle: 
-			NSLocalizedStringFromTableInBundle(@"Hide Bookmarks", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
-	}
+        if([frontTerminal sendInputToAllSessions] == YES)
+        [sendInputToAllSessions setState: NSOnState];
+        else
+        [sendInputToAllSessions setState: NSOffState];
+
+        if([frontTerminal fontSizeFollowWindowResize] == YES)
+            [fontSizeFollowWindowResize setState: NSOnState];
+        else
+            [fontSizeFollowWindowResize setState: NSOffState];
+        
+        if ([[frontTerminal currentSession] useTransparency] == YES)
+            [toggleTransparency setState: NSOnState];
+        else
+            [toggleTransparency setState: NSOffState];
+        
+        // reword some menu items
+        drawerState = [[(PTYWindow *)[frontTerminal window] drawer] state];
+        if(drawerState == NSDrawerClosedState || drawerState == NSDrawerClosingState)
+        {
+            [toggleBookmarksView setTitle: 
+                NSLocalizedStringFromTableInBundle(@"Show Bookmark Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+        }
+        else
+        {
+            [toggleBookmarksView setTitle: 
+                NSLocalizedStringFromTableInBundle(@"Hide Bookmarks Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+        }
+    }
+    else {
+        [toggleBookmarksView setEnabled:NO];
+        [toggleTransparency setEnabled:NO];
+        [fontSizeFollowWindowResize setEnabled:NO];
+        [sendInputToAllSessions setEnabled:NO];
+    }
 	
 	
 }
@@ -468,21 +509,16 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (void) buildAddressBookMenu : (NSNotification *) aNotification
 {
-    NSMenu *newMenu;
-    PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
-
-    // clear whatever menus we already have
-    [newTab setSubmenu: nil];
-    [newWindow setSubmenu: nil];
-
-    // new window
-    newMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: nil withShortcuts: YES];
-    [newWindow setSubmenu: newMenu];
- 
-    // new tab
-    newMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: frontTerminal withShortcuts: YES];
-    [newTab setSubmenu: newMenu];
+    // clear Bookmark menu
+    for (; [bookmarkMenu numberOfItems]>5;) [bookmarkMenu removeItemAtIndex: 5];
     
+    [bookmarkMenu addItem: [NSMenuItem separatorItem]];
+    
+    // add bookmarks into Bookmark menu
+    [[iTermController sharedInstance] alternativeMenu: bookmarkMenu 
+                                              forNode: [[ITAddressBookMgr sharedInstance] rootNode] 
+                                               target: [[iTermController sharedInstance] currentTerminal] 
+                                        withShortcuts: YES];    
 }
 
 - (void) reloadSessionMenus: (NSNotification *) aNotification

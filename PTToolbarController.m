@@ -32,7 +32,7 @@
 NSString *NewToolbarItem = @"New";
 NSString *BookmarksToolbarItem = @"Bookmarks";
 NSString *CloseToolbarItem = @"Close";
-NSString *ConfigToolbarItem = @"Config";
+NSString *ConfigToolbarItem = @"Info";
 
 @interface PTToolbarController (Private)
 - (void)setupToolbar;
@@ -118,9 +118,9 @@ NSString *ConfigToolbarItem = @"Config";
     }
     else if ([itemIdent isEqual: ConfigToolbarItem]) 
     {
-        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", thisBundle, @"Toolbar Item:Configure") ];
-        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Configure",@"iTerm", thisBundle, @"Toolbar Item:Configure") ];
-        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Configure current window",@"iTerm", thisBundle, @"Toolbar Item Tip:Configure")];
+        [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"Info",@"iTerm", thisBundle, @"Toolbar Item:Info") ];
+        [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"Info",@"iTerm", thisBundle, @"Toolbar Item:Info") ];
+        [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Window/Session Info",@"iTerm", thisBundle, @"Toolbar Item Tip:Info")];
         imagePath = [thisBundle pathForResource:@"config"
                                          ofType:@"png"];
         anImage = [[NSImage alloc] initByReferencingFile: imagePath];

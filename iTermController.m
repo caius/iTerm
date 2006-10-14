@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.53 2006-09-24 05:10:51 yfabian Exp $
+// $Id: iTermController.m,v 1.54 2006-10-14 16:35:31 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -41,6 +41,8 @@
 #import <iTerm/Tree.h>
 #import <iTerm/ITConfigPanelController.h>
 #import <iTerm/iTermGrowlDelegate.h>
+#import <iTermProfileWindowController.h>
+#import <iTermBookmarkController.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
@@ -93,7 +95,9 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     
 	// read preferences
 	[PreferencePanel sharedInstance];
-
+    [iTermProfileWindowController sharedInstance];
+    [iTermBookmarkController sharedInstance];
+    
     // Activate Growl
 	/*
 	 * Need to add routine in iTerm prefs for Growl support and
@@ -235,6 +239,61 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
         action = @selector(newSessionInTabAtIndex:);
     
 	return ([self _menuForNode: bookmarks action: action target: target withShortcuts: withShortcuts]);
+}
+
+- (void) alternativeMenu: (NSMenu *)aMenu forNode: (TreeNode *) theNode target: (id) aTarget withShortcuts: (BOOL) withShortcuts
+{
+    NSMenu *subMenu;
+	NSMenuItem *aMenuItem;
+	NSEnumerator *entryEnumerator;
+	NSDictionary *dataDict;
+	TreeNode *childNode;
+	NSString *shortcut;
+	unsigned int modifierMask;
+    
+	entryEnumerator = [[theNode children] objectEnumerator];
+	
+	while ((childNode = [entryEnumerator nextObject]))
+	{
+		dataDict = [childNode nodeData];
+		aMenuItem = [[[NSMenuItem alloc] initWithTitle: [dataDict objectForKey: KEY_NAME] action:@selector(newSessionInTabAtIndex:) keyEquivalent:@""] autorelease];
+		if([childNode isGroup])
+		{
+			subMenu = [[NSMenu alloc] init];
+            [self alternativeMenu: subMenu forNode: childNode target: aTarget withShortcuts: withShortcuts];
+			[aMenuItem setSubmenu: subMenu];
+			[aMenuItem setAction: @selector(noAction:)];
+			[aMenuItem setTarget: self];
+		}
+		else
+		{
+			if(withShortcuts)
+			{
+				if ([dataDict objectForKey: KEY_SHORTCUT] != nil)
+				{
+					modifierMask = NSCommandKeyMask | NSControlKeyMask;
+					
+					shortcut=[dataDict objectForKey: KEY_SHORTCUT];
+					shortcut = [shortcut lowercaseString];
+                    
+					[aMenuItem setKeyEquivalent: shortcut];
+					[aMenuItem setKeyEquivalentModifierMask: modifierMask];
+				}
+			}
+			[aMenuItem setRepresentedObject: dataDict];
+			[aMenuItem setTarget: aTarget];
+		}
+        
+        
+		[aMenu addItem: aMenuItem];
+        modifierMask = NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask;
+        aMenuItem = [[aMenuItem copy] autorelease];
+        [aMenuItem setKeyEquivalentModifierMask: modifierMask];
+        [aMenuItem setAlternate:YES];
+        [aMenuItem setAction: @selector(newSessionInWindowAtIndex:)];
+        [aMenuItem setTarget: nil];
+        [aMenu addItem: aMenuItem];
+	}
 }
 
 // Executes an addressbook command in new window or tab
@@ -388,6 +447,7 @@ NSString *terminalsKey = @"terminals";
 @end
 
 @implementation iTermController (Private)
+
 
 - (NSMenu *) _menuForNode: (TreeNode *) theNode action: (SEL) aSelector target: (id) aTarget withShortcuts: (BOOL) withShortcuts
 {

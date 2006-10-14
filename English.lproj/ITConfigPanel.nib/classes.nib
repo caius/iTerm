@@ -7,11 +7,11 @@
                 setAntiIdle = id; 
                 setAntiIdleCode = id; 
                 setBackgroundColor = id; 
+                setBold = id; 
                 setBoldColor = id; 
                 setCharacterSpacing = id; 
                 setCursorColor = id; 
                 setCursorTextColor = id; 
-                setDisableBold = id; 
                 setForegroundColor = id; 
                 setSelectedTextColor = id; 
                 setSelectionColor = id; 
@@ -20,6 +20,8 @@
                 setTransparency = id; 
                 setWindowSize = id; 
                 toggleAntiAlias = id; 
+                toggleTransparency = id; 
+                updateProfile = id; 
                 useBackgroundImage = id; 
                 windowConfigFont = id; 
                 windowConfigNAFont = id; 
@@ -46,9 +48,11 @@
                 "CONFIG_TRANS2" = id; 
                 "CONFIG_TRANSPARENCY" = id; 
                 backgroundImageView = NSImageView; 
+                boldButton = NSButton; 
                 charHorizontalSpacing = NSSlider; 
                 charVerticalSpacing = NSSlider; 
-                disableBoldButton = NSButton; 
+                transparencyButton = NSButton; 
+                updateProfileButton = id; 
                 useBackgroundImage = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 

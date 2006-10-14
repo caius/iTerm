@@ -1,0 +1,46 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {
+                addBookmark = id; 
+                addBookmarkCancel = id; 
+                addBookmarkConfirm = id; 
+                addBookmarkFolder = id; 
+                addBookmarkFolderCancel = id; 
+                addBookmarkFolderConfirm = id; 
+                deleteBookmark = id; 
+                deleteBookmarkCancel = id; 
+                deleteBookmarkConfirm = id; 
+                deleteBookmarkFolder = id; 
+                editBookmark = id; 
+                launchInNewTab = id; 
+                launchInNewWindow = id; 
+                setDefaultSession = id; 
+            }; 
+            CLASS = iTermBookmarkController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                addBookmarkFolderPanel = NSPanel; 
+                bookmarkCommand = NSTextField; 
+                bookmarkDeleteButton = NSButton; 
+                bookmarkDisplayProfile = NSPopUpButton; 
+                bookmarkEditButton = NSButton; 
+                bookmarkFolderName = NSTextField; 
+                bookmarkKeyboardProfile = NSPopUpButton; 
+                bookmarkName = NSTextField; 
+                bookmarkShortcut = NSPopUpButton; 
+                bookmarkTerminalProfile = NSPopUpButton; 
+                bookmarkWorkingDirectory = NSTextField; 
+                bookmarksView = NSOutlineView; 
+                defaultSessionButton = NSButton; 
+                deleteBookmarkPanel = NSPanel; 
+                editBookmarkPanel = NSPanel; 
+                launchInNewTabButton = NSButton; 
+                launchInNewWindowButton = NSButton; 
+            }; 
+            SUPERCLASS = NSWindowController; 
+        }
+    ); 
+    IBVersion = 1; 
+}

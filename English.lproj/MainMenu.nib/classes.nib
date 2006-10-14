@@ -116,7 +116,9 @@
                 nextTerminal = id; 
                 previousTerminal = id; 
                 showAbout = id; 
+                showBookmarkWindow = id; 
                 showPrefWindow = id; 
+                showProfileWindow = id; 
                 smallerFont = id; 
                 useTransparency = id; 
             }; 
@@ -125,6 +127,7 @@
             OUTLETS = {
                 ABOUT = id; 
                 AUTHORS = NSTextView; 
+                bookmarkMenu = id; 
                 closeTab = NSMenuItem; 
                 closeWindow = NSMenuItem; 
                 fontSizeFollowWindowResize = NSMenuItem; 

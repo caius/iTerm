@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.17 2006-09-22 23:21:07 yfabian Exp $
+// $Id: iTermApplicationDelegate.h,v 1.18 2006-10-14 16:35:31 yfabian Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -38,6 +38,7 @@
     IBOutlet NSTextView *AUTHORS;
     
     // Menu items
+    IBOutlet NSMenu     *bookmarkMenu;
     IBOutlet NSMenuItem *selectTab;
     IBOutlet NSMenuItem *previousTerminal;
     IBOutlet NSMenuItem *nextTerminal;

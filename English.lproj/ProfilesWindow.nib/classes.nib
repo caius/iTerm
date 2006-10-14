@@ -1,59 +1,6 @@
 {
     IBClasses = (
-        {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
-        {
-            ACTIONS = {cancel = id; ok = id; }; 
-            CLASS = PreferencePanel; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                cmdSelection = NSButton; 
-                enableBonjour = NSButton; 
-                enableGrowl = NSButton; 
-                focusFollowsMouse = NSButton; 
-                hideTab = NSButton; 
-                maxVertically = NSButton; 
-                middleButtonPastesFromClipboard = NSButton; 
-                openBookmark = NSButton; 
-                promptOnClose = NSButton; 
-                refreshRate = NSSlider; 
-                selectionCopiesText = NSButton; 
-                tabPosition = NSPopUpButton; 
-                useCompactLabel = NSButton; 
-                windowStyle = NSPopUpButton; 
-                wordChars = NSTextField; 
-            }; 
-            SUPERCLASS = NSWindowController; 
-        }, 
-        {
-            ACTIONS = {
-                addBookmark = id; 
-                addBookmarkCancel = id; 
-                addBookmarkConfirm = id; 
-                addBookmarkFolder = id; 
-                addBookmarkFolderCancel = id; 
-                addBookmarkFolderConfirm = id; 
-                deleteBookmark = id; 
-                editBookmark = id; 
-                setDefaultSession = id; 
-            }; 
-            CLASS = iTermBookmarkController; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                addBookmarkFolderPanel = NSPanel; 
-                bookmarkCommand = NSTextField; 
-                bookmarkDeleteButton = NSButton; 
-                bookmarkEditButton = NSButton; 
-                bookmarkFolderName = NSTextField; 
-                bookmarkName = NSTextView; 
-                bookmarkShortcut = NSPopUpButton; 
-                bookmarkWorkingDirectory = NSTextField; 
-                bookmarksView = NSOutlineView; 
-                defaultSessionButton = NSButton; 
-                deleteBookmarkPanel = NSPanel; 
-                editBookmarkPanel = NSPanel; 
-            }; 
-            SUPERCLASS = NSWindowController; 
-        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
                 displayBackgroundImage = id; 
@@ -77,7 +24,6 @@
                 profileDelete = id; 
                 profileDeleteCancel = id; 
                 profileDeleteConfirm = id; 
-                showProfilesWindow = id; 
                 terminalProfileChanged = id; 
                 terminalSetBlink = id; 
                 terminalSetCloseOnSessionEnd = id; 
@@ -160,7 +106,7 @@
                 terminalSendIdleChar = NSButton; 
                 terminalShowBell = NSButton; 
                 terminalSilenceBell = NSButton; 
-                terminalType = NSPopUpButton; 
+                terminalType = NSComboBox; 
                 xtermMouseReporting = NSButton; 
             }; 
             SUPERCLASS = NSWindowController; 

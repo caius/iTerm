@@ -34,8 +34,11 @@
 #import "VT100Screen.h"
 #import "PTYTextView.h"
 #import "PTYScrollView.h"
+#import "iTermDisplayProfileMgr.h"
+#import "iTermTerminalProfileMgr.h"
 
 static ITConfigPanelController *singleInstance = nil;
+static BOOL onScreen = NO;
 
 @implementation ITConfigPanelController
 
@@ -64,6 +67,7 @@ static ITConfigPanelController *singleInstance = nil;
 	
 	[[singleInstance window] setFrameAutosaveName: @"Config Panel"];
 	[[singleInstance window] makeKeyAndOrderFront: self];
+    onScreen = YES;
 }
 
 + (void) close
@@ -72,6 +76,12 @@ static ITConfigPanelController *singleInstance = nil;
 	{
 		[[singleInstance window] performClose: self];
 	}
+    onScreen = NO;
+}
+
++ (BOOL) onScreen
+{
+    return onScreen;
 }
 
 - (id)init
@@ -145,18 +155,38 @@ static ITConfigPanelController *singleInstance = nil;
 
 - (IBAction) setTransparency: (id) sender
 {
-	[[_pseudoTerminal currentSession] setTransparency:  [sender floatValue]/100.0];
-	if(sender == CONFIG_TRANS2)
-		[CONFIG_TRANSPARENCY setFloatValue:([[_pseudoTerminal currentSession] transparency]*100)];
-	else if (sender == CONFIG_TRANSPARENCY)
-		[CONFIG_TRANS2 setFloatValue:([[_pseudoTerminal currentSession] transparency]*100)];
+    float tr;
+    
+    if (sender == transparencyButton) {
+        [[_pseudoTerminal currentSession] setUseTransparency: [transparencyButton state] == NSOnState];
+        [CONFIG_TRANS2 setEnabled:[transparencyButton state]];
+        [CONFIG_TRANSPARENCY setEnabled:[transparencyButton state]];
+    }
+    else {
+        tr = [sender floatValue];
+    
+        [[_pseudoTerminal currentSession] setTransparency:  tr/100.0];
+        if(sender == CONFIG_TRANS2)
+            [CONFIG_TRANSPARENCY setFloatValue:tr];
+        else if (sender == CONFIG_TRANSPARENCY)
+            [CONFIG_TRANS2 setFloatValue:tr];
+        [transparencyButton setState: tr!=0];
+        [[_pseudoTerminal currentSession] setUseTransparency: [transparencyButton state] == NSOnState];
+        
+    }
 }
 
-- (IBAction) setDisableBold: (id) sender
+- (IBAction) setBold: (id) sender
 {
-	[[_pseudoTerminal currentSession] setDisableBold: ([disableBoldButton state] == NSOnState)];
+	[[_pseudoTerminal currentSession] setDisableBold: ([boldButton state] == NSOffState)];
+    [CONFIG_BOLD setEnabled:[boldButton state]];
 }
 
+- (IBAction) updateProfile: (id) sender
+{
+    [_pseudoTerminal saveDisplayProfile: self];
+    [_pseudoTerminal saveTerminalProfile: self];
+}
 - (IBAction) setForegroundColor: (id) sender
 {
 	[CONFIG_EXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
@@ -402,12 +432,17 @@ static ITConfigPanelController *singleInstance = nil;
 	
     [CONFIG_TRANSPARENCY setFloatValue:([currentSession transparency]*100)];
     [CONFIG_TRANS2 setFloatValue:([currentSession transparency]*100)];
+    [transparencyButton setState: [currentSession useTransparency]];
+    [CONFIG_TRANS2 setEnabled:[transparencyButton state]];
+    [CONFIG_TRANSPARENCY setEnabled:[transparencyButton state]];
+    
     [AI_ON setState:[currentSession antiIdle]?NSOnState:NSOffState];
     [AI_CODE setIntValue:[currentSession antiCode]];
     
     [CONFIG_ANTIALIAS setState: [[currentSession TEXTVIEW] antiAlias]];
 	
-	[disableBoldButton setState: [currentSession disableBold]];
+	[boldButton setState: ![currentSession disableBold]];
+    [CONFIG_BOLD setEnabled:[boldButton state]];
 	
     // background image
     backgroundImagePath = [[currentSession backgroundImagePath] copy];
@@ -435,7 +470,30 @@ static ITConfigPanelController *singleInstance = nil;
 		[backgroundImagePath release];
 		backgroundImagePath = nil;
     }    
+
+    iTermTerminalProfileMgr *terminalProfileMgr;
+	NSDictionary *aDict;
+	NSString *terminalProfile;
+	PTYSession *current;
 	
+	current = [_pseudoTerminal currentSession];
+	terminalProfileMgr = [iTermTerminalProfileMgr singleInstance];
+	aDict = [current addressBookEntry];
+	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
+	if(terminalProfile == nil)
+		terminalProfile = [terminalProfileMgr defaultProfileName];	
+    
+    iTermDisplayProfileMgr *displayProfileMgr;
+	NSString *displayProfile;
+	
+	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+	aDict = [current addressBookEntry];
+	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
+	if(displayProfile == nil)
+		displayProfile = [displayProfileMgr defaultProfileName];	
+    
+    [updateProfileButton setTitle:[NSString stringWithFormat:@"Update %@ & %@", terminalProfile, displayProfile]];
+
 	[[self window] setLevel: NSFloatingWindowLevel];
 	[[self window] setDelegate: self];
     

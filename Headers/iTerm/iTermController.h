@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.20 2006-09-14 08:09:16 yfabian Exp $
+// $Id: iTermController.h,v 1.21 2006-10-14 16:35:34 yfabian Exp $
 /*
  **  iTermController.h
  **
@@ -57,6 +57,7 @@
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow;
 - (NSArray *) sortedEncodingList;
 - (NSMenu *) buildAddressBookMenuWithTarget:(id)target withShortcuts: (BOOL) withShortcuts;
+- (void) alternativeMenu: (NSMenu *)aMenu forNode: (TreeNode *) theNode target: (id) aTarget withShortcuts: (BOOL) withShortcuts;
 - (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm;
 - (PTYTextView *) frontTextView;
 

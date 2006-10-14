@@ -66,12 +66,14 @@
     IBOutlet NSImageView *backgroundImageView;
     NSString *backgroundImagePath;
 	
-	// disable bold
-	IBOutlet NSButton *disableBoldButton;
+	IBOutlet NSButton *boldButton;
+	IBOutlet NSButton *transparencyButton;
+	IBOutlet NSButton *updateProfileButton;
 }
 
 + (void)show;
 + (void)close;
++ (BOOL)onScreen;
 
 - (void)loadConfigWindow: (NSNotification *) aNotification;
 
@@ -96,6 +98,7 @@
 - (IBAction) windowConfigFont:(id)sender;
 - (IBAction) windowConfigNAFont:(id)sender;
 - (IBAction) useBackgroundImage: (id) sender;
-- (IBAction) setDisableBold: (id) sender;
+- (IBAction) setBold: (id) sender;
+- (IBAction) updateProfile: (id) sender;
 
 @end

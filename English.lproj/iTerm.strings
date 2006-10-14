@@ -29,14 +29,14 @@
 "This session will be closed."="This session will be closed.";
 "All unsaved data will be lost"="All unsaved data will be lost";
 
-/* Toolbar Item:Configure */
-"Configure" = "Configure";
+/* Toolbar Item:Info */
+"Info" = "Info";
 
-/* Toolbar Item Tip:Configure */
-"Configure current window" = "Configure current window";
+/* Toolbar Item Tip:Info */
+"Window/Session Info" = "Window/Session Info";
 
 /* Context menu */
-"Configure..." = "Configure...";
+"Info..." = "Info...";
 
 /* Context menu */
 "Copy" = "Copy";
@@ -172,8 +172,8 @@
 "All bookmarks associated with this profile are affected"="All bookmarks associated with this profile are affected";
 
 /* Bookmarks */
-"Show Bookmarks" = "Show Bookmarks";
-"Hide Bookmarks"="Hide Bookmarks";
+"Show Bookmark Drawer" = "Show Bookmark Drawer";
+"Hide Bookmark Drawer"="Hide Bookmark Drawer";
 
 /* Warning */
 "Warning!" = "Warning!";

@@ -35,6 +35,7 @@
 
 @interface PreferencePanel : NSWindowController
 {
+    
 	IBOutlet NSPopUpButton *windowStyle;
 	IBOutlet NSPopUpButton *tabPosition;
     IBOutlet NSButton *selectionCopiesText;
@@ -43,33 +44,14 @@
     IBOutlet id promptOnClose;
     IBOutlet NSButton *focusFollowsMouse;
 	IBOutlet NSTextField *wordChars;
-	IBOutlet NSWindow *profilesWindow;
 	IBOutlet NSButton *enableBonjour;
     IBOutlet NSButton *enableGrowl;
     IBOutlet NSButton *cmdSelection;
 	IBOutlet NSButton *maxVertically;
 	IBOutlet NSButton *useCompactLabel;
+    IBOutlet NSButton *openBookmark;
     IBOutlet NSSlider *refreshRate;
 	
-	// Bookmark stuff
-	IBOutlet NSOutlineView *bookmarksView;
-	IBOutlet NSPanel *addBookmarkFolderPanel;
-	IBOutlet NSPanel *deleteBookmarkPanel;
-	IBOutlet NSPanel *editBookmarkPanel;
-	IBOutlet NSButton *bookmarkDeleteButton;
-	IBOutlet NSButton *bookmarkEditButton;
-	IBOutlet NSTextField *bookmarkFolderName;
-	IBOutlet NSTextField *bookmarkName;
-	IBOutlet NSTextField *bookmarkCommand;
-	IBOutlet NSTextField *bookmarkWorkingDirectory;
-	IBOutlet NSPopUpButton *bookmarkTerminalProfile;
-	IBOutlet NSPopUpButton *bookmarkKeyboardProfile;
-	IBOutlet NSPopUpButton *bookmarkDisplayProfile;
-	IBOutlet NSPopUpButton *bookmarkShortcut;
-	NSArray	 		*draggedNodes;
-	IBOutlet NSButton *defaultSessionButton;
-
-    
     NSUserDefaults *prefs;
 
 	
@@ -85,13 +67,13 @@
 	BOOL defaultCmdSelection;
 	BOOL defaultMaxVertically;
     BOOL defaultUseCompactLabel;
+    BOOL defaultOpenBookmark;
     int  defaultRefreshRate;
 	NSString *defaultWordChars;
 }
 
 
 + (PreferencePanel*)sharedInstance;
-- (id)initWithWindowNibName: (NSString *) windowNibName;
 
 - (void) readPreferences;
 - (void) savePreferences;
@@ -101,19 +83,6 @@
 
 - (void)run;
 
-// Bookmark actions
-- (IBAction) addBookmarkFolder: (id) sender;
-- (IBAction) addBookmarkFolderConfirm: (id) sender;
-- (IBAction) addBookmarkFolderCancel: (id) sender;
-- (IBAction) deleteBookmarkFolder: (id) sender;
-- (IBAction) deleteBookmarkConfirm: (id) sender;
-- (IBAction) deleteBookmarkCancel: (id) sender;
-- (IBAction) addBookmark: (id) sender;
-- (IBAction) addBookmarkConfirm: (id) sender;
-- (IBAction) addBookmarkCancel: (id) sender;
-- (IBAction) deleteBookmark: (id) sender;
-- (IBAction) editBookmark: (id) sender;
-- (IBAction) setDefaultSession: (id) sender;
 
 - (BOOL) copySelection;
 - (void) setCopySelection: (BOOL) flag;
@@ -130,6 +99,7 @@
 - (BOOL) cmdSelection;
 - (BOOL) maxVertically;
 - (BOOL) useCompactLabel;
+- (BOOL) openBookmark;
 - (int)  refreshRate;
 - (NSString *) wordChars;
 
@@ -144,13 +114,5 @@
 @end
 
 @interface PreferencePanel (Private)
-
-- (void)_addBookmarkFolderSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-- (void)_deleteBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-- (void)_editBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo;
-- (void) _loadProfiles;
-- (NSArray*) _draggedNodes;
-- (NSArray *) _selectedNodes;
-- (void)_performDropOperation:(id <NSDraggingInfo>)info onNode:(TreeNode*)parentNode atIndex:(int)childIndex;
 
 @end

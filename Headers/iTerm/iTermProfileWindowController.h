@@ -33,6 +33,8 @@
 
 @interface iTermProfileWindowController : NSWindowController 
 {
+    NSUserDefaults *_prefs;
+
 	IBOutlet NSTabView *profileTabView;
 	
 	// Profile editing
@@ -100,7 +102,7 @@
 	// Terminal Profile UI
 	IBOutlet NSPopUpButton *terminalProfileSelector;
 	IBOutlet NSButton *terminalProfileDeleteButton;
-	IBOutlet NSPopUpButton *terminalType;
+	IBOutlet NSComboBox *terminalType;
 	IBOutlet NSPopUpButton *terminalEncoding;
 	IBOutlet NSTextField *terminalScrollback;
 	IBOutlet NSButton *terminalSilenceBell;
@@ -112,9 +114,10 @@
 	IBOutlet NSButton *terminalSendIdleChar;
 	IBOutlet NSTextField *terminalIdleChar;
 	IBOutlet NSButton *xtermMouseReporting;
-
+    
 }
 
++ (iTermProfileWindowController*)sharedInstance;
 - (IBAction) showProfilesWindow: (id) sender;
 
 // profile editing

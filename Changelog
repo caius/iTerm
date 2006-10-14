@@ -1,3 +1,20 @@
+2006-10-14  fabian
+    
+    * Overhaul of the UI:
+      1. Move bookmark tab to a separate window. Added an option to display bookmark window
+         on startup.
+      2. Move profiles window outside of Preference Panel
+      3. Changed Preference Panel into 4 tabs.
+      4. Renamed Configure window to Info to avoid confusion. 
+         1) Made the window long to make it look like an Info window.
+         2) Cmd-I to open and close window.
+         3) Added a button to allow updating.
+      4. Re-ordered main menu.
+         1) added a bookmark menu. Opening a window or a tab is controlled by option key.
+         2) Moved tab operations into Windows menu.
+         
+    * Added a double check for scrollback size. Avoid crash when scrollback is too large.  
+
 2006-10-09  fabian
 
     * Initial attempt to incorporate the termcap for keyboard input. Now when a key is 
@@ -6,6 +23,7 @@
       Otherwise, the standard vt100/xterm definition is used.
     * Fixed a few building problems for pre-tiger OSes.
     * Removed excessive NSLog warnings about growl.
+    * Added a cancel button in the "send input to all sessions" warning.
     
 2006-10-05  fabian
 

@@ -33,6 +33,49 @@
 
 @implementation iTermProfileWindowController
 
++ (iTermProfileWindowController*)sharedInstance
+{
+    static iTermProfileWindowController* shared = nil;
+
+    if (!shared)
+	{
+		shared = [[self alloc] init];
+	}
+
+    return shared;
+}
+
+- (id) init
+{
+    NSMutableDictionary *profilesDictionary, *keybindingProfiles, *displayProfiles, *terminalProfiles;
+	NSString *plistFile;
+    
+    if ((self = [super init]) == nil)
+        return nil;
+
+    _prefs = [NSUserDefaults standardUserDefaults];
+    
+    // load saved profiles or default if we don't have any
+	keybindingProfiles = [_prefs objectForKey: @"KeyBindings"];
+	displayProfiles =  [_prefs objectForKey: @"Displays"];
+	terminalProfiles = [_prefs objectForKey: @"Terminals"];
+	
+	// if we got no profiles, load from our embedded plist
+	plistFile = [[NSBundle bundleForClass: [self class]] pathForResource:@"Profiles" ofType:@"plist"];
+	profilesDictionary = [NSDictionary dictionaryWithContentsOfFile: plistFile];
+	if([keybindingProfiles count] == 0)
+		keybindingProfiles = [profilesDictionary objectForKey: @"KeyBindings"];
+	if([displayProfiles count] == 0)
+		displayProfiles = [profilesDictionary objectForKey: @"Displays"];
+	if([terminalProfiles count] == 0)
+		terminalProfiles = [profilesDictionary objectForKey: @"Terminals"];
+    
+	[[iTermKeyBindingMgr singleInstance] setProfiles: keybindingProfiles];
+	[[iTermDisplayProfileMgr singleInstance] setProfiles: displayProfiles];
+	[[iTermTerminalProfileMgr singleInstance] setProfiles: terminalProfiles];
+    
+    return self;
+}    
 - (IBAction) showProfilesWindow: (id) sender
 {
 	NSEnumerator *profileEnumerator;
@@ -40,6 +83,12 @@
 	NSEnumerator *anEnumerator;
 	NSNumber *anEncoding;
 	
+    // load nib if we haven't already
+    if([self window] == nil)
+		[self initWithWindowNibName: @"ProfilesWindow"];
+    
+	[[self window] setDelegate: self]; // also forces window to load
+    
 	// load up the keyboard profiles
 	[kbProfileSelector removeAllItems];
 	profileEnumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
@@ -574,7 +623,7 @@
 	
 	theProfile = [terminalProfileSelector titleOfSelectedItem];
 
-	[terminalType setTitle: [[iTermTerminalProfileMgr singleInstance] typeForProfile: theProfile]];
+	[terminalType setStringValue: [[iTermTerminalProfileMgr singleInstance] typeForProfile: theProfile]];
 	[terminalEncoding setTitle: [NSString localizedNameOfStringEncoding:
 		[[iTermTerminalProfileMgr singleInstance] encodingForProfile: theProfile]]];
 	[terminalScrollback setStringValue: [NSString stringWithFormat: @"%d",
@@ -596,7 +645,7 @@
 
 - (IBAction) terminalSetType: (id) sender
 {
-	[[iTermTerminalProfileMgr singleInstance] setType: [sender titleOfSelectedItem] 
+	[[iTermTerminalProfileMgr singleInstance] setType: [sender stringValue] 
 										   forProfile: [terminalProfileSelector titleOfSelectedItem]];
 }
 

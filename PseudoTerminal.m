@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.358 2006-10-14 16:35:31 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.359 2006-10-17 03:04:55 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -57,6 +57,14 @@
 #import <PSMTabStyle.h>
 #import <iTermBookmarkController.h>
 #include <unistd.h>
+
+@interface PSMTabBarControl (Private)
+- (void)update;
+@end
+
+@interface NSWindow (private)
+- (void)setBottomCornerRounded:(BOOL)rounded;
+@end
 
 // keys for attributes:
 NSString *columnsKey = @"columns";
@@ -263,7 +271,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     [self setCharSizeUsingFont: aFont1];
     [self setWidth: (int) ((contentSize.width - MARGIN * 2)/charWidth + 0.1)
-			height: (int) (contentSize.height/charHeight + 0.1)];
+			height: (int) ((contentSize.height) /charHeight + 0.1)];
 	
     return ([TABVIEW autorelease]);
 }
@@ -902,7 +910,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[[self currentSession] TEXTVIEW] setForceUpdate: YES];
 //    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
     [[[self currentSession] SCROLLVIEW] setNeedsDisplay: YES];
-    [tabBarControl update:NO];
+    [tabBarControl update];
     
 }
 
@@ -1299,15 +1307,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		sz = [@"W" sizeWithAttributes:dic];
 		
 		proposedFrameSize.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
-        proposedFrameSize.width = sz.width * charHorizontalSpacingMultiplier * WIDTH + wch;
+        proposedFrameSize.width = sz.width * charHorizontalSpacingMultiplier * WIDTH + wch + MARGIN * 2;
 	}
     else {
 		int new_height = (proposedFrameSize.height - nch) / charHeight + 0.5;
-        int new_width = (proposedFrameSize.width - wch) / charWidth + 0.5;
+        int new_width = (proposedFrameSize.width - wch - MARGIN*2) / charWidth + 0.5;
         if (new_height<2) new_height = 2;
         if (new_width<20) new_width = 20;
 		proposedFrameSize.height = charHeight * new_height + nch;
-		proposedFrameSize.width = charWidth * new_width + wch;
+		proposedFrameSize.width = charWidth * new_width + wch + MARGIN * 2;
 		//NSLog(@"actual height: %f",proposedFrameSize.height);
     }
     
@@ -1355,12 +1363,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
         
         WIDTH = (int)((frame.size.width - MARGIN * 2)/charWidth + 0.5);
-		HEIGHT = (int)(frame.size.height/charHeight + 0.5);
+		HEIGHT = (int)((frame.size.height)/charHeight + 0.5);
         [self setWindowSize];
     }
 	else {	    
 		w = (int)((frame.size.width - MARGIN * 2)/charWidth);
-		h = (int)(frame.size.height/charHeight);
+		h = (int)((frame.size.height)/charHeight);
 
         if (w<20) w=20;
         if (h<2) h=2;
@@ -1416,10 +1424,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 	else {
         int new_height = (defaultFrame.size.height -nch) / charHeight;
-        int new_width =  (defaultFrame.size.width - wch) /charWidth;
+        int new_width =  (defaultFrame.size.width - wch - MARGIN * 2) /charWidth;
         
 		defaultFrame.size.height = charHeight * new_height + nch;
-		defaultFrame.size.width = ([[PreferencePanel sharedInstance] maxVertically] ? [sender frame].size.width : new_width*charWidth+wch);
+		defaultFrame.size.width = ([[PreferencePanel sharedInstance] maxVertically] ? [sender frame].size.width : new_width*charWidth+wch+MARGIN*2);
 		//NSLog(@"actual width: %f, height: %f",defaultFrame.size.width,defaultFrame.size.height);
 	}
 	
@@ -1461,7 +1469,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
     
     HEIGHT=h?h:(([[[self window] screen] frame].size.height - rh)/charHeight + 0.5);
-    WIDTH=w?w:(([[[self window] screen] frame].size.width - rw)/charWidth + 0.5); 
+    WIDTH=w?w:(([[[self window] screen] frame].size.width - rw - MARGIN*2)/charWidth + 0.5); 
 
 	// resize the TABVIEW and TEXTVIEW
     [self setWindowSize];
@@ -1481,12 +1489,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     frm.origin.y += frm.size.height;
     if (!h) h= [[[self window] screen] frame].size.height - rh;
     
-    int n = h / charHeight + 0.5;
+    int n = (h) / charHeight + 0.5;
     frm.size.height = n*charHeight + rh;
         
     if (!w) w= [[[self window] screen] frame].size.width - rw;
-    n = w / charWidth + 0.5;
-    frm.size.width = n*charWidth + rw;
+    n = (w - MARGIN*2) / charWidth + 0.5;
+    frm.size.width = n*charWidth + rw + MARGIN*2;
     
     frm.origin.y -= frm.size.height; //keep the top left point the same
     
@@ -1665,16 +1673,26 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (BOOL)tabView:(NSTabView*)aTabView shouldDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)tabBarControl
 {
-	return YES;
+    //NSLog(@"shouldDropTabViewItem: %@ inTabBar: %@", [tabViewItem label], tabBarControl);
+    return YES;
 }
 
 - (void)tabView:(NSTabView*)aTabView didDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)aTabBarControl
 {
 	//NSLog(@"didDropTabViewItem: %@ inTabBar: %@", [tabViewItem label], aTabBarControl);
     int i;
+	PTYSession *aSession = [tabViewItem identifier];
+    
+    [[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
+    [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
+    [[aSession TEXTVIEW] setFont:FONT nafont:NAFONT];
+    [[aSession TEXTVIEW] setCharWidth: charWidth];
+    [[aSession TEXTVIEW] setLineHeight: charHeight];
+    [[aSession TEXTVIEW] setLineWidth: WIDTH * charWidth];
+    
     for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
     {
-        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+        aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
         [aSession setObjectCount:i+1];
     }        
 }
@@ -1801,53 +1819,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return viewImage;
 }
 
-- (void)tabViewWillPerformDragOperation:(NSTabView *)tabView
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal tabViewWillPerformDragOperation]", __FILE__, __LINE__);
-#endif
-	
-    tabViewDragOperationInProgress = YES;
-}
-
-- (void)tabViewDidPerformDragOperation:(NSTabView *)tabView
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal tabViewDidPerformDragOperation]", __FILE__, __LINE__);
-#endif
-	
-    tabViewDragOperationInProgress = NO;
-    [self setFont:FONT nafont:NAFONT];
-    [self setAntiAlias: antiAlias];
-    
-    VT100Screen *aScreen;
-    PTYSession *aSession;
-    int i;
-    
-    for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) {
-        aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
-        aScreen = [aSession SCREEN];
-        if ([aScreen width]!=WIDTH || [aScreen height]!=HEIGHT) {
-            [self setWindowSize];
-//            [aSession SCROLLVIEW]
-//            [[aSession TEXTVIEW] setFrameSize:[[aSession SCROLLVIEW] contentSize]];
-            [aScreen resizeWidth:WIDTH height:HEIGHT];
-            [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
-            break;
-        }
-    }
-    [self tabViewDidChangeNumberOfTabViewItems: tabView];
-}
-
 - (void)tabViewDidChangeNumberOfTabViewItems:(NSTabView *)tabView
 {
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabViewDidChangeNumberOfTabViewItems]", __FILE__, __LINE__);
 #endif
 	
-    if(tabViewDragOperationInProgress == YES)
-		return;
-	    
 	// check window size in case tabs have to be hidden or shown
 	if ([TABVIEW numberOfTabViewItems] <= 2)
 		[self setWindowSize];
@@ -1940,7 +1917,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
 		[term setWidth: WIDTH height: HEIGHT];
 		[term setFont: FONT nafont: NAFONT];
-		[term initWindowWithAddressbook:[aSession addressBookEntry]];
+		[term initWindowWithAddressbook:NULL];
     }	
 	
     [[iTermController sharedInstance] addInTerminals: term];
@@ -2040,7 +2017,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[self window] performClose:sender];
 }
 
-- (IBAction) saveDisplayProfile: (id) sender
+- (void) updateCurretSessionProfiles
 {
 	iTermDisplayProfileMgr *displayProfileMgr;
 	NSDictionary *aDict;
@@ -2071,35 +2048,32 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[displayProfileMgr setColor: [current selectedTextColor] forType: TYPE_SELECTED_TEXT_COLOR forProfile: displayProfile];
 	[displayProfileMgr setColor: [current cursorColor] forType: TYPE_CURSOR_COLOR forProfile: displayProfile];
 	[displayProfileMgr setColor: [current cursorTextColor] forType: TYPE_CURSOR_TEXT_COLOR forProfile: displayProfile];
-		
-	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Display Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), displayProfile],
-								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are affected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
-								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
-}
 
-- (IBAction) saveTerminalProfile: (id) sender
-{
-	iTermTerminalProfileMgr *terminalProfileMgr;
-	NSDictionary *aDict;
+    iTermTerminalProfileMgr *terminalProfileMgr;
 	NSString *terminalProfile;
-	PTYSession *current;
 	
-	current = [self currentSession];
-	terminalProfileMgr = [iTermTerminalProfileMgr singleInstance];
+    terminalProfileMgr = [iTermTerminalProfileMgr singleInstance];
 	aDict = [current addressBookEntry];
 	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
 	if(terminalProfile == nil)
 		terminalProfile = [terminalProfileMgr defaultProfileName];	
-
+    
 	[terminalProfileMgr setEncoding: [current encoding] forProfile: terminalProfile];
 	[terminalProfileMgr setSendIdleChar: [current antiIdle] forProfile: terminalProfile];
 	[terminalProfileMgr setIdleChar: [current antiCode] forProfile: terminalProfile];
-	
-	NSRunInformationalAlertPanel([NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"Terminal Profile Saved To: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), terminalProfile],
-								 NSLocalizedStringFromTableInBundle(@"All bookmarks associated with this profile are affected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
-								 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
+    
+    id prefs = [NSUserDefaults standardUserDefaults];
+    
+    [prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
+	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
+	[prefs synchronize];
+    
+	NSRunInformationalAlertPanel(
+        [NSString stringWithFormat: NSLocalizedStringFromTableInBundle(@"%@'s display profile %@ and terminal profile %@ have been updated",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
+            [[current addressBookEntry] objectForKey: @"Name"], displayProfile, terminalProfile],
+         NSLocalizedStringFromTableInBundle(@"All bookmarks associated with these profiles are affected",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
+         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), nil, nil);
 }
-
 
 // NSOutlineView delegate methods
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn 
@@ -2159,8 +2133,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
 	
-    tabViewDragOperationInProgress = NO;
-	
+    
 	[NSThread detachNewThreadSelector: @selector(_updateDisplayThread:) toTarget: self withObject: nil];
 	
 }

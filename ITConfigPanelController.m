@@ -76,7 +76,6 @@ static BOOL onScreen = NO;
 	{
 		[[singleInstance window] performClose: self];
 	}
-    onScreen = NO;
 }
 
 + (BOOL) onScreen
@@ -110,6 +109,7 @@ static BOOL onScreen = NO;
 {
 	[[NSColorPanel sharedColorPanel] close];
 	[[NSFontPanel sharedFontPanel] close];
+    onScreen = NO;
 	
     // since this NSWindowController doesn't have a document, the releasing is not automatic when the window closes
     [self autorelease];
@@ -184,9 +184,9 @@ static BOOL onScreen = NO;
 
 - (IBAction) updateProfile: (id) sender
 {
-    [_pseudoTerminal saveDisplayProfile: self];
-    [_pseudoTerminal saveTerminalProfile: self];
+    [_pseudoTerminal updateCurretSessionProfiles];
 }
+
 - (IBAction) setForegroundColor: (id) sender
 {
 	[CONFIG_EXAMPLE setTextColor:[CONFIG_FOREGROUND color]];
@@ -471,28 +471,11 @@ static BOOL onScreen = NO;
 		backgroundImagePath = nil;
     }    
 
-    iTermTerminalProfileMgr *terminalProfileMgr;
-	NSDictionary *aDict;
-	NSString *terminalProfile;
-	PTYSession *current;
-	
-	current = [_pseudoTerminal currentSession];
-	terminalProfileMgr = [iTermTerminalProfileMgr singleInstance];
-	aDict = [current addressBookEntry];
-	terminalProfile = [aDict objectForKey: KEY_TERMINAL_PROFILE];
-	if(terminalProfile == nil)
-		terminalProfile = [terminalProfileMgr defaultProfileName];	
+   	
     
-    iTermDisplayProfileMgr *displayProfileMgr;
-	NSString *displayProfile;
-	
-	displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
-	aDict = [current addressBookEntry];
-	displayProfile = [aDict objectForKey: KEY_DISPLAY_PROFILE];
-	if(displayProfile == nil)
-		displayProfile = [displayProfileMgr defaultProfileName];	
-    
-    [updateProfileButton setTitle:[NSString stringWithFormat:@"Update %@ & %@", terminalProfile, displayProfile]];
+    [updateProfileButton setTitle:[NSString stringWithFormat:
+        NSLocalizedStringFromTableInBundle(@"Update %@", @"iTerm", [NSBundle bundleForClass: [self class]], @"Info"), 
+        [[currentSession addressBookEntry] objectForKey: @"Name"]]];
 
 	[[self window] setLevel: NSFloatingWindowLevel];
 	[[self window] setDelegate: self];

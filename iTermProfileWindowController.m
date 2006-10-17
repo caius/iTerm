@@ -134,6 +134,13 @@
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
+    id prefs = [NSUserDefaults standardUserDefaults];
+    
+    [prefs setObject: [[iTermKeyBindingMgr singleInstance] profiles] forKey: @"KeyBindings"];
+	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
+	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
+	[prefs synchronize];
+
 	[[NSColorPanel sharedColorPanel] close];
 	[[NSFontPanel sharedFontPanel] close];	
 }

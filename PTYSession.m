@@ -866,7 +866,7 @@ static NSImage *warningImage;
 	int w, h;
 		
 	w = (int)(([[SCROLLVIEW contentView] frame].size.width - MARGIN * 2)/[parent charWidth]);
-	h = (int)([[SCROLLVIEW contentView] frame].size.height/[parent charHeight]);
+	h = (int)(([[SCROLLVIEW contentView] frame].size.height)/[parent charHeight]);
 	//NSLog(@"%s: w = %d; h = %d; old w = %d; old h = %d", __PRETTY_FUNCTION__, w, h, [SCREEN width], [SCREEN height]);
 	
 	[SCREEN resizeWidth:w height:h];
@@ -1326,7 +1326,6 @@ static NSImage *warningImage;
 		NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
 		if(anImage != nil)
 		{
-			[SCROLLVIEW setDrawsBackground: NO];
 			[SCROLLVIEW setBackgroundImage: anImage];
 			[anImage release];
 		}
@@ -1334,13 +1333,11 @@ static NSImage *warningImage;
 		{
 			[backgroundImagePath release];
 			backgroundImagePath = nil;
-			[SCROLLVIEW setDrawsBackground: YES];
 		}
     }
     else
     {
 		[SCROLLVIEW setBackgroundImage: nil];
-		[SCROLLVIEW setDrawsBackground: NO];
 		[backgroundImagePath release];
 		backgroundImagePath = nil;
     }

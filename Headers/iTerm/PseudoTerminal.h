@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.41 2006-10-02 22:57:40 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.42 2006-10-17 03:04:59 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -51,8 +51,7 @@
 	float charHorizontalSpacingMultiplier, charVerticalSpacingMultiplier;
     NSFont *FONT, *NAFONT;
 	BOOL antiAlias;
-    //float alpha;
-    BOOL tabViewDragOperationInProgress;
+    
     BOOL windowInited;
 	BOOL sendInputToAllSessions;
 	BOOL fontSizeFollowWindowResize;
@@ -83,6 +82,8 @@
 - (int) currentSessionIndex;
 - (NSString *) currentSessionName;
 - (void) setCurrentSessionName: (NSString *) theSessionName;
+
+- (void) updateCurretSessionProfiles;
 
 - (void)startProgram:(NSString *)program;
 - (void)startProgram:(NSString *)program
@@ -158,10 +159,6 @@
 - (PSMTabBarControl*) tabBarControl;
 - (void) setLabelColor: (NSColor *) color forTabViewItem: tabViewItem;
 
-// Profiles
-- (IBAction) saveDisplayProfile: (id) sender;
-- (IBAction) saveTerminalProfile: (id) sender;
-
 // Bookmarks
 - (IBAction) toggleBookmarksView: (id) sender;
 
@@ -213,7 +210,6 @@
 				   lines:(float) lines;
 
 @end
-
 
 @interface PseudoTerminal (ScriptingSupport)
 

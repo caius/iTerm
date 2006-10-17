@@ -64,7 +64,7 @@ static BOOL editingBookmark = NO;
                                              selector: @selector(_reloadAddressBook:)
                                                  name: @"iTermReloadAddressBook"
                                                object: nil];	
-
+    
     return self;
 }
 
@@ -81,7 +81,7 @@ static BOOL editingBookmark = NO;
         [self initWithWindowNibName: @"Bookmarks"];
 
     [bookmarksView setDoubleAction: @selector(editBookmark:)];	
-	
+    
     [[self window] setDelegate: self]; // also forces window to load
     [self showWindow: self];
 }
@@ -166,7 +166,7 @@ static BOOL editingBookmark = NO;
 
 - (id)outlineView:(NSOutlineView *)ov objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
 {
-    //NSLog(@"%s: outlineView = 0x%x; item = %@", __PRETTY_FUNCTION__, ov, item);
+    //NSLog(@"%s: outlineView = 0x%x; item = %@; column= %@", __PRETTY_FUNCTION__, ov, item, [tableColumn identifier]);
 	// item should be a tree node witha dictionary data object
     return [[ITAddressBookMgr sharedInstance] objectForKey:[tableColumn identifier] inItem: item];
 }
@@ -454,6 +454,11 @@ static BOOL editingBookmark = NO;
 	{		
 		[[ITAddressBookMgr sharedInstance] addFolder: [bookmarkFolderName stringValue] toNode: parentNode];
 	}
+    
+    id prefs = [NSUserDefaults standardUserDefaults];
+    [prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+    [prefs synchronize];
+    
 	[addBookmarkFolderPanel close];
 }
 
@@ -464,6 +469,11 @@ static BOOL editingBookmark = NO;
 	{		
 		[[ITAddressBookMgr sharedInstance] deleteBookmarkNode: [bookmarksView itemAtRow: [bookmarksView selectedRow]]];
 	}
+    
+    id prefs = [NSUserDefaults standardUserDefaults];
+    [prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+    [prefs synchronize];
+    
 	[deleteBookmarkPanel close];
 }
 
@@ -534,6 +544,10 @@ static BOOL editingBookmark = NO;
 		[aDict release];
 	}
 	
+    id prefs = [NSUserDefaults standardUserDefaults];
+    [prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+    [prefs synchronize];
+    
 	[editBookmarkPanel close];
 }
 
@@ -581,6 +595,10 @@ static BOOL editingBookmark = NO;
 	
 	[bookmarksView reloadData];
 	
+    id prefs = [NSUserDefaults standardUserDefaults];
+    [prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+    [prefs synchronize];
+    
 	// Post a notification for all listeners that bookmarks have changed
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
     

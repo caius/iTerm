@@ -54,7 +54,7 @@
 /* Toolbar Item:New */
 "Default Session"="Default Session";
 "New" = "New";
-"Open in a new window"="Open in a new window";
+"Press Option for New Window"="Press Option for New Window";
 "Open a new session"="Open a new session";
 
 /* OK */
@@ -167,8 +167,7 @@
 "unknown key"="unknown key";
 
 /* Save Confirmation */
-"Display Profile Saved To: %@"="Display Profile Saved To: %@";
-"Terminal Profile Saved To: %@"="Terminal Profile Saved To: %@";
+"%@'s display profile %@ and terminal profile %@ have been updated"="%@'s display profile %@ and terminal profile %@ have been updated";
 "All bookmarks associated with this profile are affected"="All bookmarks associated with this profile are affected";
 
 /* Bookmarks */
@@ -192,3 +191,6 @@
 "Session %@ #%d becomes idle." = "Session %@ #%d becomes idle.";
 "New Output" = "New Output";
 "New Output was received in %@ #%d." = "New Output was received in %@ #%d.";
+
+/* Info */
+"Update %@" = "Update %@";

@@ -108,6 +108,12 @@
             SUPERCLASS = NSResponder; 
         }, 
         {
+            ACTIONS = {checkForUpdates = id; }; 
+            CLASS = SUUpdater; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
             ACTIONS = {
                 aboutOK = id; 
                 biggerFont = id; 
@@ -115,6 +121,7 @@
                 newWindow = id; 
                 nextTerminal = id; 
                 previousTerminal = id; 
+                returnToDefaultSize = id; 
                 showAbout = id; 
                 showBookmarkWindow = id; 
                 showPrefWindow = id; 

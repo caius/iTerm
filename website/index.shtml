@@ -63,8 +63,26 @@
   </UL>
 </UL>
 
-<FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
-<STRONG>Release 0.9.0!!!</STRONG> 9/22/06<BR><IMG src="new.gif">
+<FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR><IMG src="new.gif">
+<STRONG>Sparkling New!</STRONG>10/16/06<BR>
+In the latest cvs build, we have added Sparkle framework into our iTerm. That means,
+now the application will check the update, download the new version and install it
+all by itself. Well, with your permission, of course. <br><br>
+Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check it out.<BR><BR>
+
+
+<STRONG>Moving on</STRONG> 10/14/06<BR>
+We received many good feeedbacks on our 0.9.0 release. In the meanwhile, we are moving
+on to the next release to address many issues that users have raised. The main focus
+on 0.9.1 version will be the user interface. We will release CVS builds periodically.
+You are welcome to test-drive the new UI and send us your feedback. Be warned these
+are alpha quality and you shouldn't rely your critical job on them.<BR><br>
+
+Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check it out.<BR><BR>
+
+<STRONG>Release 0.9.0!!!</STRONG> 9/22/06<BR>
 Thanks to all the people who sent in their suggestion, feedback and bug reports.
 iTerm 0.9.0 is finally here. We have made the transistion to the new PSMTabBarControl.
 It gives iTerm a Safari-looking tab system. Further more, it supports drag and drop. 

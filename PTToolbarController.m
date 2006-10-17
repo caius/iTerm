@@ -28,6 +28,7 @@
 #import "PTToolbarController.h"
 #import "iTermController.h"
 #import "PseudoTerminal.h"
+#import "ITAddressBookMgr.h"
 
 NSString *NewToolbarItem = @"New";
 NSString *BookmarksToolbarItem = @"Bookmarks";
@@ -209,13 +210,11 @@ NSString *ConfigToolbarItem = @"Info";
 - (void)buildToolbarItemPopUpMenu:(NSToolbarItem *)toolbarItem forToolbar:(NSToolbar *)toolbar
 {
     NSPopUpButton *aPopUpButton;
-    NSMenuItem *item;
+    NSMenuItem *item, *tip;
     NSMenu *aMenu;
-    id newwinItem;
     NSString *imagePath;
     NSImage *anImage;
     NSBundle *thisBundle = [NSBundle bundleForClass: [self class]];
-    BOOL newwin = [[NSUserDefaults standardUserDefaults] boolForKey:@"SESSION_IN_NEW_WINDOW"];
     
     if (toolbarItem == nil)
         return;
@@ -226,15 +225,23 @@ NSString *ConfigToolbarItem = @"Info";
     [aPopUpButton removeAllItems];
     [aPopUpButton addItemWithTitle: @""];
 
-    aMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: (newwin?nil:_pseudoTerminal) withShortcuts: NO];
+    aMenu = [[NSMenu alloc] init];
+    [[iTermController sharedInstance] alternativeMenu: aMenu 
+                                              forNode: [[ITAddressBookMgr sharedInstance] rootNode] 
+                                               target: _pseudoTerminal
+                                        withShortcuts: NO];    
+    [aMenu addItem: [NSMenuItem separatorItem]];
+    tip = [[[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Press Option for New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action:@selector(xyz) keyEquivalent: @""] autorelease];
+    [tip setKeyEquivalentModifierMask: NSCommandKeyMask];
+    [aMenu addItem: tip];
+    tip = [[tip copy] autorelease];
+    [tip setTitle:@"Open in New Window"];
+    [tip setKeyEquivalentModifierMask: NSCommandKeyMask | NSAlternateKeyMask];
+    [tip setAlternate:YES];
+    [aMenu addItem: tip];
 	[aPopUpButton setMenu: aMenu];
-    
-    [[aPopUpButton menu] addItem: [NSMenuItem separatorItem]];
-    [[aPopUpButton menu] addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(toggleNewWindowState:) keyEquivalent: @""];
-    newwinItem=[aPopUpButton lastItem];
-    [newwinItem setTarget:self];    
-    [newwinItem setState:(newwin ? NSOnState : NSOffState)];    
-    
+    [aMenu release];
+        
     // Now set the icon
     item = [[aPopUpButton cell] menuItem];
     imagePath = [thisBundle pathForResource:@"newwin"
@@ -256,14 +263,23 @@ NSString *ConfigToolbarItem = @"Info";
     
     // build a menu representation for text only.
     item = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item:New") action: nil keyEquivalent: @""];
-    aMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: (newwin?nil:_pseudoTerminal) withShortcuts: NO];
+    aMenu = [[NSMenu alloc] init];
+    [[iTermController sharedInstance] alternativeMenu: aMenu 
+                                              forNode: [[ITAddressBookMgr sharedInstance] rootNode] 
+                                               target: _pseudoTerminal
+                                        withShortcuts: NO];    
     [aMenu addItem: [NSMenuItem separatorItem]];
-    [aMenu addItemWithTitle: NSLocalizedStringFromTableInBundle(@"Open in a new window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action: @selector(toggleNewWindowState:) keyEquivalent: @""];
-    newwinItem=[aMenu itemAtIndex: ([aMenu numberOfItems] - 1)];
-    [newwinItem setState:(newwin ? NSOnState : NSOffState)];
-    [newwinItem setTarget:self];
-    
-    [item setSubmenu: aMenu];
+    tip = [[[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Press Option for New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action:@selector(xyz) keyEquivalent: @""] autorelease];
+    [tip setKeyEquivalentModifierMask: NSCommandKeyMask];
+    [aMenu addItem: tip];
+    tip = [[tip copy] autorelease];
+    [tip setTitle:@"Open in New Window"];
+    [tip setKeyEquivalentModifierMask: NSCommandKeyMask | NSAlternateKeyMask];
+    [tip setAlternate:YES];
+    [aMenu addItem: tip];
+	[item setSubmenu: aMenu];
+    [aMenu release];
+        
     [toolbarItem setMenuFormRepresentation: item];
     [item release];
 }
@@ -275,14 +291,6 @@ NSString *ConfigToolbarItem = @"Info";
     
     if (aToolbarItem )
         [self buildToolbarItemPopUpMenu: aToolbarItem forToolbar:_toolbar];
-}
-
-- (void)toggleNewWindowState: (id) sender
-{
-    BOOL set = [[NSUserDefaults standardUserDefaults] boolForKey:@"SESSION_IN_NEW_WINDOW"];
-    [[NSUserDefaults standardUserDefaults] setBool:!set forKey:@"SESSION_IN_NEW_WINDOW"];    
-    
-    [self reloadAddressBookMenu: nil];
 }
 
 - (NSToolbarItem*)toolbarItemWithIdentifier:(NSString*)identifier

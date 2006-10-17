@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.54 2006-10-14 16:35:31 yfabian Exp $
+// $Id: iTermController.m,v 1.55 2006-10-17 03:04:55 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -259,7 +259,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 		aMenuItem = [[[NSMenuItem alloc] initWithTitle: [dataDict objectForKey: KEY_NAME] action:@selector(newSessionInTabAtIndex:) keyEquivalent:@""] autorelease];
 		if([childNode isGroup])
 		{
-			subMenu = [[NSMenu alloc] init];
+			subMenu = [[[NSMenu alloc] init] autorelease];
             [self alternativeMenu: subMenu forNode: childNode target: aTarget withShortcuts: withShortcuts];
 			[aMenuItem setSubmenu: subMenu];
 			[aMenuItem setAction: @selector(noAction:)];
@@ -267,20 +267,20 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 		}
 		else
 		{
+            modifierMask = NSCommandKeyMask | NSControlKeyMask;
 			if(withShortcuts)
 			{
 				if ([dataDict objectForKey: KEY_SHORTCUT] != nil)
 				{
-					modifierMask = NSCommandKeyMask | NSControlKeyMask;
-					
 					shortcut=[dataDict objectForKey: KEY_SHORTCUT];
 					shortcut = [shortcut lowercaseString];
                     
 					[aMenuItem setKeyEquivalent: shortcut];
-					[aMenuItem setKeyEquivalentModifierMask: modifierMask];
 				}
 			}
-			[aMenuItem setRepresentedObject: dataDict];
+
+            [aMenuItem setKeyEquivalentModifierMask: modifierMask];
+            [aMenuItem setRepresentedObject: dataDict];
 			[aMenuItem setTarget: aTarget];
 		}
         

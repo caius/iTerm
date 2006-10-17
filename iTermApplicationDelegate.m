@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.34 2006-10-14 16:35:31 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.35 2006-10-17 03:04:55 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -38,6 +38,7 @@
 #import <iTerm/PTYWindow.h>
 #import <iTermProfileWindowController.h>
 #import <iTermBookmarkController.h>
+#import <iTermDisplayProfileMgr.h>
 
 
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
@@ -78,6 +79,7 @@ static BOOL usingAutoLaunchScript = NO;
     [scriptMenuItem setImage: scriptIcon];
 
     // create submenu
+    int count = 0;
     NSMenu *scriptMenu = [[NSMenu alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
     [scriptMenuItem setSubmenu: scriptMenu];
     // populate the submenu with ascripts found in the script directory
@@ -88,14 +90,17 @@ static BOOL usingAutoLaunchScript = NO;
 		NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: file action: @selector(launchScript:) keyEquivalent: @""];
 		[scriptItem setTarget: [iTermController sharedInstance]];
 		[scriptMenu addItem: scriptItem];
+        count ++;
 		[scriptItem release];
     }
     [scriptMenu release];
 
     // add new menu item
-    [[NSApp mainMenu] insertItem: scriptMenuItem atIndex: 4];
-    [scriptMenuItem release];
-    [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
+    if (count) {
+        [[NSApp mainMenu] insertItem: scriptMenuItem atIndex: 5];
+        [scriptMenuItem release];
+        [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
+    }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -166,15 +171,15 @@ static BOOL usingAutoLaunchScript = NO;
 		autoLaunchScript = [[NSAppleScript alloc] initWithContentsOfURL: aURL error: &errorInfo];
 		[autoLaunchScript executeAndReturnError: &errorInfo];
 		[autoLaunchScript release];
-		
-		return (YES);
     }
-	
-	if ([[PreferencePanel sharedInstance] openBookmark])
-        [self showBookmarkWindow:nil];
-    else
-        [self newWindow:nil];
-    
+    else {
+        if ([[PreferencePanel sharedInstance] openBookmark])
+            [self showBookmarkWindow:nil];
+        else
+            [self newWindow:nil];
+    }
+    usingAutoLaunchScript = YES;
+
     return YES;
 }
 
@@ -185,6 +190,11 @@ static BOOL usingAutoLaunchScript = NO;
 	PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
     // Make sure that the first responder stuff is set up OK.
     [frontTerminal selectSessionAtIndex: [frontTerminal currentSessionIndex]];
+}
+
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app
+{
+    return [[PreferencePanel sharedInstance] quitWhenAllWindowsClosed];
 }
 
 // init
@@ -402,6 +412,24 @@ static BOOL usingAutoLaunchScript = NO;
     [NSApp stopModal];
 }
 
+// size
+- (IBAction) returnToDefaultSize: (id) sender
+{
+    PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
+    NSDictionary *abEntry = [[frontTerminal currentSession] addressBookEntry];
+    NSString *displayProfile = [abEntry objectForKey: KEY_DISPLAY_PROFILE];
+    iTermDisplayProfileMgr *displayProfileMgr = [iTermDisplayProfileMgr singleInstance];
+
+    if(displayProfile == nil)
+        displayProfile = [displayProfileMgr defaultProfileName];
+    
+    [frontTerminal resizeWindow: [displayProfileMgr windowColumnsForProfile: displayProfile]
+                         height: [displayProfileMgr windowRowsForProfile: displayProfile]];
+    [frontTerminal setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
+                    nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
+}
+
+
 // Notifications
 - (void) reloadMenus: (NSNotification *) aNotification
 {
@@ -510,9 +538,7 @@ static BOOL usingAutoLaunchScript = NO;
 - (void) buildAddressBookMenu : (NSNotification *) aNotification
 {
     // clear Bookmark menu
-    for (; [bookmarkMenu numberOfItems]>5;) [bookmarkMenu removeItemAtIndex: 5];
-    
-    [bookmarkMenu addItem: [NSMenuItem separatorItem]];
+    for (; [bookmarkMenu numberOfItems]>7;) [bookmarkMenu removeItemAtIndex: 7];
     
     // add bookmarks into Bookmark menu
     [[iTermController sharedInstance] alternativeMenu: bookmarkMenu 

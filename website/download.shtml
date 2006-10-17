@@ -20,8 +20,8 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Download:</STRONG></FONT><BR>
 <UL><A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">iTerm 0.9.0</A>: The latest iTerm release<IMG src="new.gif"><BR>
-<!--<A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">Recent binary build from CVS</A> (0.9.0 Pre-release, English only, 10/4/2006)<IMG src="new.gif"><BR>
-This build is Tiger only. We will have pre-Tiger versions when we do a formal release. -->
+<A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs_0.9.1.1016.zip">Recent binary build from CVS</A> (0.9.1.1016, English only)<IMG src="new.gif"><BR>
+This build is Tiger only. We will have pre-Tiger versions when we do a formal release.
 </UL>
 
 <FONT SIZE="5"><STRONG>Installation:</STRONG></FONT><BR>

@@ -51,7 +51,9 @@
 	IBOutlet NSButton *useCompactLabel;
     IBOutlet NSButton *openBookmark;
     IBOutlet NSSlider *refreshRate;
-	
+	IBOutlet NSButton *quitWhenAllWindowsClosed;
+    IBOutlet NSButton *checkUpdate;
+    
     NSUserDefaults *prefs;
 
 	
@@ -70,6 +72,7 @@
     BOOL defaultOpenBookmark;
     int  defaultRefreshRate;
 	NSString *defaultWordChars;
+    BOOL defaultQuitWhenAllWindowsClosed;
 }
 
 
@@ -78,8 +81,7 @@
 - (void) readPreferences;
 - (void) savePreferences;
 
-- (IBAction)ok:(id)sender;
-- (IBAction)cancel:(id)sender;
+- (IBAction)settingChanged:(id)sender;
 
 - (void)run;
 
@@ -102,6 +104,7 @@
 - (BOOL) openBookmark;
 - (int)  refreshRate;
 - (NSString *) wordChars;
+- (BOOL) quitWhenAllWindowsClosed;
 
 // Hidden preferences
 - (BOOL) useUnevenTabs;

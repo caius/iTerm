@@ -1,3 +1,21 @@
+2006-10-16  fabian
+
+    * Changes in Prefrence panel are now immediately effective. OK&Cancel buttons are gone.
+    * Re-ordered Windows menu to make it more consistent with other OS X applications (and Terminal).
+    * Added "Return to Default Size" menu item.
+    * Script menu no longer shows when there are no scripts found.
+    
+2006-10-15  fabian
+
+    * Changed the New menu for terminal window's toolbar to be "option"-controlled.
+    * Added option to quit application when all windows are closed.
+    * Now saves profile settings immediately after changese are made.
+    * Fixed several preference-not-sticky bugs.
+    * Removed old drag&drop codes
+    * Fixed a bug when drag&drop-ing tabs with different size and fonts.
+    * Fixed a bug that causes scrolling to fail to update screen when there's a background image.
+    * Incorporated Spark framework for automatic update.
+    
 2006-10-14  fabian
     
     * Overhaul of the UI:

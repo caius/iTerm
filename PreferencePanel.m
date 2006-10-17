@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.137 2006-10-14 16:35:30 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.138 2006-10-17 03:04:54 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -108,6 +108,7 @@ static float versionNumber;
 	[defaultWordChars release];
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
     defaultOpenBookmark = [prefs objectForKey:@"OpenBookmark"]?[[prefs objectForKey:@"OpenBookmark"] boolValue]: NO;
+	defaultQuitWhenAllWindowsClosed = [prefs objectForKey:@"QuitWhenAllWindowsClosed"]?[[prefs objectForKey:@"QuitWhenAllWindowsClosed"] boolValue]: NO;
 	
 }
 
@@ -132,6 +133,9 @@ static float versionNumber;
 	[prefs setObject: [[iTermDisplayProfileMgr singleInstance] profiles] forKey: @"Displays"];
 	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
 	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+	[prefs setBool:defaultQuitWhenAllWindowsClosed forKey:@"QuitWhenAllWindowsClosed"];
+    [prefs setBool:([checkUpdate state] == NSOnState) forKey:@"SUCheckAtStartup"];
+
 	[prefs synchronize];
 }
 
@@ -159,38 +163,43 @@ static float versionNumber;
     [openBookmark setState: defaultOpenBookmark?NSOnState:NSOffState];
     [refreshRate setIntValue: defaultRefreshRate];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
+	[quitWhenAllWindowsClosed setState: defaultQuitWhenAllWindowsClosed?NSOnState:NSOffState];
+    [checkUpdate setState: [[prefs objectForKey:@"SUCheckAtStartup"] boolValue]];
 	
 	[self showWindow: self];
 
 }
 
-- (IBAction)cancel:(id)sender
-{
-	[[self window] performClose: self];
-	[self readPreferences];
-}
-
-- (IBAction)ok:(id)sender
+- (IBAction)settingChanged:(id)sender
 {    
 
-	defaultWindowStyle = [windowStyle indexOfSelectedItem];
-    defaultTabViewType=[tabPosition indexOfSelectedItem];
-    defaultCopySelection=([selectionCopiesText state]==NSOnState);
-	defaultPasteFromClipboard=([middleButtonPastesFromClipboard state]==NSOnState);
-    defaultHideTab=([hideTab state]==NSOnState);
-    defaultPromptOnClose = ([promptOnClose state] == NSOnState);
-    defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
-	defaultEnableBonjour = ([enableBonjour state] == NSOnState);
-	defaultEnableGrowl = ([enableGrowl state] == NSOnState);
-	defaultCmdSelection = ([cmdSelection state] == NSOnState);
-	defaultMaxVertically = ([maxVertically state] == NSOnState);
-	defaultUseCompactLabel = ([useCompactLabel state] == NSOnState);
-	defaultOpenBookmark = ([openBookmark state] == NSOnState);
-	defaultRefreshRate = [refreshRate intValue];
-    [defaultWordChars release];
-	defaultWordChars = [[wordChars stringValue] retain];
-
-    [[self window] performClose: self];
+    if (sender == windowStyle || 
+        sender == tabPosition ||
+        sender == hideTab ||
+        sender == useCompactLabel)
+    {
+        defaultWindowStyle = [windowStyle indexOfSelectedItem];
+        defaultTabViewType=[tabPosition indexOfSelectedItem];
+        defaultUseCompactLabel = ([useCompactLabel state] == NSOnState);
+        defaultHideTab=([hideTab state]==NSOnState);
+        [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermRefreshTerminal" object: nil userInfo: nil];    
+    }
+    else
+    {
+        defaultCopySelection=([selectionCopiesText state]==NSOnState);
+        defaultPasteFromClipboard=([middleButtonPastesFromClipboard state]==NSOnState);
+        defaultPromptOnClose = ([promptOnClose state] == NSOnState);
+        defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
+        defaultEnableBonjour = ([enableBonjour state] == NSOnState);
+        defaultEnableGrowl = ([enableGrowl state] == NSOnState);
+        defaultCmdSelection = ([cmdSelection state] == NSOnState);
+        defaultMaxVertically = ([maxVertically state] == NSOnState);
+        defaultOpenBookmark = ([openBookmark state] == NSOnState);
+        defaultRefreshRate = [refreshRate intValue];
+        [defaultWordChars release];
+        defaultWordChars = [[wordChars stringValue] retain];
+        defaultQuitWhenAllWindowsClosed = ([quitWhenAllWindowsClosed state] == NSOnState);
+    }
 }
 
 // NSWindow delegate
@@ -203,7 +212,6 @@ static float versionNumber;
 - (void)windowWillClose:(NSNotification *)aNotification
 {
 	[self savePreferences];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermRefreshTerminal" object: nil userInfo: nil];    
 }
 
 
@@ -302,9 +310,9 @@ static float versionNumber;
 	return (defaultWordChars);
 }
 
-- (void) showProfileWindow
+- (BOOL) quitWhenAllWindowsClosed
 {
-    //[profileWindow show];
+    return defaultQuitWhenAllWindowsClosed;
 }
 
 // The following are preferences with no UI, but accessible via "defaults read/write"

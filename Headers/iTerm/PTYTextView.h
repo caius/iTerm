@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.57 2006-10-02 22:57:40 yfabian Exp $
+// $Id: PTYTextView.h,v 1.58 2006-10-17 03:04:59 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -34,6 +34,7 @@
 #include <sys/time.h>
 
 #define MARGIN  5
+#define VMARGIN 50
 
 @class VT100Screen;
 

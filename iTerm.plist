@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.9.1-alpha1014</string>
+	<string>0.9.1.1016</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>iTerm Help</string>
 	<key>CFBundleHelpBookName</key>
@@ -23,11 +23,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.9.1-alpha1014</string>
+	<string>0.9.1.1016</string>
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.1-alpha1014</string>
+	<string>0.9.1.1016</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
 	<key>NSExtensions</key>
@@ -40,5 +40,7 @@
 	<string>iTerm</string>
 	<key>SmartCrashReports_EmailTicket</key>
 	<string>SCR-8B63DF54C9</string>
+    <key>SUFeedURL</key> 
+    <string>http://iterm.sourceforge.net/appcast.xml</string>
 </dict>
 </plist>

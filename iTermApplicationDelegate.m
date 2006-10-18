@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.36 2006-10-18 02:07:11 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.37 2006-10-18 02:19:50 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -107,8 +107,6 @@ static BOOL usingAutoLaunchScript = NO;
 {
     id prefs = [NSUserDefaults standardUserDefaults];
     NSString *version = [prefs objectForKey: @"Last Updated Version"];
-    
-    NSLog(version);
     
     if (!version || ![version isEqualToString:[prefs objectForKey: @"iTerm Version"]]) {
         [prefs setObject:[prefs objectForKey: @"iTerm Version"] forKey:@"Last Updated Version"];

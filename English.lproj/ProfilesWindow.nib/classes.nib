@@ -5,7 +5,6 @@
             ACTIONS = {
                 displayBackgroundImage = id; 
                 displayChangeColor = id; 
-                displayProfileChanged = id; 
                 displaySelectFont = id; 
                 displaySelectNAFont = id; 
                 displaySetAntiAlias = id; 
@@ -17,14 +16,13 @@
                 kbEntryDelete = id; 
                 kbEntrySelectorChanged = id; 
                 kbOptionKeyChanged = id; 
-                kbProfileChanged = id; 
                 profileAdd = id; 
                 profileAddCancel = id; 
                 profileAddConfirm = id; 
                 profileDelete = id; 
                 profileDeleteCancel = id; 
                 profileDeleteConfirm = id; 
-                terminalProfileChanged = id; 
+                profileDuplicate = id; 
                 terminalSetBlink = id; 
                 terminalSetCloseOnSessionEnd = id; 
                 terminalSetDoubleWidth = id; 
@@ -93,6 +91,7 @@
                 kbProfileDeleteButton = NSButton; 
                 kbProfileSelector = NSPopUpButton; 
                 profileName = NSTextField; 
+                profileOutline = id; 
                 profileTabView = NSTabView; 
                 terminalBlink = NSButton; 
                 terminalCloseOnSessionEnd = NSButton; 

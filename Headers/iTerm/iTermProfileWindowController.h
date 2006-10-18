@@ -41,9 +41,9 @@
 	IBOutlet NSPanel *addProfile;
 	IBOutlet NSPanel *deleteProfile;
 	IBOutlet NSTextField *profileName;
+    IBOutlet NSOutlineView *profileOutline;
 
 	// Keybinding profile UI
-	IBOutlet NSPopUpButton *kbProfileSelector;
 	IBOutlet NSPanel *addKBEntry;
 	IBOutlet NSPopUpButton *kbEntryKey;
 	IBOutlet NSButton *kbEntryKeyModifierOption;
@@ -60,7 +60,6 @@
 	
 	// Display profile UI
 	IBOutlet NSButton *displayProfileDeleteButton;
-	IBOutlet NSPopUpButton *displayProfileSelector;
 	IBOutlet NSColorWell *displayFGColor;
 	IBOutlet NSColorWell *displayBGColor;
 	IBOutlet NSColorWell *displayBoldColor;
@@ -100,7 +99,6 @@
 	BOOL changingNAFont;
 	
 	// Terminal Profile UI
-	IBOutlet NSPopUpButton *terminalProfileSelector;
 	IBOutlet NSButton *terminalProfileDeleteButton;
 	IBOutlet NSComboBox *terminalType;
 	IBOutlet NSPopUpButton *terminalEncoding;
@@ -114,7 +112,8 @@
 	IBOutlet NSButton *terminalSendIdleChar;
 	IBOutlet NSTextField *terminalIdleChar;
 	IBOutlet NSButton *xtermMouseReporting;
-    
+
+    NSString *selectedProfile;
 }
 
 + (iTermProfileWindowController*)sharedInstance;
@@ -127,11 +126,11 @@
 - (IBAction) profileAddCancel: (id) sender;
 - (IBAction) profileDeleteConfirm: (id) sender;
 - (IBAction) profileDeleteCancel: (id) sender;
-
+- (IBAction) profileDuplicate: (id) sender;
 
 // Keybinding profile UI
 - (void) kbOptionKeyChanged: (id) sender;
-- (IBAction) kbProfileChanged: (id) sender;
+- (void) kbProfileChangedTo: (NSString *) profile;
 - (IBAction) kbEntryAdd: (id) sender;
 - (IBAction) kbEntryAddConfirm: (id) sender;
 - (IBAction) kbEntryAddCancel: (id) sender;
@@ -139,7 +138,7 @@
 - (IBAction) kbEntrySelectorChanged: (id) sender;
 
 // Display profile UI
-- (IBAction) displayProfileChanged: (id) sender;
+- (void) displayProfileChangedTo: (NSString *) profile;
 - (IBAction) displaySetAntiAlias: (id) sender;
 - (IBAction) displaySetDisableBold: (id) sender;
 - (IBAction) displayChangeColor: (id) sender;
@@ -151,7 +150,7 @@
 - (void)controlTextDidChange:(NSNotification *)aNotification;
 
 // Terminal profile UI
-- (IBAction) terminalProfileChanged: (id) sender;
+- (void) terminalProfileChangedTo: (NSString *) profile;
 - (IBAction) terminalSetType: (id) sender;
 - (IBAction) terminalSetEncoding: (id) sender;
 - (IBAction) terminalSetSilenceBell: (id) sender;
@@ -163,6 +162,7 @@
 - (IBAction) terminalSetSendIdleChar: (id) sender;
 - (IBAction) terminalSetXtermMouseReporting: (id) sender;
 
+- (void)selectProfile:(NSString *)profile withInCategory: (int) category;
 
 @end
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.35 2006-10-17 03:04:55 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.36 2006-10-18 02:07:11 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -105,6 +105,16 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    id prefs = [NSUserDefaults standardUserDefaults];
+    NSString *version = [prefs objectForKey: @"Last Updated Version"];
+    
+    NSLog(version);
+    
+    if (!version || ![version isEqualToString:[prefs objectForKey: @"iTerm Version"]]) {
+        [prefs setObject:[prefs objectForKey: @"iTerm Version"] forKey:@"Last Updated Version"];
+        [self showAbout:nil];
+    }
+    
 	[self buildAddressBookMenu:nil];
 	
 	// register for services
@@ -351,7 +361,7 @@ static BOOL usingAutoLaunchScript = NO;
     author1 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"fabian",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
     
     // Spacer...
-    tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
+    // tmpAttrString = [[[NSMutableAttributedString alloc] initWithString: @", "] autorelease];
     
     // Second Author
     author2URL = [NSURL URLWithString: @"mailto:ujwal@setlurgroup.com"];
@@ -382,15 +392,15 @@ static BOOL usingAutoLaunchScript = NO;
     NSMutableString *versionString = [[NSMutableString alloc] initWithString: (NSString *)[myDict objectForKey:@"CFBundleVersion"]];
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
-    [tmpAttrString initWithString: versionString];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: versionString] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [tmpAttrString initWithString: @"\n\n"];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n\n"] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: author1];
-    tmpAttrString = [[NSMutableAttributedString alloc] initWithString: @", "];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: @", "] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: author2];
-    [tmpAttrString initWithString: @"\n"];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n"] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: webSite];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
@@ -403,7 +413,6 @@ static BOOL usingAutoLaunchScript = NO;
     [author1 release];
     [author2 release];
     [webSite release];
-    [tmpAttrString release];
     [versionString release];
 }
 

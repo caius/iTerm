@@ -1,3 +1,8 @@
+2006-10-17  fabian
+
+    * Changed the UI for the profile window.
+    * Made iTerm to display the "About" window once it's updated.
+    
 2006-10-16  fabian
 
     * Changes in Prefrence panel are now immediately effective. OK&Cancel buttons are gone.

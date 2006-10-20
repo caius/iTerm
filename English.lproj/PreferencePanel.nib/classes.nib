@@ -2,7 +2,7 @@
     IBClasses = (
         {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {
-            ACTIONS = {settingChanged = id; }; 
+            ACTIONS = {connectURL = id; settingChanged = id; }; 
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
             OUTLETS = {
@@ -20,6 +20,8 @@
                 refreshRate = NSSlider; 
                 selectionCopiesText = NSButton; 
                 tabPosition = NSPopUpButton; 
+                urlHandlerOutline = NSOutlineView; 
+                urlTable = NSTableView; 
                 useCompactLabel = NSButton; 
                 windowStyle = NSPopUpButton; 
                 wordChars = NSTextField; 

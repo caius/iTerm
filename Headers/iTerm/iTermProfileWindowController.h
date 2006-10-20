@@ -36,13 +36,16 @@
     NSUserDefaults *_prefs;
 
 	IBOutlet NSTabView *profileTabView;
-	
-	// Profile editing
-	IBOutlet NSPanel *addProfile;
-	IBOutlet NSPanel *deleteProfile;
-	IBOutlet NSTextField *profileName;
-    IBOutlet NSOutlineView *profileOutline;
+	IBOutlet NSOutlineView *profileOutline;
 
+	// Add Profile panel
+	IBOutlet NSPanel *addProfile;
+	IBOutlet NSPopUpButton *addProfileCategory;
+	IBOutlet NSTextField *profileName;
+    
+    IBOutlet NSButton *deleteButton;
+    IBOutlet NSButton *duplicateButton;
+    
 	// Keybinding profile UI
 	IBOutlet NSPanel *addKBEntry;
 	IBOutlet NSPopUpButton *kbEntryKey;
@@ -54,12 +57,10 @@
 	IBOutlet NSTextField *kbEntryText;
 	IBOutlet NSTextField *kbEntryKeyCode;
 	IBOutlet NSTableView *kbEntryTableView;
-	IBOutlet NSButton *kbProfileDeleteButton;
 	IBOutlet NSButton *kbEntryDeleteButton;
 	IBOutlet NSMatrix *kbOptionKey;
 	
 	// Display profile UI
-	IBOutlet NSButton *displayProfileDeleteButton;
 	IBOutlet NSColorWell *displayFGColor;
 	IBOutlet NSColorWell *displayBGColor;
 	IBOutlet NSColorWell *displayBoldColor;
@@ -99,7 +100,6 @@
 	BOOL changingNAFont;
 	
 	// Terminal Profile UI
-	IBOutlet NSButton *terminalProfileDeleteButton;
 	IBOutlet NSComboBox *terminalType;
 	IBOutlet NSPopUpButton *terminalEncoding;
 	IBOutlet NSTextField *terminalScrollback;
@@ -124,8 +124,6 @@
 - (IBAction) profileDelete: (id) sender;
 - (IBAction) profileAddConfirm: (id) sender;
 - (IBAction) profileAddCancel: (id) sender;
-- (IBAction) profileDeleteConfirm: (id) sender;
-- (IBAction) profileDeleteCancel: (id) sender;
 - (IBAction) profileDuplicate: (id) sender;
 
 // Keybinding profile UI

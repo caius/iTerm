@@ -7,10 +7,10 @@ www.andymatuschak.org/xml-namespaces/sparkle">
         <description>Most recent changes with links to updates.</description> 
         <language>en</language> 
         <item> 
-            <title>Version 0.9.1.1017</title> 
+            <title>Version 0.9.1.1019</title> 
             <description>http://iterm.sourceforge.net/Changelog</description> 
             <pubDate>Tue, 17 Oct 2006 21:20:11 +0000</pubDate> 
-            <enclosure url="http://iterm.sourceforge.net/iterm-latest-cvs_0.9.1.1017.zip" length="1518048" 
+            <enclosure url="http://iterm.sourceforge.net/iTerm-latest-cvs_0.9.1.1019.zip" length="1493170" 
 type="application/octet-stream"/> 
         </item> 
     </channel> 

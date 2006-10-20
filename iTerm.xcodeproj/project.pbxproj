@@ -158,6 +158,8 @@
 		F6B077110ADDB7D400F4BB37 /* iTermBookmarkController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */; };
 		F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */; };
 		F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */; };
+		F6CDC4E20AE6D090005E7D4F /* edit.png in Resources */ = {isa = PBXBuildFile; fileRef = F6CDC4E10AE6D090005E7D4F /* edit.png */; };
+		F6CDC4E70AE6D3E2005E7D4F /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = F6CDC4E60AE6D3E2005E7D4F /* folder.png */; };
 		F6E2DEDA0AE2F67200D20B3B /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6E2DED70AE2F67200D20B3B /* Sparkle.framework */; };
 		F6E2DF1E0AE2F72700D20B3B /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F6E2DED70AE2F67200D20B3B /* Sparkle.framework */; };
 		F6E2DF680AE300AF00D20B3B /* appcast.xml in Resources */ = {isa = PBXBuildFile; fileRef = F6E2DF670AE300AF00D20B3B /* appcast.xml */; };
@@ -261,18 +263,8 @@
 		20E74F4804E9089700000106 /* ITAddressBookMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITAddressBookMgr.h; sourceTree = "<group>"; };
 		20E74F4904E9089700000106 /* ITAddressBookMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITAddressBookMgr.m; sourceTree = "<group>"; };
 		870BCD84047070AC0073D10E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/FindPanel.nib; sourceTree = "<group>"; };
-		870BCD86047071180073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/FindPanel.nib; sourceTree = "<group>"; };
-		870BCD87047071260073D10E /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/FindPanel.nib; sourceTree = "<group>"; };
-		870BCD88047071320073D10E /* Korean */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Korean; path = Korean.lproj/FindPanel.nib; sourceTree = "<group>"; };
-		870BCD890470713F0073D10E /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/FindPanel.nib; sourceTree = "<group>"; };
-		870BCD8A0470714A0073D10E /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/FindPanel.nib; sourceTree = "<group>"; };
 		870EAAB604325A880073D10E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
 		8723EDED04EAADBB0073D10E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
-		8723EDEF04EABBB40073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
-		8723EDF004EABD030073D10E /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
-		8723EDF104EABE1C0073D10E /* Korean */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Korean; path = Korean.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
-		8723EDF204EABF990073D10E /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
-		8723EDF304EAD4A00073D10E /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
 		872EBC5304E42E320073D10E /* NSStringITerm.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NSStringITerm.h; path = Headers/iTerm/NSStringITerm.h; sourceTree = "<group>"; };
 		872EBC5404E42E320073D10E /* PTYTextView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYTextView.h; path = Headers/iTerm/PTYTextView.h; sourceTree = "<group>"; };
 		872EBC5704E42E320073D10E /* PTYTabView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYTabView.h; path = Headers/iTerm/PTYTabView.h; sourceTree = "<group>"; };
@@ -290,16 +282,9 @@
 		872EBC6C04E42E320073D10E /* PseudoTerminal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PseudoTerminal.h; path = Headers/iTerm/PseudoTerminal.h; sourceTree = "<group>"; };
 		874206430564168A00CFC3F1 /* iTerm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = iTerm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8742065A0564169600CFC3F1 /* iTerm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iTerm.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		876DBBC1043277AF0073D10E /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
-		876DBBC304327CC90073D10E /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
-		876DBBC5043281250073D10E /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
-		876DBBC7043284990073D10E /* Korean */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Korean; path = Korean.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
 		8786A96E052CEC220073D10E /* script.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = script.png; path = images/script.png; sourceTree = "<group>"; };
 		8787B0D805FD160F00901149 /* iTermProfileWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermProfileWindowController.m; sourceTree = "<group>"; };
 		8787B13F05FD191400901149 /* iTermProfileWindowController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTermProfileWindowController.h; path = Headers/iTerm/iTermProfileWindowController.h; sourceTree = "<group>"; };
-		87898DDD0444F9070073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		87898DDF0444F93C0073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
-		87898DE00444F94E0073D10E /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = French.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
 		DD02572409CB9398008F320C /* PSMAquaTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMAquaTabStyle.h; sourceTree = "<group>"; };
 		DD02572509CB9398008F320C /* PSMAquaTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMAquaTabStyle.m; sourceTree = "<group>"; };
 		DD02572609CB9398008F320C /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
@@ -353,7 +338,6 @@
 		DDDB7AD605D773B400E197C2 /* iTermKeyBindingMgr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTermKeyBindingMgr.h; path = Headers/iTerm/iTermKeyBindingMgr.h; sourceTree = "<group>"; };
 		DDF0FD63062916F70080EF74 /* iTermApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermApplication.h; sourceTree = "<group>"; };
 		DDF0FD64062916F70080EF74 /* iTermApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermApplication.m; sourceTree = "<group>"; };
-		DDF28988047764E300A8A065 /* Korean */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = Korean; path = Korean.lproj/iTerm.strings; sourceTree = "<group>"; };
 		E813FB7E0297522703A80106 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		E813FB87029754BB03A80106 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
 		E8A66F030272453F03A80106 /* iTermController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = iTermController.m; sourceTree = "<group>"; };
@@ -369,12 +353,6 @@
 		F52ED8DD037F0A7D01A8A066 /* PTYSession.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYSession.m; sourceTree = "<group>"; };
 		F56B230B03A1B36701A8A066 /* PTYWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYWindow.m; sourceTree = "<group>"; };
 		F5E533B403B2959201A8A066 /* PTYTabView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYTabView.m; sourceTree = "<group>"; };
-		F61DBB350557A72A005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = German.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		F61DBB360557A754005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = German.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
-		F61DBB380557A788005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = German.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
-		F61DBB390557A7A4005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = German.lproj/FindPanel.nib; sourceTree = "<group>"; };
-		F61DBB3A0557A7BA005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = German.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
-		F61DBB3B0557A7D2005F354A /* German */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = German; path = German.lproj/iTerm.strings; sourceTree = "<group>"; };
 		F62D15EE0AA64B2F0075A287 /* PSMAdiumTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMAdiumTabStyle.h; sourceTree = "<group>"; };
 		F62D15EF0AA64B2F0075A287 /* PSMAdiumTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMAdiumTabStyle.m; sourceTree = "<group>"; };
 		F62D15F00AA64B2F0075A287 /* PSMTabDragWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMTabDragWindow.h; sourceTree = "<group>"; };
@@ -427,6 +405,8 @@
 		F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermBookmarkController.m; sourceTree = "<group>"; };
 		F6B0788F0ADDF1BE00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Bookmarks.nib; sourceTree = "<group>"; };
 		F6B07D980ADE1B9B00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/ProfilesWindow.nib; sourceTree = "<group>"; };
+		F6CDC4E10AE6D090005E7D4F /* edit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = edit.png; path = images/edit.png; sourceTree = "<group>"; };
+		F6CDC4E60AE6D3E2005E7D4F /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = folder.png; path = images/folder.png; sourceTree = "<group>"; };
 		F6E2DED70AE2F67200D20B3B /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		F6E2DF670AE300AF00D20B3B /* appcast.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = appcast.xml; path = website/appcast.xml; sourceTree = "<group>"; };
 		F6E708B50A9D0EA400D0C4EF /* NSBezierPath_AMShading.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = NSBezierPath_AMShading.h; sourceTree = "<group>"; };
@@ -438,28 +418,16 @@
 		F6FAFD99050E90C300EA4EE7 /* contrib.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contrib.png; path = website/contrib.png; sourceTree = "<group>"; };
 		F6FAFD9A050E90C300EA4EE7 /* iTerm-orig.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iTerm-orig.png"; path = "website/iTerm-orig.png"; sourceTree = "<group>"; };
 		FB019DE103670C6501F955DB /* PreferencePanel.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PreferencePanel.m; sourceTree = "<group>"; };
-		FB01DCDE04433DFB01F955DB /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = French.lproj/iTerm.strings; sourceTree = "<group>"; };
 		FB094A14033D58AE01F955DB /* addressbook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = addressbook.png; path = images/addressbook.png; sourceTree = "<group>"; };
 		FB094A16033D58B601F955DB /* close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = close.png; path = images/close.png; sourceTree = "<group>"; };
 		FB094A18033D58BD01F955DB /* new.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = new.png; path = images/new.png; sourceTree = "<group>"; };
 		FB151F2603648AB401F955DB /* iTerm.strings */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = iTerm.strings; path = English.lproj/iTerm.strings; sourceTree = "<group>"; };
 		FB47BCC403686CAC01F955DB /* exec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = exec.png; path = images/exec.png; sourceTree = "<group>"; };
 		FB754C5F036EFC5301F955DB /* config.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = config.png; path = images/config.png; sourceTree = "<group>"; };
-		FB80352E03CA060201F955DB /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		FB80352F03CA060A01F955DB /* Japanese */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Japanese; path = Japanese.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
-		FB80353003CA062601F955DB /* Japanese */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = Japanese; path = Japanese.lproj/iTerm.strings; sourceTree = "<group>"; };
 		FB896717038D935801F955DB /* newwin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = newwin.png; path = images/newwin.png; sourceTree = "<group>"; };
 		FBB2EBCD040AC7C201F955DB /* important.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = important.png; path = images/important.png; sourceTree = "<group>"; };
-		FBBB8B47039D9E1701F955DB /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/iTerm.strings; sourceTree = "<group>"; };
-		FBBB8B48039D9E1F01F955DB /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/iTerm.strings; sourceTree = "<group>"; };
-		FBBB8B49039D9E6501F955DB /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		FBBB8B4A039D9E6D01F955DB /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		FBBB8B4B039D9E7E01F955DB /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
-		FBBB8B4C039D9E8501F955DB /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_TW; path = zh_TW.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
 		FBBB8B60039FC04E01F955DB /* iTerm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iTerm.png; path = images/iTerm.png; sourceTree = "<group>"; };
 		FBD0AD0A0337A5B701F955DB /* PseudoTerminal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PseudoTerminal.m; sourceTree = "<group>"; };
-		FBDF6A55042795CE01F955DB /* Korean */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Korean; path = Korean.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		FBDF6A56042795EB01F955DB /* Korean */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = Korean; path = Korean.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
 		FBDF6B8F042A6BD801F955DB /* history.shtml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.other; name = history.shtml; path = website/history.shtml; sourceTree = "<group>"; };
 		FBDF6B90042A6BD801F955DB /* index.shtml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.other; name = index.shtml; path = website/index.shtml; sourceTree = "<group>"; };
 		FBDF6B91042A6BD801F955DB /* install.shtml */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.html.other; name = install.shtml; path = website/install.shtml; sourceTree = "<group>"; };
@@ -620,7 +588,9 @@
 				FB094A14033D58AE01F955DB /* addressbook.png */,
 				FB094A16033D58B601F955DB /* close.png */,
 				FB754C5F036EFC5301F955DB /* config.png */,
+				F6CDC4E10AE6D090005E7D4F /* edit.png */,
 				FB47BCC403686CAC01F955DB /* exec.png */,
+				F6CDC4E60AE6D3E2005E7D4F /* folder.png */,
 				FBB2EBCD040AC7C201F955DB /* important.png */,
 				FB094A18033D58BD01F955DB /* new.png */,
 				FB896717038D935801F955DB /* newwin.png */,
@@ -1161,6 +1131,8 @@
 				8742064D0564169600CFC3F1 /* iTerm.icns in Resources */,
 				DD57633705653C5F00F1905E /* iTerm.plist in Resources */,
 				F6E2DF680AE300AF00D20B3B /* appcast.xml in Resources */,
+				F6CDC4E20AE6D090005E7D4F /* edit.png in Resources */,
+				F6CDC4E70AE6D3E2005E7D4F /* folder.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1283,12 +1255,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				870BCD84047070AC0073D10E /* English */,
-				870BCD86047071180073D10E /* French */,
-				870BCD87047071260073D10E /* Japanese */,
-				870BCD88047071320073D10E /* Korean */,
-				870BCD890470713F0073D10E /* zh_CN */,
-				870BCD8A0470714A0073D10E /* zh_TW */,
-				F61DBB390557A7A4005F354A /* German */,
 			);
 			name = FindPanel.nib;
 			sourceTree = "<group>";
@@ -1297,12 +1263,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				870EAAB604325A880073D10E /* English */,
-				876DBBC1043277AF0073D10E /* zh_CN */,
-				876DBBC304327CC90073D10E /* zh_TW */,
-				876DBBC5043281250073D10E /* Japanese */,
-				876DBBC7043284990073D10E /* Korean */,
-				87898DDF0444F93C0073D10E /* French */,
-				F61DBB380557A788005F354A /* German */,
 			);
 			name = PreferencePanel.nib;
 			sourceTree = "<group>";
@@ -1311,12 +1271,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				8723EDED04EAADBB0073D10E /* English */,
-				8723EDEF04EABBB40073D10E /* French */,
-				8723EDF004EABD030073D10E /* Japanese */,
-				8723EDF104EABE1C0073D10E /* Korean */,
-				8723EDF204EABF990073D10E /* zh_CN */,
-				8723EDF304EAD4A00073D10E /* zh_TW */,
-				F61DBB3A0557A7BA005F354A /* German */,
 			);
 			name = ITConfigPanel.nib;
 			sourceTree = "<group>";
@@ -1341,12 +1295,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				E813FB7E0297522703A80106 /* English */,
-				FBBB8B49039D9E6501F955DB /* zh_CN */,
-				FBBB8B4A039D9E6D01F955DB /* zh_TW */,
-				FB80352E03CA060201F955DB /* Japanese */,
-				FBDF6A55042795CE01F955DB /* Korean */,
-				87898DDD0444F9070073D10E /* French */,
-				F61DBB350557A72A005F354A /* German */,
 			);
 			name = MainMenu.nib;
 			sourceTree = "<group>";
@@ -1355,12 +1303,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				E813FB87029754BB03A80106 /* English */,
-				FBBB8B4B039D9E7E01F955DB /* zh_CN */,
-				FBBB8B4C039D9E8501F955DB /* zh_TW */,
-				FB80352F03CA060A01F955DB /* Japanese */,
-				FBDF6A56042795EB01F955DB /* Korean */,
-				87898DE00444F94E0073D10E /* French */,
-				F61DBB360557A754005F354A /* German */,
 			);
 			name = PseudoTerminal.nib;
 			sourceTree = "<group>";
@@ -1385,12 +1327,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				FB151F2603648AB401F955DB /* iTerm.strings */,
-				FBBB8B47039D9E1701F955DB /* zh_CN */,
-				FBBB8B48039D9E1F01F955DB /* zh_TW */,
-				FB80353003CA062601F955DB /* Japanese */,
-				DDF28988047764E300A8A065 /* Korean */,
-				FB01DCDE04433DFB01F955DB /* French */,
-				F61DBB3B0557A7D2005F354A /* German */,
 			);
 			name = iTerm.strings;
 			sourceTree = "<group>";

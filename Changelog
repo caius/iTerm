@@ -1,7 +1,17 @@
+2006-10-19	fabian
+
+	* Added support for handling URLs.
+	* Removed outdated resource localization files.
+	
+2006-10-18  fabian
+
+    * Further tweaking of the Profiles window and Bookmarks window UI.
+    
 2006-10-17  fabian
 
     * Changed the UI for the profile window.
     * Made iTerm to display the "About" window once it's updated.
+    * Changed the Delete Profile and Add Profile sheet window.
     
 2006-10-16  fabian
 

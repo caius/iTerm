@@ -78,6 +78,9 @@
 - (NSDictionary *) defaultBookmarkData;
 - (NSDictionary *) dataForBookmarkWithName: (NSString *) bookmarkName;
 
+- (int) indexForBookmark: (NSDictionary *)bookmark;
+- (NSDictionary *) bookmarkForIndex: (int)index;
+
 @end
 
 @interface ITAddressBookMgr (Private)

@@ -38,6 +38,8 @@
     
 	IBOutlet NSPopUpButton *windowStyle;
 	IBOutlet NSPopUpButton *tabPosition;
+    IBOutlet NSOutlineView *urlHandlerOutline;
+	IBOutlet NSTableView *urlTable;
     IBOutlet NSButton *selectionCopiesText;
 	IBOutlet NSButton *middleButtonPastesFromClipboard;
     IBOutlet id hideTab;
@@ -56,7 +58,6 @@
     
     NSUserDefaults *prefs;
 
-	
 	int defaultWindowStyle;
     BOOL defaultCopySelection;
 	BOOL defaultPasteFromClipboard;
@@ -73,6 +74,10 @@
     int  defaultRefreshRate;
 	NSString *defaultWordChars;
     BOOL defaultQuitWhenAllWindowsClosed;
+	
+	// url handler stuff
+	NSMutableArray *urlTypes;
+	NSMutableDictionary *urlHandlers;
 }
 
 
@@ -82,6 +87,7 @@
 - (void) savePreferences;
 
 - (IBAction)settingChanged:(id)sender;
+- (IBAction)connectURL:(id)sender;
 
 - (void)run;
 
@@ -105,6 +111,7 @@
 - (int)  refreshRate;
 - (NSString *) wordChars;
 - (BOOL) quitWhenAllWindowsClosed;
+- (NSDictionary *) handlerBookmarkForURL:(NSString *)url;
 
 // Hidden preferences
 - (BOOL) useUnevenTabs;

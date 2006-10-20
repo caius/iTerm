@@ -170,6 +170,14 @@
 "%@'s display profile %@ and terminal profile %@ have been updated"="%@'s display profile %@ and terminal profile %@ have been updated";
 "All bookmarks associated with this profile are affected"="All bookmarks associated with this profile are affected";
 
+/* Profiles */
+"Delete Profile" = "Delete Profile";
+"Are you sure that you want to delete %@? There is no way to undo this action." = "Are you sure that you want to delete %@? There is no way to undo this action.";
+"Delete" = "Delete";
+"Cancel" = "Cancel";
+"Untitled" = "Untitled";
+"%@ copy" = "%@ copy";
+
 /* Bookmarks */
 "Show Bookmark Drawer" = "Show Bookmark Drawer";
 "Hide Bookmark Drawer"="Hide Bookmark Drawer";

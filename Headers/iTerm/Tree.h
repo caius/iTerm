@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.h,v 1.2 2004-03-18 19:50:43 ujwal Exp $
+// $Id: Tree.h,v 1.3 2006-10-20 05:40:08 yfabian Exp $
 //
 /*
  **  Tree.h
@@ -83,6 +83,9 @@
 
 - (void)recursiveSortChildren;
     // sort children using the compare: method in TreeNodeData
+
+- (int) indexForNode: (id) node;
+- (id) nodeForIndex: (int) index;
 
 	// Returns the minimum nodes from 'allNodes' required to cover the nodes in 'allNodes'.
 	// This methods returns an array containing nodes from 'allNodes' such that no node in

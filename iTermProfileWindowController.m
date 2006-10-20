@@ -33,7 +33,6 @@
 @implementation iTermProfileWindowController
 
 static NSArray *profileCategories;
-static int categoryChosen;
 
 + (iTermProfileWindowController*)sharedInstance
 {
@@ -45,7 +44,6 @@ static int categoryChosen;
 	}
 
     profileCategories = [[NSArray arrayWithObjects:[NSNumber numberWithInt: 0],[NSNumber numberWithInt: 1],[NSNumber numberWithInt: 2],nil] retain];
-    categoryChosen = -1;
     return shared;
 }
 
@@ -77,14 +75,12 @@ static int categoryChosen;
 	[[iTermKeyBindingMgr singleInstance] setProfiles: keybindingProfiles];
 	[[iTermDisplayProfileMgr singleInstance] setProfiles: displayProfiles];
 	[[iTermTerminalProfileMgr singleInstance] setProfiles: terminalProfiles];
-    
+
     selectedProfile = nil;
     return self;
 }    
 - (IBAction) showProfilesWindow: (id) sender
 {
-	NSEnumerator *anEnumerator;
-	NSNumber *anEncoding;
 	
     // load nib if we haven't already
     if([self window] == nil)
@@ -93,9 +89,11 @@ static int categoryChosen;
 	[[self window] setDelegate: self]; // also forces window to load
     
 	[self tableViewSelectionDidChange: nil];	
-	
-	
+ 
 	// add list of encodings
+	NSEnumerator *anEnumerator;
+	NSNumber *anEncoding;
+
 	[terminalEncoding removeAllItems];
 	anEnumerator = [[[iTermController sharedInstance] sortedEncodingList] objectEnumerator];
 	while((anEncoding = [anEnumerator nextObject]) != NULL)
@@ -103,7 +101,12 @@ static int categoryChosen;
 		[terminalEncoding addItemWithTitle: [NSString localizedNameOfStringEncoding: [anEncoding unsignedIntValue]]];
 		[[terminalEncoding lastItem] setTag: [anEncoding unsignedIntValue]];
 	}
-	
+    
+ 	
+	[profileOutline deselectAll:nil];
+	[deleteButton setEnabled:NO];
+    [duplicateButton setEnabled:NO];
+
 	[self showWindow: self];
 }
 
@@ -129,8 +132,8 @@ static int categoryChosen;
 // Profile editing
 - (IBAction) profileAdd: (id) sender
 {
-	categoryChosen = [sender tag] % 3;
-    if ([sender tag]>2 && selectedProfile == nil) {
+    // Check if duplicate button is hit, and there is a profile chosen
+	if ([sender tag] == 1 && selectedProfile == nil) {
         return;
     }
         
@@ -141,18 +144,29 @@ static int categoryChosen;
 		  contextInfo: nil];        
     
     // duplicate button?
-    if ([sender tag]>2) {
-        [profileName setStringValue: [NSString stringWithFormat:@"%@ copy", selectedProfile]];
+    if ([sender tag]) {
+        [profileName setStringValue: [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"%@ copy",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles"),
+            selectedProfile]];
+        [addProfileCategory selectItemAtIndex: [profileTabView indexOfTabViewItem:[profileTabView selectedTabViewItem]]];
+        [addProfileCategory setEnabled: NO];
     }
+    else {
+        [profileName setStringValue: NSLocalizedStringFromTableInBundle(@"Untitled",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles")];
+        [addProfileCategory setEnabled: YES];
+    }
+        
 }
 
 - (IBAction) profileDelete: (id) sender
 {
-	[NSApp beginSheet: deleteProfile
-       modalForWindow: [self window]
-        modalDelegate: self
-       didEndSelector: @selector(_deleteProfileSheetDidEnd:returnCode:contextInfo:)
-          contextInfo: nil];        
+    NSBeginAlertSheet(NSLocalizedStringFromTableInBundle(@"Delete Profile",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles"),
+                      NSLocalizedStringFromTableInBundle(@"Delete",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles"),
+                      NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles"),
+                      nil, [self window], self, 
+                      @selector(_deleteProfileSheetDidEnd:returnCode:contextInfo:), 
+                      NULL, NULL, 
+                      [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Are you sure that you want to delete %@? There is no way to undo this action.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles"),
+                          selectedProfile]);
 }
 
 - (IBAction) profileAddConfirm: (id) sender
@@ -160,6 +174,8 @@ static int categoryChosen;
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	id profileMgr;
 	
+    int categoryChosen = [addProfileCategory indexOfSelectedItem];
+
 	if(categoryChosen == KEYBOARD_PROFILE_TAB)
 	{
 		profileMgr = [iTermKeyBindingMgr singleInstance];
@@ -179,12 +195,15 @@ static int categoryChosen;
     if([[profileName stringValue] length]  <= 0 || [[profileMgr profiles] objectForKey: [profileName stringValue]] != nil)
     {
         NSBeep();
-        // write some warning
-        NSLog(@"duplicated name");
-        return;
+        // find a non-duplicated name
+        NSString *aString = [NSString stringWithFormat:@"%@ new", [profileName stringValue]];
+        int i = 1;
+        for(; [[profileMgr profiles] objectForKey: aString] != nil; i++)
+            aString = [NSString stringWithFormat:@"%@ new %d", [profileName stringValue], i];
+        [profileName setStringValue: aString];
     }
-    else
-        [NSApp endSheet:addProfile returnCode:NSOKButton];
+
+    [NSApp endSheet:addProfile returnCode:NSOKButton];
 }
 
 - (IBAction) profileAddCancel: (id) sender
@@ -192,18 +211,6 @@ static int categoryChosen;
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 
     [NSApp endSheet:addProfile returnCode:NSCancelButton];
-}
-
-- (IBAction) profileDeleteConfirm: (id) sender
-{
-	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	[NSApp endSheet:deleteProfile returnCode:NSOKButton];
-}
-
-- (IBAction) profileDeleteCancel: (id) sender
-{
-	//NSLog(@"%s", __PRETTY_FUNCTION__);
-	[NSApp endSheet:deleteProfile returnCode:NSCancelButton];
 }
 
 - (IBAction) profileDuplicate: (id) sender
@@ -237,7 +244,7 @@ static int categoryChosen;
                        copyProfile: selectedProfile];
     
     [profileOutline reloadData];
-    [self selectProfile:aString withInCategory: categoryChosen];
+    [self selectProfile:aString withInCategory: selectedTabViewItem];
     
 }
 
@@ -254,7 +261,9 @@ static int categoryChosen;
 {
 	//NSLog(@"%s; %@", __PRETTY_FUNCTION__, sender);
 	
-	[kbProfileDeleteButton setEnabled: ![[iTermKeyBindingMgr singleInstance] isGlobalProfile: selectedKBProfile]];
+	[deleteButton setEnabled: ![[iTermKeyBindingMgr singleInstance] isGlobalProfile: selectedKBProfile]];
+    [duplicateButton setEnabled:YES];
+
     [kbOptionKey selectCellAtRow:0 column:[[iTermKeyBindingMgr singleInstance] optionKeyForProfile: selectedKBProfile]];
 	
 	[kbEntryTableView reloadData];
@@ -508,9 +517,9 @@ static int categoryChosen;
 	[displayRowTextField setStringValue: [NSString stringWithFormat: @"%d",
 		[[iTermDisplayProfileMgr singleInstance] windowRowsForProfile: theProfile]]];
 	
-	[displayProfileDeleteButton setEnabled: ![[iTermDisplayProfileMgr singleInstance] isDefaultProfile: theProfile]];
+	[deleteButton setEnabled: ![[iTermDisplayProfileMgr singleInstance] isDefaultProfile: theProfile]];
+    [duplicateButton setEnabled:YES];
 
-	
 }
 
 - (IBAction) displaySetDisableBold: (id) sender
@@ -660,6 +669,8 @@ static int categoryChosen;
 // Terminal profile UI
 - (void) terminalProfileChangedTo: (NSString *)theProfile
 {
+    //NSLog(@"Terminal Profile changed to: %@", theProfile);
+    
 	[terminalType setStringValue: [[iTermTerminalProfileMgr singleInstance] typeForProfile: theProfile]];
 	[terminalEncoding setTitle: [NSString localizedNameOfStringEncoding:
 		[[iTermTerminalProfileMgr singleInstance] encodingForProfile: theProfile]]];
@@ -676,7 +687,8 @@ static int categoryChosen;
 		[[iTermTerminalProfileMgr singleInstance] idleCharForProfile: theProfile]]];
 	[xtermMouseReporting setState: [[iTermTerminalProfileMgr singleInstance] xtermMouseReportingForProfile: theProfile]];
 	
-	[terminalProfileDeleteButton setEnabled: ![[iTermTerminalProfileMgr singleInstance] isDefaultProfile: theProfile]];
+	[deleteButton setEnabled: ![[iTermTerminalProfileMgr singleInstance] isDefaultProfile: theProfile]];
+    [duplicateButton setEnabled: YES];
 
 }
 
@@ -850,7 +862,60 @@ static int categoryChosen;
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-    return NO;
+    if ([item isKindOfClass:[NSNumber class]])
+        return NO;
+ 
+    int categoryChosen = [profileTabView indexOfTabViewItem: [profileTabView selectedTabViewItem]];
+    
+	if(categoryChosen == KEYBOARD_PROFILE_TAB)
+	{
+		return ![[iTermKeyBindingMgr singleInstance] isGlobalProfile:item];
+	}
+	else if(categoryChosen == TERMINAL_PROFILE_TAB)
+	{
+		return ![[iTermTerminalProfileMgr singleInstance] isDefaultProfile:item];
+	}
+	else if(categoryChosen == DISPLAY_PROFILE_TAB)
+	{
+		return ![[iTermDisplayProfileMgr singleInstance] isDefaultProfile:item];
+	}
+	else
+		return NO;
+    
+}
+
+// Optional method: needed to allow editing.
+- (void)outlineView:(NSOutlineView *)olv setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item  
+{
+    int categoryChosen = [profileTabView indexOfTabViewItem: [profileTabView selectedTabViewItem]];
+    id profileMgr;
+    
+	if(categoryChosen == KEYBOARD_PROFILE_TAB)
+	{
+		profileMgr = [iTermKeyBindingMgr singleInstance];
+	}
+	else if(categoryChosen == TERMINAL_PROFILE_TAB)
+	{
+		profileMgr = [iTermTerminalProfileMgr singleInstance];
+	}
+	else if(categoryChosen == DISPLAY_PROFILE_TAB)
+	{
+		profileMgr = [iTermDisplayProfileMgr singleInstance];
+	}
+	else
+		return;
+    
+    if ([[profileMgr profiles] objectForKey: object] != nil) {
+        [profileOutline reloadData];
+    }
+    else {
+        id temp = [[[profileMgr profiles] objectForKey: item] retain];
+        [profileMgr deleteProfileWithName: item];
+        [(NSMutableDictionary *)[profileMgr profiles] setObject: temp forKey: object];
+        [temp release];
+        [profileOutline reloadData];
+        [self selectProfile:object withInCategory: categoryChosen];
+    }
 }
 
 - (void)selectProfile:(NSString *)profile withInCategory: (int) category
@@ -916,6 +981,8 @@ static int categoryChosen;
 {
 	id profileMgr;
 	
+    int categoryChosen = [profileTabView indexOfTabViewItem: [profileTabView selectedTabViewItem]];
+
 	if(categoryChosen == KEYBOARD_PROFILE_TAB)
 	{
 		profileMgr = [iTermKeyBindingMgr singleInstance];
@@ -946,7 +1013,9 @@ static int categoryChosen;
 {
 	id profileMgr;
 	
-	if(categoryChosen == KEYBOARD_PROFILE_TAB)
+    int categoryChosen = [addProfileCategory indexOfSelectedItem];
+    
+    if(categoryChosen == KEYBOARD_PROFILE_TAB)
 	{
 		profileMgr = [iTermKeyBindingMgr singleInstance];
 	}
@@ -967,6 +1036,8 @@ static int categoryChosen;
                            copyProfile: [profileMgr defaultProfileName]];
 		[profileOutline reloadData];
         [self selectProfile:[profileName stringValue]  withInCategory: categoryChosen];
+        [deleteButton setEnabled:YES];
+        [duplicateButton setEnabled:NO];
 	}
 	
 	[addProfile close];
@@ -994,16 +1065,18 @@ static int categoryChosen;
 	else
 		return;
 	
-	if(returnCode == NSOKButton)
+	if(returnCode == NSAlertDefaultReturn)
 	{
 		
 		[profileMgr deleteProfileWithName: selectedProfile];
 		
 	    [profileOutline reloadData];
         [profileOutline deselectAll: nil];
+        [deleteButton setEnabled:NO];
+        [duplicateButton setEnabled:NO];
     }
 	
-	[deleteProfile close];
+	[sheet close];
 }
 
 - (void) _updateFontsDisplay

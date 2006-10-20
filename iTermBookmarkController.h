@@ -45,9 +45,6 @@
 - (IBAction) addBookmarkFolder: (id) sender;
 - (IBAction) addBookmarkFolderConfirm: (id) sender;
 - (IBAction) addBookmarkFolderCancel: (id) sender;
-- (IBAction) deleteBookmarkFolder: (id) sender;
-- (IBAction) deleteBookmarkConfirm: (id) sender;
-- (IBAction) deleteBookmarkCancel: (id) sender;
 - (IBAction) addBookmark: (id) sender;
 - (IBAction) addBookmarkConfirm: (id) sender;
 - (IBAction) addBookmarkCancel: (id) sender;

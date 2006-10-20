@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.m,v 1.3 2004-03-18 19:50:40 ujwal Exp $
+// $Id: Tree.m,v 1.4 2006-10-20 05:40:04 yfabian Exp $
 //
 /*
  **  Tree.m
@@ -141,6 +141,29 @@
 	
 }
 
+// return an array of all nodes
+- (NSArray *) array
+{
+	NSEnumerator *entryEnum;
+	TreeNode *child;
+	NSMutableArray *aMutableArray;
+	
+	// recursively encode the children
+	aMutableArray = [NSMutableArray array];
+	entryEnum = [nodeChildren objectEnumerator];
+	while ((child = [entryEnum nextObject]))
+	{
+		if ([child isLeaf])
+			[aMutableArray addObject: child];
+		else
+			[aMutableArray addObjectsFromArray: [child array]];
+	}
+	
+	return (aMutableArray);
+	
+}
+
+
 - (void)dealloc {
     [nodeData release];
     [nodeChildren release];
@@ -271,6 +294,14 @@
 - (void)recursiveSortChildren {
     [nodeChildren sortUsingSelector:@selector(compare:)];
     [nodeChildren makeObjectsPerformSelector: @selector(recursiveSortChildren)];
+}
+
+- (int) indexForNode: (id) node {
+	return ([[self array] indexOfObject:node]);
+}
+
+- (id) nodeForIndex: (int) index {
+	return ([[self array] objectAtIndex:index]);
 }
 
 - (NSString*)description {

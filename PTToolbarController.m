@@ -148,13 +148,13 @@ NSString *ConfigToolbarItem = @"Info";
         NSPopUpButton *aPopUpButton;
         
         if([toolbar sizeMode] == NSToolbarSizeModeSmall)
-            aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 40.0, 24.0) pullsDown: YES];
+            aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 32.0, 24.0) pullsDown: YES];
         else
-            aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 48.0, 32.0) pullsDown: YES];
+            aPopUpButton = [[NSPopUpButton alloc] initWithFrame: NSMakeRect(0.0, 0.0, 40.0, 32.0) pullsDown: YES];
         
         [aPopUpButton setTarget: nil];
         [aPopUpButton setBordered: NO];
-        [[aPopUpButton cell] setArrowPosition:NSPopUpArrowAtBottom];
+        [[aPopUpButton cell] setArrowPosition:NSPopUpNoArrow];
         [toolbarItem setView: aPopUpButton];
         // Release the popup button since it is retained by the toolbar item.
         [aPopUpButton release];

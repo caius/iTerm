@@ -258,25 +258,6 @@ static BOOL editingBookmark = NO;
 	[NSApp endSheet:addBookmarkFolderPanel returnCode:NSCancelButton];
 }
 
-- (IBAction) deleteBookmarkFolder: (id) sender
-{
-	[NSApp beginSheet: deleteBookmarkPanel
-	   modalForWindow: [self window]
-		modalDelegate: self
-	   didEndSelector: @selector(_deleteBookmarkSheetDidEnd:returnCode:contextInfo:)
-		  contextInfo: nil];        
-}
-
-- (IBAction) deleteBookmarkConfirm: (id) sender
-{
-	[NSApp endSheet:deleteBookmarkPanel returnCode:NSOKButton];
-}
-
-- (IBAction) deleteBookmarkCancel: (id) sender
-{
-	[NSApp endSheet:deleteBookmarkPanel returnCode:NSCancelButton];
-}
-
 - (IBAction) addBookmark: (id) sender
 {
 	
@@ -304,11 +285,19 @@ static BOOL editingBookmark = NO;
 
 - (IBAction) deleteBookmark: (id) sender
 {
-	[NSApp beginSheet: deleteBookmarkPanel
+    NSBeginAlertSheet(NSLocalizedStringFromTableInBundle(@"Delete Bookmark",@"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks"),
+                      NSLocalizedStringFromTableInBundle(@"Delete",@"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks"),
+                      NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks"),
+                      nil, [self window], self, 
+                      @selector(_deleteBookmarkSheetDidEnd:returnCode:contextInfo:), 
+                      NULL, NULL, 
+                      [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Are you sure that you want to delete %@? There is no way to undo this action.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles"),
+                          [[ITAddressBookMgr sharedInstance] objectForKey:@"Name" inItem: [bookmarksView itemAtRow: [bookmarksView selectedRow]]] ]);
+/*	[NSApp beginSheet: deleteBookmarkPanel
 	   modalForWindow: [self window]
 		modalDelegate: self
 	   didEndSelector: @selector(_deleteBookmarkSheetDidEnd:returnCode:contextInfo:)
-		  contextInfo: nil];        
+		  contextInfo: nil];   */     
 }
 
 - (IBAction) editBookmark: (id) sender
@@ -465,16 +454,15 @@ static BOOL editingBookmark = NO;
 - (void)_deleteBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
 	
-	if(returnCode == NSOKButton)
+	if(returnCode == NSAlertDefaultReturn)
 	{		
 		[[ITAddressBookMgr sharedInstance] deleteBookmarkNode: [bookmarksView itemAtRow: [bookmarksView selectedRow]]];
+        id prefs = [NSUserDefaults standardUserDefaults];
+        [prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
+        [prefs synchronize];
 	}
     
-    id prefs = [NSUserDefaults standardUserDefaults];
-    [prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
-    [prefs synchronize];
-    
-	[deleteBookmarkPanel close];
+	[sheet close];
 }
 
 - (void)_editBookmarkSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo

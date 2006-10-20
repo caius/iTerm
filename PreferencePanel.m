@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.138 2006-10-17 03:04:54 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.139 2006-10-20 05:40:04 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -33,9 +33,10 @@
 #import <iTerm/iTermDisplayProfileMgr.h>
 #import <iTerm/iTermTerminalProfileMgr.h>
 #import <iTerm/Tree.h>
+#import <iTermBookmarkController.h>
 
 static float versionNumber;
-
+static NSString *NoHandler = @"<No Handler>";
 
 @implementation PreferencePanel
 
@@ -76,7 +77,12 @@ static float versionNumber;
 	
 	// sync the version number
 	[prefs setObject: [myDict objectForKey:@"CFBundleVersion"] forKey: @"iTerm Version"];
-		
+
+	[[NSNotificationCenter defaultCenter] addObserver: self
+									 selector: @selector(_reloadURLHandlers:)
+										 name: @"iTermReloadAddressBook"
+									   object: nil];	
+
 	return (self);
 }
 
@@ -109,7 +115,31 @@ static float versionNumber;
 	defaultWordChars = [[prefs objectForKey: @"WordCharacters"] retain];
     defaultOpenBookmark = [prefs objectForKey:@"OpenBookmark"]?[[prefs objectForKey:@"OpenBookmark"] boolValue]: NO;
 	defaultQuitWhenAllWindowsClosed = [prefs objectForKey:@"QuitWhenAllWindowsClosed"]?[[prefs objectForKey:@"QuitWhenAllWindowsClosed"] boolValue]: NO;
+
+	NSArray *urlArray;
+	NSDictionary *tempDict = [prefs objectForKey:@"URLHandlers"];
+	int i;
 	
+	// make sure bookmarks are loaded
+	[iTermBookmarkController sharedInstance];
+    
+	// read in the handlers by converting the index back to bookmarks
+	urlHandlers = [[NSMutableDictionary alloc] init];
+	if (tempDict) {
+		NSEnumerator *enumerator = [tempDict keyEnumerator];
+		id key;
+	   
+		while ((key = [enumerator nextObject])) {
+			//NSLog(@"%@\n%@",[tempDict objectForKey:key], [[ITAddressBookMgr sharedInstance] bookmarkForIndex:[[tempDict objectForKey:key] intValue]]);
+			[urlHandlers setObject:[[ITAddressBookMgr sharedInstance] bookmarkForIndex:[[tempDict objectForKey:key] intValue]]
+						    forKey:key];
+		}
+	}
+	urlArray = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+	urlTypes = [[NSMutableArray alloc] initWithCapacity:[urlArray count]];
+	for (i=0; i<[urlArray count]; i++) {
+		[urlTypes addObject:[[[urlArray objectAtIndex:i] objectForKey: @"CFBundleURLSchemes"] objectAtIndex:0]];
+	}
 }
 
 - (void) savePreferences
@@ -135,6 +165,17 @@ static float versionNumber;
 	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
 	[prefs setBool:defaultQuitWhenAllWindowsClosed forKey:@"QuitWhenAllWindowsClosed"];
     [prefs setBool:([checkUpdate state] == NSOnState) forKey:@"SUCheckAtStartup"];
+
+	// save the handlers by converting the bookmark into an index
+	NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] init];
+	NSEnumerator *enumerator = [urlHandlers keyEnumerator];
+	id key;
+   
+	while ((key = [enumerator nextObject])) {
+		[tempDict setObject:[NSNumber numberWithInt:[[ITAddressBookMgr sharedInstance] indexForBookmark:[urlHandlers objectForKey:key]]]
+					 forKey:key];
+	}
+	[prefs setObject: tempDict forKey:@"URLHandlers"];
 
 	[prefs synchronize];
 }
@@ -354,9 +395,119 @@ static float versionNumber;
     return [prefs objectForKey:@"BoldStrokeWidth"]?[[prefs objectForKey:@"BoldStrokeWidth"] floatValue]:-5;
 }
 
+// URL handler stuff
+- (NSDictionary *) handlerBookmarkForURL:(NSString *)url
+{
+	return [urlHandlers objectForKey: url];
+}
+
+// NSTableView data source
+- (int) numberOfRowsInTableView: (NSTableView *)aTableView
+{
+	return [urlTypes count];
+}
+
+- (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+{
+    //NSLog(@"%s: %@", __PRETTY_FUNCTION__, aTableView);
+    
+	return [urlTypes objectAtIndex: rowIndex];
+}
+
+// NSTableView delegate
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification
+{
+	int i;
+	
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
+	if ((i=[urlTable selectedRow])<0) 
+		[urlHandlerOutline deselectAll:nil];
+	else {
+		id temp = [urlHandlers objectForKey: [urlTypes objectAtIndex: i]];
+		if (temp) {
+			[urlHandlerOutline selectRow: [urlHandlerOutline rowForItem: temp] byExtendingSelection:NO];
+		}
+		else {
+			[urlHandlerOutline selectRow: 0 byExtendingSelection:NO];
+		}
+		[urlHandlerOutline scrollRowToVisible: [urlHandlerOutline selectedRow]];
+	}
+}
+
+// NSOutlineView delegate methods
+- (void) outlineViewSelectionDidChange: (NSNotification *) aNotification
+{
+}
+
+// NSOutlineView data source methods
+// required
+- (id)outlineView:(NSOutlineView *)ov child:(int)index ofItem:(id)item
+{
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
+	if (item)
+		return [[ITAddressBookMgr sharedInstance] child:index ofItem: item];
+	else if (index)
+		return [[ITAddressBookMgr sharedInstance] child:index-1 ofItem: item];
+	else
+		return NoHandler;
+}
+
+- (BOOL)outlineView:(NSOutlineView *)ov isItemExpandable:(id)item
+{
+    //NSLog(@"%s", __PRETTY_FUNCTION__);
+	if ([item isKindOfClass:[NSString class]])
+		return NO;
+	else
+		return [[ITAddressBookMgr sharedInstance] isExpandable: item];
+}
+
+- (int)outlineView:(NSOutlineView *)ov numberOfChildrenOfItem:(id)item
+{
+    //NSLog(@"%s: ov = 0x%x; item = 0x%x; numChildren: %d", __PRETTY_FUNCTION__, ov, item,
+	//	  [[ITAddressBookMgr sharedInstance] numberOfChildrenOfItem: item]);
+	if (item)
+		return [[ITAddressBookMgr sharedInstance] numberOfChildrenOfItem: item];
+	else
+		return [[ITAddressBookMgr sharedInstance] numberOfChildrenOfItem: item] + 1;
+}
+
+- (id)outlineView:(NSOutlineView *)ov objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+    //NSLog(@"%s: outlineView = 0x%x; item = %@; column= %@", __PRETTY_FUNCTION__, ov, item, [tableColumn identifier]);
+	// item should be a tree node witha dictionary data object
+	if ([item isKindOfClass:[NSString class]])
+        return item;
+	else
+		return [[ITAddressBookMgr sharedInstance] objectForKey:@"Name" inItem: item];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+	return NO;
+}
+
+- (IBAction)connectURL:(id)sender
+{
+	int i, j;
+
+	if ((i=[urlTable selectedRow])<0 ||(j=[urlHandlerOutline selectedRow])<0) return;
+	if (!j) { // No Handler
+		[urlHandlers removeObjectForKey:[urlTypes objectAtIndex: i]];
+	}
+	else {
+		[urlHandlers setObject:[urlHandlerOutline itemAtRow:j] forKey: [urlTypes objectAtIndex: i]];
+	}
+	//NSLog(@"urlHandlers:%@", urlHandlers);
+}
+
 @end
+
 
 @implementation PreferencePanel (Private)
 
+- (void) _reloadURLHandlers: (NSNotification *) aNotification
+{
+	[urlHandlerOutline reloadData];
+}
 
 @end

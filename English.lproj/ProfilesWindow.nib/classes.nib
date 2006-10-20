@@ -20,8 +20,6 @@
                 profileAddCancel = id; 
                 profileAddConfirm = id; 
                 profileDelete = id; 
-                profileDeleteCancel = id; 
-                profileDeleteConfirm = id; 
                 profileDuplicate = id; 
                 terminalSetBlink = id; 
                 terminalSetCloseOnSessionEnd = id; 
@@ -39,7 +37,8 @@
             OUTLETS = {
                 addKBEntry = NSPanel; 
                 addProfile = NSPanel; 
-                deleteProfile = NSPanel; 
+                addProfileCategory = NSButton; 
+                deleteButton = id; 
                 displayAnsi0Color = NSColorWell; 
                 displayAnsi10Color = NSColorWell; 
                 displayAnsi11Color = NSColorWell; 
@@ -70,13 +69,12 @@
                 displayFontSpacingWidth = NSSlider; 
                 displayFontTextField = NSTextField; 
                 displayNAFontTextField = NSTextField; 
-                displayProfileDeleteButton = NSButton; 
-                displayProfileSelector = NSPopUpButton; 
                 displayRowTextField = NSTextField; 
                 displaySelectedTextColor = NSColorWell; 
                 displaySelectionColor = NSColorWell; 
                 displayTransparency = NSTextField; 
                 displayUseBackgroundImage = NSButton; 
+                duplicateButton = id; 
                 kbEntryAction = NSPopUpButton; 
                 kbEntryDeleteButton = NSButton; 
                 kbEntryKey = NSPopUpButton; 
@@ -88,8 +86,6 @@
                 kbEntryTableView = NSTableView; 
                 kbEntryText = NSTextField; 
                 kbOptionKey = NSMatrix; 
-                kbProfileDeleteButton = NSButton; 
-                kbProfileSelector = NSPopUpButton; 
                 profileName = NSTextField; 
                 profileOutline = id; 
                 profileTabView = NSTabView; 
@@ -99,8 +95,6 @@
                 terminalEnableGrowl = id; 
                 terminalEncoding = NSPopUpButton; 
                 terminalIdleChar = NSTextField; 
-                terminalProfileDeleteButton = NSButton; 
-                terminalProfileSelector = NSPopUpButton; 
                 terminalScrollback = NSTextField; 
                 terminalSendIdleChar = NSButton; 
                 terminalShowBell = NSButton; 

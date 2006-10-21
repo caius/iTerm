@@ -1,3 +1,8 @@
+2006-10-20	fabian
+
+	* A fix for the memory leak.
+	* Fixed a input problem when non-english input manager is active. 
+	
 2006-10-19	fabian
 
 	* Added support for handling URLs.

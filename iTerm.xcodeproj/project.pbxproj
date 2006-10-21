@@ -171,36 +171,6 @@
 		F6E708C00A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildStyle section */
-		05A162CE006CD5FC7F000001 /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				DEBUGGING_SYMBOLS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = Headers/iTerm/;
-				OPTIMIZATION_CFLAGS = "-O0";
-				ZERO_LINK = YES;
-			};
-			name = Development;
-		};
-		05A162CF006CD5FC7F000001 /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.2;
-				OPTIMIZATION_CFLAGS = "-O3";
-				UNSTRIPPED_PRODUCT = NO;
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
-
 /* Begin PBXContainerItemProxy section */
 		8742069A056416D000CFC3F1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -895,31 +865,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G4;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				INFOPLIST_FILE = iTerm_Framework.plist;
-				INSTALL_PATH = "@executable_path/../Frameworks";
-				JAVA_COMPILER_DEBUGGING_SYMBOLS = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = (
-					"-seg1addr",
-					0x14000000,
-				);
-				OTHER_LIBTOOL_FLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRINCIPAL_CLASS = "";
-				PRODUCT_NAME = iTerm;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost";
-				WRAPPER_EXTENSION = framework;
-			};
 			dependencies = (
 				F69E796B0AB8CF1A001EC0FF /* PBXTargetDependency */,
 			);
@@ -942,35 +887,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G4;
-				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_MISSING_PARENTHESES = YES;
-				GCC_WARN_SHADOW = YES;
-				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = NO;
-				GCC_WARN_UNUSED_VALUE = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = iTerm.plist;
-				MACOSX_DEPLOYMENT_TARGET = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = iTerm;
-				REZ_EXECUTABLE = YES;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wall",
-					"-Wmost",
-				);
-				WRAPPER_EXTENSION = app;
-			};
 			dependencies = (
 				8742069B056416D000CFC3F1 /* PBXTargetDependency */,
 				F69E811B0ABB4879001EC0FF /* PBXTargetDependency */,
@@ -991,50 +907,11 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				FRAMEWORK_VERSION = A;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
-				INFOPLIST_FILE = "Growl-Info.plist";
-				INSTALL_PATH = "$(HOME)/Library/Frameworks";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Carbon,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Growl;
-				ZERO_LINK = YES;
-			};
 			dependencies = (
 			);
 			name = Growl;
 			productName = Growl;
 			productReference = F69E79110AB8CDB3001EC0FF /* Growl.framework */;
-			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
-<plist version=\"1.0\">
-<dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
-	<key>CFBundleExecutable</key>
-	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIdentifier</key>
-	<string>com.yourcompany.Growl</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundlePackageType</key>
-	<string>FMWK</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>1.0</string>
-</dict>
-</plist>
-";
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -1043,12 +920,6 @@
 		0464AB0C006CD2EC7F000001 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = BB024D39096EE4080021E793 /* Build configuration list for PBXProject "iTerm" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				05A162CE006CD5FC7F000001 /* Development */,
-				05A162CF006CD5FC7F000001 /* Deployment */,
-			);
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -1448,10 +1319,11 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Deployment",
-					"$(SRCROOT)/build/Deployment <= 10.3",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(SRCROOT)/build/Development",
 					"$(SRCROOT)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "$(SRCROOT)/build/Deployment\\ <=\\ 10.3";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -1497,9 +1369,10 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(SRCROOT)/build/Development",
 					"$(SRCROOT)/build/Deployment",
-					"$(SRCROOT)/build/Deployment <= 10.3",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(SRCROOT)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "$(SRCROOT)/build/Deployment\\ <=\\ 10.3";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G4;
@@ -1540,10 +1413,11 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/build/Deployment",
-					"$(SRCROOT)/build/Deployment <= 10.3",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(SRCROOT)/build/Development",
 					"$(SRCROOT)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "$(SRCROOT)/build/Deployment\\ <=\\ 10.3";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
@@ -1672,9 +1546,10 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(SRCROOT)/build/Development",
 					"$(SRCROOT)/build/Deployment",
-					"$(SRCROOT)/build/Deployment <= 10.3",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 					"$(SRCROOT)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "$(SRCROOT)/build/Deployment\\ <=\\ 10.3";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_MODEL_TUNING = G4;

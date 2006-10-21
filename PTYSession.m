@@ -350,7 +350,7 @@ static NSImage *warningImage;
 	return (keyBindingAction >= 0);
 }
 
-// PTYTextView
+// Screen for special keys
 - (void)keyDown:(NSEvent *)event
 {
     unsigned char *send_str = NULL;
@@ -1751,13 +1751,13 @@ static NSImage *warningImage;
 -(void)_processReadDataThread: (void *) arg
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSAutoreleasePool *arPool = nil;
+	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];
 	int iterationCount = 0;
 	VT100TCC token;
 	
 	while(EXIT == NO)
 	{
-		
+
 		// wait for data
 		MPWaitOnSemaphore(dataSemaphore, kDurationForever);
 		
@@ -1775,9 +1775,6 @@ static NSImage *warningImage;
 			if (TERMINAL && token.type != VT100_WAIT)
 			{	
 				
-				// refresh our autrelease pool
-				if(arPool == nil)
-					arPool = [[NSAutoreleasePool alloc] init];
 				
 				// process token
 				if (token.type != VT100_SKIP)
@@ -1795,8 +1792,9 @@ static NSImage *warningImage;
 				iterationCount++;
 				if(iterationCount % 100 == 0)
 				{
+					// refresh our autrelease pool
 					[arPool release];
-					arPool = nil;
+					arPool = [[NSAutoreleasePool alloc] init];
 					iterationCount = 0;
 				}
 			} // end token processing

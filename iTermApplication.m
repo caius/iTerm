@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplication.m,v 1.8 2006-02-05 17:32:23 ujwal Exp $
+// $Id: iTermApplication.m,v 1.9 2006-10-21 02:11:09 yfabian Exp $
 //
 /*
  **  iTermApplication.m
@@ -38,7 +38,7 @@
 @implementation iTermApplication
 
 // override to catch key mappings
-- (void)sendEvent:(NSEvent *)anEvent
+/*- (void)sendEvent:(NSEvent *)anEvent
 {
 	id aWindow;
 	PseudoTerminal *currentTerminal;
@@ -68,5 +68,5 @@
 	else
 		[super sendEvent: anEvent];
 }
-
+*/
 @end

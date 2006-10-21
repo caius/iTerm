@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplication.h,v 1.2 2004-04-11 07:04:26 ujwal Exp $
+// $Id: iTermApplication.h,v 1.3 2006-10-21 02:11:09 yfabian Exp $
 //
 /*
  **  iTermApplication.h
@@ -35,6 +35,6 @@
 
 }
 
-- (void)sendEvent:(NSEvent *)anEvent;
+//- (void)sendEvent:(NSEvent *)anEvent;
 
 @end

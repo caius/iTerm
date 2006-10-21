@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.267 2006-10-17 03:04:54 yfabian Exp $
+// $Id: PTYTextView.m,v 1.268 2006-10-21 02:11:09 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1089,17 +1089,7 @@ static float strokeWidth, boldStrokeWidth;
 	
     // Hide the cursor
     [NSCursor setHiddenUntilMouseMoves: YES];   
-	
-	// Check whether we have a custom mapping for this event or if numeric or function keys were pressed.
-	if ( prev == NO && 
-		 ([delegate hasKeyMappingForEvent: event] ||
-		  (modflag & NSNumericPadKeyMask) || 
-		  (modflag & NSFunctionKeyMask)))
-	{
-		[delegate keyDown:event];
-		return;
-	}
-	
+		
     IM_INPUT_INSERT = NO;
     if (IMEnable) {
         [self interpretKeyEvents:[NSArray arrayWithObject:event]];
@@ -1112,14 +1102,23 @@ static float strokeWidth, boldStrokeWidth;
         }
     }
     else {
-
-		if([[self delegate] optionKey] == OPT_NORMAL)
+		// Check whether we have a custom mapping for this event or if numeric or function keys were pressed.
+		if ( prev == NO && 
+			 ([delegate hasKeyMappingForEvent: event] ||
+			  (modflag & NSNumericPadKeyMask) || 
+			  (modflag & NSFunctionKeyMask)))
 		{
-			[self interpretKeyEvents:[NSArray arrayWithObject:event]];
-		}
-		
-		if (IM_INPUT_INSERT == NO) {
 			[delegate keyDown:event];
+		}
+		else {
+			if([[self delegate] optionKey] == OPT_NORMAL)
+			{
+				[self interpretKeyEvents:[NSArray arrayWithObject:event]];
+			}
+			
+			if (IM_INPUT_INSERT == NO) {
+				[delegate keyDown:event];
+			}
 		}
     }
 }

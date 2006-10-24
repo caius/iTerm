@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.36 2006-03-17 19:08:39 ujwal Exp $
+// $Id: PTYTask.m,v 1.37 2006-10-24 05:28:25 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -139,10 +139,10 @@ static int writep(int fds, char *buf, size_t len)
 + (void)_processReadThread:(PTYTask *)boss
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];;
     BOOL exitf = NO;
     int sts;
 	int iterationCount = 0;
-	NSAutoreleasePool *arPool = nil;
 	char readbuf[4096];
 	fd_set rfds,efds;
 	
@@ -160,9 +160,7 @@ static int writep(int fds, char *buf, size_t len)
 	{
 		
 		// periodically refresh our autorelease pool
-		iterationCount++;
-		if(arPool == nil)
-			arPool = [[NSAutoreleasePool alloc] init];
+		iterationCount++;			
 		
 		FD_ZERO(&rfds);
 		FD_ZERO(&efds);
@@ -215,10 +213,10 @@ static int writep(int fds, char *buf, size_t len)
 		}
 		
 		// periodically refresh our autorelease pool
-		if((iterationCount % 10) == 0)
+		if((iterationCount % 50) == 0)
 		{
 			[arPool release];
-			arPool = nil;
+			arPool = [[NSAutoreleasePool alloc] init];
 			iterationCount = 0;
 		}
 		

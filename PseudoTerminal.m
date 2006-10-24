@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.361 2006-10-21 02:11:09 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.362 2006-10-24 05:28:25 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -56,6 +56,7 @@
 #import <PSMTabBarControl.h>
 #import <PSMTabStyle.h>
 #import <iTermBookmarkController.h>
+#import <iTermOutlineView.h>
 #include <unistd.h>
 
 @interface PSMTabBarControl (Private)
@@ -185,7 +186,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	aRect = NSZeroRect;
 	aRect.size = aSize;
 	
-	bookmarksView = [[NSOutlineView alloc] initWithFrame:aRect];
+	bookmarksView = [[iTermOutlineView alloc] initWithFrame:aRect];
 	aTableColumn = [[NSTableColumn alloc] initWithIdentifier: @"Name"];
 	[[aTableColumn headerCell] setStringValue: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
 	[bookmarksView addTableColumn: aTableColumn];
@@ -1847,7 +1848,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }        
 			
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
-    
+	[tabBarControl update];
 }
 
 - (NSMenu *)tabView:(NSTabView *)aTabView menuForTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1936,6 +1937,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
     
     return [term tabBarControl];
+}
+
+- (NSString *)tabView:(NSTabView *)aTabView toolTipForTabViewItem:(NSTabViewItem *)aTabViewItem
+{
+	NSDictionary *ade = [[aTabViewItem identifier] addressBookEntry];
+	
+	NSString *temp = [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Name: %@\nCommand: %@\nTerminal Profile: %@\nDisplay Profile: %@\nKeyboard Profile: %@",@"iTerm", [NSBundle bundleForClass: [self class]], @"Tab Tooltips"),
+		[ade objectForKey:KEY_NAME], [ade objectForKey:KEY_COMMAND], [ade objectForKey:KEY_TERMINAL_PROFILE],
+		[ade objectForKey:KEY_DISPLAY_PROFILE], [ade objectForKey:KEY_KEYBOARD_PROFILE]];
+	
+	return temp;
+	
 }
 
 - (void) setLabelColor: (NSColor *) color forTabViewItem: tabViewItem

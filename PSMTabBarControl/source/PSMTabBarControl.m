@@ -520,7 +520,7 @@
 	[cell release];
     
     [_lock unlock];
-    [self update]; 
+    //[self update]; 
 }
 
 - (void)removeTabForCell:(PSMTabBarCell *)cell
@@ -573,7 +573,7 @@
     [_cells removeObject:cell];
     [_lock unlock];
 
-    [self update];
+    //[self update];
 
 }
 

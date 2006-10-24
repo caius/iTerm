@@ -1,3 +1,16 @@
+2006-10-23	fabian
+
+	* Added ,+~ into acceptable set of URL characters.
+	* CMD-Click to open URL now works for multi-line URLs.
+	* Fixed a bug in [VT100Screen scrollUp]
+	* Subclassed NSOutlineView to avoid possible crashes (http://www.corbinstreehouse.com/blog/?p=151)
+	* Added tool tips for tabs.
+	* A hack for enter key on laptops.
+	
+2006-10-22	fabian
+	
+	* Enforced one extra refreshing of tab bar every time a tab is closed or opened to fix the display.
+	
 2006-10-20	fabian
 
 	* A fix for the memory leak.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.251 2006-10-14 16:35:31 yfabian Exp $
+// $Id: VT100Screen.m,v 1.252 2006-10-24 05:28:25 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1512,13 +1512,13 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 				memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
 			}
 		}
-	}
-	// new line at SCROLL_BOTTOM with default settings
-	targetLine = [self getLineAtScreenIndex:SCROLL_BOTTOM];
-	memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
+		// new line at SCROLL_BOTTOM with default settings
+		targetLine = [self getLineAtScreenIndex:SCROLL_BOTTOM];
+		memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
 
-	// everything between SCROLL_TOP and SCROLL_BOTTOM is dirty
-	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
+		// everything between SCROLL_TOP and SCROLL_BOTTOM is dirty
+		memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
+	}
 }
 
 - (void)scrollDown

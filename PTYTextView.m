@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.268 2006-10-21 02:11:09 yfabian Exp $
+// $Id: PTYTextView.m,v 1.269 2006-10-24 05:28:25 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1783,6 +1783,7 @@ static float strokeWidth, boldStrokeWidth;
 	//NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }
 
+
 - (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines pad: (BOOL) pad
 {
 	unichar *temp;
@@ -2746,6 +2747,14 @@ static float strokeWidth, boldStrokeWidth;
 	}
 }
 
+- (unichar) _getCharacterAtX:(int) x Y:(int) y
+{
+	screen_char_t *theLine;
+	theLine = [dataSource getLineAtIndex:y];
+		
+	return theLine[x].ch;
+}
+
 - (NSString *) _getWordForX: (int) x 
                           y: (int) y 
                      startX: (int *) startx 
@@ -2845,25 +2854,31 @@ static float strokeWidth, boldStrokeWidth;
 - (NSString *) _getURLForX: (int) x 
 					y: (int) y 
 {
-	static NSCharacterSet *urlSet = nil;
-	int x1=x, x2=x;
-    NSString *c;
+	static char *urlSet = ".?/:;%=&_-,+~";
+	int x1=x, x2=x, y1=y, y2=y;
+	int w = [dataSource width];
+	int h = [dataSource height];
+	unichar c;
     
-    if (!urlSet) urlSet = [[NSCharacterSet characterSetWithCharactersInString:@".?/:;%=&_-"] retain]; 
-    
-    for (;x1>=0;x1--) {
-        c = [self contentFromX:x1 Y:y ToX:x1 Y:y breakLines: NO pad: YES];
-        if ([c rangeOfCharacterFromSet:urlSet].length == 0 && [c rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) break;
+    for (;x1>=0&&y1>=0;) {
+        c = [self _getCharacterAtX:x1 Y:y1];
+        if (!c || !(isnumber(c) || isalpha(c) || strchr(urlSet, c))) break;
+		x1--;
+		if (x1<0) y1--, x1=w-1;
     }
     x1++;
+	if (x1>=w) x1=0, y1++;
     
-    for (;x2<[dataSource width];x2++) {
-        c = [self contentFromX:x2 Y:y ToX:x2 Y:y breakLines: NO pad: YES];
-        if ([c rangeOfCharacterFromSet:urlSet].length == 0 && [c rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) break;
+    for (;x2<w&&y2<h;) {
+        c = [self _getCharacterAtX:x2 Y:y2];
+        if (!c || !(isnumber(c) || isalpha(c) || strchr(urlSet, c))) break;
+		x2++;
+		if (x2>=w) y2++, x2=0;
     }
     x2--;
+	if (x2<0) x2=w-1, y2--;
     
-	return ([self contentFromX:x1 Y:y ToX:x2 Y:y breakLines: NO pad: YES]);
+	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2 breakLines: NO pad: YES]);
 	
 }
 

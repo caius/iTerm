@@ -202,3 +202,6 @@
 
 /* Info */
 "Update %@" = "Update %@";
+
+/* Tab Tooltips */
+@"Name: %@\nCommand: %@\nTerminal Profile: %@\nDisplay Profile: %@\nKeyboard Profile: %@" = @"Name: %@\nCommand: %@\nTerminal Profile: %@\nDisplay Profile: %@\nKeyboard Profile: %@";

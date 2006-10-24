@@ -275,10 +275,12 @@ static NSImage *warningImage;
     // check if we want to send this input to all the sessions
     if([parent sendInputToAllSessions] == NO)
     {
-		[SHELL writeTask: data];
-		// Make sure we scroll down to the end
-		[TEXTVIEW scrollEnd];
-		[ptys setUserScroll: NO];		
+		if (!EXIT) {
+			[SHELL writeTask: data];
+			// Make sure we scroll down to the end
+			[TEXTVIEW scrollEnd];
+			[ptys setUserScroll: NO];		
+		}
     }
     else
     {
@@ -562,7 +564,13 @@ static NSImage *warningImage;
 				send_str = (unsigned char*)"\015";  // NumericPad or Laptop Enter -> 0x0d
 				send_strlen = 1;
 			}
-			if (modflag & NSControlKeyMask &&
+			else if (send_strlen == 1 &&
+					 send_str[0] == 0x03 && keycode==76)
+			{
+				send_str = (unsigned char*)"\015";  // Laptop Enter -> 0x0d
+				send_strlen = 1;
+			}
+			else if (modflag & NSControlKeyMask &&
 				send_strlen == 1 &&
 				send_str[0] == '|')
 			{
@@ -570,7 +578,7 @@ static NSImage *warningImage;
 				send_strlen = 1;
 			}
 			
-			if ((modflag & NSControlKeyMask) && 
+			else if ((modflag & NSControlKeyMask) && 
 				(modflag & NSShiftKeyMask) &&
 				send_strlen == 1 &&
 				send_str[0] == '/')

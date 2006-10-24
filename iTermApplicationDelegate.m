@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.38 2006-10-20 05:40:04 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.39 2006-10-24 05:28:25 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -450,13 +450,14 @@ static BOOL usingAutoLaunchScript = NO;
                          height: [displayProfileMgr windowRowsForProfile: displayProfile]];
     [frontTerminal setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
                     nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
+					
 }
 
 
 // Notifications
 - (void) reloadMenus: (NSNotification *) aNotification
 {
-    PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
+    PseudoTerminal *frontTerminal = [self currentTerminal];
 	unsigned int drawerState;
     
     [previousTerminal setAction: (frontTerminal?@selector(previousTerminal:):nil)];
@@ -514,7 +515,6 @@ static BOOL usingAutoLaunchScript = NO;
         [sendInputToAllSessions setEnabled:NO];
     }
 	
-	
 }
 
 - (void) nonTerminalWindowBecameKey: (NSNotification *) aNotification
@@ -528,8 +528,10 @@ static BOOL usingAutoLaunchScript = NO;
 - (void) buildSessionSubmenu: (NSNotification *) aNotification
 {
     // build a submenu to select tabs
+	PseudoTerminal *currentTerminal = [self currentTerminal];
+	
     NSMenu *aMenu = [[NSMenu alloc] initWithTitle: @"SessionMenu"];
-    PTYTabView *aTabView = [[[iTermController sharedInstance] currentTerminal] tabView];
+    PTYTabView *aTabView = [currentTerminal tabView];
     PTYSession *aSession;
     int n = [aTabView numberOfTabViewItems];
     int i;
@@ -574,11 +576,14 @@ static BOOL usingAutoLaunchScript = NO;
 {
     PTYSession *aSession = [aNotification object];
 
-    if(aSession == nil)
-	return;
-
-    [logStart setEnabled: ![aSession logging]];
-    [logStop setEnabled: [aSession logging]];
+    if(aSession == nil || [aSession exited]) {
+		[logStart setEnabled: NO];
+		[logStop setEnabled: NO];
+	}
+	else {
+		[logStart setEnabled: ![aSession logging]];
+		[logStop setEnabled: [aSession logging]];
+	}
 }
 
 - (BOOL) validateMenuItem: (NSMenuItem *) menuItem

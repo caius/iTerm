@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.108 2006-10-09 22:24:52 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.109 2006-10-25 02:59:15 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1961,6 +1961,7 @@ else {
                 case 7:  WRAPAROUND_MODE = mode; break;
                 case 8:  AUTOREPEAT_MODE = mode; break;
                 case 9:  INTERLACE_MODE  = mode; break;
+				case 25: [SCREEN showCursor: mode]; break;
 				case 40: allowColumnMode = mode; break;
 				case 47: if(mode) [SCREEN saveBuffer]; else [SCREEN restoreBuffer]; break; // alternate screen buffer mode
 				case 1000:

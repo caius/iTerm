@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.252 2006-10-24 05:28:25 yfabian Exp $
+// $Id: VT100Screen.m,v 1.253 2006-10-25 02:59:14 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -953,6 +953,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
     for(idx = 0; idx < len;) 
 	{
+		if (buffer[idx].ch == 0xffff) // cut off in the middle of double width characters
+		{
+			buffer[idx].ch = '#';
+		}
+		
         if (CURSOR_X >= WIDTH) 
 		{
             if ([TERMINAL wraparoundMode]) 
@@ -989,12 +994,27 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			}
 		}
 		
+		if (aLine[CURSOR_X].ch == 0xffff) {
+			if (CURSOR_X>0) aLine[CURSOR_X-1].ch = '#';
+		}
+		
 		// insert as many characters as we can
 		memcpy(aLine + CURSOR_X, buffer + idx, j * sizeof(screen_char_t));
 		memset(dirty+screenIdx+CURSOR_X,1,j);
 		
 		CURSOR_X = newx;
 		idx += j;
+		
+		// cut off in the middle of double width characters
+		if (CURSOR_X<WIDTH-1 && aLine[CURSOR_X].ch == 0xffff) 
+		{
+			aLine[CURSOR_X].ch = '#';
+		}
+			
+		if (idx<len && buffer[idx].ch == 0xffff) 
+		{
+			if (CURSOR_X>0) aLine[CURSOR_X-1].ch = '#';
+		}
     }
 	
 	free(buffer);
@@ -1785,6 +1805,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     if (report != nil) {
 		[SHELL writeTask:report];
     }
+}
+
+- (void)showCursor:(BOOL)show
+{
+	if (show)
+		[display showCursor];
+	else
+		[display hideCursor];
 }
 
 - (void)blink

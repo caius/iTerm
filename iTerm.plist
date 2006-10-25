@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.9.1.1019</string>
+	<string>0.9.1.1025</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>iTerm Help</string>
 	<key>CFBundleHelpBookName</key>
@@ -23,11 +23,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.9.1.1019</string>
+	<string>0.9.1.1025</string>
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.1.1019</string>
+	<string>0.9.1.1025</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
 	<key>NSExtensions</key>

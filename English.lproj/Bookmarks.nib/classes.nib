@@ -9,6 +9,7 @@
                 addBookmarkFolder = id; 
                 addBookmarkFolderCancel = id; 
                 addBookmarkFolderConfirm = id; 
+                closeWindow = id; 
                 deleteBookmark = id; 
                 deleteBookmarkCancel = id; 
                 deleteBookmarkConfirm = id; 

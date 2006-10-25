@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.269 2006-10-24 05:28:25 yfabian Exp $
+// $Id: PTYTextView.m,v 1.270 2006-10-25 02:59:14 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1003,20 +1003,19 @@ static float strokeWidth, boldStrokeWidth;
 		cursorHeight = lineHeight;
 	else
 		cursorHeight = charHeightWithoutSpacing;
-	
-	if([self blinkingCursor] && [[self window] isKeyWindow] && x1==oldCursorX && y1==oldCursorY)
-		showCursor = blinkShow;
-	else
-		showCursor = YES;
 
-    oldCursorX = x1;
-    oldCursorY = y1;
-	if (CURSOR && x1<[dataSource width] && x1>=0 && y1>=0 && y1<[dataSource height]) {
-		i = y1*[dataSource width]+x1;
-		// get the cursor line
-		theLine = [dataSource getLineAtScreenIndex: y1];
-		if(showCursor)
-		{			
+	if (CURSOR) {
+			
+		if([self blinkingCursor] && [[self window] isKeyWindow] && x1==oldCursorX && y1==oldCursorY)
+			showCursor = blinkShow;
+		else
+			showCursor = YES;
+
+		if (showCursor && x1<[dataSource width] && x1>=0 && y1>=0 && y1<[dataSource height]) {
+			i = y1*[dataSource width]+x1;
+			// get the cursor line
+			theLine = [dataSource getLineAtScreenIndex: y1];
+			
 			[[[self defaultCursorColor] colorWithAlphaComponent: trans] set];
 
 			if([[self window] isKeyWindow])
@@ -1049,10 +1048,14 @@ static float strokeWidth, boldStrokeWidth;
 								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
 						doubleWidth: double_width];
 			}
-		}
-		[dataSource dirty][i] = 1; //cursor loc is dirty
 		
+			[dataSource dirty][i] = 1; //cursor loc is dirty
+			
+		}
 	}
+	
+	oldCursorX = x1;
+	oldCursorY = y1;
 	
 	// draw any text for NSTextInput
 	if([self hasMarkedText]) {

@@ -79,6 +79,7 @@ static NSArray *profileCategories;
     selectedProfile = nil;
     return self;
 }    
+
 - (IBAction) showProfilesWindow: (id) sender
 {
 	
@@ -109,6 +110,12 @@ static NSArray *profileCategories;
 
 	[self showWindow: self];
 }
+
+- (IBAction)closeWindow:(id)sender
+{
+	[[self window] close];
+}
+
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {

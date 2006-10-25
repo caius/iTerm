@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.21 2006-09-29 23:21:10 yfabian Exp $
+// $Id: VT100Screen.h,v 1.22 2006-10-25 02:59:16 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -140,6 +140,7 @@ typedef struct screen_char_t
 
 - (BOOL) blinkingCursor;
 - (void) setBlinkingCursor: (BOOL) flag;
+- (void)showCursor:(BOOL)show;
 - (void)setPlayBellFlag:(BOOL)flag;
 - (void)setShowBellFlag:(BOOL)flag;
 - (void)setGrowlFlag:(BOOL)flag;

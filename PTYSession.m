@@ -520,7 +520,12 @@ static NSImage *warningImage;
 					send_str[i] |= 0x80;
 			}
 		}
-		else 
+		else if (unicode == NSEnterCharacter && unmodunicode == NSEnterCharacter)
+		{
+			send_str = (unsigned char*)"\015";  // Enter key -> 0x0d
+			send_strlen = 1;
+		}
+		else
 		{
 			int max = [keystr length];
 			NSData *data=nil;
@@ -557,20 +562,7 @@ static NSImage *warningImage;
 			}
 			
 			// NSLog(@"modflag = 0x%x; send_strlen = %d; send_str[0] = '%c (0x%x)'", modflag, send_strlen, send_str[0]);
-			if ((modflag & NSNumericPadKeyMask &&
-				 send_strlen == 1 &&
-				 send_str[0] == 0x03) || keycode==52)
-			{
-				send_str = (unsigned char*)"\015";  // NumericPad or Laptop Enter -> 0x0d
-				send_strlen = 1;
-			}
-			else if (send_strlen == 1 &&
-					 send_str[0] == 0x03 && keycode==76)
-			{
-				send_str = (unsigned char*)"\015";  // Laptop Enter -> 0x0d
-				send_strlen = 1;
-			}
-			else if (modflag & NSControlKeyMask &&
+			if (modflag & NSControlKeyMask &&
 				send_strlen == 1 &&
 				send_str[0] == '|')
 			{

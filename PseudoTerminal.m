@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.362 2006-10-24 05:28:25 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.363 2006-10-25 02:59:14 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -159,7 +159,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	if([[PreferencePanel sharedInstance] windowStyle] == 0)
 		styleMask |= NSTexturedBackgroundWindowMask;
 	
-	myWindow = [[PTYWindow alloc] initWithContentRect: NSMakeRect(0,0,100,100) 
+	myWindow = [[PTYWindow alloc] initWithContentRect: [[NSScreen mainScreen] frame]
 											styleMask: styleMask 
 											  backing: NSBackingStoreBuffered 
 												defer: YES];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.39 2006-10-24 05:28:25 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.40 2006-10-25 02:59:15 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -102,10 +102,17 @@ static BOOL usingAutoLaunchScript = NO;
         [scriptMenuItem release];
         [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
     }
+	
+	// read preferences
+    [iTermProfileWindowController sharedInstance];
+    [iTermBookmarkController sharedInstance];
+    [PreferencePanel sharedInstance];
+	
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+		
     id prefs = [NSUserDefaults standardUserDefaults];
     NSString *version = [prefs objectForKey: @"Last Updated Version"];
     

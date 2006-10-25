@@ -3,6 +3,7 @@
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
             ACTIONS = {
+                closeWindow = id; 
                 displayBackgroundImage = id; 
                 displayChangeColor = id; 
                 displaySelectFont = id; 

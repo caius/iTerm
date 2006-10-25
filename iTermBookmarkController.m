@@ -86,6 +86,12 @@ static BOOL editingBookmark = NO;
     [self showWindow: self];
 }
 
+- (IBAction)closeWindow:(id)sender
+{
+	[[self window] close];
+}
+
+
 // NSOutlineView delegate methods
 - (void) outlineViewSelectionDidChange: (NSNotification *) aNotification
 {

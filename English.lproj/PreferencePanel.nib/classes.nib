@@ -2,7 +2,7 @@
     IBClasses = (
         {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {
-            ACTIONS = {connectURL = id; settingChanged = id; }; 
+            ACTIONS = {closeWindow = id; connectURL = id; settingChanged = id; }; 
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
             OUTLETS = {

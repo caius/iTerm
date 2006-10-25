@@ -434,6 +434,8 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	sscanf(utf8String, "%s %g", utf8FontName, &fontSize);
 	
 	aFont = [NSFont fontWithName: [NSString stringWithFormat: @"%s", utf8FontName] size: fontSize];
+	if (aFont == nil)
+		return ([NSFont userFixedPitchFontOfSize: 0.0]);
 	
 	return (aFont);
 }
@@ -478,6 +480,8 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	sscanf(utf8String, "%s %g", utf8FontName, &fontSize);
 	
 	aFont = [NSFont fontWithName: [NSString stringWithFormat: @"%s", utf8FontName] size: fontSize];
+	if (aFont == nil)
+		return ([NSFont userFixedPitchFontOfSize: 0.0]);
 	
 	return (aFont);
 }

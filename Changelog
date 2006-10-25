@@ -1,3 +1,11 @@
+2006-10-24	fabian
+
+	* Changed default stroke width to a less bold look.
+	* Allow using ESC to close preferences, profiles and bookmarks windows.
+	* Added support for the escape sequences of show/hide cursor: ESC [ ? 25 h/l
+	* Fixed crashes if no preferences file is found.
+	* Fixed crashes when initial font settings are wrong.
+	
 2006-10-23	fabian
 
 	* Added ,+~ into acceptable set of URL characters.

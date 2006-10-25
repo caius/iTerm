@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.56 2006-10-20 05:40:04 yfabian Exp $
+// $Id: iTermController.m,v 1.57 2006-10-25 02:59:15 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -92,12 +92,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     
     terminalWindows = [[NSMutableArray alloc] init];
 	terminalLock = [[NSLock alloc] init];
-    
-	// read preferences
-    [PreferencePanel sharedInstance];
-    [iTermBookmarkController sharedInstance];
-    [iTermProfileWindowController sharedInstance];
-	
+    	
     // Activate Growl
 	/*
 	 * Need to add routine in iTerm prefs for Growl support and

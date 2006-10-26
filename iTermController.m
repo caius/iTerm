@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.57 2006-10-25 02:59:15 yfabian Exp $
+// $Id: iTermController.m,v 1.58 2006-10-26 05:36:56 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -407,7 +407,7 @@ NSString *terminalsKey = @"terminals";
 		[[thePseudoTerminal window] makeKeyAndOrderFront: self];
 
     // Post a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: thePseudoTerminal userInfo: nil];    
 
 }
 

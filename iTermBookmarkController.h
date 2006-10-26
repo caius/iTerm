@@ -21,8 +21,7 @@
 	IBOutlet NSPanel *editBookmarkPanel;
 	IBOutlet NSButton *bookmarkDeleteButton;
 	IBOutlet NSButton *bookmarkEditButton;
-	IBOutlet NSButton *launchInNewWindowButton;
-	IBOutlet NSButton *launchInNewTabButton;
+	IBOutlet NSSegmentedControl *launchButton;
 	IBOutlet NSTextField *bookmarkFolderName;
 	IBOutlet NSTextField *bookmarkName;
 	IBOutlet NSTextField *bookmarkCommand;
@@ -51,8 +50,7 @@
 - (IBAction) deleteBookmark: (id) sender;
 - (IBAction) editBookmark: (id) sender;
 - (IBAction) setDefaultSession: (id) sender;
-- (IBAction) launchInNewWindow: (id) sender;
-- (IBAction) launchInNewTab: (id) sender;
+- (IBAction) launchSession: (id) sender;
 @end
 
 @interface iTermBookmarkController (Private)

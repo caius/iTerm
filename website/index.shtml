@@ -64,18 +64,17 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
-<STRONG>iTerm Everything!</STRONG> 10/19/06<IMG src="new.gif"><BR>
-A true geek does everything in command lines, web, ftp, everything. Now iTerm
+<STRONG>iTerm It All!</STRONG> 10/26/06<IMG src="new.gif"><BR>
+A true geek does everything in command lines, web, ftp, everything. Or maybe
+your more modest goal is just to get the telnet link to work. Now iTerm
 features the support to associate URLs with your bookmarks. You can set up a
-session to run ncftp, and tell OS X that iTerm will be the default handler for ftp
-protocols. Next time you click a link in a Safari window, voila, there is your
-ncftp session with the link passed to it as a command line argument.<br><br>
+bookmark session with a command like this:<br><br>
+ telnet -l $$USER$$ $$HOST$$ $$PORT$$<br><br> and then tell OS X that iTerm will 
+be the default handler for the telnet protocol. Next time you click a link in 
+a Safari window such as telnet://joe@myserver.net:80, voila, there is your
+telnet session with the user name, host address and port number passed to it.<br><br>
 
-Right now, you still need to use other program to specify iTerm as the default handler
-for a protocol (I suggest <a href="http://www.monkeyfood.com">More Internet</a>). You 
-also probably need to write a shell wrapper to prossess the URL, as many old programs
- (eg. telnet) don't understand the standard format (such as telnet://myhost:2323). But
-I believe this is no problem for a true geek like you.
+
 <br><br>
 Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
 and check it out, or if you are using recent CVS buildings, click "Check For Update" 

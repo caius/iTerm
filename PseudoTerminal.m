@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.363 2006-10-25 02:59:14 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.364 2006-10-26 05:36:55 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -470,30 +470,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 }
 
-- (void) switchSession: (id) sender
-{
-    [self selectSessionAtIndex: [sender tag]];
-}
-
-- (void) setCurrentSession: (PTYSession *) aSession
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal setCurrentSession:%@]",
-          __FILE__, __LINE__, aSession);
-#endif
-    
-    if ([[TABVIEW selectedTabViewItem] identifier] != aSession)
-        [TABVIEW selectTabViewItemWithIdentifier: aSession];
-    [aSession resetStatus];
-    [aSession setLabelAttribute];
-    
-    [self setWindowTitle];
-    [[TABVIEW window] makeFirstResponder:[aSession TEXTVIEW]];
-    	
-    // send a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: aSession];
-}
-
 - (void)selectSessionAtIndexAction:(id)sender
 {
     [TABVIEW selectTabViewItemAtIndex:[sender tag]];
@@ -502,16 +478,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) newSessionInTabAtIndex: (id) sender
 {
     [self addNewSession: [sender representedObject]];
-}
-
-- (void) selectSessionAtIndex: (int) sessionIndex
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal selectSessionAtIndex:%d]",
-          __FILE__, __LINE__, sessionIndex);
-#endif
-
-    [TABVIEW selectTabViewItemAtIndex: sessionIndex];
 }
 
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index
@@ -539,8 +505,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [TABVIEW insertTabViewItem: aTabViewItem atIndex: index];
 		
         [aTabViewItem release];
-		[self selectSessionAtIndex:index];
-		
+		[TABVIEW selectTabViewItemAtIndex: index];
+
 		if([self windowInited])
 			[[self window] makeKeyAndOrderFront: self];
 		[[iTermController sharedInstance] setCurrentTerminal: self];
@@ -565,14 +531,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[self window] close];
     }
 	else {
-        // if we are closing the current session, select another session before closing this one
-        
-        
-        // now get rid of this session
-        //[aSession retain];  
+         // now get rid of this session
         aTabViewItem = [aSession tabViewItem];
         [aSession terminate];
-        //[aSession release];
         [TABVIEW removeTabViewItem: aTabViewItem];
     }
 }
@@ -935,7 +896,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle:%@]",
           __FILE__, __LINE__, title);
 #endif
-    [[self window] setTitle:title];
+    if (title) [[self window] setTitle:title]; else [[self window] setTitle:@"Session"];
 }
 
 // increases or dcreases font size
@@ -1087,14 +1048,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     if (![[self currentSession] logging]) [[self currentSession] logStart];
     // send a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [self currentSession]];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: [self currentSession]];
 }
 
 - (IBAction)logStop:(id)sender
 {
     if ([[self currentSession] logging]) [[self currentSession] logStop];
     // send a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [self currentSession]];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: [self currentSession]];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
@@ -1609,7 +1570,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     if (![[self currentSession] exited]) [[self currentSession] resetStatus];
-    [[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
     
 }
 
@@ -1619,14 +1579,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: didSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     
-    [[tabViewItem identifier] setLabelAttribute];
+	[[tabViewItem identifier] resetStatus];
+	[[tabViewItem identifier] setLabelAttribute];
 	[[[tabViewItem identifier] SCREEN] setDirty];
 	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
 	[self setWindowTitle];
 
+    [[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
+
 	// Post notifications
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: self userInfo: nil];    
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionDidBecomeActive" object: [tabViewItem identifier]];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: [tabViewItem identifier]];    
 }
 
 - (void)tabView:(NSTabView *)tabView willRemoveTabViewItem:(NSTabViewItem *)tabViewItem
@@ -2117,7 +2079,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 	[[(PTYWindow *)[self window] drawer] toggle: sender];	
 	// Post a notification
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: nil userInfo: nil];    
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: self userInfo: nil];    
 }
 
 - (NSSize)drawerWillResizeContents:(NSDrawer *)sender toSize:(NSSize)contentSize
@@ -2415,14 +2377,22 @@ end_thread:
     [self acquireLock];
     [self appendSession: aSession];
     
-    
-    NSString *cmd;
-    NSArray *arg;
-    NSString *pwd;
+    // We process the cmd to insert URL parts
+    NSMutableString *cmd = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_COMMAND]] autorelease];
+	NSURL *urlRep = [NSURL URLWithString: url];
 	
+    
     // Grab the addressbook command
-	cmd = [NSString stringWithFormat:@"%@ %@", [addressbookEntry objectForKey: KEY_COMMAND], url];
-    [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
+	[cmd replaceOccurrencesOfString:@"$$URL$$" withString:url options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+	[cmd replaceOccurrencesOfString:@"$$HOST$$" withString:[urlRep host]?[urlRep host]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+	[cmd replaceOccurrencesOfString:@"$$USER$$" withString:[urlRep user]?[urlRep user]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+	[cmd replaceOccurrencesOfString:@"$$PASSWORD$$" withString:[urlRep password]?[urlRep password]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+	[cmd replaceOccurrencesOfString:@"$$PORT$$" withString:[urlRep port]?[[urlRep port] stringValue]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+	[cmd replaceOccurrencesOfString:@"$$PATH$$" withString:[urlRep path]?[urlRep path]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+
+	NSArray *arg;
+	NSString *pwd;
+	[PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
     
 	pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
 	if([pwd length] <= 0)

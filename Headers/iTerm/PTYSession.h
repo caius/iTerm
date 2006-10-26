@@ -53,7 +53,8 @@
 	
 	// semaphore to coordinate data read from task
 	MPSemaphoreID	dataSemaphore;
-    
+	// semaphore to coordinate thread
+    MPSemaphoreID   threadEndSemaphore;
 
     PTYTask *SHELL;
     VT100Terminal *TERMINAL;

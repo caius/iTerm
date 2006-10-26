@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.253 2006-10-25 02:59:14 yfabian Exp $
+// $Id: VT100Screen.m,v 1.254 2006-10-26 05:36:56 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -406,7 +406,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		
 	// copy the screen content
 	screen_lines_top = bl + current_scrollback_lines*width;
-    for(i = 0; i < HEIGHT; i++) 
+    for(i = 0; i < height && i< HEIGHT; i++) 
     {
         aLine = [self getLineAtScreenIndex: i+skip_lines];
         memcpy(screen_lines_top+width*i, aLine, sw*sizeof(screen_char_t));

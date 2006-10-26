@@ -1,6 +1,7 @@
 {
     IBClasses = (
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {
             ACTIONS = {
                 addBookmark = id; 
@@ -15,8 +16,7 @@
                 deleteBookmarkConfirm = id; 
                 deleteBookmarkFolder = id; 
                 editBookmark = id; 
-                launchInNewTab = id; 
-                launchInNewWindow = id; 
+                launchSession = id; 
                 setDefaultSession = id; 
             }; 
             CLASS = iTermBookmarkController; 
@@ -35,10 +35,8 @@
                 bookmarkWorkingDirectory = NSTextField; 
                 bookmarksView = NSOutlineView; 
                 defaultSessionButton = NSButton; 
-                deleteBookmarkPanel = NSPanel; 
                 editBookmarkPanel = NSPanel; 
-                launchInNewTabButton = NSButton; 
-                launchInNewWindowButton = NSButton; 
+                launchButton = id; 
             }; 
             SUPERCLASS = NSWindowController; 
         }

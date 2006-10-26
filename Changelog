@@ -1,3 +1,20 @@
+2006-10-25	fabian
+
+	* Added a semaphore in PTYSession's read thread to avoid the loss of data when the session ends.
+	* Replaced two launch buttons in bookmarks window with a segmented control.
+	* Cleaned some of the notification code. Now notifications will only be processed if it's from
+	  the front session or window.
+	* Icons updated.
+	* Fixed a bug in [VT100Screen resizeWidth:Height] that might be the source of many crashes.
+	* Added ability to parse URL for URL handlers. The following macro can be used in handler's command:
+		$$URL$$, $$HOST$$, $$USER$$, $$PASSWORD$$, $$PORT$$, $$PATH$$
+	  For example, a bookmark's command is: telnet -l $$USER$$ $$HOST$$ $$PORT$$, and the
+	  URL is: telnet://joe@fancyland.com:23
+	  This will give you this command: telnet -l joe fancyland.com 23
+	  The URL will no longer be passed to a session by default, unless you specify one of those 6 macros
+	  in your command line.
+	* Now iTerm offers to become the default handler when you connect a URL scheme to a session. No undo.
+	
 2006-10-24	fabian
 
 	* Changed default stroke width to a less bold look.

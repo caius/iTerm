@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.40 2006-10-25 02:59:15 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.41 2006-10-26 05:36:56 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -203,9 +203,9 @@ static BOOL usingAutoLaunchScript = NO;
 // but some users reported that keyboard input is blocked after a hide/unhide operation.
 - (void)applicationDidUnhide:(NSNotification *)aNotification
 {
-	PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
+	// PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
     // Make sure that the first responder stuff is set up OK.
-    [frontTerminal selectSessionAtIndex: [frontTerminal currentSessionIndex]];
+    // [frontTerminal selectSessionAtIndex: [frontTerminal currentSessionIndex]];
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app
@@ -241,13 +241,8 @@ static BOOL usingAutoLaunchScript = NO;
 
     [[NSNotificationCenter defaultCenter] addObserver: self
                                              selector: @selector(reloadSessionMenus:)
-                                                 name: @"iTermSessionDidBecomeActive"
+                                                 name: @"iTermSessionBecameKey"
                                                object: nil];    
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(reloadMenus:)
-                                                 name:@"iTermSessionDidBecomeActive"
-                                               object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(nonTerminalWindowBecameKey:)
@@ -464,64 +459,61 @@ static BOOL usingAutoLaunchScript = NO;
 // Notifications
 - (void) reloadMenus: (NSNotification *) aNotification
 {
+
     PseudoTerminal *frontTerminal = [self currentTerminal];
-	unsigned int drawerState;
-    
-    [previousTerminal setAction: (frontTerminal?@selector(previousTerminal:):nil)];
-    [nextTerminal setAction: (frontTerminal?@selector(nextTerminal:):nil)];
-
-    [self buildSessionSubmenu: aNotification];
-    [self buildAddressBookMenu: aNotification];
-    
-    // reset the close tab/window shortcuts
-    [closeTab setAction: @selector(closeCurrentSession:)];
-    [closeTab setTarget: frontTerminal];
-    [closeTab setKeyEquivalent: @"w"];
-    [closeWindow setKeyEquivalent: @"W"];
-    [closeWindow setKeyEquivalentModifierMask: NSCommandKeyMask];
-    
-    // set some menu item states
-    if (frontTerminal && [[frontTerminal tabView] numberOfTabViewItems]) {
-        [toggleBookmarksView setEnabled:YES];
-        [toggleTransparency setEnabled:YES];
-        [fontSizeFollowWindowResize setEnabled:YES];
-        [sendInputToAllSessions setEnabled:YES];
-
-        if([frontTerminal sendInputToAllSessions] == YES)
-        [sendInputToAllSessions setState: NSOnState];
-        else
-        [sendInputToAllSessions setState: NSOffState];
-
-        if([frontTerminal fontSizeFollowWindowResize] == YES)
-            [fontSizeFollowWindowResize setState: NSOnState];
-        else
-            [fontSizeFollowWindowResize setState: NSOffState];
-        
-        if ([[frontTerminal currentSession] useTransparency] == YES)
-            [toggleTransparency setState: NSOnState];
-        else
-            [toggleTransparency setState: NSOffState];
-        
-        // reword some menu items
-        drawerState = [[(PTYWindow *)[frontTerminal window] drawer] state];
-        if(drawerState == NSDrawerClosedState || drawerState == NSDrawerClosingState)
-        {
-            [toggleBookmarksView setTitle: 
-                NSLocalizedStringFromTableInBundle(@"Show Bookmark Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
-        }
-        else
-        {
-            [toggleBookmarksView setTitle: 
-                NSLocalizedStringFromTableInBundle(@"Hide Bookmarks Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
-        }
-    }
-    else {
-        [toggleBookmarksView setEnabled:NO];
-        [toggleTransparency setEnabled:NO];
-        [fontSizeFollowWindowResize setEnabled:NO];
-        [sendInputToAllSessions setEnabled:NO];
-    }
+    if (frontTerminal != [aNotification object]) return;
 	
+	unsigned int drawerState;
+
+	[previousTerminal setAction: (frontTerminal?@selector(previousTerminal:):nil)];
+	[nextTerminal setAction: (frontTerminal?@selector(nextTerminal:):nil)];
+
+	[self buildSessionSubmenu: aNotification];
+	[self buildAddressBookMenu: aNotification];
+	// reset the close tab/window shortcuts
+	[closeTab setAction: @selector(closeCurrentSession:)];
+	[closeTab setTarget: frontTerminal];
+	[closeTab setKeyEquivalent: @"w"];
+	[closeWindow setKeyEquivalent: @"W"];
+	[closeWindow setKeyEquivalentModifierMask: NSCommandKeyMask];
+
+
+	// set some menu item states
+	if (frontTerminal && [[frontTerminal tabView] numberOfTabViewItems]) {
+		[toggleBookmarksView setEnabled:YES];
+		[toggleTransparency setEnabled:YES];
+		[fontSizeFollowWindowResize setEnabled:YES];
+		[sendInputToAllSessions setEnabled:YES];
+
+		if([frontTerminal sendInputToAllSessions] == YES)
+		[sendInputToAllSessions setState: NSOnState];
+		else
+		[sendInputToAllSessions setState: NSOffState];
+
+		if([frontTerminal fontSizeFollowWindowResize] == YES)
+			[fontSizeFollowWindowResize setState: NSOnState];
+		else
+			[fontSizeFollowWindowResize setState: NSOffState];
+		
+		// reword some menu items
+		drawerState = [[(PTYWindow *)[frontTerminal window] drawer] state];
+		if(drawerState == NSDrawerClosedState || drawerState == NSDrawerClosingState)
+		{
+			[toggleBookmarksView setTitle: 
+				NSLocalizedStringFromTableInBundle(@"Show Bookmark Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+		}
+		else
+		{
+			[toggleBookmarksView setTitle: 
+				NSLocalizedStringFromTableInBundle(@"Hide Bookmarks Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+		}
+	}
+	else {
+		[toggleBookmarksView setEnabled:NO];
+		[toggleTransparency setEnabled:NO];
+		[fontSizeFollowWindowResize setEnabled:NO];
+		[sendInputToAllSessions setEnabled:NO];
+	}
 }
 
 - (void) nonTerminalWindowBecameKey: (NSNotification *) aNotification
@@ -534,34 +526,37 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (void) buildSessionSubmenu: (NSNotification *) aNotification
 {
-    // build a submenu to select tabs
+	// build a submenu to select tabs
 	PseudoTerminal *currentTerminal = [self currentTerminal];
+	
+	if (currentTerminal != [aNotification object] || ![[currentTerminal window] isKeyWindow]) return;
 	
     NSMenu *aMenu = [[NSMenu alloc] initWithTitle: @"SessionMenu"];
     PTYTabView *aTabView = [currentTerminal tabView];
     PTYSession *aSession;
-    int n = [aTabView numberOfTabViewItems];
-    int i;
-
+    NSArray *tabViewItemArray = [aTabView tabViewItems];
+	NSEnumerator *enumerator = [tabViewItemArray objectEnumerator];
+	NSTabViewItem *aTabViewItem;
+	int i=1;
+	
     // clear whatever menu we already have
     [selectTab setSubmenu: nil];
 
-    for (i=0; i<n; i++)
-    {
-        aSession = [[aTabView tabViewItemAtIndex:i] identifier];
+	while ((aTabViewItem = [enumerator nextObject])) {
+		aSession = [aTabViewItem identifier];
         NSMenuItem *aMenuItem;
-
-
+		
         if(i < 10)
         {
-            aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(selectSessionAtIndexAction:) keyEquivalent: [NSString stringWithFormat: @"%d", i+1]];
-            [aMenuItem setTag: i];
-
+            aMenuItem  = [[NSMenuItem alloc] initWithTitle: [aSession name] action: @selector(selectSessionAtIndexAction:) keyEquivalent: [NSString stringWithFormat: @"%d", i]];
+            [aMenuItem setTag: i-1];
+			
             [aMenu addItem: aMenuItem];
             [aMenuItem release];
         }
+		i++;
+	}
 
-    }
     [selectTab setSubmenu: aMenu];
 
     [aMenu release];
@@ -581,15 +576,21 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (void) reloadSessionMenus: (NSNotification *) aNotification
 {
+	PseudoTerminal *currentTerminal = [self currentTerminal];
     PTYSession *aSession = [aNotification object];
+
+	if (currentTerminal != [aSession parent] || ![[currentTerminal window] isKeyWindow]) return;
 
     if(aSession == nil || [aSession exited]) {
 		[logStart setEnabled: NO];
 		[logStop setEnabled: NO];
+		[toggleTransparency setEnabled: NO];
 	}
 	else {
 		[logStart setEnabled: ![aSession logging]];
 		[logStop setEnabled: [aSession logging]];
+		[toggleTransparency setState: [aSession useTransparency] ? NSOnState : NSOffState];
+		[toggleTransparency setEnabled: YES];
 	}
 }
 

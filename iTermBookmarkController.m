@@ -83,6 +83,7 @@ static BOOL editingBookmark = NO;
     [bookmarksView setDoubleAction: @selector(editBookmark:)];	
     
     [[self window] setDelegate: self]; // also forces window to load
+	[self outlineViewSelectionDidChange:nil];
     [self showWindow: self];
 }
 
@@ -97,10 +98,7 @@ static BOOL editingBookmark = NO;
 {
 	int selectedRow;
 	id selectedItem;
-	
-	if([aNotification object] != bookmarksView)
-		return;
-	
+		
 	selectedRow = [bookmarksView selectedRow];
 	
 	if(selectedRow == -1)
@@ -108,8 +106,7 @@ static BOOL editingBookmark = NO;
 		[bookmarkDeleteButton setEnabled: NO];
 		[bookmarkEditButton setEnabled: NO];
 		[defaultSessionButton setEnabled: NO];
-        [launchInNewWindowButton setEnabled: NO];
-        [launchInNewTabButton setEnabled: NO];
+        [launchButton setEnabled: NO];
 	}
 	else
 	{
@@ -126,24 +123,21 @@ static BOOL editingBookmark = NO;
 			[defaultSessionButton setState: NSOnState];
 			[defaultSessionButton setEnabled: NO];
 			[bookmarkEditButton setEnabled: YES];
-            [launchInNewWindowButton setEnabled: YES];
-            [launchInNewTabButton setEnabled: YES];
+            [launchButton setEnabled: YES];
 		}
 		// check for folder
 		else if([[ITAddressBookMgr sharedInstance] isExpandable: selectedItem])
 		{
 			[bookmarkEditButton setEnabled: NO];
 			[defaultSessionButton setEnabled: NO];
-            [launchInNewWindowButton setEnabled: NO];
-            [launchInNewTabButton setEnabled: NO];
+            [launchButton setEnabled: NO];
         }		
 		else
 		{
 			[defaultSessionButton setState: NSOffState];
 			[defaultSessionButton setEnabled: YES];
 			[bookmarkEditButton setEnabled: YES];
-            [launchInNewWindowButton setEnabled: YES];
-            [launchInNewTabButton setEnabled: YES];
+            [launchButton setEnabled: YES];
 		}
 				
 	}
@@ -394,33 +388,20 @@ static BOOL editingBookmark = NO;
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermRefreshTerminal" object: nil userInfo: nil];    
 }
 
-- (IBAction) launchInNewWindow: (id) sender
+- (IBAction) launchSession: (id) sender
 {
     int selectedRow = [bookmarksView selectedRow];
 	TreeNode *selectedItem;
 	
+	//NSLog(@"selected: %d", [sender selectedSegment]);
 	if(selectedRow < 0)
 		return;
 	
-	selectedItem = [bookmarksView itemAtRow: selectedRow];
-	if(selectedItem != nil && [selectedItem isLeaf])
-	{
-		[[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] inTerminal: nil];
-	}
-}
 
-- (IBAction) launchInNewTab: (id) sender
-{
-    int selectedRow = [bookmarksView selectedRow];
-	TreeNode *selectedItem;
-	
-	if(selectedRow < 0)
-		return;
-	
 	selectedItem = [bookmarksView itemAtRow: selectedRow];
 	if(selectedItem != nil && [selectedItem isLeaf])
 	{
-		[[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] inTerminal: [[iTermController sharedInstance] currentTerminal]];
+		[[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] inTerminal: [sender selectedSegment] ? nil :[[iTermController sharedInstance] currentTerminal]];
 	}
 }
 

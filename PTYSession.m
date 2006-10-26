@@ -100,6 +100,9 @@ static NSImage *warningImage;
 	
 	// allocate a semaphore to coordinate data processing
 	MPCreateBinarySemaphore(&dataSemaphore);
+
+	// allocate a semaphore to coordinate with thread
+	MPCreateBinarySemaphore(&threadEndSemaphore);
 	
     // Allocate screen, shell, and terminal objects
     SHELL = [[PTYTask alloc] init];
@@ -246,6 +249,10 @@ static NSImage *warningImage;
     EXIT = YES;
 	[SHELL stop];
 	
+	// wait till all the remaining data is processed
+	MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
+    MPDeleteSemaphore(threadEndSemaphore);
+
 	// release the data processing semaphore
 	MPDeleteSemaphore(dataSemaphore);
 		
@@ -374,6 +381,8 @@ static NSImage *warningImage;
 		  __FILE__, __LINE__, event);
 #endif
     
+	if (EXIT) return;
+	
     modflag = [event modifierFlags];
     keycode = [event keyCode];
     keystr  = [event characters];
@@ -629,6 +638,8 @@ static NSImage *warningImage;
 
 - (void) handleOptionClick: (NSEvent *) theEvent
 {
+	if (EXIT) return;
+	
     // Here we will attempt to position the cursor to the mouse-click
 	
     NSPoint locationInWindow, locationInTextView, locationInScrollView;
@@ -1107,8 +1118,6 @@ static NSImage *warningImage;
 
 - (void) setName: (NSString *) theName
 {
-    NSMutableString *aMutableString;
-	
     if([name isEqualToString: theName])
 		return;
     
@@ -1127,23 +1136,15 @@ static NSImage *warningImage;
 		if([self windowTitle] == nil)
 			[self setWindowTitle: theName];
     }
-    if([theName length] > 20)
-    {
-        aMutableString = [[NSMutableString alloc] initWithString: [theName substringWithRange: NSMakeRange(0, 17)]];
-        [aMutableString appendString: @"..."];
-        [tabViewItem setLabel: aMutableString];
-        [self setBell: NO];
-        [aMutableString release];
-    }
-    else {
-        [tabViewItem setLabel: theName];
-        [self setBell: NO];
-    }
+    
+	[tabViewItem setLabel: theName];
+	[self setBell: NO];
+    
 	
     // get the session submenu to be rebuilt
     if([[iTermController sharedInstance] currentTerminal] == [self parent])
     {
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNameOfSessionDidChange" object: self userInfo: nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNameOfSessionDidChange" object: [self parent] userInfo: nil];
     }
 }
 
@@ -1613,7 +1614,7 @@ static NSImage *warningImage;
 - (void) updateDisplay
 {
     struct timeval now;
-    
+    	
     gettimeofday(&now, NULL);
 
     if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {
@@ -1693,7 +1694,7 @@ static NSImage *warningImage;
 
 -(void)handleSelectScriptCommand: (NSScriptCommand *)command
 {
-    [parent setCurrentSession: self];
+	[[parent tabView] selectTabViewItemWithIdentifier: self];
 }
 
 -(void)handleWriteScriptCommand: (NSScriptCommand *)command
@@ -1762,7 +1763,7 @@ static NSImage *warningImage;
 		MPWaitOnSemaphore(dataSemaphore, kDurationForever);
 		
 		// inner while loop to process all the tokens we can get
-		while(EXIT == NO)
+		while(1)
 		{
 			// grab next token
 			token = [TERMINAL getNextToken];
@@ -1809,8 +1810,12 @@ static NSImage *warningImage;
 		[arPool release];
 		arPool = nil;
 	}
+
+	[self updateDisplay];
 	
 	[pool release];
+
+    MPSignalSemaphore(threadEndSemaphore);
 	
 	[NSThread exit];
 	

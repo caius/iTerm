@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.43 2006-10-20 05:40:08 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.44 2006-10-26 05:36:57 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -71,14 +71,11 @@
 - (void)initWindowWithAddressbook:(NSDictionary *)entry;
 - (void)setupSession: (PTYSession *) aSession title: (NSString *)title;
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index;
-- (void) switchSession: (id) sender;
-- (void) selectSessionAtIndex: (int) sessionIndex;
 - (void) closeSession: (PTYSession*) aSession;
 - (IBAction) closeCurrentSession: (id) sender;
 - (IBAction) previousSession:(id)sender;
 - (IBAction) nextSession:(id)sender;
 - (PTYSession *) currentSession;
-- (void) setCurrentSession: (PTYSession *) aSession;
 - (int) currentSessionIndex;
 - (NSString *) currentSessionName;
 - (void) setCurrentSessionName: (NSString *) theSessionName;

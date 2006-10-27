@@ -15,6 +15,7 @@
                 kbEntryAddCancel = id; 
                 kbEntryAddConfirm = id; 
                 kbEntryDelete = id; 
+                kbEntryEdit = id; 
                 kbEntrySelectorChanged = id; 
                 kbOptionKeyChanged = id; 
                 profileAdd = id; 
@@ -78,6 +79,7 @@
                 duplicateButton = id; 
                 kbEntryAction = NSPopUpButton; 
                 kbEntryDeleteButton = NSButton; 
+                kbEntryHint = id; 
                 kbEntryKey = NSPopUpButton; 
                 kbEntryKeyCode = NSTextField; 
                 kbEntryKeyModifierCommand = NSButton; 

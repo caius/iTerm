@@ -56,6 +56,7 @@
 	IBOutlet NSPopUpButton *kbEntryAction;
 	IBOutlet NSTextField *kbEntryText;
 	IBOutlet NSTextField *kbEntryKeyCode;
+	IBOutlet NSTextField *kbEntryHint;
 	IBOutlet NSTableView *kbEntryTableView;
 	IBOutlet NSButton *kbEntryDeleteButton;
 	IBOutlet NSMatrix *kbOptionKey;
@@ -130,6 +131,7 @@
 - (void) kbOptionKeyChanged: (id) sender;
 - (void) kbProfileChangedTo: (NSString *) profile;
 - (IBAction) kbEntryAdd: (id) sender;
+- (IBAction) kbEntryEdit: (id) sender;
 - (IBAction) kbEntryAddConfirm: (id) sender;
 - (IBAction) kbEntryAddCancel: (id) sender;
 - (IBAction) kbEntryDelete: (id) sender;

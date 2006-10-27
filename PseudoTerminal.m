@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.364 2006-10-26 05:36:55 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.365 2006-10-27 22:39:51 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -883,11 +883,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle]",
           __FILE__, __LINE__);
 #endif
-    
-    if([[self currentSession] windowTitle] == nil)
-		[[self window] setTitle:[self currentSessionName]];
-    else
-		[[self window] setTitle:[[self currentSession] windowTitle]];
+    NSString *title = [[self currentSession] windowTitle] ? [[self currentSession] windowTitle] : [self currentSessionName];
+	
+	[self setWindowTitle: title];
 }
 
 - (void) setWindowTitle: (NSString *)title
@@ -896,7 +894,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle:%@]",
           __FILE__, __LINE__, title);
 #endif
-    if (title) [[self window] setTitle:title]; else [[self window] setTitle:@"Session"];
+	NSString *temp = title ? title : @"Session";
+	
+	[[self window] setTitle: [self sendInputToAllSessions] ? [NSString stringWithFormat:@">>%@<<", temp] : temp];
 }
 
 // increases or dcreases font size
@@ -1135,6 +1135,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     // cause reloading of menus
     [[iTermController sharedInstance] setCurrentTerminal: self];
+	[self setWindowTitle];
 }
 
 - (void) setFontSizeFollowWindowResize: (BOOL) flag
@@ -1810,7 +1811,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }        
 			
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNumberOfSessionsDidChange" object: self userInfo: nil];		
-	[tabBarControl update];
+	//[tabBarControl update];
 }
 
 - (NSMenu *)tabView:(NSTabView *)aTabView menuForTabViewItem:(NSTabViewItem *)tabViewItem

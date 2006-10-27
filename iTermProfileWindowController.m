@@ -33,6 +33,7 @@
 @implementation iTermProfileWindowController
 
 static NSArray *profileCategories;
+static BOOL addingKBEntry;
 
 + (iTermProfileWindowController*)sharedInstance
 {
@@ -280,6 +281,7 @@ static NSArray *profileCategories;
 {
 	int i;
 	
+	addingKBEntry = YES;
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	[kbEntryKeyCode setStringValue: @""];
 	[kbEntryText setStringValue: @""];
@@ -305,6 +307,199 @@ static NSArray *profileCategories;
 	[kbEntryAction setAction: @selector(kbEntrySelectorChanged:)];
 	
 	
+	
+	if([[iTermKeyBindingMgr singleInstance] isGlobalProfile: selectedProfile])
+	{
+		for (i = KEY_ACTION_NEXT_SESSION; i < KEY_ACTION_ESCAPE_SEQUENCE; i++)
+		{
+			[[kbEntryAction itemAtIndex: i] setEnabled: YES];
+			[[kbEntryAction itemAtIndex: i] setAction: @selector(kbEntrySelectorChanged:)];
+			[[kbEntryAction itemAtIndex: i] setTarget: self];
+		}
+	}
+	else
+	{
+		for (i = KEY_ACTION_NEXT_SESSION; i < KEY_ACTION_ESCAPE_SEQUENCE; i++)
+		{
+			[[kbEntryAction itemAtIndex: i] setEnabled: NO];
+			[[kbEntryAction itemAtIndex: i] setAction: nil];
+		}
+		[kbEntryAction selectItemAtIndex: KEY_ACTION_ESCAPE_SEQUENCE];
+		
+	}
+	
+	[self kbEntrySelectorChanged: kbEntryAction];
+	
+	[NSApp beginSheet: addKBEntry
+       modalForWindow: [self window]
+        modalDelegate: self
+       didEndSelector: @selector(_addKBEntrySheetDidEnd:returnCode:contextInfo:)
+          contextInfo: nil];        
+	
+}
+
+- (IBAction) kbEntryEdit: (id) sender
+{
+	int index;
+	int selectedRow = [kbEntryTableView selectedRow];
+	
+	NSMutableDictionary *keyMappings;
+	NSArray *allKeys;
+	NSString *theKeyCombination;
+	unsigned int keyCode, keyModifiers;
+	int action;
+	NSString *auxText;
+	
+	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
+	
+	keyMappings = [[[[iTermKeyBindingMgr singleInstance] profiles] objectForKey: selectedProfile] objectForKey: @"Key Mappings"];
+	allKeys = [keyMappings allKeys];
+	
+	if(selectedRow >= 0 && selectedRow < [allKeys count])
+	{
+		theKeyCombination = [allKeys objectAtIndex: selectedRow];
+		action = [[[keyMappings objectForKey: [allKeys objectAtIndex: selectedRow]] objectForKey: @"Action"] intValue];
+		auxText = [[keyMappings objectForKey: [allKeys objectAtIndex: selectedRow]] objectForKey: @"Text"];
+	}
+	else
+		return;
+	
+	addingKBEntry = NO;
+	sscanf([theKeyCombination UTF8String], "%x-%x", &keyCode, &keyModifiers);
+	
+	[kbEntryKey setTarget: self];
+	[kbEntryKey setAction: @selector(kbEntrySelectorChanged:)];
+	[kbEntryAction setTarget: self];
+	[kbEntryAction setAction: @selector(kbEntrySelectorChanged:)];
+	
+	switch (keyCode)
+	{
+		case NSDownArrowFunctionKey:
+			index = KEY_CURSOR_DOWN;
+			break;
+		case NSLeftArrowFunctionKey:
+			index = KEY_CURSOR_LEFT;
+			break;
+		case NSRightArrowFunctionKey:
+			index = KEY_CURSOR_RIGHT;
+			break;
+		case NSUpArrowFunctionKey:
+			index = KEY_CURSOR_UP;
+			break;
+		case NSDeleteFunctionKey:
+			index = KEY_DEL;
+			break;
+		case 0x7f:
+			index = KEY_DELETE;
+			break;
+		case NSEndFunctionKey:
+			index = KEY_END;
+			break;
+		case NSF1FunctionKey:
+		case NSF2FunctionKey:
+		case NSF3FunctionKey:
+		case NSF4FunctionKey:
+		case NSF5FunctionKey:
+		case NSF6FunctionKey:
+		case NSF7FunctionKey:
+		case NSF8FunctionKey:
+		case NSF9FunctionKey:
+		case NSF10FunctionKey:
+		case NSF11FunctionKey:
+		case NSF12FunctionKey:
+		case NSF13FunctionKey:
+		case NSF14FunctionKey:
+		case NSF15FunctionKey:
+		case NSF16FunctionKey:
+		case NSF17FunctionKey:
+		case NSF18FunctionKey:
+		case NSF19FunctionKey:
+		case NSF20FunctionKey:
+			index = KEY_F1 + keyCode - NSF1FunctionKey;
+			break;
+		case NSHelpFunctionKey:
+			index = KEY_HELP;
+			break;
+		case NSHomeFunctionKey:
+			index = KEY_HOME;
+			break;
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			index = KEY_NUMERIC_0 + keyCode - '0';
+			break;
+		case '=':
+			index = KEY_NUMERIC_EQUAL;
+			break;
+		case '/':
+			index = KEY_NUMERIC_DIVIDE;
+			break;
+		case '*':
+			index = KEY_NUMERIC_MULTIPLY;
+			break;
+		case '-':
+			index = KEY_NUMERIC_MINUS;
+			break;
+		case '+':
+			index = KEY_NUMERIC_PLUS;
+			break;
+		case '.':
+			index = KEY_NUMERIC_PERIOD;
+			break;
+		case NSClearLineFunctionKey:
+			index = KEY_NUMLOCK;
+			break;
+		case NSPageDownFunctionKey:
+			index = KEY_PAGE_DOWN;
+			break;
+		case NSPageUpFunctionKey:
+			index = KEY_PAGE_UP;
+			break;
+		case 0x3: // 'enter' on numeric key pad
+			index = KEY_NUMERIC_ENTER;
+			break;
+		default:
+			index = KEY_HEX_CODE;
+			[kbEntryKeyCode setStringValue: [NSString stringWithFormat:@"0x%x", keyCode]];
+			break;
+	}
+	
+	[kbEntryKey selectItemAtIndex:index];
+	[self kbEntrySelectorChanged: kbEntryKey];
+	
+	[kbEntryKeyModifierCommand setState: (keyModifiers & NSCommandKeyMask)];
+	[kbEntryKeyModifierOption setState: (keyModifiers & NSAlternateKeyMask)];
+	[kbEntryKeyModifierControl setState: (keyModifiers & NSControlKeyMask)];
+	[kbEntryKeyModifierShift setState: (keyModifiers & NSShiftKeyMask)];
+	
+	//NSLog(@"%s", __PRETTY_FUNCTION__);
+
+	[kbEntryKeyModifierOption setEnabled: YES];
+	[kbEntryKeyModifierControl setEnabled: YES];
+	[kbEntryKeyModifierShift setEnabled: YES];
+	[kbEntryKeyModifierCommand setEnabled: YES];
+	
+	if (action == KEY_ACTION_HEX_CODE || action == KEY_ACTION_ESCAPE_SEQUENCE)
+	{
+		[kbEntryText setStringValue: auxText];
+	}
+	else
+	{
+		[kbEntryText setStringValue: @""];
+	}
+	
+	[kbEntryAction selectItemAtIndex: action];
+	[self kbEntrySelectorChanged: kbEntryAction];
+	
+	
+	int i;
 	
 	if([[iTermKeyBindingMgr singleInstance] isGlobalProfile: selectedProfile])
 	{
@@ -380,14 +575,16 @@ static NSArray *profileCategories;
 		if([kbEntryAction indexOfSelectedItem] == KEY_ACTION_HEX_CODE ||
 		   [kbEntryAction indexOfSelectedItem] == KEY_ACTION_ESCAPE_SEQUENCE)
 		{		
-			if ([kbEntryText respondsToSelector: @selector(setHidden:)] == YES)
-				[kbEntryText setHidden: NO];
+			[kbEntryText setHidden: NO];
+			[kbEntryHint setHidden: NO];
+			[kbEntryHint setStringValue: ([kbEntryAction indexOfSelectedItem] == KEY_ACTION_HEX_CODE) ?
+				@"eg. 7f for forward delete" : @"eg. [OC for ESC [OC"];
 		}
 		else
 		{
 			[kbEntryText setStringValue: @""];
-			if([kbEntryText respondsToSelector: @selector(setHidden:)] == YES)
-				[kbEntryText setHidden: YES];
+			[kbEntryText setHidden: YES];
+			[kbEntryHint setHidden: YES];
 		}
 	}	
 }
@@ -949,7 +1146,13 @@ static NSArray *profileCategories;
 	{
 		unsigned int modifiers = 0;
 		unsigned int hexCode = 0;
-		
+		int selectedRow = [kbEntryTableView selectedRow];
+
+		// if we are editing, we remove the old entry first
+		if (!addingKBEntry && selectedRow>=0)
+			[[iTermKeyBindingMgr singleInstance] deleteEntryAtIndex: [kbEntryTableView selectedRow] 
+														  inProfile: selectedProfile];
+
 		if([kbEntryKeyModifierOption state] == NSOnState)
 			modifiers |= NSAlternateKeyMask;
 		if([kbEntryKeyModifierControl state] == NSOnState)
@@ -982,6 +1185,7 @@ static NSArray *profileCategories;
 	}
 	
 	[addKBEntry close];
+	[kbEntryTableView reloadData];
 }
 
 - (void)_duplicateProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo

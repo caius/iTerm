@@ -565,9 +565,11 @@
 				E8EDCE69015E0A5703000001 /* iTerm.icns */,
 				FBBB8B60039FC04E01F955DB /* iTerm.png */,
 				DD9C1AE2051F45C000A8A065 /* iTerm-Aqua.jpg */,
+				F6DA0B020AF06A4F0098EFEB /* add.png */,
 				FB094A14033D58AE01F955DB /* addressbook.png */,
 				FB094A16033D58B601F955DB /* close.png */,
 				FB754C5F036EFC5301F955DB /* config.png */,
+				F6DA0AFC0AF066EE0098EFEB /* edit.png */,
 				FB47BCC403686CAC01F955DB /* exec.png */,
 				F6CDC4E60AE6D3E2005E7D4F /* folder.png */,
 				FBB2EBCD040AC7C201F955DB /* important.png */,
@@ -579,8 +581,6 @@
 				FB151F2903648AC401F955DB /* iTerm.strings */,
 				DD57633005653C2E00F1905E /* iTerm_Framework.plist */,
 				DD57633605653C5F00F1905E /* iTerm.plist */,
-				F6DA0AFC0AF066EE0098EFEB /* edit.png */,
-				F6DA0B020AF06A4F0098EFEB /* add.png */,
 			);
 			name = Interfaces;
 			sourceTree = "<group>";

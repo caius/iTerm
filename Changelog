@@ -1,3 +1,9 @@
+2006-10-26	fabian
+
+	* Added a visual to indicate whether "send to all session" is turned on or not.
+	* Improved About dialog.
+	* Added Edit button for keymapping settings.
+	
 2006-10-25	fabian
 
 	* Added a semaphore in PTYSession's read thread to avoid the loss of data when the session ends.
@@ -6,7 +12,7 @@
 	  the front session or window.
 	* Icons updated.
 	* Fixed a bug in [VT100Screen resizeWidth:Height] that might be the source of many crashes.
-	* Added ability to parse URL for URL handlers. The following macro can be used in handler's command:
+	* Added ability to parse URL for URL handlers. The following macros can be used in handler's command:
 		$$URL$$, $$HOST$$, $$USER$$, $$PASSWORD$$, $$PORT$$, $$PATH$$
 	  For example, a bookmark's command is: telnet -l $$USER$$ $$HOST$$ $$PORT$$, and the
 	  URL is: telnet://joe@fancyland.com:23

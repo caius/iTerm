@@ -1047,7 +1047,7 @@
 		_animationTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 / 30.0 target:self selector:@selector(_animateCells:) userInfo:newWidths repeats:YES];
 	} else {
 		[self _finishCellUpdate:newWidths];
-        [self setNeedsDisplay:YES];
+        [self setNeedsDisplay];
 	}
     
     [_lock unlock];
@@ -1121,7 +1121,7 @@
 		_animationTimer = nil;
 	}
 	
-	[self setNeedsDisplay:YES];
+	[self setNeedsDisplay];
 }
 
 - (void)_finishCellUpdate:(NSArray *)newWidths
@@ -1374,7 +1374,7 @@
 				[self performSelector:@selector(tabClick:) withObject:cell];
 			}
         }
-        [self setNeedsDisplay:YES];
+        [self setNeedsDisplay];
     }
 }
 
@@ -1419,7 +1419,7 @@
 		if (_closeClicked && NSMouseInRect(trackingStartPoint, iconRect, [self isFlipped]) &&
 				([self allowsBackgroundTabClosing] || [[cell representedObject] isEqualTo:[tabView selectedTabViewItem]])) {
 			[cell setCloseButtonPressed:NSMouseInRect(currentPoint, iconRect, [self isFlipped])];
-			[self setNeedsDisplay:YES];
+			[self setNeedsDisplay];
 			return;
 		}
 		
@@ -1658,7 +1658,7 @@
         [[cell indicator] stopAnimation:self];
         [[cell indicator] startAnimation:self];
     }
-    [self setNeedsDisplay:YES];
+    [self setNeedsDisplay];
 }
 
 - (void)viewWillStartLiveResize
@@ -1668,7 +1668,7 @@
     while ( (cell = [e nextObject]) ) {
         [[cell indicator] stopAnimation:self];
     }
-    [self setNeedsDisplay:YES];
+    [self setNeedsDisplay];
 }
 
 -(void)viewDidEndLiveResize
@@ -1678,12 +1678,12 @@
     while ( (cell = [e nextObject]) ) {
         [[cell indicator] startAnimation:self];
     }
-    [self setNeedsDisplay:YES];
+    [self setNeedsDisplay];
 }
 
 - (void)windowDidMove:(NSNotification *)aNotification
 {
-    [self setNeedsDisplay:YES];
+    [self setNeedsDisplay];
 }
 
 - (void)windowStatusDidChange:(NSNotification *)notification
@@ -1707,7 +1707,7 @@
 					[partnerView setFrame:NSMakeRect(partnerFrame.origin.x, partnerFrame.origin.y - 21, partnerFrame.size.width, partnerFrame.size.height + 21)];
 				}
 				[partnerView setNeedsDisplay:YES];
-				[self setNeedsDisplay:YES];
+				[self setNeedsDisplay];
 			} else {
 				// for window movement
 				NSRect windowFrame = [[self window] frame];
@@ -1729,7 +1729,7 @@
 				}
 				_tabBarWidth = myFrame.size.width;
 				[partnerView setNeedsDisplay:YES];
-				[self setNeedsDisplay:YES];
+				[self setNeedsDisplay];
 			} else {
 				// for window movement
 				NSRect windowFrame = [[self window] frame];
@@ -1745,7 +1745,7 @@
 		}
     }
 	
-	[self setNeedsDisplay:YES];
+	[self setNeedsDisplay];
      _awakenedFromNib = YES;
     [self update];
 }

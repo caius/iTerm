@@ -140,10 +140,9 @@
                 fontSizeFollowWindowResize = NSMenuItem; 
                 logStart = NSMenuItem; 
                 logStop = NSMenuItem; 
-                newTab = NSMenuItem; 
-                newWindow = NSMenuItem; 
                 nextTerminal = NSMenuItem; 
                 previousTerminal = NSMenuItem; 
+                scrollingInfo = id; 
                 selectTab = NSMenuItem; 
                 sendInputToAllSessions = NSMenuItem; 
                 toggleBookmarksView = NSMenuItem; 

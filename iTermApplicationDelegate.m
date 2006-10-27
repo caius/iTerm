@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.41 2006-10-26 05:36:56 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.42 2006-10-27 22:39:51 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -46,6 +46,9 @@ static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Script
 static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";
 
 static BOOL usingAutoLaunchScript = NO;
+
+#define ABOUT_SCROLL_FPS	30.0
+#define ABOUT_SCROLL_RATE	1.0
 
 
 @implementation iTermApplicationDelegate
@@ -251,6 +254,7 @@ static BOOL usingAutoLaunchScript = NO;
 
 	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:self andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
 
+	aboutController = nil;
 
     return self;
 }
@@ -362,6 +366,9 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (IBAction)showAbout:(id)sender
 {
+	// check if an About window is shown already
+	if (aboutController) return;
+	
     NSURL *author1URL, *author2URL, *webURL, *bugURL;
     NSAttributedString *author1, *author2, *webSite, *bugReport;
     NSMutableAttributedString *tmpAttrString;
@@ -423,18 +430,51 @@ static BOOL usingAutoLaunchScript = NO;
     [[AUTHORS textStorage] appendAttributedString: bugReport];
     [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];
 
+	/*NSAttributedString		*creditsString;
     
-    [NSApp runModalForWindow:ABOUT];
-    [ABOUT close];
+    Credits
+		creditsString = [[[NSAttributedString alloc] initWithPath:[[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"rtf"]
+											   documentAttributes:nil] autorelease];
+    [[textView_credits textStorage] setAttributedString:creditsString]; */
+    [[scrollingInfo enclosingScrollView] setLineScroll:0.0];
+    [[scrollingInfo enclosingScrollView] setPageScroll:0.0];
+	[[scrollingInfo enclosingScrollView] setVerticalScroller:nil];
+    
+    //Start scrolling    
+    scrollLocation = 0; 
+    scrollRate = ABOUT_SCROLL_RATE;
+    maxScroll = [[scrollingInfo textStorage] size].height - [[scrollingInfo enclosingScrollView] documentVisibleRect].size.height;
+    scrollTimer = [[NSTimer scheduledTimerWithTimeInterval:(1.0/ABOUT_SCROLL_FPS)
+													target:self
+												  selector:@selector(_scrollTimer:)
+												  userInfo:nil
+												   repeats:YES] retain];
+	eventLoopScrollTimer = [[NSTimer timerWithTimeInterval:(1.0/ABOUT_SCROLL_FPS)
+													target:self
+												  selector:@selector(_scrollTimer:)
+												  userInfo:nil
+												   repeats:YES] retain];
+    [[NSRunLoop currentRunLoop] addTimer:eventLoopScrollTimer forMode:NSEventTrackingRunLoopMode];
+	
+    aboutController = [[NSWindowController alloc] initWithWindow:ABOUT];
+    [aboutController showWindow:ABOUT];
+
     [author1 release];
     [author2 release];
     [webSite release];
     [versionString release];
+	
+	
+	
 }
 
 - (IBAction)aboutOK:(id)sender
 {
-    [NSApp stopModal];
+    [ABOUT close];
+	[scrollTimer invalidate]; [scrollTimer release]; scrollTimer = nil;
+	[eventLoopScrollTimer invalidate]; [eventLoopScrollTimer release]; eventLoopScrollTimer = nil;
+	[aboutController release];
+	aboutController = nil;
 }
 
 // size
@@ -724,5 +764,17 @@ static BOOL usingAutoLaunchScript = NO;
 
 @end
 
+@implementation iTermApplicationDelegate (Private)
 
+//Scroll the credits
+- (void)_scrollTimer:(NSTimer *)scrollTimer
+{    
+	scrollLocation += scrollRate;
+	
+	if (scrollLocation > maxScroll) scrollLocation = 0;    
+	if (scrollLocation < 0) scrollLocation = maxScroll;
+	
+	[scrollingInfo scrollPoint:NSMakePoint(0, scrollLocation)];
+}
 
+@end

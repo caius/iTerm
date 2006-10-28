@@ -3,6 +3,8 @@
 	* Added a visual to indicate whether "send to all session" is turned on or not.
 	* Improved About dialog.
 	* Added Edit button for keymapping settings.
+	* Changed cmd-click to open URL behavior: now http:// is no longer added unless the URL doesn't
+	  explicitly have a scheme prefix.
 	
 2006-10-25	fabian
 

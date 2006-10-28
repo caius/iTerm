@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.270 2006-10-25 02:59:14 yfabian Exp $
+// $Id: PTYTextView.m,v 1.271 2006-10-28 21:19:17 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2945,7 +2945,7 @@ static float strokeWidth, boldStrokeWidth;
         return;
 	    
     // Check for common types of URLs
-    if ([trimmedURLString hasPrefix:@"file://"])
+/*    if ([trimmedURLString hasPrefix:@"file://"])
         url = [NSURL URLWithString:trimmedURLString];
     else if ([trimmedURLString hasPrefix:@"ftp"])
     {
@@ -2962,8 +2962,12 @@ static float strokeWidth, boldStrokeWidth;
         url = [NSURL URLWithString:trimmedURLString];
     else if (![trimmedURLString hasPrefix:@"http"])
         url = [NSURL URLWithString:[@"http://" stringByAppendingString:trimmedURLString]];
-    else
-        url = [NSURL URLWithString:trimmedURLString];
+    else */
+	NSRange range = [trimmedURLString rangeOfString:@"://"];
+	if (range.location == NSNotFound)
+		url = [NSURL URLWithString:[@"http://" stringByAppendingString:trimmedURLString]];
+	else
+		url = [NSURL URLWithString:trimmedURLString];
 	
     [[NSWorkspace sharedWorkspace] openURL:url];
 	

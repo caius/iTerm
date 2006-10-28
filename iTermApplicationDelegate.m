@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.42 2006-10-27 22:39:51 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.43 2006-10-28 21:19:17 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -369,31 +369,13 @@ static BOOL usingAutoLaunchScript = NO;
 	// check if an About window is shown already
 	if (aboutController) return;
 	
-    NSURL *author1URL, *author2URL, *webURL, *bugURL;
-    NSAttributedString *author1, *author2, *webSite, *bugReport;
+    NSURL *webURL, *bugURL;
+    NSAttributedString *webSite, *bugReport;
     NSMutableAttributedString *tmpAttrString;
     NSDictionary *linkAttributes;
 //    [NSApp orderFrontStandardAboutPanel:nil];
 
-    // First Author
-    author1URL = [NSURL URLWithString: @"mailto:yfabian@gmail.com"];
-    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: author1URL, NSLinkAttributeName,
-                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
-					    [NSColor blueColor], NSForegroundColorAttributeName,
-					    NULL];
-    author1 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"fabian",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
-    
-    // Spacer...
-    // tmpAttrString = [[[NSMutableAttributedString alloc] initWithString: @", "] autorelease];
-    
-    // Second Author
-    author2URL = [NSURL URLWithString: @"mailto:ujwal@setlurgroup.com"];
-    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: author2URL, NSLinkAttributeName,
-                        [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
-					    [NSColor blueColor], NSForegroundColorAttributeName,
-					    NULL];
-    author2 = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Ujwal S. Setlur",@"iTerm", [NSBundle bundleForClass: [self class]], @"Author") attributes: linkAttributes];
-    
+        
     // Web URL
     webURL = [NSURL URLWithString: @"http://iterm.sourceforge.net"];
     linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: webURL, NSLinkAttributeName,
@@ -412,31 +394,20 @@ static BOOL usingAutoLaunchScript = NO;
 
     // version number and mode
     NSDictionary *myDict = [[NSBundle bundleForClass:[self class]] infoDictionary];
-    NSMutableString *versionString = [[NSMutableString alloc] initWithString: (NSString *)[myDict objectForKey:@"CFBundleVersion"]];
+    NSString *versionString = [@"Build " stringByAppendingString: (NSString *)[myDict objectForKey:@"CFBundleVersion"]];
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
     tmpAttrString = [[[NSAttributedString alloc] initWithString: versionString] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n\n"] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [[AUTHORS textStorage] appendAttributedString: author1];
-    tmpAttrString = [[[NSAttributedString alloc] initWithString: @", "] autorelease];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    [[AUTHORS textStorage] appendAttributedString: author2];
-    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n"] autorelease];
-    [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: webSite];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n"] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: bugReport];
     [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];
 
-	/*NSAttributedString		*creditsString;
-    
-    Credits
-		creditsString = [[[NSAttributedString alloc] initWithPath:[[NSBundle mainBundle] pathForResource:@"Credits" ofType:@"rtf"]
-											   documentAttributes:nil] autorelease];
-    [[textView_credits textStorage] setAttributedString:creditsString]; */
-    [[scrollingInfo enclosingScrollView] setLineScroll:0.0];
+	[[scrollingInfo enclosingScrollView] setLineScroll:0.0];
     [[scrollingInfo enclosingScrollView] setPageScroll:0.0];
 	[[scrollingInfo enclosingScrollView] setVerticalScroller:nil];
     
@@ -459,11 +430,7 @@ static BOOL usingAutoLaunchScript = NO;
     aboutController = [[NSWindowController alloc] initWithWindow:ABOUT];
     [aboutController showWindow:ABOUT];
 
-    [author1 release];
-    [author2 release];
-    [webSite release];
-    [versionString release];
-	
+    [webSite release];	
 	
 	
 }

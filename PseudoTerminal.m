@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.365 2006-10-27 22:39:51 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.366 2006-10-30 08:47:00 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -148,6 +148,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     if ((self = [super initWithWindowNibName: windowNibName]) == nil)
 		return nil;
+	
+	//enforce the nib to load
+	[self window];
 	
 	// create the window programmatically with appropriate style mask
 	styleMask = NSTitledWindowMask | 
@@ -2101,6 +2104,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [PTLock unlock];
 }
 
+- (IBAction) parameterPanelEnd: (id) sender
+{
+    [NSApp stopModal];
+}
+
 @end
 
 @implementation PseudoTerminal (Private)
@@ -2203,6 +2211,41 @@ end_thread:
 - (void) _refreshTerminal: (NSNotification *) aNotification
 {
 	[self setWindowSize];
+}
+
+- (NSString *) _getSessionParameters: (NSString *) command
+{
+	NSMutableString *completeCommand = [[NSMutableString alloc] initWithString:command];
+	NSRange r1, r2, currentRange;
+	
+	
+	while (1)
+	{
+		currentRange = NSMakeRange(0,[completeCommand length]);
+		r1 = [completeCommand rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
+		if (r1.location == NSNotFound) break;
+		currentRange.location = r1.location + 2;
+		currentRange.length -= r1.location + 2;
+		r2 = [completeCommand rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
+		if (r2.location == NSNotFound) break;
+		
+		[parameterName setStringValue: [completeCommand substringWithRange:NSMakeRange(r1.location+2, r2.location - r1.location-2)]];
+		[parameterValue setStringValue:@""];
+		[NSApp beginSheet: parameterPanel
+		   modalForWindow: [self window]
+			modalDelegate: self
+		   didEndSelector: nil
+			  contextInfo: nil];
+
+		[NSApp runModalForWindow:parameterPanel];
+		
+		[NSApp endSheet:parameterPanel];
+		[parameterPanel orderOut:self];
+
+		[completeCommand replaceOccurrencesOfString:[completeCommand  substringWithRange:NSMakeRange(r1.location, r2.location - r1.location+2)] withString:[parameterValue stringValue] options:NSLiteralSearch range:NSMakeRange(0,[completeCommand length])];
+	}
+	
+	return completeCommand;
 }
 
 @end
@@ -2342,7 +2385,8 @@ end_thread:
     NSString *pwd;
 	
     // Grab the addressbook command
-	cmd = [addressbookEntry objectForKey: KEY_COMMAND];
+	cmd = [self _getSessionParameters: [addressbookEntry objectForKey: KEY_COMMAND]];
+	
     [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
     
 	pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
@@ -2379,7 +2423,7 @@ end_thread:
     [self appendSession: aSession];
     
     // We process the cmd to insert URL parts
-    NSMutableString *cmd = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_COMMAND]] autorelease];
+    NSMutableString *cmd = [[[NSMutableString alloc] initWithString:[self _getSessionParameters: [addressbookEntry objectForKey: KEY_COMMAND]]] autorelease];
 	NSURL *urlRep = [NSURL URLWithString: url];
 	
     

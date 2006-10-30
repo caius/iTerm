@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.44 2006-10-26 05:36:57 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.45 2006-10-30 08:47:02 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -37,6 +37,12 @@
 {
 	
 	NSOutlineView *bookmarksView;
+	
+	// Parameter Panel
+	IBOutlet NSTextField *parameterName;
+	IBOutlet NSPanel     *parameterPanel;
+	IBOutlet NSTextField *parameterValue;
+	IBOutlet NSTextField *parameterPrompt;
 	
     /// tab view
     PTYTabView *TABVIEW;

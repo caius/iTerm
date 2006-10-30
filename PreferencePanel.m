@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.141 2006-10-26 05:36:55 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.142 2006-10-30 08:47:00 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -497,6 +497,8 @@ static NSString *NoHandler = @"<No Handler>";
 	else {
 		[urlHandlers setObject:[urlHandlerOutline itemAtRow:j] forKey: [urlTypes objectAtIndex: i]];
 		
+#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION >= MAC_OS_X_VERSION_10_4)
+
 		NSURL *appURL = nil;
 		OSStatus err;
 		BOOL set = NO;
@@ -520,6 +522,7 @@ static NSString *NoHandler = @"<No Handler>";
 		if (set) {
 			  LSSetDefaultHandlerForURLScheme ((CFStringRef)[urlTypes objectAtIndex: i],(CFStringRef)[[NSBundle mainBundle] bundleIdentifier]);
 		}
+#endif
 	}
 	//NSLog(@"urlHandlers:%@", urlHandlers);
 }

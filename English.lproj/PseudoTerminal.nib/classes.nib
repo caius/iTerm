@@ -39,6 +39,7 @@
                 logStop = id; 
                 moveTabToNewWindowContextualMenuAction = id; 
                 nextSession = id; 
+                parameterPanelEnd = id; 
                 previousSession = id; 
                 saveDisplayProfile = id; 
                 saveTerminalProfile = id; 
@@ -49,6 +50,12 @@
             }; 
             CLASS = PseudoTerminal; 
             LANGUAGE = ObjC; 
+            OUTLETS = {
+                parameterName = id; 
+                parameterPanel = id; 
+                parameterPrompt = id; 
+                parameterValue = id; 
+            }; 
             SUPERCLASS = NSWindowController; 
         }
     ); 

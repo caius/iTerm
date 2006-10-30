@@ -1,3 +1,10 @@
+2006-10-29	fabian
+	
+	* Allowing users to specify parameters in bookmarks' command. For example, if the command is
+	  ssh $$User Name$$@myserver.com, when you start this session, iTerm will ask you to enter
+	  the "User Name", then plug your input into the command and run the session.
+	* Release 0.9.2
+	  
 2006-10-26	fabian
 
 	* Added a visual to indicate whether "send to all session" is turned on or not.

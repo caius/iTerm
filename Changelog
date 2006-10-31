@@ -1,3 +1,7 @@
+2006-10-30	fabian
+
+	* A few tweaks to make panther version to have its own appcast and updates channel.
+	
 2006-10-29	fabian
 	
 	* Allowing users to specify parameters in bookmarks' command. For example, if the command is

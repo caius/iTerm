@@ -308,7 +308,7 @@
 {
 	NSMutableAttributedString *attrStr;
 	NSFontManager *fm = [NSFontManager sharedFontManager];
-#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION >= MAC_OS_X_VERSION_10_4)
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
     NSNumberFormatter *nf = [[[NSNumberFormatter alloc] init] autorelease];
     [nf setLocalizesFormat:YES];
     [nf setFormat:@"0"];

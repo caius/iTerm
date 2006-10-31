@@ -168,6 +168,11 @@ iTerm also supports autolaunching of an Applescript on startup. On startup, iTer
 iTerm also supports launching of user defined scripts from the "Scripts" menu. The scripts need to be stored under the "~/Library/Application Support/iTerm/Scripts" directory. You can create this directory if it does not already exist. iTerm checks this directory on startup.
 </UL>
 
+<FONT SIZE="5"><STRONG>Some example scripts provided by users:</STRONG></FONT><BR>
+<UL>
+<LI><A href="http://homepage.mac.com/ashugg/sw/">Andrew Shugg's iTerm scripts</a></LI>
+
+</UL>
 
 </TD>
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">

@@ -180,22 +180,17 @@ NSString *ConfigToolbarItem = @"Info";
 
 - (void)setupToolbar;
 {   
-	SInt32 osVersion;
-	
     _toolbar = [[NSToolbar alloc] initWithIdentifier: @"Terminal Toolbar"];
     [_toolbar setVisible:true];
     [_toolbar setDelegate:self];
     [_toolbar setAllowsUserCustomization:YES];
     [_toolbar setAutosavesConfiguration:YES];
 	
-	if (Gestalt(gestaltSystemVersion, &osVersion) == noErr){
-		if (osVersion >= 0x1040){
-			// this call is Tiger only
-			[_toolbar setShowsBaselineSeparator:NO];
-		}
-	}
-	
-    [_toolbar setDisplayMode:NSToolbarDisplayModeDefault];
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	[_toolbar setShowsBaselineSeparator:NO];
+#endif
+
+	[_toolbar setDisplayMode:NSToolbarDisplayModeDefault];
     [_toolbar insertItemWithItemIdentifier: NewToolbarItem atIndex:0];
     [_toolbar insertItemWithItemIdentifier: ConfigToolbarItem atIndex:1];
     [_toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:2];

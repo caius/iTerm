@@ -1,0 +1,47 @@
+<STRONG>Release 0.9.2</STRONG> 10/29/06<BR>
+This new release features a new preference system. It is based on the same "Profiles-oriented" idea of
+previous version, with enhancement targeted toward the user experiences. The new changes include:<BR>
+<UL>
+<LI>A Change of preferences settings:<br>
+    <UL>
+	<LI> Move bookmark tab to a separate window. Added an option to display bookmark window
+         on startup.</LI>
+    <LI> Move profiles window outside of Preference Panel</LI>
+         <UL>
+		 <LI> The Profiles window shows profiles on the left and their contents on the right.</LI>
+         <LI> Now allows to rename a profile.</LI>
+         <LI> Now allows to edit existing keymapping.</LI>
+         </UL>
+    <LI> Changed Preference Panel into 5 tabs. Any changes in these settings are immediate effecitve. 
+	     Ok/Cancel buttons are gone.</LI>
+    <LI> Renamed Configure window to Info to avoid confusion. </LI>
+         <UL>
+		 <LI> Made the window long to make it look like an Info window.</LI>
+         <LI> Cmd-I to open and close window.</LI>
+         <LI> Added a button to allow updating.</LI>
+         </UL>
+    <LI> Re-ordered main menu.</LI>
+         <UL>
+		 <LI> added a bookmark menu. Opening a window or a tab is controlled by option key.</LI>
+         <LI> Moved tab operations into Windows menu.</LI>
+         <LI> Added "Return to Default Size" menu item.</LI>
+		 <LI> Script menu no longer shows when there are no scripts found.</LI>
+         </UL>
+	<LI> Added option to quit iTerm when all windows are closed</LI>
+	<LI> Enhanced About dialog. It's now shown on startup whenever you installed a new version.</LI>
+	</UL>
+<LI>Now iTerm is able to check updates automatically using Sparkle framework.</LI>
+<LI>Added support for handling URLs. The following macros can be used in handler's command:<BR>
+		$$URL$$, $$HOST$$, $$USER$$, $$PASSWORD$$, $$PORT$$, $$PATH$$<BR>
+	  For example, a bookmark's command is: telnet -l $$USER$$ $$HOST$$ $$PORT$$, and the
+	  URL is: telnet://joe@fancyland.com:23<BR>
+	  This will give you this command: telnet -l joe fancyland.com 23</LI>
+<LI>Allowing users to specify parameters in bookmarks' command. For example, if the command is
+	  ssh $$User Name$$@myserver.com, when you start this session, iTerm will ask you to enter
+	  the "User Name", then plug your input into the command and run the session.</LI>
+<LI>Added support for the ESC sequence to show/hide cursor.</LI>
+<LI>Added a visual to indicate whether "send to all session" is turned on or not.</LI>
+<LI>Primitive support for terminfo/termcap. The termcap definition for a key is used when there is no customized keymapping.</LI>
+<LI>Enhanced stability.</LI>
+<LI>Many many bug fixes and GUI enhancements.</LI>
+</UL>

@@ -466,7 +466,7 @@
 
 - (NSString *)accessibilityActionDescription:(NSString *)action
 {
-#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION >= MAC_OS_X_VERSION_10_4)
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	return NSAccessibilityActionDescription(action);
 #else
     return nil;

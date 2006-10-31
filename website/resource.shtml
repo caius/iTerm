@@ -148,12 +148,10 @@ application... (added an alias run as well)<BR><BR>
 Here are some links to some iTerm related websites.<BR>
 <UL>
 <LI><A HREF="http://damonparker.org/blog/2005/09/14/iterm-tricks/">Applescript for opening a session</A> by Damon Parker</LI>
-<LI><A HREF="http://www.chemistry.ucsc.edu/~wgscott/xtal/terminal_finder_interactions.html">Improving Unix-Finder Interactions in OS X</A> from Professor Scott</LI>
-<LI><A HREF="http://chemistry.ucsc.edu/%7Ewgscott/xtal/iterm_tab_customization.html">iTerm Tab Name Customization</A> from Professor Scott, again :-)</LI>
-<LI><A HREF="http://www.tco.net/%7Edscott/software/itermhere/">iTerm Here</A></LI>
-<LI><A HREF="http://www.hawaii.edu/itsdocs/mac/iterm.pdf">Getting Started with iTerm</A> from University of Hawaii</LI>
+<LI><A HREF="http://xanana.ucsc.edu/xtal/iterm_tab_customization.html">iTerm Shell Customizations for bash, zsh and tcsh</A> from William G. Scott</LI>
+<LI><A HREF="http://applewoods.blogspot.com/2004/12/iterm-bbs.html">iTerm Tutorial in Chinese</A> (for version0.8.x)</LI>
+<LI><A HREF="http://www.hawaii.edu/itsdocs/mac/iterm.pdf">Getting Started with iTerm</A> from University of Hawaii (for version 0.7.8) </LI>
 <LI><A HREF="http://www.macosxhints.com/article.php?story=20030609222910699">Use iTerm with OnMyCommand</A> from macosxhints</LI>
-<LI><A HREF="http://applewoods.blogspot.com/2004/12/iterm-bbs.html">iTerm Tutorial in Chinese</A></LI>
 </TD>
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <script type="text/javascript"><!--

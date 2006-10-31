@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.43 2006-10-28 21:19:17 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.44 2006-10-31 01:31:01 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -105,6 +105,14 @@ static BOOL usingAutoLaunchScript = NO;
         [scriptMenuItem release];
         [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
     }
+	
+#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION >= MAC_OS_X_VERSION_10_4)
+	NSString *patherAppCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURL"];
+	[[NSUserDefaults standardUserDefaults] setObject: patherAppCast forKey:@"SUFeedURL"];
+#else
+	NSString *patherAppCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURLForPanther"];
+	[[NSUserDefaults standardUserDefaults] setObject: patherAppCast forKey:@"SUFeedURL"];
+#endif
 	
 	// read preferences
     [iTermProfileWindowController sharedInstance];

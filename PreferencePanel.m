@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.142 2006-10-30 08:47:00 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.143 2006-10-31 01:31:01 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -497,8 +497,7 @@ static NSString *NoHandler = @"<No Handler>";
 	else {
 		[urlHandlers setObject:[urlHandlerOutline itemAtRow:j] forKey: [urlTypes objectAtIndex: i]];
 		
-#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION >= MAC_OS_X_VERSION_10_4)
-
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 		NSURL *appURL = nil;
 		OSStatus err;
 		BOOL set = NO;

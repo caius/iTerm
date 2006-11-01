@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.58 2006-10-26 05:36:56 yfabian Exp $
+// $Id: iTermController.m,v 1.59 2006-11-01 05:21:49 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -137,6 +137,49 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     [self launchBookmark:[sender representedObject] inTerminal:nil];
 }
 
+// Open all childs within a given window
+- (PseudoTerminal *) newSessionsInWindow:(PseudoTerminal *) terminal forNode:(TreeNode*)theNode
+{
+	NSEnumerator *entryEnumerator;
+	NSDictionary *dataDict;
+	TreeNode *childNode;
+	
+	entryEnumerator = [[theNode children] objectEnumerator];
+	
+	while ((childNode = [entryEnumerator nextObject]))
+	{
+		dataDict = [childNode nodeData];
+		if([childNode isGroup])
+		{
+			terminal = [self newSessionsInWindow:terminal forNode:childNode];
+		}
+		else
+		{
+			if(terminal == nil)
+			{
+				terminal = [[PseudoTerminal alloc] init];
+				[terminal initWindowWithAddressbook: [childNode nodeData]];
+				[self addInTerminals: terminal];
+				[terminal release];
+			}
+			
+			[self launchBookmark:[childNode nodeData] inTerminal:terminal];
+		}
+	}
+
+	return terminal;
+}
+
+- (void) newSessionsInWindow: (id) sender
+{
+	[self newSessionsInWindow:FRONT forNode:[sender representedObject]];
+}
+
+- (void) newSessionsInNewWindow: (id) sender
+{
+	[self newSessionsInWindow:nil forNode:[sender representedObject]];
+}
+
 // meant for action for menu items that have a submenu
 - (void) noAction: (id) sender
 {
@@ -218,24 +261,6 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	return (tmp);
 }
 
-
-
-// Build the bookmarks menu
-- (NSMenu *) buildAddressBookMenuWithTarget:(id)target withShortcuts: (BOOL) withShortcuts
-{
-    SEL action;
-	TreeNode *bookmarks;
-	
-	bookmarks = [[ITAddressBookMgr sharedInstance] rootNode];
-    
-    if (target == nil)
-        action = @selector(newSessionInWindowAtIndex:);
-    else
-        action = @selector(newSessionInTabAtIndex:);
-    
-	return ([self _menuForNode: bookmarks action: action target: target withShortcuts: withShortcuts]);
-}
-
 - (void) alternativeMenu: (NSMenu *)aMenu forNode: (TreeNode *) theNode target: (id) aTarget withShortcuts: (BOOL) withShortcuts
 {
     NSMenu *subMenu;
@@ -244,26 +269,27 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	NSDictionary *dataDict;
 	TreeNode *childNode;
 	NSString *shortcut;
-	unsigned int modifierMask;
+	unsigned int modifierMask = NSCommandKeyMask | NSControlKeyMask;
+	int count = 0;
     
 	entryEnumerator = [[theNode children] objectEnumerator];
 	
 	while ((childNode = [entryEnumerator nextObject]))
 	{
+		count ++;
 		dataDict = [childNode nodeData];
 		aMenuItem = [[[NSMenuItem alloc] initWithTitle: [dataDict objectForKey: KEY_NAME] action:@selector(newSessionInTabAtIndex:) keyEquivalent:@""] autorelease];
 		if([childNode isGroup])
 		{
 			subMenu = [[[NSMenu alloc] init] autorelease];
-            [self alternativeMenu: subMenu forNode: childNode target: aTarget withShortcuts: withShortcuts];
+            [self alternativeMenu: subMenu forNode: childNode target: aTarget withShortcuts: withShortcuts]; 
 			[aMenuItem setSubmenu: subMenu];
-			[aMenuItem setAction: @selector(noAction:)];
-			[aMenuItem setTarget: self];
+			[aMenu addItem: aMenuItem];
+			
 		}
 		else
 		{
-            modifierMask = NSCommandKeyMask | NSControlKeyMask;
-			if(withShortcuts)
+            if(withShortcuts)
 			{
 				if ([dataDict objectForKey: KEY_SHORTCUT] != nil)
 				{
@@ -277,18 +303,32 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
             [aMenuItem setKeyEquivalentModifierMask: modifierMask];
             [aMenuItem setRepresentedObject: dataDict];
 			[aMenuItem setTarget: aTarget];
-		}
-        
-        
-		[aMenu addItem: aMenuItem];
-        modifierMask = NSCommandKeyMask | NSControlKeyMask | NSAlternateKeyMask;
-        aMenuItem = [[aMenuItem copy] autorelease];
-        [aMenuItem setKeyEquivalentModifierMask: modifierMask];
-        [aMenuItem setAlternate:YES];
-        [aMenuItem setAction: @selector(newSessionInWindowAtIndex:)];
-        [aMenuItem setTarget: nil];
-        [aMenu addItem: aMenuItem];
+			[aMenu addItem: aMenuItem];
+
+			aMenuItem = [[aMenuItem copy] autorelease];
+			[aMenuItem setKeyEquivalentModifierMask: modifierMask | NSAlternateKeyMask];
+			[aMenuItem setAlternate:YES];
+			[aMenuItem setAction: @selector(newSessionInWindowAtIndex:)];
+			[aMenuItem setTarget: self];
+			[aMenu addItem: aMenuItem];
+		}                
 	}
+	
+	if (count>1) {
+		[aMenu addItem:[NSMenuItem separatorItem]];
+		aMenuItem = [[[NSMenuItem alloc] initWithTitle: @"Open All" action:@selector(newSessionsInWindow:) keyEquivalent:@""] autorelease];
+		[aMenuItem setKeyEquivalentModifierMask: modifierMask];
+		[aMenuItem setRepresentedObject: theNode];
+		[aMenuItem setTarget: self];
+		[aMenu addItem: aMenuItem];
+		aMenuItem = [[aMenuItem copy] autorelease];
+		[aMenuItem setKeyEquivalentModifierMask: modifierMask | NSAlternateKeyMask];
+		[aMenuItem setAlternate:YES];
+		[aMenuItem setAction: @selector(newSessionsInNewWindow:)];
+		[aMenuItem setTarget: self];
+		[aMenu addItem: aMenuItem];
+	}
+	
 }
 
 // Executes an addressbook command in new window or tab
@@ -466,71 +506,6 @@ NSString *terminalsKey = @"terminals";
 @end
 
 @implementation iTermController (Private)
-
-
-- (NSMenu *) _menuForNode: (TreeNode *) theNode action: (SEL) aSelector target: (id) aTarget withShortcuts: (BOOL) withShortcuts
-{
-	NSMenu *aMenu, *subMenu;
-	NSMenuItem *aMenuItem;
-	NSEnumerator *entryEnumerator;
-	NSDictionary *dataDict;
-	TreeNode *childNode;
-	NSString *shortcut;
-	unsigned int modifierMask;
-		
-	aMenu = [[NSMenu alloc] init];
-	
-	entryEnumerator = [[theNode children] objectEnumerator];
-	
-	while ((childNode = [entryEnumerator nextObject]))
-	{
-		dataDict = [childNode nodeData];
-		aMenuItem = [[[NSMenuItem alloc] initWithTitle: [dataDict objectForKey: KEY_NAME] action:aSelector keyEquivalent:@""] autorelease];
-		if([childNode isGroup])
-		{
-			subMenu = [self _menuForNode: childNode action: aSelector target: aTarget withShortcuts: withShortcuts];
-			[aMenuItem setSubmenu: subMenu];
-			[aMenuItem setAction: @selector(noAction:)];
-			[aMenuItem setTarget: self];
-		}
-		else
-		{
-			if(withShortcuts)
-			{
-				
-				if([[ITAddressBookMgr sharedInstance] defaultBookmarkData] == dataDict)
-				{
-					if(aTarget == nil)
-						shortcut = @"n";
-					else
-						shortcut = @"t";
-					modifierMask = NSCommandKeyMask;
-					
-					[aMenuItem setKeyEquivalent: shortcut];
-					[aMenuItem setKeyEquivalentModifierMask: modifierMask];
-				}
-				else if ([dataDict objectForKey: KEY_SHORTCUT] != nil)
-				{
-					modifierMask = NSCommandKeyMask | NSControlKeyMask;
-					if(aTarget == nil)
-						modifierMask |= NSAlternateKeyMask;
-					
-					shortcut=[dataDict objectForKey: KEY_SHORTCUT];
-					shortcut = [shortcut lowercaseString];
-
-					[aMenuItem setKeyEquivalent: shortcut];
-					[aMenuItem setKeyEquivalentModifierMask: modifierMask];
-				}
-			}
-			[aMenuItem setRepresentedObject: dataDict];
-			[aMenuItem setTarget: aTarget];
-		}
-		[aMenu addItem: aMenuItem];
-	}
-	
-	return ([aMenu autorelease]);
-}
-
 
 
 @end

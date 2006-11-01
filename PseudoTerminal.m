@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.366 2006-10-30 08:47:00 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.367 2006-11-01 05:21:49 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1037,6 +1037,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return NAFONT;
 }
 
+- (void)reset:(id)sender
+{
+	[[[self currentSession] TERMINAL] reset];
+}
+
 - (void)clearBuffer:(id)sender
 {
     [[self currentSession] clearBuffer];
@@ -1484,10 +1489,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu
 {
     unsigned int modflag = 0;
-    BOOL newWin;
     int nextIndex;
-	NSMenu *abMenu;
-    NSMenuItem *aMenuItem;
+	NSMenuItem *aMenuItem;
     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal menuForEvent]", __FILE__, __LINE__);
@@ -1499,17 +1502,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     modflag = [theEvent modifierFlags];
 	
     // Bookmarks
-    // Figure out whether the command shall be executed in a new window or tab
-    if (modflag & NSCommandKeyMask)
-    {
-		[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
-		newWin = YES;
-    }
-    else
-    {
-		[theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"New Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
-		newWin = NO;
-    }
+    [theMenu insertItemWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" atIndex: 0];
     nextIndex = 1;
 	
     // Create a menu with a submenu to navigate between tabs if there are more than one
@@ -1543,9 +1536,22 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [theMenu insertItem:[NSMenuItem separatorItem] atIndex: nextIndex];
 	
     // Build the bookmarks menu
-    abMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: (newWin?nil:self) withShortcuts: NO];
+	NSMenu *aMenu = [[[NSMenu alloc] init] autorelease];
+    [[iTermController sharedInstance] alternativeMenu: aMenu 
+                                              forNode: [[ITAddressBookMgr sharedInstance] rootNode] 
+                                               target: self
+                                        withShortcuts: NO];
+    [aMenu addItem: [NSMenuItem separatorItem]];
+    NSMenuItem *tip = [[[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Press Option for New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action:@selector(xyz) keyEquivalent: @""] autorelease];
+    [tip setKeyEquivalentModifierMask: NSCommandKeyMask];
+    [aMenu addItem: tip];
+    tip = [[tip copy] autorelease];
+    [tip setTitle:NSLocalizedStringFromTableInBundle(@"Open In New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New")];
+    [tip setKeyEquivalentModifierMask: NSCommandKeyMask | NSAlternateKeyMask];
+    [tip setAlternate:YES];
+    [aMenu addItem: tip];
 	
-    [theMenu setSubmenu: abMenu forItem: [theMenu itemAtIndex: 0]];
+    [theMenu setSubmenu: aMenu forItem: [theMenu itemAtIndex: 0]];
 	
     // Separator
     [theMenu addItem:[NSMenuItem separatorItem]];

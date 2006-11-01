@@ -14,6 +14,7 @@
                 nextSession = id; 
                 pasteSelection = id; 
                 previousSession = id; 
+                reset = id; 
                 saveDisplayProfile = id; 
                 saveTerminalProfile = id; 
                 showConfigWindow = id; 

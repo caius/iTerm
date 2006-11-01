@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.44 2006-10-31 01:31:01 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.45 2006-11-01 05:21:49 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -106,7 +106,7 @@ static BOOL usingAutoLaunchScript = NO;
         [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
     }
 	
-#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION >= MAC_OS_X_VERSION_10_4)
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	NSString *patherAppCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURL"];
 	[[NSUserDefaults standardUserDefaults] setObject: patherAppCast forKey:@"SUFeedURL"];
 #else
@@ -325,26 +325,36 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (NSMenu *)applicationDockMenu:(NSApplication *)sender
 {
-    NSMenu *aMenu, *abMenu;
-    NSMenuItem *newTabMenuItem, *newWindowMenuItem;
+    NSMenu *aMenu, *bookmarksMenu;
+    NSMenuItem *newMenuItem;
 	PseudoTerminal *frontTerminal;
     
     aMenu = [[NSMenu alloc] initWithTitle: @"Dock Menu"];
-    newTabMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Tab",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
-    newWindowMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
-    [aMenu addItem: newTabMenuItem];
-    [aMenu addItem: newWindowMenuItem];
-    [newTabMenuItem release];
-    [newWindowMenuItem release];
+    //new session menu
+	newMenuItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu") action:nil keyEquivalent:@"" ]; 
+    [aMenu addItem: newMenuItem];
+    [newMenuItem release];
     
-    // Create the addressbook submenus for new tabs and windows.
+    // Create the bookmark submenus for new session
 	frontTerminal = [[iTermController sharedInstance] currentTerminal];
-    abMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: frontTerminal withShortcuts: NO]; // target the top terminal window.
-    [newTabMenuItem setSubmenu: abMenu];
+    // Build the bookmark menu
+	bookmarksMenu = [[[NSMenu alloc] init] autorelease];
+    [[iTermController sharedInstance] alternativeMenu: bookmarksMenu 
+                                              forNode: [[ITAddressBookMgr sharedInstance] rootNode] 
+                                               target: frontTerminal
+                                        withShortcuts: NO];
+	[newMenuItem setSubmenu: bookmarksMenu];
+
+	[bookmarksMenu addItem: [NSMenuItem separatorItem]];
     
-    abMenu = [[iTermController sharedInstance] buildAddressBookMenuWithTarget: nil withShortcuts: NO];
-    [newWindowMenuItem setSubmenu: abMenu];
-	
+	NSMenuItem *tip = [[[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Press Option for New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New") action:@selector(xyz) keyEquivalent: @""] autorelease];
+    [tip setKeyEquivalentModifierMask: 0];
+    [bookmarksMenu addItem: tip];
+    tip = [[tip copy] autorelease];
+    [tip setTitle:NSLocalizedStringFromTableInBundle(@"Open In New Window",@"iTerm", [NSBundle bundleForClass: [self class]], @"Toolbar Item: New")];
+    [tip setKeyEquivalentModifierMask: NSAlternateKeyMask];
+    [tip setAlternate:YES];
+    [bookmarksMenu addItem: tip];
     return ([aMenu autorelease]);
 }
 

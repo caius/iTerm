@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.21 2006-10-09 22:24:54 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.22 2006-11-01 05:21:54 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -314,6 +314,8 @@ typedef enum {
 - (void)cleanStream;
 - (void)putStreamData:(char *)data length: (int)length;
 - (VT100TCC)getNextToken;
+
+- (void)reset;
 
 - (NSData *)keyArrowUp:(unsigned int)modflag;
 - (NSData *)keyArrowDown:(unsigned int)modflag;

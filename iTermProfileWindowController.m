@@ -578,7 +578,8 @@ static BOOL addingKBEntry;
 			[kbEntryText setHidden: NO];
 			[kbEntryHint setHidden: NO];
 			[kbEntryHint setStringValue: ([kbEntryAction indexOfSelectedItem] == KEY_ACTION_HEX_CODE) ?
-				@"eg. 7f for forward delete" : @"eg. [OC for ESC [OC"];
+				NSLocalizedStringFromTableInBundle(@"eg. 7F for forward delete.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles") :
+				NSLocalizedStringFromTableInBundle(@"eg. [OC for ESC [OC.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles")];
 		}
 		else
 		{
@@ -1054,14 +1055,15 @@ static BOOL addingKBEntry;
     if ([item isKindOfClass:[NSNumber class]]) {
         switch ([item intValue]) {
             case KEYBOARD_PROFILE_TAB:
-                return @"Keyboard Profiles";
+                return NSLocalizedStringFromTableInBundle(@"Keyboard Profiles",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles");
             case TERMINAL_PROFILE_TAB:
-                return @"Terminal Profiles";
-        }
-        return @"Display Profiles";
+                return NSLocalizedStringFromTableInBundle(@"Terminal Profiles",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles");
+			default:
+				return NSLocalizedStringFromTableInBundle(@"Display Profiles",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles");
+		}
     }
-    
-    return item;
+    else
+		return item;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item

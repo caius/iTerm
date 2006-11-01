@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.109 2006-10-25 02:59:15 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.110 2006-11-01 05:21:49 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1344,6 +1344,34 @@ static VT100TCC decode_string(unsigned char *datap,
     }
 }
 
+
+- (void)reset
+{
+	LINE_MODE = NO;
+    CURSOR_MODE = NO;
+    COLUMN_MODE = NO;
+    SCROLL_MODE = NO;
+    SCREEN_MODE = NO;
+    ORIGIN_MODE = NO;
+    WRAPAROUND_MODE = YES;
+    AUTOREPEAT_MODE = NO;
+    INTERLACE_MODE = NO;
+    KEYPAD_MODE = NO;
+    INSERT_MODE = NO;
+    saveCHARSET=CHARSET = NO;
+    XON = YES;
+    bold=blink=reversed=under=0;
+    saveBold=saveBlink=saveReversed=saveUnder = 0;
+    highlight = saveHighlight = NO;
+    FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
+    BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
+	MOUSE_MODE = MOUSE_REPORTING_NONE;
+    
+    TRACE = NO;
+	
+    strictAnsiMode = NO;
+    allowColumnMode = YES;
+}
 
 - (BOOL)trace
 {

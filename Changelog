@@ -1,3 +1,11 @@
+2006-10-31	fabian
+
+	* Added a few strings into iTerm.strings for localization purposes.
+	* Fixed a bug in Profiles window's background image settings.
+	* Added paste with escape
+	* Added support to open all sessions in a bookmark folder.
+	* Added a Reset operation in the menu (not fully working yet)
+	
 2006-10-30	fabian
 
 	* A few tweaks to make panther version to have its own appcast and updates channel.

@@ -55,6 +55,7 @@
 "Default Session"="Default Session";
 "New" = "New";
 "Press Option for New Window"="Press Option for New Window";
+"Open In New Window" = "Open In New Window";
 "Open a new session"="Open a new session";
 
 /* OK */
@@ -204,4 +205,11 @@
 "Update %@" = "Update %@";
 
 /* Tab Tooltips */
-@"Name: %@\nCommand: %@\nTerminal Profile: %@\nDisplay Profile: %@\nKeyboard Profile: %@" = @"Name: %@\nCommand: %@\nTerminal Profile: %@\nDisplay Profile: %@\nKeyboard Profile: %@";
+"Name: %@\nCommand: %@\nTerminal Profile: %@\nDisplay Profile: %@\nKeyboard Profile: %@" = "Name: %@\nCommand: %@\nTerminal Profile: %@\nDisplay Profile: %@\nKeyboard Profile: %@";
+
+/* Profiles */
+"Keyboard Profiles" = "Keyboard Profiles";
+"Display Profiles" = "Display Profiles";
+"Terminal Profiles" = "Terminal Profiles";
+"eg. [OC for ESC [OC." = "eg. [OC for ESC [OC.";
+"eg. 7F for forward delete." = "eg. 7F for forward delete.";

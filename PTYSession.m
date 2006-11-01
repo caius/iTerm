@@ -805,7 +805,7 @@ static NSImage *warningImage;
 - (void)paste:(id)sender
 {
     NSPasteboard *board;
-    NSString *str;
+    NSMutableString *str;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession paste:...]", __FILE__, __LINE__);
@@ -813,7 +813,14 @@ static NSImage *warningImage;
 	
     board = [NSPasteboard generalPasteboard];
     NSParameterAssert(board != nil );
-    str = [board stringForType:NSStringPboardType];
+    str = [[[NSMutableString alloc] initWithString:[board stringForType:NSStringPboardType]] autorelease];
+	if ([sender tag]) // paste with escape;
+	{
+		[str replaceOccurrencesOfString:@"\\" withString:@"\\\\" options:NSLiteralSearch range:NSMakeRange(0, [str length])];
+		[str replaceOccurrencesOfString:@"'" withString:@"\\'" options:NSLiteralSearch range:NSMakeRange(0, [str length])];
+		[str replaceOccurrencesOfString:@"\"" withString:@"\\\"" options:NSLiteralSearch range:NSMakeRange(0, [str length])];
+		[str replaceOccurrencesOfString:@" " withString:@"\\ " options:NSLiteralSearch range:NSMakeRange(0, [str length])];
+	}
     [self pasteString: str];
 }
 
@@ -1129,15 +1136,16 @@ static NSImage *warningImage;
         [name release];
         name = nil;
     }
-    if(theName)
-    {
-        name = [theName retain];
-		// sync the window title if it is not set to something else
-		if([self windowTitle] == nil)
-			[self setWindowTitle: theName];
-    }
-    
-	[tabViewItem setLabel: theName];
+    if (!theName)
+		theName = NSLocalizedStringFromTableInBundle(@"Untitled",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles");
+	
+	name = [theName retain];
+	// sync the window title if it is not set to something else
+	if([self windowTitle] == nil)
+		[self setWindowTitle: theName];
+   
+	
+	[tabViewItem setLabel: name];
 	[self setBell: NO];
     
 	

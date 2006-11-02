@@ -77,6 +77,7 @@
 #define KEY_NUMLOCK						47
 #define KEY_PAGE_DOWN					48
 #define KEY_PAGE_UP						49
+#define KEY_INS							50
 
 
 // Actions for key bindings

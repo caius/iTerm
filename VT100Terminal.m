@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.110 2006-11-01 05:21:49 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.111 2006-11-02 07:12:47 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -28,13 +28,12 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <termcap.h>
-
 #import <iTerm/VT100Terminal.h>
 #import <iTerm/PseudoTerminal.h>
 #import <iTerm/PTYSession.h>
 #import <iTerm/VT100Screen.h>
 #import <iTerm/NSStringITerm.h>
+#include <term.h>
 
 #define DEBUG_ALLOC		0
 #define LOG_UNKNOWN     0
@@ -155,12 +154,6 @@ static VT100TCC decode_euccn(unsigned char *, size_t, size_t *);
 static VT100TCC decode_big5(unsigned char *,size_t, size_t *);
 static VT100TCC decode_string(unsigned char *, size_t, size_t *,
 							  NSStringEncoding);
-
-static char *key_names[] = {
-    "kl", "kr", "ku", "kd", "kh", "k0", "k1", "k2", "k3",  
-    "k4", "k5", "k6", "k7", "k8", "k9", "kb", "kC", "kD",
-    "kI", "kN", "kP"};
-
 
 static BOOL isCSI(unsigned char *code, size_t len)
 {
@@ -1261,7 +1254,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	streamLock = [[NSLock alloc] init];
     
     termType = nil;
-    for(i = 0; i < TERMCAP_KEYS; i ++) {
+    for(i = 0; i < TERMINFO_KEYS; i ++) {
         key_strings[i]=NULL;
     }
     
@@ -1308,7 +1301,13 @@ static VT100TCC decode_string(unsigned char *datap,
 	[streamLock unlock];
 	[streamLock release];
     [termType release];
-        
+
+	int i;
+	for(i = 0; i < TERMINFO_KEYS; i ++) {
+		if (key_strings[i]) free(key_strings[i]);
+		key_strings[i]=NULL;
+	}
+	
     [super dealloc];
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
@@ -1328,18 +1327,37 @@ static VT100TCC decode_string(unsigned char *datap,
     
     int i;
     int r;
-    
-    if (!(r=tgetent(NULL,[termtype cString]))) {
+
+    setupterm((char *)[termtype cString], fileno(stdout), &r);
+	
+    if (r!=1) {
         NSLog(@"Terminal type %s is not defined.\n",[termtype cString]);
-        for(i = 0; i < TERMCAP_KEYS; i ++) {
+        for(i = 0; i < TERMINFO_KEYS; i ++) {
             if (key_strings[i]) free(key_strings[i]);
             key_strings[i]=NULL;
         }
     }
     else {
-        for(i = 0; i < TERMCAP_KEYS; i ++) {
+		char *key_names[] = {
+			key_left, key_right, key_up, key_down,
+			key_home, key_end, key_npage, key_ppage,
+			key_f0, key_f1, key_f2, key_f3, key_f4,
+			key_f5, key_f6, key_f7, key_f8, key_f9,
+			key_f10, key_f11, key_f12, key_f13, key_f14,
+			key_f15, key_f16, key_f17, key_f18, key_f19,
+			key_f20, key_f21, key_f22, key_f23, key_f24,
+			key_f25, key_f26, key_f27, key_f28, key_f29,
+			key_f30, key_f31, key_f32, key_f33, key_f34,
+			key_f35, 
+			key_backspace, key_btab,
+			tab,
+			key_dc, key_ic,
+			key_help,
+		};
+
+        for(i = 0; i < TERMINFO_KEYS; i ++) {
             if (key_strings[i]) free(key_strings[i]);
-            key_strings[i] = tgetstr(key_names[i], 0);
+            key_strings[i] = key_names[i]?strdup(key_names[i]):NULL;
         }
     }
 }
@@ -1506,9 +1524,9 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowUp:(unsigned int)modflag
 {
-    if (key_strings[TERMCAP_KEY_UP]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_UP]
-                       length:strlen(key_strings[TERMCAP_KEY_UP])];
+    if (key_strings[TERMINFO_KEY_UP]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_UP]
+                       length:strlen(key_strings[TERMINFO_KEY_UP])];
     }
     else {
         int mod=0;
@@ -1534,9 +1552,9 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowDown:(unsigned int)modflag
 {
-    if (key_strings[TERMCAP_KEY_DOWN]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_DOWN]
-                              length:strlen(key_strings[TERMCAP_KEY_DOWN])];
+    if (key_strings[TERMINFO_KEY_DOWN]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_DOWN]
+                              length:strlen(key_strings[TERMINFO_KEY_DOWN])];
     }
     else {
         int mod=0;
@@ -1562,9 +1580,9 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowLeft:(unsigned int)modflag
 {
-    if (key_strings[TERMCAP_KEY_LEFT]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_LEFT]
-                              length:strlen(key_strings[TERMCAP_KEY_LEFT])];
+    if (key_strings[TERMINFO_KEY_LEFT]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_LEFT]
+                              length:strlen(key_strings[TERMINFO_KEY_LEFT])];
     }
     else {
         int mod=0;
@@ -1590,9 +1608,9 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowRight:(unsigned int)modflag
 {
-    if (key_strings[TERMCAP_KEY_RIGHT]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_RIGHT]
-                              length:strlen(key_strings[TERMCAP_KEY_RIGHT])];
+    if (key_strings[TERMINFO_KEY_RIGHT]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_RIGHT]
+                              length:strlen(key_strings[TERMINFO_KEY_RIGHT])];
     }
     else {
         int mod=0;
@@ -1617,9 +1635,9 @@ static VT100TCC decode_string(unsigned char *datap,
 }
 
 - (NSData *)keyInsert
-{    if (key_strings[TERMCAP_KEY_INS]) {
-    return [NSData dataWithBytes:key_strings[TERMCAP_KEY_INS]
-                          length:strlen(key_strings[TERMCAP_KEY_INS])];
+{    if (key_strings[TERMINFO_KEY_INS]) {
+    return [NSData dataWithBytes:key_strings[TERMINFO_KEY_INS]
+                          length:strlen(key_strings[TERMINFO_KEY_INS])];
 }
 else {
     return [NSData dataWithBytes:KEY_INSERT length:conststr_sizeof(KEY_INSERT)];
@@ -1628,9 +1646,9 @@ else {
 
 - (NSData *)keyHome
 {
-    if (key_strings[TERMCAP_KEY_HOME]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_HOME]
-                              length:strlen(key_strings[TERMCAP_KEY_HOME])];
+    if (key_strings[TERMINFO_KEY_HOME]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_HOME]
+                              length:strlen(key_strings[TERMINFO_KEY_HOME])];
     }
     else {
         return [NSData dataWithBytes:KEY_HOME length:conststr_sizeof(KEY_HOME)];
@@ -1639,11 +1657,12 @@ else {
 
 - (NSData *)keyDelete
 {
-    //    unsigned char del = 0x7f;
-    //    return [NSData dataWithBytes:&del length:1];
-    if (key_strings[TERMCAP_KEY_DEL]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_DEL]
-                              length:strlen(key_strings[TERMCAP_KEY_DEL])];
+    /*unsigned char del = 0x7f;
+    return [NSData dataWithBytes:&del length:1];*/
+    
+	if (key_strings[TERMINFO_KEY_DEL]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_DEL]
+                              length:strlen(key_strings[TERMINFO_KEY_DEL])];
     }
     else {
         return [NSData dataWithBytes:KEY_DEL length:conststr_sizeof(KEY_DEL)];
@@ -1652,9 +1671,9 @@ else {
 
 - (NSData *)keyBackspace
 {
-    if (key_strings[TERMCAP_KEY_BACKSPACE]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_BACKSPACE]
-                              length:strlen(key_strings[TERMCAP_KEY_BACKSPACE])];
+    if (key_strings[TERMINFO_KEY_BACKSPACE]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_BACKSPACE]
+                              length:strlen(key_strings[TERMINFO_KEY_BACKSPACE])];
     }
     else {
         return [NSData dataWithBytes:KEY_BACKSPACE length:conststr_sizeof(KEY_BACKSPACE)];
@@ -1663,14 +1682,20 @@ else {
 
 - (NSData *)keyEnd
 {
-    return [NSData dataWithBytes:KEY_END length:conststr_sizeof(KEY_END)];
+	if (key_strings[TERMINFO_KEY_END]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_END]
+                              length:strlen(key_strings[TERMINFO_KEY_END])];
+    }
+    else {
+		return [NSData dataWithBytes:KEY_END length:conststr_sizeof(KEY_END)];
+	}
 }
 
 - (NSData *)keyPageUp
 {
-    if (key_strings[TERMCAP_KEY_PAGEUP]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_PAGEUP]
-                              length:strlen(key_strings[TERMCAP_KEY_PAGEUP])];
+    if (key_strings[TERMINFO_KEY_PAGEUP]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_PAGEUP]
+                              length:strlen(key_strings[TERMINFO_KEY_PAGEUP])];
     }
     else {
         return [NSData dataWithBytes:KEY_PAGE_UP
@@ -1680,9 +1705,9 @@ else {
 
 - (NSData *)keyPageDown
 {
-    if (key_strings[TERMCAP_KEY_PAGEDOWN]) {
-        return [NSData dataWithBytes:key_strings[TERMCAP_KEY_PAGEDOWN]
-                              length:strlen(key_strings[TERMCAP_KEY_PAGEDOWN])];
+    if (key_strings[TERMINFO_KEY_PAGEDOWN]) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_PAGEDOWN]
+                              length:strlen(key_strings[TERMINFO_KEY_PAGEDOWN])];
     }
     else {
         return [NSData dataWithBytes:KEY_PAGE_DOWN 
@@ -1698,41 +1723,57 @@ else {
     size_t len;
 	
     if (no <= 5) {
-        if (key_strings[TERMCAP_KEY_F10+no]) {
-            return [NSData dataWithBytes:key_strings[TERMCAP_KEY_F10+no]
-                                  length:strlen(key_strings[TERMCAP_KEY_F10+no])];
+        if (key_strings[TERMINFO_KEY_F0+no]) {
+            return [NSData dataWithBytes:key_strings[TERMINFO_KEY_F0+no]
+                                  length:strlen(key_strings[TERMINFO_KEY_F0+no])];
         }
         else {
             sprintf(str, KEY_FUNCTION_FORMAT, no + 10);
         }
     }
-    else if (no < 10) {
-        if (key_strings[TERMCAP_KEY_F10+no]) {
-            return [NSData dataWithBytes:key_strings[TERMCAP_KEY_F10+no]
-                                  length:strlen(key_strings[TERMCAP_KEY_F10+no])];
+    else if (no <= 10) {
+        if (key_strings[TERMINFO_KEY_F0+no]) {
+            return [NSData dataWithBytes:key_strings[TERMINFO_KEY_F0+no]
+                                  length:strlen(key_strings[TERMINFO_KEY_F0+no])];
         }
         else {
             sprintf(str, KEY_FUNCTION_FORMAT, no + 11);
         }
     }
-    else if (no == 10) {
-        if (key_strings[TERMCAP_KEY_F10]) {
-            return [NSData dataWithBytes:key_strings[TERMCAP_KEY_F10]
-                                  length:strlen(key_strings[TERMCAP_KEY_F10])];
-        }
-        else {
-            sprintf(str, KEY_FUNCTION_FORMAT, 21);
-        }
-    }
     else if (no <= 14)
-		sprintf(str, KEY_FUNCTION_FORMAT, no + 12);
+		if (key_strings[TERMINFO_KEY_F0+no]) {
+            return [NSData dataWithBytes:key_strings[TERMINFO_KEY_F0+no]
+                                  length:strlen(key_strings[TERMINFO_KEY_F0+no])];
+        }
+		else {
+			sprintf(str, KEY_FUNCTION_FORMAT, no + 12);
+		}
     else if (no <= 16)
-		sprintf(str, KEY_FUNCTION_FORMAT, no + 13);
+		if (key_strings[TERMINFO_KEY_F0+no]) {
+            return [NSData dataWithBytes:key_strings[TERMINFO_KEY_F0+no]
+                                  length:strlen(key_strings[TERMINFO_KEY_F0+no])];
+        }
+		else {
+			sprintf(str, KEY_FUNCTION_FORMAT, no + 13);
+		}
     else if (no <= 20)
-		sprintf(str, KEY_FUNCTION_FORMAT, no + 14);
-    else
-        str[0] = 0;
-	
+		if (key_strings[TERMINFO_KEY_F0+no]) {
+            return [NSData dataWithBytes:key_strings[TERMINFO_KEY_F0+no]
+                                  length:strlen(key_strings[TERMINFO_KEY_F0+no])];
+        }
+		else {
+			sprintf(str, KEY_FUNCTION_FORMAT, no + 14);
+		}
+    else if (no <=35)
+		if (key_strings[TERMINFO_KEY_F0+no]) {
+            return [NSData dataWithBytes:key_strings[TERMINFO_KEY_F0+no]
+                                  length:strlen(key_strings[TERMINFO_KEY_F0+no])];
+        }
+		else
+			str[0] = 0;
+	else
+		str[0] = 0;
+
     len = strlen(str);
     return [NSData dataWithBytes:str length:len];
 }

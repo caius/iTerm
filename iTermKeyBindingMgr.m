@@ -313,6 +313,12 @@ static iTermKeyBindingMgr *singleInstance = nil;
 														 [NSBundle bundleForClass: [self class]], 
 														 @"Key Names");
 			break;
+		case NSInsertCharFunctionKey:
+			aString = NSLocalizedStringFromTableInBundle(@"insert",@"iTerm", 
+														 [NSBundle bundleForClass: [self class]], 
+														 @"Key Names");
+			break;
+			
 		default:
 			aString = [NSString stringWithFormat: @"%@ 0x%x", 
 				NSLocalizedStringFromTableInBundle(@"hex code",@"iTerm", 
@@ -600,6 +606,9 @@ static iTermKeyBindingMgr *singleInstance = nil;
 			break;
 		case KEY_PAGE_UP:
 			keyUnicode = NSPageUpFunctionKey;
+			break;
+		case KEY_INS:
+			keyUnicode = NSInsertCharFunctionKey;
 			break;
 		default:
 			NSLog(@"%s: unknown key %d", __PRETTY_FUNCTION__, key);

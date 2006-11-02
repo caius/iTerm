@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.254 2006-10-26 05:36:56 yfabian Exp $
+// $Id: VT100Screen.m,v 1.255 2006-11-02 07:12:47 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1880,10 +1880,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 - (screen_char_t *) _getLineAtIndex: (int) anIndex fromLine: (screen_char_t *) aLine
 {
 	screen_char_t *the_line = NULL;	
-	int pre_wrap, post_wrap;
 		
-	if(anIndex < 0)
-		return (NULL);
+	NSParameterAssert(anIndex >= 0);
 	
 	// get the line offset from the specified line
 	the_line = aLine + anIndex*WIDTH;
@@ -1891,9 +1889,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	// check if we have gone beyond our buffer; if so, we need to wrap around to the top of buffer
 	if(the_line > last_buffer_line)
 	{
-		pre_wrap = (last_buffer_line - aLine)/WIDTH + 1; // accounting for lines at bottom
-		post_wrap = anIndex - pre_wrap; // accounting for lines at top
-		the_line = first_buffer_line + post_wrap*WIDTH;
+		the_line = first_buffer_line + (the_line - last_buffer_line - WIDTH);
 	}
 	
 	return (the_line);

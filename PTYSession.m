@@ -301,7 +301,7 @@ static NSImage *warningImage;
 - (void)readTask:(char *)buf length:(int)length
 {
 	
-	if (buf == NULL)
+	if (buf == NULL || EXIT)
         return;
 	
 #if DEBUG_METHOD_TRACE
@@ -321,14 +321,13 @@ static NSImage *warningImage;
     NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
 #endif
     if (EXIT) return;
-    
-    EXIT = YES;
 
     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
     withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
     andNotification:@"Broken Pipes"];
-    
+
     [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
+	EXIT = YES;
 }
 
 - (BOOL) hasKeyMappingForEvent: (NSEvent *) event
@@ -697,6 +696,8 @@ static NSImage *warningImage;
     NSMutableString *mstring;
     int i, max;
 	
+	if (EXIT) return;
+
 	//    NSLog(@"insertText: %@",string);
     mstring = [NSMutableString stringWithString:string];
     max = [string length];
@@ -1335,17 +1336,20 @@ static NSImage *warningImage;
 		NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
 		if(anImage != nil)
 		{
+			[SCROLLVIEW setDrawsBackground: NO];
 			[SCROLLVIEW setBackgroundImage: anImage];
 			[anImage release];
 		}
 		else
 		{
+			[SCROLLVIEW setDrawsBackground: YES];
 			[backgroundImagePath release];
 			backgroundImagePath = nil;
 		}
     }
     else
     {
+		[SCROLLVIEW setDrawsBackground: YES];
 		[SCROLLVIEW setBackgroundImage: nil];
 		[backgroundImagePath release];
 		backgroundImagePath = nil;
@@ -1623,6 +1627,8 @@ static NSImage *warningImage;
 {
     struct timeval now;
     	
+	if (EXIT) return;
+
     gettimeofday(&now, NULL);
 
     if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {

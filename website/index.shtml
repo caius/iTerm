@@ -64,6 +64,17 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
+
+<STRONG>Terminfo support is here!</STRONG> 11/1/06<IMG src="new.gif"><BR>
+Our latest CVS build features terminfo support. The keyboard mapping of a session will
+now use the terminfo library. Your customized keymappings will override the terminfo library though.
+So you should probably remove some settings in your keyboard profile for you to see terminfo
+at work.<BR><BR>
+
+This CVS build also fixes a few embarrassing bugs in the 0.9.2 release. Go to the 
+<A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check it out.<BR><BR>
+ 
 <STRONG>Release 0.9.2</STRONG> 10/29/06<BR>
 This new release features a new preference system. It is based on the same "Profiles-oriented" idea of
 previous version, with enhancement targeted toward the user experiences. The new changes include:<BR>
@@ -115,7 +126,7 @@ previous version, with enhancement targeted toward the user experiences. The new
 You can find out more details in the ChangeLog. Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
 and check it out.<BR><BR>
 
-<STRONG>iTerm It All!</STRONG> 10/26/06<IMG src="new.gif"><BR>
+<STRONG>iTerm It All!</STRONG> 10/26/06
 A true geek does everything in command lines, web, ftp, everything. Or maybe
 your more modest goal is just to get the telnet link to work. Now iTerm
 features the support to associate URLs with your bookmarks. You can set up a

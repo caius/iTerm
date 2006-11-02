@@ -1244,7 +1244,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
-					"-ltermcap",
+					"-lncurses",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1280,7 +1280,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
-					"-ltermcap",
+					"-lncurses",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1313,7 +1313,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
-					"-ltermcap",
+					"-lncurses",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";
@@ -1537,7 +1537,7 @@
 				OTHER_LDFLAGS = (
 					"-seg1addr",
 					0x14000000,
-					"-ltermcap",
+					"-lncurses",
 				);
 				OTHER_LIBTOOL_FLAGS = "";
 				OTHER_REZFLAGS = "";

@@ -1,3 +1,12 @@
+2006-11-01	fabian
+
+	* Rewrite [VT100Screen _getLineAtIndex] for clarity.
+	* Fixed background image problem when scrolling
+	* Replace the termcap code with terminfo.
+	* Changed the default profiles. Got rid of redundant keyboard settings.
+	* Fixed a bug in [PTYSession brokenPipe] that has been producing crashes.
+	* Fixed a bug in URL handlers where parameters are processed correctly.
+	
 2006-10-31	fabian
 
 	* Added a few strings into iTerm.strings for localization purposes.

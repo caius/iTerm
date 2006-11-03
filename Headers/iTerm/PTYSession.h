@@ -87,6 +87,10 @@
 	BOOL isProcessing;
     BOOL newOutput;
     BOOL growlIdle, growlNewOutput;
+	
+	// update timer
+	NSTimer *updateTimer;
+	int updateCount;
 }
 
 // init/dealloc

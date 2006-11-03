@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.45 2006-10-30 08:47:02 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.46 2006-11-03 05:27:28 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -207,8 +207,6 @@
 @interface PseudoTerminal (Private)
 
 - (void) _commonInit;
-- (void) _updateDisplayThread: (void *) incoming;
-
 - (NSFont *) _getMaxFont:(NSFont* ) font 
 				  height:(float) height
 				   lines:(float) lines;

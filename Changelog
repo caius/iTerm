@@ -1,3 +1,9 @@
+2006-11-02	fabian
+
+	* Eliminated the updateDisplay thread. Now all the UI stuff is in one thread, that should
+	  help with the stability a lot.
+	* Fixed the resizing bug when window is maximized and tab is hidden and a new tab is being opened.
+	  
 2006-11-01	fabian
 
 	* Rewrite [VT100Screen _getLineAtIndex] for clarity.

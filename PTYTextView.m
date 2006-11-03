@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.272 2006-10-30 08:47:00 yfabian Exp $
+// $Id: PTYTextView.m,v 1.273 2006-11-03 05:27:25 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -772,7 +772,7 @@ static float strokeWidth, boldStrokeWidth;
     if (![dataSource tryLock]) return;
 	
     gettimeofday(&now, NULL);
-    if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+5) {
+    if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
         blinkShow = !blinkShow;
         lastBlink = now;
     }
@@ -954,7 +954,7 @@ static float strokeWidth, boldStrokeWidth;
 				(line < startScreenLineIndex || forceUpdate || dirty[j] || (theLine[j].fg_color & BLINK_MASK));
 			if (need_draw) 
 			{ 
-				double_width = (theLine[j+1].ch == 0xffff);
+				double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
 				// switch colors if text is selected
 				if((theLine[j].bg_color & SELECTION_MASK) && ((theLine[j].fg_color & 0x1f) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0xff); // check for bold
@@ -1041,7 +1041,7 @@ static float strokeWidth, boldStrokeWidth;
 					x1--;
 					aChar = theLine[x1].ch;
 				}
-				double_width = (theLine[x1+1].ch == 0xffff);
+				double_width = x1 < WIDTH-1 || (theLine[x1+1].ch == 0xffff);
 				[self _drawCharacter: aChar 
 							 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0xff)
 								AtX: x1 * charWidth + MARGIN 

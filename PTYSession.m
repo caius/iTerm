@@ -236,7 +236,15 @@ static NSImage *warningImage;
 	
 	// launch a thread to process the data read from the SHELL process
 	[NSThread detachNewThreadSelector: @selector(_processReadDataThread:) toTarget: self withObject: nil];
+
+    updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
+													target:self
+												  selector:@selector(_updateTimer:)
+												  userInfo:nil
+												   repeats:YES] retain]; 
 	
+	updateCount = 0;
+
 }
 
 
@@ -253,6 +261,11 @@ static NSImage *warningImage;
 	MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
     MPDeleteSemaphore(threadEndSemaphore);
 
+	//stop the timer;
+	[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	// final update of display
+	[self updateDisplay];
+	
 	// release the data processing semaphore
 	MPDeleteSemaphore(dataSemaphore);
 		
@@ -321,13 +334,13 @@ static NSImage *warningImage;
     NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
 #endif
     if (EXIT) return;
+	EXIT = YES;
 
     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
     withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
     andNotification:@"Broken Pipes"];
 
-    [self setName:[NSString stringWithFormat:@"[%@]",[self name]]];
-	EXIT = YES;
+	[self setLabelAttribute];
 }
 
 - (BOOL) hasKeyMappingForEvent: (NSEvent *) event
@@ -1627,8 +1640,6 @@ static NSImage *warningImage;
 {
     struct timeval now;
     	
-	if (EXIT) return;
-
     gettimeofday(&now, NULL);
 
     if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {
@@ -1639,15 +1650,15 @@ static NSImage *warningImage;
 	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
 		[self setLabelAttribute];
 	
-	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+5) {
+	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
         [TEXTVIEW refresh];
-        lastUpdate = lastBlink = now;
+		lastUpdate = lastBlink = now;
 	}
 	else if (lastOutput.tv_sec > lastUpdate.tv_sec || (lastOutput.tv_sec == lastUpdate.tv_sec &&lastOutput.tv_usec > lastUpdate.tv_usec) ) {
         [TEXTVIEW refresh];
-        lastUpdate = now;
+		lastUpdate = now;
     }
-	
+	updateCount = 0;
 }
 
 
@@ -1751,10 +1762,10 @@ static NSImage *warningImage;
 
 -(void)handleTerminateScriptCommand: (NSScriptCommand *)command
 {
-    id p = parent;
+	id p = parent;
     int n = [[p tabView] numberOfTabViewItems];
-    [parent acquireLock];
-    [parent closeSession: self];
+    [p acquireLock];
+    [p closeSession: self];
     if (n>1) [p releaseLock];
 }
 
@@ -1825,7 +1836,6 @@ static NSImage *warningImage;
 		arPool = nil;
 	}
 
-	[self updateDisplay];
 	
 	[pool release];
 
@@ -1835,5 +1845,23 @@ static NSImage *warningImage;
 	
 }
 
+//Update the display if necessary
+- (void)_updateTimer:(NSTimer *)aTimer
+{   
+	if (EXIT && [self autoClose]) {
+		int n = [[parent tabView] numberOfTabViewItems];
+		id p = parent;
+		[p acquireLock];
+		[p closeSession: self];
+		if (n>1) [p releaseLock];
+	}
+	else {
+		updateCount++;
+		if ([[TEXTVIEW window] isKeyWindow])
+			[self updateDisplay];
+		else if (([parent currentSession] == self && updateCount>3) || updateCount >9)
+			[self updateDisplay];
+	}
+}
 
 @end

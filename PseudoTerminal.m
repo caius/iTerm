@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.368 2006-11-02 07:12:46 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.369 2006-11-03 05:27:25 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -871,12 +871,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [thisWindow setContentSize:winSize];
 	[[thisWindow contentView] setAutoresizesSubviews: YES]; 
 	[thisWindow setFrameTopLeftPoint: topLeft];
-    
-    [[[self currentSession] TEXTVIEW] setForceUpdate: YES];
+
+	[[[self currentSession] TEXTVIEW] setForceUpdate: YES];
 //    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
-    [[[self currentSession] SCROLLVIEW] setNeedsDisplay: YES];
-    [tabBarControl update];
-    
+	[[[self currentSession] SCROLLVIEW] setNeedsDisplay: YES];
+	[tabBarControl update];
 }
 
 
@@ -1304,10 +1303,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  __FILE__, __LINE__, [[self window] frame].size.width, [[self window] frame].size.height);
 #endif
 		
-	
+	int tabBarHeight = [tabBarControl isHidden] ? 0 : [tabBarControl frame].size.height;
     frame = [[[self currentSession] SCROLLVIEW] documentVisibleRect];
-    if (frame.size.height > [[[self window] contentView] frame].size.height) {
-        frame.size.height = [[[self window] contentView] frame].size.height;
+    if (frame.size.height + tabBarHeight > [[[self window] contentView] frame].size.height) {
+        frame.size.height = [[[self window] contentView] frame].size.height - tabBarHeight;
     }
     
 #if 0
@@ -1799,16 +1798,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	
 	// check window size in case tabs have to be hidden or shown
-	if ([TABVIEW numberOfTabViewItems] <= 2)
-		[self setWindowSize];
-	
-    if ([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
+    if ([[PreferencePanel sharedInstance] hideTab] && 
+		(([TABVIEW numberOfTabViewItems] > 1 && [tabBarControl isHidden]) || ([TABVIEW numberOfTabViewItems] < 2 && ![tabBarControl isHidden])))
     {
-        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
         [self setWindowSize];
+		[self windowDidResize:nil];
+		/*
+        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
         [[aSession TEXTVIEW] scrollEnd];
         // make sure the display is up-to-date.
-        [[aSession TEXTVIEW] setForceUpdate: YES];
+        [[aSession TEXTVIEW] setForceUpdate: YES]; */
         
     }
     
@@ -2102,12 +2101,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) acquireLock
 {
-    [PTLock lock];
+    //[PTLock lock];
 }
 
 - (void) releaseLock;
 {
-    [PTLock unlock];
+    //[PTLock unlock];
 }
 
 - (IBAction) parameterPanelEnd: (id) sender
@@ -2122,74 +2121,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) _commonInit
 {
 	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
-	
-    
-	[NSThread detachNewThreadSelector: @selector(_updateDisplayThread:) toTarget: self withObject: nil];
-	
-}
-
-- (void) _updateDisplayThread: (void *) incoming
-{
-	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];
-	int i, n, iterationCount;
-	NSAutoreleasePool *pool = nil;
-	PTYSession *aSession;
-	
-	iterationCount = 0;
-	while (EXIT == NO)
-	{
-
-		iterationCount++;
 		
-        //[self acquireLock];
-        [PTLock lock];
-        if (EXIT) break;
-		
-        if (iterationCount % 5 ==0) {
-            n = [TABVIEW numberOfTabViewItems];
-            for (i = 0; i < n; i++)
-            {
-                aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
-                if (![aSession exited]) [aSession updateDisplay];
-                else {
-                    if ([aSession autoClose]) {
-                        [self closeSession:aSession];
-                        i--;
-                        n--;
-                        if (!n) {
-                            //[self releaseLock];
-                            goto end_thread;
-                        }
-                    }
-                }
-            }
-		}
-        else {
-            if (![[self currentSession] exited] &&[[[[self currentSession] TEXTVIEW] window] isKeyWindow] || iterationCount % 3 ==0 ) 
-                [[self currentSession] updateDisplay];
-        }
-		// periodically create and release autorelease pools
-		if((iterationCount % 50) == 0)
-		{
-			// periodically create and release autorelease pools
-            [pool release];
-			pool = [[NSAutoreleasePool alloc] init];
-			iterationCount = 0;
-		}
-        [PTLock unlock];
-        //[self releaseLock];
-		usleep(2000*[[PreferencePanel sharedInstance] refreshRate]);
-	}
-	
-end_thread:
-	if(pool != nil)
-	{
-		[pool release];
-		pool = nil;
-	}
-	
-	[arPool release];
-	[NSThread exit];
 }
 
 - (NSFont *) _getMaxFont:(NSFont* ) font 

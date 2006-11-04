@@ -1,4 +1,16 @@
+The changes in 0.9.2.1103 are mainly under the hood. We changed the thread code, and hopefully that alone
+will improve the stability by a lot. <br><br>
 <STRONG>Changes since 0.9.2</STRONG><br><br>
+2006-11-03	fabian
+<ul>
+	<li>Changed VT100Screen code so that the resize caused by escape sequences is processed in the main thread. 
+	This way the data reading process is UI free now too.</li>
+</ul>
+2006-11-02	fabian
+<ul>
+	<li>Eliminated the updateDisplay thread. Now all the UI stuff is in one thread, that should help with the stability a lot.</li>
+	<li>Fixed the resizing bug when window is maximized and tab is hidden and a new tab is being opened.</li>
+</ul>
 2006-11-01	fabian
 <ul>
 	<li>Rewrite [VT100Screen _getLineAtIndex] for clarity.</li>

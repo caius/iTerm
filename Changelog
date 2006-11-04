@@ -1,3 +1,9 @@
+2006-11-03	fabian
+
+	* Changed VT100Screen code so that the resize caused by escape sequences is processed in the main thread.
+	  This way the data reading process is UI free now too.
+	* "Open all in new window" command now creates a new window for every bookmark folder.
+
 2006-11-02	fabian
 
 	* Eliminated the updateDisplay thread. Now all the UI stuff is in one thread, that should

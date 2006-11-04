@@ -1805,6 +1805,10 @@ static NSImage *warningImage;
 				// process token
 				if (token.type != VT100_SKIP)
 				{
+					while ([SCREEN changeSize] != NO_CHANGE) {
+						usleep(100000);
+					}
+					
 					[SCREEN putToken:token];
 					newOutput=YES;
 					gettimeofday(&lastOutput, NULL);
@@ -1857,10 +1861,23 @@ static NSImage *warningImage;
 	}
 	else {
 		updateCount++;
-		if ([[TEXTVIEW window] isKeyWindow])
-			[self updateDisplay];
-		else if (([parent currentSession] == self && updateCount>3) || updateCount >9)
-			[self updateDisplay];
+		switch ([SCREEN changeSize]) {
+			case CHANGE:
+				[parent resizeWindow:[SCREEN newWidth] height:[SCREEN newHeight]];
+				[SCREEN resetChangeSize];
+				//[TEXTVIEW scrollEnd];
+				break;
+			case CHANGE_PIXEL:
+				[parent resizeWindowToPixelsWidth:[SCREEN newWidth] height:[SCREEN newHeight]];
+				[SCREEN resetChangeSize];
+				//[TEXTVIEW scrollEnd];
+				break;
+			default:
+				if ([[TEXTVIEW window] isKeyWindow])
+					[self updateDisplay];
+				else if (([parent currentSession] == self && updateCount>3) || updateCount >9)
+					[self updateDisplay];
+		}
 	}
 }
 

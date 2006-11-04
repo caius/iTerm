@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.255 2006-11-02 07:12:47 yfabian Exp $
+// $Id: VT100Screen.m,v 1.256 2006-11-04 00:31:50 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -347,17 +347,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     NSLog(@"%s:%d :%d]", __PRETTY_FUNCTION__, width, height);
 #endif
 	
-	if(WIDTH == 0 || HEIGHT == 0)
+	if (WIDTH == 0 || HEIGHT == 0 || (width==WIDTH && height==HEIGHT)) {
+		changeSize = NO_CHANGE;
 		return;
-		
-	if (width==WIDTH && height==HEIGHT) return;
+	}
+	if (![self tryLock]) return;
 	
-	// get lock
-    if (![self tryLock]) {
-        NSLog(@"Fail to lock!");
-        return;	
-    }
-    
     total_height = max_scrollback_lines + HEIGHT;
 
     // Try to determine how many empty trailing lines there are on screen
@@ -451,6 +446,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	dirty=(char*)malloc(height*width*sizeof(char));
 	memset(dirty, 1, width*height*sizeof(char));
 	
+	changeSize = NO_CHANGE;
 	// release lock
 	[self releaseLock];
     
@@ -686,11 +682,10 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case VT100CSI_DECRST:
         if (token.u.csi.p[0]==3 && [TERMINAL allowColumnMode] == YES) {
 			// set the column
-			[self releaseLock];
-            [[SESSION parent] resizeWindow:([TERMINAL columnMode]?132:80)
-                                    height:HEIGHT];
-            [[SESSION TEXTVIEW] scrollEnd];
-			return;
+			changeSize = CHANGE;
+			newWidth = [TERMINAL columnMode]?132:80;
+			newHeight = HEIGHT;
+			break;
         }
         
         break;
@@ -768,15 +763,15 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case XTERMCC_DELLN: [self deleteLines:token.u.csi.p[0]]; break;
     case XTERMCC_WINDOWSIZE:
         //NSLog(@"setting window size from (%d, %d) to (%d, %d)", WIDTH, HEIGHT, token.u.csi.p[1], token.u.csi.p[2]);
-        [self releaseLock];
-        [[SESSION parent] resizeWindow: token.u.csi.p[2]
-                                height: token.u.csi.p[1]];
-        [[SESSION TEXTVIEW] scrollEnd];
-        return;
+		changeSize = CHANGE;
+		newWidth = token.u.csi.p[2];
+		newHeight = token.u.csi.p[1];
+        break;
     case XTERMCC_WINDOWSIZE_PIXEL:
-        [self releaseLock];
-        [[SESSION parent] resizeWindowToPixelsWidth: token.u.csi.p[2] height:token.u.csi.p[1]];
-        return;
+		changeSize = CHANGE_PIXEL;
+		newWidth = token.u.csi.p[2];
+		newHeight = token.u.csi.p[1];
+        break;
     case XTERMCC_WINDOWPOS:
         //NSLog(@"setting window position to Y=%d, X=%d", token.u.csi.p[1], token.u.csi.p[2]);
         [[[SESSION parent] window] setFrameTopLeftPoint: NSMakePoint(token.u.csi.p[2], [[[[SESSION parent] window] screen] frame].size.height - token.u.csi.p[1])];
@@ -1870,6 +1865,27 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 {
 //	memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
 	[display setForceUpdate: YES];
+}
+
+// resize-related
+- (int)changeSize
+{
+	return changeSize;
+}
+
+- (int)newWidth
+{
+	return newWidth;
+}
+
+- (int)newHeight
+{
+	return newHeight;
+}
+
+- (void) resetChangeSize
+{
+	changeSize = NO;
 }
 
 @end

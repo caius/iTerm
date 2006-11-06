@@ -148,7 +148,7 @@ static BOOL addingKBEntry;
 	[NSApp beginSheet: addProfile
 	   modalForWindow: [self window]
 		modalDelegate: self
-	   didEndSelector: @selector(_duplicateProfileSheetDidEnd:returnCode:contextInfo:)
+	   didEndSelector: @selector(_addProfileSheetDidEnd:returnCode:contextInfo:)
 		  contextInfo: nil];        
     
     // duplicate button?
@@ -1190,37 +1190,6 @@ static BOOL addingKBEntry;
 	[kbEntryTableView reloadData];
 }
 
-- (void)_duplicateProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
-{
-	id profileMgr;
-	
-    int categoryChosen = [profileTabView indexOfTabViewItem: [profileTabView selectedTabViewItem]];
-
-	if(categoryChosen == KEYBOARD_PROFILE_TAB)
-	{
-		profileMgr = [iTermKeyBindingMgr singleInstance];
-	}
-	else if(categoryChosen == TERMINAL_PROFILE_TAB)
-	{
-		profileMgr = [iTermTerminalProfileMgr singleInstance];
-	}
-	else if(categoryChosen == DISPLAY_PROFILE_TAB)
-	{
-		profileMgr = [iTermDisplayProfileMgr singleInstance];
-	}
-	else
-		return;
-	
-	if(returnCode == NSOKButton)
-	{
-        [profileMgr addProfileWithName: [profileName stringValue] 
-                           copyProfile: selectedProfile];
-		[profileOutline reloadData];
-        [self selectProfile:[profileName stringValue]  withInCategory: categoryChosen];
-	}
-	
-	[addProfile close];
-}
 
 - (void)_addProfileSheetDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {

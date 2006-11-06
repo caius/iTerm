@@ -124,7 +124,6 @@
     _cellOptimumWidth = 130;
     _tabLocation = PSMTab_TopTab;
     style = [[PSMMetalTabStyle alloc] init];
-    _lock = [[NSLock alloc] init];
     
     // the overflow button/menu
     NSRect overflowButtonRect = NSMakeRect([self frame].size.width - [style rightMarginForTabBarControl] + 1, 0, [style rightMarginForTabBarControl] - 1, [self frame].size.height);
@@ -201,7 +200,6 @@
     [partnerView release];
     [_lastMouseDownEvent release];
     [style release];
-    [_lock release];
     
     [self unregisterDraggedTypes];
 	
@@ -509,9 +507,7 @@
     // create cell
     PSMTabBarCell *cell = [[PSMTabBarCell alloc] initWithControlView:self];
     [cell setRepresentedObject:item];
-    
-    [_lock lock];
-        
+            
     // add to collection
     [_cells addObject:cell];
     
@@ -519,7 +515,6 @@
     [self bindPropertiesForCell:cell andTabViewItem:item];
 	[cell release];
     
-    [_lock unlock];
     //[self update]; 
 }
 
@@ -527,8 +522,6 @@
 {
 	NSObjectController *item = [[cell representedObject] identifier];
 	
-    [_lock lock];
-
     // unbind
     [[cell indicator] unbind:@"animate"];
     [[cell indicator] unbind:@"hidden"];
@@ -571,7 +564,6 @@
 
     // pull from collection
     [_cells removeObject:cell];
-    [_lock unlock];
 
     //[self update];
 
@@ -833,10 +825,7 @@
 
 - (void)drawRect:(NSRect)rect 
 {
-    if ([_lock tryLock]) {
-        [style drawTabBar:self inRect:rect];
-        [_lock unlock];
-    }
+	[style drawTabBar:self inRect:rect];
 }
 
 - (void)update
@@ -848,13 +837,9 @@
 {
     // abandon hope, all ye who enter here :-)
     // this method handles all of the cell layout, and is called when something changes to require the refresh.  This method is not called during drag and drop; see the PSMTabDragAssistant's calculateDragAnimationForTabBar: method, which does layout in that case.
-   
-    
-    if (![_lock tryLock]) return;
     
     // make sure all of our tabs are accounted for before updating
     if ([tabView numberOfTabViewItems] != [_cells count]) {
-        [_lock unlock];
         return;
     }
 	
@@ -1050,7 +1035,6 @@
         [self setNeedsDisplay];
 	}
     
-    [_lock unlock];
 }
 
 - (void)_removeCellTrackingRects
@@ -1613,10 +1597,7 @@
 	
     [item retain];
     if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(closeSession:)])){
-        [[self delegate] acquireLock];
-        int n = [tabView numberOfTabViewItems];
         [[self delegate] closeSession: [item identifier]];
-        if (n>1) [[self delegate] releaseLock];
     } 
         
     [item release];
@@ -2110,8 +2091,6 @@
 - (void)setLabelColor:(NSColor *)aColor forTabViewItem:(NSTabViewItem *) tabViewItem
 {
     BOOL updated = NO;
-
-    [_lock lock];
     
     NSEnumerator *e = [_cells objectEnumerator];
     PSMTabBarCell *cell;
@@ -2123,7 +2102,6 @@
             }
 		}
     }
-    [_lock unlock];
     
     if (updated) [self update: NO];
 }

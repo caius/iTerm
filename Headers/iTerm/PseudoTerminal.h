@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.46 2006-11-03 05:27:28 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.47 2006-11-06 17:08:54 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -63,8 +63,6 @@
 	BOOL fontSizeFollowWindowResize;
 	BOOL suppressContextualMenu;
     
-    NSLock *PTLock;
-
 	BOOL EXIT;
 }
 
@@ -167,8 +165,6 @@
 
 // Utility methods
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;
-- (void) acquireLock;
-- (void) releaseLock;
 
 @end
 

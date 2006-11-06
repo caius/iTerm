@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.370 2006-11-04 00:31:50 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.371 2006-11-06 17:08:53 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -228,7 +228,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (id)init
 {
-    PTLock = [[NSLock alloc] init];
     return ([self initWithWindowNibName: @"PseudoTerminal"]);
 }
 
@@ -558,11 +557,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 							,nil) == 0) return;
     }
     
-    [self acquireLock];
-    int n = [TABVIEW numberOfTabViewItems];
     [self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
-    if (n>1) [self releaseLock];
-}
+} 
 
 - (IBAction)previousSession:(id)sender
 {
@@ -635,8 +631,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 	
     [_toolbarController release];
-	[PTLock release];
-    PTLock = nil;
     
     [super dealloc];
 }
@@ -1094,7 +1088,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     PTYSession *aSession;
     int i;
     
-    [self acquireLock];
     int n = [TABVIEW numberOfTabViewItems];    
     for (i=0; i<n; i++)
     {
@@ -1107,7 +1100,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[[aSession TEXTVIEW] scrollEnd];
 		[ptys setUserScroll: NO];		
     }    
-	[self releaseLock];
 	[pool release];
 }
 
@@ -1432,7 +1424,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal resizeWindow:%d,%d]",
           __FILE__, __LINE__, w, h);
 #endif
-    [self acquireLock];
     NSRect frm = [[self window] frame];
     float rh = frm.size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
     float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
@@ -1442,15 +1433,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 	// resize the TABVIEW and TEXTVIEW
     [self setWindowSize];
-    [self releaseLock];
-    
 }
 
 // Resize the window so that the text display area has pixel size of w*h
 - (void) resizeWindowToPixelsWidth:(int)w height:(int)h
 {
-    [self acquireLock];
-    
     NSRect frm = [[self window] frame];
     float rh = frm.size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
     float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
@@ -1469,8 +1456,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     [[self window] setFrame:frm display:NO];
     [self windowDidResize:nil];
-	[self releaseLock];
-    
 }
 
 // Contextual menu
@@ -1945,10 +1930,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) closeTabWithIdentifier: (id) identifier
 {
-    [self acquireLock];
-    int n = [TABVIEW numberOfTabViewItems];
     [self closeSession: identifier];
-    if (n>1) [self releaseLock];
 }
 
 // moves a tab with its session to a new window
@@ -2097,16 +2079,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return (contentSize);
 }
 
-- (void) acquireLock
-{
-    //[PTLock lock];
-}
-
-- (void) releaseLock;
-{
-    //[PTLock unlock];
-}
-
 - (IBAction) parameterPanelEnd: (id) sender
 {
     [NSApp stopModal];
@@ -2237,8 +2209,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 -(NSArray*)sessions
 {
-    [self acquireLock];
-    
     int n = [TABVIEW numberOfTabViewItems];
     NSMutableArray *sessions = [NSMutableArray arrayWithCapacity: n];
     int i;
@@ -2247,8 +2217,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
         [sessions addObject: [[TABVIEW tabViewItemAtIndex:i] identifier]];
     } 
-    
-    [self releaseLock];
 
     return sessions;
 }
@@ -2312,7 +2280,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // set our preferences
     [aSession setAddressBookEntry: addressbookEntry];
     // Add this session to our term and make it current
-    [self acquireLock];
     [self appendSession: aSession];
     
     
@@ -2336,7 +2303,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self startProgram:cmd arguments:arg environment:env];
 	
     [aSession release];
-    [self releaseLock];
 }
 
 -(void)addNewSession:(NSDictionary *) addressbookEntry withURL: (NSString *)url
@@ -2355,7 +2321,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // set our preferences
     [aSession setAddressBookEntry: addressbookEntry];
     // Add this session to our term and make it current
-    [self acquireLock];
     [self appendSession: aSession];
     
     // We process the cmd to insert URL parts
@@ -2386,7 +2351,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self startProgram:[self _getSessionParameters: cmd] arguments:arg environment:env];
 	
     [aSession release];
-    [self releaseLock];
 }
 
 -(void)appendSession:(PTYSession *)object
@@ -2424,14 +2388,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(void)removeFromSessionsAtIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -removeFromSessionsAtIndex: %d", index);
-    [self acquireLock];
-    int n = [TABVIEW numberOfTabViewItems];
     if(index < [TABVIEW numberOfTabViewItems])
     {
 		PTYSession *aSession = [[TABVIEW tabViewItemAtIndex:index] identifier];
 		[self closeSession: aSession];
     }
-    if (n>1) [self releaseLock];
 }
 
 - (BOOL)windowInited

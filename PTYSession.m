@@ -1762,11 +1762,7 @@ static NSImage *warningImage;
 
 -(void)handleTerminateScriptCommand: (NSScriptCommand *)command
 {
-	id p = parent;
-    int n = [[p tabView] numberOfTabViewItems];
-    [p acquireLock];
-    [p closeSession: self];
-    if (n>1) [p releaseLock];
+    [parent closeSession: self];
 }
 
 @end
@@ -1853,11 +1849,7 @@ static NSImage *warningImage;
 - (void)_updateTimer:(NSTimer *)aTimer
 {   
 	if (EXIT && [self autoClose]) {
-		int n = [[parent tabView] numberOfTabViewItems];
-		id p = parent;
-		[p acquireLock];
-		[p closeSession: self];
-		if (n>1) [p releaseLock];
+		[parent closeSession: self];
 	}
 	else {
 		updateCount++;

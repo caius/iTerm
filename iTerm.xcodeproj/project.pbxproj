@@ -199,15 +199,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		8742063C0564168A00CFC3F1 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Fonts;
-			dstSubfolderSpec = 7;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		874206560564169600CFC3F1 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -873,7 +864,6 @@
 				8742061F0564168A00CFC3F1 /* Sources */,
 				874206380564168A00CFC3F1 /* Frameworks */,
 				8742063B0564168A00CFC3F1 /* Rez */,
-				8742063C0564168A00CFC3F1 /* CopyFiles */,
 			);
 			buildRules = (
 			);

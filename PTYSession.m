@@ -343,7 +343,7 @@ static NSImage *warningImage;
 	[self setLabelAttribute];
 }
 
-- (BOOL) hasKeyMappingForEvent: (NSEvent *) event
+- (BOOL) hasKeyMappingForEvent: (NSEvent *) event highPriority: (BOOL) priority
 {
     unsigned int modflag;
     unsigned short keycode;
@@ -352,6 +352,7 @@ static NSImage *warningImage;
     unichar unicode, unmodunicode;
 	int keyBindingAction;
 	NSString *keyBindingText;
+	BOOL keyBindingPriority;
         
     modflag = [event modifierFlags];
     keycode = [event keyCode];
@@ -365,10 +366,11 @@ static NSImage *warningImage;
 	// Check if we have a custom key mapping for this event
 	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unmodunicode 
 																   modifiers: modflag 
+																highPriority: &keyBindingPriority
 																		text: &keyBindingText 
 																	 profile: [[self addressBookEntry] objectForKey: KEY_KEYBOARD_PROFILE]];
 	
-	return (keyBindingAction >= 0);
+	return (keyBindingAction >= 0 && keyBindingPriority >= priority);
 }
 
 // Screen for special keys
@@ -381,6 +383,7 @@ static NSImage *warningImage;
     int send_pchr = -1;
 	int keyBindingAction;
 	NSString *keyBindingText;
+	BOOL priority;
     
     unsigned int modflag;
     unsigned short keycode;
@@ -412,7 +415,8 @@ static NSImage *warningImage;
 	// Check if we have a custom key mapping for this event
 	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unmodunicode 
 																   modifiers: modflag 
-																		 text: &keyBindingText 
+																highPriority: &priority
+																		text: &keyBindingText 
 																	 profile: [[self addressBookEntry] objectForKey: KEY_KEYBOARD_PROFILE]];
 	if(keyBindingAction >= 0)
 	{

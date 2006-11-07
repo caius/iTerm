@@ -60,6 +60,7 @@
 	IBOutlet NSTableView *kbEntryTableView;
 	IBOutlet NSButton *kbEntryDeleteButton;
 	IBOutlet NSMatrix *kbOptionKey;
+	IBOutlet NSButton *kbEntryHighPriority;
 	
 	// Display profile UI
 	IBOutlet NSColorWell *displayFGColor;

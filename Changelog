@@ -3,6 +3,8 @@
 	* Fixed "Add Profile" dialog.
 	* Fixed "New" button position in the bookmarks window.
 	* Removed now unnecessary lock for display updating.
+	* Added # as an acceptable URL character.
+	* Added an "High interception priority" to allow certain key mappings being processed before others.
 	
 2006-11-03	fabian
 

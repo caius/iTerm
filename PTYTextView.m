@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.273 2006-11-03 05:27:25 yfabian Exp $
+// $Id: PTYTextView.m,v 1.274 2006-11-07 08:03:08 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1093,6 +1093,12 @@ static float strokeWidth, boldStrokeWidth;
     // Hide the cursor
     [NSCursor setHiddenUntilMouseMoves: YES];   
 		
+	if ([delegate hasKeyMappingForEvent: event highPriority: YES]) 
+	{
+		[delegate keyDown:event];
+		return;
+	}
+	
     IM_INPUT_INSERT = NO;
     if (IMEnable) {
         [self interpretKeyEvents:[NSArray arrayWithObject:event]];
@@ -1107,7 +1113,7 @@ static float strokeWidth, boldStrokeWidth;
     else {
 		// Check whether we have a custom mapping for this event or if numeric or function keys were pressed.
 		if ( prev == NO && 
-			 ([delegate hasKeyMappingForEvent: event] ||
+			 ([delegate hasKeyMappingForEvent: event highPriority: NO] ||
 			  (modflag & NSNumericPadKeyMask) || 
 			  (modflag & NSFunctionKeyMask)))
 		{
@@ -2857,7 +2863,7 @@ static float strokeWidth, boldStrokeWidth;
 - (NSString *) _getURLForX: (int) x 
 					y: (int) y 
 {
-	static char *urlSet = ".?/:;%=&_-,+~";
+	static char *urlSet = ".?/:;%=&_-,+~#";
 	int x1=x, x2=x, y1=y, y2=y;
 	int w = [dataSource width];
 	int h = [dataSource height];

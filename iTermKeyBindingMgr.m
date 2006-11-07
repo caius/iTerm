@@ -363,6 +363,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	int action;
 	NSString *actionString;
 	NSString *auxText;
+	BOOL priority;
 	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
@@ -373,6 +374,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	{
 		action = [[[keyMappings objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Action"] intValue];
 		auxText = [[keyMappings objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Text"];
+		priority = [[keyMappings objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Priority"] ? [[[keyMappings objectForKey: [allKeys objectAtIndex: index]] objectForKey: @"Priority"] boolValue] : NO;
 	}
 	else
 		return (nil);
@@ -457,13 +459,14 @@ static iTermKeyBindingMgr *singleInstance = nil;
 			break;
 	}
 	
-	return (actionString);
+	return (priority?[actionString stringByAppendingString:@" (!)"] : actionString);
 }
 
 
 - (void) addEntryForKeyCode: (unsigned int) hexCode 
 				  modifiers: (unsigned int) modifiers
 					 action: (unsigned int) action
+			   highPriority: (BOOL) highPriority
 					   text: (NSString *) text
 					profile: (NSString *) profile
 {
@@ -488,6 +491,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	[keyBinding setObject: [NSNumber numberWithInt: action] forKey: @"Action"];
 	if([text length] > 0)
 		[keyBinding setObject:[[text copy] autorelease] forKey: @"Text"];
+	[keyBinding setObject: [NSNumber numberWithBool:highPriority] forKey: @"Priority"];
 	[keyMappings setObject: keyBinding forKey: keyString];
 	[keyBinding release];
 	
@@ -496,6 +500,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 - (void) addEntryForKey: (unsigned int) key 
 			  modifiers: (unsigned int) modifiers
 				 action: (unsigned int) action
+		   highPriority: (BOOL) highPriority
 				   text: (NSString *) text
 				profile: (NSString *) profile
 {
@@ -615,7 +620,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 			return;
 	}
 	
-	[self addEntryForKeyCode: keyUnicode modifiers: keyModifiers action: action text: text profile: profile];
+	[self addEntryForKeyCode: keyUnicode modifiers: keyModifiers action: action highPriority: highPriority text: text profile: profile];
 		
 }
 
@@ -685,14 +690,14 @@ static iTermKeyBindingMgr *singleInstance = nil;
 }
 
 
-- (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
+- (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers highPriority: (BOOL *) highPriority text: (NSString **) text profile: (NSString *)profile
 {
 	int retCode = -1;
 	NSString *globalProfile;
 			
 	// search the specified profile first
 	if([profile length] > 0)
-		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: profile];
+		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers highPriority: highPriority text: text profile: profile];
 	
 	// If we found something in the common profile, return that
 	if(retCode >= 0)
@@ -702,7 +707,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	
 	// search the common profile if a match was not found
 	if([globalProfile length] > 0)
-		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers text: text profile: globalProfile];	
+		retCode = [self _actionForKeyCode: keyCode modifiers: keyModifiers highPriority: highPriority text: text profile: globalProfile];	
 	
 	
 	return (retCode);
@@ -711,7 +716,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 @end
 
 @implementation iTermKeyBindingMgr (Private)
-- (int) _actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile
+- (int) _actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers highPriority: (BOOL *) highPriority text: (NSString **) text profile: (NSString *)profile
 {
 	NSDictionary *keyMappings;
 	NSString *keyString;
@@ -755,6 +760,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	retCode = [[theKeyMapping objectForKey: @"Action"] intValue];
 	if(text != nil)
 		*text = [theKeyMapping objectForKey: @"Text"];
+	*highPriority = [theKeyMapping objectForKey: @"Priority"] ? [[theKeyMapping objectForKey: @"Priority"] boolValue] : NO;
 	
 	return (retCode);
 	

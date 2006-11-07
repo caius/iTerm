@@ -327,6 +327,7 @@ static BOOL addingKBEntry;
 		[kbEntryAction selectItemAtIndex: KEY_ACTION_ESCAPE_SEQUENCE];
 		
 	}
+	[kbEntryHighPriority setState: NSOffState];
 	
 	[self kbEntrySelectorChanged: kbEntryAction];
 	
@@ -349,6 +350,7 @@ static BOOL addingKBEntry;
 	unsigned int keyCode, keyModifiers;
 	int action;
 	NSString *auxText;
+	BOOL priority;
 	
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
@@ -360,6 +362,8 @@ static BOOL addingKBEntry;
 		theKeyCombination = [allKeys objectAtIndex: selectedRow];
 		action = [[[keyMappings objectForKey: [allKeys objectAtIndex: selectedRow]] objectForKey: @"Action"] intValue];
 		auxText = [[keyMappings objectForKey: [allKeys objectAtIndex: selectedRow]] objectForKey: @"Text"];
+		priority = [[keyMappings objectForKey: [allKeys objectAtIndex: selectedRow]] objectForKey: @"Priority"] ? [[[keyMappings objectForKey: [allKeys objectAtIndex: selectedRow]] objectForKey: @"Priority"] boolValue] : NO;
+		
 	}
 	else
 		return;
@@ -521,6 +525,7 @@ static BOOL addingKBEntry;
 		
 	}
 	
+	[kbEntryHighPriority setState: priority ? NSOnState : NSOffState];
 	[self kbEntrySelectorChanged: kbEntryAction];
 	
 	[NSApp beginSheet: addKBEntry
@@ -1171,6 +1176,7 @@ static BOOL addingKBEntry;
 				[[iTermKeyBindingMgr singleInstance] addEntryForKeyCode: hexCode 
 															  modifiers: modifiers 
 																 action: [kbEntryAction indexOfSelectedItem] 
+														   highPriority: [kbEntryHighPriority state] == NSOnState
 																   text: [kbEntryText stringValue]
 																profile: selectedProfile];
 			}
@@ -1180,6 +1186,7 @@ static BOOL addingKBEntry;
 			[[iTermKeyBindingMgr singleInstance] addEntryForKey: [kbEntryKey indexOfSelectedItem] 
 													  modifiers: modifiers 
 														 action: [kbEntryAction indexOfSelectedItem] 
+												   highPriority: [kbEntryHighPriority state] == NSOnState
 														   text: [kbEntryText stringValue]
 														profile: selectedProfile];			
 		}

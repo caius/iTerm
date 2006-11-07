@@ -114,7 +114,7 @@
 - (void)brokenPipe;
 
 // PTYTextView
-- (BOOL) hasKeyMappingForEvent: (NSEvent *) event;
+- (BOOL)hasKeyMappingForEvent: (NSEvent *) event highPriority: (BOOL) priority;
 - (void)keyDown:(NSEvent *)event;
 - (BOOL)willHandleEvent: (NSEvent *) theEvent;
 - (void)handleEvent: (NSEvent *) theEvent;

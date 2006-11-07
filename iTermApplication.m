@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplication.m,v 1.9 2006-10-21 02:11:09 yfabian Exp $
+// $Id: iTermApplication.m,v 1.10 2006-11-07 08:03:08 yfabian Exp $
 //
 /*
  **  iTermApplication.m
@@ -38,7 +38,7 @@
 @implementation iTermApplication
 
 // override to catch key mappings
-/*- (void)sendEvent:(NSEvent *)anEvent
+- (void)sendEvent:(NSEvent *)anEvent
 {
 	id aWindow;
 	PseudoTerminal *currentTerminal;
@@ -56,7 +56,7 @@
 			currentTerminal = [[iTermController sharedInstance] currentTerminal];
 			currentSession = [currentTerminal currentSession];
 			
-			if([currentSession hasKeyMappingForEvent: anEvent])
+			if([currentSession hasKeyMappingForEvent: anEvent highPriority: YES])
 				[currentSession keyDown: anEvent];
 			else
 				[super sendEvent: anEvent];
@@ -68,5 +68,5 @@
 	else
 		[super sendEvent: anEvent];
 }
-*/
+
 @end

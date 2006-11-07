@@ -123,21 +123,31 @@
 - (void) addEntryForKeyCode: (unsigned int) hexCode 
 				  modifiers: (unsigned int) modifiers
 					 action: (unsigned int) action
+			   highPriority: (BOOL) highPriority
 					   text: (NSString *) text
 					profile: (NSString *) profile;
 - (void) addEntryForKey: (unsigned int) key 
 				  modifiers: (unsigned int) modifiers
 					 action: (unsigned int) action
+			   highPriority: (BOOL) highPriority
 					   text: (NSString *) text
-				profile: (NSString *) profile;
+				    profile: (NSString *) profile;
 - (void) deleteEntryAtIndex: (int) index inProfile: (NSString *) profile;
 
 - (NSString *) keyCombinationAtIndex: (int) index inProfile: (NSString *) profile;
 - (NSString *) actionForKeyCombinationAtIndex: (int) index inProfile: (NSString *) profile;
-- (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile;
+- (int) actionForKeyCode: (unichar)keyCode 
+			   modifiers: (unsigned int) keyModifiers 
+			highPriority: (BOOL *) highPriority
+					text: (NSString **) text 
+				 profile: (NSString *)profile;
 
 @end
 
 @interface iTermKeyBindingMgr (Private)
-- (int) _actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers text: (NSString **) text profile: (NSString *)profile;
+- (int) _actionForKeyCode: (unichar)keyCode 
+				modifiers: (unsigned int) keyModifiers
+			 highPriority: (BOOL *) highPriority
+					 text: (NSString **) text 
+				  profile: (NSString *)profile;
 @end

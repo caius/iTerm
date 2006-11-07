@@ -79,6 +79,7 @@
                 duplicateButton = id; 
                 kbEntryAction = NSPopUpButton; 
                 kbEntryDeleteButton = NSButton; 
+                kbEntryHighPriority = id; 
                 kbEntryHint = id; 
                 kbEntryKey = NSPopUpButton; 
                 kbEntryKeyCode = NSTextField; 

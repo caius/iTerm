@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.274 2006-11-07 08:03:08 yfabian Exp $
+// $Id: PTYTextView.m,v 1.275 2006-11-08 01:00:48 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1149,7 +1149,7 @@ static float strokeWidth, boldStrokeWidth;
 	
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
-		&& (locationInTextView.y > visibleRect.origin.y))
+		&& (locationInTextView.y > visibleRect.origin.y) && !([event modifierFlags] & NSAlternateKeyMask))
 		//		&& ([event modifierFlags] & NSCommandKeyMask == 0)) 
 	{
 		int rx, ry;
@@ -1192,7 +1192,7 @@ static float strokeWidth, boldStrokeWidth;
 	
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
-		&& reportingMouseDown)
+		&& reportingMouseDown && !([event modifierFlags] & NSAlternateKeyMask))
 	{
 		reportingMouseDown = NO;
 		int rx, ry;
@@ -1228,7 +1228,7 @@ static float strokeWidth, boldStrokeWidth;
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
 		&& (locationInTextView.y > visibleRect.origin.y)
-		&& reportingMouseDown)
+		&& reportingMouseDown && !([event modifierFlags] & NSAlternateKeyMask))
 	{
 		int rx, ry;
 		rx = (locationInTextView.x-MARGIN - visibleRect.origin.x)/charWidth;
@@ -1269,7 +1269,7 @@ static float strokeWidth, boldStrokeWidth;
 	
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
-		&& (locationInTextView.y > visibleRect.origin.y))
+		&& (locationInTextView.y > visibleRect.origin.y) && !([event modifierFlags] & NSAlternateKeyMask))
 		//		&& ([event modifierFlags] & NSCommandKeyMask == 0)) 
 	{
 		int rx, ry;
@@ -1305,7 +1305,7 @@ static float strokeWidth, boldStrokeWidth;
 	
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
-		&& reportingMouseDown)
+		&& reportingMouseDown && !([event modifierFlags] & NSAlternateKeyMask))
 	{
 		reportingMouseDown = NO;
 		int rx, ry;
@@ -1341,7 +1341,7 @@ static float strokeWidth, boldStrokeWidth;
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
 		&& (locationInTextView.y > visibleRect.origin.y)
-		&& reportingMouseDown)
+		&& reportingMouseDown && !([event modifierFlags] & NSAlternateKeyMask))
 	{
 		int rx, ry;
 		rx = (locationInTextView.x-MARGIN - visibleRect.origin.x)/charWidth;
@@ -1379,7 +1379,7 @@ static float strokeWidth, boldStrokeWidth;
 	
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
-		&& (locationInTextView.y > visibleRect.origin.y))
+		&& (locationInTextView.y > visibleRect.origin.y) && !([event modifierFlags] & NSAlternateKeyMask))
 		//		&& ([event modifierFlags] & NSCommandKeyMask == 0)) 
 	{
 		int rx, ry;
@@ -1443,7 +1443,7 @@ static float strokeWidth, boldStrokeWidth;
 
 	NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];
 	if (([[self delegate] xtermMouseReporting]) 
-		&& (locationInTextView.y > visibleRect.origin.y))
+		&& (locationInTextView.y > visibleRect.origin.y) && !([event modifierFlags] & NSAlternateKeyMask))
 	{
 		int rx, ry;
 		rx = (locationInTextView.x-MARGIN - visibleRect.origin.x)/charWidth;
@@ -1592,7 +1592,7 @@ static float strokeWidth, boldStrokeWidth;
 	
 	
 	if ([[self delegate] xtermMouseReporting]
-		&& reportingMouseDown) 
+		&& reportingMouseDown && !([event modifierFlags] & NSAlternateKeyMask)) 
 	{
 		reportingMouseDown = NO;
 		int rx, ry;
@@ -1684,7 +1684,7 @@ static float strokeWidth, boldStrokeWidth;
 	y = locationInTextView.y/lineHeight;
 	
 	if (([[self delegate] xtermMouseReporting])
-		&& reportingMouseDown) 
+		&& reportingMouseDown&& !([event modifierFlags] & NSAlternateKeyMask)) 
 	{
 		int rx, ry;
 		NSRect visibleRect = [[self enclosingScrollView] documentVisibleRect];

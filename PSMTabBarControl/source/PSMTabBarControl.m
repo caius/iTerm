@@ -1354,8 +1354,13 @@
 			_closeClicked = YES;
         } else {
             [cell setCloseButtonPressed:NO];
-			if (_selectsTabsOnMouseDown) {
-				[self performSelector:@selector(tabClick:) withObject:cell];
+			if ([theEvent clickCount] == 2) {
+				[self performSelector:@selector(tabDoubleClick:) withObject:cell];
+			}
+			else {
+				if (_selectsTabsOnMouseDown) {
+					[self performSelector:@selector(tabClick:) withObject:cell];
+				}
 			}
         }
         [self setNeedsDisplay];
@@ -1608,6 +1613,13 @@
 {
     [tabView selectTabViewItem:[sender representedObject]];
     [self update];
+}
+
+- (void)tabDoubleClick:(id)sender
+{
+    if(([self delegate]) && ([[self delegate] respondsToSelector:@selector(tabView:doubleClickTabViewItem:)])){
+        [[self delegate] tabView:[self tabView] doubleClickTabViewItem:[sender representedObject]];
+    } 
 }
 
 - (void)tabNothing:(id)sender

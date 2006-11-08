@@ -1,10 +1,23 @@
-The changes in 0.9.2.1103 are mainly under the hood. We changed the thread code, and hopefully that alone
-will improve the stability by a lot. <br><br>
 <STRONG>Changes since 0.9.2</STRONG><br><br>
+2006-11-07	fabian
+<ul>
+	<li>Added the support for using Option key to temporarily disable xterm mouse reporting.</li>
+	<li>double click tab to open info window.</li>
+	<li>Removed obsolete localization resource files from the binary build.</li>
+</ul>
+2006-11-06	fabian
+<ul>
+	<li>Fixed "Add Profile" dialog.</li>
+	<li>Fixed "New" button position in the bookmarks window.</li>
+	<li>Removed now unnecessary lock for display updating.</li>
+	<li>Added # as an acceptable URL character.</li>
+	<li>Added an "High interception priority" to allow certain key mappings being processed before others.</li>
+</ul>
 2006-11-03	fabian
 <ul>
 	<li>Changed VT100Screen code so that the resize caused by escape sequences is processed in the main thread. 
 	This way the data reading process is UI free now too.</li>
+	<li>"Open all in new window" command now creates a new window for every bookmark folder.</li>
 </ul>
 2006-11-02	fabian
 <ul>

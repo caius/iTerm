@@ -1,3 +1,8 @@
+2006-11-07	fabian
+
+	* Added the support for using Option key to temporarily disable xterm mouse reporting.
+	* double click tab to open info window.
+	
 2006-11-06	fabian
 
 	* Fixed "Add Profile" dialog.

@@ -34,6 +34,7 @@
 - (void)tabView:(NSTabView *)tabView willAddTabViewItem:(NSTabViewItem *)tabViewItem;
 - (void)tabView:(NSTabView *)tabView willInsertTabViewItem:(NSTabViewItem *)tabViewItem atIndex:(int) index;
 - (void)tabViewDidChangeNumberOfTabViewItems:(NSTabView *)tabView;
+- (void)tabView:(NSTabView *)tabView doubleClickTabViewItem:(NSTabViewItem *)tabViewItem;
 @end
 
 @interface PTYTabView : NSTabView {

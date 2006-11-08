@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.371 2006-11-06 17:08:53 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.372 2006-11-08 01:00:48 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1903,6 +1903,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	return temp;
 	
+}
+
+- (void)tabView:(NSTabView *)tabView doubleClickTabViewItem:(NSTabViewItem *)tabViewItem
+{
+	[tabView selectTabViewItem:tabViewItem];
+	[ITConfigPanelController show];
 }
 
 - (void) setLabelColor: (NSColor *) color forTabViewItem: tabViewItem

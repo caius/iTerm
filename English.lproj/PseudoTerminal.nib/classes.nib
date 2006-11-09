@@ -43,6 +43,7 @@
                 previousSession = id; 
                 saveDisplayProfile = id; 
                 saveTerminalProfile = id; 
+                sendCommand = id; 
                 switchSession = id; 
                 toggleBookmarksView = id; 
                 toggleFontSizeFollowWindowResize = id; 
@@ -51,6 +52,7 @@
             CLASS = PseudoTerminal; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                commandField = id; 
                 parameterName = id; 
                 parameterPanel = id; 
                 parameterPrompt = id; 

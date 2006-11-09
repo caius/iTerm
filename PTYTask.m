@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.37 2006-10-24 05:28:25 yfabian Exp $
+// $Id: PTYTask.m,v 1.38 2006-11-09 05:45:07 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -276,6 +276,8 @@ static int writep(int fds, char *buf, size_t len)
 		kill(PID, SIGKILL);
     if (FILDES >= 0)
 		close(FILDES);
+
+	FILDES = -1;
 	
     MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
     MPDeleteSemaphore(threadEndSemaphore);

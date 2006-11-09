@@ -233,10 +233,11 @@
 - (void)setLabelAttribute;
 - (BOOL)bell;
 - (void)setBell: (BOOL) flag;
-- (BOOL) isProcessing;
-- (void) setIsProcessing: (BOOL) aFlag;
+- (BOOL)isProcessing;
+- (void)setIsProcessing: (BOOL) aFlag;
 
-- (void) updateDisplay;
+- (void)sendCommand: (NSString *)command;
+- (void)updateDisplay;
 
 @end
 

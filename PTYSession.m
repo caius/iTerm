@@ -333,14 +333,7 @@ static NSImage *warningImage;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
 #endif
-    if (EXIT) return;
 	EXIT = YES;
-
-    [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-    withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
-    andNotification:@"Broken Pipes"];
-
-	[self setLabelAttribute];
 }
 
 - (BOOL) hasKeyMappingForEvent: (NSEvent *) event highPriority: (BOOL) priority
@@ -1639,6 +1632,22 @@ static NSImage *warningImage;
     return addressBookEntry;
 }
 
+-(void)sendCommand: (NSString *)command
+{
+    NSData *data = nil;
+    NSString *aString = nil;
+	
+    if(command != nil)
+    {
+		aString = [NSString stringWithFormat:@"%@\n", command];
+		data = [aString dataUsingEncoding: [TERMINAL encoding]];
+    }
+	
+    if(data != nil)
+    {
+		[self writeTask:data];
+    }
+}
 
 - (void) updateDisplay
 {
@@ -1776,7 +1785,6 @@ static NSImage *warningImage;
 // thread to process data read from the task being run
 -(void)_processReadDataThread: (void *) arg
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];
 	int iterationCount = 0;
 	VT100TCC token;
@@ -1788,60 +1796,39 @@ static NSImage *warningImage;
 		MPWaitOnSemaphore(dataSemaphore, kDurationForever);
 		
 		// inner while loop to process all the tokens we can get
-		while(1)
+		while(TERMINAL && ((token = [TERMINAL getNextToken]),
+						   token.type != VT100_WAIT && token.type != VT100CC_NULL))
 		{
-			// grab next token
-			token = [TERMINAL getNextToken];
-			
-			// if we reached end of stream, get out
-			if(token.type == VT100CC_NULL)
-				break;
-			
-			// ok, we have a token to be processed
-			if (TERMINAL && token.type != VT100_WAIT)
-			{	
-				
-				
-				// process token
-				if (token.type != VT100_SKIP)
-				{
+			// process token
+			if (token.type != VT100_SKIP)
+			{
+				if (token.type == VT100_NOTSUPPORT) {
+					//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
+				}
+				else {
 					while ([SCREEN changeSize] != NO_CHANGE) {
 						usleep(100000);
 					}
-					
+				
 					[SCREEN putToken:token];
 					newOutput=YES;
 					gettimeofday(&lastOutput, NULL);
 				}
-				
-				if (token.type == VT100_NOTSUPPORT) {
-					//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
-				}
-				
-				// periodically refresh autoreleasepool
-				iterationCount++;
-				if(iterationCount % 100 == 0)
-				{
-					// refresh our autrelease pool
-					[arPool release];
-					arPool = [[NSAutoreleasePool alloc] init];
-					iterationCount = 0;
-				}
-			} // end token processing
+			}
 			
-		} // end inner while loop
-		
-		
-	} // end outer while loop
+			// periodically refresh autoreleasepool
+			iterationCount++;
+			if(iterationCount % 100 == 0)
+			{
+				// refresh our autrelease pool
+				[arPool release];
+				arPool = [[NSAutoreleasePool alloc] init];
+				iterationCount = 0;
+			}
+		} // end token processing loop
+	} // end fetch new data loop
 				
-	if(arPool != nil)
-	{
-		[arPool release];
-		arPool = nil;
-	}
-
-	
-	[pool release];
+	[arPool release];
 
     MPSignalSemaphore(threadEndSemaphore);
 	
@@ -1852,11 +1839,34 @@ static NSImage *warningImage;
 //Update the display if necessary
 - (void)_updateTimer:(NSTimer *)aTimer
 {   
-	if (EXIT && [self autoClose]) {
-		[parent closeSession: self];
+	if (EXIT) {
+		[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+		withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
+		andNotification:@"Broken Pipes"];
+		
+		[self setLabelAttribute];
+		
+		if ([self autoClose]) {
+			[parent closeSession: self];
+		}
 	}
 	else {
 		updateCount++;
+		if ([SCREEN changeTitle]) {
+			if ([SCREEN changeTitle]==XTERMCC_WIN_TITLE||[SCREEN changeTitle]==XTERMCC_WINICON_TITLE) 
+			{
+				//NSLog(@"setting window title to %@", token.u.string);
+				[self setWindowTitle: [SCREEN newTitle]];
+			}
+			if ([SCREEN changeTitle]==XTERMCC_ICON_TITLE||[SCREEN changeTitle]==XTERMCC_WINICON_TITLE)
+			{
+				//NSLog(@"setting session title to %@", token.u.string);
+				[self setName: [SCREEN newTitle]];
+			}
+			[SCREEN resetChangeTitle];
+		}
+		[SCREEN updateBell];
+		
 		switch ([SCREEN changeSize]) {
 			case CHANGE:
 				[parent resizeWindow:[SCREEN newWidth] height:[SCREEN newHeight]];

@@ -34,6 +34,7 @@ NSString *NewToolbarItem = @"New";
 NSString *BookmarksToolbarItem = @"Bookmarks";
 NSString *CloseToolbarItem = @"Close";
 NSString *ConfigToolbarItem = @"Info";
+NSString *CommandToolbarItem = @"Command";
 
 @interface PTToolbarController (Private)
 - (void)setupToolbar;
@@ -71,12 +72,14 @@ NSString *ConfigToolbarItem = @"Info";
     NSMutableArray* itemIdentifiers= [[[NSMutableArray alloc]init] autorelease];
     
     [itemIdentifiers addObject: NewToolbarItem];
-	[itemIdentifiers addObject: BookmarksToolbarItem];
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
+    [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
+    [itemIdentifiers addObject: CommandToolbarItem];
     [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
+	[itemIdentifiers addObject: BookmarksToolbarItem];
     
     return itemIdentifiers;
 }
@@ -90,6 +93,7 @@ NSString *ConfigToolbarItem = @"Info";
     [itemIdentifiers addObject: ConfigToolbarItem];
     [itemIdentifiers addObject: NSToolbarCustomizeToolbarItemIdentifier];
     [itemIdentifiers addObject: CloseToolbarItem];
+    [itemIdentifiers addObject: CommandToolbarItem];
     [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
     [itemIdentifiers addObject: NSToolbarSpaceItemIdentifier];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
@@ -168,7 +172,20 @@ NSString *ConfigToolbarItem = @"Info";
         [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", thisBundle, @"Toolbar Item:New")];
         [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open a new session",@"iTerm", thisBundle, @"Toolbar Item:New")];
     }
-    else
+    else if ([itemIdent isEqual: CommandToolbarItem])
+	{
+		// Set up the standard properties 
+		[toolbarItem setLabel:@"Execute"];
+		[toolbarItem setPaletteLabel:@"Execute"];
+		[toolbarItem setToolTip:@"Execute command or launch URL"];
+		
+		// Use a custom view, a rounded text field,
+		[toolbarItem setView:[_pseudoTerminal commandField]];
+		[toolbarItem setMinSize:NSMakeSize(100,NSHeight([[_pseudoTerminal commandField] frame]))];
+		[toolbarItem setMaxSize:NSMakeSize(700,NSHeight([[_pseudoTerminal commandField] frame]))];
+		
+	}
+	else
         toolbarItem=nil;
     
     return toolbarItem;
@@ -196,7 +213,8 @@ NSString *ConfigToolbarItem = @"Info";
     [_toolbar insertItemWithItemIdentifier: NSToolbarFlexibleSpaceItemIdentifier atIndex:2];
     [_toolbar insertItemWithItemIdentifier: NSToolbarCustomizeToolbarItemIdentifier atIndex:3];
     [_toolbar insertItemWithItemIdentifier: NSToolbarSeparatorItemIdentifier atIndex:4];
-    [_toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:5];
+    [_toolbar insertItemWithItemIdentifier: CommandToolbarItem atIndex:5];
+    [_toolbar insertItemWithItemIdentifier: CloseToolbarItem atIndex:6];
     
     [[_pseudoTerminal window] setToolbar:_toolbar];
     
@@ -305,7 +323,7 @@ NSString *ConfigToolbarItem = @"Info";
             return aToolbarItem;
     }
 
-return nil;
+	return nil;
 }
 
 

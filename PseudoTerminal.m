@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.372 2006-11-08 01:00:48 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.373 2006-11-09 05:45:07 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -388,6 +388,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[self setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
                                    vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
     }
+}
+
+-  (id) commandField
+{
+	return commandField;
 }
 
 
@@ -1985,6 +1990,32 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (IBAction)closeWindow:(id)sender
 {
     [[self window] performClose:sender];
+}
+
+- (IBAction)sendCommand:(id)sender
+{
+	NSString *command = [commandField stringValue];
+	
+	if (command == nil || [[command stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] isEqualToString:@""])
+		return;
+	
+	NSRange range = [command rangeOfString:@"://"];
+	if (range.location != NSNotFound) {
+		range = [[command substringToIndex:range.location] rangeOfString:@" "];
+		if (range.location == NSNotFound) {
+			NSURL *url = [NSURL URLWithString: command];
+			NSString *urlType = [url scheme];
+			id bm = [[PreferencePanel sharedInstance] handlerBookmarkForURL: urlType];
+			
+			//NSLog(@"Got the URL:%@\n%@", urlType, bm);
+			if (bm) [[iTermController sharedInstance] launchBookmark:[bm nodeData] inTerminal:[[iTermController sharedInstance] currentTerminal] withURL:command];
+			else [[NSWorkspace sharedWorkspace] openURL:url];
+			
+			return;
+		}
+	}
+	[[self currentSession] sendCommand: command];
+	[commandField setStringValue:@""];
 }
 
 - (void) updateCurretSessionProfiles

@@ -103,8 +103,6 @@
 
     self = [super initWithFrame: aRect];
 
-    lock = [[NSLock alloc] init];
-    
     return self;
 }
 
@@ -114,8 +112,6 @@
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 
-    [lock release];
-        
     [super dealloc];
 }
 
@@ -145,13 +141,11 @@
     // Let our delegate know
     id delegate = [self delegate];
 
-    [lock lock];
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
 		[delegate tabView: self willAddTabViewItem: aTabViewItem];
     
     
     [super addTabViewItem: aTabViewItem];
-    [lock unlock];
 }
 
 - (void) removeTabViewItem: (NSTabViewItem *) aTabViewItem
@@ -163,14 +157,11 @@
     // Let our delegate know
     id delegate = [self delegate];
     
-    [lock lock];
     if([delegate conformsToProtocol: @protocol(PTYTabViewDelegateProtocol)])
 		[delegate tabView: self willRemoveTabViewItem: aTabViewItem];
     
     // remove the item
-    
     [super removeTabViewItem: aTabViewItem];
-    [lock unlock];
 }
 
 - (void) insertTabViewItem: (NSTabViewItem *) tabViewItem atIndex: (int) index
@@ -182,8 +173,6 @@
     // Let our delegate know
     id delegate = [self delegate];
 
-    [lock lock];
-    
     // Check the boundary
     if (index>[super numberOfTabViewItems]) {
         NSLog(@"Warning: index(%d) > numberOfTabViewItems(%d)", index, [super numberOfTabViewItems]);
@@ -194,7 +183,6 @@
         [delegate tabView: self willInsertTabViewItem: tabViewItem atIndex: index];    
 
     [super insertTabViewItem: tabViewItem atIndex: index];
-    [lock unlock];
 #if DEBUG_METHOD_TRACE
     NSLog(@"PTYTabView: -insertTabViewItem atIndex: %d, done", index);
 #endif

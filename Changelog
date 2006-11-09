@@ -1,3 +1,15 @@
+2006-11-08	fabian
+
+	* Fixed the bookmark menu bug that an empty tab is open when one clicks on a folder.
+	* Removed unnecssary lock code from PTYTabView.
+	* Now iTerm precomposes UTF characters (e' -> Ž)
+	* Moved UI related stuff from [PTYSession brokenPipe] to the timer function to avoid crashes.
+	* Moved window title setting stuff and bell stuff from [VT100Screen putToken] to the PTYSession's 
+	  timer function. Now putToken should be strictly only operating on the buffers.
+	* Fixed a toolbar bug (missing encode/decode for TreeNode)
+	* Added a command field in the toolbar. It handles URL too.
+	* Now opening URL within iTerm will give iTerm handlers priority.
+	
 2006-11-07	fabian
 
 	* Added the support for using Option key to temporarily disable xterm mouse reporting.

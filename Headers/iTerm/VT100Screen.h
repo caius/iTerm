@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.23 2006-11-04 00:31:51 yfabian Exp $
+// $Id: VT100Screen.h,v 1.24 2006-11-09 05:45:08 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -116,9 +116,12 @@ typedef struct screen_char_t
 	// Growl stuff
 	iTermGrowlDelegate* gd;
 	
-	// resize-related
+	// UI related
 	int changeSize;
 	int newWidth,  newHeight;
+	int changeTitle;
+	NSString *newTitle;
+	BOOL bell;
 }
 
 
@@ -215,10 +218,15 @@ typedef struct screen_char_t
 - (void) setPrintToAnsi: (BOOL) aFlag;
 - (void) printStringToAnsi: (NSString *) aString;
 
-// resize-related
+// UI stuff
 - (int)changeSize;
 - (int)newWidth;
 - (int)newHeight;
 - (void) resetChangeSize;
+- (int) changeTitle;
+- (NSString *) newTitle;
+- (void) resetChangeTitle;
+- (void) updateBell;
+
 
 @end

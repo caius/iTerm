@@ -38,7 +38,6 @@
 @end
 
 @interface PTYTabView : NSTabView {
-    NSLock *lock;
 }
 
 // Class methods that Apple should have provided

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.144 2006-11-02 07:12:46 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.145 2006-11-09 05:45:07 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -396,7 +396,7 @@ static NSString *NoHandler = @"<No Handler>";
 }
 
 // URL handler stuff
-- (NSDictionary *) handlerBookmarkForURL:(NSString *)url
+- (TreeNode *) handlerBookmarkForURL:(NSString *)url
 {
 	return [urlHandlers objectForKey: url];
 }

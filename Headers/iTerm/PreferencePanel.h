@@ -111,7 +111,7 @@
 - (int)  refreshRate;
 - (NSString *) wordChars;
 - (BOOL) quitWhenAllWindowsClosed;
-- (NSDictionary *) handlerBookmarkForURL:(NSString *)url;
+- (TreeNode *) handlerBookmarkForURL:(NSString *)url;
 
 // Hidden preferences
 - (BOOL) useUnevenTabs;

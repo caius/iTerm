@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.47 2006-11-06 17:08:54 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.48 2006-11-09 05:45:08 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -48,6 +48,7 @@
     PTYTabView *TABVIEW;
 	PSMTabBarControl *tabBarControl;
     PTToolbarController* _toolbarController;
+	IBOutlet id commandField;
 
     
     /////////////////////////////////////////////////////////////////////////
@@ -162,6 +163,7 @@
 
 // Bookmarks
 - (IBAction) toggleBookmarksView: (id) sender;
+-  (id) commandField;
 
 // Utility methods
 + (void) breakDown:(NSString *)cmdl cmdPath: (NSString **) cmd cmdArgs: (NSArray **) path;

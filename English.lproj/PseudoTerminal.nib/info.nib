@@ -4,6 +4,11 @@
 <dict>
 	<key>IBDocumentLocation</key>
 	<string>198 160 356 240 0 0 1280 832 </string>
+	<key>IBEditorPositions</key>
+	<dict>
+		<key>365</key>
+		<string>562 545 146 64 0 0 1280 832 </string>
+	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>
 	<key>IBLockedObjects</key>
@@ -13,6 +18,7 @@
 	<key>IBOpenObjects</key>
 	<array>
 		<integer>351</integer>
+		<integer>365</integer>
 	</array>
 	<key>IBSystem Version</key>
 	<string>8L127</string>

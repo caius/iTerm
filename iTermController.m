@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.60 2006-11-04 00:31:50 yfabian Exp $
+// $Id: iTermController.m,v 1.61 2006-11-09 05:45:07 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -283,6 +283,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 			subMenu = [[[NSMenu alloc] init] autorelease];
             [self alternativeMenu: subMenu forNode: childNode target: aTarget withShortcuts: withShortcuts]; 
 			[aMenuItem setSubmenu: subMenu];
+			[aMenuItem setAction:nil];
 			[aMenu addItem: aMenuItem];
 			
 		}

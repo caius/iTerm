@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.m,v 1.4 2006-10-20 05:40:04 yfabian Exp $
+// $Id: Tree.m,v 1.5 2006-11-09 05:45:07 yfabian Exp $
 //
 /*
  **  Tree.m
@@ -331,5 +331,15 @@
     return minimumCover;
 }
 
+- (id)initWithCoder:(NSCoder *)coder { 
+	self = 	[coder decodeObject]; 
+	return self; 
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder { 
+	if (self) { 
+		[coder encodeByrefObject: self]; 
+	} 
+}
 
 @end

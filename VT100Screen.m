@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.256 2006-11-04 00:31:50 yfabian Exp $
+// $Id: VT100Screen.m,v 1.257 2006-11-09 05:45:07 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -163,6 +163,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
     // Need Growl plist stuff
 	gd = [iTermGrowlDelegate sharedInstance];
+
+	changeSize = NO_CHANGE;
+	changeTitle = 0;
+	newTitle = nil;
+	bell = NO;
 
     return self;
 }
@@ -572,7 +577,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
     //  VT100 CC
     case VT100CC_ENQ: break;
-    case VT100CC_BEL: [self activateBell]; break;
+    case VT100CC_BEL: bell = YES; break;
     case VT100CC_BS:  [self backSpace]; break;
     case VT100CC_HT:  [self setTab]; break;
     case VT100CC_LF:
@@ -746,16 +751,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case XTERMCC_WINICON_TITLE:
     case XTERMCC_ICON_TITLE:
         //[SESSION setName:token.u.string];
-        if (token.type==XTERMCC_WIN_TITLE||token.type==XTERMCC_WINICON_TITLE) 
-        {
-	    //NSLog(@"setting window title to %@", token.u.string);
-	    [SESSION setWindowTitle: token.u.string];
-        }
-        if (token.type==XTERMCC_ICON_TITLE||token.type==XTERMCC_WINICON_TITLE)
-        {
-            //NSLog(@"setting session title to %@", token.u.string);
-            [SESSION setName:token.u.string];
-        }
+		newTitle = [token.u.string copy];
+		changeTitle = token.type;
         break;
     case XTERMCC_INSBLNK: [self insertBlank:token.u.csi.p[0]]; break;
     case XTERMCC_INSLN: [self insertLines:token.u.csi.p[0]]; break;
@@ -927,7 +924,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		//NSLog(@"%s: invalid string '%@'", __PRETTY_FUNCTION__, string);
 		return;		
 	}
-	
+
+	string = [string precomposedStringWithCanonicalMapping];
 	buffer = (screen_char_t *) malloc( 2 * [string length] * sizeof(screen_char_t) );
 	if (!buffer)
 	{
@@ -1886,6 +1884,29 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 - (void) resetChangeSize
 {
 	changeSize = NO;
+}
+
+- (int) changeTitle
+{
+	return changeTitle;
+}
+
+- (NSString *) newTitle
+{
+	return newTitle;
+}
+
+- (void) resetChangeTitle
+{
+	changeTitle = 0;
+	[newTitle release];
+}
+
+- (void) updateBell
+{
+	if (bell)
+		[self activateBell];
+	bell = NO;
 }
 
 @end

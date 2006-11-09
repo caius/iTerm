@@ -1,4 +1,20 @@
+The new CVS fixed an outstanding crashing bug. You should upgrade if you are using previous 0.9.x versions. A new
+"Execute" field is available in the toolbar area. It allows you to type in command locally, or launch a URL.<br><br>
+
+Details<br>
 <STRONG>Changes since 0.9.2</STRONG><br><br>
+2006-11-08	fabian
+<ul>
+	<li>Fixed the bookmark menu bug that an empty tab is open when one clicks on a folder.</li>
+	<li>Removed unnecssary lock code from PTYTabView.</li>
+	<li>Now iTerm precomposes UTF characters (e' -> é)</li>
+	<li>Moved UI related stuff from [PTYSession brokenPipe] to the timer function to avoid crashes.</li>
+	<li>Moved window title setting stuff and bell stuff from [VT100Screen putToken] to the PTYSession's 
+	  timer function. Now putToken should be strictly only operating on the buffers.</li>
+	<li>Fixed a toolbar bug (missing encode/decode for TreeNode)</li>
+	<li>Added a command field in the toolbar. It handles URL too.</li>
+	<li>Now opening URL within iTerm will give iTerm handlers priority.</li>
+</ul>
 2006-11-07	fabian
 <ul>
 	<li>Added the support for using Option key to temporarily disable xterm mouse reporting.</li>

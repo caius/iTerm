@@ -78,7 +78,6 @@ NSString *CommandToolbarItem = @"Command";
     [itemIdentifiers addObject: CloseToolbarItem];
     [itemIdentifiers addObject: NSToolbarSeparatorItemIdentifier];
     [itemIdentifiers addObject: CommandToolbarItem];
-    [itemIdentifiers addObject: NSToolbarFlexibleSpaceItemIdentifier];
 	[itemIdentifiers addObject: BookmarksToolbarItem];
     
     return itemIdentifiers;

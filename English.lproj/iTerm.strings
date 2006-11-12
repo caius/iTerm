@@ -57,6 +57,8 @@
 "Press Option for New Window"="Press Option for New Window";
 "Open In New Window" = "Open In New Window";
 "Open a new session"="Open a new session";
+"Execute" = "Execute";
+"Execute Command or Launch URL" = "Execute Command or Launch URL";
 
 /* OK */
 "OK" = "OK";

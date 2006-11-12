@@ -1,3 +1,12 @@
+2006-11-11	fabian
+
+	* Made mouse cursor a tiny bit darker.
+	* release 0.9.3
+	
+2006-11-09	fabian
+
+	* Changed toolbar's execute field's strings to localizable ones.
+	
 2006-11-08	fabian
 
 	* Fixed the bookmark menu bug that an empty tab is open when one clicks on a folder.

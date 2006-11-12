@@ -65,6 +65,23 @@
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
 
+<STRONG>Release 0.9.3</STRONG> 11/11/06<BR>
+This is mainly a bug fix version. The stability has been greatly enhancced. Random crashes that
+plagued previous 0.9.x version should be largely eliminated. Other changes include:<BR>
+<UL>
+<LI>Terminfo support.</LI>
+<LI>New Execute field in toolbar for type in commands and URLs.</LI>
+<LI>Open all bookmarks with a folder.</LI>
+<LI>Paste strings with escape characters.</LI>
+<LI>Use option key to temporarily disable xterm mouse reporting.</LI>
+<LI>Added a "high priority" option to key mapping.</LI>
+<LI>Enhanced stability.</LI>
+<LI>Other bug fixes and GUI enhancements as usual.</LI>
+</UL>
+
+Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check it out.<BR><BR>
+
 <STRONG>Terminfo support is here!</STRONG> 11/1/06<IMG src="new.gif"><BR>
 Our latest CVS build features terminfo support. The keyboard mapping of a session will
 now use the terminfo library. Your customized keymappings will override the terminfo library though.

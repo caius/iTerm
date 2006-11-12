@@ -7,10 +7,10 @@ www.andymatuschak.org/xml-namespaces/sparkle">
         <description>Most recent changes with links to updates.</description>
         <language>en</language>
         <item>
-            <title>Version 0.9.2</title>
+            <title>Version 0.9.3</title>
             <description>http://iterm.sourceforge.net/Changelog.html</description>
-            <pubDate>Mon, 30 Oct 2006 11:59:11 +0000</pubDate>   
-            <enclosure url="http://osdn.dl.sourceforge.net/sourceforge/iterm/iTerm_Panther_0.9.2.dmg" length="3368411" type="application/octet-stream"/>
+            <pubDate>Sat, 11 Nov 2006 17:59:11 +0000</pubDate>   
+            <enclosure url="http://iterm.sourceforge.net/iTerm_Panther_0.9.3.dmg" length="20262853" type="application/octet-stream"/>
         </item>
     </channel>
 </rss>

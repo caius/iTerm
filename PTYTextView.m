@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.276 2006-11-09 05:45:07 yfabian Exp $
+// $Id: PTYTextView.m,v 1.277 2006-11-12 08:18:38 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -69,7 +69,7 @@ static float strokeWidth, boldStrokeWidth;
     [ibeamImage compositeToPoint:NSMakePoint(0,0) operation:NSCompositeDestinationIn];
     [reverseCursorImage unlockFocus];
     [aCursorImage lockFocus];
-    [reverseCursorImage compositeToPoint:NSMakePoint(1,0) operation:NSCompositePlusLighter];
+    [reverseCursorImage compositeToPoint:NSMakePoint(2,0) operation:NSCompositePlusLighter];
     [aCursorImage unlockFocus];
     textViewCursor = [[NSCursor alloc] initWithImage:aCursorImage hotSpot:hotspot];
     strokeWidth = [[PreferencePanel sharedInstance] strokeWidth];

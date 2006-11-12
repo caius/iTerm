@@ -174,9 +174,9 @@ NSString *CommandToolbarItem = @"Command";
     else if ([itemIdent isEqual: CommandToolbarItem])
 	{
 		// Set up the standard properties 
-		[toolbarItem setLabel:@"Execute"];
-		[toolbarItem setPaletteLabel:@"Execute"];
-		[toolbarItem setToolTip:@"Execute command or launch URL"];
+		[toolbarItem setLabel:NSLocalizedStringFromTableInBundle(@"Execute",@"iTerm", thisBundle, @"Toolbar Item:New")];
+		[toolbarItem setPaletteLabel:NSLocalizedStringFromTableInBundle(@"Execute",@"iTerm", thisBundle, @"Toolbar Item:New")];
+		[toolbarItem setToolTip:NSLocalizedStringFromTableInBundle(@"Execute Command or Launch URL",@"iTerm", thisBundle, @"Toolbar Item:New")];
 		
 		// Use a custom view, a rounded text field,
 		[toolbarItem setView:[_pseudoTerminal commandField]];

@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.h,v 1.1 2003-08-08 20:12:57 ujwal Exp $
+// $Id: NSStringITerm.h,v 1.2 2006-11-13 06:57:47 yfabian Exp $
 //
 //  NSStringJTerminal.h
 //
@@ -38,7 +38,7 @@
 @interface NSString (iTerm)
 
 + (NSString *)stringWithInt:(int)num;
-+ (BOOL)isDoubleWidthCharacter:(unichar)unicode;
++ (BOOL)isDoubleWidthCharacter:(unichar)unicode encoding:(NSStringEncoding) e;
 
 - (NSMutableString *) stringReplaceSubstringFrom:(NSString *)oldSubstring to:(NSString *)newSubstring;
 

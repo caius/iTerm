@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.24 2006-11-09 05:45:08 yfabian Exp $
+// $Id: VT100Screen.h,v 1.25 2006-11-13 06:57:48 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -29,8 +29,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import <iTerm/VT100Terminal.h>
-
-#define ISDOUBLEWIDTHCHARACTER(c) ((c)>=0x1000)
 
 enum { NO_CHANGE, CHANGE, CHANGE_PIXEL };
 	
@@ -228,5 +226,7 @@ typedef struct screen_char_t
 - (void) resetChangeTitle;
 - (void) updateBell;
 
+// double width
+- (BOOL) isDoubleWidthCharacter:(unichar) c;
 
 @end

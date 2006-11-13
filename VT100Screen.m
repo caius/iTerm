@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.257 2006-11-09 05:45:07 yfabian Exp $
+// $Id: VT100Screen.m,v 1.258 2006-11-13 06:57:45 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -56,7 +56,7 @@ void translate(screen_char_t *s, int len)
 }
 
 /* pad the source string whenever double width character appears */
-void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg, int *len)
+void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg, int *len, NSStringEncoding encoding)
 {
     unichar *sc; 
 	int l=[s length];
@@ -65,15 +65,23 @@ void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg
 	sc = (unichar *) malloc(l*sizeof(unichar));
 	[s getCharacters: sc];
 	for(i=j=0;i<l;i++,j++) {
-		buf[j].ch = sc[i];
-		buf[j].fg_color = fg;
-		buf[j].bg_color = bg;
-		if (doubleWidth && ISDOUBLEWIDTHCHARACTER(sc[i])) 
+		if (sc[i]<=0xa0) {
+			buf[j].ch = sc[i];
+			buf[j].fg_color = fg;
+			buf[j].bg_color = bg;
+		}
+		else if (doubleWidth && sc[i]>0xa0 && [NSString isDoubleWidthCharacter:sc[i] encoding:encoding]) 
 		{
+			buf[j].ch = sc[i];
+			buf[j].fg_color = fg;
+			buf[j].bg_color = bg;
 			j++;
 			buf[j].ch = 0xffff;
 			buf[j].fg_color = fg;
 			buf[j].bg_color = bg;
+		}
+		else if (buf[j].ch == 0xfeff ||buf[j].ch == 0x200b || buf[j].ch == 0x200c || buf[j].ch == 0x200d) { //zero width space
+			j--;
 		}
 	}
 	*len=j;
@@ -933,7 +941,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		return;		
 	}
 	
-	padString(string,buffer,[SESSION doubleWidth], [TERMINAL foregroundColorCode], [TERMINAL backgroundColorCode], &len);
+	padString(string,buffer,[SESSION doubleWidth], [TERMINAL foregroundColorCode], [TERMINAL backgroundColorCode], &len, [TERMINAL encoding]);
 	
 	// check for graphical characters
 	if (charset[[TERMINAL charset]]) 
@@ -1907,6 +1915,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if (bell)
 		[self activateBell];
 	bell = NO;
+}
+
+- (BOOL) isDoubleWidthCharacter:(unichar) c
+{
+	return [NSString isDoubleWidthCharacter:c encoding:[TERMINAL encoding]];
 }
 
 @end

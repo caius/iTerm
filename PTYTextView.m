@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.277 2006-11-12 08:18:38 yfabian Exp $
+// $Id: PTYTextView.m,v 1.278 2006-11-13 06:57:44 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -46,6 +46,8 @@
 
 #define  SELECT_CODE 0x40
 #define  CURSOR_CODE 0x80
+
+#define ISDOUBLEWIDTHCHARACTER(c) ((c)>0xa0 && [dataSource isDoubleWidthCharacter:(c)])
 
 static SInt32 systemVersion;
 static NSCursor* textViewCursor =  nil;

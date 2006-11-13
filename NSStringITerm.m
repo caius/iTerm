@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.m,v 1.7 2006-11-13 06:57:44 yfabian Exp $
+// $Id: NSStringITerm.m,v 1.8 2006-11-13 08:01:04 yfabian Exp $
 /*
  **  NSStringIterm.m
  **
@@ -28,6 +28,8 @@
 
 #define NSSTRINGJTERMINAL_CLASS_COMPILE
 #import <iTerm/NSStringITerm.h>
+
+#define AMB_CHAR_NUMBER 252
 
 static const unichar ambiguous_chars[] = {
 	0xa1,
@@ -348,10 +350,21 @@ static const unichar ambiguous_chars[] = {
 // Private use:	(unicode >= 0xe000 && unicode <=0xf8ff) not double width
 			return YES;
 
-		int i;
-		
-		for(i=0; ambiguous_chars[i]<0xfffd; i++)
-			if (unicode == ambiguous_chars[i]) return YES;
+		// binary search in the ambiguous char list
+		int ind= AMB_CHAR_NUMBER / 2, start = 0, end = AMB_CHAR_NUMBER;
+		while (start<end) {
+			if (ambiguous_chars[ind] == unicode) {
+				return YES;
+			}
+			else if (ambiguous_chars[ind] < unicode) {
+				start = ind+1;
+				ind = (start+end)/2;
+			}
+			else {
+				end = ind;
+				ind = (start+end)/2;
+			}
+		}
 
 	}
 	

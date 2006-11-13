@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.278 2006-11-13 06:57:44 yfabian Exp $
+// $Id: PTYTextView.m,v 1.279 2006-11-13 08:01:04 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -46,8 +46,6 @@
 
 #define  SELECT_CODE 0x40
 #define  CURSOR_CODE 0x80
-
-#define ISDOUBLEWIDTHCHARACTER(c) ((c)>0xa0 && [dataSource isDoubleWidthCharacter:(c)])
 
 static SInt32 systemVersion;
 static NSCursor* textViewCursor =  nil;
@@ -2647,7 +2645,7 @@ static float strokeWidth, boldStrokeWidth;
 		[self _renderChar: image 
 				withChar: code
 			   withColor: [self colorForCode: c] 
-				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
+				withFont: dw?nafont:font
 					bold: c&BOLD_MASK];
 		
 		return image;
@@ -2671,7 +2669,7 @@ static float strokeWidth, boldStrokeWidth;
 		[self _renderChar: image 
 				withChar: code
 			   withColor: [self colorForCode: c] 
-				withFont: ISDOUBLEWIDTHCHARACTER(code)?nafont:font
+				withFont: dw?nafont:font
 					bold: c & BOLD_MASK];
 		return image;
 	}

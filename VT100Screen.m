@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.258 2006-11-13 06:57:45 yfabian Exp $
+// $Id: VT100Screen.m,v 1.259 2006-11-13 08:01:04 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -65,16 +65,13 @@ void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg
 	sc = (unichar *) malloc(l*sizeof(unichar));
 	[s getCharacters: sc];
 	for(i=j=0;i<l;i++,j++) {
+		buf[j].ch = sc[i];
+		buf[j].fg_color = fg;
+		buf[j].bg_color = bg;
 		if (sc[i]<=0xa0) {
-			buf[j].ch = sc[i];
-			buf[j].fg_color = fg;
-			buf[j].bg_color = bg;
 		}
 		else if (doubleWidth && sc[i]>0xa0 && [NSString isDoubleWidthCharacter:sc[i] encoding:encoding]) 
 		{
-			buf[j].ch = sc[i];
-			buf[j].fg_color = fg;
-			buf[j].bg_color = bg;
 			j++;
 			buf[j].ch = 0xffff;
 			buf[j].fg_color = fg;

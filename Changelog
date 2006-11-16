@@ -1,3 +1,14 @@
+2006-11-15	fabian
+
+	* Fixed URL getting cut bug.
+	* Now changing window/tab title  blocks the processing.
+	
+2006-11-14	fabian
+
+	* Fixed "bookmark folder grey out" bug.
+	* Possible fix for resizing related crashes.
+	* Fixed "info panel font selection" bug.
+	
 2006-11-12	fabian
 
 	* Improved eastern asian language double width processing.

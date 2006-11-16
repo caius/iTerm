@@ -83,6 +83,12 @@ static BOOL onScreen = NO;
     return onScreen;
 }
 
++ (id) singleInstance
+{
+	return singleInstance;
+}
+
+
 - (id)init
 {
     self = [super init];

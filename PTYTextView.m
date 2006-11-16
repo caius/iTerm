@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.279 2006-11-13 08:01:04 yfabian Exp $
+// $Id: PTYTextView.m,v 1.280 2006-11-16 07:42:45 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -40,6 +40,7 @@
 #import <iTerm/PTYScrollView.h>
 #import <iTerm/PTYTask.h>
 #import <iTerm/iTermController.h>
+#import "ITConfigPanelController.h"
 #import <iTerm/Tree.h>
 
 #include <sys/time.h>
@@ -483,6 +484,14 @@ static float strokeWidth, boldStrokeWidth;
 	[self resetCharCache];
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
+}
+
+- (void)changeFont:(id)fontManager
+{
+	if ([ITConfigPanelController onScreen])
+		[[ITConfigPanelController singleInstance] changeFont:fontManager];
+	else
+		[super changeFont:fontManager];
 }
 
 - (void) resetCharCache
@@ -1644,7 +1653,8 @@ static float strokeWidth, boldStrokeWidth;
            [mouseDownEvent locationInWindow].y == [event locationInWindow].y)
         {
             //[self _openURL: [self selectedText]];
-            [self _openURL: [self _getURLForX:x y:y]];
+			NSString *url = [self _getURLForX:x y:y];
+            if (url != nil) [self _openURL:url];
         }
 	}
 	
@@ -1971,15 +1981,6 @@ static float strokeWidth, boldStrokeWidth;
     }
     else
         return NO;
-}
-
-- (void)changeFont:(id)sender
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView changeFont:%@]", __FILE__, __LINE__, sender );
-#endif
-    
-    [super changeFont:sender];
 }
 
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent
@@ -2867,29 +2868,30 @@ static float strokeWidth, boldStrokeWidth;
 {
 	static char *urlSet = ".?/:;%=&_-,+~#";
 	int x1=x, x2=x, y1=y, y2=y;
+	int startx=-1, starty, endx, endy;
 	int w = [dataSource width];
-	int h = [dataSource height];
+	int h = [dataSource numberOfLines];
 	unichar c;
     
     for (;x1>=0&&y1>=0;) {
         c = [self _getCharacterAtX:x1 Y:y1];
         if (!c || !(isnumber(c) || isalpha(c) || strchr(urlSet, c))) break;
+		startx = x1; starty = y1;
 		x1--;
 		if (x1<0) y1--, x1=w-1;
     }
-    x1++;
-	if (x1>=w) x1=0, y1++;
-    
-    for (;x2<w&&y2<h;) {
+    if (startx == -1) return nil;
+
+	endx = x; endy = y;
+	for (;x2<w&&y2<h;) {
         c = [self _getCharacterAtX:x2 Y:y2];
         if (!c || !(isnumber(c) || isalpha(c) || strchr(urlSet, c))) break;
+		endx = x2; endy = y2;
 		x2++;
 		if (x2>=w) y2++, x2=0;
     }
-    x2--;
-	if (x2<0) x2=w-1, y2--;
     
-	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2 breakLines: NO pad: YES]);
+	return ([self contentFromX:startx Y:starty ToX:endx Y:endy breakLines: NO pad: YES]);
 	
 }
 

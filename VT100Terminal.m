@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.112 2006-11-06 17:08:53 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.113 2006-11-16 07:42:46 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -933,7 +933,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
                 else break;
             }
             else {
-				NSLog(@"unknown code in UTF8: %d(%c)",*p,*p);
+				//NSLog(@"unknown code in UTF8: %d(%c)",*p,*p);
                 *p=UNKNOWN;
                 p++;
                 len--;

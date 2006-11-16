@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.259 2006-11-13 08:01:04 yfabian Exp $
+// $Id: VT100Screen.m,v 1.260 2006-11-16 07:42:45 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -44,6 +44,7 @@
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/iTermGrowlDelegate.h>
 #include <string.h>
+#include <unistd.h>
 
 #define MAX_SCROLLBACK_LINES 1000000
 
@@ -182,7 +183,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
-    
+    [self acquireLock];
+	
 	// free our character buffer
 	if(buffer_chars)
 		free(buffer_chars);
@@ -361,7 +363,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		changeSize = NO_CHANGE;
 		return;
 	}
-	if (![self tryLock]) return;
+	[self acquireLock];
 	
     total_height = max_scrollback_lines + HEIGHT;
 
@@ -1905,6 +1907,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 {
 	changeTitle = 0;
 	[newTitle release];
+	newTitle = nil;
 }
 
 - (void) updateBell
@@ -1950,7 +1953,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		
 	// check if we have to generate a new line
 	if(default_line && default_fg_code == [TERMINAL foregroundColorCode] && 
-	   default_bg_code == [TERMINAL backgroundColorCode] && default_line_width == width)
+	   default_bg_code == [TERMINAL backgroundColorCode] && default_line_width >= width)
 		return (default_line);
 	
 	if(default_line)

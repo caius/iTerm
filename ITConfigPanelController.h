@@ -71,6 +71,8 @@
 	IBOutlet NSButton *updateProfileButton;
 }
 
++ (id) singleInstance;
+
 + (void)show;
 + (void)close;
 + (BOOL)onScreen;

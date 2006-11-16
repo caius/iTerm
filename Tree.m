@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.m,v 1.5 2006-11-09 05:45:07 yfabian Exp $
+// $Id: Tree.m,v 1.6 2006-11-16 07:42:45 yfabian Exp $
 //
 /*
  **  Tree.m
@@ -332,13 +332,13 @@
 }
 
 - (id)initWithCoder:(NSCoder *)coder { 
-	self = 	[coder decodeObject]; 
+	self = 	[[TreeNode alloc] initFromDictionary:[coder decodeObject]]; 
 	return self; 
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder { 
 	if (self) { 
-		[coder encodeByrefObject: self]; 
+		[coder encodeObject: [self dictionary]]; 
 	} 
 }
 

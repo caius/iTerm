@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.373 2006-11-09 05:45:07 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.374 2006-11-17 05:01:14 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1641,21 +1641,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void)tabView:(NSTabView*)aTabView didDropTabViewItem:(NSTabViewItem *)tabViewItem inTabBar:(PSMTabBarControl *)aTabBarControl
 {
 	//NSLog(@"didDropTabViewItem: %@ inTabBar: %@", [tabViewItem label], aTabBarControl);
-    int i;
 	PTYSession *aSession = [tabViewItem identifier];
+	PseudoTerminal *term = [aTabBarControl delegate];
     
-    [[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
-    [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
-    [[aSession TEXTVIEW] setFont:FONT nafont:NAFONT];
-    [[aSession TEXTVIEW] setCharWidth: charWidth];
-    [[aSession TEXTVIEW] setLineHeight: charHeight];
-    [[aSession TEXTVIEW] setLineWidth: WIDTH * charWidth];
-    
-    for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
-    {
-        aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-        [aSession setObjectCount:i+1];
-    }        
+    [[aSession SCREEN] resizeWidth:[term width] height:[term height]];
+    [[aSession SHELL] setWidth:[term width]  height:[term height]];
+    [[aSession TEXTVIEW] setFont:[term font] nafont:[term nafont]];
+    [[aSession TEXTVIEW] setCharWidth: [term charWidth]];
+    [[aSession TEXTVIEW] setLineHeight: [term charHeight]];
+    [[aSession TEXTVIEW] setLineWidth: [term width] * [term charWidth]];
+    if ([[term tabView] numberOfTabViewItems] == 1) [term setWindowSize];
 }
 
 - (void)tabView:(NSTabView *)aTabView closeWindowForLastTabViewItem:(NSTabViewItem *)tabViewItem
@@ -1790,13 +1785,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if ([[PreferencePanel sharedInstance] hideTab] && 
 		(([TABVIEW numberOfTabViewItems] > 1 && [tabBarControl isHidden]) || ([TABVIEW numberOfTabViewItems] < 2 && ![tabBarControl isHidden])))
     {
-        [self setWindowSize];
-		/*
-        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: 0] identifier];
-        [[aSession TEXTVIEW] scrollEnd];
-        // make sure the display is up-to-date.
-        [[aSession TEXTVIEW] setForceUpdate: YES]; */
-        
+        [self setWindowSize];      
     }
     
     int i;
@@ -1873,21 +1862,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(term == nil)
 		return nil;
 	
-	if([term windowInited] == NO)
-    {
-		[term setWidth: WIDTH height: HEIGHT];
-		[term setFont: FONT nafont: NAFONT];
-		[term initWindowWithAddressbook:NULL];
-    }	
+	[term initWindowWithAddressbook: [aSession addressBookEntry]];
 	
     [[iTermController sharedInstance] addInTerminals: term];
 	[term release];
-	
-	
-    // If this is the current session, make previous one active.
-//    if(aSession == [self currentSession])
-//		[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
-	
+			
     if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
         [[term window] setFrameTopLeftPoint:point];
     }
@@ -1959,20 +1938,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(term == nil)
 		return;
 	
-	if([term windowInited] == NO)
-    {
-		[term setWidth: WIDTH height: HEIGHT];
-		[term setFont: FONT nafont: NAFONT];
-		[term initWindowWithAddressbook:NULL];
-    }	
+	[term initWindowWithAddressbook: [aSession addressBookEntry]];
 	
     [[iTermController sharedInstance] addInTerminals: term];
 	[term release];
 	
-	
-    // If this is the current session, make previous one active.
-   // if(aSession == [_sessionMgr currentSession])
-	//	[self selectSessionAtIndex: ([_sessionMgr currentSessionIndex] - 1)];
 	
     // temporarily retain the tabViewItem
     [aTabViewItem retain];
@@ -1982,6 +1952,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     // add the session to the new terminal
     [term insertSession: aSession atIndex: 0];
+    [[aSession SCREEN] resizeWidth:[term width] height:[term height]];
+    [[aSession SHELL] setWidth:[term width]  height:[term height]];
+    [[aSession TEXTVIEW] setFont:[term font] nafont:[term nafont]];
+    [[aSession TEXTVIEW] setCharWidth: [term charWidth]];
+    [[aSession TEXTVIEW] setLineHeight: [term charHeight]];
+    [[aSession TEXTVIEW] setLineWidth: [term width] * [term charWidth]];
+    [term setWindowSize];
 	
     // release the tabViewItem
     [aTabViewItem release];

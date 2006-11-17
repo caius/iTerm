@@ -256,6 +256,9 @@ static NSImage *warningImage;
     
     EXIT = YES;
 	[SHELL stop];
+
+	// Bring the reading thread out of sleep
+	MPSignalSemaphore(dataSemaphore);
 	
 	// wait till all the remaining data is processed
 	MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
@@ -633,16 +636,17 @@ static NSImage *warningImage;
 - (BOOL)willHandleEvent: (NSEvent *) theEvent
 {
     // Handle the option-click event
-    return (([theEvent type] == NSLeftMouseDown) &&
-			([theEvent modifierFlags] & NSAlternateKeyMask));       
+    return 0;
+/*	return (([theEvent type] == NSLeftMouseDown) &&
+			([theEvent modifierFlags] & NSAlternateKeyMask));   */
 }
 
 - (void)handleEvent: (NSEvent *) theEvent
 {
     // We handle option-click to position the cursor...
-    if(([theEvent type] == NSLeftMouseDown) &&
+    /*if(([theEvent type] == NSLeftMouseDown) &&
        ([theEvent modifierFlags] & NSAlternateKeyMask))
-		[self handleOptionClick: theEvent];
+		[self handleOptionClick: theEvent]; */
 }
 
 - (void) handleOptionClick: (NSEvent *) theEvent
@@ -1794,9 +1798,9 @@ static NSImage *warningImage;
 
 		// wait for data
 		MPWaitOnSemaphore(dataSemaphore, kDurationForever);
-		
+
 		// inner while loop to process all the tokens we can get
-		while(TERMINAL && ((token = [TERMINAL getNextToken]),
+		while(!EXIT && TERMINAL && ((token = [TERMINAL getNextToken]),
 						   token.type != VT100_WAIT && token.type != VT100CC_NULL))
 		{
 			// process token
@@ -1831,7 +1835,6 @@ static NSImage *warningImage;
 	[arPool release];
 
     MPSignalSemaphore(threadEndSemaphore);
-	
 	[NSThread exit];
 	
 }

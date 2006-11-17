@@ -1,3 +1,13 @@
+2006-11-16	fabian
+
+	* Fixed scrolling bug.
+	* Fixed a drag&drop bug where newly created window is not properly set up.
+	* One more bell related fix.
+	* Replaced NSData object STREAM with a plain char buffer to improve performance.
+	* Fixed a bug in PTYTask that crashes iTerm.
+	* Fixed a bug that keeps PTYSession's data thread from exiting properly sometimes.
+	* Disabled Option-click to position cursor. Option key is now used to escape xterm mouse reporting.
+		
 2006-11-15	fabian
 
 	* Fixed URL getting cut bug.

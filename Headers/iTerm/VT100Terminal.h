@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.23 2006-11-02 07:12:47 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.24 2006-11-17 05:01:16 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -263,10 +263,13 @@ typedef enum {
 {
     NSString          *termType;
     NSStringEncoding  ENCODING;
-    NSMutableData     *STREAM;
     VT100Screen       *SCREEN;
 	NSLock			  *streamLock;
 
+	unsigned char     *STREAM;
+	int				  current_stream_length;
+	int				  total_stream_length;
+	
     BOOL LINE_MODE;			// YES=Newline, NO=Line feed
     BOOL CURSOR_MODE;		// YES=Application, NO=Cursor
     BOOL ANSI_MODE;			// YES=ANSI, NO=VT52

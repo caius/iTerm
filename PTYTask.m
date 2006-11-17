@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.38 2006-11-09 05:45:07 yfabian Exp $
+// $Id: PTYTask.m,v 1.39 2006-11-17 05:01:14 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -138,7 +138,6 @@ static int writep(int fds, char *buf, size_t len)
 
 + (void)_processReadThread:(PTYTask *)boss
 {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];;
     BOOL exitf = NO;
     int sts;
@@ -164,6 +163,7 @@ static int writep(int fds, char *buf, size_t len)
 		
 		FD_ZERO(&rfds);
 		FD_ZERO(&efds);
+		
 		FD_SET(boss->FILDES, &rfds);
 		FD_SET(boss->FILDES, &efds);
 		
@@ -225,19 +225,13 @@ static int writep(int fds, char *buf, size_t len)
 	if(sts >= 0) 
         [boss brokenPipe];
 			
-	if(arPool != nil)
-	{
-		[arPool release];
-		arPool = nil;
-	}
+	[arPool release];
 	
 #if DEBUG_THREAD
     NSLog(@"%s(%d):+[PTYTask _processReadThread:] finish",
 		  __FILE__, __LINE__);
 #endif
-	
-    [pool release];
-	
+		
     MPSignalSemaphore(boss->threadEndSemaphore);
 	
 	[NSThread exit];
@@ -274,11 +268,10 @@ static int writep(int fds, char *buf, size_t len)
 #endif
     if (PID > 0)
 		kill(PID, SIGKILL);
-    if (FILDES >= 0)
+    
+	if (FILDES >= 0)
 		close(FILDES);
 
-	FILDES = -1;
-	
     MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
     MPDeleteSemaphore(threadEndSemaphore);
 	
@@ -498,7 +491,6 @@ static int writep(int fds, char *buf, size_t len)
 	usleep(10000);
 	if(FILDES >= 0)
 		close(FILDES);
-	FILDES = -1;
     [self wait];
 }
 

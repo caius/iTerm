@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.260 2006-11-16 07:42:45 yfabian Exp $
+// $Id: VT100Screen.m,v 1.261 2006-11-17 05:01:14 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1917,6 +1917,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	bell = NO;
 }
 
+- (void) setBell
+{
+	bell = YES;
+}		
+
 - (BOOL) isDoubleWidthCharacter:(unichar) c
 {
 	return [NSString isDoubleWidthCharacter:c encoding:[TERMINAL encoding]];
@@ -1950,11 +1955,18 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 - (screen_char_t *) _getDefaultLineWithWidth: (int) width
 {
 	int i;
-		
+	static int entry=0;
+	
+	if (entry>0) {
+		NSLog(@"Re-entry!");
+	}
+	entry++;
 	// check if we have to generate a new line
 	if(default_line && default_fg_code == [TERMINAL foregroundColorCode] && 
-	   default_bg_code == [TERMINAL backgroundColorCode] && default_line_width >= width)
+	   default_bg_code == [TERMINAL backgroundColorCode] && default_line_width >= width) {
+		entry--;
 		return (default_line);
+	}
 	
 	if(default_line)
 		free(default_line);
@@ -1971,7 +1983,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	default_fg_code = [TERMINAL foregroundColorCode];
 	default_bg_code = [TERMINAL backgroundColorCode];
 	default_line_width = width;
-	
+	entry--;
 	return (default_line);
 	
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.113 2006-11-16 07:42:46 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.114 2006-11-17 05:01:14 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -37,7 +37,7 @@
 
 #define DEBUG_ALLOC		0
 #define LOG_UNKNOWN     0
-
+#define STANDARD_STREAM_SIZE 100000
 /*
  Traditional Chinese (Big5)
  1st   0xa1-0xfe
@@ -304,13 +304,13 @@ static size_t getCSIParam(unsigned char *datap,
                 case 'z':
                 case '|':
                 case 'w':
-                    NSLog(@"Unsupported locator sequence");
+                    //NSLog(@"Unsupported locator sequence");
                     param->cmd=0xff;
                     datap++;
                     datalen--;
                     break;
                 default:
-                    NSLog(@"Unrecognized locator sequence");
+                    //NSLog(@"Unrecognized locator sequence");
                     datap++;
                     datalen--;
                     param->cmd=0xff;
@@ -323,13 +323,13 @@ static size_t getCSIParam(unsigned char *datap,
             datalen--;
             switch (*datap) {
                 case 'w':
-                    NSLog(@"Unsupported locator sequence");
+                    //NSLog(@"Unsupported locator sequence");
                     param->cmd=0xff;
                     datap++;
                     datalen--;
                     break;
                 default:
-                    NSLog(@"Unrecognized locator sequence");
+                    //NSLog(@"Unrecognized locator sequence");
                     datap++;
                     datalen--;
                     param->cmd=0xff;
@@ -340,7 +340,7 @@ static size_t getCSIParam(unsigned char *datap,
 		else {
             switch (*datap) {
                 case VT100CC_ENQ: break;
-                case VT100CC_BEL: [SCREEN activateBell]; break;
+                case VT100CC_BEL: [SCREEN setBell]; break;
                 case VT100CC_BS:  [SCREEN backSpace]; break;
                 case VT100CC_HT:  [SCREEN setTab]; break;
                 case VT100CC_LF:
@@ -617,11 +617,12 @@ static VT100TCC decode_xterm(unsigned char *datap,
                              size_t *rmlen,
                              NSStringEncoding enc)
 {
+#define MAX_BUFFER_LENGTH 1024
     int mode=0;
     VT100TCC result;
     NSData *data;
     BOOL unrecognized=NO;
-    char s[1024]={0}, *c=nil;
+    char s[MAX_BUFFER_LENGTH]={0}, *c=nil;
 	
     NSCParameterAssert(datap != NULL);
     NSCParameterAssert(datalen >= 2);
@@ -653,12 +654,14 @@ static VT100TCC decode_xterm(unsigned char *datap,
             datalen--;
             datap++;
             (*rmlen)++;
-            while (*datap!=0x007&&c-s<sizeof(s)&&datalen>0) {
-                *c=*datap;
+            while (*datap!=0x007&&datalen>0) {
+				if (c-s<MAX_BUFFER_LENGTH) {
+					*c=*datap;
+					c++;
+				}
                 datalen--;
                 datap++;
                 (*rmlen)++;
-                c++;
             }
             if (*datap!=0x007) {
                 if (datalen>0) unrecognized=YES;
@@ -1250,7 +1253,10 @@ static VT100TCC decode_string(unsigned char *datap,
 		return nil;
 	
     ENCODING = NSASCIIStringEncoding;
-    STREAM   = [[NSMutableData alloc] init];
+	total_stream_length = STANDARD_STREAM_SIZE;
+    STREAM = malloc(total_stream_length);
+	current_stream_length = 0;
+
 	streamLock = [[NSLock alloc] init];
     
     termType = nil;
@@ -1297,7 +1303,7 @@ static VT100TCC decode_string(unsigned char *datap,
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
     
-    [STREAM release];
+    free(STREAM);
 	[streamLock unlock];
 	[streamLock release];
     [termType release];
@@ -1434,17 +1440,22 @@ static VT100TCC decode_string(unsigned char *datap,
 - (void)cleanStream
 {
 	[streamLock lock];
-    [STREAM autorelease];
-    STREAM = [[NSMutableData data] retain];
+	current_stream_length = 0;
 	[streamLock unlock];
 }
 
 - (void)putStreamData:(char *)data length: (int)length
 {
 	[streamLock lock];
-    if([STREAM length] == 0)
+	if (current_stream_length + length > total_stream_length) {
+		total_stream_length += STANDARD_STREAM_SIZE;
+		STREAM = reallocf(STREAM, total_stream_length);
+	}
+	
+	memcpy(STREAM+current_stream_length, data, length);
+	current_stream_length += length;
+    if(current_stream_length == 0)
 		streamOffset = 0;
-    [STREAM appendBytes:data length:length];
 	[streamLock unlock];
 }
 
@@ -1459,28 +1470,36 @@ static VT100TCC decode_string(unsigned char *datap,
 
 	
 #if 0
-    NSLog(@"buffer data = %@", STREAM);
+    NSLog(@"buffer data = %s", STREAM);
 #endif
 		
     // get our current position in the stream
-    datap = (unsigned char *)[STREAM bytes] + streamOffset;
-    datalen = (size_t)[STREAM length] - streamOffset;
+    datap = STREAM + streamOffset;
+    datalen = current_stream_length - streamOffset;
 	
     if (datalen == 0) {
 		result.type = VT100CC_NULL;
 		result.length = 0;
+		streamOffset = 0;
+		current_stream_length = 0;
+		
+		if (total_stream_length >= STANDARD_STREAM_SIZE * 2) {
 		// We are done with this stream. Get rid of it and allocate a new one
 		// to avoid allowing this to grow too big.
-		streamOffset = 0;
-		[STREAM release];
-		STREAM = nil;
-		STREAM = [[NSMutableData alloc] init];	
+			free(STREAM);
+			total_stream_length = STANDARD_STREAM_SIZE;
+			STREAM = malloc(total_stream_length);
+		}
     }
     else {
 		size_t rmlen = 0;
 		
 		if (iscontrol(datap[0])) {
 			result = decode_control(datap, datalen, &rmlen, ENCODING, SCREEN);
+			result.length = rmlen;
+			result.position = datap;
+			[self _setMode:result];
+			[self _setCharAttr:result];
 		}
 		else {
             if (isString(datap,ENCODING)) {
@@ -1496,10 +1515,10 @@ static VT100TCC decode_string(unsigned char *datap,
 				result.u.code = datap[0];
 				rmlen = 1;
 			}
+			result.length = rmlen;
+			result.position = datap;
 		}
 		
-		result.length = rmlen;
-		result.position = datap;
 		
 		if (rmlen > 0) {
 			NSParameterAssert(datalen - rmlen >= 0);
@@ -1507,15 +1526,12 @@ static VT100TCC decode_string(unsigned char *datap,
 				//		NSLog(@"INPUT-BUFFER %@, read %d byte, type %d", 
 				//                      STREAM, rmlen, result.type);
 			}
-			
 			// mark our current position in the stream
 			streamOffset += rmlen;
 		}
     }
 	
-    [self _setMode:result];
-    [self _setCharAttr:result];
-	
+ 	
 	// release lock
 	[streamLock unlock];
 	

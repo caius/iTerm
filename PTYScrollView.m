@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.18 2006-02-12 17:47:25 ujwal Exp $
+// $Id: PTYScrollView.m,v 1.19 2006-11-17 05:01:14 yfabian Exp $
 /*
  **  PTYScrollView.m
  **
@@ -202,6 +202,12 @@
 		transparency = theTransparency;
 		[self setNeedsDisplay: YES];
     }
+}
+
+- (void)reflectScrolledClipView:(NSClipView *)aClipView
+{
+	[super reflectScrolledClipView: aClipView];
+	[[self documentView] setForceUpdate: YES];
 }
 
 @end

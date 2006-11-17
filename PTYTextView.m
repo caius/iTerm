@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.280 2006-11-16 07:42:45 yfabian Exp $
+// $Id: PTYTextView.m,v 1.281 2006-11-17 05:01:14 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -665,8 +665,6 @@ static float strokeWidth, boldStrokeWidth;
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll];
-	//forceUpdate = YES;
-	//[self setNeedsDisplay: YES];
     //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
     [self scrollRectToVisible: scrollRect];
 }
@@ -677,7 +675,6 @@ static float strokeWidth, boldStrokeWidth;
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalLineScroll];
-	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -687,7 +684,6 @@ static float strokeWidth, boldStrokeWidth;
 	
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
-	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -697,7 +693,6 @@ static float strokeWidth, boldStrokeWidth;
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalPageScroll];
-	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -707,7 +702,6 @@ static float strokeWidth, boldStrokeWidth;
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y = 0;
-	//forceUpdate = YES;
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -724,7 +718,6 @@ static float strokeWidth, boldStrokeWidth;
 		aFrame.origin.y = (numberOfLines - 1) * lineHeight;
 		aFrame.size.width = [self frame].size.width;
 		aFrame.size.height = lineHeight;
-		//forceUpdate = YES;
 		[self scrollRectToVisible: aFrame];
     }
 }
@@ -736,7 +729,6 @@ static float strokeWidth, boldStrokeWidth;
 	aFrame.origin.y = startY * lineHeight;
 	aFrame.size.width = [self frame].size.width;
 	aFrame.size.height = (endY - startY + 1) *lineHeight;
-	//forceUpdate = YES;
 	[self scrollRectToVisible: aFrame];
 }
 
@@ -2868,7 +2860,7 @@ static float strokeWidth, boldStrokeWidth;
 {
 	static char *urlSet = ".?/:;%=&_-,+~#";
 	int x1=x, x2=x, y1=y, y2=y;
-	int startx=-1, starty, endx, endy;
+	int startx=-1, starty=-1, endx, endy;
 	int w = [dataSource width];
 	int h = [dataSource numberOfLines];
 	unichar c;

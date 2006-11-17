@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.26 2006-11-17 05:01:16 yfabian Exp $
+// $Id: VT100Screen.h,v 1.27 2006-11-17 06:31:20 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -171,10 +171,11 @@ typedef struct screen_char_t
 - (void)restoreBuffer;
 
 // internal
-- (void)setString:(NSString *)s;
+- (void)setString:(NSString *)s ascii:(BOOL)ascii;
 - (void)setStringToX:(int)x
 				   Y:(int)y
-			  string:(NSString *)string;
+			  string:(NSString *)string
+			   ascii:(BOOL)ascii;
 - (void)setNewLine;
 - (void)deleteCharacters:(int)n;
 - (void)backSpace;

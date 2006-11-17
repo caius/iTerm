@@ -7,6 +7,7 @@
 	* Fixed a bug in PTYTask that crashes iTerm.
 	* Fixed a bug that keeps PTYSession's data thread from exiting properly sometimes.
 	* Disabled Option-click to position cursor. Option key is now used to escape xterm mouse reporting.
+	* Now ascii strings are processed separately from nonascii strings. Hopefully this will improve performance.
 		
 2006-11-15	fabian
 

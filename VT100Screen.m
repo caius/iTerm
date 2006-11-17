@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.261 2006-11-17 05:01:14 yfabian Exp $
+// $Id: VT100Screen.m,v 1.262 2006-11-17 06:31:20 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -57,10 +57,10 @@ void translate(screen_char_t *s, int len)
 }
 
 /* pad the source string whenever double width character appears */
-void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg, int *len, NSStringEncoding encoding)
+void padString(NSString *s, screen_char_t *buf, int fg, int bg, int *len, NSStringEncoding encoding)
 {
-    unichar *sc; 
-	int l=[s length];
+    unichar *sc;
+	int l=*len;
 	int i,j;
 	
 	sc = (unichar *) malloc(l*sizeof(unichar));
@@ -69,9 +69,7 @@ void padString(NSString *s, screen_char_t *buf, char doubleWidth, int fg, int bg
 		buf[j].ch = sc[i];
 		buf[j].fg_color = fg;
 		buf[j].bg_color = bg;
-		if (sc[i]<=0xa0) {
-		}
-		else if (doubleWidth && sc[i]>0xa0 && [NSString isDoubleWidthCharacter:sc[i] encoding:encoding]) 
+		if (sc[i]>0xa0 && [NSString isDoubleWidthCharacter:sc[i] encoding:encoding]) 
 		{
 			j++;
 			buf[j].ch = 0xffff;
@@ -572,12 +570,13 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     switch (token.type) {
     // our special code
     case VT100_STRING:
+	case VT100_ASCIISTRING:
 		// check if we are in print mode
 		if([self printToAnsi] == YES)
 			[self printStringToAnsi: token.u.string];
 		// else display string on screen
 		else
-			[self setString:token.u.string];
+			[self setString:token.u.string ascii: token.type == VT100_ASCIISTRING];
         break;
     case VT100_UNKNOWNCHAR: break;
     case VT100_NOTSUPPORT: break;
@@ -914,40 +913,66 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		[printToAnsiString appendString: aString];
 }
 
-- (void)setString:(NSString *)string
+- (void)setString:(NSString *)string ascii:(BOOL)ascii
 {
     int idx, screenIdx;
     int j, len, newx;
 	screen_char_t *buffer;
 	screen_char_t *aLine;
-
+	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen setString:%@ at %d]",
           __FILE__, __LINE__, string, CURSOR_X);
 #endif
 
-	if ([string length] < 1 || !string) 
+	if ((len=[string length]) < 1 || !string) 
 	{
 		//NSLog(@"%s: invalid string '%@'", __PRETTY_FUNCTION__, string);
 		return;		
 	}
 
-	string = [string precomposedStringWithCanonicalMapping];
-	buffer = (screen_char_t *) malloc( 2 * [string length] * sizeof(screen_char_t) );
-	if (!buffer)
-	{
-		NSLog(@"%s: Out of memory", __PRETTY_FUNCTION__);
-		return;		
+	if (ascii || ![SESSION doubleWidth]) {
+	
+		if (!ascii) {
+			string = [string precomposedStringWithCanonicalMapping];
+			len=[string length];
+		}
+		
+		unichar *sc = (unichar *) malloc(len*sizeof(unichar));
+		int fg=[TERMINAL foregroundColorCode], bg=[TERMINAL backgroundColorCode];
+		
+		buffer = (screen_char_t *) malloc([string length] * sizeof(screen_char_t));
+		if (!buffer)
+		{
+			NSLog(@"%s: Out of memory", __PRETTY_FUNCTION__);
+			return;		
+		}
+		
+		[string getCharacters: sc];
+		for(int i=0;i<len;i++) {
+			buffer[i].ch=sc[i];
+			buffer[i].fg_color = fg;
+			buffer[i].bg_color = bg;
+		}
+		
+		// check for graphical characters
+		if (charset[[TERMINAL charset]]) 
+			translate(buffer,len);
+		//    NSLog(@"%d(%d):%@",[TERMINAL charset],charset[[TERMINAL charset]],string);
 	}
-	
-	padString(string,buffer,[SESSION doubleWidth], [TERMINAL foregroundColorCode], [TERMINAL backgroundColorCode], &len, [TERMINAL encoding]);
-	
-	// check for graphical characters
-	if (charset[[TERMINAL charset]]) 
-		translate(buffer,len);
-	//    NSLog(@"%d(%d):%@",[TERMINAL charset],charset[[TERMINAL charset]],string);
-	//NSLog(@"string:%s",s);
-	
+	else {
+		string = [string precomposedStringWithCanonicalMapping];
+		len=[string length];
+		buffer = (screen_char_t *) malloc( 2 * len * sizeof(screen_char_t) );
+		if (!buffer)
+		{
+			NSLog(@"%s: Out of memory", __PRETTY_FUNCTION__);
+			return;		
+		}
+		
+		padString(string,buffer, [TERMINAL foregroundColorCode], [TERMINAL backgroundColorCode], &len, [TERMINAL encoding]);
+	}
+
     if (len < 1) 
 		return;
 
@@ -1027,6 +1052,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 - (void)setStringToX:(int)x
 				   Y:(int)y
 			  string:(NSString *)string 
+			   ascii:(BOOL)ascii
 {
     int sx, sy;
 
@@ -1039,7 +1065,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     sy = CURSOR_Y;
     CURSOR_X = x;
     CURSOR_Y = y;
-    [self setString:string]; 
+    [self setString:string ascii:ascii]; 
     CURSOR_X = sx;
     CURSOR_Y = sy;
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.114 2006-11-17 05:01:14 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.115 2006-11-17 06:31:20 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -942,11 +942,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
                 len--;
             }
         }
-        else if (*p>= 0x20 && *p <= 0x7f) {
-			++p;
-			--len;
-		}
-		else break;
+       else break;
     }
     if (len == datalen) {
         *rmlen = 0;
@@ -984,11 +980,7 @@ static VT100TCC decode_euccn(unsigned char *datap,
                 len--;
             }
         }
-        else if (*p>= 0x20 && *p <= 0x7f) {
-			++p;
-			--len;
-		}
-		else break;
+        else break;
     }
     if (len == datalen) {
 		*rmlen = 0;
@@ -1022,10 +1014,6 @@ static VT100TCC decode_big5(unsigned char *datap,
                 len--;
             }
         }
-        else if (*p>= 0x20 && *p <= 0x7f) {
-			++p;
-			--len;
-		}
 		else break;
     }
     if (len == datalen) {
@@ -1061,10 +1049,6 @@ static VT100TCC decode_euc_jp(unsigned char *datap,
             p += 2;
             len -= 2;
         }
-        else if (*p>= 0x20 && *p <= 0x7f) {
-			++p;
-			--len;
-		}
 		else break;
     }
     if (len == datalen) {
@@ -1093,7 +1077,7 @@ static VT100TCC decode_sjis(unsigned char *datap,
             p += 2;
             len -= 2;
         }
-        else if (*p>=0x20) {
+        else if (*p>=0x80) {
             p++;
             len--;
         }
@@ -1126,10 +1110,6 @@ static VT100TCC decode_euckr(unsigned char *datap,
 			p += 2;
 			len -= 2;
         }
-        else if (*p>= 0x20 && *p <= 0x7f) {
-			++p;
-			--len;
-		}
 		else break;
     }
     if (len == datalen) {
@@ -1153,7 +1133,7 @@ static VT100TCC decode_other_enc(unsigned char *datap,
     size_t len = datalen;
 	
     while (len > 0) {
-        if (*p>=0x20) {
+        if (*p>=0x80) {
             p++;
             len--;
         }
@@ -1167,6 +1147,46 @@ static VT100TCC decode_other_enc(unsigned char *datap,
         *rmlen = datalen - len;
         result.type = VT100_STRING;
     }
+	
+    return result;
+}
+
+static VT100TCC decode_ascii_string(unsigned char *datap,
+								 size_t datalen,
+								 size_t *rmlen)
+{
+    VT100TCC result;
+    unsigned char *p = datap;
+    size_t len = datalen;
+	
+    while (len > 0) {
+        if (*p>=0x20 && *p<=0x7f) {
+            p++;
+            len--;
+        }
+        else break;
+    }
+    if (len == datalen) {
+        *rmlen = 0;
+        result.type = VT100_WAIT;
+    }
+    else {
+        *rmlen = datalen - len;
+        result.type = VT100_ASCIISTRING;
+    }
+	
+	result.u.string =[[[NSString alloc]
+                                   initWithBytes:datap
+                                          length:*rmlen
+										encoding:NSASCIIStringEncoding]
+		autorelease];
+	
+	if (result.u.string==nil) {
+		*rmlen = 0;
+		result.type = VT100_UNKNOWNCHAR;
+		result.u.code = datap[0];
+	}
+	
 	
     return result;
 }
@@ -1494,7 +1514,12 @@ static VT100TCC decode_string(unsigned char *datap,
     else {
 		size_t rmlen = 0;
 		
-		if (iscontrol(datap[0])) {
+		if (*datap>=0x20 && *datap<=0x7f) {
+			result = decode_ascii_string(datap, datalen, &rmlen);
+			result.length = rmlen;
+			result.position = datap;
+		}
+		else if (iscontrol(datap[0])) {
 			result = decode_control(datap, datalen, &rmlen, ENCODING, SCREEN);
 			result.length = rmlen;
 			result.position = datap;

@@ -8,10 +8,12 @@
 <LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
 <CENTER>
 <!--#include virtual="/header.html" -->
+<BR>
+<HR>
 
-<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<TABLE BGCOLOR="#FFFFFF" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
 <TR>
-<TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF">
+<TD VALIGN="TOP" BGCOLOR="#EEEEFF">
 <!--#include virtual="/sidebar.html" -->
 
 </TD>
@@ -20,7 +22,7 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Download:</STRONG></FONT><BR>
 <UL><A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">iTerm 0.9.3</A>: The latest iTerm release<IMG src="new.gif"><BR>
-<A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs_0.9.3.1115.zip">Recent binary build from CVS</A> (0.9.3.1115, English only, <A HREF="http://iterm.sourceforge.net/Changelog.html">changelog</a>)<IMG src="new.gif"><BR>
+<A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs_0.9.3.1117.zip">Recent binary build from CVS</A> (0.9.3.1117, English only, <A HREF="http://iterm.sourceforge.net/Changelog.html">changelog</a>)<IMG src="new.gif"><BR>
 This build is Tiger only. We will have pre-Tiger versions when we do a formal release.--!>
 </UL>
 

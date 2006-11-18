@@ -10,9 +10,11 @@
 <LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
 <CENTER>
 <!--#include virtual="/header.html" -->
-<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<BR>
+<HR>
+<TABLE BGCOLOR="#FFFFFF" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
 <TR>
-<TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF">
+<TD VALIGN="TOP" BGCOLOR="#EEEEFF">
 <!--#include virtual="/sidebar.html" -->
 </TD>
 
@@ -248,14 +250,6 @@ and check out the recent CVS build.<BR><BR>
 We are experimenting with a new tab control (PSMTabBarControl) that can mimic Safari-like tabs. Download the
 <A HREF="http://iterm.sourceforge.net/iTerm-latest-cvs.zip">binary build</A> 
 from the latest CVS and check it out.<BR><BR>
-
-<FONT SIZE="5"><STRONG>Notice:</STRONG></FONT><BR>
-<UL>Due a change of bookmark organizations introduced in 0.8.0, bookmark settings for versions older than 0.8.0 are
-no longer completely recognized. Only names, commands, directories, and shortcuts are migrated. 
-Display and terminal settings are not migrated. You have to re-enter these manually into the new version.</UL>
-<UL>Starting from version 0.8.0, iTerm comes with a few keymapping/display/terminal profiles.
-If you do not see them, please delete your iTerm.plist file in ~/Library/Preferences and
-restart the program.</UL>
 
 </TD>
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">

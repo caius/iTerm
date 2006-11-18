@@ -8,10 +8,12 @@
 <LINK REL=stylesheet HREF="styles.css" TYPE="text/css">
 <CENTER>
 <!--#include virtual="/header.html" -->
+<BR>
+<HR>
 
-<TABLE BGCOLOR="#000000" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
+<TABLE BGCOLOR="#FFFFFF" CELLPADDING="10" CELLSPACING="1" BORDER="0" WIDTH="100%">
 <TR>
-<TD VALIGN="TOP" WIDTH="300" BGCOLOR="#FFFFFF">
+<TD VALIGN="TOP" BGCOLOR="#EEEEFF">
 <!--#include virtual="/sidebar.html" -->
 </TD>
 
@@ -44,7 +46,7 @@
 </UL>
 
 <FONT SIZE="5"><STRONG>and...</STRONG></FONT><BR>
-<UL>The application and toolbar icons are adapted from icons from <A HREF="http://kde-look.org">KDE-LOOK.org</A><BR><BR>
+<UL>Some of our icons are adapted from icons from <A HREF="http://kde-look.org">KDE-LOOK.org</A><BR><BR>
 We are looking for people with artistic talents to help us make iTerm's own icons. Please contact us if you feel like to help!
 </UL>
 

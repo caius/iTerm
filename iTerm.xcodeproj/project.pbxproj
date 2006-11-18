@@ -372,6 +372,7 @@
 		F6B0788F0ADDF1BE00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Bookmarks.nib; sourceTree = "<group>"; };
 		F6B07D980ADE1B9B00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/ProfilesWindow.nib; sourceTree = "<group>"; };
 		F6CDC4E60AE6D3E2005E7D4F /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = folder.png; path = images/folder.png; sourceTree = "<group>"; };
+		F6D936F40B0E763F00106855 /* iTerm_header.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iTerm_header.png; path = website/iTerm_header.png; sourceTree = "<group>"; };
 		F6DA0AFC0AF066EE0098EFEB /* edit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = edit.png; path = images/edit.png; sourceTree = "<group>"; };
 		F6DA0B5C0AF07B550098EFEB /* Changelog.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = Changelog.html; path = website/Changelog.html; sourceTree = "<group>"; };
 		F6E2DED70AE2F67200D20B3B /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
@@ -745,6 +746,7 @@
 				FBDF6B95042A6BD801F955DB /* navigation.shtml */,
 				FBDF6B96042A6BD801F955DB /* new.gif */,
 				F6FAFD99050E90C300EA4EE7 /* contrib.png */,
+				F6D936F40B0E763F00106855 /* iTerm_header.png */,
 				F6FAFD9A050E90C300EA4EE7 /* iTerm-orig.png */,
 				F645F2B00557B868005F354A /* iTerm-sinomac.png */,
 				FBDF6B97042A6BD801F955DB /* preferences.shtml */,

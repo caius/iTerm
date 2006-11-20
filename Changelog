@@ -1,3 +1,8 @@
+2006-11-19	fabian
+
+	* Fixed a toolbar related bug that causes crash.
+	* Fixed a few typo in help files.
+	
 2006-11-17	fabian
 	
 	* Updated Help files.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.374 2006-11-17 05:01:14 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.375 2006-11-20 07:07:28 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -151,6 +151,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	//enforce the nib to load
 	[self window];
+	[commandField retain];
 	
 	// create the window programmatically with appropriate style mask
 	styleMask = NSTitledWindowMask | 
@@ -634,6 +635,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [[aTabViewItem identifier] terminate];
         [TABVIEW removeTabViewItem: aTabViewItem];
     }
+	[commandField release];
 	
     [_toolbarController release];
     

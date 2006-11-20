@@ -164,9 +164,11 @@ NSString *CommandToolbarItem = @"Command";
         
         // build the menu
         [self buildToolbarItemPopUpMenu: toolbarItem forToolbar: toolbar];
-        
-        [toolbarItem setMinSize:[aPopUpButton bounds].size];
-        [toolbarItem setMaxSize:[aPopUpButton bounds].size];
+		
+		NSSize sz = [aPopUpButton bounds].size;
+		//sz.width += 8;
+        [toolbarItem setMinSize:sz];
+        [toolbarItem setMaxSize:sz];
         [toolbarItem setLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", thisBundle, @"Toolbar Item:New")];
         [toolbarItem setPaletteLabel: NSLocalizedStringFromTableInBundle(@"New",@"iTerm", thisBundle, @"Toolbar Item:New")];
         [toolbarItem setToolTip: NSLocalizedStringFromTableInBundle(@"Open a new session",@"iTerm", thisBundle, @"Toolbar Item:New")];
@@ -259,14 +261,14 @@ NSString *CommandToolbarItem = @"Command";
     imagePath = [thisBundle pathForResource:@"newwin"
                                      ofType:@"png"];
     anImage = [[NSImage alloc] initByReferencingFile: imagePath];
-    [toolbarItem setImage: anImage];
-    [anImage release];
     [anImage setScalesWhenResized:YES];
     if([toolbar sizeMode] == NSToolbarSizeModeSmall)
         [anImage setSize:NSMakeSize(24.0, 24.0)];
     else
         [anImage setSize:NSMakeSize(30.0, 30.0)];
-    
+    [toolbarItem setImage: anImage];
+    [anImage release];
+ 	
     [item setImage:anImage];
     [item setOnStateImage:nil];
     [item setMixedStateImage:nil];

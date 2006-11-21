@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.46 2006-11-03 05:27:25 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.47 2006-11-21 19:24:29 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -71,40 +71,7 @@ static BOOL usingAutoLaunchScript = NO;
     // set the TERM_PROGRAM environment variable
     putenv("TERM_PROGRAM=iTerm.app");
 
-
-    // add our script menu to the menu bar
-    // get image
-    NSImage *scriptIcon = [NSImage imageNamed: @"script"];
-    [scriptIcon setScalesWhenResized: YES];
-    [scriptIcon setSize: NSMakeSize(16, 16)];
-
-    // create menu item with no title and set image
-    NSMenuItem *scriptMenuItem = [[NSMenuItem alloc] initWithTitle: @"" action: nil keyEquivalent: @""];
-    [scriptMenuItem setImage: scriptIcon];
-
-    // create submenu
-    int count = 0;
-    NSMenu *scriptMenu = [[NSMenu alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
-    [scriptMenuItem setSubmenu: scriptMenu];
-    // populate the submenu with ascripts found in the script directory
-    NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath: [SCRIPT_DIRECTORY stringByExpandingTildeInPath]];
-    NSString *file;
-    while ((file = [directoryEnumerator nextObject]))
-    {
-		NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: file action: @selector(launchScript:) keyEquivalent: @""];
-		[scriptItem setTarget: [iTermController sharedInstance]];
-		[scriptMenu addItem: scriptItem];
-        count ++;
-		[scriptItem release];
-    }
-    [scriptMenu release];
-
-    // add new menu item
-    if (count) {
-        [[NSApp mainMenu] insertItem: scriptMenuItem atIndex: 5];
-        [scriptMenuItem release];
-        [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
-    }
+	[self buildScriptMenu:nil];
 	
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	NSString *patherAppCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURL"];
@@ -629,6 +596,63 @@ static BOOL usingAutoLaunchScript = NO;
   return YES;
 }
 
+- (IBAction)buildScriptMenu:(id)sender
+{
+	if ([[[[NSApp mainMenu] itemAtIndex: 5] title] isEqualToString:@"Script"])
+		[[NSApp mainMenu] removeItemAtIndex:5];
+
+	// add our script menu to the menu bar
+    // get image
+    NSImage *scriptIcon = [NSImage imageNamed: @"script"];
+    [scriptIcon setScalesWhenResized: YES];
+    [scriptIcon setSize: NSMakeSize(16, 16)];
+	
+    // create menu item with no title and set image
+    NSMenuItem *scriptMenuItem = [[NSMenuItem alloc] initWithTitle: @"" action: nil keyEquivalent: @""];
+    [scriptMenuItem setImage: scriptIcon];
+	
+    // create submenu
+    int count = 0;
+    NSMenu *scriptMenu = [[NSMenu alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
+    [scriptMenuItem setSubmenu: scriptMenu];
+    // populate the submenu with ascripts found in the script directory
+    NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath: [SCRIPT_DIRECTORY stringByExpandingTildeInPath]];
+    NSString *file;
+	
+    while ((file = [directoryEnumerator nextObject]))
+    {
+		if ([[NSWorkspace sharedWorkspace] isFilePackageAtPath: [NSString stringWithFormat: @"%@/%@", [SCRIPT_DIRECTORY stringByExpandingTildeInPath], file]])
+			[directoryEnumerator skipDescendents];
+		
+		if ([[file pathExtension] isEqualToString: @"scpt"] || [[file pathExtension] isEqualToString: @"app"] ) {
+			NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: file action: @selector(launchScript:) keyEquivalent: @""];
+			[scriptItem setTarget: [iTermController sharedInstance]];
+			[scriptMenu addItem: scriptItem];
+			count ++;
+			[scriptItem release];
+		}
+    }
+	if (count>0) {
+		[scriptMenu addItem:[NSMenuItem separatorItem]];
+		NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: @"Refresh"
+															action: @selector(buildScriptMenu:) 
+													 keyEquivalent: @""];
+		[scriptItem setTarget: self];
+		[scriptMenu addItem: scriptItem];
+		count ++;
+		[scriptItem release];
+	}
+	[scriptMenu release];
+	
+    // add new menu item
+    if (count) {
+        [[NSApp mainMenu] insertItem: scriptMenuItem atIndex: 5];
+        [scriptMenuItem release];
+        [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
+    }
+}
+
+
 @end
 
 // Scripting support
@@ -703,6 +727,7 @@ static BOOL usingAutoLaunchScript = NO;
 {
     return [[iTermController sharedInstance] kvcKeys];
 }
+
 
 @end
 

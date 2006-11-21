@@ -689,6 +689,10 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	return (aProfileName);
 }
 
+- (NSString *) defaultProfileName
+{
+	return [self globalProfileName];
+}
 
 - (int) actionForKeyCode: (unichar)keyCode modifiers: (unsigned int) keyModifiers highPriority: (BOOL *) highPriority text: (NSString **) text profile: (NSString *)profile
 {

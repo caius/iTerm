@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.115 2006-11-17 06:31:20 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.116 2006-11-21 19:24:26 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -976,7 +976,7 @@ static VT100TCC decode_euccn(unsigned char *datap,
             }
             else {
                 *p=UNKNOWN;
-                p++;
+				p++;
                 len--;
             }
         }
@@ -1244,14 +1244,16 @@ static VT100TCC decode_string(unsigned char *datap,
             autorelease];
 		
 		if (result.u.string==nil) {
-            /*int i;
-            NSLog(@"Null:%@",data);
-            for(i=0;i<*rmlen;i++) datap[i]=UNKNOWN;
-            result.u.string = [[[NSString alloc] initWithCString:datap length:*rmlen] autorelease];*/
+            int i;
+            for(i=*rmlen-1;i>=0&&!result.u.string;i--) {
+				datap[i]=UNKNOWN;
+				result.u.string = [[[NSString alloc] initWithBytes:datap length:*rmlen encoding:encoding] autorelease];
+			}
 			//NSLog(@"Null(%d bytes)",*rmlen);
+			/*
 			*rmlen = 0;
 			result.type = VT100_UNKNOWNCHAR;
-			result.u.code = datap[0];
+			result.u.code = datap[0]; */
         }
     }
     return result;
@@ -1468,7 +1470,9 @@ static VT100TCC decode_string(unsigned char *datap,
 {
 	[streamLock lock];
 	if (current_stream_length + length > total_stream_length) {
-		total_stream_length += STANDARD_STREAM_SIZE;
+		int n = (length + current_stream_length) / STANDARD_STREAM_SIZE;
+		
+		total_stream_length += n*STANDARD_STREAM_SIZE;
 		STREAM = reallocf(STREAM, total_stream_length);
 	}
 	

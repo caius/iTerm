@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.h,v 1.20 2006-10-27 22:39:51 yfabian Exp $
+// $Id: iTermApplicationDelegate.h,v 1.21 2006-11-21 19:24:29 yfabian Exp $
 /*
  **  iTermApplicationDelegate.h
  **
@@ -74,6 +74,7 @@
 
 - (IBAction)newWindow:(id)sender;
 - (IBAction)newSession:(id)sender;
+- (IBAction)buildScriptMenu:(id)sender;
 
     // About window
 - (IBAction)showAbout:(id)sender;

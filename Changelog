@@ -1,3 +1,13 @@
+2006-11-20	fabian
+
+	* Fixed CPU usgae bug related to unclosed dead tab.
+	* Reduced update frequency for the tabs in the background.
+	* Fixed a memory leak in [VT100Screen setString:ascii:].
+	* Fixed Script menu behavior. Now it will only show and launch scpt and app files.
+	* Added Refresh option in the script menu.
+	* Fixed bug when adding keyboard profile.
+	* Fixed a bug that might cause crash when there's a lot of incoming data.
+	
 2006-11-19	fabian
 
 	* Fixed a toolbar related bug that causes crash.

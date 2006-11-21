@@ -265,7 +265,9 @@ static NSImage *warningImage;
     MPDeleteSemaphore(threadEndSemaphore);
 
 	//stop the timer;
-	[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	if (updateTimer) {
+		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	}
 	// final update of display
 	[self updateDisplay];
 	
@@ -1848,9 +1850,14 @@ static NSImage *warningImage;
 		andNotification:@"Broken Pipes"];
 		
 		[self setLabelAttribute];
-		
+
 		if ([self autoClose]) {
 			[parent closeSession: self];
+		}
+		else
+		{
+			[self updateDisplay];
+			[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
 		}
 	}
 	else {
@@ -1884,7 +1891,7 @@ static NSImage *warningImage;
 			default:
 				if ([[TEXTVIEW window] isKeyWindow])
 					[self updateDisplay];
-				else if (([parent currentSession] == self && updateCount>3) || updateCount >9)
+				else if (([parent currentSession] == self && updateCount>3) || updateCount >20)
 					[self updateDisplay];
 		}
 	}

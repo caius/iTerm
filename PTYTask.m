@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.39 2006-11-17 05:01:14 yfabian Exp $
+// $Id: PTYTask.m,v 1.40 2006-11-23 02:08:03 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -471,18 +471,6 @@ static int writep(int fds, char *buf, size_t len)
 		waitpid(PID, &STATUS, 0);
 	
     return STATUS;
-}
-
-- (BOOL)exist
-{
-    BOOL result;
-	
-    if (WIFEXITED(STATUS))
-		result = YES;
-    else
-		result = NO;
-	
-    return result;
 }
 
 - (void)stop

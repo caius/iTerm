@@ -294,14 +294,13 @@ static NSImage *warningImage;
 
 - (void)writeTask:(NSData *)data
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
-
-    // check if we want to send this input to all the sessions
+	// check if we want to send this input to all the sessions
     if([parent sendInputToAllSessions] == NO)
     {
 		if (!EXIT) {
-			[SHELL writeTask: data];
+			PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
+			
+    		[SHELL writeTask: data];
 			// Make sure we scroll down to the end
 			[TEXTVIEW scrollEnd];
 			[ptys setUserScroll: NO];		
@@ -312,8 +311,6 @@ static NSImage *warningImage;
 		// send to all sessions
 		[parent sendInputToAllSessions: data];
     }
-		
-	[pool release];
 }
 
 - (void)readTask:(char *)buf length:(int)length
@@ -851,8 +848,11 @@ static NSImage *warningImage;
 								 allowLossyConversion:YES];
 		
 		// Do this in a new thread since we do not want to block the read code.
-		[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:self withObject:strdata];
+		[NSThread detachNewThreadSelector:@selector(_processWriteDataThread:) toTarget:self withObject:strdata];
+		PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
 		
+		[TEXTVIEW scrollEnd];
+		[ptys setUserScroll: NO];				
     }
     else
 		NSBeep();
@@ -1775,8 +1775,34 @@ static NSImage *warningImage;
 		}
 		
 		// do this in a new thread so that we don't get stuck.
-		[NSThread detachNewThreadSelector:@selector(writeTask:) toTarget:SHELL withObject:data];
+		[NSThread detachNewThreadSelector:@selector(_processWriteDataThread:) toTarget:SHELL withObject:data];
+		// Make sure we scroll down to the end
+		PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
+		
+		[TEXTVIEW scrollEnd];
+		[ptys setUserScroll: NO];		
     }
+}
+
+// this is only used for non keyboard events
+-(void)_processWriteDataThread: (NSData *) data
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+    // check if we want to send this input to all the sessions
+    if([parent sendInputToAllSessions] == NO)
+    {
+		if (!EXIT) {
+			[SHELL writeTask: data];
+		}
+    }
+    else
+    {
+		// send to all sessions
+		[parent sendInputToAllSessions: data];
+    }
+	
+	[pool release];
 }
 
 -(void)handleTerminateScriptCommand: (NSScriptCommand *)command

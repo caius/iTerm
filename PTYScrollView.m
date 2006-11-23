@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.19 2006-11-17 05:01:14 yfabian Exp $
+// $Id: PTYScrollView.m,v 1.20 2006-11-23 02:08:03 yfabian Exp $
 /*
  **  PTYScrollView.m
  **
@@ -145,7 +145,7 @@
 	srcRect.origin.y = [backgroundImage size].height - srcRect.origin.y - srcRect.size.height;
 	
 	// draw the image rect
-	[[self backgroundImage] compositeToPoint: NSMakePoint(rect.origin.x, rect.origin.y + rect.size.height) fromRect: srcRect operation: NSCompositeSourceOver fraction: (1.0 - [self transparency])];
+	[[self backgroundImage] compositeToPoint: NSMakePoint(rect.origin.x, rect.origin.y + rect.size.height) fromRect: srcRect operation: NSCompositeCopy fraction: (1.0 - [self transparency])];
 }
 
 - (void)scrollWheel:(NSEvent *)theEvent
@@ -181,13 +181,11 @@
 
 - (void) setBackgroundImage: (NSImage *) anImage
 {
-	
 	[backgroundImage release];
 	[anImage retain];
 	backgroundImage = anImage;
 	[backgroundImage setScalesWhenResized: YES];
 	[backgroundImage setSize: [self documentVisibleRect].size];
-
 }
 
 - (float) transparency

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.375 2006-11-20 07:07:28 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.376 2006-11-23 02:08:03 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1090,24 +1090,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal sendDataToAllSessions:]",
 		  __FILE__, __LINE__);
 #endif
-	// could be called from a thread
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];	
-    PTYSession *aSession;
+	PTYSession *aSession;
     int i;
     
     int n = [TABVIEW numberOfTabViewItems];    
     for (i=0; i<n; i++)
     {
         aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-		PTYScroller *ptys=(PTYScroller *)[[aSession SCROLLVIEW] verticalScroller];
 		
 		[[aSession SHELL] writeTask:data];
-
-		// Make sure we scroll down to the end
-		[[aSession TEXTVIEW] scrollEnd];
-		[ptys setUserScroll: NO];		
     }    
-	[pool release];
 }
 
 - (BOOL) sendInputToAllSessions

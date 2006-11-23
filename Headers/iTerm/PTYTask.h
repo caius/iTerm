@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.9 2006-03-17 19:08:32 ujwal Exp $
+// $Id: PTYTask.h,v 1.10 2006-11-23 02:08:04 yfabian Exp $
 /*
  **  PTYTask.h
  **
@@ -72,7 +72,6 @@
 - (void)setWidth:(int)width height:(int)height;
 - (pid_t)pid;
 - (int)wait;
-- (BOOL)exist;
 - (void)stop;
 - (int)status;
 - (NSString *)tty;

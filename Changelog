@@ -1,3 +1,7 @@
+2006-11-21	fabian
+
+	* Removed some UI code from the writeTask process
+	
 2006-11-20	fabian
 
 	* Fixed CPU usgae bug related to unclosed dead tab.

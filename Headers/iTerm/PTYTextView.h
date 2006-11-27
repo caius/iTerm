@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.58 2006-10-17 03:04:59 yfabian Exp $
+// $Id: PTYTextView.h,v 1.59 2006-11-27 03:35:02 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -42,6 +42,7 @@ typedef struct
 {
 	int code;
 	unsigned int color;
+	unsigned int bgColor;
 	NSImage *image;
 	int count;
 } CharCache;
@@ -303,12 +304,13 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 				 endX: (int *) endx 
 				 endY: (int *) endy;
 - (NSString *) _getURLForX: (int) x y: (int) y;
-- (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold;
-- (NSImage *) _getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw;
-- (void) _drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
+- (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withBGColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold;
+- (NSImage *) _getCharImage:(unichar) code color:(int)fg bgColor:(int)bg doubleWidth:(BOOL) dw;
+- (void) _drawCharacter:(unichar)c fgColor:(int)fg bgColor:(int)bg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
 - (BOOL) _isBlankLine: (int) y;
 - (void) _openURL: (NSString *) aURLString;
 - (void) _clearCacheForColor:(int)colorIndex;
+- (void) _clearCacheForBGColor:(int)colorIndex;
 - (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase;
 - (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent;
 - (void) _dragText: (NSString *) aString forEvent: (NSEvent *) theEvent;

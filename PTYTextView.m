@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.281 2006-11-17 05:01:14 yfabian Exp $
+// $Id: PTYTextView.m,v 1.282 2006-11-27 03:35:01 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -299,6 +299,7 @@ static float strokeWidth, boldStrokeWidth;
 	//    bg = [bg colorWithAlphaComponent: [[SESSION backgroundColor] alphaComponent]];
 	//    fg = [fg colorWithAlphaComponent: [[SESSION foregroundColor] alphaComponent]];
 	forceUpdate = YES;
+	[self resetCharCache];
 	[self setNeedsDisplay: YES];
 }
 
@@ -384,6 +385,7 @@ static float strokeWidth, boldStrokeWidth;
     colorTable[idx]=c;
 	[self _clearCacheForColor: idx];
 	[self _clearCacheForColor: (BOLD_MASK | idx)];
+	[self _clearCacheForBGColor: idx];
 	
 	[self setNeedsDisplay: YES];
 }
@@ -758,13 +760,15 @@ static float strokeWidth, boldStrokeWidth;
 	NSColor *aColor;
 	char  *dirty = NULL;
 	BOOL need_draw;
-	int bgstart, ulstart;
-    float curX, curY;
+	float curX, curY;
 	unsigned int bgcode = 0, fgcode = 0;
 	int y1, x1;
 	BOOL double_width;
 	BOOL reversed = [[dataSource terminal] screenMode]; 
     struct timeval now;
+	int bgstart;
+	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
+	BOOL fillBG = NO;
     
     float trans = useTransparency ? 1.0 - transparency : 1.0;
     
@@ -780,14 +784,13 @@ static float strokeWidth, boldStrokeWidth;
         lastBlink = now;
     }
     
-	// make sure margins are filled in
 	if (forceUpdate) {
-		if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
+		if(hasBGImage)
 		{
 			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
 		}
 		else {
-			aColor = [self colorForCode:(reversed ? DEFAULT_FG_COLOR_CODE : DEFAULT_BG_COLOR_CODE)];
+			aColor = [self colorForCode:(reversed ? [[dataSource terminal] foregroundColorCode] : [[dataSource terminal] backgroundColorCode])];
 			aColor = [aColor colorWithAlphaComponent: trans];
 			[aColor set];
 			NSRectFill(rect);
@@ -839,6 +842,7 @@ static float strokeWidth, boldStrokeWidth;
 		if (line < startScreenLineIndex) 
 		{
 			//NSLog(@"Buffer: %d",line);
+			dirty = nil;
 		}
 		else 
 		{ 
@@ -847,8 +851,8 @@ static float strokeWidth, boldStrokeWidth;
 			//NSLog(@"Screen: %d",(line-startScreenLineIndex));
 		}	
 		
-		//draw background and underline here
-		bgstart = ulstart = -1;
+		//draw background here
+		bgstart = -1;
 		
 		for(j = 0; j < WIDTH; j++) 
 		{
@@ -856,134 +860,122 @@ static float strokeWidth, boldStrokeWidth;
 				continue;
 			
 			// Check if we need to redraw the char
-			need_draw = line < startScreenLineIndex || forceUpdate || dirty[j] || (theLine[j].fg_color & BLINK_MASK);
-
+			// do something to define need_draw
+			need_draw = ((line < startScreenLineIndex || dirty[j]) && (theLine[j].ch == 0 || (theLine[j].bg_color & SELECTION_MASK) || hasBGImage)) || ((theLine[j].fg_color & BLINK_MASK) && !blinkShow);
+			
 			// if we don't have to update next char, finish pending jobs
 			if (!need_draw)
 			{
 				if (bgstart >= 0) 
 				{
-					aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
-						[self colorForCode: 
-							((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
-					aColor = [aColor colorWithAlphaComponent: trans];
-					[aColor set];
-					
 					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
-					NSRectFill(bgRect);
 					// if we have a background image and we are using the background image, redraw image
-					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
+					if( hasBGImage)
 					{
 						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
-					
+					if (fillBG) {
+						aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
+						aColor = [aColor colorWithAlphaComponent: trans];
+						[aColor set];
+						NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
+					}
 				}						
-				if (ulstart >= 0) 
-				{
-					[[self colorForCode:(fgcode & 0x3f)] set];
-					NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
-				}
-				bgstart = ulstart = -1;
+				bgstart = -1;
 			}
 			else 
 			{
 				// find out if the current char is being selected
 				if (bgstart < 0) {
 					bgstart = j; 
-					bgcode = theLine[j].bg_color & 0xff; 
+					bgcode = theLine[j].bg_color & 0xff;
+					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE);
 				}
-				else if (theLine[j].bg_color != bgcode || (ulstart >= 0 && (theLine[j].fg_color != fgcode || !(theLine[j].ch)))) 
+				else if (theLine[j].bg_color != bgcode || ((bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE)) != fillBG) 
 				{ 
-					//background or underline property change?
-					aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
-						[self colorForCode: 
-							((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
-					aColor = [aColor colorWithAlphaComponent: trans];
-					[aColor set];
-					
+					//background change
 					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
-					NSRectFill(bgRect);
-					if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
+					// if we have a background image and we are using the background image, redraw image
+					if( hasBGImage)
 					{
 						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 					}
+					if (fillBG) {
+						aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
+						aColor = [aColor colorWithAlphaComponent: trans];
+						[aColor set];
+						NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
+					}
 					bgstart = j; 
 					bgcode = theLine[j].bg_color & 0xff; 
+					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE);
 				}
 				
-				if (ulstart < 0 && (theLine[j].fg_color & UNDER_MASK) && theLine[j].ch) 
-				{ 
-					ulstart = j;
-					fgcode = theLine[j].fg_color & 0xff; 
-				}
-				else if (ulstart >= 0 && (theLine[j].fg_color != fgcode || !(theLine[j].ch))) 
-				{ 
-					//underline or fg color property change?
-					[[self colorForCode:(fgcode & 0x3f)] set];
-					NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
-					fgcode = theLine[j].fg_color & 0xff;
-					ulstart = (theLine[j].fg_color & UNDER_MASK && theLine[j].ch)?j:-1;
-				}
 			}
 		}
 		
 		// finish pending jobs
 		if (bgstart >= 0) 
 		{
-			aColor = (bgcode & SELECTION_MASK) ? selectionColor : 
-				[self colorForCode: 
-					((reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode)]; 
-			aColor = [aColor colorWithAlphaComponent: trans];
-			[aColor set];
-			
 			bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
-			NSRectFill(bgRect);
-			if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil && bgcode == DEFAULT_BG_COLOR_CODE)
+			// if we have a background image and we are using the background image, redraw image
+			if( hasBGImage)
 			{
 				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 			}
-		}
-		
-		if (ulstart >= 0) 
-		{
-			[[self colorForCode:fgcode] set];
-			NSRectFill(NSMakeRect(floor(curX+ulstart*charWidth),curY-2,ceil((j-ulstart)*charWidth),1));
+			if (fillBG) {
+				aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
+				aColor = [aColor colorWithAlphaComponent: trans];
+				[aColor set];
+				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
+			}
 		}
 		
 		//draw all char
 		for(j = 0; j < WIDTH; j++) 
 		{
-			need_draw = (theLine[j].ch && theLine[j].ch != 0xffff) && 
+			need_draw = (theLine[j].ch != 0xffff) && 
 				(line < startScreenLineIndex || forceUpdate || dirty[j] || (theLine[j].fg_color & BLINK_MASK));
 			if (need_draw) 
 			{ 
 				double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
+
+				if (reversed) {
+					bgcode = theLine[j].bg_color == DEFAULT_BG_COLOR_CODE ? DEFAULT_FG_COLOR_CODE : theLine[j].bg_color;
+				}
+				else
+					bgcode = theLine[j].bg_color;
+				
 				// switch colors if text is selected
 				if((theLine[j].bg_color & SELECTION_MASK) && ((theLine[j].fg_color & 0x1f) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0xff); // check for bold
 				else
 					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ? 
 						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : (theLine[j].fg_color & 0xff);
+				
 				if (theLine[j].fg_color & BLINK_MASK) 
 				{
 					if (blinkShow) 
 					{				
-						[self _drawCharacter:theLine[j].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
+						[self _drawCharacter:theLine[j].ch fgColor:fgcode bgColor:bgcode AtX:curX Y:curY doubleWidth: double_width];
 					}
 				}
 				else 
 				{
-					[self _drawCharacter:theLine[j].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
-					if(line >= startScreenLineIndex) 
-						dirty[j]=0;
+					[self _drawCharacter:theLine[j].ch fgColor:fgcode bgColor:bgcode AtX:curX Y:curY doubleWidth: double_width];
 				}
+				
+				//draw underline
+				if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
+					[[self colorForCode:(fgcode & 0x3f)] set];
+					NSRectFill(NSMakeRect(curX,curY-2,charWidth,1));
+				}
+
 			}
-			else if(line >= startScreenLineIndex) 
-				dirty[j]=0;
+			if(line >= startScreenLineIndex) dirty[j]=0;
 			
 			curX+=charWidth;
 		}
-		//if (line>=startScreenLineIndex) memset(dirty,0,WIDTH);
 		curY+=lineHeight;
 	}
 	
@@ -1047,12 +1039,13 @@ static float strokeWidth, boldStrokeWidth;
 				double_width = x1 < WIDTH-1 || (theLine[x1+1].ch == 0xffff);
 				[self _drawCharacter: aChar 
 							 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0xff)
+							 bgColor: -1 // not to draw any background
 								AtX: x1 * charWidth + MARGIN 
 								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
 						doubleWidth: double_width];
 			}
 		
-			[dataSource dirty][i] = 1; //cursor loc is dirty
+			([dataSource dirty]+y1*WIDTH)[x1] = 1; //cursor loc is dirty
 			
 		}
 	}
@@ -1716,7 +1709,7 @@ static float strokeWidth, boldStrokeWidth;
 	mouseDragged = YES;
 	
 	// check if we want to drag and drop a selection
-	if(mouseDownOnSelection == YES)
+	if(mouseDownOnSelection == YES && ([event modifierFlags] & NSCommandKeyMask))
 	{
 		theSelectedText = [self contentFromX: startX Y: startY ToX: endX Y: endY breakLines: YES pad: NO];
 		if([theSelectedText length] > 0)
@@ -2483,6 +2476,7 @@ static float strokeWidth, boldStrokeWidth;
 	transparency = fVal;
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
+	[self resetCharCache];
 }
 
 - (BOOL) useTransparency
@@ -2537,9 +2531,9 @@ static float strokeWidth, boldStrokeWidth;
 //
 @implementation PTYTextView (Private)
 
-- (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold
+- (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withBGColor:(NSColor*)bgColor withFont:(NSFont*)aFont bold:(int)bold
 {
-	NSAttributedString  *crap;
+	NSString  *crap;
 	NSDictionary *attrib;
 	NSFont *theFont;
 	float sw;
@@ -2573,7 +2567,7 @@ static float strokeWidth, boldStrokeWidth;
         sw = antiAlias ? strokeWidth:0;
     }
 	
-	if (systemVersion >= 0x00001030)
+	if (systemVersion >= 0x00001030 && sw)
 	{
 		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
 			theFont, NSFontAttributeName,
@@ -2590,28 +2584,33 @@ static float strokeWidth, boldStrokeWidth;
 	}
 	
 	
-	crap = [[[NSAttributedString alloc]initWithString:[NSString stringWithCharacters:&carac length:1]
-										   attributes:attrib] autorelease];
+	crap = [NSString stringWithCharacters:&carac length:1];		
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
-	[crap drawAtPoint:NSMakePoint(0,0)];
+	if (bgColor) {
+		bgColor = [bgColor colorWithAlphaComponent: (useTransparency ? 1.0 - transparency : 1.0)];
+		[bgColor set];
+		NSRectFill(NSMakeRect(0,0,[image size].width,[image size].height));
+	}
+	[crap drawAtPoint:NSMakePoint(0,0) withAttributes:attrib];
+	
 	// on older systems, for bold, redraw the character offset by 1 pixel
 	if (renderBold && (systemVersion < 0x00001030 || !antiAlias))
 	{
-		[crap drawAtPoint:NSMakePoint(1,0)];
+		[crap drawAtPoint:NSMakePoint(1,0)  withAttributes:attrib];
 	}
 	[image unlockFocus];
 } // renderChar
 
 #define  CELLSIZE (CACHESIZE/256)
-- (NSImage *) _getCharImage:(unichar) code color:(int)fg doubleWidth:(BOOL) dw
+- (NSImage *) _getCharImage:(unichar) code color:(int)fg bgColor:(int)bg doubleWidth:(BOOL) dw
 {
 	int i;
 	int j;
 	NSImage *image;
 	int width;
 	unsigned int c = fg;
-	int seed;
+	unsigned short int seed[3];
 	
 	if (fg & SELECTED_TEXT) {
 		c = SELECT_CODE | (fg & BOLD_MASK);
@@ -2624,20 +2623,22 @@ static float strokeWidth, boldStrokeWidth;
 	}
 	if (!code) return nil;
 	width = dw?2:1;
-    seed = code;
-    seed <<= 8;
-    srand( seed + c );
-    i = rand() % (CACHESIZE-CELLSIZE);
-    for(j = 0;(charImages[i].code!=code || charImages[i].color!=c) && charImages[i].image && j<CELLSIZE; i++, j++);
+    seed[0]=code; seed[1] = c; seed[2] = bg;
+	i = nrand48(seed) % (CACHESIZE-CELLSIZE);
+    //srand( code<<16 + c<<8 + bg);
+	//i = rand() % (CACHESIZE-CELLSIZE);
+    for(j = 0;(charImages[i].code!=code || charImages[i].color!=c || charImages[i].bgColor != bg) && charImages[i].image && j<CELLSIZE; i++, j++);
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
 		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
 		charImages[i].code=code;
 		charImages[i].color=c;
+		charImages[i].bgColor=bg;
 		charImages[i].count=1;
 		[self _renderChar: image 
 				withChar: code
 			   withColor: [self colorForCode: c] 
+			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
 				withFont: dw?nafont:font
 					bold: c&BOLD_MASK];
 		
@@ -2653,6 +2654,7 @@ static float strokeWidth, boldStrokeWidth;
 		[charImages[t].image release];
 		image=charImages[t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
 		charImages[t].code=code;
+		charImages[i].bgColor=bg;
 		charImages[t].color=c;
 		for(j=1; j<=CELLSIZE; j++) {	//reset the cache count
 			charImages[i-j].count -= charImages[t].count;
@@ -2662,6 +2664,7 @@ static float strokeWidth, boldStrokeWidth;
 		[self _renderChar: image 
 				withChar: code
 			   withColor: [self colorForCode: c] 
+			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
 				withFont: dw?nafont:font
 					bold: c & BOLD_MASK];
 		return image;
@@ -2674,16 +2677,21 @@ static float strokeWidth, boldStrokeWidth;
 	
 }
 
-- (void) _drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
+- (void) _drawCharacter:(unichar)c fgColor:(int)fg bgColor:(int)bg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
 {
 	NSImage *image;
-	
+	BOOL bgImage = ([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil);
+	BOOL noBg = bg==-1 || (bg&SELECTION_MASK) || (bgImage && bg == DEFAULT_BG_COLOR_CODE);
+		
 	if (c) {
 		//NSLog(@"%s: %c(%d)",__PRETTY_FUNCTION__, c,c);
+
 		image=[self _getCharImage:c 
 						   color:fg
+						  bgColor:noBg ? -1: bg
 					 doubleWidth:dw];
-		[image compositeToPoint:NSMakePoint(X,Y) operation:NSCompositeSourceOver];
+		
+		[image compositeToPoint:NSMakePoint(X,Y) operation: bgImage || (bg&SELECTION_MASK) || bg==-1 ? NSCompositeSourceOver:NSCompositeCopy];
 	}
 }	
 
@@ -2970,6 +2978,18 @@ static float strokeWidth, boldStrokeWidth;
 
 	for ( i = 0 ; i < CACHESIZE; i++) {
 		if (charImages[i].color == colorIndex) {
+			[charImages[i].image release];
+			charImages[i].image = nil;
+		}
+	}
+}
+
+- (void) _clearCacheForBGColor:(int)colorIndex
+{
+	int i;
+	
+	for ( i = 0 ; i < CACHESIZE; i++) {
+		if (charImages[i].bgColor == colorIndex) {
 			[charImages[i].image release];
 			charImages[i].image = nil;
 		}

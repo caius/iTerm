@@ -1,3 +1,9 @@
+2006-11-24	fabian
+
+	* A fix for the anti-aliasing problem by caching the background. Enable the new rendering by 
+	  setting the strokewidth to 0:
+		defaults write iTerm StrokeWidth -float 0
+
 2006-11-21	fabian
 
 	* Removed some UI code from the writeTask process

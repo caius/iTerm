@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.145 2006-11-09 05:45:07 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.146 2006-11-29 23:19:28 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -387,12 +387,17 @@ static NSString *NoHandler = @"<No Handler>";
 
 - (float) strokeWidth
 {
-    return [prefs objectForKey:@"StrokeWidth"]?[[prefs objectForKey:@"StrokeWidth"] floatValue]:-2;
+    return [prefs objectForKey:@"StrokeWidth"]?[[prefs objectForKey:@"StrokeWidth"] floatValue]:0;
 }
 
 - (float) boldStrokeWidth
 {
-    return [prefs objectForKey:@"BoldStrokeWidth"]?[[prefs objectForKey:@"BoldStrokeWidth"] floatValue]:-3;
+    return [prefs objectForKey:@"BoldStrokeWidth"]?[[prefs objectForKey:@"BoldStrokeWidth"] floatValue]:-2;
+}
+
+- (int) cacheSize
+{
+    return [prefs objectForKey:@"CacheSize"]?[[prefs objectForKey:@"CacheSize"] intValue]:2048;
 }
 
 // URL handler stuff

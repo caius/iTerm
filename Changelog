@@ -1,3 +1,10 @@
+2006-11-29	fabian
+
+	* For better speed, the characters between 0x20 and 0x7e are no longer in a hash table.
+	* Added a hidden setting cacheSize for the size of rendered characters. Increase it if you 
+	  work with a large character set such as Chinese.
+	* Fixed a bug related to blink characters when there is no background image.
+	
 2006-11-24	fabian
 
 	* A fix for the anti-aliasing problem by caching the background. Enable the new rendering by 

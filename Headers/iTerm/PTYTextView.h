@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.59 2006-11-27 03:35:02 yfabian Exp $
+// $Id: PTYTextView.h,v 1.60 2006-11-29 23:19:28 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -47,7 +47,6 @@ typedef struct
 	int count;
 } CharCache;
 	
-#define CACHESIZE 2048
 enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 
 @interface PTYTextView : NSView <NSTextInput>
@@ -121,7 +120,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	BOOL reportingMouseDown;
 	
 	//cache
-	CharCache	charImages[CACHESIZE];
+	CharCache	*charImages;
 	
 	// blinking cursor
 	BOOL blinkingCursor;

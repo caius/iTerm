@@ -67,6 +67,15 @@
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
 
+<STRONG>Font rendering</STRONG> 11/29/06<IMG src="new.gif"><BR>
+For people who have complained the less than ideal font rendering behavior of iTerm, we hear you, loud and
+clear. Our latest cvs build hopefully alleviates some of your pain. You can go to the 
+<A HREF="http://iterm.sourceforge.net/download.shtml">download page</a> and check
+it out. If you have played with the stroke width setting before, you might need to set it to
+0 before you can see our new rendering effects:
+<ul>defaults write iTerm StrokeWidth -float 0</ul>
+<BR><BR>
+
 <STRONG>Release 0.9.3</STRONG> 11/11/06<BR>
 This is mainly a bug fix version. The stability has been greatly enhancced. Random crashes that
 plagued previous 0.9.x version should be largely eliminated. Other changes include:<BR>
@@ -84,7 +93,7 @@ plagued previous 0.9.x version should be largely eliminated. Other changes inclu
 Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
 and check it out.<BR><BR>
 
-<STRONG>Terminfo support is here!</STRONG> 11/1/06<IMG src="new.gif"><BR>
+<STRONG>Terminfo support is here!</STRONG> 11/1/06<BR>
 Our latest CVS build features terminfo support. The keyboard mapping of a session will
 now use the terminfo library. Your customized keymappings will override the terminfo library though.
 So you should probably remove some settings in your keyboard profile for you to see terminfo

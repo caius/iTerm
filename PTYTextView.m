@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.282 2006-11-27 03:35:01 yfabian Exp $
+// $Id: PTYTextView.m,v 1.283 2006-11-29 23:19:28 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -51,6 +51,7 @@
 static SInt32 systemVersion;
 static NSCursor* textViewCursor =  nil;
 static float strokeWidth, boldStrokeWidth;
+static int cacheSize;
 
 @implementation PTYTextView
 
@@ -75,6 +76,7 @@ static float strokeWidth, boldStrokeWidth;
     textViewCursor = [[NSCursor alloc] initWithImage:aCursorImage hotSpot:hotspot];
     strokeWidth = [[PreferencePanel sharedInstance] strokeWidth];
     boldStrokeWidth = [[PreferencePanel sharedInstance] boldStrokeWidth];
+    cacheSize = [[PreferencePanel sharedInstance] cacheSize];
 }
 
 + (NSCursor *) textViewCursor
@@ -111,7 +113,8 @@ static float strokeWidth, boldStrokeWidth;
         nil]];
 	
 	// init the cache
-	memset(charImages, 0, CACHESIZE*sizeof(CharCache));	
+	charImages = (CharCache *)malloc(sizeof(CharCache)*cacheSize);
+	memset(charImages, 0, cacheSize*sizeof(CharCache));	
     charWidth = 12;
     oldCursorX = oldCursorY = -1;
     
@@ -191,6 +194,8 @@ static float strokeWidth, boldStrokeWidth;
 	[markedText release];
 	
     [self resetCharCache];
+	free(charImages);
+	
     [super dealloc];
     
 #if DEBUG_ALLOC
@@ -499,7 +504,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void) resetCharCache
 {
 	int loop;
-	for (loop=0;loop<CACHESIZE;loop++)
+	for (loop=0;loop<cacheSize;loop++)
     {
 		[charImages[loop].image release];
 		charImages[loop].image=nil;
@@ -889,9 +894,9 @@ static float strokeWidth, boldStrokeWidth;
 				if (bgstart < 0) {
 					bgstart = j; 
 					bgcode = theLine[j].bg_color & 0xff;
-					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE);
+					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage || theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE));
 				}
-				else if (theLine[j].bg_color != bgcode || ((bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE)) != fillBG) 
+				else if (theLine[j].bg_color != bgcode || ((bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE))) != fillBG) 
 				{ 
 					//background change
 					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
@@ -908,7 +913,7 @@ static float strokeWidth, boldStrokeWidth;
 					}
 					bgstart = j; 
 					bgcode = theLine[j].bg_color & 0xff; 
-					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE);
+					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE));
 				}
 				
 			}
@@ -2602,13 +2607,12 @@ static float strokeWidth, boldStrokeWidth;
 	[image unlockFocus];
 } // renderChar
 
-#define  CELLSIZE (CACHESIZE/256)
+#define  CELLSIZE (cacheSize/256)
 - (NSImage *) _getCharImage:(unichar) code color:(int)fg bgColor:(int)bg doubleWidth:(BOOL) dw
 {
 	int i;
 	int j;
 	NSImage *image;
-	int width;
 	unsigned int c = fg;
 	unsigned short int seed[3];
 	
@@ -2622,15 +2626,20 @@ static float strokeWidth, boldStrokeWidth;
 		c &= (BOLD_MASK|0x1f); // turn of all masks except for bold and default fg color
 	}
 	if (!code) return nil;
-	width = dw?2:1;
-    seed[0]=code; seed[1] = c; seed[2] = bg;
-	i = nrand48(seed) % (CACHESIZE-CELLSIZE);
-    //srand( code<<16 + c<<8 + bg);
-	//i = rand() % (CACHESIZE-CELLSIZE);
-    for(j = 0;(charImages[i].code!=code || charImages[i].color!=c || charImages[i].bgColor != bg) && charImages[i].image && j<CELLSIZE; i++, j++);
+	if (code>=0x20 && code<0x7f && c == DEFAULT_FG_COLOR_CODE && bg == DEFAULT_BG_COLOR_CODE) {
+		i = code - 0x20;
+		j = 0;
+	}
+	else {
+		seed[0]=code; seed[1] = c; seed[2] = bg;
+		i = nrand48(seed) % (cacheSize-CELLSIZE-0x5f) + 0x5f;
+		//srand( code<<16 + c<<8 + bg);
+		//i = rand() % (CACHESIZE-CELLSIZE);
+		for(j = 0;(charImages[i].code!=code || charImages[i].color!=c || charImages[i].bgColor != bg) && charImages[i].image && j<CELLSIZE; i++, j++);
+	}
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
-		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
+		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*(dw?2:1), lineHeight)];
 		charImages[i].code=code;
 		charImages[i].color=c;
 		charImages[i].bgColor=bg;
@@ -2652,7 +2661,7 @@ static float strokeWidth, boldStrokeWidth;
 		}
 		t = i - t;
 		[charImages[t].image release];
-		image=charImages[t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*width, lineHeight)];
+		image=charImages[t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*(dw?2:1), lineHeight)];
 		charImages[t].code=code;
 		charImages[i].bgColor=bg;
 		charImages[t].color=c;
@@ -2976,7 +2985,7 @@ static float strokeWidth, boldStrokeWidth;
 {
 	int i;
 
-	for ( i = 0 ; i < CACHESIZE; i++) {
+	for ( i = 0 ; i < cacheSize; i++) {
 		if (charImages[i].color == colorIndex) {
 			[charImages[i].image release];
 			charImages[i].image = nil;
@@ -2988,7 +2997,7 @@ static float strokeWidth, boldStrokeWidth;
 {
 	int i;
 	
-	for ( i = 0 ; i < CACHESIZE; i++) {
+	for ( i = 0 ; i < cacheSize; i++) {
 		if (charImages[i].bgColor == colorIndex) {
 			[charImages[i].image release];
 			charImages[i].image = nil;

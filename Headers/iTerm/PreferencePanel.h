@@ -120,6 +120,7 @@
 - (int) optimumTabWidth;
 - (float) strokeWidth;
 - (float) boldStrokeWidth;
+- (int) cacheSize;
 
 @end
 

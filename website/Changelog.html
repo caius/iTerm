@@ -1,4 +1,14 @@
 <STRONG>Changes since 0.9.3</STRONG> <BR><BR>
+2006-11-29 fabian<BR><BR>
+This build has some significant changes in the character rendering. It will give the fonts a more
+standard anti-aliasing looking. If you have previously played with the stroke width setting, please
+set it to 0 to see the new effect:<BR><BR>
+
+defaults write iTerm StrokeWidth -float 0<BR><BR>
+
+Known bug: when the font size is set to a value below certain threshold, antialiasing is turned off 
+no matter what. For Monaco, this threshold is 11.<BR><BR>
+
 2006-11-20	fabian
 <UL>	
 	<LI> Fixed CPU usgae bug related to unclosed dead tab.</LI>

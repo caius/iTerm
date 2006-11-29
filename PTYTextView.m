@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.283 2006-11-29 23:19:28 yfabian Exp $
+// $Id: PTYTextView.m,v 1.284 2006-11-29 23:51:20 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -866,7 +866,7 @@ static int cacheSize;
 			
 			// Check if we need to redraw the char
 			// do something to define need_draw
-			need_draw = ((line < startScreenLineIndex || dirty[j]) && (theLine[j].ch == 0 || (theLine[j].bg_color & SELECTION_MASK) || hasBGImage)) || ((theLine[j].fg_color & BLINK_MASK) && !blinkShow);
+			need_draw = ((line < startScreenLineIndex || dirty[j] || forceUpdate) && (theLine[j].ch == 0 || (theLine[j].bg_color & SELECTION_MASK) || hasBGImage)) || ((theLine[j].fg_color & BLINK_MASK) && !blinkShow);
 			
 			// if we don't have to update next char, finish pending jobs
 			if (!need_draw)

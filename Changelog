@@ -4,6 +4,7 @@
 	* Added a hidden setting cacheSize for the size of rendered characters. Increase it if you 
 	  work with a large character set such as Chinese.
 	* Fixed a bug related to blink characters when there is no background image.
+	* Fixed a background updating bug.
 	
 2006-11-24	fabian
 

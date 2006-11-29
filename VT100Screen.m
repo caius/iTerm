@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.264 2006-11-29 23:19:28 yfabian Exp $
+// $Id: VT100Screen.m,v 1.265 2006-11-29 23:51:20 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -264,8 +264,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	// set up our dirty flags buffer
 	dirty=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
 	// force a redraw
-	memset(dirty,1,HEIGHT*WIDTH*sizeof(char));	
-		
+	[self setDirty];		
 }
 
 
@@ -454,14 +453,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if(dirty)
 		free(dirty);
 	dirty=(char*)malloc(height*width*sizeof(char));
-	memset(dirty, 1, width*height*sizeof(char));
-	
+	[self setDirty];
 	changeSize = NO_CHANGE;
 	// release lock
 	[self releaseLock];
     
     // An immediate refresh is needed so that the size of TEXTVIEW can be adjusted to fit the new size
-	[display setForceUpdate: YES];	
     [display refresh];
  
 }
@@ -624,7 +621,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 				aLine[j].bg_color = [TERMINAL backgroundColorCode];
 			}
 		}
-		memset(dirty,1,HEIGHT*WIDTH);
+		[self setDirty];
 		break;
     case VT100CSI_DECDHL: break;
     case VT100CSI_DECDWL: break;
@@ -890,7 +887,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	current_scrollback_lines = saved_scrollback_lines;
 	
 		
-	memset(dirty, 1, WIDTH*HEIGHT);
+	[self setDirty];
 	
 	free(temp_buffer);
 	temp_buffer = NULL;
@@ -1094,7 +1091,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		if(current_scrollback_lines == max_scrollback_lines)
 		{
 			// we can't shove top line into scroll buffer, entire screen needs to be redrawn
-			memset(dirty, 1, HEIGHT*WIDTH*sizeof(char));
+			[self setDirty];
 		}
 		else
 		{
@@ -1206,7 +1203,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	}
 	
 	// all the screen is dirty
-	memset(dirty, 1, WIDTH*HEIGHT);
+	[self setDirty];
 	
 	[self releaseLock];
 

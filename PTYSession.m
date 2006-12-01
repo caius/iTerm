@@ -1775,7 +1775,7 @@ static NSImage *warningImage;
 		}
 		
 		// do this in a new thread so that we don't get stuck.
-		[NSThread detachNewThreadSelector:@selector(_processWriteDataThread:) toTarget:SHELL withObject:data];
+		[NSThread detachNewThreadSelector:@selector(_processWriteDataThread:) toTarget:self withObject:data];
 		// Make sure we scroll down to the end
 		PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
 		

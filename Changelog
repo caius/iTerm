@@ -1,3 +1,7 @@
+2006-11-30	fabian
+
+	* Fixed a bug in [PTYSession handleWriteScriptCommand]
+	
 2006-11-29	fabian
 
 	* For better speed, the characters between 0x20 and 0x7e are no longer in a hash table.

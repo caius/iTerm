@@ -33,6 +33,8 @@
 @class iTermController;
 @class TreeNode;
 
+typedef enum { CURSOR_UNDERLINE, CURSOR_VERTICAL, CURSOR_BOX } ITermCursorType;
+
 @interface PreferencePanel : NSWindowController
 {
     
@@ -55,6 +57,7 @@
     IBOutlet NSSlider *refreshRate;
 	IBOutlet NSButton *quitWhenAllWindowsClosed;
     IBOutlet NSButton *checkUpdate;
+	IBOutlet NSMatrix *cursorType;
     
     NSUserDefaults *prefs;
 
@@ -74,6 +77,8 @@
     int  defaultRefreshRate;
 	NSString *defaultWordChars;
     BOOL defaultQuitWhenAllWindowsClosed;
+	BOOL defaultCheckUpdate;
+	ITermCursorType defaultCursorType;
 	
 	// url handler stuff
 	NSMutableArray *urlTypes;
@@ -111,6 +116,7 @@
 - (int)  refreshRate;
 - (NSString *) wordChars;
 - (BOOL) quitWhenAllWindowsClosed;
+- (ITermCursorType) cursorType;
 - (TreeNode *) handlerBookmarkForURL:(NSString *)url;
 
 // Hidden preferences
@@ -121,6 +127,7 @@
 - (float) strokeWidth;
 - (float) boldStrokeWidth;
 - (int) cacheSize;
+- (NSString *) searchCommand;
 
 @end
 

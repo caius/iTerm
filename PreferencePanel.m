@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.146 2006-11-29 23:19:28 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.147 2006-12-05 02:59:52 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -115,7 +115,9 @@ static NSString *NoHandler = @"<No Handler>";
 	defaultWordChars = [prefs objectForKey: @"WordCharacters"]?[[prefs objectForKey: @"WordCharacters"] retain]:@"";
     defaultOpenBookmark = [prefs objectForKey:@"OpenBookmark"]?[[prefs objectForKey:@"OpenBookmark"] boolValue]: NO;
 	defaultQuitWhenAllWindowsClosed = [prefs objectForKey:@"QuitWhenAllWindowsClosed"]?[[prefs objectForKey:@"QuitWhenAllWindowsClosed"] boolValue]: NO;
-
+	defaultCursorType=[prefs objectForKey:@"CursorType"]?[prefs integerForKey:@"CursorType"]:2;
+    defaultCheckUpdate = [prefs objectForKey:@"SUCheckAtStartup"]?[[prefs objectForKey:@"SUCheckAtStartup"] boolValue]: YES;
+	
 	NSArray *urlArray;
 	NSDictionary *tempDict = [prefs objectForKey:@"URLHandlers"];
 	int i;
@@ -164,8 +166,9 @@ static NSString *NoHandler = @"<No Handler>";
 	[prefs setObject: [[iTermTerminalProfileMgr singleInstance] profiles] forKey: @"Terminals"];
 	[prefs setObject: [[ITAddressBookMgr sharedInstance] bookmarks] forKey: @"Bookmarks"];
 	[prefs setBool:defaultQuitWhenAllWindowsClosed forKey:@"QuitWhenAllWindowsClosed"];
-    [prefs setBool:([checkUpdate state] == NSOnState) forKey:@"SUCheckAtStartup"];
-
+    [prefs setBool:defaultCheckUpdate forKey:@"SUCheckAtStartup"];
+	[prefs setInteger:defaultCursorType forKey:@"CursorType"];
+	
 	// save the handlers by converting the bookmark into an index
 	NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] init];
 	NSEnumerator *enumerator = [urlHandlers keyEnumerator];
@@ -205,7 +208,8 @@ static NSString *NoHandler = @"<No Handler>";
     [refreshRate setIntValue: defaultRefreshRate];
 	[wordChars setStringValue: ([defaultWordChars length] > 0)?defaultWordChars:@""];	
 	[quitWhenAllWindowsClosed setState: defaultQuitWhenAllWindowsClosed?NSOnState:NSOffState];
-    [checkUpdate setState: [[prefs objectForKey:@"SUCheckAtStartup"] boolValue]];
+    [checkUpdate setState: defaultCheckUpdate?NSOnState:NSOffState];
+	[cursorType selectCellWithTag:defaultCursorType];
 	
 	[self showWindow: self];
 
@@ -217,12 +221,14 @@ static NSString *NoHandler = @"<No Handler>";
     if (sender == windowStyle || 
         sender == tabPosition ||
         sender == hideTab ||
-        sender == useCompactLabel)
+        sender == useCompactLabel ||
+		sender == cursorType)
     {
         defaultWindowStyle = [windowStyle indexOfSelectedItem];
         defaultTabViewType=[tabPosition indexOfSelectedItem];
         defaultUseCompactLabel = ([useCompactLabel state] == NSOnState);
         defaultHideTab=([hideTab state]==NSOnState);
+		defaultCursorType = [[cursorType selectedCell] tag];
         [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermRefreshTerminal" object: nil userInfo: nil];    
     }
     else
@@ -240,6 +246,7 @@ static NSString *NoHandler = @"<No Handler>";
         [defaultWordChars release];
         defaultWordChars = [[wordChars stringValue] retain];
         defaultQuitWhenAllWindowsClosed = ([quitWhenAllWindowsClosed state] == NSOnState);
+        defaultCheckUpdate = ([checkUpdate state] == NSOnState);
     }
 }
 
@@ -351,6 +358,11 @@ static NSString *NoHandler = @"<No Handler>";
 	return (defaultWordChars);
 }
 
+- (ITermCursorType) cursorType
+{
+	return defaultCursorType;
+}
+
 - (BOOL) quitWhenAllWindowsClosed
 {
     return defaultQuitWhenAllWindowsClosed;
@@ -398,6 +410,11 @@ static NSString *NoHandler = @"<No Handler>";
 - (int) cacheSize
 {
     return [prefs objectForKey:@"CacheSize"]?[[prefs objectForKey:@"CacheSize"] intValue]:2048;
+}
+
+- (NSString *) searchCommand
+{
+	return [prefs objectForKey:@"SearchCommand"]?[prefs objectForKey:@"SearchCommand"]:@"http://google.com/search?q=%@";
 }
 
 // URL handler stuff

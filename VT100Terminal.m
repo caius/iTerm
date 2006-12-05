@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.116 2006-11-21 19:24:26 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.117 2006-12-05 02:59:52 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1417,6 +1417,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	
     strictAnsiMode = NO;
     allowColumnMode = YES;
+	[SCREEN reset];
 }
 
 - (BOOL)trace

@@ -1,8 +1,7 @@
 /* Context menu */
 "-> Browser" = "-> Browser";
-
-/* Context menu */
 "-> Mail" = "-> Mail";
+"-> Google" = "-> Google";
 
 /* Toolbar Item:Bookmarks */
 "Bookmarks" = "Bookmarks";
@@ -131,6 +130,7 @@
 
 /* Script */
 "Script" = "Script";
+"Refresh" = "Refresh";
 
 /* Key Binding Profiles */
 "Global"="Global";

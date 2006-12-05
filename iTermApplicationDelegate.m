@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.47 2006-11-21 19:24:29 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.48 2006-12-05 02:59:52 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -634,7 +634,7 @@ static BOOL usingAutoLaunchScript = NO;
     }
 	if (count>0) {
 		[scriptMenu addItem:[NSMenuItem separatorItem]];
-		NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: @"Refresh"
+		NSMenuItem *scriptItem = [[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Refresh",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")
 															action: @selector(buildScriptMenu:) 
 													 keyEquivalent: @""];
 		[scriptItem setTarget: self];

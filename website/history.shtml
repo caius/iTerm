@@ -20,6 +20,21 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Version History:</STRONG></FONT>
 <BR><BR>
+<STRONG>Release 0.9.4</STRONG> 12/4/06<BR>
+This version further improves on stability. Further more, we changed the font rendering to make
+it more in line with other Cocoa applications. Lastly, we have an updated Help that reflects the
+latest changes in the GUI. We encourage all users who use previous versions to upgrade. New changes 
+include:<BR>
+<UL>
+<LI>New font rendering code.</LI>
+<LI>Updated Help documentation.</LI>
+<LI>Improved support for the wide glyphs, especially for the eastern asian languages.</LI>
+<LI>Added a Google command in the context menu to launch a search session with selected text.</LI>
+<LI>Improved speed.</LI>
+<LI>Enhanced stability.</LI>
+<LI>Other bug fixes and GUI enhancements as usual.</LI>
+</UL>
+
 <STRONG>Release 0.9.3</STRONG> 11/11/06<BR>
 This is mainly a bug fix version. The stability has been greatly enhancced. Random crashes that
 plagued previous 0.9.x version should be largely eliminated. Other changes include:<BR>

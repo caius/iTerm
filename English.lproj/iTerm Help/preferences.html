@@ -87,17 +87,31 @@ For example, a bookmark's command is: <I>telnet -l $$USER$$ $$HOST$$ $$PORT$$</I
 <FONT SIZE="5"><STRONG>Hidden Settings</STRONG></FONT><BR><BR>
 There are a few settings that you cannot access via iTerm's own
 Preferences panel. However, you can use 'defaults" command to
-change them to your taste. The settings available are:<BR>
+change them to your taste. The settings available along with the
+default numbers are:<BR>
 <ul>
   defaults write iTerm UseUnevenTabs -bool false<BR>
   defaults write iTerm MinTabWidth -int 75        <BR>
   defaults write iTerm MinCompactTabWidth -int 60<BR>
   defaults write iTerm OptimumTabWidth -int 175<BR>
-  defaults write iTerm StrokeWidth -float -1<BR>
-  defaults write iTerm BoldStrokeWidth -float -3<BR>
+  defaults write iTerm StrokeWidth -float 0<BR>
+  defaults write iTerm BoldStrokeWidth -float -2<BR>
+  defaults write iTerm CacheSize -float 2048<BR>
+  defaults write iTerm SearchCommand -string "http://google.com/search?q=%@"<BR>
 </ul>
-The first four are for setting the tab size. And the last 2 are for setting the stroke width
-of fonts rendering. The numbers in the example are all default settings.
+The first four are for setting the tab size. And the next 2 are for setting the stroke width
+of fonts rendering. The numbers in the example are all default settings. Experiment with
+different numbers. For example, to enable antialias for very small fonts, type these commands:
+<ul>
+  defaults write iTerm StrokeWidth -float -1<BR>
+</ul>
+The CacheSize is the number of characters that are cached for rendering.
+Increase it when you use a lot of different colors and a large character set. The last one
+is for the search command launched from the contextual menu. The default is to use google.
+You can set it to anything you want. For example, if you like yahoo, here is the command:<BR>
+<ul>
+  defaults write iTerm SearchCommand -string "http://search.yahoo.com/search?p=%@"
+</ul>
 
 </TD>
 </TR>
@@ -106,7 +120,7 @@ of fonts rendering. The numbers in the example are all default settings.
 
 <BR>
 <FONT SIZE="-1">
-Modified: Nov 16th, 2006<BR>Created: Dec 18th, 2002<BR>
+Modified: Dec 1st, 2006<BR>Created: Dec 18th, 2002<BR>
 <A HREF="MAILTO:fabian@macvillage.net">Fabian</A> and <A HREF="MAILTO:ujwal@setlurgroup.com">Ujwal S. Setlur</A><BR>
 Support free software by writing one.<BR>
 </FONT>

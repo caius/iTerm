@@ -1,60 +1,18 @@
-<STRONG>Changes since 0.9.3</STRONG> <BR><BR>
-2006-11-29 fabian<BR><BR>
-This build has some significant changes in the character rendering. It will give the fonts a more
-standard anti-aliasing looking. If you have previously played with the stroke width setting, please
-set it to 0 to see the new effect:<BR><BR>
-
-defaults write iTerm StrokeWidth -float 0<BR><BR>
-
-Known bug: when the font size is set to a value below certain threshold, antialiasing is turned off 
-no matter what. For Monaco, this threshold is 11.<BR><BR>
-
-2006-11-20	fabian
-<UL>	
-	<LI> Fixed CPU usgae bug related to unclosed dead tab.</LI>
-	<LI> Reduced update frequency for the tabs in the background.</LI>
-	<LI> Fixed a memory leak in [VT100Screen setString:ascii:].</LI>
-	<LI> Fixed Script menu behavior. Now it will only show and launch scpt and app files.</LI>
-	<LI> Added Refresh option in the script menu.</LI>
-	<LI> Fixed bug when adding keyboard profile.</LI>
-</UL>
-2006-11-19	fabian
-<UL>	
-	<LI> Fixed a toolbar related bug that causes crash.</LI>
-	<LI> Fixed a few typo in help files.</LI>
-</UL>
-2006-11-17	fabian
-<UL>	
-	<LI> Updated Help files.</LI>
-</UL>
-	
-2006-11-16	fabian
+<STRONG>Release 0.9.4</STRONG> 12/4/06<BR>
+This version further improves on stability. Further more, we changed the font rendering to make
+it more in line with other Cocoa applications. Lastly, we have an updated Help that reflects the
+latest changes in the GUI. We encourage all users who use previous versions to upgrade. New changes 
+include:<BR>
 <UL>
-	<LI> Fixed scrolling bug.
-	<LI> Fixed a drag&drop bug where newly created window is not properly set up.</LI>
-	<LI> One more bell related fix.</LI>
-	<LI> Replaced NSData object STREAM with a plain char buffer to improve performance.</LI>
-	<LI> Fixed a bug in PTYTask that crashes iTerm.</LI>
-	<LI> Fixed a bug that keeps PTYSession's data thread from exiting properly sometimes.</LI>
-	<LI> Disabled Option-click to position cursor. Option key is now used to escape xterm mouse reporting.</LI>
-	<LI> Now ascii strings are processed separately from nonascii strings. Hopefully this will improve performance.</LI>
+<LI>New font rendering code.</LI>
+<LI>Updated Help documentation.</LI>
+<LI>Improved support for the wide glyphs, especially for the eastern asian languages.</LI>
+<LI>Added a Google command in the context menu to launch a search session with selected text.</LI>
+<LI>Improved speed.</LI>
+<LI>Enhanced stability.</LI>
+<LI>Other bug fixes and GUI enhancements as usual.</LI>
 </UL>
-
-2006-11-15	fabian
-<UL>
-	<LI> Fixed URL getting cut bug.</LI>
-	<LI> Now changing window/tab title  blocks the processing.</LI>
-</UL>	
-2006-11-14	fabian
-<UL>
-	<LI> Fixed "bookmark folder grey out" bug.</LI>
-	<LI> Possible fix for resizing related crashes.</LI>
-	<LI> Fixed "info panel font selection" bug.</LI>
-</UL>		
-2006-11-12	fabian
-<UL>
-	<LI> Improved eastern asian language double width processing.</LI>
-</UL><BR>	
+<BR>
 <STRONG>Release 0.9.3</STRONG> 11/11/06<BR>
 This is mainly a bug fix version. The stability has been greatly enhancced. Random crashes that
 plagued previous 0.9.x version should be largely eliminated. Other changes include:<BR>

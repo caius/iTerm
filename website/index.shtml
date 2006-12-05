@@ -34,29 +34,35 @@
 <LI>Native Cocoa application that runs both on Tiger and earlier Panther.</LI>
   <UL>
     <LI>Native OS X user interface</LI>
-    <LI>Support for both PowerPC and  new Intel Macs</LI>
-	<LI>Support of Applescript</LI>
-	<LI>Transparent windows and custm background pictures</LI>
+    <LI>Support for both PowerPC and Intel Macs</LI>
+	<LI>Applescript support</LI>
+	<LI>Transparent windows and custom background pictures</LI>
     <LI>Bonjour support</LI>
   </UL>
 <LI>Complete VT100 emulation, with additional support for most common xterm and 
 	ANSI escape sequences.</LI>
   <UL>
-    <LI>Custom key-mapping</LI>
+    <LI>terminfo support with flexible custom key-mapping</LI>
 	<LI>Supports select-to-copy and mid-button paste</LI>
 	<LI>Supports focus follow mouse</LI>
-	<LI>Supports xterm titling sequence to change tab label</LI>
+	<LI>Supports a variety of additional  xterm escape sequences, including xterm 
+	    titling sequence and xterm mouse reporting</LI>
 	<LI>Supports ANSI 16 colors, which are also fully customizable</LI>
   </UL>
 <LI>Multi-tab within one window.</LI>
   <UL>
 	<LI>Tabs can be drag and drop between windows.</LI>
-	<LI>Tab labels can change color to indicate the session activiies</LI>
+	<LI>Tab labels can change color to indicate the session activities</LI>
+	<LI>Choose among Metal, Aqua, Adium, and Unified styles</LI>
 	<LI>You can send keyboard input to multiple tabs</LI>
   </UL>
 <LI>Bookmarks for storing settings of most used sessions</LI>
+  <UL>
+	<LI>You can fully customize each session, with support of macro in bookmark
+	    commands</LI>
+	<LI>Bookmarks can be specified to handle URLs such as ftp.</LI>
+  </UL>
 <LI>Anti-idle function that avoids disconnection because of no activity</LI>
-<LI>Universal Binary that runs natively on  both PPC and Intel Macs.</LI>
 <LI>Supports all language encodings that are available with OS X</LI>
   <UL>
     <LI>User can specify a second font to display non-latin characters
@@ -67,7 +73,26 @@
 
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
 
-<STRONG>Font rendering</STRONG> 11/29/06<IMG src="new.gif"><BR>
+<STRONG>Release 0.9.4</STRONG> 12/4/06<IMG src="new.gif"><BR>
+This version further improves on stability. Further more, we changed the font rendering to make
+it more in line with other Cocoa applications. Lastly, we have an updated Help that reflects the
+latest changes in the GUI. We encourage all users who use previous versions to upgrade. New changes 
+include:<BR>
+<UL>
+<LI>New font rendering code.</LI>
+<LI>Updated Help documentation.</LI>
+<LI>Improved support for the wide glyphs, especially for the eastern asian languages.</LI>
+<LI>Added a Google command in the context menu to launch a search session with selected text.</LI>
+<LI>Improved speed.</LI>
+<LI>Enhanced stability.</LI>
+<LI>Other bug fixes and GUI enhancements as usual.</LI>
+</UL>
+
+Go to the <A HREF="http://iterm.sourceforge.net/download.shtml">Download page</A> 
+and check it out. We have Tiger only version now. A Panther version will be released after a few
+issues are addressed.<BR><BR>
+
+<STRONG>Font rendering</STRONG> 11/29/06<BR>
 For people who have complained the less than ideal font rendering behavior of iTerm, we hear you, loud and
 clear. Our latest cvs build hopefully alleviates some of your pain. You can go to the 
 <A HREF="http://iterm.sourceforge.net/download.shtml">download page</a> and check

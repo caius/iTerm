@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.265 2006-11-29 23:51:20 yfabian Exp $
+// $Id: VT100Screen.m,v 1.266 2006-12-05 02:59:52 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -461,6 +461,31 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     // An immediate refresh is needed so that the size of TEXTVIEW can be adjusted to fit the new size
     [display refresh];
  
+}
+
+- (void) reset
+{
+	// reset terminal scroll top and bottom
+	SCROLL_TOP = 0;
+	SCROLL_BOTTOM = HEIGHT - 1;
+	
+	[self clearScreen];
+    [self clearTabStop];
+    SAVE_CURSOR_X = 0;
+	CURSOR_Y = 0;
+	SAVE_CURSOR_Y = 0;
+	
+    // set initial tabs
+    int i;
+    for(i = TABSIZE; i < TABWINDOW; i += TABSIZE)
+        tabStop[i] = YES;
+	
+    for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
+	
+	changeSize = NO_CHANGE;
+	changeTitle = 0;
+	newTitle = nil;
+	bell = NO;
 }
 
 - (int)width
@@ -1092,6 +1117,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		{
 			// we can't shove top line into scroll buffer, entire screen needs to be redrawn
 			[self setDirty];
+			if ([(PTYScroller *)([[display enclosingScrollView] verticalScroller]) userScroll]) 
+			{
+				[display scrollLineUp: nil];
+			}
+			[display topOfLineRemoved];
 		}
 		else
 		{

@@ -1,3 +1,23 @@
+2006-12-4	fabian
+
+	* Fixed a selection bug (BUG #1608727).
+	* Added new cursor types (underline and vertical).
+	* Fixed auto-check of updates setting bug (BUG #1599702).
+	* Release 0.9.4 for Tiger.
+	
+2006-12-2	fabian
+
+	* Fixed a RESET and clearScreen bug.
+	
+2006-12-1	fabian
+
+	* Stop scrolling with new output when users manually move back to the history buffer.
+	* Added support to launch a google session with the selected contents from the contextual menu. 
+	  To customize your search command, do this (using yahoo as an example):
+		defaults write iTerm SearchCommand -string "http://search.yahoo.com/search?p=%@"
+	* Fixed a clearScreen bug.
+	* Completed RESET command.
+	
 2006-11-30	fabian
 
 	* Fixed a bug in [PTYSession handleWriteScriptCommand]
@@ -7,6 +27,7 @@
 	* For better speed, the characters between 0x20 and 0x7e are no longer in a hash table.
 	* Added a hidden setting cacheSize for the size of rendered characters. Increase it if you 
 	  work with a large character set such as Chinese.
+	    defaults write iTerm CacheSize -float 2048
 	* Fixed a bug related to blink characters when there is no background image.
 	* Fixed a background updating bug.
 	

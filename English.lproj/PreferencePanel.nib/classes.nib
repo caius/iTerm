@@ -8,6 +8,7 @@
             OUTLETS = {
                 checkUpdate = NSButton; 
                 cmdSelection = NSButton; 
+                cursorType = id; 
                 enableBonjour = NSButton; 
                 enableGrowl = NSButton; 
                 focusFollowsMouse = NSButton; 

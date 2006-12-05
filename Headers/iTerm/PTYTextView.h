@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.60 2006-11-29 23:19:28 yfabian Exp $
+// $Id: PTYTextView.h,v 1.61 2006-12-05 02:59:54 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -170,6 +170,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void)changeFont:(id)sender;
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent;
 - (void) browse:(id)sender;
+- (void) searchInBrowser:(id)sender;
 - (void) mail:(id)sender;
 
 //get/set methods
@@ -283,6 +284,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;	
 
 - (void)resetCharCache;
+
+- (void)topOfLineRemoved;
 
 @end
 

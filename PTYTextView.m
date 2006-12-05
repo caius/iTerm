@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.284 2006-11-29 23:51:20 yfabian Exp $
+// $Id: PTYTextView.m,v 1.285 2006-12-05 02:59:52 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1018,38 +1018,53 @@ static int cacheSize;
 			
 			[[[self defaultCursorColor] colorWithAlphaComponent: trans] set];
 
-			if([[self window] isKeyWindow])
-			{
-				NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
-									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-									  ceil(cursorWidth), cursorHeight));
+			switch ([[PreferencePanel sharedInstance] cursorType]) {
+				case CURSOR_BOX:
+					if([[self window] isKeyWindow])
+					{
+						NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
+											  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
+											  ceil(cursorWidth), cursorHeight));
+					}
+					else
+					{
+						NSFrameRect(NSMakeRect(floor(x1 * charWidth + MARGIN),
+											  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
+											  ceil(cursorWidth), cursorHeight));
+						
+					}
+					// draw any character on cursor if we need to
+					unichar aChar = theLine[x1].ch;
+					if (aChar)
+					{
+						if (aChar == 0xffff && x1>0) 
+						{
+							i--;
+							x1--;
+							aChar = theLine[x1].ch;
+						}
+						double_width = x1 < WIDTH-1 || (theLine[x1+1].ch == 0xffff);
+						[self _drawCharacter: aChar 
+									 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0xff)
+									 bgColor: -1 // not to draw any background
+										 AtX: x1 * charWidth + MARGIN 
+										   Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
+								 doubleWidth: double_width];
+					}
+						
+					break;
+				case CURSOR_VERTICAL:
+					NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
+										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
+										  1, cursorHeight));
+					break;
+				case CURSOR_UNDERLINE:
+					NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
+										  (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight + (lineHeight - cursorHeight) - 2,
+										  ceil(cursorWidth), 2));
+					break;
 			}
-			else
-			{
-				NSFrameRect(NSMakeRect(floor(x1 * charWidth + MARGIN),
-									  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-									  ceil(cursorWidth), cursorHeight));
-				
-			}
-			// draw any character on cursor if we need to
-			unichar aChar = theLine[x1].ch;
-			if (aChar)
-			{
-				if (aChar == 0xffff && x1>0) 
-				{
-					i--;
-					x1--;
-					aChar = theLine[x1].ch;
-				}
-				double_width = x1 < WIDTH-1 || (theLine[x1+1].ch == 0xffff);
-				[self _drawCharacter: aChar 
-							 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0xff)
-							 bgColor: -1 // not to draw any background
-								AtX: x1 * charWidth + MARGIN 
-								  Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
-						doubleWidth: double_width];
-			}
-		
+					
 			([dataSource dirty]+y1*WIDTH)[x1] = 1; //cursor loc is dirty
 			
 		}
@@ -1962,6 +1977,7 @@ static int cacheSize;
     }
     else if ([item action]==@selector(mail:) ||
              [item action]==@selector(browse:) ||
+			 [item action]==@selector(searchInBrowser:) ||
              [item action]==@selector(copy:) ||
 			 [item action]==@selector(pasteSelection:) || 
 			 ([item action]==@selector(print:) && [item tag] == 1)) // print selection
@@ -1983,6 +1999,8 @@ static int cacheSize;
     // Menu items for acting on text selections
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Browser",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                      action:@selector(browse:) keyEquivalent:@""];
+    [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Google",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
+                     action:@selector(searchInBrowser:) keyEquivalent:@""];
     [cMenu addItemWithTitle:NSLocalizedStringFromTableInBundle(@"-> Mail",@"iTerm", [NSBundle bundleForClass: [self class]], @"Context menu")
                      action:@selector(mail:) keyEquivalent:@""];
     
@@ -2020,6 +2038,11 @@ static int cacheSize;
 - (void) browse:(id)sender
 {
 	[self _openURL: [self selectedText]];
+}
+
+- (void) searchInBrowser:(id)sender
+{
+	[self _openURL: [[NSString stringWithFormat:[[PreferencePanel sharedInstance] searchCommand], [self selectedText]] stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding]];
 }
 
 //
@@ -2527,6 +2550,30 @@ static int cacheSize;
 {
 	//NSLog(@"%s", __PRETTY_FUNCTION__);
 	return (NO);
+}
+
+- (void)topOfLineRemoved
+{
+	if (startX>-1) {
+		if (startY>0) {
+			startY--;
+			endY--;
+		}
+		else if (endY>0) {
+			endY--;
+			startX = startY = 0;
+		}
+		else
+			startX = -1;
+	}
+	
+	if (lastFindX >-1) {
+		if (lastFindY>0) {
+			lastFindY --;
+		}
+		else
+			lastFindX = -1;
+	}
 }
 
 @end

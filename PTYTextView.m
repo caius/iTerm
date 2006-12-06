@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.286 2006-12-06 01:58:30 yfabian Exp $
+// $Id: PTYTextView.m,v 1.287 2006-12-06 07:21:56 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1056,7 +1056,7 @@ static int cacheSize;
 						}
 						double_width = x1 < WIDTH-1 || (theLine[x1+1].ch == 0xffff);
 						[self _drawCharacter: aChar 
-									 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0xff)
+									 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0x1ff)
 									 bgColor: -1 // not to draw any background
 										 AtX: x1 * charWidth + MARGIN 
 										   Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
@@ -2704,7 +2704,7 @@ static int cacheSize;
 		charImages[i].count=1;
 		[self _renderChar: image 
 				withChar: code
-			   withColor: [self colorForCode: c] 
+			   withColor: [self colorForCode: c & 0x1ff] //turn off bold mask
 			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
 				withFont: dw?nafont:font
 					bold: c&BOLD_MASK];
@@ -2730,7 +2730,7 @@ static int cacheSize;
 		
 		[self _renderChar: image 
 				withChar: code
-			   withColor: [self colorForCode: c] 
+			   withColor: [self colorForCode: c & 0x1ff] //turn off bold mask
 			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
 				withFont: dw?nafont:font
 					bold: c & BOLD_MASK];

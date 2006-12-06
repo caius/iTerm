@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.117 2006-12-05 02:59:52 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.118 2006-12-06 01:58:32 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -489,7 +489,7 @@ static VT100TCC decode_csi(unsigned char *datap,
                         SET_PARAM_DEFAULT(param, i, 0);
 						//                        NSLog(@"m[%d]=%d",i,param.p[i]);
                     }
-						break;
+					break;
 					
                 case 'h':
                     result.type = VT100CSI_SM;
@@ -2020,7 +2020,10 @@ else {
 
 - (int)foregroundColorCode
 {
-	return (reversed?BG_COLORCODE:FG_COLORCODE+(highlight?1:bold)*8)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
+	if (FG_COLORCODE % 256 >7)
+		return (reversed?BG_COLORCODE:FG_COLORCODE)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
+	else
+		return (reversed?BG_COLORCODE:FG_COLORCODE+(highlight?1:bold)*8)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
 }
 
 - (int)backgroundColorCode
@@ -2186,6 +2189,18 @@ else {
 						break;
 					case VT100CHARATTR_BG_DEFAULT:
 						BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
+						break;
+					case VT100CHARATTR_FG_256:
+						if (token.u.csi.count==3 && i==0 && token.u.csi.p[1]==5) {
+							FG_COLORCODE = token.u.csi.p[2];
+							i =2;
+						}
+						break;
+					case VT100CHARATTR_BG_256:
+						if (token.u.csi.count==3 && i==0 && token.u.csi.p[1]==5) {
+							BG_COLORCODE = token.u.csi.p[2];
+							i=2;
+						}
 						break;
 					default:
 						// 8 color support

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.285 2006-12-05 02:59:52 yfabian Exp $
+// $Id: PTYTextView.m,v 1.286 2006-12-06 01:58:30 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -44,9 +44,6 @@
 #import <iTerm/Tree.h>
 
 #include <sys/time.h>
-
-#define  SELECT_CODE 0x40
-#define  CURSOR_CODE 0x80
 
 static SInt32 systemVersion;
 static NSCursor* textViewCursor =  nil;
@@ -332,8 +329,8 @@ static int cacheSize;
 	[selectedTextColor release];
 	[aColor retain];
 	selectedTextColor = aColor;
-	[self _clearCacheForColor: SELECT_CODE];
-	[self _clearCacheForColor: SELECT_CODE | BOLD_MASK];
+	[self _clearCacheForColor: SELECTED_TEXT];
+	[self _clearCacheForColor: SELECTED_TEXT | BOLD_MASK];
 	forceUpdate = YES;
 
 	[self setNeedsDisplay: YES];
@@ -344,8 +341,7 @@ static int cacheSize;
 	[cursorTextColor release];
 	[aColor retain];
 	cursorTextColor = aColor;
-	[self _clearCacheForColor: CURSOR_CODE];
-	[self _clearCacheForColor: CURSOR_CODE | BOLD_MASK];
+	[self _clearCacheForColor: CURSOR_TEXT];
 	
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
@@ -399,30 +395,45 @@ static int cacheSize;
 {
     NSColor *color;
 	
-	if(index & SELECT_CODE)
-		return (selectedTextColor);
-	
-	if(index & CURSOR_CODE)
-		return (cursorTextColor);
-	
-	if (index&DEFAULT_FG_COLOR_CODE)
+	if (index&DEFAULT_FG_COLOR_CODE) // special colors?
     {
-		if (index&1) // background color?
-		{
-			color=defaultBGColor;
-		}
-		else if(index&BOLD_MASK)
-		{
-			color = [self defaultBoldColor];
-		}
-		else
-		{
-			color = defaultFGColor;
+		switch (index) {
+			case SELECTED_TEXT:
+				color = selectedTextColor;
+				break;
+			case CURSOR_TEXT:
+				color = cursorTextColor;
+				break;
+			case DEFAULT_BG_COLOR_CODE:
+				color = defaultBGColor;
+				break;
+			default:
+				if(index&BOLD_MASK)
+				{
+					color = [self defaultBoldColor];
+				}
+				else
+				{
+					color = defaultFGColor;
+				}
 		}
     }
     else
     {
-        color=colorTable[index&15];
+        if (index<16) {
+			color=colorTable[index];
+		}
+		else if (index<232) {
+			index -= 16;
+			color=[NSColor colorWithCalibratedRed:(index/36) ? ((index/36)*40+55)/256.0:0 
+											green:(index%36)/6 ? (((index%36)/6)*40+55)/256.0:0 
+											 blue:(index%6) ?((index%6)*40+55)/256.0:0
+											alpha:1];
+		}
+		else {
+			index -= 232;
+			color=[NSColor colorWithCalibratedWhite:(index*10+8)/256.0 alpha:1];
+		}
     }
 	
     return color;
@@ -893,10 +904,10 @@ static int cacheSize;
 				// find out if the current char is being selected
 				if (bgstart < 0) {
 					bgstart = j; 
-					bgcode = theLine[j].bg_color & 0xff;
-					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage || theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE));
+					bgcode = theLine[j].bg_color & 0x3ff;
+					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage || bgcode!=DEFAULT_BG_COLOR_CODE));
 				}
-				else if (theLine[j].bg_color != bgcode || ((bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE))) != fillBG) 
+				else if (theLine[j].bg_color != bgcode || ((bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||bgcode!=DEFAULT_BG_COLOR_CODE))) != fillBG) 
 				{ 
 					//background change
 					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
@@ -912,8 +923,8 @@ static int cacheSize;
 						NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 					}
 					bgstart = j; 
-					bgcode = theLine[j].bg_color & 0xff; 
-					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||theLine[j].bg_color!=DEFAULT_BG_COLOR_CODE));
+					bgcode = theLine[j].bg_color & 0x1ff; 
+					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||bgcode!=DEFAULT_BG_COLOR_CODE));
 				}
 				
 			}
@@ -952,11 +963,11 @@ static int cacheSize;
 					bgcode = theLine[j].bg_color;
 				
 				// switch colors if text is selected
-				if((theLine[j].bg_color & SELECTION_MASK) && ((theLine[j].fg_color & 0x1f) == DEFAULT_FG_COLOR_CODE))
-					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0xff); // check for bold
+				if((theLine[j].bg_color & SELECTION_MASK) && ((theLine[j].fg_color & 0x3ff) == DEFAULT_FG_COLOR_CODE))
+					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0x3ff); // check for bold
 				else
 					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ? 
-						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : (theLine[j].fg_color & 0xff);
+						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : (theLine[j].fg_color & 0x3ff);
 				
 				if (theLine[j].fg_color & BLINK_MASK) 
 				{
@@ -972,7 +983,7 @@ static int cacheSize;
 				
 				//draw underline
 				if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
-					[[self colorForCode:(fgcode & 0x3f)] set];
+					[[self colorForCode:(fgcode & 0xff)] set];
 					NSRectFill(NSMakeRect(curX,curY-2,charWidth,1));
 				}
 
@@ -2655,7 +2666,7 @@ static int cacheSize;
 } // renderChar
 
 #define  CELLSIZE (cacheSize/256)
-- (NSImage *) _getCharImage:(unichar) code color:(int)fg bgColor:(int)bg doubleWidth:(BOOL) dw
+- (NSImage *) _getCharImage:(unichar) code color:(unsigned int)fg bgColor:(unsigned int)bg doubleWidth:(BOOL) dw
 {
 	int i;
 	int j;
@@ -2663,14 +2674,14 @@ static int cacheSize;
 	unsigned int c = fg;
 	unsigned short int seed[3];
 	
-	if (fg & SELECTED_TEXT) {
-		c = SELECT_CODE | (fg & BOLD_MASK);
+	if (fg == SELECTED_TEXT) {
+		c = SELECTED_TEXT;
 	}
-	else if (fg & CURSOR_TEXT) {
-		c = CURSOR_CODE | (fg & BOLD_MASK);
+	else if (fg == CURSOR_TEXT) {
+		c = CURSOR_TEXT;
 	}
 	else {
-		c &= (BOLD_MASK|0x1f); // turn of all masks except for bold and default fg color
+		c &= 0x3ff; // turn of all masks except for bold and default fg color
 	}
 	if (!code) return nil;
 	if (code>=0x20 && code<0x7f && c == DEFAULT_FG_COLOR_CODE && bg == DEFAULT_BG_COLOR_CODE) {
@@ -2771,7 +2782,7 @@ static int cacheSize;
 
 	int bfHeight;
 	int width, height, x, y, idx, startIdx, endIdx;
-	char newbg;
+	unsigned int newbg;
 	char *dirty;
 	screen_char_t *theLine;
 	
@@ -3225,7 +3236,7 @@ static int cacheSize;
 {
 	NSPoint locationInWindow, locationInView;
 	int row, col;
-	char theBackgroundAttribute;
+	unsigned int theBackgroundAttribute;
 	BOOL result;
 	screen_char_t *theLine;
 	

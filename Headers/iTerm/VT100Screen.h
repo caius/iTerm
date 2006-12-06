@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.28 2006-12-05 02:59:57 yfabian Exp $
+// $Id: VT100Screen.h,v 1.29 2006-12-06 01:58:34 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -40,8 +40,8 @@ enum { NO_CHANGE, CHANGE, CHANGE_PIXEL };
 typedef struct screen_char_t
 {
 	unichar ch;    // the actual character
-	char bg_color; // background color
-	char fg_color; // foreground color
+	unsigned int bg_color; // background color
+	unsigned int fg_color; // foreground color
 } screen_char_t;
 
 #define TABWINDOW	300

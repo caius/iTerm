@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.376 2006-11-23 02:08:03 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.377 2006-12-06 01:58:30 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1645,6 +1645,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession TEXTVIEW] setLineHeight: [term charHeight]];
     [[aSession TEXTVIEW] setLineWidth: [term width] * [term charWidth]];
     if ([[term tabView] numberOfTabViewItems] == 1) [term setWindowSize];
+
+    int i;
+    for (i=0;i<[aTabView numberOfTabViewItems];i++) 
+    {
+        PTYSession *aSession = [[aTabView tabViewItemAtIndex: i] identifier];
+        [aSession setObjectCount:i+1];
+    }        
 }
 
 - (void)tabView:(NSTabView *)aTabView closeWindowForLastTabViewItem:(NSTabViewItem *)tabViewItem

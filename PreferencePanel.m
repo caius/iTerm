@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.147 2006-12-05 02:59:52 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.148 2006-12-07 06:19:33 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -530,14 +530,14 @@ static NSString *NoHandler = @"<No Handler>";
 								  NSLocalizedStringFromTableInBundle(@"There is no handler currently.",@"iTerm", [NSBundle bundleForClass: [self class]], @"URL Handler"),
 								  NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
 								  NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
-								  ,nil);
+								  ,nil) == NSAlertDefaultReturn;
 		}
 		else if (![[[NSFileManager defaultManager] displayNameAtPath:[appURL path]] isEqualToString:@"iTerm"]) {
 			set = NSRunAlertPanel([NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"iTerm is not the default handler for %@. Would you like to set iTerm as the default handler?", @"iTerm", [NSBundle bundleForClass: [self class]], @"URL Handler"), [urlTypes objectAtIndex: i]],
 								  [NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"The current handler is: %@" ,@"iTerm", [NSBundle bundleForClass: [self class]], @"URL Handler"), [[NSFileManager defaultManager] displayNameAtPath:[appURL path]]],
 								  NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
 								  NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
-								  ,nil);
+								  ,nil) == NSAlertDefaultReturn;
 		}
 			
 		if (set) {

@@ -23,6 +23,7 @@
 
 /* Close window */
 "Close Window?" = "Close Window?";
+"Quit iTerm?" = "Quit iTerm?";
 
 /* Close Session */
 "This session will be closed."="This session will be closed.";

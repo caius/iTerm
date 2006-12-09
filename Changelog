@@ -9,7 +9,7 @@
 	
 2006-12-7	fabian
 
-	* Fixed bug that loses changes to 'Editors considered parts of word' text field.
+	* Fixed bug that loses changes to 'Characters considered parts of word' text field.
 	* Fixed the "show cursor" behavior in RESET.
 
 2006-12-6	fabian

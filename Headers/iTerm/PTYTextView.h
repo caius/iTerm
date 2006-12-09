@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.62 2006-12-06 01:58:34 yfabian Exp $
+// $Id: PTYTextView.h,v 1.63 2006-12-09 02:33:45 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -225,6 +225,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 
 // selection
 - (IBAction) selectAll: (id) sender;
+- (void) deselect;
 
 // transparency
 - (float) transparency;
@@ -313,7 +314,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) _openURL: (NSString *) aURLString;
 - (void) _clearCacheForColor:(int)colorIndex;
 - (void) _clearCacheForBGColor:(int)colorIndex;
-- (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase;
+- (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase wrapping: (BOOL) wrapping;
+- (BOOL) _findMatchingParenthesis: (NSString *) parenthesis withX:(int)X Y:(int)Y;
 - (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent;
 - (void) _dragText: (NSString *) aString forEvent: (NSEvent *) theEvent;
 

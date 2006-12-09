@@ -49,13 +49,9 @@
     
     PseudoTerminal *parent;  // parent controller
     NSString *name;
+	NSString *defaultName;
     NSString *windowTitle;
 	
-	// semaphore to coordinate data read from task
-	MPSemaphoreID	dataSemaphore;
-	// semaphore to coordinate thread
-    MPSemaphoreID   threadEndSemaphore;
-
     PTYTask *SHELL;
     VT100Terminal *TERMINAL;
     NSString *TERM_VALUE;
@@ -152,6 +148,8 @@
 - (void) setTabViewItem: (NSTabViewItem *) theTabViewItem;
 - (NSString *) name;
 - (void) setName: (NSString *) theName;
+- (NSString *) defaultName;
+- (void) setDefaultName: (NSString *) theName;
 - (NSString *) uniqueID;
 - (void) setUniqueID: (NSString *)uniqueID;
 - (NSString *) windowTitle;

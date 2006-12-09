@@ -1,3 +1,17 @@
+2006-12-8	fabian
+
+	* Fixed a wrapping porblem under ANSI terminals.
+	* Incorporated the data processing thread into the data reading thread.
+	* Find panel now will set the string system-wide.
+	* Added an option in the terminal profile to allow default session name not to be overwritten
+	  by dynamic tab name changes.
+	* Double click on a parenthesis now selects everything between the pair of parenthesis.
+	
+2006-12-7	fabian
+
+	* Fixed bug that loses changes to 'Editors considered parts of word' text field.
+	* Fixed the "show cursor" behavior in RESET.
+
 2006-12-6	fabian
 
 	* An attempt to fix the closing window confirmation panel.

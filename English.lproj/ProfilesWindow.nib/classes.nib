@@ -23,6 +23,7 @@
                 profileAddConfirm = id; 
                 profileDelete = id; 
                 profileDuplicate = id; 
+                terminalSetAppendTitle = id; 
                 terminalSetBlink = id; 
                 terminalSetCloseOnSessionEnd = id; 
                 terminalSetDoubleWidth = id; 
@@ -93,6 +94,7 @@
                 profileName = NSTextField; 
                 profileOutline = id; 
                 profileTabView = NSTabView; 
+                terminalAppendTitle = NSButton; 
                 terminalBlink = NSButton; 
                 terminalCloseOnSessionEnd = NSButton; 
                 terminalDoubleWidth = NSButton; 

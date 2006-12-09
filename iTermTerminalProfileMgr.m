@@ -581,5 +581,39 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	[aProfile setObject: [NSNumber numberWithBool: xtermMouseReporting] forKey: @"Xterm Mouse Reporting"];	
 }
 
+- (BOOL) appendTitleForProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	NSNumber *appendTitle;
+	
+	if([profileName length] <= 0)
+		return (YES);
+	
+	aProfile = [profiles objectForKey: profileName];
+	if(aProfile == nil)
+		return (YES);
+	
+	appendTitle = [aProfile objectForKey: @"Append Title"];
+	if(appendTitle == nil)
+		return (YES);
+	
+	return ([appendTitle boolValue]);	
+}
+
+- (void) setAppendTitle: (BOOL) appendTitle forProfile: (NSString *) profileName
+{
+	NSMutableDictionary *aProfile;
+	
+	if([profileName length] <= 0)
+		return;
+	
+	aProfile = [profiles objectForKey: profileName];
+	
+	if(aProfile == nil)
+		return;
+	
+	[aProfile setObject: [NSNumber numberWithBool: appendTitle] forKey: @"Append Title"];	
+}
+
 
 @end

@@ -113,6 +113,7 @@
 	IBOutlet NSButton *terminalDoubleWidth;
 	IBOutlet NSButton *terminalSendIdleChar;
 	IBOutlet NSTextField *terminalIdleChar;
+	IBOutlet NSButton *terminalAppendTitle;
 	IBOutlet NSButton *xtermMouseReporting;
 
     NSString *selectedProfile;
@@ -162,6 +163,7 @@
 - (IBAction) terminalSetDoubleWidth: (id) sender;
 - (IBAction) terminalSetSendIdleChar: (id) sender;
 - (IBAction) terminalSetXtermMouseReporting: (id) sender;
+- (IBAction) terminalSetAppendTitle: (id) sender;
 
 - (void)selectProfile:(NSString *)profile withInCategory: (int) category;
 

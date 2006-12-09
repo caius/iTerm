@@ -97,13 +97,7 @@ static NSImage *warningImage;
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif    
-	
-	// allocate a semaphore to coordinate data processing
-	MPCreateBinarySemaphore(&dataSemaphore);
-
-	// allocate a semaphore to coordinate with thread
-	MPCreateBinarySemaphore(&threadEndSemaphore);
-	
+		
     // Allocate screen, shell, and terminal objects
     SHELL = [[PTYTask alloc] init];
     TERMINAL = [[VT100Terminal alloc] init];
@@ -184,6 +178,7 @@ static NSImage *warningImage;
     // initialize the screen
     [SCREEN initScreenWithWidth:width Height:height];
 	[self setName:@"Shell"];
+	[self setDefaultName:@"Shell"];
 
 	
     [TEXTVIEW setDataSource: SCREEN];
@@ -234,8 +229,6 @@ static NSImage *warningImage;
 					width:[SCREEN width]
 				   height:[SCREEN height]];
 	
-	// launch a thread to process the data read from the SHELL process
-	[NSThread detachNewThreadSelector: @selector(_processReadDataThread:) toTarget: self withObject: nil];
 
     updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
 													target:self
@@ -257,13 +250,6 @@ static NSImage *warningImage;
     EXIT = YES;
 	[SHELL stop];
 
-	// Bring the reading thread out of sleep
-	MPSignalSemaphore(dataSemaphore);
-	
-	// wait till all the remaining data is processed
-	MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
-    MPDeleteSemaphore(threadEndSemaphore);
-
 	//stop the timer;
 	if (updateTimer) {
 		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
@@ -271,8 +257,6 @@ static NSImage *warningImage;
 	// final update of display
 	[self updateDisplay];
 	
-	// release the data processing semaphore
-	MPDeleteSemaphore(dataSemaphore);
 		
     [addressBookEntry release];
     addressBookEntry = nil;
@@ -302,6 +286,7 @@ static NSImage *warningImage;
 			
     		[SHELL writeTask: data];
 			// Make sure we scroll down to the end
+			[TEXTVIEW deselect];
 			[TEXTVIEW scrollEnd];
 			[ptys setUserScroll: NO];		
 		}
@@ -325,9 +310,29 @@ static NSImage *warningImage;
 	
     [TERMINAL putStreamData:buf length:length];	
 	
-	// signal the data processing thread
-	MPSignalSemaphore(dataSemaphore);
+	VT100TCC token;
 	
+	// while loop to process all the tokens we can get
+	while(!EXIT && TERMINAL && ((token = [TERMINAL getNextToken]),
+								token.type != VT100_WAIT && token.type != VT100CC_NULL))
+	{
+		// process token
+		if (token.type != VT100_SKIP)
+		{
+			if (token.type == VT100_NOTSUPPORT) {
+				//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
+			}
+			else {
+				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN changeTitle]) {
+					usleep(100000);
+				}
+				
+				[SCREEN putToken:token];
+				newOutput=YES;
+				gettimeofday(&lastOutput, NULL);
+			}
+		}
+	} // end token processing loop
 }
 
 - (void)brokenPipe
@@ -1135,6 +1140,30 @@ static NSImage *warningImage;
     NSLog(@"Not allowed to set unique ID");
 }
 
+- (NSString *) defaultName
+{
+    return (defaultName);
+}
+
+- (void) setDefaultName: (NSString *) theName
+{
+    if([defaultName isEqualToString: theName])
+		return;
+    
+    if(defaultName)
+    {		
+		// clear the window title if it is not different
+		if([self windowTitle] == nil || [name isEqualToString: [self windowTitle]])
+			[self setWindowTitle: nil];
+        [defaultName release];
+        defaultName = nil;
+    }
+    if (!theName)
+		theName = NSLocalizedStringFromTableInBundle(@"Untitled",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles");
+	
+	defaultName = [theName retain];
+}
+
 - (NSString *) name
 {
     return (name);
@@ -1146,7 +1175,7 @@ static NSImage *warningImage;
 		return;
     
     if(name)
-    {
+    {		
 		// clear the window title if it is not different
 		if([self windowTitle] == nil || [name isEqualToString: [self windowTitle]])
 			[self setWindowTitle: nil];
@@ -1814,59 +1843,6 @@ static NSImage *warningImage;
 
 @implementation PTYSession (Private)
 
-// thread to process data read from the task being run
--(void)_processReadDataThread: (void *) arg
-{
-	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];
-	int iterationCount = 0;
-	VT100TCC token;
-	
-	while(EXIT == NO)
-	{
-
-		// wait for data
-		MPWaitOnSemaphore(dataSemaphore, kDurationForever);
-
-		// inner while loop to process all the tokens we can get
-		while(!EXIT && TERMINAL && ((token = [TERMINAL getNextToken]),
-						   token.type != VT100_WAIT && token.type != VT100CC_NULL))
-		{
-			// process token
-			if (token.type != VT100_SKIP)
-			{
-				if (token.type == VT100_NOTSUPPORT) {
-					//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
-				}
-				else {
-					while ([SCREEN changeSize] != NO_CHANGE || [SCREEN changeTitle]) {
-						usleep(100000);
-					}
-				
-					[SCREEN putToken:token];
-					newOutput=YES;
-					gettimeofday(&lastOutput, NULL);
-				}
-			}
-			
-			// periodically refresh autoreleasepool
-			iterationCount++;
-			if(iterationCount % 100 == 0)
-			{
-				// refresh our autrelease pool
-				[arPool release];
-				arPool = [[NSAutoreleasePool alloc] init];
-				iterationCount = 0;
-			}
-		} // end token processing loop
-	} // end fetch new data loop
-				
-	[arPool release];
-
-    MPSignalSemaphore(threadEndSemaphore);
-	[NSThread exit];
-	
-}
-
 //Update the display if necessary
 - (void)_updateTimer:(NSTimer *)aTimer
 {   
@@ -1889,15 +1865,18 @@ static NSImage *warningImage;
 	else {
 		updateCount++;
 		if ([SCREEN changeTitle]) {
+			NSString *newTitle = [SCREEN newTitle];
+			if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [addressBookEntry objectForKey: @"Terminal Profile"]]) 
+				newTitle = [NSString stringWithFormat:@"%@: %@", defaultName, newTitle];
 			if ([SCREEN changeTitle]==XTERMCC_WIN_TITLE||[SCREEN changeTitle]==XTERMCC_WINICON_TITLE) 
 			{
 				//NSLog(@"setting window title to %@", token.u.string);
-				[self setWindowTitle: [SCREEN newTitle]];
+				[self setWindowTitle: newTitle];
 			}
 			if ([SCREEN changeTitle]==XTERMCC_ICON_TITLE||[SCREEN changeTitle]==XTERMCC_WINICON_TITLE)
 			{
 				//NSLog(@"setting session title to %@", token.u.string);
-				[self setName: [SCREEN newTitle]];
+				[self setName: newTitle];
 			}
 			[SCREEN resetChangeTitle];
 		}

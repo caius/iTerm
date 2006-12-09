@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.287 2006-12-06 07:21:56 yfabian Exp $
+// $Id: PTYTextView.m,v 1.288 2006-12-09 02:33:43 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1541,8 +1541,11 @@ static int cacheSize;
         
         // double-click; select word
         selectMode = SELECT_WORD;
-		[self _getWordForX: x y: y startX: &tmpX1 startY: &tmpY1 endX: &tmpX2 endY: &tmpY2];
-        if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
+		NSString *selectedWord = [self _getWordForX: x y: y startX: &tmpX1 startY: &tmpY1 endX: &tmpX2 endY: &tmpY2];
+		if ([self _findMatchingParenthesis:selectedWord withX:tmpX1 Y:tmpY1]) {
+			;
+		}
+		else if (startX > -1 && ([event modifierFlags] & NSShiftKeyMask))
         {
             if (startX+startY*width<tmpX1+tmpY1*width) {
                 endX = tmpX2;
@@ -1895,6 +1898,15 @@ static int cacheSize;
 	[self _selectFromX:startX Y:startY toX:endX Y:endY];
 	[self setNeedsDisplay: YES];
 }
+
+- (void) deselect
+{
+	if (startX>=0) {
+		startX = -1;
+		[self _selectFromX:-1 Y:0 toX:0 Y:0];
+	}
+}
+
 
 - (NSString *) selectedText
 {
@@ -2487,14 +2499,14 @@ static int cacheSize;
 	BOOL foundString;
 	int tmpX, tmpY;
 	
-	foundString = [self _findString: aString forwardDirection: direction ignoringCase: ignoreCase];
+	foundString = [self _findString: aString forwardDirection: direction ignoringCase: ignoreCase wrapping:YES];
 	if(foundString == NO)
 	{
 		// start from beginning or end depending on search direction
 		tmpX = lastFindX;
 		tmpY = lastFindY;
 		lastFindX = lastFindY = -1;
-		foundString = [self _findString: aString forwardDirection: direction ignoringCase: ignoreCase];
+		foundString = [self _findString: aString forwardDirection: direction ignoringCase: ignoreCase wrapping:YES];
 		if(foundString == NO)
 		{
 			lastFindX = tmpX;
@@ -2962,6 +2974,101 @@ static int cacheSize;
 	
 }
 
+- (BOOL) _findMatchingParenthesis: (NSString *) parenthesis withX:(int)X Y:(int)Y
+{
+	unichar matchingParenthesis, sameParenthesis, c;
+	int level = 0, direction;
+	int x1, y1;
+	int w = [dataSource width];
+	int h = [dataSource numberOfLines];
+	
+	if (!parenthesis || [parenthesis length]<1)  
+		return NO;
+	
+	[parenthesis getCharacters:&sameParenthesis range:NSMakeRange(0,1)];
+	switch (sameParenthesis) {
+		case '(':
+			matchingParenthesis = ')';
+			direction = 0;
+			break;
+		case ')':
+			matchingParenthesis = '(';
+			direction = 1;
+			break;
+		case '[':
+			matchingParenthesis = ']';
+			direction = 0;
+			break;
+		case ']':
+			matchingParenthesis = '[';
+			direction = 1;
+			break;
+		case '{':
+			matchingParenthesis = '}';
+			direction = 0;
+			break;
+		case '}':
+			matchingParenthesis = '{';
+			direction = 1;
+			break;
+		default:
+			return NO;
+	}
+	
+	if (direction) {
+		x1 = X -1;
+		y1 = Y;
+		if (x1<0) y1--, x1=w-1;
+		for (;x1>=0&&y1>=0;) {
+			c = [self _getCharacterAtX:x1 Y:y1];
+			if (c == sameParenthesis) level++;
+			else if (c == matchingParenthesis) {
+				level--;
+				if (level<0) break;
+			}
+			x1--;
+			if (x1<0) y1--, x1=w-1;
+		}
+		if (level<0) {
+			startX = x1;
+			startY = y1;
+			endX = X;
+			endY = Y;
+
+			return YES;
+		}
+		else 
+			return NO;
+	}
+	else {
+		x1 = X +1;
+		y1 = Y;
+		if (x1>=w) y1++, x1=0;
+		
+		for (;x1<w&&y1<h;) {
+			c = [self _getCharacterAtX:x1 Y:y1];
+			if (c == sameParenthesis) level++;
+			else if (c == matchingParenthesis) {
+				level--;
+				if (level<0) break;
+			}
+			x1++;
+			if (x1>=w) y1++, x1=0;
+		}
+		if (level<0) {
+			startX = X;
+			startY = Y;
+			endX = x1;
+			endY = y1;
+			
+			return YES;
+		}
+		else 
+			return NO;
+	}
+	
+}
+
 - (unsigned int) _checkForSupportedDragTypes:(id <NSDraggingInfo>) sender
 {
     NSString *sourceType;
@@ -3063,7 +3170,7 @@ static int cacheSize;
 	}
 }
 
-- (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase
+- (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase wrapping: (BOOL) wrapping
 {
 	int x1, y1, x2, y2;
 	NSString *searchBody;
@@ -3094,8 +3201,13 @@ static int cacheSize;
 				}
 				else
 				{
-					// wrap around to beginning
-					x1 = y1 = 0;
+					if (wrapping) {
+						// wrap around to beginning
+						x1 = y1 = 0;
+					}
+					else {
+						return NO;
+					}
 				}
 			}
 			x2 = [dataSource width] - 1;
@@ -3116,9 +3228,14 @@ static int cacheSize;
 				}
 				else
 				{
-					// wrap around to the end
-					x2 = [dataSource width] - 1;
-					y2 = [dataSource numberOfLines] - 1;
+					if (wrapping) {
+						// wrap around to the end
+						x2 = [dataSource width] - 1;
+						y2 = [dataSource numberOfLines] - 1;
+					}
+					else {
+						return NO;
+					}
 				}
 			}
 		}

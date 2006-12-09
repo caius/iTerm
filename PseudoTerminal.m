@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.378 2006-12-07 06:19:33 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.379 2006-12-09 02:33:43 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -473,6 +473,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
         [self setWindowTitle: title];
         [aSession setName: title];
+		[aSession setDefaultName: title];
     }
 }
 
@@ -582,7 +583,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (NSString *) currentSessionName
 {
-    return ([[[TABVIEW selectedTabViewItem] identifier] name]);
+    return ([[[TABVIEW selectedTabViewItem] identifier] defaultName]);
 }
 
 - (void) setCurrentSessionName: (NSString *) theSessionName
@@ -597,6 +598,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(theSessionName != nil)
     {
         [aSession setName: theSessionName];
+        [aSession setDefaultName: theSessionName];
     }
     else {
         NSString *progpath = [NSString stringWithFormat: @"%@ #%d", [[[[aSession SHELL] path] pathComponents] lastObject], [TABVIEW indexOfTabViewItem:[TABVIEW selectedTabViewItem]]];
@@ -607,6 +609,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             [title appendString:progpath];
 		
         [aSession setName: title];
+        [aSession setDefaultName: title];
 		
     }
 }
@@ -1099,6 +1102,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
 		
 		[[aSession SHELL] writeTask:data];
+		[[aSession TEXTVIEW] deselect];
     }    
 }
 

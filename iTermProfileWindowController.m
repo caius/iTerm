@@ -896,6 +896,7 @@ static BOOL addingKBEntry;
 	[terminalIdleChar setStringValue: [NSString stringWithFormat: @"%d",  
 		[[iTermTerminalProfileMgr singleInstance] idleCharForProfile: theProfile]]];
 	[xtermMouseReporting setState: [[iTermTerminalProfileMgr singleInstance] xtermMouseReportingForProfile: theProfile]];
+	[terminalAppendTitle setState: [[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: theProfile]];
 	
 	[deleteButton setEnabled: ![[iTermTerminalProfileMgr singleInstance] isDefaultProfile: theProfile]];
     [duplicateButton setEnabled: YES];
@@ -962,6 +963,11 @@ static BOOL addingKBEntry;
 												  forProfile: selectedProfile];
 }	
 
+- (IBAction) terminalSetAppendTitle: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setAppendTitle: [sender state] 
+												  forProfile: selectedProfile];
+}	
 
 //outline view
 // NSOutlineView delegate methods

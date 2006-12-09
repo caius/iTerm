@@ -71,6 +71,8 @@
 - (void) setIdleChar: (char) idle forProfile: (NSString *) profileName;
 - (BOOL) xtermMouseReportingForProfile: (NSString *) profileName;
 - (void) setXtermMouseReporting: (BOOL) xtermMouseReporting forProfile: (NSString *) profileName;
+- (BOOL) appendTitleForProfile: (NSString *) profileName;
+- (void) setAppendTitle: (BOOL) appendTitle forProfile: (NSString *) profileName;
 
 @end
 

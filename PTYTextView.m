@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.288 2006-12-09 02:33:43 yfabian Exp $
+// $Id: PTYTextView.m,v 1.289 2006-12-12 00:08:43 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2526,6 +2526,7 @@ static int cacheSize;
 {
 	transparency = fVal;
 	forceUpdate = YES;
+	useTransparency = fVal >=0.01;
 	[self setNeedsDisplay: YES];
 	[self resetCharCache];
 }
@@ -2540,6 +2541,7 @@ static int cacheSize;
   useTransparency = flag;
   forceUpdate = YES;
   [self setNeedsDisplay: YES];
+  [self resetCharCache];
 }
 
 // service stuff

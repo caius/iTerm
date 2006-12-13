@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.289 2006-12-12 00:08:43 yfabian Exp $
+// $Id: PTYTextView.m,v 1.290 2006-12-13 08:32:41 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2718,7 +2718,7 @@ static int cacheSize;
 		charImages[i].count=1;
 		[self _renderChar: image 
 				withChar: code
-			   withColor: [self colorForCode: c & 0x1ff] //turn off bold mask
+			   withColor: [self colorForCode: c]
 			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
 				withFont: dw?nafont:font
 					bold: c&BOLD_MASK];

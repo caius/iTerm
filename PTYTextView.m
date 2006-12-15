@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.290 2006-12-13 08:32:41 yfabian Exp $
+// $Id: PTYTextView.m,v 1.291 2006-12-15 08:04:13 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -418,8 +418,10 @@ static int cacheSize;
 				}
 		}
     }
-    else
+    else 
     {
+		index &= 0xff;
+		
         if (index<16) {
 			color=colorTable[index];
 		}

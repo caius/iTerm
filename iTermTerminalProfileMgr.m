@@ -591,11 +591,11 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	
 	aProfile = [profiles objectForKey: profileName];
 	if(aProfile == nil)
-		return (YES);
+		return (NO);
 	
 	appendTitle = [aProfile objectForKey: @"Append Title"];
 	if(appendTitle == nil)
-		return (YES);
+		return (NO);
 	
 	return ([appendTitle boolValue]);	
 }

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.380 2006-12-18 23:08:54 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.381 2006-12-19 00:44:30 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -752,6 +752,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSRect aRect;
     NSPoint topLeft;
 	float max_height;
+	BOOL vmargin_added = NO;
 		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize] (%d,%d)", __FILE__, __LINE__, WIDTH, HEIGHT );
@@ -797,14 +798,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	// desired size of window content
 	winSize = tabViewSize;
-
+	
     if([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
 	{
 		[tabBarControl setHidden: YES];
 		aRect.origin.x = 0;
-		aRect.origin.y = 0;
+		aRect.origin.y = VMARGIN;
 		aRect.size = tabViewSize;
 		[TABVIEW setFrame: aRect];		
+		winSize.height += VMARGIN;
+		vmargin_added = YES;
 	}
 	else
 	{
@@ -813,12 +816,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         winSize.height += [tabBarControl frame].size.height;
 		if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
             aRect.origin.x = 0;
-            aRect.origin.y = 0;
+            aRect.origin.y = VMARGIN;
             aRect.size = tabViewSize;
             [TABVIEW setFrame: aRect];
-            aRect.origin.y = aRect.size.height;
+            aRect.origin.y += aRect.size.height;
             aRect.size.height = [tabBarControl frame].size.height;
             [tabBarControl setFrame: aRect];
+			winSize.height += VMARGIN;
+			vmargin_added = YES;
         }
         else {
             aRect.origin.x = 0;
@@ -872,7 +877,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	
 	
-	    // preserve the top left corner of the frame
+	// preserve the top left corner of the frame
     aRect = [thisWindow frame];
     topLeft.x = aRect.origin.x;
     topLeft.y = aRect.origin.y + aRect.size.height;
@@ -882,6 +887,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [thisWindow setContentSize:winSize];
 	[[thisWindow contentView] setAutoresizesSubviews: YES]; 
 	[thisWindow setFrameTopLeftPoint: topLeft];
+	
+	if (vmargin_added) {
+		[[thisWindow contentView] lockFocus];
+		[[NSColor windowBackgroundColor] set];
+		NSRectFill(NSMakeRect(0,0,aRect.size.width,VMARGIN));
+		[[thisWindow contentView] unlockFocus];
+	}
 
 	[[[self currentSession] TEXTVIEW] setForceUpdate: YES];
 //    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
@@ -1395,7 +1407,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		NSLog(@"actual height: %f\t (nch=%f) scale: %f\t new font:%f\told:%f",defaultFrame.size.height,nch,scale, [font pointSize], [FONT pointSize]);
 	}
 	else {
-        int new_height = (defaultFrame.size.height -nch) / charHeight;
+        int new_height = (defaultFrame.size.height - nch) / charHeight;
         int new_width =  (defaultFrame.size.width - wch - MARGIN * 2) /charWidth;
         
 		defaultFrame.size.height = charHeight * new_height + nch;

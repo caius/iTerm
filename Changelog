@@ -1,3 +1,9 @@
+2006-12-18	fabian
+
+	* Updated the "term type" list. Removed xterm that doesn't work for many keys.
+	* Added a window border when there's no tab bar at the bottom of screen.
+	* Fixed a reverse bold color bug.
+	
 2006-12-15	fabian
 
 	* Fixed the tabbar-disappearing bug (#1613110).

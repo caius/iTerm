@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.291 2006-12-15 08:04:13 yfabian Exp $
+// $Id: PTYTextView.m,v 1.292 2006-12-19 00:44:30 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -410,7 +410,7 @@ static int cacheSize;
 			default:
 				if(index&BOLD_MASK)
 				{
-					color = [self defaultBoldColor];
+					color = index-BOLD_MASK == DEFAULT_BG_COLOR_CODE ? defaultBGColor : [self defaultBoldColor];
 				}
 				else
 				{

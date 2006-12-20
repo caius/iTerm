@@ -55,6 +55,38 @@ specify window size and choose your favorite font. Notice since every tab within
 have same size and font, the window settings will only be honored for the new created windows.
 </UL>
 
+<FONT SIZE="4"><STRONG>Hidden Settings</STRONG></FONT><BR>
+<BR>
+There are a few settings that you cannot access via iTerm's own
+Preferences panel. However, you can use 'defaults" command to
+change them to your taste. The available settins along with the
+default settings are:<BR>
+<ul>
+  defaults write iTerm UseUnevenTabs -bool false<BR>
+  defaults write iTerm MinTabWidth -int 75        <BR>
+  defaults write iTerm MinCompactTabWidth -int 60<BR>
+  defaults write iTerm OptimumTabWidth -int 175<BR><BR>
+  defaults write iTerm StrokeWidth -float 0<BR>
+  defaults write iTerm BoldStrokeWidth -float -2<BR><BR>
+  defaults write iTerm CacheSize -float 2048<BR>
+  defaults write iTerm SearchCommand -string "http://google.com/search?q=%@"<BR>
+</ul>
+
+The first four are for setting the tab size. And the next 2 are for setting the stroke width
+of fonts rendering. The numbers in the example are all default settings. Experiment with
+different numbers. For example, to enable antialias for very small fonts, type these commands:
+<ul>
+  defaults write iTerm StrokeWidth -float -1<BR>
+</ul>
+
+The CacheSize is the number of characters that are cached for rendering.
+Increase it when you use a lot of different colors and a large character set. The last one
+is for the search command launched from the contextual menu. The default is to use google.
+You can set it to anything you want. For example, if you like yahoo, here is the command:<BR>
+<ul>
+  defaults write iTerm SearchCommand -string "http://search.yahoo.com/search?p=%@"
+</ul>
+
 
 </TD>
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">

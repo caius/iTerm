@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.292 2006-12-19 00:44:30 yfabian Exp $
+// $Id: PTYTextView.m,v 1.293 2006-12-20 01:03:19 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -3367,7 +3367,7 @@ static int cacheSize;
 	col = (locationInView.x - MARGIN)/charWidth;
 	row = locationInView.y/lineHeight;
 	
-	theLine = [dataSource getLineAtScreenIndex: row];
+	theLine = [dataSource getLineAtIndex: row];
 	
 	theBackgroundAttribute = theLine[col].bg_color;
 	

@@ -1,3 +1,8 @@
+2006-12-19	fabian
+
+	* Fixed a bug in VT100Terminal that causes crashes.
+	* Fixed a bug that disables dragging of text.
+	
 2006-12-18	fabian
 
 	* Updated the "term type" list. Removed xterm that doesn't work for many keys.

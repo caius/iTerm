@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.381 2006-12-19 00:44:30 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.382 2006-12-20 01:03:19 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1240,7 +1240,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     //[self selectSessionAtIndex: [self currentSessionIndex]];
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
-    // update the cursor
+	// update the cursor
     [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 }
 

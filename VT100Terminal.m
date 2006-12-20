@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.118 2006-12-06 01:58:32 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.119 2006-12-20 01:03:19 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -175,10 +175,7 @@ static BOOL isString(unsigned char *code,
     BOOL result = NO;
 	
 	//    NSLog(@"%@",[NSString localizedNameOfStringEncoding:encoding]);
-    if (isascii(*code)) {
-        result = YES;
-    }
-    else if (encoding== NSUTF8StringEncoding) {
+    if (encoding== NSUTF8StringEncoding) {
         if (*code >= 0x80)
             result = YES;
     }
@@ -632,7 +629,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
     datalen -= 2;
     *rmlen=2;
     
-    while (isdigit(*datap)) {
+	if (isdigit(*datap)) {
         int n = *datap++ - '0';
         datalen--;
         (*rmlen)++;
@@ -663,7 +660,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
                 datap++;
                 (*rmlen)++;
             }
-            if (*datap!=0x007) {
+            if (*datap!=0x007 || datalen==0) {
                 if (datalen>0) unrecognized=YES;
                 else {
                     *rmlen=0;
@@ -680,9 +677,13 @@ static VT100TCC decode_xterm(unsigned char *datap,
         *rmlen=0;
     }
 	
-    if (unrecognized||!(*rmlen)) {
-        result.type = VT100_WAIT;
+    if (unrecognized) {
         //NSLog(@"invalid: %d",*rmlen);
+		result.type = VT100_NOTSUPPORT;
+		*rmlen = 2;
+	}
+	else if (!(*rmlen)) {
+        result.type = VT100_WAIT;
     }
     else {
         data = [NSData dataWithBytes:s length:c-s];
@@ -874,7 +875,7 @@ static VT100TCC decode_control(unsigned char *datap,
 					--datalen;
 					++ *rmlen;
 				}
-					break;
+				break;
 				
 			case VT100CC_ESC:
 				if (datalen == 1) {
@@ -1551,7 +1552,7 @@ static VT100TCC decode_string(unsigned char *datap,
 		
 		
 		if (rmlen > 0) {
-			NSParameterAssert(datalen - rmlen >= 0);
+			NSParameterAssert(current_stream_length >= streamOffset + rmlen);
 			if (TRACE && result.type == VT100_UNKNOWNCHAR) {
 				//		NSLog(@"INPUT-BUFFER %@, read %d byte, type %d", 
 				//                      STREAM, rmlen, result.type);

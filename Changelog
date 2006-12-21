@@ -1,3 +1,8 @@
+2006-12-20	fabian
+
+	* Fixed a selection location bug (#1608727).
+	* Fixed a scrolling bug (#1619629).
+	
 2006-12-19	fabian
 
 	* Fixed a bug in VT100Terminal that causes crashes.

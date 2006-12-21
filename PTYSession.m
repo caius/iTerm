@@ -165,7 +165,7 @@ static NSImage *warningImage;
     view = SCROLLVIEW;
     
     // Allocate a text view
-    aSize = [PTYScrollView contentSizeForFrameSize: [SCROLLVIEW frame].size hasHorizontalScroller: NO hasVerticalScroller: YES borderType: [SCROLLVIEW borderType]];
+    aSize = [SCROLLVIEW contentSize];
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 	
@@ -286,7 +286,7 @@ static NSImage *warningImage;
 			
     		[SHELL writeTask: data];
 			// Make sure we scroll down to the end
-			[TEXTVIEW deselect];
+			//[TEXTVIEW deselect];
 			[TEXTVIEW scrollEnd];
 			[ptys setUserScroll: NO];		
 		}

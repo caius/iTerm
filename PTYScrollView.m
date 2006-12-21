@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.20 2006-11-23 02:08:03 yfabian Exp $
+// $Id: PTYScrollView.m,v 1.21 2006-12-21 02:52:41 yfabian Exp $
 /*
  **  PTYScrollView.m
  **
@@ -86,6 +86,13 @@
     userScroll=scroll;
 }
 
+- (NSScrollerPart)hitPart
+{
+	NSScrollerPart h = [super hitPart];
+	
+	return h;
+}
+
 @end
 
 @implementation PTYScrollView
@@ -117,8 +124,9 @@
     PTYScroller *aScroller;
 	
     aScroller=[[PTYScroller alloc] init];
-    [self setVerticalScroller: aScroller];
-    [aScroller release];
+	//[aScroller setControlSize:NSSmallControlSize];
+	[self setVerticalScroller: aScroller];
+	[aScroller release];
 	
     return self;
 }

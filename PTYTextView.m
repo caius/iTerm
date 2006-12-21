@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.293 2006-12-20 01:03:19 yfabian Exp $
+// $Id: PTYTextView.m,v 1.294 2006-12-21 02:52:41 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -651,33 +651,11 @@ static int cacheSize;
 
 	if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
         forceUpdate = YES; // we have to update everything if there's a background image
-    else {
-
-        NSRect currentRect;    
-        currentRect= [self visibleRect];
-        
-        int i, line;
-        int lineNum = (proposedVisibleRect.origin.y - currentRect.origin.y)/lineHeight;
-        for(i=lineNum-1; i>=0; i--) {
-            line = (currentRect.origin.y+currentRect.size.height)/lineHeight + i -[dataSource numberOfLines]+[dataSource height];
-            if (line>0) memset([dataSource dirty]+line*[dataSource width]*sizeof(char), 1, [dataSource width]*sizeof(char));
-            else break;
-        }
-    }
     
+	[self setNeedsDisplay:YES];
+	
 	return proposedVisibleRect;
 }
-
--(void) scrollLineUpWithoutMoving
-{
-    NSRect scrollRect;
-    float yOffset = [[self enclosingScrollView] verticalLineScroll];
-    
-    scrollRect = [self visibleRect];
-    scrollRect.origin.y += yOffset;
-    //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
-    [self scrollRect: scrollRect by:NSMakeSize(0, -yOffset)];
-} 
 
 -(void) scrollLineUp: (id) sender
 {
@@ -703,7 +681,7 @@ static int cacheSize;
     NSRect scrollRect;
 	
     scrollRect= [self visibleRect];
-    scrollRect.origin.y-=[[self enclosingScrollView] verticalPageScroll];
+    scrollRect.origin.y-= scrollRect.size.height - [[self enclosingScrollView] verticalPageScroll];
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -712,7 +690,7 @@ static int cacheSize;
     NSRect scrollRect;
     
     scrollRect= [self visibleRect];
-    scrollRect.origin.y+=[[self enclosingScrollView] verticalPageScroll];
+    scrollRect.origin.y+= scrollRect.size.height - [[self enclosingScrollView] verticalPageScroll];
     [self scrollRectToVisible: scrollRect];
 }
 
@@ -1924,6 +1902,7 @@ static int cacheSize;
 #endif
 	
 	if (startX == -1) return nil;
+	[self _updateSelectionLocation];
 	
 	return ([self contentFromX: startX Y: startY ToX: endX Y: endY breakLines: breakLines pad: pad]);
 	
@@ -2579,30 +2558,6 @@ static int cacheSize;
 	return (NO);
 }
 
-- (void)topOfLineRemoved
-{
-	if (startX>-1) {
-		if (startY>0) {
-			startY--;
-			endY--;
-		}
-		else if (endY>0) {
-			endY--;
-			startX = startY = 0;
-		}
-		else
-			startX = -1;
-	}
-	
-	if (lastFindX >-1) {
-		if (lastFindY>0) {
-			lastFindY --;
-		}
-		else
-			lastFindX = -1;
-	}
-}
-
 @end
 
 //
@@ -2840,6 +2795,55 @@ static int cacheSize;
 			}
 		}		
 	}
+}
+
+- (void) _updateSelectionLocation
+{
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[PTYTextView _selectFromX:%d Y:%d toX:%d Y:%d]", __FILE__, __LINE__, startx, starty, endx, endy);
+#endif
+	
+	int width, height, x, y;
+	screen_char_t *theLine;
+	BOOL foundSelection = NO;
+	
+	if (startX < 0) return;
+	
+	width = [dataSource width];
+	height = [dataSource numberOfLines];
+	for (y=0; y<height; y++) {
+		theLine = [dataSource getLineAtIndex: y];
+		
+		for(x=0; x < width; x++) 
+		{
+			if (theLine[x].bg_color & SELECTION_MASK) {
+				if (!foundSelection) {
+					startX = x;
+					startY = y;
+					foundSelection = YES;
+				}
+			}
+			else if (foundSelection) {
+				endX = x - 1;
+				endY = y;
+				if (endX < 0) {
+					endX = width - 1;
+					endY --;
+				}
+				return;
+			}
+		}		
+	}
+	if (foundSelection) {
+		endX = width - 1;
+		endY = height - 1;
+	}
+	else {
+		startX=-1;
+	}
+	
+	return;
+		
 }
 
 - (unichar) _getCharacterAtX:(int) x Y:(int) y

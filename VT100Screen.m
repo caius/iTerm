@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.267 2006-12-09 02:33:43 yfabian Exp $
+// $Id: VT100Screen.m,v 1.268 2006-12-21 02:52:41 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1137,7 +1137,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			{
 				[display scrollLineUp: nil];
 			}
-			[display topOfLineRemoved];
 		}
 		else
 		{
@@ -2068,7 +2067,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
 		current_scrollback_lines = max_scrollback_lines;
 		lost_oldest_line = YES;
-        // [display scrollLineUpWithoutMoving];
 	}
 	
 	return (lost_oldest_line);

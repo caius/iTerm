@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.383 2006-12-21 02:52:41 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.384 2006-12-22 08:06:07 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -166,7 +166,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	myWindow = [[PTYWindow alloc] initWithContentRect: [[NSScreen mainScreen] frame]
 											styleMask: styleMask 
 											  backing: NSBackingStoreBuffered 
-												defer: YES];
+												defer: NO];
 	[self setWindow: myWindow];
 	[myWindow release];
 	

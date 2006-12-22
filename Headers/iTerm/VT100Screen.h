@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.29 2006-12-06 01:58:34 yfabian Exp $
+// $Id: VT100Screen.h,v 1.30 2006-12-22 01:44:51 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -120,6 +120,7 @@ typedef struct screen_char_t
 	int changeTitle;
 	NSString *newTitle;
 	BOOL bell;
+	int scrollUpLines;
 }
 
 
@@ -228,6 +229,8 @@ typedef struct screen_char_t
 - (void) resetChangeTitle;
 - (void) updateBell;
 - (void) setBell;
+- (int) scrollUpLines;
+- (void) resetScrollUpLines;
 
 // double width
 - (BOOL) isDoubleWidthCharacter:(unichar) c;

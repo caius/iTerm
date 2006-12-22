@@ -1687,6 +1687,7 @@ static NSImage *warningImage;
 - (void) updateDisplay
 {
     struct timeval now;
+	int i;
     	
     gettimeofday(&now, NULL);
 
@@ -1707,6 +1708,12 @@ static NSImage *warningImage;
 		lastUpdate = now;
     }
 	updateCount = 0;
+	
+	for(i=0; i<[SCREEN scrollUpLines]; i++) {
+		[TEXTVIEW scrollLineUp:nil];
+	}
+	
+	[SCREEN resetScrollUpLines];
 }
 
 
@@ -1858,8 +1865,8 @@ static NSImage *warningImage;
 		}
 		else
 		{
-			[self updateDisplay];
 			[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+			[self updateDisplay];
 		}
 	}
 	else {

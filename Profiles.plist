@@ -1140,7 +1140,7 @@
 			<key>Silence Bell</key>
 			<true/>
 			<key>Term Type</key>
-			<string>xterm-new</string>
+			<string>rxvt</string>
 		</dict>
 	</dict>
 </dict>

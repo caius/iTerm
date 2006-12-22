@@ -384,6 +384,7 @@
 		F6E708B90A9D0EA400D0C4EF /* PSMUnifiedTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMUnifiedTabStyle.h; sourceTree = "<group>"; };
 		F6E708BA0A9D0EA400D0C4EF /* PSMUnifiedTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMUnifiedTabStyle.m; sourceTree = "<group>"; };
 		F6F6430E0AF6D6FB00CE20D0 /* appcast_panther.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = appcast_panther.xml; path = website/appcast_panther.xml; sourceTree = "<group>"; };
+		F6FAD5DA0B3B7092004E7AC1 /* news.shtml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.other; name = news.shtml; path = website/news.shtml; sourceTree = "<group>"; };
 		F6FAFD99050E90C300EA4EE7 /* contrib.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = contrib.png; path = website/contrib.png; sourceTree = "<group>"; };
 		F6FAFD9A050E90C300EA4EE7 /* iTerm-orig.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iTerm-orig.png"; path = "website/iTerm-orig.png"; sourceTree = "<group>"; };
 		FB019DE103670C6501F955DB /* PreferencePanel.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PreferencePanel.m; sourceTree = "<group>"; };
@@ -736,6 +737,7 @@
 			children = (
 				FBDF6B8F042A6BD801F955DB /* history.shtml */,
 				FBDF6B90042A6BD801F955DB /* index.shtml */,
+				F6FAD5DA0B3B7092004E7AC1 /* news.shtml */,
 				F63C15F806139B3800C79EBB /* download.shtml */,
 				FBDF6B91042A6BD801F955DB /* install.shtml */,
 				F6A32ABA0ACB278B00525F86 /* localization.shtml */,

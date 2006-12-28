@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.149 2006-12-09 02:33:43 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.150 2006-12-28 08:15:45 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -117,6 +117,7 @@ static NSString *NoHandler = @"<No Handler>";
 	defaultQuitWhenAllWindowsClosed = [prefs objectForKey:@"QuitWhenAllWindowsClosed"]?[[prefs objectForKey:@"QuitWhenAllWindowsClosed"] boolValue]: NO;
 	defaultCursorType=[prefs objectForKey:@"CursorType"]?[prefs integerForKey:@"CursorType"]:2;
     defaultCheckUpdate = [prefs objectForKey:@"SUCheckAtStartup"]?[[prefs objectForKey:@"SUCheckAtStartup"] boolValue]: YES;
+	defaultUseBorder = [prefs objectForKey:@"UseBorder"]?[[prefs objectForKey:@"UseBorder"] boolValue]: NO;
 	
 	NSArray *urlArray;
 	NSDictionary *tempDict = [prefs objectForKey:@"URLHandlers"];
@@ -171,6 +172,7 @@ static NSString *NoHandler = @"<No Handler>";
 	[prefs setBool:defaultQuitWhenAllWindowsClosed forKey:@"QuitWhenAllWindowsClosed"];
     [prefs setBool:defaultCheckUpdate forKey:@"SUCheckAtStartup"];
 	[prefs setInteger:defaultCursorType forKey:@"CursorType"];
+	[prefs setBool:defaultUseBorder forKey:@"UseBorder"];
 	
 	// save the handlers by converting the bookmark into an index
 	NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] init];
@@ -214,7 +216,8 @@ static NSString *NoHandler = @"<No Handler>";
 	[quitWhenAllWindowsClosed setState: defaultQuitWhenAllWindowsClosed?NSOnState:NSOffState];
     [checkUpdate setState: defaultCheckUpdate?NSOnState:NSOffState];
 	[cursorType selectCellWithTag:defaultCursorType];
-	
+	[useBorder setState: defaultUseBorder?NSOnState:NSOffState];
+    
 	[self showWindow: self];
 
 }
@@ -226,13 +229,15 @@ static NSString *NoHandler = @"<No Handler>";
         sender == tabPosition ||
         sender == hideTab ||
         sender == useCompactLabel ||
-		sender == cursorType)
+		sender == cursorType ||
+		sender == useBorder)
     {
         defaultWindowStyle = [windowStyle indexOfSelectedItem];
         defaultTabViewType=[tabPosition indexOfSelectedItem];
         defaultUseCompactLabel = ([useCompactLabel state] == NSOnState);
         defaultHideTab=([hideTab state]==NSOnState);
 		defaultCursorType = [[cursorType selectedCell] tag];
+        defaultUseBorder = ([useBorder state] == NSOnState);
         [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermRefreshTerminal" object: nil userInfo: nil];    
     }
     else
@@ -365,6 +370,11 @@ static NSString *NoHandler = @"<No Handler>";
 - (ITermCursorType) cursorType
 {
 	return defaultCursorType;
+}
+
+- (BOOL) useBorder
+{
+	return (defaultUseBorder);
 }
 
 - (BOOL) quitWhenAllWindowsClosed

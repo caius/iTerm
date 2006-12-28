@@ -23,6 +23,7 @@
                 tabPosition = NSPopUpButton; 
                 urlHandlerOutline = NSOutlineView; 
                 urlTable = NSTableView; 
+                useBorder = NSButton; 
                 useCompactLabel = NSButton; 
                 windowStyle = NSPopUpButton; 
                 wordChars = NSTextField; 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.384 2006-12-22 08:06:07 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.385 2006-12-28 08:15:45 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -803,11 +803,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	{
 		[tabBarControl setHidden: YES];
 		aRect.origin.x = 0;
-		aRect.origin.y = VMARGIN;
+		aRect.origin.y = [[PreferencePanel sharedInstance] useBorder] ? VMARGIN : 0;
 		aRect.size = tabViewSize;
 		[TABVIEW setFrame: aRect];		
-		winSize.height += VMARGIN;
-		vmargin_added = YES;
+		if ([[PreferencePanel sharedInstance] useBorder]) {
+			winSize.height += VMARGIN;
+			vmargin_added = YES;
+		}
 	}
 	else
 	{
@@ -816,14 +818,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         winSize.height += [tabBarControl frame].size.height;
 		if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
             aRect.origin.x = 0;
-            aRect.origin.y = VMARGIN;
+            aRect.origin.y = [[PreferencePanel sharedInstance] useBorder] ? VMARGIN : 0;
             aRect.size = tabViewSize;
             [TABVIEW setFrame: aRect];
             aRect.origin.y += aRect.size.height;
             aRect.size.height = [tabBarControl frame].size.height;
             [tabBarControl setFrame: aRect];
-			winSize.height += VMARGIN;
-			vmargin_added = YES;
+			if ([[PreferencePanel sharedInstance] useBorder]) {
+				winSize.height += VMARGIN;
+				vmargin_added = YES;
+			}
         }
         else {
             aRect.origin.x = 0;

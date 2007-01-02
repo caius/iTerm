@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.385 2006-12-28 08:15:45 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.386 2007-01-02 23:58:38 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -898,7 +898,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	if (vmargin_added) {
 		[[thisWindow contentView] lockFocus];
 		[[NSColor windowBackgroundColor] set];
-		NSRectFill(NSMakeRect(0,0,aRect.size.width,VMARGIN));
+		NSRectFill(NSMakeRect(0,0,vsize.width,VMARGIN));
 		[[thisWindow contentView] unlockFocus];
 	}
 
@@ -1814,8 +1814,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	
 	// check window size in case tabs have to be hidden or shown
-    if ([[PreferencePanel sharedInstance] hideTab] && 
-		(([TABVIEW numberOfTabViewItems] > 1 && [tabBarControl isHidden]) || ([TABVIEW numberOfTabViewItems] < 2 && ![tabBarControl isHidden])))
+    if (([TABVIEW numberOfTabViewItems] == 1) || ([[PreferencePanel sharedInstance] hideTab] && 
+		([TABVIEW numberOfTabViewItems] > 1 && [tabBarControl isHidden])) )
     {
         [self setWindowSize];      
     }

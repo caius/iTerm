@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.269 2006-12-22 01:44:51 yfabian Exp $
+// $Id: VT100Screen.m,v 1.270 2007-01-02 23:58:38 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -512,7 +512,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if(buffer_chars != NULL)
 		return;
 	
-    max_scrollback_lines = lines<MAX_SCROLLBACK_LINES?lines:MAX_SCROLLBACK_LINES;
+    max_scrollback_lines = lines<MAX_SCROLLBACK_LINES && lines >=0 ?lines:MAX_SCROLLBACK_LINES;
 }
 
 - (PTYSession *) session
@@ -2072,12 +2072,45 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 #endif	
 	
-	if(max_scrollback_lines && ++current_scrollback_lines > max_scrollback_lines)
-	{
-		// scrollback area is full; lose oldest line
-		scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
-		current_scrollback_lines = max_scrollback_lines;
-		lost_oldest_line = YES;
+	if(max_scrollback_lines>0) {
+		if (max_scrollback_lines < MAX_SCROLLBACK_LINES  ) {
+			if (++current_scrollback_lines > max_scrollback_lines)
+			{
+				// scrollback area is full; lose oldest line
+				scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
+				current_scrollback_lines = max_scrollback_lines;
+				lost_oldest_line = YES;
+			}
+		}
+		else if (max_scrollback_lines >= MAX_SCROLLBACK_LINES) {
+			if (++current_scrollback_lines > max_scrollback_lines)
+			{
+				// scrollback area is full; add more
+				screen_char_t *bl = first_buffer_line;
+				int total_height = max_scrollback_lines + MAX_SCROLLBACK_LINES/10 + HEIGHT;
+				bl = realloc (bl, total_height*WIDTH*sizeof(screen_char_t));
+				if (!bl) {
+					scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
+					current_scrollback_lines = max_scrollback_lines;
+					lost_oldest_line = YES;
+				}				
+				else {
+					/*screen_char_t *aLine = [self _getDefaultLineWithWidth: WIDTH];
+					int i;
+					
+					for(i = max_scrollback_lines+HEIGHT; i < total_height; i++)
+						memcpy(bl+WIDTH*i, aLine, width*sizeof(screen_char_t));*/
+					
+					max_scrollback_lines += MAX_SCROLLBACK_LINES / 10;
+					
+					buffer_chars = scrollback_top = first_buffer_line = bl;
+					last_buffer_line = bl + (total_height - 1)*WIDTH;
+					screen_top = bl + (current_scrollback_lines-1)*WIDTH;
+					
+					lost_oldest_line = NO;
+				}
+			}
+		}
 	}
 	
 	return (lost_oldest_line);

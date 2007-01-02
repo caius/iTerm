@@ -266,7 +266,7 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	if(aProfile == nil)
 		return;
 	
-	[aProfile setObject: [NSNumber numberWithInt: (lines < 0 ? 0 : lines)] forKey: @"Scrollback"];	
+	[aProfile setObject: [NSNumber numberWithInt: (lines < 0 ? -1 : lines)] forKey: @"Scrollback"];	
 }
 
 

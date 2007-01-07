@@ -985,6 +985,8 @@
 				<dict>
 					<key>Action</key>
 					<integer>10</integer>
+					<key>Priority</key>
+					<integer>1</integer>
 					<key>Text</key>
 					<string>O5D</string>
 				</dict>
@@ -999,6 +1001,8 @@
 				<dict>
 					<key>Action</key>
 					<integer>10</integer>
+					<key>Priority</key>
+					<integer>1</integer>
 					<key>Text</key>
 					<string>O5C</string>
 				</dict>

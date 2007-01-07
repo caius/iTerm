@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.26 2006-12-06 01:58:34 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.27 2007-01-07 03:21:52 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -116,6 +116,8 @@
 #define XTERMCC_DEICONIFY    97
 #define XTERMCC_RAISE        98
 #define XTERMCC_LOWER        99
+#define XTERMCC_SU			 100	 // scroll up
+#define XTERMCC_SD			 101     // scroll down
 
 // Some ansi stuff
 #define ANSICSI_CHA	     3000	// Cursor Horizontal Absolute

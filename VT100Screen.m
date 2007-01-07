@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.270 2007-01-02 23:58:38 yfabian Exp $
+// $Id: VT100Screen.m,v 1.271 2007-01-07 03:21:51 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -154,6 +154,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	temp_buffer=NULL;
 
     max_scrollback_lines = DEFAULT_SCROLLBACK;
+	dynamic_scrollback_size = NO;
     [self clearTabStop];
     
     // set initial tabs
@@ -512,7 +513,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if(buffer_chars != NULL)
 		return;
 	
-    max_scrollback_lines = lines<MAX_SCROLLBACK_LINES && lines >=0 ?lines:MAX_SCROLLBACK_LINES;
+	if (lines<0 || lines>MAX_SCROLLBACK_LINES) {
+		dynamic_scrollback_size = YES;
+		max_scrollback_lines = DEFAULT_SCROLLBACK;
+	}
+	else {
+		dynamic_scrollback_size = NO;
+		max_scrollback_lines = lines;
+	}
 }
 
 - (PTYSession *) session
@@ -675,6 +683,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case VT100CSI_IND:
 		if(CURSOR_Y == SCROLL_BOTTOM)
 		{
+			NSLog(@"up!");
 			[self scrollUp];
 		}
 		else
@@ -688,6 +697,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case VT100CSI_RI:
 		if(CURSOR_Y == SCROLL_TOP)
 		{
+			NSLog(@"down!");
 			[self scrollDown];
 		}
 		else
@@ -815,8 +825,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     case XTERMCC_LOWER:
         [[[SESSION parent] window] orderBack: nil];
         break;
-        
-    // Our iTerm specific codes    
+    case XTERMCC_SU:
+		for (i=0; i<token.u.csi.p[0]; i++) [self scrollUp];
+		break;
+	case XTERMCC_SD:
+		for (i=0; i<token.u.csi.p[0]; i++) [self scrollDown];
+		break;
+
+	// Our iTerm specific codes    
     case ITERM_GROWL:
         if (GROWL) {
             [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Alert",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
@@ -1129,28 +1145,23 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	{
 		total_height = max_scrollback_lines + HEIGHT;
         
-		// check how much of the screen we need to redraw
-		if(current_scrollback_lines == max_scrollback_lines)
-		{
-			// we can't shove top line into scroll buffer, entire screen needs to be redrawn
-			[self setDirty];
-			if ([(PTYScroller *)([[display enclosingScrollView] verticalScroller]) userScroll]) 
-			{
-				scrollUpLines++;
-			}
-		}
-		else
-		{
-			// top line can move into scroll area; we need to draw only bottom line
-			//dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
-			memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
-			memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
-		}
-		
 		// try to add top line to scroll area
-		if(max_scrollback_lines > 0)
-			[self _addLineToScrollback];
-		
+		if(max_scrollback_lines > 0) {
+			if ([self _addLineToScrollback]) {
+				// scroll buffer overflow, entire screen needs to be redrawn
+				[self setDirty];
+				if ([(PTYScroller *)([[display enclosingScrollView] verticalScroller]) userScroll]) 
+				{
+					scrollUpLines++;
+				}
+			}
+			else{
+				// top line can move into scroll area; we need to draw only bottom line
+				//dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
+				memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
+				memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
+			};
+		}
 		// Increment screen_top pointer
 		screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
 		
@@ -2073,21 +2084,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 #endif	
 	
 	if(max_scrollback_lines>0) {
-		if (max_scrollback_lines < MAX_SCROLLBACK_LINES  ) {
-			if (++current_scrollback_lines > max_scrollback_lines)
-			{
-				// scrollback area is full; lose oldest line
-				scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
-				current_scrollback_lines = max_scrollback_lines;
-				lost_oldest_line = YES;
-			}
-		}
-		else if (max_scrollback_lines >= MAX_SCROLLBACK_LINES) {
+		if (dynamic_scrollback_size && max_scrollback_lines < MAX_SCROLLBACK_LINES  ) {
 			if (++current_scrollback_lines > max_scrollback_lines)
 			{
 				// scrollback area is full; add more
 				screen_char_t *bl = first_buffer_line;
-				int total_height = max_scrollback_lines + MAX_SCROLLBACK_LINES/10 + HEIGHT;
+				int total_height = max_scrollback_lines + DEFAULT_SCROLLBACK + HEIGHT;
 				bl = realloc (bl, total_height*WIDTH*sizeof(screen_char_t));
 				if (!bl) {
 					scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
@@ -2099,9 +2101,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 					int i;
 					
 					for(i = max_scrollback_lines+HEIGHT; i < total_height; i++)
-						memcpy(bl+WIDTH*i, aLine, width*sizeof(screen_char_t));*/
+					memcpy(bl+WIDTH*i, aLine, width*sizeof(screen_char_t));*/
 					
-					max_scrollback_lines += MAX_SCROLLBACK_LINES / 10;
+					max_scrollback_lines += DEFAULT_SCROLLBACK;
 					
 					buffer_chars = scrollback_top = first_buffer_line = bl;
 					last_buffer_line = bl + (total_height - 1)*WIDTH;
@@ -2109,6 +2111,15 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 					
 					lost_oldest_line = NO;
 				}
+			}
+		}
+		else {
+			if (++current_scrollback_lines > max_scrollback_lines)
+			{
+				// scrollback area is full; lose oldest line
+				scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
+				current_scrollback_lines = max_scrollback_lines;
+				lost_oldest_line = YES;
 			}
 		}
 	}

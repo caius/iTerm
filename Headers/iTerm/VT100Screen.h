@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.30 2006-12-22 01:44:51 yfabian Exp $
+// $Id: VT100Screen.h,v 1.31 2007-01-07 03:21:52 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -99,6 +99,8 @@ typedef struct screen_char_t
 	char default_fg_code;
 	int default_line_width;
 
+	//scroll back stuff
+	BOOL dynamic_scrollback_size;
 	// max size of scrollback buffer
     unsigned int  max_scrollback_lines;
 	// current number of lines in scrollback buffer

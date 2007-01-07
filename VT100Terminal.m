@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.119 2006-12-20 01:03:19 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.120 2007-01-07 03:21:52 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -545,6 +545,17 @@ static VT100TCC decode_csi(unsigned char *datap,
                             break;
                     }
                     break;
+				case 'S':
+					result.type = XTERMCC_SU;
+					SET_PARAM_DEFAULT(param,0,1);
+					break;
+				case 'T':
+					if (param.count<2) {
+						result.type = XTERMCC_SD;
+						SET_PARAM_DEFAULT(param,0,1);
+					}
+					break;
+					
                     
 					// ANSI
 				case 'G':

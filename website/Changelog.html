@@ -1,4 +1,18 @@
 <STRONG>Changes since 0.9.4</STRONG><BR><BR>
+The build 0.9.4.1306 includes the following changes:<BR>
+<UL>
+	<LI> Improved memory usage for "unlimited" scrollback situation. An upper limit is set to avoid eating up all system memory.</LI>
+</UL>
+
+The build 0.9.4.1303 includes the following changes:<BR>
+<UL>
+	<LI> Added support for xterm's CSI S (SU), CSI T (SD) commands. Nano now works correctly when term type is xterm.</LI>
+	<LI> Added support for unlimited scrollback. Set scroll back lines to -1 or any number larger than 1,000,000.</LI>
+	<LI> Added an option to enable/disable the border at the bottom of windows.</LI>
+	<LI> Fixed initial window size bug (#1623786).</LI>
+	<LI> Fixed the bottom border, so it no longer overlaps with the resizing triangle.</LI>
+</UL>
+
 The build 0.9.4.1221.1 includes the following changes:<BR>
 <UL>
 	<LI> Added a window border when there's no tab bar at the bottom of screen.</LI>

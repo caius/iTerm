@@ -1209,6 +1209,8 @@ static NSImage *warningImage;
 
 - (void) setWindowTitle: (NSString *) theTitle
 {
+	if ([theTitle isEqualToString:windowTitle]) return;
+	
     [windowTitle autorelease];
     windowTitle = nil;
     

@@ -1,3 +1,10 @@
+2007-1-9	fabian
+
+	* save/restore buffer now only save/restore the current screen.
+	* removed redundant first_buffer_line from VT100Screen.
+	* Added a wrapping flag to indicate hard line break. Selecting&copying now uses this flag.
+	* Wrapping now works with resizing.
+	
 2007-1-6	fabian
 
 	* Improved memory usage for "unlimited" scrollback situation. An upper limit is set to avoid eating up

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.271 2007-01-07 03:21:51 yfabian Exp $
+// $Id: VT100Screen.m,v 1.272 2007-01-10 07:42:05 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -48,6 +48,9 @@
 
 #define MAX_SCROLLBACK_LINES 1000000
 
+// we add a character at the end of line to indiacte wrapping
+#define REAL_WIDTH (WIDTH+1)
+
 /* translates normal char into graphics char */
 void translate(screen_char_t *s, int len)
 {
@@ -89,6 +92,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 								  int max_lines, int line_width, BOOL *wrap)
 {
 	screen_char_t *next_line;
+	
+	//include the wrapping indicator
+	line_width++;
 	
 	next_line = current_line + line_width;
 	if(next_line >= (buf_start + line_width*max_lines))
@@ -144,9 +150,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     TERMINAL = nil;
     SHELL = nil;
 	
-	buffer_chars = NULL;
+	buffer_lines = NULL;
 	dirty = NULL;
-	first_buffer_line = NULL;
 	last_buffer_line = NULL;
 	screen_top = NULL;
 	scrollback_top = NULL;
@@ -186,8 +191,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
     [self acquireLock];
 	
 	// free our character buffer
-	if(buffer_chars)
-		free(buffer_chars);
+	if(buffer_lines)
+		free(buffer_lines);
+	
 	// free our "dirty flags" buffer
 	if(dirty)
 		free(dirty);
@@ -244,13 +250,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	
 	// allocate our buffer to hold both scrollback and screen contents
 	total_height = HEIGHT + max_scrollback_lines;
-	buffer_chars = (screen_char_t *)malloc(total_height*WIDTH*sizeof(screen_char_t));
+	buffer_lines = (screen_char_t *)malloc(total_height*REAL_WIDTH*sizeof(screen_char_t));
 	
 	// set up our pointers
-	first_buffer_line = buffer_chars;
-	last_buffer_line = buffer_chars + (total_height - 1)*WIDTH;
-	screen_top = first_buffer_line;
-	scrollback_top = first_buffer_line;
+	last_buffer_line = buffer_lines + (total_height - 1)*REAL_WIDTH;
+	screen_top = buffer_lines;
+	scrollback_top = buffer_lines;
 	
 	// set all lines in buffer to default
 	default_fg_code = [TERMINAL foregroundColorCode];
@@ -258,7 +263,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	default_line_width = WIDTH;
 	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
 	for(i = 0; i < HEIGHT; i++)
-		memcpy([self _getLineAtIndex: i fromLine: first_buffer_line], aDefaultLine, WIDTH*sizeof(screen_char_t));
+		memcpy([self _getLineAtIndex: i fromLine: buffer_lines], aDefaultLine, REAL_WIDTH*sizeof(screen_char_t));
 	
 	// set current lines in scrollback
 	current_scrollback_lines = 0;
@@ -320,12 +325,17 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	NSLog(@"%s", __PRETTY_FUNCTION__);
 #endif	
 	
-	char_buf = malloc(WIDTH*sizeof(unichar));
+	char_buf = malloc(REAL_WIDTH*sizeof(unichar));
 	
 	for(i = 0; i < WIDTH; i++)
 		char_buf[i] = theLine[i].ch;
 	
-	theString = [NSString stringWithCharacters: char_buf length: WIDTH];
+	if (theLine[i].ch) {
+		char_buf[WIDTH]='\n';
+		theString = [NSString stringWithCharacters: char_buf length: REAL_WIDTH];
+	}
+	else 
+		theString = [NSString stringWithCharacters: char_buf length: WIDTH];
 	
 	return (theString);
 }
@@ -351,8 +361,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (void)resizeWidth:(int)width height:(int)height
 {
-    int i, sw, total_height, skip_lines;
-	screen_char_t *screen_lines_top, *bl, *aLine;
+    int i, total_height, new_total_height;
+	screen_char_t *bl, *aLine, *c1, *c2, *new_scrollback_top;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s:%d :%d]", __PRETTY_FUNCTION__, width, height);
@@ -373,57 +383,134 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
             if (aLine[i].ch) break;
         if (i<WIDTH) break;
     }
-    
-    
-    // if new screen is short, we need to move some lines into scrollback
-    if (max_scrollback_lines>0) {
-        for(; HEIGHT>height; HEIGHT--) {
-            [self _addLineToScrollback];
-            screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, NULL);
-            CURSOR_Y--;
-            SAVE_CURSOR_Y--;
-        }
-        if (CURSOR_Y<0) CURSOR_Y=0;
-        if (SAVE_CURSOR_Y<0) SAVE_CURSOR_Y=0;
-        skip_lines = 0;
-    }
-    else { // we have no scrollback, we just need to skip several lines
-        skip_lines = HEIGHT - height;
-        if (skip_lines<0) skip_lines = 0;
-    }
-    
+	
 	// create a new buffer
-	total_height = max_scrollback_lines + height;
-	bl = (screen_char_t*)malloc(total_height*width*sizeof(screen_char_t));
-	// set to default line
-	aLine = [self _getDefaultLineWithWidth: width];
-	for(i = 0; i < total_height; i++)
-		memcpy(bl+width*i, aLine, width*sizeof(screen_char_t));
+	new_total_height = max_scrollback_lines + height;
+	new_scrollback_top = bl = (screen_char_t*)malloc(new_total_height*(width+1)*sizeof(screen_char_t));
 	
-	// set up the width we need to copy
-	sw = width<WIDTH?width:WIDTH;
-	
-	// copy over the old scrollback contents
-	for(i = 0; i < current_scrollback_lines; i++) 
-	{
-		aLine = [self getLineAtIndex: i];
-		memcpy(bl+width*i, aLine, sw*sizeof(screen_char_t));
-	}
+	//copy over the content
+	int y1, y2, x1, x2, x3;
+	BOOL wrapped = NO;
+	screen_char_t *defaultLine = [self _getDefaultLineWithWidth: width];
+
+	c2 = bl;
+	for(y2=y1=0; y1<current_scrollback_lines+HEIGHT; y1++) {
+		c1 = [self getLineAtIndex:y1];
+		if (WIDTH == width) {
+			memcpy(c2, c1, REAL_WIDTH*sizeof(screen_char_t));
+		}
+		else if (WIDTH < width) {
+			memcpy(c2, c1, WIDTH*sizeof(screen_char_t));
+			c2[width].ch = 0; // no wrapping by default
+			x2 = WIDTH;
+			while (c1[WIDTH].ch) { //wrapping?
+				c1 = [self getLineAtIndex:++y1];
+				for(x1=0;x1<WIDTH;x1++,x2++) {
+					for(x3=x1; x3<WIDTH && !c1[x3].ch; x3++);
+					if (x3>=WIDTH&&!c1[WIDTH].ch) break;
+					if (x2>=width) {
+						c2[width].ch = 1;
+						x2 = 0;
+						c2 += width+1;
+						y2 ++;
+						if (wrapped) {
+							new_scrollback_top += width+1;
+							if (new_scrollback_top >= bl + new_total_height*(width+1))
+								new_scrollback_top = bl;
+						}
+						if (y2 >= new_total_height) {
+							wrapped = YES;
+							y2 = 0;
+							c2 = bl;
+						}						
+					}
+					c2[x2]=c1[x1];
+				}
+			}
+			memcpy(c2+x2, defaultLine, (width-x2)*sizeof(screen_char_t));
+		}
+		else {
+			memcpy(c2, c1, width*sizeof(screen_char_t));
+			for(x1=width; x1<WIDTH && !c1[x1].ch; x1++);
+			if (x1<WIDTH) { // Need to wrap
+				x1 = x2 = width;
+				do {
+					for(;x1<WIDTH;x1++,x2++) {
+						for(x3=x1; x3<WIDTH && !c1[x3].ch; x3++);
+						if (x3>=WIDTH && !c1[WIDTH].ch) break;
+						if (x2>=width) {
+							c2[width].ch = 1;
+							x2 = 0;
+							c2 += width+1;
+							y2 ++;
+							if (wrapped) {
+								new_scrollback_top += width+1;
+								if (new_scrollback_top >= bl + new_total_height*(width+1))
+									new_scrollback_top = bl;
+							}
+							if (y2 >= new_total_height) {
+								wrapped = YES;
+								y2 = 0;
+								c2 = bl;
+							}
+						}
+						c2[x2]=c1[x1];
+					}
+					if (c1[WIDTH].ch) {
+						c1 = [self getLineAtIndex:++y1];
+						x1 = 0;
+					}
+					else
+						break;
+				} while (1);
+				memcpy(c2+x2, defaultLine, (width-x2)*sizeof(screen_char_t));
+			}
+			else
+				c2[width].ch = 0; // no wrapping by default
+		}
 		
-	// copy the screen content
-	screen_lines_top = bl + current_scrollback_lines*width;
-    for(i = 0; i < height && i< HEIGHT; i++) 
-    {
-        aLine = [self getLineAtScreenIndex: i+skip_lines];
-        memcpy(screen_lines_top+width*i, aLine, sw*sizeof(screen_char_t));
-    }
-    	
+		c2 += width+1;
+		y2 ++;
+		if (wrapped) {
+			new_scrollback_top += width+1;
+			if (new_scrollback_top >= bl + new_total_height*(width+1))
+				new_scrollback_top = bl;
+		}
+		if (y2 >= new_total_height) {
+			wrapped = YES;
+			y2 = 0;
+			c2 = bl;
+		}
+	}
+	
+	if (HEIGHT>height) {
+		CURSOR_Y -= HEIGHT-height;
+		if (CURSOR_Y<0) CURSOR_Y=0;
+	}
+
+    
 	// reassign our pointers
-	if(buffer_chars)
-		free(buffer_chars);
-	buffer_chars = scrollback_top = first_buffer_line = bl;
-	last_buffer_line = bl + (total_height - 1)*width;
-	screen_top = screen_lines_top;
+	if(buffer_lines)
+		free(buffer_lines);
+	buffer_lines = bl;
+	scrollback_top = new_scrollback_top;
+	last_buffer_line = bl + (new_total_height - 1)*(width+1);
+	current_scrollback_lines = wrapped ? max_scrollback_lines : (y2 - HEIGHT);
+	if (HEIGHT>height && !wrapped) {
+		current_scrollback_lines += (HEIGHT-height);
+	}
+	screen_top = scrollback_top + current_scrollback_lines*(width+1);
+	if (screen_top > last_buffer_line)
+		screen_top = bl + (screen_top - last_buffer_line) - width - 1;
+	
+	// set the rest of new buffer (if any) to default line
+	if (!wrapped) {
+		for(;y2 < new_total_height; y2++)
+			memcpy(bl+(width+1)*y2, defaultLine, (width+1)*sizeof(screen_char_t));
+	}
+	
+		
+	
 	
 	
 	// new height and width
@@ -510,7 +597,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 - (void)setScrollback:(unsigned int)lines;
 {
 	// if we already have a buffer, don't allow this
-	if(buffer_chars != NULL)
+	if(buffer_lines != NULL)
 		return;
 	
 	if (lines<0 || lines>MAX_SCROLLBACK_LINES) {
@@ -655,6 +742,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 				aLine[j].fg_color = [TERMINAL foregroundColorCode];
 				aLine[j].bg_color = [TERMINAL backgroundColorCode];
 			}
+			aLine[WIDTH].ch = 0;
 		}
 		[self setDirty];
 		break;
@@ -879,6 +967,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		{
 			aLine = [self getLineAtIndex:i];
 			memcpy(aLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+			aLine[WIDTH].ch = 0;
 		}
 		
 		current_scrollback_lines = 0;
@@ -893,7 +982,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 - (void) saveBuffer
 {	
-	int size=WIDTH*(HEIGHT+max_scrollback_lines);
+	int size=REAL_WIDTH*HEIGHT;
 	
 #if DEBUG_METHOD_TRACE
 	NSLog(@"%s", __PRETTY_FUNCTION__);
@@ -905,17 +994,19 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		free(temp_buffer);
 	
 	temp_buffer=(screen_char_t *)malloc(size*(sizeof(screen_char_t)));
-	memcpy(temp_buffer, first_buffer_line, size*sizeof(screen_char_t));
-	saved_screen_top = screen_top;
-	saved_scrollback_top = scrollback_top;
-	saved_scrollback_lines = current_scrollback_lines;
-		
+	if ((screen_top - buffer_lines)/REAL_WIDTH < max_scrollback_lines)
+		memcpy(temp_buffer, screen_top, size*sizeof(screen_char_t));
+	else {
+		int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
+		memcpy(temp_buffer, screen_top,n*REAL_WIDTH*sizeof(screen_char_t));
+		memcpy(temp_buffer+n*REAL_WIDTH*sizeof(screen_char_t), buffer_lines, (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
+	}
+			
 	[self releaseLock];
 }
 
 - (void) restoreBuffer
 {	
-	int size=WIDTH*(HEIGHT+max_scrollback_lines);
 	
 #if DEBUG_METHOD_TRACE
 	NSLog(@"%s", __PRETTY_FUNCTION__);
@@ -924,10 +1015,13 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if (!temp_buffer) 
 		return;
 	
-	memcpy(first_buffer_line, temp_buffer, size*sizeof(screen_char_t));
-	screen_top = saved_screen_top;
-	scrollback_top = saved_scrollback_top;
-	current_scrollback_lines = saved_scrollback_lines;
+	if ((screen_top - buffer_lines)/REAL_WIDTH < max_scrollback_lines)
+		memcpy(screen_top, temp_buffer, REAL_WIDTH*HEIGHT*sizeof(screen_char_t));
+	else {
+		int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
+		memcpy(screen_top, temp_buffer, n*REAL_WIDTH*sizeof(screen_char_t));
+		memcpy(buffer_lines, temp_buffer+n*REAL_WIDTH*sizeof(screen_char_t), (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
+	}
 	
 		
 	[self setDirty];
@@ -1029,10 +1123,14 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
             if ([TERMINAL wraparoundMode]) 
 			{
                 CURSOR_X=0;    
+				//set the wrapping flag
+				[self getLineAtScreenIndex: CURSOR_Y][WIDTH].ch = 1;
 				[self setNewLine];
             }
             else 
 			{
+				//set the wrapping flag
+				[self getLineAtScreenIndex: CURSOR_Y][WIDTH].ch = 0;
                 CURSOR_X=WIDTH-1;
                 idx=len-1;
             }
@@ -1087,7 +1185,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		{
             if ([TERMINAL wraparoundMode]) 
 			{
-                CURSOR_X=0;    
+				//set the wrapping flag
+				aLine[WIDTH].ch = 1;
+				CURSOR_X=0;    
 				[self setNewLine];
             }
             else 
@@ -1163,11 +1263,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			};
 		}
 		// Increment screen_top pointer
-		screen_top = incrementLinePointer(first_buffer_line, screen_top, total_height, WIDTH, &wrap);
+		screen_top = incrementLinePointer(buffer_lines, screen_top, total_height, WIDTH, &wrap);
 		
 		// set last screen line default
 		aLine = [self getLineAtScreenIndex: (HEIGHT - 1)];
-		memcpy(aLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
+		memcpy(aLine, [self _getDefaultLineWithWidth: WIDTH], REAL_WIDTH*sizeof(screen_char_t));
 		
     }
     else 
@@ -1250,13 +1350,13 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	
 	// make the current line the first line and clear everything else
 	aLine = [self getLineAtScreenIndex:CURSOR_Y];
-	memcpy(screen_top, aLine, WIDTH*sizeof(screen_char_t));
+	memcpy(screen_top, aLine, REAL_WIDTH*sizeof(screen_char_t));
 	CURSOR_Y = 0;
 	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
 	for (i = 1; i < HEIGHT; i++)
 	{
 		aLine = [self getLineAtScreenIndex:i];
-		memcpy(aLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+		memcpy(aLine, aDefaultLine, REAL_WIDTH*sizeof(screen_char_t));
 	}
 	
 	// all the screen is dirty
@@ -1305,22 +1405,22 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 
 	int idx1, idx2;
 	
-	idx1=y1*WIDTH+x1;
-	idx2=y2*WIDTH+x2;
+	idx1=y1*REAL_WIDTH+x1;
+	idx2=y2*REAL_WIDTH+x2;
 	
 	total_height = max_scrollback_lines + HEIGHT;
 	
 	// clear the contents between idx1 and idx2
 	for(i = idx1, aScreenChar = screen_top + idx1; i < idx2; i++, aScreenChar++)
 	{
-		if(aScreenChar >= (first_buffer_line + total_height*WIDTH))
-			aScreenChar = first_buffer_line; // wrap around to top of buffer
-		aScreenChar->ch = 0;
+		if(aScreenChar >= (buffer_lines + total_height*REAL_WIDTH))
+			aScreenChar = buffer_lines; // wrap around to top of buffer
+		aScreenChar->ch = ' ';
 		aScreenChar->fg_color = [TERMINAL foregroundColorCode];
 		aScreenChar->bg_color = [TERMINAL backgroundColorCode];
 	}
 	
-	memset(dirty+idx1,1,(idx2-idx1)*sizeof(char));
+	memset(dirty+y1*WIDTH+x1,1,((y2-y1)*WIDTH+(x2-x1))*sizeof(char));
 }
 
 - (void)eraseInLine:(VT100TCC)token
@@ -1351,7 +1451,6 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		x2=WIDTH;
 		break;
 	}
-	idx=CURSOR_Y*WIDTH+x1;
 	aLine = [self getLineAtScreenIndex: CURSOR_Y];
 	
 	// I'm commenting out the following code. I'm not sure about OpenVMS, but this code produces wrong result
@@ -1373,10 +1472,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	
 	for(i = x1; i < x2; i++)
 	{
-		aLine[i].ch = 0;
+		aLine[i].ch = ' ';
 		aLine[i].fg_color = fgCode;
 		aLine[i].bg_color = bgCode;
 	}
+
+	idx=CURSOR_Y*WIDTH+x1;
 	memset(dirty+idx,1,(x2-x1)*sizeof(char));
 }
 
@@ -1601,7 +1702,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		if(sourceLine < targetLine)
 		{
 			// screen area is not wrapped; direct memmove
-			memmove(screen_top+SCROLL_TOP*WIDTH, screen_top+(SCROLL_TOP+1)*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(screen_char_t));
+			memmove(screen_top+SCROLL_TOP*REAL_WIDTH, screen_top+(SCROLL_TOP+1)*REAL_WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*REAL_WIDTH*sizeof(screen_char_t));
 		}
 		else
 		{
@@ -1610,12 +1711,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			{
 				sourceLine = [self getLineAtScreenIndex:i+1];
 				targetLine = [self getLineAtScreenIndex: i];
-				memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+				memmove(targetLine, sourceLine, REAL_WIDTH*sizeof(screen_char_t));
 			}
 		}
 		// new line at SCROLL_BOTTOM with default settings
 		targetLine = [self getLineAtScreenIndex:SCROLL_BOTTOM];
-		memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
+		memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], REAL_WIDTH*sizeof(screen_char_t));
 
 		// everything between SCROLL_TOP and SCROLL_BOTTOM is dirty
 		memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
@@ -1644,7 +1745,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		if(sourceLine < targetLine)
 		{
 			// screen area is not wrapped; direct memmove
-			memmove(screen_top+(SCROLL_TOP+1)*WIDTH, screen_top+SCROLL_TOP*WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*WIDTH*sizeof(screen_char_t));
+			memmove(screen_top+(SCROLL_TOP+1)*REAL_WIDTH, screen_top+SCROLL_TOP*REAL_WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*REAL_WIDTH*sizeof(screen_char_t));
 		}
 		else
 		{
@@ -1653,13 +1754,13 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			{
 				sourceLine = [self getLineAtScreenIndex:i];
 				targetLine = [self getLineAtScreenIndex:i+1];
-				memmove(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+				memmove(targetLine, sourceLine, REAL_WIDTH*sizeof(screen_char_t));
 			}
 		}
 	}
 	// new line at SCROLL_TOP with default settings
 	targetLine = [self getLineAtScreenIndex:SCROLL_TOP];
-	memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], WIDTH*sizeof(screen_char_t));
+	memcpy(targetLine, [self _getDefaultLineWithWidth: WIDTH], REAL_WIDTH*sizeof(screen_char_t));
 	
 	// everything between SCROLL_TOP and SCROLL_BOTTOM is dirty
 	memset(dirty+SCROLL_TOP*WIDTH,1,(SCROLL_BOTTOM-SCROLL_TOP+1)*WIDTH*sizeof(char));
@@ -1678,9 +1779,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 //    NSLog(@"insertBlank[%d@(%d,%d)]",n,CURSOR_X,CURSOR_Y);
 
     if (CURSOR_X>=WIDTH) return;
-    
-	int screenIdx=CURSOR_Y*WIDTH+CURSOR_X;
-	
+    	
 	// get the appropriate line
 	aLine = [self getLineAtScreenIndex:CURSOR_Y];
 	
@@ -1694,6 +1793,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	}
 	
 	// everything from CURSOR_X to end of line is dirty
+	int screenIdx=CURSOR_Y*WIDTH+CURSOR_X;
 	memset(dirty+screenIdx,1,WIDTH-CURSOR_X);
 	
 }
@@ -1719,7 +1819,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		{
 			sourceLine = [self getLineAtScreenIndex: CURSOR_Y + i];
 			targetLine = [self getLineAtScreenIndex:CURSOR_Y + i + n];
-			memcpy(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+			memcpy(targetLine, sourceLine, REAL_WIDTH*sizeof(screen_char_t));
 		}
 		
 	}
@@ -1731,7 +1831,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	for(i = 0; i < n; i++)
 	{
 		sourceLine = [self getLineAtScreenIndex:CURSOR_Y+i];
-		memcpy(sourceLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+		memcpy(sourceLine, aDefaultLine, REAL_WIDTH*sizeof(screen_char_t));
 	}
 	
 	// everything between CURSOR_Y and SCROLL_BOTTOM is dirty
@@ -1757,7 +1857,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		{
 			sourceLine = [self getLineAtScreenIndex:CURSOR_Y + i + n];
 			targetLine = [self getLineAtScreenIndex: CURSOR_Y + i];
-			memcpy(targetLine, sourceLine, WIDTH*sizeof(screen_char_t));
+			memcpy(targetLine, sourceLine, REAL_WIDTH*sizeof(screen_char_t));
 		}
 		
 	}
@@ -1768,7 +1868,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	for(i = 0; i < n; i++)
 	{
 		sourceLine = [self getLineAtScreenIndex:SCROLL_BOTTOM-n+1+i];
-		memcpy(sourceLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
+		memcpy(sourceLine, aDefaultLine, REAL_WIDTH*sizeof(screen_char_t));
 	}
 	
 	// everything between CURSOR_Y and SCROLL_BOTTOM is dirty
@@ -2030,12 +2130,12 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	NSParameterAssert(anIndex >= 0);
 	
 	// get the line offset from the specified line
-	the_line = aLine + anIndex*WIDTH;
+	the_line = aLine + anIndex*REAL_WIDTH;
 	
 	// check if we have gone beyond our buffer; if so, we need to wrap around to the top of buffer
 	if(the_line > last_buffer_line)
 	{
-		the_line = first_buffer_line + (the_line - last_buffer_line - WIDTH);
+		the_line = buffer_lines + (the_line - last_buffer_line - REAL_WIDTH);
 	}
 	
 	return (the_line);
@@ -2056,7 +2156,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 	if(default_line)
 		free(default_line);
 	
-	default_line = (screen_char_t *)malloc(width*sizeof(screen_char_t));
+	default_line = (screen_char_t *)malloc((width+1)*sizeof(screen_char_t));
 	
 	for(i = 0; i < width; i++)
 	{
@@ -2064,6 +2164,8 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 		default_line[i].fg_color = [TERMINAL foregroundColorCode];
 		default_line[i].bg_color = [TERMINAL backgroundColorCode];
 	}
+	//Not wrapped by default
+	default_line[width].ch = 0;
 	
 	default_fg_code = [TERMINAL foregroundColorCode];
 	default_bg_code = [TERMINAL backgroundColorCode];
@@ -2088,11 +2190,11 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			if (++current_scrollback_lines > max_scrollback_lines)
 			{
 				// scrollback area is full; add more
-				screen_char_t *bl = first_buffer_line;
+				screen_char_t *bl = buffer_lines;
 				int total_height = max_scrollback_lines + DEFAULT_SCROLLBACK + HEIGHT;
-				bl = realloc (bl, total_height*WIDTH*sizeof(screen_char_t));
+				bl = realloc (bl, total_height*REAL_WIDTH*sizeof(screen_char_t));
 				if (!bl) {
-					scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
+					scrollback_top = incrementLinePointer(buffer_lines, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
 					current_scrollback_lines = max_scrollback_lines;
 					lost_oldest_line = YES;
 				}				
@@ -2105,9 +2207,9 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 					
 					max_scrollback_lines += DEFAULT_SCROLLBACK;
 					
-					buffer_chars = scrollback_top = first_buffer_line = bl;
-					last_buffer_line = bl + (total_height - 1)*WIDTH;
-					screen_top = bl + (current_scrollback_lines-1)*WIDTH;
+					buffer_lines = scrollback_top = bl;
+					last_buffer_line = bl + (total_height - 1)*REAL_WIDTH;
+					screen_top = bl + (current_scrollback_lines-1)*REAL_WIDTH;
 					
 					lost_oldest_line = NO;
 				}
@@ -2117,7 +2219,7 @@ static screen_char_t *incrementLinePointer(screen_char_t *buf_start, screen_char
 			if (++current_scrollback_lines > max_scrollback_lines)
 			{
 				// scrollback area is full; lose oldest line
-				scrollback_top = incrementLinePointer(first_buffer_line, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
+				scrollback_top = incrementLinePointer(buffer_lines, scrollback_top, max_scrollback_lines+HEIGHT, WIDTH, &wrap);
 				current_scrollback_lines = max_scrollback_lines;
 				lost_oldest_line = YES;
 			}

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.294 2006-12-21 02:52:41 yfabian Exp $
+// $Id: PTYTextView.m,v 1.295 2007-01-10 07:42:05 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1725,7 +1725,7 @@ static int cacheSize;
 	// check if we want to drag and drop a selection
 	if(mouseDownOnSelection == YES && ([event modifierFlags] & NSCommandKeyMask))
 	{
-		theSelectedText = [self contentFromX: startX Y: startY ToX: endX Y: endY breakLines: YES pad: NO];
+		theSelectedText = [self contentFromX: startX Y: startY ToX: endX Y: endY pad: NO];
 		if([theSelectedText length] > 0)
 		{
 			[self _dragText: theSelectedText forEvent: event];
@@ -1804,7 +1804,7 @@ static int cacheSize;
 }
 
 
-- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy breakLines: (BOOL) breakLines pad: (BOOL) pad
+- (NSString *) contentFromX:(int)startx Y:(int)starty ToX:(int)endx Y:(int)endy pad: (BOOL) pad
 {
 	unichar *temp;
 	int j;
@@ -1821,12 +1821,8 @@ static int cacheSize;
 	{
 		theLine = [dataSource getLineAtIndex:y];
 
-		x1=0; 
-		x2=width - 1;
-		if (y == starty) 
-			x1 = startx;
-		if (y == endy) 
-			x2=endx;
+		x1 = y == starty ? startx : 0;
+		x2 = y == endy ? endx : width-1;
 		for(; x1 <= x2; x1++) 
 		{
 			if (theLine[x1].ch != 0xffff) 
@@ -1836,27 +1832,28 @@ static int cacheSize;
 				{
 					// if there is no text after this, insert a hard line break
 					endOfLine = YES;
-					for(i = x1+1; i <= x2; i++)
+					for(i = x1+1; i <= x2 && endOfLine; i++)
 					{
 						if(theLine[i].ch != 0)
 							endOfLine = NO;
 					}
-					if(endOfLine && !pad && y < endy)
-					{
-						temp[j] = '\n'; // hard break
-						j++;
-						break; // continue to next line
-					}
-					else if (endOfLine && (y == endy))
+					if (endOfLine) {
+						if (pad) {
+							for(i = x1; i <= x2; i++) temp[j++] = ' ';
+						}
+						if (y < endy && !theLine[width].ch){
+							temp[j] = '\n'; // hard break
+							j++;
+							break; // continue to next line
+						}
 						break;
+					}
 					else
 						temp[j] = ' '; // represent blank with space
 				}
-				else if (x1 == x2 && breakLines && y < endy) // definitely end of line
+				else if (x1 == x2 && y < endy && !theLine[width].ch) // definitely end of line
 				{
-					temp[j+1] = '\n'; // hard break
-					j += 2;
-					break; // continue to next line
+					temp[++j] = '\n'; // hard break
 				}
 				j++;
 			}
@@ -1890,11 +1887,11 @@ static int cacheSize;
 
 - (NSString *) selectedText
 {
-	return [self selectedTextBreakingLines: NO pad: NO];
+	return [self selectedTextWithPad: NO];
 }
 
 
-- (NSString *) selectedTextBreakingLines: (BOOL) breakLines pad: (BOOL) pad
+- (NSString *) selectedTextWithPad: (BOOL) pad
 {
 	
 #if DEBUG_METHOD_TRACE
@@ -1904,7 +1901,7 @@ static int cacheSize;
 	if (startX == -1) return nil;
 	[self _updateSelectionLocation];
 	
-	return ([self contentFromX: startX Y: startY ToX: endX Y: endY breakLines: breakLines pad: pad]);
+	return ([self contentFromX: startX Y: startY ToX: endX Y: endY pad: pad]);
 	
 }
 
@@ -1915,7 +1912,7 @@ static int cacheSize;
     NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
 #endif
     	
-	return [self contentFromX:0 Y:0 ToX:[dataSource width]-1 Y:[dataSource numberOfLines]-1 breakLines: YES pad: NO];
+	return [self contentFromX:0 Y:0 ToX:[dataSource width]-1 Y:[dataSource numberOfLines]-1 pad: NO];
 }
 
 - (void) copy: (id) sender
@@ -2277,10 +2274,10 @@ static int cacheSize;
 			numLines = visibleRect.size.height/lineHeight;
 			[self printContent: [self contentFromX: 0 Y: lineOffset 
 											   ToX: [dataSource width] - 1 Y: lineOffset + numLines - 1
-										breakLines: YES pad: NO]];
+										pad: NO]];
 			break;
 		case 1: // text selection
-			[self printContent: [self selectedTextBreakingLines: YES pad: NO]];
+			[self printContent: [self selectedTextWithPad: NO]];
 			break;
 		case 2: // entire buffer
 			[self printContent: [self content]];
@@ -2873,7 +2870,7 @@ static int cacheSize;
 	tmpY = y;
 	while(tmpX >= 0)
 	{
-		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY breakLines: NO pad: YES];
+		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY pad: YES];
 		if(([aString length] == 0 || 
 			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
 		   [wordChars rangeOfString: aString].length == 0)
@@ -2912,7 +2909,7 @@ static int cacheSize;
 	tmpY = y;
 	while(tmpX < [dataSource width])
 	{
-		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY breakLines: NO pad: YES];
+		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY pad: YES];
 		if(([aString length] == 0 || 
 			[aString rangeOfCharacterFromSet: [NSCharacterSet alphanumericCharacterSet]].length == 0) &&
 		   [wordChars rangeOfString: aString].length == 0)
@@ -2946,7 +2943,7 @@ static int cacheSize;
 	x2 = tmpX;
 	y2 = tmpY;
     
-	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2 breakLines: NO pad: YES]);
+	return ([self contentFromX:x1 Y:y1 ToX:x2 Y:y2 pad: YES]);
 	
 }
 
@@ -2978,7 +2975,7 @@ static int cacheSize;
 		if (x2>=w) y2++, x2=0;
     }
     
-	return ([self contentFromX:startx Y:starty ToX:endx Y:endy breakLines: NO pad: YES]);
+	return ([self contentFromX:startx Y:starty ToX:endx Y:endy pad: YES]);
 	
 }
 
@@ -3116,7 +3113,7 @@ static int cacheSize;
 	char blankString[1024];	
 	
 	
-	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y breakLines: NO pad: YES];
+	lineContents = [self contentFromX: 0 Y: y ToX: [dataSource width] - 1 Y: y pad: YES];
 	memset(blankString, ' ', 1024);
 	blankString[[dataSource width]] = 0;
 	blankLine = [NSString stringWithUTF8String: (const char*)blankString];
@@ -3257,7 +3254,7 @@ static int cacheSize;
 	}
 	
 	// ok, now get the search body
-	searchBody = [self contentFromX: x1 Y: y1 ToX: x2 Y: y2 breakLines: NO pad: YES];
+	searchBody = [self contentFromX: x1 Y: y1 ToX: x2 Y: y2 pad: YES];
 	
 	if([searchBody length] <= 0)
 	{

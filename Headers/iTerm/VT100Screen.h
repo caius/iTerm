@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.31 2007-01-07 03:21:52 yfabian Exp $
+// $Id: VT100Screen.h,v 1.32 2007-01-10 07:42:05 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -72,7 +72,7 @@ typedef struct screen_char_t
     PTYTextView *display;
 	
 	// single buffer that holds both scrollback and screen contents
-	screen_char_t *buffer_chars;
+	screen_char_t *buffer_lines;
 	// buffer holding flags for each char on whether it needs to be redrawn
 	char *dirty;
 	// a single default line
@@ -80,19 +80,12 @@ typedef struct screen_char_t
 	// temporary buffer to store main buffer in SAVE_BUFFER/RESET_BUFFER mode
 	screen_char_t *temp_buffer;
 	
-	// pointer to first buffer line;
-	screen_char_t *first_buffer_line;
 	// pointer to last line in buffer
 	screen_char_t *last_buffer_line;
 	// pointer to first screen line
 	screen_char_t *screen_top;
 	//pointer to first scrollback line
 	screen_char_t *scrollback_top;
-	
-	// saved stuff
-	screen_char_t *saved_screen_top;
-	screen_char_t *saved_scrollback_top;
-	int saved_scrollback_lines;
 	
 	// default line stuff
 	char default_bg_code;

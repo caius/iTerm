@@ -56,7 +56,7 @@
     VT100Terminal *TERMINAL;
     NSString *TERM_VALUE;
     VT100Screen   *SCREEN;
-    BOOL EXIT;
+    BOOL EXIT, EXIT_WARNED;
     NSView *view;
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
@@ -83,10 +83,10 @@
 	BOOL isProcessing;
     BOOL newOutput;
     BOOL growlIdle, growlNewOutput;
+		
+	// semaphore to coordinate updating UI
+	MPSemaphoreID	updateSemaphore;
 	
-	// update timer
-	NSTimer *updateTimer;
-	int updateCount;
 }
 
 // init/dealloc
@@ -190,6 +190,7 @@
 - (NSString *) contents;
 - (NSImage *) icon;
 - (void) setIcon: (NSImage *) anIcon;
+- (iTermGrowlDelegate*) growlDelegate;
 
 
 - (void)clearBuffer;
@@ -233,9 +234,14 @@
 - (void)setBell: (BOOL) flag;
 - (BOOL)isProcessing;
 - (void)setIsProcessing: (BOOL) aFlag;
+- (BOOL)exitWarned;
+- (void)setExitWarned;
 
 - (void)sendCommand: (NSString *)command;
+
 - (void)updateDisplay;
+- (void)signalUpdateSemaphore;
+
 
 @end
 

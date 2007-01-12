@@ -90,7 +90,7 @@ static NSImage *warningImage;
 	
     gettimeofday(&lastInput, NULL);
     lastOutput = lastBlink = lastUpdate = lastInput;
-    antiIdle=EXIT=NO;
+    antiIdle=EXIT=EXIT_WARNED=NO;
     
     addressBookEntry=nil;
 	
@@ -108,6 +108,9 @@ static NSImage *warningImage;
 	gd = [iTermGrowlDelegate sharedInstance];
     growlIdle = growlNewOutput = NO;
 	
+	// allocate a semaphore to coordinate UI update
+	MPCreateBinarySemaphore(&updateSemaphore);
+
     return (self);
 }
 
@@ -117,6 +120,9 @@ static NSImage *warningImage;
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
+	// release the data processing semaphore
+	MPDeleteSemaphore(updateSemaphore);
+
 	[icon release];
     [TERM_VALUE release];
     [view release];
@@ -229,15 +235,6 @@ static NSImage *warningImage;
 					width:[SCREEN width]
 				   height:[SCREEN height]];
 	
-
-    updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
-													target:self
-												  selector:@selector(_updateTimer:)
-												  userInfo:nil
-												   repeats:YES] retain]; 
-	
-	updateCount = 0;
-
 }
 
 
@@ -248,15 +245,7 @@ static NSImage *warningImage;
 	[[NSNotificationCenter defaultCenter] removeObserver:self];    
     
     EXIT = YES;
-	[SHELL stop];
-
-	//stop the timer;
-	if (updateTimer) {
-		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-	}
-	// final update of display
-	[self updateDisplay];
-	
+	[SHELL stop];	
 		
     [addressBookEntry release];
     addressBookEntry = nil;
@@ -324,7 +313,7 @@ static NSImage *warningImage;
 			}
 			else {
 				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN changeTitle]) {
-					usleep(100000);
+					MPWaitOnSemaphore(updateSemaphore, kDurationForever);
 				}
 				
 				[SCREEN putToken:token];
@@ -1648,6 +1637,16 @@ static NSImage *warningImage;
     return EXIT;
 }
 
+- (BOOL)exitWarned
+{
+	return EXIT_WARNED;
+}
+
+- (void)setExitWarned
+{
+	EXIT_WARNED = YES;
+}
+
 - (int) optionKey
 {
 	NSString *kbProfile;
@@ -1667,6 +1666,11 @@ static NSImage *warningImage;
 - (NSDictionary *)addressBookEntry
 {
     return addressBookEntry;
+}
+
+- (iTermGrowlDelegate*) growlDelegate
+{
+	return gd;
 }
 
 -(void)sendCommand: (NSString *)command
@@ -1709,13 +1713,17 @@ static NSImage *warningImage;
         [TEXTVIEW refresh];
 		lastUpdate = now;
     }
-	updateCount = 0;
 	
 	for(i=0; i<[SCREEN scrollUpLines]; i++) {
 		[TEXTVIEW scrollLineUp:nil];
 	}
 	
 	[SCREEN resetScrollUpLines];
+}
+
+- (void)signalUpdateSemaphore
+{
+	MPSignalSemaphore(updateSemaphore);
 }
 
 
@@ -1852,63 +1860,5 @@ static NSImage *warningImage;
 
 @implementation PTYSession (Private)
 
-//Update the display if necessary
-- (void)_updateTimer:(NSTimer *)aTimer
-{   
-	if (EXIT) {
-		[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-		withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
-		andNotification:@"Broken Pipes"];
-		
-		[self setLabelAttribute];
-
-		if ([self autoClose]) {
-			[parent closeSession: self];
-		}
-		else
-		{
-			[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-			[self updateDisplay];
-		}
-	}
-	else {
-		updateCount++;
-		if ([SCREEN changeTitle]) {
-			NSString *newTitle = [SCREEN newTitle];
-			if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [addressBookEntry objectForKey: @"Terminal Profile"]]) 
-				newTitle = [NSString stringWithFormat:@"%@: %@", defaultName, newTitle];
-			if ([SCREEN changeTitle]==XTERMCC_WIN_TITLE||[SCREEN changeTitle]==XTERMCC_WINICON_TITLE) 
-			{
-				//NSLog(@"setting window title to %@", token.u.string);
-				[self setWindowTitle: newTitle];
-			}
-			if ([SCREEN changeTitle]==XTERMCC_ICON_TITLE||[SCREEN changeTitle]==XTERMCC_WINICON_TITLE)
-			{
-				//NSLog(@"setting session title to %@", token.u.string);
-				[self setName: newTitle];
-			}
-			[SCREEN resetChangeTitle];
-		}
-		[SCREEN updateBell];
-		
-		switch ([SCREEN changeSize]) {
-			case CHANGE:
-				[parent resizeWindow:[SCREEN newWidth] height:[SCREEN newHeight]];
-				[SCREEN resetChangeSize];
-				//[TEXTVIEW scrollEnd];
-				break;
-			case CHANGE_PIXEL:
-				[parent resizeWindowToPixelsWidth:[SCREEN newWidth] height:[SCREEN newHeight]];
-				[SCREEN resetChangeSize];
-				//[TEXTVIEW scrollEnd];
-				break;
-			default:
-				if ([[TEXTVIEW window] isKeyWindow])
-					[self updateDisplay];
-				else if (([parent currentSession] == self && updateCount>3) || updateCount >20)
-					[self updateDisplay];
-		}
-	}
-}
 
 @end

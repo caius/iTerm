@@ -1,3 +1,13 @@
+2007-1-11	fabian
+
+	* Fixed a bug that causes failure to update screen when there's no scrollback buffer.
+	* Fixed a few resizing related bugs.
+	* Moved display update timers from PTYSession to PseudoTerminal to reduce CPU usage.
+	
+2007-1-10	fabian
+
+	* Added a semaphore to coordinate updating. Resizing and dynamic title is now processed in a faster cycle.
+	
 2007-1-9	fabian
 
 	* save/restore buffer now only save/restore the current screen.

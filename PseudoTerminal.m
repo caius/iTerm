@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.386 2007-01-02 23:58:38 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.387 2007-01-12 05:50:31 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -57,6 +57,7 @@
 #import <PSMTabStyle.h>
 #import <iTermBookmarkController.h>
 #import <iTermOutlineView.h>
+#import <iTerm/iTermGrowlDelegate.h>
 #include <unistd.h>
 
 @interface PSMTabBarControl (Private)
@@ -218,6 +219,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
     }
 	     
+    updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.0002 * [[PreferencePanel sharedInstance] refreshRate]
+													target:self
+												  selector:@selector(_updateTimerTick:)
+												  userInfo:nil
+												   repeats:YES] retain]; 
+	
+	updateCount = 0;
+	
 	[self _commonInit];
 	
 #if DEBUG_ALLOC
@@ -630,7 +639,13 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-    // Release all our sessions
+    
+	//stop the timer;
+	if (updateTimer) {
+		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	}
+
+	// Release all our sessions
     NSTabViewItem *aTabViewItem;
     for(;[TABVIEW numberOfTabViewItems];) 
     {
@@ -2200,6 +2215,88 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 	
 	return completeCommand;
+}
+
+//Update the display if necessary
+- (void)_updateTimerTick:(NSTimer *)aTimer
+{   
+	PTYSession *aSession;
+	int i, n;
+	
+	updateCount++;
+	
+	n = [TABVIEW numberOfTabViewItems];
+	for (i = 0; i < n; i++)
+	{
+		aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
+
+		if ([aSession exited]) {
+			if (![aSession exitWarned]) {
+				[[aSession growlDelegate] growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+				withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[aSession name],[aSession realObjectCount]] 
+				andNotification:@"Broken Pipes"];
+				
+				[aSession setLabelAttribute];
+				[aSession setExitWarned];
+			}
+			
+			if ([aSession autoClose]) {
+				[self closeSession: aSession];
+				i--;
+				n--;
+				if (!n) {
+					return;
+				}
+			}
+		}
+		else {
+			VT100Screen *theScreen = [aSession SCREEN];
+			if ([theScreen changeTitle]) {
+				NSString *newTitle = [theScreen newTitle];
+				if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [[aSession addressBookEntry] objectForKey: @"Terminal Profile"]]) 
+					newTitle = [NSString stringWithFormat:@"%@: %@", [aSession defaultName], newTitle];
+				if ([theScreen changeTitle]==XTERMCC_WIN_TITLE||[theScreen changeTitle]==XTERMCC_WINICON_TITLE) 
+				{
+					//NSLog(@"setting window title to %@", token.u.string);
+					[aSession setWindowTitle: newTitle];
+				}
+				if ([theScreen changeTitle]==XTERMCC_ICON_TITLE||[theScreen changeTitle]==XTERMCC_WINICON_TITLE)
+				{
+					//NSLog(@"setting session title to %@", token.u.string);
+					[aSession setName: newTitle];
+				}
+				[theScreen resetChangeTitle];
+				// signal the UI updating thread
+				[aSession signalUpdateSemaphore];
+			}
+			[theScreen updateBell];
+			
+			switch ([theScreen changeSize]) {
+				case CHANGE:
+					[self resizeWindow:[theScreen newWidth] height:[theScreen newHeight]];
+					[theScreen resetChangeSize];
+					// signal the UI updating thread
+					[aSession signalUpdateSemaphore];
+					//[TEXTVIEW scrollEnd];
+					break;
+				case CHANGE_PIXEL:
+					[self resizeWindowToPixelsWidth:[theScreen newWidth] height:[theScreen newHeight]];
+					[theScreen resetChangeSize];
+					// signal the UI updating thread
+					[aSession signalUpdateSemaphore];
+					//[TEXTVIEW scrollEnd];
+					break;
+			}
+			
+			if (!(updateCount % 10)) {
+				if ([[[aSession TEXTVIEW] window] isKeyWindow])
+					[aSession updateDisplay];
+				else if (([self currentSession] == aSession && updateCount>=30) || updateCount >=200)
+					[aSession updateDisplay];
+			}
+		}
+	}
+
 }
 
 @end

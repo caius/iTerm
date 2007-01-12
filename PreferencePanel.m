@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.150 2006-12-28 08:15:45 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.151 2007-01-12 07:08:49 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -269,6 +269,12 @@ static NSString *NoHandler = @"<No Handler>";
 - (void)windowWillClose:(NSNotification *)aNotification
 {
 	[self savePreferences];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)aNotification
+{
+    // Post a notification
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"nonTerminalWindowBecameKey" object: nil userInfo: nil];        
 }
 
 

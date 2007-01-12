@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.273 2007-01-12 05:50:32 yfabian Exp $
+// $Id: VT100Screen.m,v 1.274 2007-01-12 07:08:49 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -177,7 +177,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	changeSize = NO_CHANGE;
 	changeTitle = 0;
 	newTitle = nil;
-	bell = NO;
+	bell = printPending = NO;
 	scrollUpLines = 0;
 
     return self;
@@ -204,6 +204,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	if (temp_buffer) 
 		free(temp_buffer);
 	
+
 	[screenLock release];
 	
     [printToAnsiString release];
@@ -846,22 +847,25 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		break;
 
     case ANSICSI_PRINT:
-		if(token.u.csi.p[0] == 4)
-		{
-			// print our stuff!!
-			if([printToAnsiString length] > 0)
-				[[SESSION TEXTVIEW] printContent: printToAnsiString];
-			[printToAnsiString release];
-			printToAnsiString = nil;
-			[self setPrintToAnsi: NO];
-		}
-		else if (token.u.csi.p[0] == 5)
-		{
-			// allocate a string for the stuff to be printed
-			if (printToAnsiString != nil)
-				[printToAnsiString release];
-			printToAnsiString = [[NSMutableString alloc] init];
-			[self setPrintToAnsi: YES];
+		switch (token.u.csi.p[0]) {
+			case 4:
+				// print our stuff!!
+				printPending = YES;
+				break;
+			case 5:
+				// allocate a string for the stuff to be printed
+				if (printToAnsiString != nil)
+					[printToAnsiString release];
+				printToAnsiString = [[NSMutableString alloc] init];
+				[self setPrintToAnsi: YES];
+				break;
+			default:
+				//print out the whole screen
+				if (printToAnsiString != nil)
+					[printToAnsiString release];
+				printToAnsiString = nil;
+				[self setPrintToAnsi: NO];
+				printPending = YES;
 		}
 		break;
 	
@@ -957,8 +961,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		for(i = 0; i < current_scrollback_lines; i++)
 		{
 			aLine = [self getLineAtIndex:i];
-			memcpy(aLine, aDefaultLine, WIDTH*sizeof(screen_char_t));
-			aLine[WIDTH].ch = 0;
+			memcpy(aLine, aDefaultLine, REAL_WIDTH*sizeof(screen_char_t));
 		}
 		
 		current_scrollback_lines = 0;
@@ -1331,7 +1334,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 - (void)clearScreen
 {
 	screen_char_t *aLine, *aDefaultLine;
-	int i;
+	int i, j;
 	
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen clearScreen]; CURSOR_Y = %d", __FILE__, __LINE__, CURSOR_Y);
@@ -1343,11 +1346,18 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	[self acquireLock];
 	
 	// make the current line the first line and clear everything else
-	aLine = [self getLineAtScreenIndex:CURSOR_Y];
-	memcpy(screen_top, aLine, REAL_WIDTH*sizeof(screen_char_t));
-	CURSOR_Y = 0;
+	for(i=CURSOR_Y-1;i>=0;i--) {
+		aLine = [self getLineAtScreenIndex:i];
+		if (!aLine[WIDTH].ch) break;
+	}
+	for(j=0,i++;i<=CURSOR_Y;i++,j++) {
+		aLine = [self getLineAtScreenIndex:i];
+		memcpy(screen_top+j*REAL_WIDTH, aLine, REAL_WIDTH*sizeof(screen_char_t));
+	}
+	
+	CURSOR_Y = j-1;
 	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
-	for (i = 1; i < HEIGHT; i++)
+	for (i = j; i < HEIGHT; i++)
 	{
 		aLine = [self getLineAtScreenIndex:i];
 		memcpy(aLine, aDefaultLine, REAL_WIDTH*sizeof(screen_char_t));
@@ -2105,6 +2115,25 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 - (void) resetScrollUpLines
 {
 	scrollUpLines = 0;
+}
+
+- (BOOL) printPending
+{
+	return printPending;
+}
+
+- (void) doPrint
+{
+	if (printPending) {
+		if([printToAnsiString length] > 0)
+			[[SESSION TEXTVIEW] printContent: printToAnsiString];
+		else
+			[[SESSION TEXTVIEW] print: nil];
+		[printToAnsiString release];
+		printToAnsiString = nil;
+		[self setPrintToAnsi: NO];
+		printPending = NO;
+	}
 }
 
 - (BOOL) isDoubleWidthCharacter:(unichar) c

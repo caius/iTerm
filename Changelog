@@ -1,5 +1,12 @@
 2007-1-11	fabian
 
+	* Clear screen now leaves the last line (which can wrap to several lines) intact.
+	* Fixed a bug of cmd-w closing a terminal tab when preference panel is in the front. (#1618969)
+	* Fixed hanging-on-printing bug. (#1630780, #1598353)
+	* Added support for CSI[0i, which prints out the screen.
+	
+2007-1-11	fabian
+
 	* Fixed a bug that causes failure to update screen when there's no scrollback buffer.
 	* Fixed a few resizing related bugs.
 	* Moved display update timers from PTYSession to PseudoTerminal to reduce CPU usage.

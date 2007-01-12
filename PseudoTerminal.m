@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.387 2007-01-12 05:50:31 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.388 2007-01-12 07:08:49 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2251,6 +2251,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
 		else {
 			VT100Screen *theScreen = [aSession SCREEN];
+			
+			if ([theScreen printPending]) {
+				[theScreen doPrint];
+				[aSession signalUpdateSemaphore];
+			}
+			
 			if ([theScreen changeTitle]) {
 				NSString *newTitle = [theScreen newTitle];
 				if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [[aSession addressBookEntry] objectForKey: @"Terminal Profile"]]) 

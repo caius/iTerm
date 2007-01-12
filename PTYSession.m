@@ -312,7 +312,7 @@ static NSImage *warningImage;
 				//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
 			}
 			else {
-				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN changeTitle]) {
+				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN changeTitle] || [SCREEN printPending]) {
 					MPWaitOnSemaphore(updateSemaphore, kDurationForever);
 				}
 				

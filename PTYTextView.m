@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.295 2007-01-10 07:42:05 yfabian Exp $
+// $Id: PTYTextView.m,v 1.296 2007-01-12 07:08:49 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2263,8 +2263,9 @@ static int cacheSize;
 {
 	NSRect visibleRect;
 	int lineOffset, numLines;
+	int type = sender ? [sender tag] : 0;
 	
-	switch ([sender tag])
+	switch (type)
 	{
 		case 0: // visible range
 			visibleRect = [[self enclosingScrollView] documentVisibleRect];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.24 2006-11-23 02:08:04 yfabian Exp $
+// $Id: iTermController.h,v 1.25 2007-01-12 23:15:49 yfabian Exp $
 /*
  **  iTermController.h
  **
@@ -57,6 +57,7 @@
 - (NSArray *) sortedEncodingList;
 - (void) alternativeMenu: (NSMenu *)aMenu forNode: (TreeNode *) theNode target: (id) aTarget withShortcuts: (BOOL) withShortcuts;
 - (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm;
+- (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm withCommand: (NSString *)command;
 - (void) launchBookmark: (NSDictionary *) bookmarkData inTerminal: (PseudoTerminal *) theTerm withURL: (NSString *)url;
 - (PTYTextView *) frontTextView;
 

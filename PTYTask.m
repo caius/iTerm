@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.41 2006-12-18 23:08:54 yfabian Exp $
+// $Id: PTYTask.m,v 1.42 2007-01-12 23:15:45 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -455,9 +455,11 @@ static int writep(int fds, char *buf, size_t len)
 		return;
 	
     ioctl(FILDES, TIOCGWINSZ, &winsize);
-    winsize.ws_col = width;
-    winsize.ws_row = height;
-    ioctl(FILDES, TIOCSWINSZ, &winsize);
+	if (winsize.ws_col != width || winsize.ws_row != height) {
+		winsize.ws_col = width;
+		winsize.ws_row = height;
+		ioctl(FILDES, TIOCSWINSZ, &winsize);
+	}
 }
 
 - (pid_t)pid

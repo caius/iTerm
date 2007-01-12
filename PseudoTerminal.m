@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.388 2007-01-12 07:08:49 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.389 2007-01-12 23:15:45 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -153,6 +153,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	//enforce the nib to load
 	[self window];
 	[commandField retain];
+	[commandField setDelegate:self];
 	
 	// create the window programmatically with appropriate style mask
 	styleMask = NSTitledWindowMask | 
@@ -640,11 +641,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
     
-	//stop the timer;
-	if (updateTimer) {
-		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-	}
-
 	// Release all our sessions
     NSTabViewItem *aTabViewItem;
     for(;[TABVIEW numberOfTabViewItems];) 
@@ -1248,6 +1244,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
     }
 	EXIT = YES;
+	//stop the timer;
+	if (updateTimer) {
+		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	}
+
     [[iTermController sharedInstance] terminalWillClose: self];
 	
 }
@@ -2145,6 +2146,22 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [NSApp stopModal];
 }
 
+- (void)controlTextDidEndEditing:(NSNotification *)aNotification
+{
+	int move = [[[aNotification userInfo] objectForKey:@"NSTextMovement"] intValue];
+	
+	switch (move) {
+		case 16: // Return key
+			[self sendCommand: nil];
+			break;
+		case 17: // Tab key
+			[self addNewSession: [[ITAddressBookMgr sharedInstance] defaultBookmarkData] withCommand: [commandField stringValue]];
+			break;
+		default:
+			break;
+	}
+}
+
 @end
 
 @implementation PseudoTerminal (Private)
@@ -2245,6 +2262,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 				i--;
 				n--;
 				if (!n) {
+					//stop the timer;
+					[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
 					return;
 				}
 			}
@@ -2498,6 +2517,41 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     // Start the command        
     [self startProgram:[self _getSessionParameters: cmd] arguments:arg environment:env];
+	
+    [aSession release];
+}
+
+-(void)addNewSession:(NSDictionary *) addressbookEntry withCommand: (NSString *)command
+{
+    // NSLog(@"PseudoTerminal: -addInSessions: 0x%x", object);
+    PTYSession *aSession;
+    NSString *terminalProfile;
+    
+    terminalProfile = [addressbookEntry objectForKey: KEY_TERMINAL_PROFILE];
+	if(terminalProfile == nil)
+		terminalProfile = [[iTermTerminalProfileMgr singleInstance] defaultProfileName];	
+	
+    // Initialize a new session
+    aSession = [[PTYSession alloc] init];
+	[[aSession SCREEN] setScrollback:[[iTermTerminalProfileMgr singleInstance] scrollbackLinesForProfile: [addressbookEntry objectForKey: KEY_TERMINAL_PROFILE]]];
+    // set our preferences
+    [aSession setAddressBookEntry: addressbookEntry];
+    // Add this session to our term and make it current
+    [self appendSession: aSession];
+    
+	NSArray *arg;
+	NSString *pwd;
+	[PseudoTerminal breakDown:command cmdPath:&command cmdArgs:&arg];
+    
+	pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
+	if([pwd length] <= 0)
+		pwd = NSHomeDirectory();
+    NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
+    
+    [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+    
+    // Start the command        
+    [self startProgram:[self _getSessionParameters: command] arguments:arg environment:env];
 	
     [aSession release];
 }

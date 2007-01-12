@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.49 2006-12-07 06:19:33 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.50 2007-01-12 23:15:47 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -131,23 +131,11 @@ static BOOL usingAutoLaunchScript = NO;
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, filename);
-	
-	// open a new default session in the front terminal
-	[self newSession: self];
-	
-	// launch the command
-	NSData *data = nil;
-    NSString *aString = nil;
-	PseudoTerminal *theTerminal = [[iTermController sharedInstance] currentTerminal];
-	PTYSession *theSession = [theTerminal currentSession];
-	if(filename != nil)
-    {
-		aString = [NSString stringWithFormat:@"%@\n", filename];
-		data = [aString dataUsingEncoding: [[theSession TERMINAL] encoding]];
-		[theSession writeTask: data];
-    }
-	
-	
+		
+	if (filename) {
+		NSString *aString = [NSString stringWithFormat:@"\"%@\"", filename];
+		[[iTermController sharedInstance] launchBookmark:nil inTerminal:nil withCommand:aString];
+	}
 	return (YES);
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.49 2007-01-12 05:50:34 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.50 2007-01-12 23:15:49 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -189,6 +189,7 @@
 -(id)valueWithID: (NSString *)uniqueID inPropertyWithKey: (NSString*)propertyKey;
 -(void)addNewSession:(NSDictionary *)addressbookEntry;
 -(void)addNewSession:(NSDictionary *)addressbookEntry withURL: (NSString *)url;
+-(void)addNewSession:(NSDictionary *) addressbookEntry withCommand: (NSString *)command;
 -(void)appendSession:(PTYSession *)object;
 -(void)removeFromSessionsAtIndex:(unsigned)index;
 -(NSArray*)sessions;

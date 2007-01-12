@@ -1,4 +1,18 @@
 <STRONG>Changes since 0.9.4</STRONG><BR><BR>
+The build 0.9.4.1312 fixes many problems in 0.9.4.1311. The changes include:<BR>
+<UL>
+	<LI> Added support for CSI[0i, which prints out the screen.</LI>
+	<LI> Fixed a memory leak in PseudoTerminal.</LI>
+	<LI> Added support for opening .command, .tool, .sh, .zsh, .csh, .pl files as shell scripts.</LI>
+	<LI> Now press TAB in the Execute field will open a new session with the command.</LI>
+	<LI> Fixed a crash when saving/restoring buffers.</LI>
+	<LI> More fixes for resizing behaviors.</LI>
+	<LI> Fixed opening file behavior (#1629686).</LI>
+	<LI> Clear screen now leaves the last line (which can wrap to several lines) intact. (#1575193)</LI>
+	<LI> Fixed a bug of cmd-w closing a terminal tab when preference panel is in the front. (#1618969)</LI>
+	<LI> Fixed hanging-on-printing bug. (#1630780, #1598353)</LI>
+</UL>
+
 Warning: The build 0.9.4.1311 is one of those "risky" updates. You shouldn't rely your critical work on it. The changes
 include:<BR>
 <UL>

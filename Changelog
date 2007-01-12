@@ -1,3 +1,12 @@
+2007-1-12	fabian
+
+	* Fixed a memory leak in PseudoTerminal.
+	* Fixed opening file behavior (#1629686).
+	* Added support for opening .command, .tool, .sh, .zsh, .csh, .pl files as shell scripts.
+	* Now press TAB in the Execute field will open a new session with the command.
+	* Fixed a crash when saving/restoring buffers.
+	* More fixes for resizing behaviors.
+	
 2007-1-11	fabian
 
 	* Clear screen now leaves the last line (which can wrap to several lines) intact.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.274 2007-01-12 07:08:49 yfabian Exp $
+// $Id: VT100Screen.m,v 1.275 2007-01-12 23:15:46 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -378,7 +378,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
     total_height = max_scrollback_lines + HEIGHT;
 
     // Try to determine how many empty trailing lines there are on screen
-    for(;HEIGHT>1;HEIGHT--) {
+    for(;HEIGHT>CURSOR_Y+1;HEIGHT--) {
         aLine = [self getLineAtScreenIndex: HEIGHT-1];
         for (i=0;i<WIDTH;i++)
             if (aLine[i].ch) break;
@@ -473,22 +473,22 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	if (max_scrollback_lines > 0) {
 		if (wrapped) {
 			current_scrollback_lines = max_scrollback_lines;
-			CURSOR_Y = height;
+			CURSOR_Y = height - 1;
 		}
 		else {
-			if (y2 < height - 1) {
+			if (y2 <= height) {
 				current_scrollback_lines = 0;
-				CURSOR_Y = y2;
+				CURSOR_Y = y2 - 1;
 			}
 			else {
-				current_scrollback_lines = y2 - height + 1;
+				current_scrollback_lines = y2 - height ;
 				CURSOR_Y = height - 1;
 			}
 		}
 	}
 	else {
 		current_scrollback_lines = 0;
-		CURSOR_Y = wrapped ? height : y2 - 1;
+		CURSOR_Y = wrapped ? height - 1 : y2 - 1;
 	}
 	
 	screen_top = scrollback_top + current_scrollback_lines*(width+1);
@@ -680,7 +680,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
     
     [self acquireLock];
     
-    switch (token.type) {
+	switch (token.type) {
     // our special code
     case VT100_STRING:
 	case VT100_ASCIISTRING:
@@ -987,13 +987,14 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	if (temp_buffer) 
 		free(temp_buffer);
 	
+	int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
+	
 	temp_buffer=(screen_char_t *)malloc(size*(sizeof(screen_char_t)));
-	if ((screen_top - buffer_lines)/REAL_WIDTH < max_scrollback_lines)
+	if (n <= 0)
 		memcpy(temp_buffer, screen_top, size*sizeof(screen_char_t));
 	else {
-		int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
-		memcpy(temp_buffer, screen_top,n*REAL_WIDTH*sizeof(screen_char_t));
-		memcpy(temp_buffer+n*REAL_WIDTH*sizeof(screen_char_t), buffer_lines, (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
+		memcpy(temp_buffer, screen_top, (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
+		memcpy(temp_buffer+(HEIGHT-n)*REAL_WIDTH, buffer_lines, n*REAL_WIDTH*sizeof(screen_char_t));
 	}
 			
 	[self releaseLock];
@@ -1008,13 +1009,16 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	
 	if (!temp_buffer) 
 		return;
-	
-	if ((screen_top - buffer_lines)/REAL_WIDTH < max_scrollback_lines)
+
+	[self acquireLock];
+
+	int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
+
+	if (n<=0)
 		memcpy(screen_top, temp_buffer, REAL_WIDTH*HEIGHT*sizeof(screen_char_t));
 	else {
-		int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
-		memcpy(screen_top, temp_buffer, n*REAL_WIDTH*sizeof(screen_char_t));
-		memcpy(buffer_lines, temp_buffer+n*REAL_WIDTH*sizeof(screen_char_t), (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
+		memcpy(screen_top, temp_buffer, (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
+		memcpy(buffer_lines, temp_buffer+(HEIGHT-n)*REAL_WIDTH, n*REAL_WIDTH*sizeof(screen_char_t));
 	}
 	
 		
@@ -1022,6 +1026,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	
 	free(temp_buffer);
 	temp_buffer = NULL;
+	[self releaseLock];
 	
 }
 

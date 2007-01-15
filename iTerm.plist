@@ -4,6 +4,26 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>command</string>
+				<string>tool</string>
+				<string>sh</string>
+				<string>zsh</string>
+				<string>csh</string>
+				<string>pl</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>iTerm.icns</string>
+			<key>CFBundleTypeName</key>
+			<string>Terminal scripts</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
@@ -26,44 +46,6 @@
 	<string>0.9.4.1312</string>
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
-	<key>CFBundleVersion</key>
-	<string>0.9.4.1312</string>
-	<key>NSAppleScriptEnabled</key>
-	<string>YES</string>
-	<key>NSExtensions</key>
-	<dict/>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
-	<key>NSPrincipalClass</key>
-	<string>iTermApplication</string>
-	<key>SmartCrashReports_CompanyName</key>
-	<string>iTerm</string>
-	<key>SmartCrashReports_EmailTicket</key>
-	<string>SCR-8B63DF54C9</string>
-    <key>SUFeedURL</key> 
-    <string>http://iterm.sourceforge.net/appcast.xml</string>
-    <key>SUFeedURLForPanther</key> 
-    <string>http://iterm.sourceforge.net/appcast_panther.xml</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>command</string>
-				<string>tool</string>
-				<string>sh</string>
-				<string>zsh</string>
-				<string>csh</string>
-				<string>pl</string>
-			</array>
-			<key>CFBundleTypeIconFile</key>
-			<string>iTerm.icns</string>
-			<key>CFBundleTypeName</key>
-			<string>Terminal scripts</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-		</dict>
-	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -171,5 +153,23 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>0.9.4.1312</string>
+	<key>NSAppleScriptEnabled</key>
+	<string>YES</string>
+	<key>NSExtensions</key>
+	<dict/>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>iTermApplication</string>
+	<key>SUFeedURL</key>
+	<string>http://iterm.sourceforge.net/appcast.xml</string>
+	<key>SUFeedURLForPanther</key>
+	<string>http://iterm.sourceforge.net/appcast_panther.xml</string>
+	<key>SmartCrashReports_CompanyName</key>
+	<string>iTerm</string>
+	<key>SmartCrashReports_EmailTicket</key>
+	<string>SCR-73C32475CB</string>
 </dict>
 </plist>

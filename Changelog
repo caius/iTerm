@@ -1,3 +1,9 @@
+2007-1-16	fabian
+
+	* Moved updateTimer back to PTYSession and fixed a type of related crash.
+	* Improved the handling of title changing. 
+	* Changed the timer code in hope of reducing the CPU usage.
+	
 2007-1-12	fabian
 
 	* Fixed a memory leak in PseudoTerminal.

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.389 2007-01-12 23:15:45 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.390 2007-01-17 07:31:20 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -220,14 +220,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
     }
 	     
-    updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.0002 * [[PreferencePanel sharedInstance] refreshRate]
-													target:self
-												  selector:@selector(_updateTimerTick:)
-												  userInfo:nil
-												   repeats:YES] retain]; 
-	
-	updateCount = 0;
-	
 	[self _commonInit];
 	
 #if DEBUG_ALLOC
@@ -1244,10 +1236,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
     }
 	EXIT = YES;
-	//stop the timer;
-	if (updateTimer) {
-		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-	}
+	
 
     [[iTermController sharedInstance] terminalWillClose: self];
 	
@@ -1609,6 +1598,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
 #endif
     if (![[self currentSession] exited]) [[self currentSession] resetStatus];
+	[[[tabView selectedTabViewItem] identifier] setTimerMode: SLOW_MODE];
     
 }
 
@@ -1622,6 +1612,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[tabViewItem identifier] setLabelAttribute];
 	[[[tabViewItem identifier] SCREEN] setDirty];
 	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
+	[[tabViewItem identifier] setTimerMode: FAST_MODE];
 	[self setWindowTitle];
 
     [[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
@@ -2234,95 +2225,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return completeCommand;
 }
 
-//Update the display if necessary
-- (void)_updateTimerTick:(NSTimer *)aTimer
-{   
-	PTYSession *aSession;
-	int i, n;
-	
-	updateCount++;
-	
-	n = [TABVIEW numberOfTabViewItems];
-	for (i = 0; i < n; i++)
-	{
-		aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
-
-		if ([aSession exited]) {
-			if (![aSession exitWarned]) {
-				[[aSession growlDelegate] growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-				withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[aSession name],[aSession realObjectCount]] 
-				andNotification:@"Broken Pipes"];
-				
-				[aSession setLabelAttribute];
-				[aSession setExitWarned];
-			}
-			
-			if ([aSession autoClose]) {
-				[self closeSession: aSession];
-				i--;
-				n--;
-				if (!n) {
-					//stop the timer;
-					[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-					return;
-				}
-			}
-		}
-		else {
-			VT100Screen *theScreen = [aSession SCREEN];
-			
-			if ([theScreen printPending]) {
-				[theScreen doPrint];
-				[aSession signalUpdateSemaphore];
-			}
-			
-			if ([theScreen changeTitle]) {
-				NSString *newTitle = [theScreen newTitle];
-				if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [[aSession addressBookEntry] objectForKey: @"Terminal Profile"]]) 
-					newTitle = [NSString stringWithFormat:@"%@: %@", [aSession defaultName], newTitle];
-				if ([theScreen changeTitle]==XTERMCC_WIN_TITLE||[theScreen changeTitle]==XTERMCC_WINICON_TITLE) 
-				{
-					//NSLog(@"setting window title to %@", token.u.string);
-					[aSession setWindowTitle: newTitle];
-				}
-				if ([theScreen changeTitle]==XTERMCC_ICON_TITLE||[theScreen changeTitle]==XTERMCC_WINICON_TITLE)
-				{
-					//NSLog(@"setting session title to %@", token.u.string);
-					[aSession setName: newTitle];
-				}
-				[theScreen resetChangeTitle];
-				// signal the UI updating thread
-				[aSession signalUpdateSemaphore];
-			}
-			[theScreen updateBell];
-			
-			switch ([theScreen changeSize]) {
-				case CHANGE:
-					[self resizeWindow:[theScreen newWidth] height:[theScreen newHeight]];
-					[theScreen resetChangeSize];
-					// signal the UI updating thread
-					[aSession signalUpdateSemaphore];
-					//[TEXTVIEW scrollEnd];
-					break;
-				case CHANGE_PIXEL:
-					[self resizeWindowToPixelsWidth:[theScreen newWidth] height:[theScreen newHeight]];
-					[theScreen resetChangeSize];
-					// signal the UI updating thread
-					[aSession signalUpdateSemaphore];
-					//[TEXTVIEW scrollEnd];
-					break;
-			}
-			
-			if (!(updateCount % 10)) {
-				if ([[[aSession TEXTVIEW] window] isKeyWindow])
-					[aSession updateDisplay];
-				else if (([self currentSession] == aSession && updateCount>=30) || updateCount >=200)
-					[aSession updateDisplay];
-			}
-		}
-	}
-
-}
 
 @end
 

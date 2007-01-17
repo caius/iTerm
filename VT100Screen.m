@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.275 2007-01-12 23:15:46 yfabian Exp $
+// $Id: VT100Screen.m,v 1.276 2007-01-17 07:31:20 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -175,8 +175,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	gd = [iTermGrowlDelegate sharedInstance];
 
 	changeSize = NO_CHANGE;
-	changeTitle = 0;
-	newTitle = nil;
+	newWinTitle = nil;
+	newIconTitle = nil;
 	bell = printPending = NO;
 	scrollUpLines = 0;
 
@@ -567,8 +567,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	
 	[self showCursor: YES];
 	changeSize = NO_CHANGE;
-	changeTitle = 0;
-	newTitle = nil;
+	newWinTitle = nil;
+	newIconTitle = nil;
 	bell = NO;
 }
 
@@ -871,11 +871,19 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	
     // XTERM extensions
     case XTERMCC_WIN_TITLE:
+		if (newWinTitle) [newWinTitle release];
+		newWinTitle = [token.u.string copy];
+		break;
     case XTERMCC_WINICON_TITLE:
+		if (newWinTitle) [newWinTitle release];
+		if (newIconTitle) [newIconTitle release];
+		newWinTitle = [token.u.string copy];
+		newIconTitle = [token.u.string copy];
+		break;
     case XTERMCC_ICON_TITLE:
         //[SESSION setName:token.u.string];
-		newTitle = [token.u.string copy];
-		changeTitle = token.type;
+		if (newIconTitle) [newIconTitle release];
+		newIconTitle = [token.u.string copy];
         break;
     case XTERMCC_INSBLNK: [self insertBlank:token.u.csi.p[0]]; break;
     case XTERMCC_INSLN: [self insertLines:token.u.csi.p[0]]; break;
@@ -2083,21 +2091,22 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	changeSize = NO;
 }
 
-- (int) changeTitle
+- (NSString *) newWinTitle
 {
-	return changeTitle;
+	return newWinTitle;
 }
 
-- (NSString *) newTitle
+- (NSString *) newIconTitle
 {
-	return newTitle;
+	return newIconTitle;
 }
 
 - (void) resetChangeTitle
 {
-	changeTitle = 0;
-	[newTitle release];
-	newTitle = nil;
+	[newWinTitle release];
+	newWinTitle = nil;
+	[newIconTitle release];
+	newIconTitle = nil;
 }
 
 - (void) updateBell

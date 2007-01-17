@@ -49,6 +49,16 @@
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
+void runloopCallback (
+	 CFRunLoopObserverRef observer, 
+	 CFRunLoopActivity activity, 
+	 CFRunLoopObserverContext *context
+)
+{
+	PTYSession *sourceSession = context->info;
+	NSLog(@"call back from: %p", sourceSession);
+}
+
 @implementation PTYSession
 
 static NSString *TERM_ENVNAME = @"TERM";
@@ -111,6 +121,7 @@ static NSImage *warningImage;
 	// allocate a semaphore to coordinate UI update
 	MPCreateBinarySemaphore(&updateSemaphore);
 
+	
     return (self);
 }
 
@@ -234,7 +245,15 @@ static NSImage *warningImage;
 			  environment:env
 					width:[SCREEN width]
 				   height:[SCREEN height]];
+
+	updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
+													target:self
+												  selector:@selector(_updateTimerTick:)
+												  userInfo:nil
+												   repeats:YES] retain]; 
 	
+	updateCount = 0;
+		
 }
 
 
@@ -244,9 +263,16 @@ static NSImage *warningImage;
 	// deregister from the notification center
 	[[NSNotificationCenter defaultCenter] removeObserver:self];    
     
-    EXIT = YES;
+	EXIT = YES;
 	[SHELL stop];	
-		
+	
+	//stop the timer;
+	if (updateTimer) {
+		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	}
+	// final update of display
+	[self updateDisplay];
+    
     [addressBookEntry release];
     addressBookEntry = nil;
 	
@@ -312,7 +338,7 @@ static NSImage *warningImage;
 				//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
 			}
 			else {
-				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN changeTitle] || [SCREEN printPending]) {
+				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN printPending]) {
 					MPWaitOnSemaphore(updateSemaphore, kDurationForever);
 				}
 				
@@ -1113,12 +1139,6 @@ static NSImage *warningImage;
     tabViewItem = theTabViewItem;
 }
 
-- (void) tabViewWillRedraw: (NSNotification *) aNotification
-{
-	if([aNotification object] == [[self tabViewItem] tabView])
-		[TEXTVIEW setForceUpdate: YES];
-}
-
 - (NSString *) uniqueID
 {
     return ([self tty]);
@@ -1721,11 +1741,47 @@ static NSImage *warningImage;
 	[SCREEN resetScrollUpLines];
 }
 
+- (void)setTimerMode:(int)mode
+{
+
+	//stop the timer;
+	if (updateTimer) {
+		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	}
+
+	switch (mode) {
+		case FAST_MODE:
+			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
+															target:self
+														  selector:@selector(_updateTimerTick:)
+														  userInfo:nil
+														   repeats:YES] retain]; 
+			
+			break;
+		case SLOW_MODE:
+			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.25
+															target:self
+														  selector:@selector(_updateTimerTick:)
+														  userInfo:nil
+														   repeats:YES] retain]; 
+			
+			break;
+	}
+	updateCount = 0;
+}
+
 - (void)signalUpdateSemaphore
 {
 	MPSignalSemaphore(updateSemaphore);
 }
 
+
+// Notification
+- (void) tabViewWillRedraw: (NSNotification *) aNotification
+{
+	if([aNotification object] == [[self tabViewItem] tabView])
+		[TEXTVIEW setForceUpdate: YES];
+}
 
 @end
 
@@ -1860,5 +1916,77 @@ static NSImage *warningImage;
 
 @implementation PTYSession (Private)
 
+//Update the display if necessary
+- (void)_updateTimerTick:(NSTimer *)aTimer
+{   
+	if (EXIT) {
+		[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+							  withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
+							  andNotification:@"Broken Pipes"];
+		
+		[self setLabelAttribute];
+		
+		if ([self autoClose]) {
+			[parent closeSession: self];
+		}
+		else
+		{
+			[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+			[self updateDisplay];
+		}
+	}
+	else {
+		if ([SCREEN printPending]) {
+			[SCREEN doPrint];
+			MPSignalSemaphore(updateSemaphore);
+		}
+		
+		[SCREEN acquireLock];
+		NSString *newTitle;
+		if (newTitle=[SCREEN newWinTitle]) 
+		{
+			//NSLog(@"setting window title to %@", token.u.string);
+			if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [addressBookEntry objectForKey: @"Terminal Profile"]]) 
+				newTitle = [NSString stringWithFormat:@"%@: %@", defaultName, newTitle];
+			[self setWindowTitle: newTitle];
+		}
+		if (newTitle=[SCREEN newIconTitle])
+		{
+			//NSLog(@"setting session title to %@", token.u.string);
+			if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [addressBookEntry objectForKey: @"Terminal Profile"]]) 
+				newTitle = [NSString stringWithFormat:@"%@: %@", defaultName, newTitle];
+			[self setName: newTitle];
+		}
+		[SCREEN resetChangeTitle];
+		[SCREEN releaseLock];
+	
+		[SCREEN updateBell];
+		
+		switch ([SCREEN changeSize]) {
+			case CHANGE:
+				[parent resizeWindow:[SCREEN newWidth] height:[SCREEN newHeight]];
+				[SCREEN resetChangeSize];
+				// signal the UI updating thread
+				MPSignalSemaphore(updateSemaphore);
+				//[TEXTVIEW scrollEnd];
+				break;
+			case CHANGE_PIXEL:
+				[parent resizeWindowToPixelsWidth:[SCREEN newWidth] height:[SCREEN newHeight]];
+				[SCREEN resetChangeSize];
+				// signal the UI updating thread
+				MPSignalSemaphore(updateSemaphore);
+				//[TEXTVIEW scrollEnd];
+				break;
+		}
+		
+		if ([[TEXTVIEW window] isKeyWindow] && [parent currentSession] == self)
+			[self updateDisplay];
+		else if (!(updateCount%2))
+			[self updateDisplay];
+
+		updateCount++;
+	}
+	
+}
 
 @end

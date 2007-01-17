@@ -87,6 +87,9 @@
 	// semaphore to coordinate updating UI
 	MPSemaphoreID	updateSemaphore;
 	
+	// update timer stuff
+	NSTimer *updateTimer;
+	unsigned int updateCount;
 }
 
 // init/dealloc
@@ -239,9 +242,12 @@
 
 - (void)sendCommand: (NSString *)command;
 
+// Display timer stuff
 - (void)updateDisplay;
 - (void)signalUpdateSemaphore;
 
+enum {FAST_MODE, SLOW_MODE};
+- (void)setTimerMode:(int)mode;
 
 @end
 
@@ -257,5 +263,7 @@
 @end
 
 @interface PTYSession (Private)
+
+- (void)_updateTimerTick:(NSTimer *)aTimer;
 
 @end

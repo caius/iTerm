@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.50 2007-01-12 23:15:49 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.51 2007-01-17 07:31:20 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -64,10 +64,6 @@
 	BOOL fontSizeFollowWindowResize;
 	BOOL suppressContextualMenu;
 	
-	// update timer
-	NSTimer *updateTimer;
-	int updateCount;
-    
 	BOOL EXIT;
 }
 
@@ -213,9 +209,6 @@
 - (NSFont *) _getMaxFont:(NSFont* ) font 
 				  height:(float) height
 				   lines:(float) lines;
-
-//Update the display if necessary
-- (void)_updateTimerTick:(NSTimer *)aTimer;
 
 @end
 

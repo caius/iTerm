@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.33 2007-01-12 07:08:50 yfabian Exp $
+// $Id: VT100Screen.h,v 1.34 2007-01-17 07:31:20 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -112,8 +112,8 @@ typedef struct screen_char_t
 	// UI related
 	int changeSize;
 	int newWidth,  newHeight;
-	int changeTitle;
-	NSString *newTitle;
+	NSString *newWinTitle;
+	NSString *newIconTitle;
 	BOOL bell;
 	int scrollUpLines;
 	BOOL printPending;
@@ -220,8 +220,8 @@ typedef struct screen_char_t
 - (int)newWidth;
 - (int)newHeight;
 - (void) resetChangeSize;
-- (int) changeTitle;
-- (NSString *) newTitle;
+- (NSString *) newWinTitle;
+- (NSString *) newIconTitle;
 - (void) resetChangeTitle;
 - (void) updateBell;
 - (void) setBell;

@@ -164,7 +164,7 @@ static BOOL onScreen = NO;
     float tr;
     
     if (sender == transparencyButton) {
-        [[_pseudoTerminal currentSession] setUseTransparency: [transparencyButton state] == NSOnState];
+        [_pseudoTerminal setUseTransparency: [transparencyButton state] == NSOnState];
         [CONFIG_TRANS2 setEnabled:[transparencyButton state]];
         [CONFIG_TRANSPARENCY setEnabled:[transparencyButton state]];
     }
@@ -177,7 +177,7 @@ static BOOL onScreen = NO;
         else if (sender == CONFIG_TRANSPARENCY)
             [CONFIG_TRANS2 setFloatValue:tr];
         [transparencyButton setState: tr!=0];
-        [[_pseudoTerminal currentSession] setUseTransparency: [transparencyButton state] == NSOnState];
+        [_pseudoTerminal setUseTransparency: [transparencyButton state] == NSOnState];
         
     }
 }
@@ -438,7 +438,7 @@ static BOOL onScreen = NO;
 	
     [CONFIG_TRANSPARENCY setFloatValue:([currentSession transparency]*100)];
     [CONFIG_TRANS2 setFloatValue:([currentSession transparency]*100)];
-    [transparencyButton setState: [currentSession useTransparency]];
+    [transparencyButton setState: [_pseudoTerminal useTransparency]];
     [CONFIG_TRANS2 setEnabled:[transparencyButton state]];
     [CONFIG_TRANSPARENCY setEnabled:[transparencyButton state]];
     

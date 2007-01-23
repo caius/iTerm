@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.65 2007-01-12 23:15:47 yfabian Exp $
+// $Id: iTermController.m,v 1.66 2007-01-23 04:46:12 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -98,7 +98,9 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	 * PLIST check here.
 	 */
     gd = [iTermGrowlDelegate sharedInstance];
-    
+
+	_fullScreenTerminal = nil;
+
     return (self);
 }
 
@@ -429,6 +431,17 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 {
     return ([[FRONT currentSession] TEXTVIEW]);
 }
+
+- (PseudoTerminal *) fullScreenTerminal
+{
+	return _fullScreenTerminal;
+}
+
+- (void) setFullScreenTerminal:(PseudoTerminal *)terminal
+{
+	_fullScreenTerminal = terminal;
+}
+
 
 @end
 

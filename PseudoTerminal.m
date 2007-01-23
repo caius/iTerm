@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.390 2007-01-17 07:31:20 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.391 2007-01-23 04:46:12 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -516,7 +516,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [aTabViewItem release];
 		[TABVIEW selectTabViewItemAtIndex: index];
 
-		if([self windowInited])
+		if([self windowInited] && !_fullScreen)
 			[[self window] makeKeyAndOrderFront: self];
 		[[iTermController sharedInstance] setCurrentTerminal: self];
 		[self setWindowSize];
@@ -532,12 +532,19 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSTabViewItem *aTabViewItem;
 	int numberOfSessions;
     
+	/*if (_fullScreen) {
+		[self toggleFullScreen: nil];
+	}*/
+	
     if([TABVIEW indexOfTabViewItemWithIdentifier: aSession] == NSNotFound)
         return;
     
     numberOfSessions = [TABVIEW numberOfTabViewItems]; 
     if(numberOfSessions == 1 && [self windowInited])
     {   
+		if (_fullScreen) {
+			[self toggleFullScreen: nil];
+		}
         [[self window] close];
     }
 	else {
@@ -761,7 +768,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize] (%d,%d)", __FILE__, __LINE__, WIDTH, HEIGHT );
 #endif
     
-    if([self windowInited] == NO)
+    if([self windowInited] == NO || _fullScreen)
 		return;
 	
 	aRect = [thisWindow contentRectForFrameRect:[[thisWindow screen] visibleFrame]];
@@ -1074,6 +1081,23 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[[self currentSession] TERMINAL] reset];
 }
 
+- (BOOL) useTransparency
+{
+	return useTransparency;
+}
+
+- (void) setUseTransparency: (BOOL) flag
+{
+	useTransparency = flag;
+	[[self window] setAlphaValue:flag?0.9999:1];
+	
+	int n = [TABVIEW numberOfTabViewItems];
+	int i;
+	for(i=0;i<n;i++) {
+		[[[[TABVIEW tabViewItemAtIndex:i] identifier] TEXTVIEW] setUseTransparency:flag];
+	}
+}
+
 - (void)clearBuffer:(id)sender
 {
     [[self currentSession] clearBuffer];
@@ -1222,6 +1246,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowWillClose:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
+	
+	if (_fullScreen) {
+		[self toggleFullScreen: nil];
+	}
 	
 	// tabBarControl is holding on to us, so we have to tell it to let go
 	[tabBarControl setDelegate: nil];
@@ -1391,6 +1419,120 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) windowDidToggleToolbarVisibility: (id) sender
 {
 }
+
+// Bookmarks
+- (IBAction) toggleFullScreen: (id) sender
+{
+	static CGDirectDisplayID displayID;
+	static NSWindow *normalWindow;
+	static NSRect originalFrame;
+	static int originalWidth, originalHeight;
+	NSWindow *mScreenWindow;
+	
+	if ([[iTermController sharedInstance] fullScreenTerminal] != self) {
+		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	}
+		
+	_fullScreen = !_fullScreen;
+	
+	if (_fullScreen) {
+		// Get the screen information.
+		NSScreen* mainScreen = [NSScreen mainScreen]; 
+		NSDictionary* screenInfo = [mainScreen deviceDescription]; 
+		NSNumber* screenID = [screenInfo objectForKey:@"NSScreenNumber"];
+		
+		// Capture the screen.
+		//displayID = (CGDirectDisplayID)[screenID longValue]; 
+		//CGDisplayErr err = CGDisplayCapture(displayID);
+		CGDisplayErr err=CGDisplayNoErr;
+		if (err == CGDisplayNoErr)
+		{
+			// save the old window
+			normalWindow = [[self window] retain];
+			
+			// Create the full-screen window.
+			NSRect winRect = [mainScreen frame];
+			//NSLog(@"full screen frame: %f, %f, %f, %f", winRect.origin.x, winRect.origin.y, winRect.size.width, winRect.size.height);
+			mScreenWindow = [[PTYWindow alloc] initWithContentRect:winRect
+														styleMask:NSBorderlessWindowMask 
+														  backing:NSBackingStoreBuffered 
+															defer:NO 
+														   screen:[NSScreen mainScreen]];
+			
+			// Establish the window attributes.
+			[mScreenWindow setReleasedWhenClosed:NO];
+			[mScreenWindow setDisplaysWhenScreenProfileChanges:YES];
+			[mScreenWindow setDelegate:self];
+			
+			// Add tabview to the window
+			originalFrame = [TABVIEW frame];
+			originalWidth = WIDTH;
+			originalHeight = HEIGHT;
+			WIDTH = (int)((winRect.size.width - MARGIN * 2)/charWidth);
+			HEIGHT = (int)((winRect.size.height)/charHeight);
+			//NSLog(@"fulll screen size: (%d,%d)", WIDTH, HEIGHT);
+			[TABVIEW setFrame:NSMakeRect((winRect.size.width-WIDTH*charWidth-MARGIN*2)/2,(winRect.size.height-charHeight*HEIGHT)/2,WIDTH*charWidth+MARGIN*2, charHeight*HEIGHT)];
+			
+			[[mScreenWindow contentView] addSubview: TABVIEW];
+			
+			[self setWindow:mScreenWindow];
+						
+			// The window has to be above the level of the shield window.
+			[mScreenWindow setLevel:CGShieldingWindowLevel()];
+			
+			// Show the window.
+			[[NSApplication sharedApplication] removeWindowsItem:normalWindow];
+			[[NSApplication sharedApplication] addWindowsItem:mScreenWindow title:[normalWindow title] filename:NO];
+			[mScreenWindow makeKeyAndOrderFront:self];
+
+			int i;
+			for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
+			{
+				PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+				[aSession setObjectCount:i+1];
+				[[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
+				[[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
+				[[aSession SCROLLVIEW] setFrameSize:NSMakeSize(WIDTH*charWidth+MARGIN*2, charHeight*HEIGHT)];
+				[[aSession SCROLLVIEW] setHasVerticalScroller:NO];
+				[[aSession SCROLLVIEW] setLineScroll: [[aSession TEXTVIEW] lineHeight]];
+				[[aSession SCROLLVIEW] setPageScroll: 2*[[aSession TEXTVIEW] lineHeight]];
+			}
+			[[iTermController sharedInstance] setFullScreenTerminal: self];
+			[mScreenWindow makeFirstResponder:[[self currentSession] TEXTVIEW]];
+			[[mScreenWindow contentView] lockFocus];
+			[[NSColor blackColor] set];
+			NSRectFill(winRect);
+			[[mScreenWindow contentView] unlockFocus];
+		}
+	}
+	else
+	{
+		//CGDisplayRelease (displayID);
+		mScreenWindow = [self window];
+		[self setWindow: normalWindow];
+		[[NSApplication sharedApplication] addWindowsItem:normalWindow title:[normalWindow title] filename:NO];
+
+		[mScreenWindow close];
+
+		int i;
+		for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
+		{
+			PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+			[[aSession SCROLLVIEW] setHasVerticalScroller:YES];
+		}
+		[TABVIEW setFrame:originalFrame];
+		[[normalWindow contentView] addSubview: TABVIEW];
+
+		WIDTH = originalWidth;
+		HEIGHT = originalHeight;
+		[self setWindowSize];
+
+		[normalWindow makeFirstResponder:[[self currentSession] TEXTVIEW]];
+		[normalWindow release];
+		[[iTermController sharedInstance] setFullScreenTerminal: nil];
+	}
+}
+
 
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame
 {
@@ -1597,8 +1739,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal tabView: willSelectTabViewItem]", __FILE__, __LINE__);
 #endif
-    if (![[self currentSession] exited]) [[self currentSession] resetStatus];
-	[[[tabView selectedTabViewItem] identifier] setTimerMode: SLOW_MODE];
+    if (![[self currentSession] exited]) {
+		[[self currentSession] resetStatus];
+		[[[tabView selectedTabViewItem] identifier] setTimerMode: SLOW_MODE];
+	}
     
 }
 
@@ -1609,13 +1753,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
     
 	[[tabViewItem identifier] resetStatus];
-	[[tabViewItem identifier] setLabelAttribute];
 	[[[tabViewItem identifier] SCREEN] setDirty];
 	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
 	[[tabViewItem identifier] setTimerMode: FAST_MODE];
-	[self setWindowTitle];
+	if (_fullScreen) {
+		[[[self window] contentView] lockFocus];
+		[[NSColor blackColor] set];
+		NSRectFill([[self window] frame]);
+		[[[self window] contentView] unlockFocus];
+	}
+	else {
+		[[tabViewItem identifier] setLabelAttribute];
+		[self setWindowTitle];
+	}
 
-    [[TABVIEW window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
+    [[self window] makeFirstResponder:[[tabViewItem identifier] TEXTVIEW]];
 
 	// Post notifications
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermSessionBecameKey" object: [tabViewItem identifier]];    
@@ -2119,6 +2271,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Bookmarks
 - (IBAction) toggleBookmarksView: (id) sender
 {
+	if (_fullScreen) return;
+	
 	[[(PTYWindow *)[self window] drawer] toggle: sender];	
 	// Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: self userInfo: nil];    

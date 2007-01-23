@@ -49,16 +49,6 @@
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
-void runloopCallback (
-	 CFRunLoopObserverRef observer, 
-	 CFRunLoopActivity activity, 
-	 CFRunLoopObserverContext *context
-)
-{
-	PTYSession *sourceSession = context->info;
-	NSLog(@"call back from: %p", sourceSession);
-}
-
 @implementation PTYSession
 
 static NSString *TERM_ENVNAME = @"TERM";
@@ -100,7 +90,7 @@ static NSImage *warningImage;
 	
     gettimeofday(&lastInput, NULL);
     lastOutput = lastBlink = lastUpdate = lastInput;
-    antiIdle=EXIT=EXIT_WARNED=NO;
+    antiIdle=EXIT=NO;
     
     addressBookEntry=nil;
 	
@@ -173,7 +163,7 @@ static NSImage *warningImage;
 		
     // Allocate a scrollview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
-    [SCROLLVIEW setHasVerticalScroller:YES];
+    [SCROLLVIEW setHasVerticalScroller:[[iTermController sharedInstance] fullScreenTerminal] != parent];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 	
@@ -246,13 +236,13 @@ static NSImage *warningImage;
 					width:[SCREEN width]
 				   height:[SCREEN height]];
 
-	updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
+	/*updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
 													target:self
 												  selector:@selector(_updateTimerTick:)
 												  userInfo:nil
 												   repeats:YES] retain]; 
 	
-	updateCount = 0;
+	updateCount = 0; */
 		
 }
 
@@ -1520,16 +1510,6 @@ static NSImage *warningImage;
 	
 }
 
-- (BOOL) useTransparency
-{
-  return [TEXTVIEW useTransparency];
-}
-
-- (void) setUseTransparency: (BOOL) flag
-{
-  [TEXTVIEW setUseTransparency: flag];
-}
-
 - (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
 {
     [TEXTVIEW setColorTable:index highLight:hili color:c];
@@ -1657,16 +1637,6 @@ static NSImage *warningImage;
     return EXIT;
 }
 
-- (BOOL)exitWarned
-{
-	return EXIT_WARNED;
-}
-
-- (void)setExitWarned
-{
-	EXIT_WARNED = YES;
-}
-
 - (int) optionKey
 {
 	NSString *kbProfile;
@@ -1738,15 +1708,16 @@ static NSImage *warningImage;
 		[TEXTVIEW scrollLineUp:nil];
 	}
 	
+	updateCount = 0;
 	[SCREEN resetScrollUpLines];
 }
 
 - (void)setTimerMode:(int)mode
-{
-
+{	
 	//stop the timer;
-	if (updateTimer) {
+	if (updateTimer || EXIT) {
 		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+		if (EXIT) return;
 	}
 
 	switch (mode) {

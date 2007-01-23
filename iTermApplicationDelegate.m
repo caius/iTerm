@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.50 2007-01-12 23:15:47 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.51 2007-01-23 04:46:12 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -222,7 +222,7 @@ static BOOL usingAutoLaunchScript = NO;
 	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:self andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
 
 	aboutController = nil;
-
+	
     return self;
 }
 
@@ -248,22 +248,38 @@ static BOOL usingAutoLaunchScript = NO;
 // Action methods
 - (IBAction)newWindow:(id)sender
 {
+	// turn full screen off first
+	if ([[iTermController sharedInstance] fullScreenTerminal]) 
+		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	
     [[iTermController sharedInstance] newWindow:sender];
 }
 
 - (IBAction)newSession:(id)sender
 {
+	// turn full screen off first
+	//if ([[iTermController sharedInstance] fullScreenTerminal]) 
+	//	[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	
     [[iTermController sharedInstance] newSession:sender];
 }
 
 // navigation
 - (IBAction) previousTerminal: (id) sender
 {
+	// turn full screen off first
+	if ([[iTermController sharedInstance] fullScreenTerminal]) 
+		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	
     [[iTermController sharedInstance] previousTerminal:sender];
 }
 
 - (IBAction) nextTerminal: (id) sender
 {
+	// turn full screen off first
+	if ([[iTermController sharedInstance] fullScreenTerminal]) 
+		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	
     [[iTermController sharedInstance] nextTerminal:sender];
 }
 
@@ -274,11 +290,19 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (IBAction)showBookmarkWindow:(id)sender
 {
+	// turn full screen off first
+	if ([[iTermController sharedInstance] fullScreenTerminal]) 
+		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	
     [[iTermBookmarkController sharedInstance] showWindow];
 }
 
 - (IBAction)showProfileWindow:(id)sender
 {
+	// turn full screen off first
+	if ([[iTermController sharedInstance] fullScreenTerminal]) 
+		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	
     [[iTermProfileWindowController sharedInstance] showProfilesWindow: nil];
 }
 
@@ -331,9 +355,9 @@ static BOOL usingAutoLaunchScript = NO;
 // transparency
 - (IBAction) useTransparency: (id) sender
 {
-  BOOL b = [[[[iTermController sharedInstance] currentTerminal] currentSession] useTransparency];
-  [[[[iTermController sharedInstance] currentTerminal] currentSession] setUseTransparency: !b];
-
+  BOOL b = [[[iTermController sharedInstance] currentTerminal]useTransparency];
+  [[[iTermController sharedInstance] currentTerminal] setUseTransparency: !b];
+  
   // Post a notification
   [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
 }
@@ -424,6 +448,10 @@ static BOOL usingAutoLaunchScript = NO;
 // size
 - (IBAction) returnToDefaultSize: (id) sender
 {
+	// turn full screen off first
+	if ([[iTermController sharedInstance] fullScreenTerminal]) 
+		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	
     PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
     NSDictionary *abEntry = [[frontTerminal currentSession] addressBookEntry];
     NSString *displayProfile = [abEntry objectForKey: KEY_DISPLAY_PROFILE];
@@ -443,7 +471,8 @@ static BOOL usingAutoLaunchScript = NO;
 // Notifications
 - (void) reloadMenus: (NSNotification *) aNotification
 {
-
+	if ([[iTermController sharedInstance] fullScreenTerminal]) return;
+	
     PseudoTerminal *frontTerminal = [self currentTerminal];
     if (frontTerminal != [aNotification object]) return;
 	
@@ -573,7 +602,7 @@ static BOOL usingAutoLaunchScript = NO;
 	else {
 		[logStart setEnabled: ![aSession logging]];
 		[logStop setEnabled: [aSession logging]];
-		[toggleTransparency setState: [aSession useTransparency] ? NSOnState : NSOffState];
+		[toggleTransparency setState: [currentTerminal useTransparency] ? NSOnState : NSOffState];
 		[toggleTransparency setEnabled: YES];
 	}
 }
@@ -582,7 +611,7 @@ static BOOL usingAutoLaunchScript = NO;
 {
   if ([menuItem action] == @selector(useTransparency:)) 
   {
-    BOOL b = [[[[iTermController sharedInstance] currentTerminal] currentSession] useTransparency];
+    BOOL b = [[[iTermController sharedInstance] currentTerminal] useTransparency];
     [menuItem setState: b == YES ? NSOnState : NSOffState];
   }
   return YES;
@@ -643,7 +672,6 @@ static BOOL usingAutoLaunchScript = NO;
         [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
     }
 }
-
 
 @end
 

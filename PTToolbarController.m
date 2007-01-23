@@ -47,7 +47,6 @@ NSString *CommandToolbarItem = @"Command";
 - (id)initWithPseudoTerminal:(PseudoTerminal*)terminal;
 {
     self = [super init];
-    
     _pseudoTerminal = terminal; // don't retain;
     
     // Add ourselves as an observer for notifications to reload the addressbook.
@@ -198,7 +197,7 @@ NSString *CommandToolbarItem = @"Command";
 
 - (void)setupToolbar;
 {   
-    _toolbar = [[NSToolbar alloc] initWithIdentifier: @"Terminal Toolbar"];
+	_toolbar = [[NSToolbar alloc] initWithIdentifier: @"Terminal Toolbar"];
     [_toolbar setVisible:true];
     [_toolbar setDelegate:self];
     [_toolbar setAllowsUserCustomization:YES];

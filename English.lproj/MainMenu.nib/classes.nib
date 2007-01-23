@@ -21,6 +21,7 @@
                 showFindPanel = id; 
                 toggleBookmarksView = id; 
                 toggleFontSizeFollowWindowResize = id; 
+                toggleFullScreen = id; 
                 toggleInputToAllSessions = id; 
                 toggleRemapDeleteKey = id; 
             }; 

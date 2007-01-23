@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.12 2006-09-26 07:54:39 yfabian Exp $ */
+/* $Id: PTYWindow.m,v 1.13 2007-01-23 04:46:12 yfabian Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -99,6 +99,11 @@
 	[aDrawer retain];
 	[drawer release];
 	drawer = aDrawer;
+}
+
+- (BOOL)canBecomeKeyWindow
+{
+	return YES;
 }
 
 - (void)sendEvent:(NSEvent *)event

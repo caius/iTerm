@@ -56,7 +56,7 @@
     VT100Terminal *TERMINAL;
     NSString *TERM_VALUE;
     VT100Screen   *SCREEN;
-    BOOL EXIT, EXIT_WARNED;
+    BOOL EXIT;
     NSView *view;
     PTYScrollView *SCROLLVIEW;
     PTYTextView *TEXTVIEW;
@@ -219,8 +219,6 @@
 - (void) setCursorTextColor: (NSColor *) aColor;
 - (float) transparency;
 - (void)setTransparency:(float)transparency;
-- (BOOL) useTransparency;
-- (void) setUseTransparency: (BOOL) flag;
 - (BOOL) disableBold;
 - (void) setDisableBold: (BOOL) boldFlag;
 - (BOOL) disableBold;
@@ -237,8 +235,6 @@
 - (void)setBell: (BOOL) flag;
 - (BOOL)isProcessing;
 - (void)setIsProcessing: (BOOL) aFlag;
-- (BOOL)exitWarned;
-- (void)setExitWarned;
 
 - (void)sendCommand: (NSString *)command;
 

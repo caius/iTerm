@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.151 2007-01-12 07:08:49 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.152 2007-01-23 04:46:12 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -219,7 +219,11 @@ static NSString *NoHandler = @"<No Handler>";
 	[useBorder setState: defaultUseBorder?NSOnState:NSOffState];
     
 	[self showWindow: self];
-
+	[[self window] setLevel:CGShieldingWindowLevel()];
+	
+	// Show the window.
+	[[self window] makeKeyAndOrderFront:self];
+	
 }
 
 - (IBAction)settingChanged:(id)sender

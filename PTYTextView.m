@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.296 2007-01-12 07:08:49 yfabian Exp $
+// $Id: PTYTextView.m,v 1.297 2007-01-23 04:46:12 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -593,7 +593,7 @@ static int cacheSize;
 	NSSize anotherSize = aSize;
 	
 	anotherSize.height = [dataSource numberOfLines] * lineHeight;
-	
+
 	[super setFrameSize: anotherSize];
 	
     if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) 
@@ -647,13 +647,12 @@ static int cacheSize;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTextView adjustScroll]", __FILE__, __LINE__ );
 #endif
-    proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
+	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
 
 	if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
         forceUpdate = YES; // we have to update everything if there's a background image
     
 	[self setNeedsDisplay:YES];
-	
 	return proposedVisibleRect;
 }
 
@@ -799,14 +798,14 @@ static int cacheSize;
 	lineOffset = rect.origin.y/lineHeight;
     
 	// How many lines do we need to draw?
-	numLines = rect.size.height/lineHeight;
+	numLines = ceil(rect.size.height/lineHeight);
 
 	// Which line is our screen start?
 	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
     //NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
 		
     // [self adjustScroll] should've made sure we are at an integer multiple of a line
-	curY=rect.origin.y +lineHeight;
+	curY=(lineOffset+1)*lineHeight;
 	
 	// redraw margins if we have a background image, otherwise we can still "see" the margin
 	if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
@@ -826,8 +825,7 @@ static int cacheSize;
 		if(line >= [dataSource numberOfLines])
 		{
 			//NSLog(@"%s (0x%x): illegal line index %d >= %d", __PRETTY_FUNCTION__, self, line, [dataSource numberOfLines]);
-			[dataSource releaseLock];
-			return;
+			break;
 		}
 		
 		// get the line

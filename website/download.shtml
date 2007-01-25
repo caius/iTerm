@@ -22,7 +22,7 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Download:</STRONG></FONT><BR>
 <UL><A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">iTerm 0.9.4</A>: The latest iTerm release<IMG src="new.gif"><BR>
-<A HREF="http://iterm.sourceforge.net/iTerm_0.9.4.1323.zip">Recent binary build from CVS</A> (0.9.4.1323, English only, <A HREF="http://iterm.sourceforge.net/Changelog.html">changelog</a>)<IMG src="new.gif"><BR>
+<A HREF="http://iterm.sourceforge.net/iTerm_0.9.4.1324.zip">Recent binary build from CVS</A> (0.9.4.1324, English only, <A HREF="http://iterm.sourceforge.net/Changelog.html">changelog</a>)<IMG src="new.gif"><BR>
 This build is Tiger only. (In principle, the CVS code should compile and run under Panther. Howerver, due to the limited resource, ie. my only powerbook G4, I can't test it. Any user contribution will be welcome.)<?BR>
 </UL>
 

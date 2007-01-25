@@ -21,6 +21,14 @@
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
+<STRONG>Go Full Screen!</STRONG><IMG src="new.gif"> 1/24/07<BR>
+Happy 2007!! We are continuing working on improving our iTerm. The first exciting new feature
+we are introducing in the new year is the support for the full screen mode. You can turn any
+terminal window into full screen. Although the tab bar will be hidden, you can still use
+your keyboard to navigate between tabs under the full screen mode.  You can go to the 
+<A HREF="http://iterm.sourceforge.net/download.shtml">download page</a> and test the latest CVS 
+build.<BR><BR>
+
 <STRONG>0.9.4 for Panther</STRONG> 12/21/06<BR>
 Merry Christmas to everybody! The build for Panther is finally available. This build includes a 
 few post-0.9.4 fixes. For Tiger users, please download the latest CVS build (0.9.4.1221). It 

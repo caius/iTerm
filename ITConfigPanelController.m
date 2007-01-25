@@ -66,6 +66,7 @@ static BOOL onScreen = NO;
     [singleInstance loadConfigWindow: nil];
 	
 	[[singleInstance window] setFrameAutosaveName: @"Config Panel"];
+	[[singleInstance window] setLevel:CGShieldingWindowLevel()];
 	[[singleInstance window] makeKeyAndOrderFront: self];
     onScreen = YES;
 }
@@ -270,6 +271,7 @@ static BOOL onScreen = NO;
 	[aFontPanel setAccessoryView: nil];
     [[NSFontManager sharedFontManager] setSelectedFont:configFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
+	[aFontPanel setLevel:CGShieldingWindowLevel()];
 }
 
 - (IBAction)windowConfigNAFont:(id)sender
@@ -283,6 +285,7 @@ static BOOL onScreen = NO;
 	[aFontPanel setAccessoryView: nil];
     [[NSFontManager sharedFontManager] setSelectedFont:configNAFont isMultiple:NO];
     [[NSFontManager sharedFontManager] orderFrontFontPanel:self];
+	[aFontPanel setLevel:CGShieldingWindowLevel()];
 }
 
 
@@ -315,6 +318,8 @@ static BOOL onScreen = NO;
 // background image stuff
 - (IBAction) useBackgroundImage: (id) sender
 {
+	if (![_pseudoTerminal fullScreen]) return;
+
     [CONFIG_BACKGROUND setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
     if([useBackgroundImage state]==NSOffState)
     {
@@ -323,7 +328,7 @@ static BOOL onScreen = NO;
 		[backgroundImageView setImage: nil];
 		[[_pseudoTerminal currentSession] setBackgroundImagePath: @""];
     }
-    else
+    else 
 		[self chooseBackgroundImage: sender];
 }
 
@@ -346,7 +351,7 @@ static BOOL onScreen = NO;
 	
     panel = [NSOpenPanel openPanel];
     [panel setAllowsMultipleSelection: NO];
-	
+		
     directory = NSHomeDirectory();
     filename = [NSString stringWithString: @""];
 	

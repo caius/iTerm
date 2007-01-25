@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.391 2007-01-23 04:46:12 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.392 2007-01-25 07:29:53 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -171,6 +171,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 												defer: NO];
 	[self setWindow: myWindow];
 	[myWindow release];
+
+	_fullScreen = NO;
 	
 	// create and set up drawer
 	myDrawer = [[NSDrawer alloc] initWithContentSize: NSMakeSize(20, 100) preferredEdge: NSMinXEdge];
@@ -225,6 +227,35 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
+
+	_resizeInProgressFlag = NO;
+
+    return self;
+}
+
+- (id)initWithFullScreenWindowNibName: (NSString *) windowNibName
+{
+    PTYWindow *myWindow;
+	
+    if ((self = [super initWithWindowNibName: windowNibName]) == nil)
+		return nil;
+			
+	myWindow = [[PTYWindow alloc] initWithContentRect: [[NSScreen mainScreen] frame]
+											styleMask: NSBorderlessWindowMask 
+											  backing: NSBackingStoreBuffered 
+												defer: NO];
+	[self setWindow: myWindow];
+	[myWindow setLevel:CGShieldingWindowLevel()];
+	[myWindow release];
+	_fullScreen = YES;
+	[[iTermController sharedInstance] setFullScreenTerminal: self];
+		
+	[self _commonInit];
+	
+#if DEBUG_ALLOC
+    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
+#endif
+	_resizeInProgressFlag = NO;
 	
     return self;
 }
@@ -272,7 +303,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // Calculate the size of the terminal
     contentSize = [NSScrollView contentSizeForFrameSize: [TABVIEW contentRect].size
 								  hasHorizontalScroller: NO
-									hasVerticalScroller: YES
+									hasVerticalScroller: ![[PreferencePanel sharedInstance] hideScrollbar]
 											 borderType: NSNoBorder];
 	
     [self setCharSizeUsingFont: aFont1];
@@ -290,10 +321,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(TABVIEW != nil)
 		return;
 	
-    _toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
-	
-	if ([[self window] respondsToSelector:@selector(setBottomCornerRounded:)])
-		[[self window] setBottomCornerRounded:NO];
+    if (!_fullScreen) {
+		_toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
+		if ([[self window] respondsToSelector:@selector(setBottomCornerRounded:)])
+			[[self window] setBottomCornerRounded:NO];
+	}
     
 	// create the tab bar control
 	aRect = [[[self window] contentView] bounds];
@@ -321,7 +353,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[TABVIEW setDelegate: tabBarControl];
 	[tabBarControl setDelegate: self];
 	[tabBarControl setHideForSingleTab: NO];
-    
+    [tabBarControl setHidden:_fullScreen];
 	
 	// set the style of tabs to match window style
 	switch ([[PreferencePanel sharedInstance] windowStyle]) {
@@ -339,25 +371,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             break;
     }
 
-	
-	// position the tabview and control
-	aRect = [TABVIEW frame];
-	aRect.origin.x = 0;
-	aRect.origin.y = 0;
-	[TABVIEW setFrame: aRect];		
-	aRect = [tabBarControl frame];
-	aRect.origin.x = 0;
-	aRect.origin.y = [TABVIEW frame].size.height;
-	aRect.size.width = [[[self window] contentView] bounds].size.width;
-	[tabBarControl setFrame: aRect];	
-    [tabBarControl setSizeCellsToFit:NO];
-    [tabBarControl setCellMinWidth:75];
-    [tabBarControl setCellOptimumWidth:175];
-	
-	
     [[[self window] contentView] setAutoresizesSubviews: YES];
-		
-	
     [[self window] setDelegate: self];
 		
 	[[NSNotificationCenter defaultCenter] addObserver: self
@@ -383,14 +397,44 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         if(displayProfile == nil)
             displayProfile = [displayProfileMgr defaultProfileName];
         
- 		WIDTH = [displayProfileMgr windowColumnsForProfile: displayProfile];
-		HEIGHT = [displayProfileMgr windowRowsForProfile: displayProfile];
 		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
 		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
 			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
 		[self setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
                                    vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
+
+ 		if (_fullScreen) {
+			aRect = [TABVIEW frame];
+			WIDTH = (int)((aRect.size.width - MARGIN * 2)/charWidth);
+			HEIGHT = (int)((aRect.size.height)/charHeight);
+		}
+		else {
+			WIDTH = [displayProfileMgr windowColumnsForProfile: displayProfile];
+			HEIGHT = [displayProfileMgr windowRowsForProfile: displayProfile];
+		}
     }
+
+	// position the tabview and control
+	if (_fullScreen) {
+		aRect = [[[self window] contentView] bounds];
+		aRect = NSMakeRect(floor((aRect.size.width-WIDTH*charWidth-MARGIN*2)/2),floor((aRect.size.height-charHeight*HEIGHT)/2),WIDTH*charWidth+MARGIN*2, charHeight*HEIGHT);
+		[TABVIEW setFrame: aRect];
+	}
+	else {
+		aRect = [TABVIEW frame];
+		aRect.origin.x = 0;
+		aRect.origin.y = 0;
+		[TABVIEW setFrame: aRect];		
+		aRect = [tabBarControl frame];
+		aRect.origin.x = 0;
+		aRect.origin.y = [TABVIEW frame].size.height;
+		aRect.size.width = [[[self window] contentView] bounds].size.width;
+		[tabBarControl setFrame: aRect];	
+		[tabBarControl setSizeCellsToFit:NO];
+		[tabBarControl setCellMinWidth:75];
+		[tabBarControl setCellOptimumWidth:175];
+	}
+	
 }
 
 -  (id) commandField
@@ -542,10 +586,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     numberOfSessions = [TABVIEW numberOfTabViewItems]; 
     if(numberOfSessions == 1 && [self windowInited])
     {   
-		if (_fullScreen) {
-			[self toggleFullScreen: nil];
-		}
-        [[self window] close];
+		[[self window] close];
     }
 	else {
          // now get rid of this session
@@ -763,159 +804,179 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSPoint topLeft;
 	float max_height;
 	BOOL vmargin_added = NO;
+	BOOL hasScrollbar = [[iTermController sharedInstance] fullScreenTerminal] != self && ![[PreferencePanel sharedInstance] hideScrollbar];
 		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize] (%d,%d)", __FILE__, __LINE__, WIDTH, HEIGHT );
 #endif
     
-    if([self windowInited] == NO || _fullScreen)
+    if([self windowInited] == NO) 
 		return;
 	
-	aRect = [thisWindow contentRectForFrameRect:[[thisWindow screen] visibleFrame]];
-	if ([TABVIEW numberOfTabViewItems] > 1 || ![[PreferencePanel sharedInstance] hideTab])
-		aRect.size.height -= [tabBarControl frame].size.height;
-	max_height = aRect.size.height / charHeight;
-		
-    if (WIDTH<20) WIDTH=20;
-    if (HEIGHT<2) HEIGHT=2;
-	if (HEIGHT>max_height) HEIGHT=max_height;
-	
-    // desired size of textview
-    vsize.width = charWidth * WIDTH + MARGIN * 2;
-	vsize.height = charHeight * HEIGHT;
-    
-    // NSLog(@"width=%d,height=%d",[[[_sessionMgr currentSession] SCREEN] width],[[[_sessionMgr currentSession] SCREEN] height]);
-    
-	// desired size of scrollview
-	size = [PTYScrollView frameSizeForContentSize:vsize
-							hasHorizontalScroller:NO
-							  hasVerticalScroller:YES
-									   borderType:NSNoBorder];
-#if 0
-    NSLog(@"%s: scrollview content size %.1f, %.1f", __PRETTY_FUNCTION__,
-		  size.width, size.height);
-#endif
-	
-	
-	// desired size of tabview
-	tabViewSize = [PTYTabView frameSizeForContentSize:size 
-										  tabViewType:[TABVIEW tabViewType] 
-										  controlSize:[TABVIEW controlSize]];
-#if 0
-    NSLog(@"%s: tabview content size %.1f, %.1f", __PRETTY_FUNCTION__,
-		  tabViewSize.width, tabViewSize.height);
-#endif
-	
-	// desired size of window content
-	winSize = tabViewSize;
-	
-    if([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
-	{
-		[tabBarControl setHidden: YES];
-		aRect.origin.x = 0;
-		aRect.origin.y = [[PreferencePanel sharedInstance] useBorder] ? VMARGIN : 0;
-		aRect.size = tabViewSize;
-		[TABVIEW setFrame: aRect];		
-		if ([[PreferencePanel sharedInstance] useBorder]) {
-			winSize.height += VMARGIN;
-			vmargin_added = YES;
-		}
-	}
-	else
-	{
-		[tabBarControl setHidden: NO];
-        [tabBarControl setTabLocation: [[PreferencePanel sharedInstance] tabViewType]];
-        winSize.height += [tabBarControl frame].size.height;
-		if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
-            aRect.origin.x = 0;
-            aRect.origin.y = [[PreferencePanel sharedInstance] useBorder] ? VMARGIN : 0;
-            aRect.size = tabViewSize;
-            [TABVIEW setFrame: aRect];
-            aRect.origin.y += aRect.size.height;
-            aRect.size.height = [tabBarControl frame].size.height;
-            [tabBarControl setFrame: aRect];
-			if ([[PreferencePanel sharedInstance] useBorder]) {
-				winSize.height += VMARGIN;
-				vmargin_added = YES;
+	if (!_resizeInProgressFlag) {
+		_resizeInProgressFlag = YES;
+		if (!_fullScreen) {
+			aRect = [thisWindow contentRectForFrameRect:[[thisWindow screen] visibleFrame]];
+			if ([TABVIEW numberOfTabViewItems] > 1 || ![[PreferencePanel sharedInstance] hideTab])
+				aRect.size.height -= [tabBarControl frame].size.height;
+			max_height = aRect.size.height / charHeight;
+				
+			if (WIDTH<20) WIDTH=20;
+			if (HEIGHT<2) HEIGHT=2;
+			if (HEIGHT>max_height) HEIGHT=max_height;
+			
+			// desired size of textview
+			vsize.width = charWidth * WIDTH + MARGIN * 2;
+			vsize.height = charHeight * HEIGHT;
+			
+			// NSLog(@"width=%d,height=%d",[[[_sessionMgr currentSession] SCREEN] width],[[[_sessionMgr currentSession] SCREEN] height]);
+			
+			// desired size of scrollview
+			size = [PTYScrollView frameSizeForContentSize:vsize
+									hasHorizontalScroller:NO
+									  hasVerticalScroller:hasScrollbar
+											   borderType:NSNoBorder];
+		#if 0
+			NSLog(@"%s: scrollview content size %.1f, %.1f", __PRETTY_FUNCTION__,
+				  size.width, size.height);
+		#endif
+			
+			
+			// desired size of tabview
+			tabViewSize = [PTYTabView frameSizeForContentSize:size 
+												  tabViewType:[TABVIEW tabViewType] 
+												  controlSize:[TABVIEW controlSize]];
+		#if 0
+			NSLog(@"%s: tabview content size %.1f, %.1f", __PRETTY_FUNCTION__,
+				  tabViewSize.width, tabViewSize.height);
+		#endif
+			
+			// desired size of window content
+			winSize = tabViewSize;
+			
+			if([TABVIEW numberOfTabViewItems] == 1 && [[PreferencePanel sharedInstance] hideTab])
+			{
+				[tabBarControl setHidden: YES];
+				aRect.origin.x = 0;
+				aRect.origin.y = [[PreferencePanel sharedInstance] useBorder] ? VMARGIN : 0;
+				aRect.size = tabViewSize;
+				[TABVIEW setFrame: aRect];		
+				if ([[PreferencePanel sharedInstance] useBorder]) {
+					winSize.height += VMARGIN;
+					vmargin_added = YES;
+				}
 			}
-        }
-        else {
-            aRect.origin.x = 0;
-            aRect.origin.y = 0;
-            aRect.size.width = tabViewSize.width;
-            aRect.size.height = [tabBarControl frame].size.height;
-            [tabBarControl setFrame: aRect];
-            aRect.origin.y = [tabBarControl frame].size.height;
-            aRect.size.height = tabViewSize.height;
-            //[TABVIEW setAutoresizesSubviews: NO];
-            [TABVIEW setFrame: aRect];
-            //[TABVIEW setAutoresizesSubviews: YES];
-        }
- 	}
-	
-    // set the style of tabs to match window style
-	switch ([[PreferencePanel sharedInstance] windowStyle]) {
-        case 0:
-            [tabBarControl setStyleNamed:@"Metal"];
-            break;
-        case 1:
-            [tabBarControl setStyleNamed:@"Aqua"];
-            break;
-        case 2:
-            [tabBarControl setStyleNamed:@"Unified"];
-            break;
-        default:
-            [tabBarControl setStyleNamed:@"Adium"];
-            break;
-    }
-    
-    [tabBarControl setDisableTabClose:[[PreferencePanel sharedInstance] useCompactLabel]];
-    [tabBarControl setCellMinWidth: [[PreferencePanel sharedInstance] useCompactLabel]?
-                                  [[PreferencePanel sharedInstance] minCompactTabWidth]:
-                                  [[PreferencePanel sharedInstance] minTabWidth]];
-    [tabBarControl setSizeCellsToFit: [[PreferencePanel sharedInstance] useUnevenTabs]];
-    [tabBarControl setCellOptimumWidth:  [[PreferencePanel sharedInstance] optimumTabWidth]];
-    
-    int i;
-    for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
-    {
-        PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-        [aSession setObjectCount:i+1];
-        [[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
-        [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
-		[[aSession SCROLLVIEW] setLineScroll: [[aSession TEXTVIEW] lineHeight]];
-		[[aSession SCROLLVIEW] setPageScroll: 2*[[aSession TEXTVIEW] lineHeight]];
+			else
+			{
+				[tabBarControl setHidden: NO];
+				[tabBarControl setTabLocation: [[PreferencePanel sharedInstance] tabViewType]];
+				winSize.height += [tabBarControl frame].size.height;
+				if ([[PreferencePanel sharedInstance] tabViewType] == PSMTab_TopTab) {
+					aRect.origin.x = 0;
+					aRect.origin.y = [[PreferencePanel sharedInstance] useBorder] ? VMARGIN : 0;
+					aRect.size = tabViewSize;
+					[TABVIEW setFrame: aRect];
+					aRect.origin.y += aRect.size.height;
+					aRect.size.height = [tabBarControl frame].size.height;
+					[tabBarControl setFrame: aRect];
+					if ([[PreferencePanel sharedInstance] useBorder]) {
+						winSize.height += VMARGIN;
+						vmargin_added = YES;
+					}
+				}
+				else {
+					aRect.origin.x = 0;
+					aRect.origin.y = 0;
+					aRect.size.width = tabViewSize.width;
+					aRect.size.height = [tabBarControl frame].size.height;
+					[tabBarControl setFrame: aRect];
+					aRect.origin.y = [tabBarControl frame].size.height;
+					aRect.size.height = tabViewSize.height;
+					//[TABVIEW setAutoresizesSubviews: NO];
+					[TABVIEW setFrame: aRect];
+					//[TABVIEW setAutoresizesSubviews: YES];
+				}
+			}
+			
+			// set the style of tabs to match window style
+			switch ([[PreferencePanel sharedInstance] windowStyle]) {
+				case 0:
+					[tabBarControl setStyleNamed:@"Metal"];
+					break;
+				case 1:
+					[tabBarControl setStyleNamed:@"Aqua"];
+					break;
+				case 2:
+					[tabBarControl setStyleNamed:@"Unified"];
+					break;
+				default:
+					[tabBarControl setStyleNamed:@"Adium"];
+					break;
+			}
+			
+			[tabBarControl setDisableTabClose:[[PreferencePanel sharedInstance] useCompactLabel]];
+			[tabBarControl setCellMinWidth: [[PreferencePanel sharedInstance] useCompactLabel]?
+										  [[PreferencePanel sharedInstance] minCompactTabWidth]:
+										  [[PreferencePanel sharedInstance] minTabWidth]];
+			[tabBarControl setSizeCellsToFit: [[PreferencePanel sharedInstance] useUnevenTabs]];
+			[tabBarControl setCellOptimumWidth:  [[PreferencePanel sharedInstance] optimumTabWidth]];
+		#if 0
+			NSLog(@"%s: window content size %.1f, %.1f", __PRETTY_FUNCTION__,
+				  winSize.width, winSize.height);
+		#endif
 
-    }
-    
-#if 0
-    NSLog(@"%s: window content size %.1f, %.1f", __PRETTY_FUNCTION__,
-		  winSize.width, winSize.height);
-#endif
-	
-	
-	// preserve the top left corner of the frame
-    aRect = [thisWindow frame];
-    topLeft.x = aRect.origin.x;
-    topLeft.y = aRect.origin.y + aRect.size.height;
-	
-	
-	[[thisWindow contentView] setAutoresizesSubviews: NO];
-    [thisWindow setContentSize:winSize];
-	[[thisWindow contentView] setAutoresizesSubviews: YES]; 
-	[thisWindow setFrameTopLeftPoint: topLeft];
-	
-	if (vmargin_added) {
-		[[thisWindow contentView] lockFocus];
-		[[NSColor windowBackgroundColor] set];
-		NSRectFill(NSMakeRect(0,0,vsize.width,VMARGIN));
-		[[thisWindow contentView] unlockFocus];
+		}
+		else {
+			aRect = [thisWindow frame];
+			WIDTH = (int)((aRect.size.width - MARGIN * 2)/charWidth);
+			HEIGHT = (int)((aRect.size.height)/charHeight);
+			aRect = NSMakeRect(floor((aRect.size.width-WIDTH*charWidth-MARGIN*2)/2),floor((aRect.size.height-charHeight*HEIGHT)/2),WIDTH*charWidth+MARGIN*2, charHeight*HEIGHT);
+			[TABVIEW setFrame: aRect];
+			/*[[thisWindow contentView] lockFocus];
+			[[NSColor blackColor] set];
+			NSRectFill([thisWindow frame]);
+			[[thisWindow contentView] unlockFocus];*/
+		}			
+		
+		int i;
+		for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
+		{
+			PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
+			[aSession setObjectCount:i+1];
+			[[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
+			[[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
+			[[aSession SCROLLVIEW] setLineScroll: [[aSession TEXTVIEW] lineHeight]];
+			[[aSession SCROLLVIEW] setPageScroll: 2*[[aSession TEXTVIEW] lineHeight]];
+			[[aSession SCROLLVIEW] setHasVerticalScroller:hasScrollbar];
+		}
+		
+		if (!_fullScreen) {
+			// preserve the top left corner of the frame
+			aRect = [thisWindow frame];
+			topLeft.x = aRect.origin.x;
+			topLeft.y = aRect.origin.y + aRect.size.height;
+			
+			
+			[[thisWindow contentView] setAutoresizesSubviews: NO];
+			[thisWindow setContentSize:winSize];
+			[[thisWindow contentView] setAutoresizesSubviews: YES]; 
+			[thisWindow setFrameTopLeftPoint: topLeft];
+
+			if (vmargin_added) {
+				[[thisWindow contentView] lockFocus];
+				[[NSColor windowBackgroundColor] set];
+				NSRectFill(NSMakeRect(0,0,vsize.width,VMARGIN));
+				[[thisWindow contentView] unlockFocus];
+			}
+		}
+		
+		_resizeInProgressFlag = NO;
 	}
 
 	[[[self currentSession] TEXTVIEW] setForceUpdate: YES];
-//    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 	[[[self currentSession] SCROLLVIEW] setNeedsDisplay: YES];
 	[tabBarControl update];
+	
 }
 
 
@@ -1247,10 +1308,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  __FILE__, __LINE__, aNotification);
 #endif
 	
-	if (_fullScreen) {
-		[self toggleFullScreen: nil];
-	}
-	
 	// tabBarControl is holding on to us, so we have to tell it to let go
 	[tabBarControl setDelegate: nil];
 	
@@ -1423,116 +1480,99 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Bookmarks
 - (IBAction) toggleFullScreen: (id) sender
 {
-	static CGDirectDisplayID displayID;
-	static NSWindow *normalWindow;
-	static NSRect originalFrame;
-	static int originalWidth, originalHeight;
-	NSWindow *mScreenWindow;
-	
 	if ([[iTermController sharedInstance] fullScreenTerminal] != self) {
 		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
 	}
-		
-	_fullScreen = !_fullScreen;
-	
-	if (_fullScreen) {
-		// Get the screen information.
-		NSScreen* mainScreen = [NSScreen mainScreen]; 
-		NSDictionary* screenInfo = [mainScreen deviceDescription]; 
-		NSNumber* screenID = [screenInfo objectForKey:@"NSScreenNumber"];
-		
-		// Capture the screen.
-		//displayID = (CGDirectDisplayID)[screenID longValue]; 
-		//CGDisplayErr err = CGDisplayCapture(displayID);
-		CGDisplayErr err=CGDisplayNoErr;
-		if (err == CGDisplayNoErr)
-		{
-			// save the old window
-			normalWindow = [[self window] retain];
+	if (!_fullScreen) {
+		PseudoTerminal *fullScreenTerminal = [[PseudoTerminal alloc] initWithFullScreenWindowNibName:@"PseudoTerminal"];
+		if (fullScreenTerminal) {
+			PTYSession *currentSession = [self currentSession];
 			
-			// Create the full-screen window.
-			NSRect winRect = [mainScreen frame];
-			//NSLog(@"full screen frame: %f, %f, %f, %f", winRect.origin.x, winRect.origin.y, winRect.size.width, winRect.size.height);
-			mScreenWindow = [[PTYWindow alloc] initWithContentRect:winRect
-														styleMask:NSBorderlessWindowMask 
-														  backing:NSBackingStoreBuffered 
-															defer:NO 
-														   screen:[NSScreen mainScreen]];
-			
-			// Establish the window attributes.
-			[mScreenWindow setReleasedWhenClosed:NO];
-			[mScreenWindow setDisplaysWhenScreenProfileChanges:YES];
-			[mScreenWindow setDelegate:self];
-			
-			// Add tabview to the window
-			originalFrame = [TABVIEW frame];
-			originalWidth = WIDTH;
-			originalHeight = HEIGHT;
-			WIDTH = (int)((winRect.size.width - MARGIN * 2)/charWidth);
-			HEIGHT = (int)((winRect.size.height)/charHeight);
-			//NSLog(@"fulll screen size: (%d,%d)", WIDTH, HEIGHT);
-			[TABVIEW setFrame:NSMakeRect((winRect.size.width-WIDTH*charWidth-MARGIN*2)/2,(winRect.size.height-charHeight*HEIGHT)/2,WIDTH*charWidth+MARGIN*2, charHeight*HEIGHT)];
-			
-			[[mScreenWindow contentView] addSubview: TABVIEW];
-			
-			[self setWindow:mScreenWindow];
-						
-			// The window has to be above the level of the shield window.
-			[mScreenWindow setLevel:CGShieldingWindowLevel()];
-			
-			// Show the window.
-			[[NSApplication sharedApplication] removeWindowsItem:normalWindow];
-			[[NSApplication sharedApplication] addWindowsItem:mScreenWindow title:[normalWindow title] filename:NO];
-			[mScreenWindow makeKeyAndOrderFront:self];
-
-			int i;
-			for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
-			{
-				PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-				[aSession setObjectCount:i+1];
-				[[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
-				[[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
-				[[aSession SCROLLVIEW] setFrameSize:NSMakeSize(WIDTH*charWidth+MARGIN*2, charHeight*HEIGHT)];
-				[[aSession SCROLLVIEW] setHasVerticalScroller:NO];
-				[[aSession SCROLLVIEW] setLineScroll: [[aSession TEXTVIEW] lineHeight]];
-				[[aSession SCROLLVIEW] setPageScroll: 2*[[aSession TEXTVIEW] lineHeight]];
-			}
-			[[iTermController sharedInstance] setFullScreenTerminal: self];
-			[mScreenWindow makeFirstResponder:[[self currentSession] TEXTVIEW]];
-			[[mScreenWindow contentView] lockFocus];
+			[fullScreenTerminal initWindowWithAddressbook: [currentSession addressBookEntry]];
+			[[[fullScreenTerminal window] contentView] lockFocus];
 			[[NSColor blackColor] set];
-			NSRectFill(winRect);
-			[[mScreenWindow contentView] unlockFocus];
+			NSRectFill([[fullScreenTerminal window] frame]);
+			[[[fullScreenTerminal window] contentView] unlockFocus];
+			
+			[[iTermController sharedInstance] addInTerminals: fullScreenTerminal];
+			[fullScreenTerminal release];
+			
+			int n = [TABVIEW numberOfTabViewItems];
+			int i;
+			NSTabViewItem *aTabViewItem;
+			PTYSession *aSession;
+			
+			fullScreenTerminal->_resizeInProgressFlag = YES;
+			for(i=0;i<n;i++) {
+				aTabViewItem = [[TABVIEW tabViewItemAtIndex:0] retain];
+				aSession = [aTabViewItem identifier];
+				
+				// remove from our window
+				[TABVIEW removeTabViewItem: aTabViewItem];
+				
+				// add the session to the new terminal
+				[fullScreenTerminal insertSession: aSession atIndex: i];
+				[[aSession TEXTVIEW] setFont:[fullScreenTerminal font] nafont:[fullScreenTerminal nafont]];
+				[[aSession TEXTVIEW] setCharWidth: [fullScreenTerminal charWidth]];
+				[[aSession TEXTVIEW] setLineHeight: [fullScreenTerminal charHeight]];
+				[[aSession TEXTVIEW] setLineWidth: [fullScreenTerminal width] * [fullScreenTerminal charWidth]];
+				
+				// release the tabViewItem
+				[aTabViewItem release];
+			}
+			fullScreenTerminal->_resizeInProgressFlag = NO;
+			[[fullScreenTerminal tabView] selectTabViewItemWithIdentifier:currentSession];
+			[fullScreenTerminal setWindowSize];
+			[[iTermController sharedInstance] setFullScreenTerminal: fullScreenTerminal];
+			[[self window] close];
 		}
 	}
 	else
 	{
-		//CGDisplayRelease (displayID);
-		mScreenWindow = [self window];
-		[self setWindow: normalWindow];
-		[[NSApplication sharedApplication] addWindowsItem:normalWindow title:[normalWindow title] filename:NO];
+		PseudoTerminal *normalScreenTerminal = [[PseudoTerminal alloc] init];
+		if (normalScreenTerminal) {
+			PTYSession *currentSession = [self currentSession];
+			[normalScreenTerminal initWindowWithAddressbook: [currentSession addressBookEntry]];
 
-		[mScreenWindow close];
-
-		int i;
-		for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
-		{
-			PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
-			[[aSession SCROLLVIEW] setHasVerticalScroller:YES];
+			[[iTermController sharedInstance] addInTerminals: normalScreenTerminal];
+			[normalScreenTerminal release];
+			
+			int n = [TABVIEW numberOfTabViewItems];
+			int i;
+			NSTabViewItem *aTabViewItem;
+			PTYSession *aSession;
+			
+			normalScreenTerminal->_resizeInProgressFlag = YES;
+			for(i=0;i<n;i++) {
+				aTabViewItem = [[TABVIEW tabViewItemAtIndex:0] retain];
+				aSession = [aTabViewItem identifier];
+				
+				// remove from our window
+				[TABVIEW removeTabViewItem: aTabViewItem];
+				
+				// add the session to the new terminal
+				[normalScreenTerminal insertSession: aSession atIndex: i];
+				[[aSession TEXTVIEW] setFont:[normalScreenTerminal font] nafont:[normalScreenTerminal nafont]];
+				[[aSession TEXTVIEW] setCharWidth: [normalScreenTerminal charWidth]];
+				[[aSession TEXTVIEW] setLineHeight: [normalScreenTerminal charHeight]];
+				[[aSession TEXTVIEW] setLineWidth: [normalScreenTerminal width] * [normalScreenTerminal charWidth]];
+				
+				// release the tabViewItem
+				[aTabViewItem release];
+			}
+			normalScreenTerminal->_resizeInProgressFlag = NO;
+			[normalScreenTerminal setWindowSize];
+			[[normalScreenTerminal tabView] selectTabViewItemWithIdentifier:currentSession];
+			[[iTermController sharedInstance] setFullScreenTerminal: nil];
+			[[self window] close];
 		}
-		[TABVIEW setFrame:originalFrame];
-		[[normalWindow contentView] addSubview: TABVIEW];
-
-		WIDTH = originalWidth;
-		HEIGHT = originalHeight;
-		[self setWindowSize];
-
-		[normalWindow makeFirstResponder:[[self currentSession] TEXTVIEW]];
-		[normalWindow release];
-		[[iTermController sharedInstance] setFullScreenTerminal: nil];
 	}
 }
 
+- (BOOL) fullScreen
+{
+	return _fullScreen;
+}
 
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame
 {
@@ -1601,6 +1641,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal resizeWindow:%d,%d]",
           __FILE__, __LINE__, w, h);
 #endif
+	
+	// ignore resize request when we are in full screen mode.
+	if (_fullScreen) return;
+	
     NSRect frm = [[self window] frame];
     float rh = frm.size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
     float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
@@ -1615,6 +1659,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Resize the window so that the text display area has pixel size of w*h
 - (void) resizeWindowToPixelsWidth:(int)w height:(int)h
 {
+	// ignore resize request when we are in full screen mode.
+	if (_fullScreen) return;
+
     NSRect frm = [[self window] frame];
     float rh = frm.size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
     float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;

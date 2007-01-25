@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.276 2007-01-17 07:31:20 yfabian Exp $
+// $Id: VT100Screen.m,v 1.277 2007-01-25 07:29:53 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -902,10 +902,12 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
         break;
     case XTERMCC_WINDOWPOS:
         //NSLog(@"setting window position to Y=%d, X=%d", token.u.csi.p[1], token.u.csi.p[2]);
-        [[[SESSION parent] window] setFrameTopLeftPoint: NSMakePoint(token.u.csi.p[2], [[[[SESSION parent] window] screen] frame].size.height - token.u.csi.p[1])];
+		if (![[SESSION parent] fullScreen])
+			[[[SESSION parent] window] setFrameTopLeftPoint: NSMakePoint(token.u.csi.p[2], [[[[SESSION parent] window] screen] frame].size.height - token.u.csi.p[1])];
         break;
     case XTERMCC_ICONIFY:
-        [[[SESSION parent] window] performMiniaturize: nil];
+		if (![[SESSION parent] fullScreen])
+			[[[SESSION parent] window] performMiniaturize: nil];
         break;
     case XTERMCC_DEICONIFY:
         [[[SESSION parent] window] deminiaturize: nil];
@@ -914,7 +916,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
         [[[SESSION parent] window] orderFront: nil];
         break;
     case XTERMCC_LOWER:
-        [[[SESSION parent] window] orderBack: nil];
+		if (![[SESSION parent] fullScreen])
+			[[[SESSION parent] window] orderBack: nil];
         break;
     case XTERMCC_SU:
 		for (i=0; i<token.u.csi.p[0]; i++) [self scrollUp];

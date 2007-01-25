@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.152 2007-01-23 04:46:12 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.153 2007-01-25 07:29:53 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -118,6 +118,7 @@ static NSString *NoHandler = @"<No Handler>";
 	defaultCursorType=[prefs objectForKey:@"CursorType"]?[prefs integerForKey:@"CursorType"]:2;
     defaultCheckUpdate = [prefs objectForKey:@"SUCheckAtStartup"]?[[prefs objectForKey:@"SUCheckAtStartup"] boolValue]: YES;
 	defaultUseBorder = [prefs objectForKey:@"UseBorder"]?[[prefs objectForKey:@"UseBorder"] boolValue]: NO;
+	defaultHideScrollbar = [prefs objectForKey:@"HideScrollbar"]?[[prefs objectForKey:@"HideScrollbar"] boolValue]: NO;
 	
 	NSArray *urlArray;
 	NSDictionary *tempDict = [prefs objectForKey:@"URLHandlers"];
@@ -173,6 +174,7 @@ static NSString *NoHandler = @"<No Handler>";
     [prefs setBool:defaultCheckUpdate forKey:@"SUCheckAtStartup"];
 	[prefs setInteger:defaultCursorType forKey:@"CursorType"];
 	[prefs setBool:defaultUseBorder forKey:@"UseBorder"];
+	[prefs setBool:defaultHideScrollbar forKey:@"HideScrollbar"];
 	
 	// save the handlers by converting the bookmark into an index
 	NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] init];
@@ -217,7 +219,8 @@ static NSString *NoHandler = @"<No Handler>";
     [checkUpdate setState: defaultCheckUpdate?NSOnState:NSOffState];
 	[cursorType selectCellWithTag:defaultCursorType];
 	[useBorder setState: defaultUseBorder?NSOnState:NSOffState];
-    
+	[hideScrollbar setState: defaultHideScrollbar?NSOnState:NSOffState];
+	
 	[self showWindow: self];
 	[[self window] setLevel:CGShieldingWindowLevel()];
 	
@@ -234,7 +237,8 @@ static NSString *NoHandler = @"<No Handler>";
         sender == hideTab ||
         sender == useCompactLabel ||
 		sender == cursorType ||
-		sender == useBorder)
+		sender == useBorder ||
+		sender == hideScrollbar)
     {
         defaultWindowStyle = [windowStyle indexOfSelectedItem];
         defaultTabViewType=[tabPosition indexOfSelectedItem];
@@ -242,6 +246,7 @@ static NSString *NoHandler = @"<No Handler>";
         defaultHideTab=([hideTab state]==NSOnState);
 		defaultCursorType = [[cursorType selectedCell] tag];
         defaultUseBorder = ([useBorder state] == NSOnState);
+        defaultHideScrollbar = ([hideScrollbar state] == NSOnState);
         [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermRefreshTerminal" object: nil userInfo: nil];    
     }
     else
@@ -385,6 +390,11 @@ static NSString *NoHandler = @"<No Handler>";
 - (BOOL) useBorder
 {
 	return (defaultUseBorder);
+}
+
+- (BOOL) hideScrollbar
+{
+	return defaultHideScrollbar;
 }
 
 - (BOOL) quitWhenAllWindowsClosed

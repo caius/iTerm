@@ -59,6 +59,7 @@ typedef enum { CURSOR_UNDERLINE, CURSOR_VERTICAL, CURSOR_BOX } ITermCursorType;
     IBOutlet NSButton *checkUpdate;
 	IBOutlet NSMatrix *cursorType;
 	IBOutlet NSButton *useBorder;
+	IBOutlet NSButton *hideScrollbar;
     
     NSUserDefaults *prefs;
 
@@ -80,6 +81,7 @@ typedef enum { CURSOR_UNDERLINE, CURSOR_VERTICAL, CURSOR_BOX } ITermCursorType;
     BOOL defaultQuitWhenAllWindowsClosed;
 	BOOL defaultCheckUpdate;
 	BOOL defaultUseBorder;
+	BOOL defaultHideScrollbar;
 	ITermCursorType defaultCursorType;
 	
 	// url handler stuff
@@ -116,6 +118,7 @@ typedef enum { CURSOR_UNDERLINE, CURSOR_VERTICAL, CURSOR_BOX } ITermCursorType;
 - (BOOL) useCompactLabel;
 - (BOOL) openBookmark;
 - (BOOL) useBorder;
+- (BOOL) hideScrollbar;
 - (int)  refreshRate;
 - (NSString *) wordChars;
 - (BOOL) quitWhenAllWindowsClosed;

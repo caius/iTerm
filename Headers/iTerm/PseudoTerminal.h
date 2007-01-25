@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.52 2007-01-23 04:46:14 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.53 2007-01-25 07:29:55 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -68,6 +68,9 @@
 	BOOL suppressContextualMenu;
 	
 	BOOL EXIT;
+	
+	// flags
+	BOOL _resizeInProgressFlag;
 }
 
 
@@ -132,6 +135,7 @@
 
 // full screen support
 - (IBAction) toggleFullScreen:(id)sender;
+- (BOOL) fullScreen;
 
 // iTermController
 - (void)clearBuffer:(id)sender;

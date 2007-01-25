@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.297 2007-01-23 04:46:12 yfabian Exp $
+// $Id: PTYTextView.m,v 1.298 2007-01-25 07:29:53 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -139,7 +139,7 @@ static int cacheSize;
 - (void)viewWillMoveToWindow:(NSWindow *)win 
 {
     
-    //NSLog(@"0x%x: %s, %@, %@", self, __PRETTY_FUNCTION__, win, [self window]);
+    //NSLog(@"0x%x: %s, will move view from %@ to %@", self, __PRETTY_FUNCTION__, [self window], win);
     if (!win && [self window] && trackingRectTag) {
         //NSLog(@"remove tracking");
         [self removeTrackingRect:trackingRectTag];
@@ -150,7 +150,7 @@ static int cacheSize;
 
 - (void)viewDidMoveToWindow
 {
-    //NSLog(@"0x%x: %s, %@", self, __PRETTY_FUNCTION__, [self window]);
+    //NSLog(@"0x%x: %s, moved view to %@", self, __PRETTY_FUNCTION__, [self window]);
     if ([self window]) {
         //NSLog(@"add tracking");
         trackingRectTag = [self addTrackingRect:[self frame] owner: self userData: nil assumeInside: NO];
@@ -780,6 +780,13 @@ static int cacheSize;
     }
     
 	if (forceUpdate) {
+		if ([[[dataSource session] parent] fullScreen]) {
+			[[[self window] contentView] lockFocus];
+			[[NSColor blackColor] set];
+			NSRectFill([[self window] frame]);
+			[[[self window] contentView] unlockFocus];
+		}
+		
 		if(hasBGImage)
 		{
 			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
@@ -3177,7 +3184,7 @@ static int cacheSize;
 - (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase wrapping: (BOOL) wrapping
 {
 	int x1, y1, x2, y2;
-	NSString *searchBody;
+	NSMutableString *searchBody;
 	NSRange foundRange;
 	int anIndex;
 	unsigned searchMask = 0;
@@ -3253,7 +3260,8 @@ static int cacheSize;
 	}
 	
 	// ok, now get the search body
-	searchBody = [self contentFromX: x1 Y: y1 ToX: x2 Y: y2 pad: YES];
+	searchBody = [NSMutableString stringWithString:[self contentFromX: x1 Y: y1 ToX: x2 Y: y2 pad: YES]];
+	[searchBody replaceOccurrencesOfString:@"\n" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, [searchBody length])];
 	
 	if([searchBody length] <= 0)
 	{

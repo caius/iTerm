@@ -12,6 +12,7 @@
                 enableBonjour = NSButton; 
                 enableGrowl = NSButton; 
                 focusFollowsMouse = NSButton; 
+                hideScrollbar = NSButton; 
                 hideTab = NSButton; 
                 maxVertically = NSButton; 
                 middleButtonPastesFromClipboard = NSButton; 

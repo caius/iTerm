@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.51 2007-01-23 04:46:12 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.52 2007-01-25 07:29:53 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -372,24 +372,28 @@ static BOOL usingAutoLaunchScript = NO;
 	
     NSURL *webURL, *bugURL;
     NSAttributedString *webSite, *bugReport;
-    NSMutableAttributedString *tmpAttrString;
-    NSDictionary *linkAttributes;
+    NSAttributedString *tmpAttrString;
+    NSDictionary *linkAttributes, *otherAttributes;
 //    [NSApp orderFrontStandardAboutPanel:nil];
 
-        
+	otherAttributes= [NSDictionary dictionaryWithObjectsAndKeys: [NSCursor pointingHandCursor], NSCursorAttributeName,
+		NULL];
+	
     // Web URL
     webURL = [NSURL URLWithString: @"http://iterm.sourceforge.net"];
     linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: webURL, NSLinkAttributeName,
                         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
 					    [NSColor blueColor], NSForegroundColorAttributeName,
+						[NSCursor pointingHandCursor], NSCursorAttributeName,
 					    NULL];
     webSite = [[NSAttributedString alloc] initWithString: @"http://iterm.sourceforge.net" attributes: linkAttributes];
 
     // Bug report
     bugURL = [NSURL URLWithString: @"https://sourceforge.net/tracker/?func=add&group_id=67789&atid=518973"];
-    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: webURL, NSLinkAttributeName,
+    linkAttributes= [NSDictionary dictionaryWithObjectsAndKeys: bugURL, NSLinkAttributeName,
         [NSNumber numberWithInt: NSSingleUnderlineStyle], NSUnderlineStyleAttributeName,
         [NSColor blueColor], NSForegroundColorAttributeName,
+		[NSCursor pointingHandCursor], NSCursorAttributeName,
         NULL];
     bugReport = [[NSAttributedString alloc] initWithString: NSLocalizedStringFromTableInBundle(@"Report A Bug", @"iTerm", [NSBundle bundleForClass: [self class]], @"About") attributes: linkAttributes];
 
@@ -398,12 +402,12 @@ static BOOL usingAutoLaunchScript = NO;
     NSString *versionString = [@"Build " stringByAppendingString: (NSString *)[myDict objectForKey:@"CFBundleVersion"]];
     
     [[AUTHORS textStorage] deleteCharactersInRange: NSMakeRange(0, [[AUTHORS textStorage] length])];
-    tmpAttrString = [[[NSAttributedString alloc] initWithString: versionString] autorelease];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: versionString attributes: otherAttributes] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
-    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n\n"] autorelease];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n\n" attributes: otherAttributes] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: webSite];
-    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n"] autorelease];
+    tmpAttrString = [[[NSAttributedString alloc] initWithString: @"\n" attributes: otherAttributes] autorelease];
     [[AUTHORS textStorage] appendAttributedString: tmpAttrString];
     [[AUTHORS textStorage] appendAttributedString: bugReport];
     [AUTHORS setAlignment: NSCenterTextAlignment range: NSMakeRange(0, [[AUTHORS textStorage] length])];
@@ -471,9 +475,7 @@ static BOOL usingAutoLaunchScript = NO;
 // Notifications
 - (void) reloadMenus: (NSNotification *) aNotification
 {
-	if ([[iTermController sharedInstance] fullScreenTerminal]) return;
-	
-    PseudoTerminal *frontTerminal = [self currentTerminal];
+	PseudoTerminal *frontTerminal = [self currentTerminal];
     if (frontTerminal != [aNotification object]) return;
 	
 	unsigned int drawerState;

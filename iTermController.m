@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.66 2007-01-23 04:46:12 yfabian Exp $
+// $Id: iTermController.m,v 1.67 2007-01-25 07:29:53 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -245,6 +245,8 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 
     if(theTerminalWindow)
         [self removeFromTerminalsAtIndex: [terminalWindows indexOfObject: theTerminalWindow]];
+	
+	if (theTerminalWindow == _fullScreenTerminal) _fullScreenTerminal = nil;
 }
 
 // Build sorted list of encodings

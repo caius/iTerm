@@ -1,10 +1,22 @@
+2007-1-24	fabian
+
+	* Added option to turn off vertical scrollbar.
+	* Fixed broken Find.
+	* Fixed tab updating glitch.
+	* Fixed several full screen related bug/crashes.
+	
+2007-1-23	fabian
+
+	* Fixed the "report a bug" link in the about panel.
+	* Finished full screen support.
+	
 2007-1-22	fabian
 	
 	* Fixed a timer function bug that fails to turn of timer after a session is over.
 	* Fixed a emulation bug related to an unsupported escape sequences.
 	* Changed the "Use Transparency" behavior. Now it's a per window setting. When it's disabled, any updates of
 	  display behind the terminal window will not cause a refresh.
-	* Incomplete support for full screen mode (still crashes).
+	* Unfinished support for full screen mode (still crashes).
 	
 2007-1-16	fabian
 

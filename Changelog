@@ -1,3 +1,8 @@
+2007-1-25	fabian
+
+	* Added option to send text in custom key-mapping.
+	* Added option to disable session-initiated window resize.
+	
 2007-1-24	fabian
 
 	* Added option to turn off vertical scrollbar.

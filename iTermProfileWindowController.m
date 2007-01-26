@@ -490,7 +490,7 @@ static BOOL addingKBEntry;
 	[kbEntryKeyModifierShift setEnabled: YES];
 	[kbEntryKeyModifierCommand setEnabled: YES];
 	
-	if (action == KEY_ACTION_HEX_CODE || action == KEY_ACTION_ESCAPE_SEQUENCE)
+	if (action == KEY_ACTION_HEX_CODE || action == KEY_ACTION_ESCAPE_SEQUENCE || action == KEY_ACTION_TEXT)
 	{
 		[kbEntryText setStringValue: auxText];
 	}
@@ -578,13 +578,22 @@ static BOOL addingKBEntry;
 	else if(sender == kbEntryAction)
 	{
 		if([kbEntryAction indexOfSelectedItem] == KEY_ACTION_HEX_CODE ||
-		   [kbEntryAction indexOfSelectedItem] == KEY_ACTION_ESCAPE_SEQUENCE)
+		   [kbEntryAction indexOfSelectedItem] == KEY_ACTION_ESCAPE_SEQUENCE ||
+		   [kbEntryAction indexOfSelectedItem] == KEY_ACTION_TEXT)
 		{		
 			[kbEntryText setHidden: NO];
 			[kbEntryHint setHidden: NO];
-			[kbEntryHint setStringValue: ([kbEntryAction indexOfSelectedItem] == KEY_ACTION_HEX_CODE) ?
-				NSLocalizedStringFromTableInBundle(@"eg. 7F for forward delete.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles") :
-				NSLocalizedStringFromTableInBundle(@"eg. [OC for ESC [OC.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles")];
+			switch ([kbEntryAction indexOfSelectedItem]) {
+				case KEY_ACTION_HEX_CODE:
+					[kbEntryHint setStringValue: NSLocalizedStringFromTableInBundle(@"eg. 7F for backward delete.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles")];
+					break;
+				case KEY_ACTION_ESCAPE_SEQUENCE:
+					[kbEntryHint setStringValue: NSLocalizedStringFromTableInBundle(@"eg. [OC for ESC [OC.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles")];
+					break;
+				case KEY_ACTION_TEXT:
+					[kbEntryHint setStringValue: NSLocalizedStringFromTableInBundle(@"use \\n for new-line, etc",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles")];
+					break;
+			}				
 		}
 		else
 		{
@@ -897,6 +906,7 @@ static BOOL addingKBEntry;
 		[[iTermTerminalProfileMgr singleInstance] idleCharForProfile: theProfile]]];
 	[xtermMouseReporting setState: [[iTermTerminalProfileMgr singleInstance] xtermMouseReportingForProfile: theProfile]];
 	[terminalAppendTitle setState: [[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: theProfile]];
+	[terminalNoResizing setState: [[iTermTerminalProfileMgr singleInstance] noResizingForProfile: theProfile]];
 	
 	[deleteButton setEnabled: ![[iTermTerminalProfileMgr singleInstance] isDefaultProfile: theProfile]];
     [duplicateButton setEnabled: YES];
@@ -966,6 +976,12 @@ static BOOL addingKBEntry;
 - (IBAction) terminalSetAppendTitle: (id) sender
 {
 	[[iTermTerminalProfileMgr singleInstance] setAppendTitle: [sender state] 
+												  forProfile: selectedProfile];
+}	
+
+- (IBAction) terminalSetNoResizing: (id) sender
+{
+	[[iTermTerminalProfileMgr singleInstance] setNoResizing: [sender state] 
 												  forProfile: selectedProfile];
 }	
 

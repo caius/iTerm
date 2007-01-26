@@ -29,6 +29,7 @@
                 terminalSetDoubleWidth = id; 
                 terminalSetEnableGrowl = id; 
                 terminalSetEncoding = id; 
+                terminalSetNoResizing = id; 
                 terminalSetSendIdleChar = id; 
                 terminalSetShowBell = id; 
                 terminalSetSilenceBell = id; 
@@ -101,6 +102,7 @@
                 terminalEnableGrowl = id; 
                 terminalEncoding = NSPopUpButton; 
                 terminalIdleChar = NSTextField; 
+                terminalNoResizing = id; 
                 terminalScrollback = NSTextField; 
                 terminalSendIdleChar = NSButton; 
                 terminalShowBell = NSButton; 

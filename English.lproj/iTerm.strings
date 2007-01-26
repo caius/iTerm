@@ -215,4 +215,5 @@
 "Display Profiles" = "Display Profiles";
 "Terminal Profiles" = "Terminal Profiles";
 "eg. [OC for ESC [OC." = "eg. [OC for ESC [OC.";
-"eg. 7F for forward delete." = "eg. 7F for forward delete.";
+"eg. 7F for backward delete." = "eg. 7F for backward delete.";
+"use \n for new-line, etc" = "use \n for new-line, etc";

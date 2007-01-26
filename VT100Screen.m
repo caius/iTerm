@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.277 2007-01-25 07:29:53 yfabian Exp $
+// $Id: VT100Screen.m,v 1.278 2007-01-26 05:14:51 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -43,6 +43,7 @@
 #import <iTerm/PTYTask.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/iTermGrowlDelegate.h>
+#import <iTerm/iTermTerminalProfileMgr.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -805,7 +806,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 
     case VT100CSI_DECSET:
     case VT100CSI_DECRST:
-        if (token.u.csi.p[0]==3 && [TERMINAL allowColumnMode] == YES) {
+        if (token.u.csi.p[0]==3 && [TERMINAL allowColumnMode] == YES && ![[iTermTerminalProfileMgr singleInstance] noResizingForProfile: [[SESSION addressBookEntry] objectForKey: @"Terminal Profile"]]) {
 			// set the column
 			changeSize = CHANGE;
 			newWidth = [TERMINAL columnMode]?132:80;
@@ -891,18 +892,22 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
     case XTERMCC_DELLN: [self deleteLines:token.u.csi.p[0]]; break;
     case XTERMCC_WINDOWSIZE:
         //NSLog(@"setting window size from (%d, %d) to (%d, %d)", WIDTH, HEIGHT, token.u.csi.p[1], token.u.csi.p[2]);
-		changeSize = CHANGE;
-		newWidth = token.u.csi.p[2];
-		newHeight = token.u.csi.p[1];
+		if (![[iTermTerminalProfileMgr singleInstance] noResizingForProfile: [[SESSION addressBookEntry] objectForKey: @"Terminal Profile"]] && ![[SESSION parent] fullScreen]) {
+			changeSize = CHANGE;
+			newWidth = token.u.csi.p[2];
+			newHeight = token.u.csi.p[1];
+		}
         break;
     case XTERMCC_WINDOWSIZE_PIXEL:
-		changeSize = CHANGE_PIXEL;
-		newWidth = token.u.csi.p[2];
-		newHeight = token.u.csi.p[1];
+		if (![[iTermTerminalProfileMgr singleInstance] noResizingForProfile: [[SESSION addressBookEntry] objectForKey: @"Terminal Profile"]] && ![[SESSION parent] fullScreen]) {
+			changeSize = CHANGE_PIXEL;
+			newWidth = token.u.csi.p[2];
+			newHeight = token.u.csi.p[1];
+		}
         break;
     case XTERMCC_WINDOWPOS:
         //NSLog(@"setting window position to Y=%d, X=%d", token.u.csi.p[1], token.u.csi.p[2]);
-		if (![[SESSION parent] fullScreen])
+		if (![[iTermTerminalProfileMgr singleInstance] noResizingForProfile: [[SESSION addressBookEntry] objectForKey: @"Terminal Profile"]] && ![[SESSION parent] fullScreen])
 			[[[SESSION parent] window] setFrameTopLeftPoint: NSMakePoint(token.u.csi.p[2], [[[[SESSION parent] window] screen] frame].size.height - token.u.csi.p[1])];
         break;
     case XTERMCC_ICONIFY:

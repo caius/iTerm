@@ -479,6 +479,17 @@ static NSImage *warningImage;
 					[self writeTask:[NSData dataWithBytes:&hexCode length: sizeof(hexCode)]];
 				}
 				break;
+			case KEY_ACTION_TEXT:
+				if([keyBindingText length] > 0)
+				{
+					NSMutableString *aString = [NSMutableString stringWithString: keyBindingText];
+					[aString replaceOccurrencesOfString:@"\\n" withString:@"\n" options:NSLiteralSearch range:NSMakeRange(0,[aString length])];
+					[aString replaceOccurrencesOfString:@"\\e" withString:@"\e" options:NSLiteralSearch range:NSMakeRange(0,[aString length])];
+					[aString replaceOccurrencesOfString:@"\\a" withString:@"\a" options:NSLiteralSearch range:NSMakeRange(0,[aString length])];
+					[aString replaceOccurrencesOfString:@"\\t" withString:@"\t" options:NSLiteralSearch range:NSMakeRange(0,[aString length])];
+					[self writeTask: [aString dataUsingEncoding: NSUTF8StringEncoding]];
+				}
+				break;
 			case KEY_ACTION_IGNORE:
 				break;
 			default:

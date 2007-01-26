@@ -93,7 +93,8 @@
 #define KEY_ACTION_SCROLL_PAGE_UP		9
 #define KEY_ACTION_ESCAPE_SEQUENCE		10
 #define KEY_ACTION_HEX_CODE				11
-#define KEY_ACTION_IGNORE				12
+#define KEY_ACTION_TEXT				12
+#define KEY_ACTION_IGNORE				13
 
 
 @interface iTermKeyBindingMgr : NSObject {

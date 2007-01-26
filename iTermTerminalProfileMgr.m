@@ -615,5 +615,39 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	[aProfile setObject: [NSNumber numberWithBool: appendTitle] forKey: @"Append Title"];	
 }
 
+- (BOOL) noResizingForProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	NSNumber *noResizing;
+	
+	if([profileName length] <= 0)
+		return (NO);
+	
+	aProfile = [profiles objectForKey: profileName];
+	if(aProfile == nil)
+		return (NO);
+	
+	noResizing = [aProfile objectForKey: @"No Resizing"];
+	if(noResizing == nil)
+		return (NO);
+	
+	return ([noResizing boolValue]);	
+}
+
+- (void) setNoResizing: (BOOL) noResizing forProfile: (NSString *) profileName
+{
+	NSMutableDictionary *aProfile;
+	
+	if([profileName length] <= 0)
+		return;
+	
+	aProfile = [profiles objectForKey: profileName];
+	
+	if(aProfile == nil)
+		return;
+	
+	[aProfile setObject: [NSNumber numberWithBool: noResizing] forKey: @"No Resizing"];	
+}
+
 
 @end

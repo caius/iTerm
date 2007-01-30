@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.278 2007-01-26 05:14:51 yfabian Exp $
+// $Id: VT100Screen.m,v 1.279 2007-01-30 00:37:54 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -811,7 +811,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 			changeSize = CHANGE;
 			newWidth = [TERMINAL columnMode]?132:80;
 			newHeight = HEIGHT;
-			break;
         }
         
         break;

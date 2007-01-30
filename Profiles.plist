@@ -1120,6 +1120,50 @@
 				</dict>
 			</dict>
 		</dict>
+		<key>OS X Terminal.app</key>
+		<dict>
+			<key>Key Mappings</key>
+			<dict>
+				<key>0xf700-0x200000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<false/>
+					<key>Text</key>
+					<string>OA</string>
+				</dict>
+				<key>0xf701-0x200000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<false/>
+					<key>Text</key>
+					<string>OB</string>
+				</dict>
+				<key>0xf702-0x200000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<false/>
+					<key>Text</key>
+					<string>OD</string>
+				</dict>
+				<key>0xf703-0x200000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<false/>
+					<key>Text</key>
+					<string>OC</string>
+				</dict>
+			</dict>
+			<key>Option Key</key>
+			<integer>0</integer>
+		</dict>
 	</dict>
 	<key>Terminals</key>
 	<dict>

@@ -1,3 +1,15 @@
+2007-1-29	fabian
+
+	* Now full screen mode uses the current window settings instead of the settings in address book.
+	* Full screen mode will adjust font size if "Font Size Follows Resize" is set.
+	* Fixed the scrolling bug when there's no scroller bar.
+	
+2007-1-26	fabian
+
+	* Windows will have unified look when tabs are set to unified style.
+	* Fixed underline color bug (#1640553).
+	* Slow down update rate when the terminal window is not the key window.
+	
 2007-1-25	fabian
 
 	* Added option to send text in custom key-mapping.

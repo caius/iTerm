@@ -1963,7 +1963,7 @@ static NSImage *warningImage;
 		
 		if ([[TEXTVIEW window] isKeyWindow] && [parent currentSession] == self)
 			[self updateDisplay];
-		else if (!(updateCount%2))
+		else if (!(updateCount%4))
 			[self updateDisplay];
 
 		updateCount++;

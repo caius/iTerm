@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.21 2006-12-21 02:52:41 yfabian Exp $
+// $Id: PTYScrollView.m,v 1.22 2007-01-30 00:37:53 yfabian Exp $
 /*
  **  PTYScrollView.m
  **
@@ -159,11 +159,14 @@
 - (void)scrollWheel:(NSEvent *)theEvent
 {
     PTYScroller *verticalScroller = (PTYScroller *)[self verticalScroller];
+    NSRect scrollRect;
 	
-    [super scrollWheel: theEvent];
+	scrollRect= [self documentVisibleRect];
+	scrollRect.origin.y-=[theEvent deltaY] * [self verticalLineScroll];
+	[[self documentView] scrollRectToVisible: scrollRect];
 	
-    //NSLog(@"PTYScrollView: scrollWheel: %f", [verticalScroller floatValue]);
-    if([verticalScroller floatValue] < 1.0)
+	scrollRect= [self documentVisibleRect];
+	if(scrollRect.origin.y+scrollRect.size.height < [[self documentView] frame].size.height)
 		[verticalScroller setUserScroll: YES];
     else
 		[verticalScroller setUserScroll: NO];
@@ -171,11 +174,10 @@
 
 - (void)detectUserScroll
 {
+    NSRect scrollRect;
     PTYScroller *verticalScroller = (PTYScroller *)[self verticalScroller];
 	
-    //NSLog(@"PTYScrollView: detectUserScroll: %f", [verticalScroller floatValue]);
-    
-    if([verticalScroller floatValue] < 1.0)
+    if(scrollRect.origin.y+scrollRect.size.height < [[self documentView] frame].size.height)
 		[verticalScroller setUserScroll: YES];
     else
 		[verticalScroller setUserScroll: NO];

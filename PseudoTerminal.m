@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.392 2007-01-25 07:29:53 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.393 2007-01-30 00:37:54 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -164,6 +164,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	// set the window style according to preference
 	if([[PreferencePanel sharedInstance] windowStyle] == 0)
 		styleMask |= NSTexturedBackgroundWindowMask;
+	else if([[PreferencePanel sharedInstance] windowStyle] == 2)
+		styleMask |= NSUnifiedTitleAndToolbarWindowMask;
 	
 	myWindow = [[PTYWindow alloc] initWithContentRect: [[NSScreen mainScreen] frame]
 											styleMask: styleMask 
@@ -414,6 +416,152 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		}
     }
 
+	// position the tabview and control
+	if (_fullScreen) {
+		aRect = [[[self window] contentView] bounds];
+		aRect = NSMakeRect(floor((aRect.size.width-WIDTH*charWidth-MARGIN*2)/2),floor((aRect.size.height-charHeight*HEIGHT)/2),WIDTH*charWidth+MARGIN*2, charHeight*HEIGHT);
+		[TABVIEW setFrame: aRect];
+	}
+	else {
+		aRect = [TABVIEW frame];
+		aRect.origin.x = 0;
+		aRect.origin.y = 0;
+		[TABVIEW setFrame: aRect];		
+		aRect = [tabBarControl frame];
+		aRect.origin.x = 0;
+		aRect.origin.y = [TABVIEW frame].size.height;
+		aRect.size.width = [[[self window] contentView] bounds].size.width;
+		[tabBarControl setFrame: aRect];	
+		[tabBarControl setSizeCellsToFit:NO];
+		[tabBarControl setCellMinWidth:75];
+		[tabBarControl setCellOptimumWidth:175];
+	}
+	
+}
+
+- (void)initWindowWithSettingsFrom:(PseudoTerminal *)aPseudoTerminal
+{
+	NSRect aRect;
+	// sanity check
+    if(TABVIEW != nil)
+		return;
+	
+    if (!_fullScreen) {
+		_toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
+		if ([[self window] respondsToSelector:@selector(setBottomCornerRounded:)])
+			[[self window] setBottomCornerRounded:NO];
+	}
+    
+	// create the tab bar control
+	aRect = [[[self window] contentView] bounds];
+	aRect.size.height = 22;
+	tabBarControl = [[PSMTabBarControl alloc] initWithFrame: aRect];
+	[tabBarControl setAutoresizingMask: (NSViewWidthSizable | NSViewMinYMargin)];
+	[[[self window] contentView] addSubview: tabBarControl];
+	[tabBarControl release];	
+	
+    // create the tabview
+	aRect = [[[self window] contentView] bounds];
+	//aRect.size.height -= [tabBarControl frame].size.height;
+    TABVIEW = [[PTYTabView alloc] initWithFrame: aRect];
+    [TABVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+	[TABVIEW setAutoresizesSubviews: YES];
+    [TABVIEW setAllowsTruncatedLabels: NO];
+    [TABVIEW setControlSize: NSSmallControlSize];
+	[TABVIEW setTabViewType: NSNoTabsNoBorder];
+    // Add to the window
+    [[[self window] contentView] addSubview: TABVIEW];
+	[TABVIEW release];
+	
+	// assign tabview and delegates
+	[tabBarControl setTabView: TABVIEW];
+	[TABVIEW setDelegate: tabBarControl];
+	[tabBarControl setDelegate: self];
+	[tabBarControl setHideForSingleTab: NO];
+    [tabBarControl setHidden:_fullScreen];
+	
+	// set the style of tabs to match window style
+	switch ([[PreferencePanel sharedInstance] windowStyle]) {
+        case 0:
+            [tabBarControl setStyleNamed:@"Metal"];
+            break;
+        case 1:
+            [tabBarControl setStyleNamed:@"Aqua"];
+            break;
+        case 2:
+            [tabBarControl setStyleNamed:@"Unified"];
+            break;
+        default:
+            [tabBarControl setStyleNamed:@"Adium"];
+            break;
+    }
+	
+    [[[self window] contentView] setAutoresizesSubviews: YES];
+    [[self window] setDelegate: self];
+	
+	[[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(_reloadAddressBook:)
+                                                 name: @"iTermReloadAddressBook"
+                                               object: nil];	
+	
+    [[NSNotificationCenter defaultCenter] addObserver: self
+                                             selector: @selector(_refreshTerminal:)
+                                                 name: @"iTermRefreshTerminal"
+                                               object: nil];	
+	
+    [self setWindowInited: YES];
+    
+    if (aPseudoTerminal) {
+        
+		[self setAntiAlias: [aPseudoTerminal antiAlias]];
+		[self setFont: [aPseudoTerminal font] 
+			   nafont: [aPseudoTerminal nafont]];
+		oldFont = [FONT retain];
+		oldNAFont = [NAFONT retain];
+		[self setCharacterSpacingHorizontal: [aPseudoTerminal charSpacingVertical] 
+                                   vertical: [aPseudoTerminal charSpacingHorizontal]];
+		
+ 		if (_fullScreen) {
+			// we are entering full screen mode. store the original size
+			WIDTH = oldWidth = [aPseudoTerminal width];
+			HEIGHT = oldHeight = [aPseudoTerminal height];
+			aRect = [TABVIEW frame];
+			fontSizeFollowWindowResize = [aPseudoTerminal fontSizeFollowWindowResize];
+			if (fontSizeFollowWindowResize) {
+				float scale = (aRect.size.height) / HEIGHT / charHeight;
+				NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
+				font = [self _getMaxFont:font height:aRect.size.height lines:HEIGHT];
+				
+				float height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier;
+				
+				if (height != charHeight) {
+					//NSLog(@"Old size: %f\t proposed New size:%f\tWindow Height: %f",[FONT pointSize], [font pointSize],frame.size.height);
+					NSFont *nafont = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([NAFONT pointSize] * scale))];
+					nafont = [self _getMaxFont:nafont height:aRect.size.height lines:HEIGHT];
+					
+					[self setFont:font nafont:nafont];
+				}
+			}
+			else {
+				WIDTH = (int)((aRect.size.width - MARGIN * 2)/charWidth);
+				HEIGHT = (int)((aRect.size.height)/charHeight);
+			}
+		}
+		else {
+			if ([aPseudoTerminal fullScreen]) {
+				// we are exiting full screen mode. restore the original size.
+				WIDTH = [aPseudoTerminal oldWidth];
+				HEIGHT = [aPseudoTerminal oldHeight];
+				[self setFont:[aPseudoTerminal oldFont] nafont:[aPseudoTerminal oldNAFont]];
+				
+			}
+			else {
+				WIDTH = [aPseudoTerminal width];
+				HEIGHT = [aPseudoTerminal height];
+			}
+		}
+    }
+	
 	// position the tabview and control
 	if (_fullScreen) {
 		aRect = [[[self window] contentView] bounds];
@@ -690,6 +838,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [TABVIEW removeTabViewItem: aTabViewItem];
     }
 	[commandField release];
+	[FONT release];
+	[NAFONT release];
+	[oldFont release];
+	[oldNAFont release];
+		
 	
     [_toolbarController release];
     
@@ -751,6 +904,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (int)height;
 {
     return HEIGHT;
+}
+
+- (int)oldWidth;
+{
+    return oldWidth;
+}
+
+- (int)oldHeight;
+{
+    return oldHeight;
 }
 
 - (void)setCharSizeUsingFont: (NSFont *)font
@@ -1125,6 +1288,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         PTYSession* session = [[TABVIEW tabViewItemAtIndex: i] identifier];
         [[session TEXTVIEW]  setFont:FONT nafont:NAFONT];
     }
+
+	[[self window] setResizeIncrements: NSMakeSize(charWidth, charHeight)];
 }
 
 - (NSFont *) font
@@ -1135,6 +1300,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (NSFont *) nafont
 {
 	return NAFONT;
+}
+
+- (NSFont *) oldFont
+{
+	return oldFont;
+}
+
+- (NSFont *) oldNAFont
+{
+	return oldNAFont;
 }
 
 - (void)reset:(id)sender
@@ -1488,7 +1663,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		if (fullScreenTerminal) {
 			PTYSession *currentSession = [self currentSession];
 			
-			[fullScreenTerminal initWindowWithAddressbook: [currentSession addressBookEntry]];
+			[fullScreenTerminal initWindowWithSettingsFrom: self];
 			[[[fullScreenTerminal window] contentView] lockFocus];
 			[[NSColor blackColor] set];
 			NSRectFill([[fullScreenTerminal window] frame]);
@@ -1532,7 +1707,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		PseudoTerminal *normalScreenTerminal = [[PseudoTerminal alloc] init];
 		if (normalScreenTerminal) {
 			PTYSession *currentSession = [self currentSession];
-			[normalScreenTerminal initWindowWithAddressbook: [currentSession addressBookEntry]];
+			[normalScreenTerminal initWindowWithSettingsFrom: self];
 
 			[[iTermController sharedInstance] addInTerminals: normalScreenTerminal];
 			[normalScreenTerminal release];

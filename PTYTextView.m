@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.298 2007-01-25 07:29:53 yfabian Exp $
+// $Id: PTYTextView.m,v 1.299 2007-01-30 00:37:54 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -954,24 +954,15 @@ static int cacheSize;
 					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ? 
 						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : (theLine[j].fg_color & 0x3ff);
 				
-				if (theLine[j].fg_color & BLINK_MASK) 
-				{
-					if (blinkShow) 
-					{				
-						[self _drawCharacter:theLine[j].ch fgColor:fgcode bgColor:bgcode AtX:curX Y:curY doubleWidth: double_width];
-					}
-				}
-				else 
+				if (blinkShow || !(theLine[j].fg_color & BLINK_MASK)) 
 				{
 					[self _drawCharacter:theLine[j].ch fgColor:fgcode bgColor:bgcode AtX:curX Y:curY doubleWidth: double_width];
+					//draw underline
+					if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
+						[[self colorForCode:(fgcode & 0x1ff)] set];
+						NSRectFill(NSMakeRect(curX,curY-2,charWidth,1));
+					}
 				}
-				
-				//draw underline
-				if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
-					[[self colorForCode:(fgcode & 0xff)] set];
-					NSRectFill(NSMakeRect(curX,curY-2,charWidth,1));
-				}
-
 			}
 			if(line >= startScreenLineIndex) dirty[j]=0;
 			
@@ -1415,6 +1406,7 @@ static int cacheSize;
 				break;
 		}
 	}
+	
 	[super scrollWheel:event];	
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.53 2007-01-25 07:29:55 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.54 2007-01-30 00:37:54 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -52,7 +52,7 @@
 
     
     /////////////////////////////////////////////////////////////////////////
-    int WIDTH,HEIGHT;
+    int WIDTH, HEIGHT;
 	int charWidth;
 	int charHeight;
 	float charHorizontalSpacingMultiplier, charVerticalSpacingMultiplier;
@@ -71,6 +71,10 @@
 	
 	// flags
 	BOOL _resizeInProgressFlag;
+	
+	// for full screen windows
+	int oldWidth, oldHeight;
+	NSFont *oldFont, *oldNAFont;
 }
 
 
@@ -80,6 +84,7 @@
 - (void)dealloc;
 
 - (void)initWindowWithAddressbook:(NSDictionary *)entry;
+- (void)initWindowWithSettingsFrom:(PseudoTerminal *)aPseudoTerminal;
 - (void)setupSession: (PTYSession *) aSession title: (NSString *)title;
 - (void) insertSession: (PTYSession *) aSession atIndex: (int) index;
 - (void) closeSession: (PTYSession*) aSession;
@@ -109,10 +114,14 @@
 - (float) smallerSizeForSize: (float) aSize;
 - (NSFont *) font;
 - (NSFont *) nafont;
+- (NSFont *) oldFont;
+- (NSFont *) oldNAFont;
 - (BOOL) antiAlias;
 - (void) setAntiAlias: (BOOL) bAntiAlias;
 - (int)width;
 - (int)height;
+- (int)oldWidth;
+- (int)oldHeight;
 - (void)setWidth:(int)width height:(int)height;
 - (void)setCharSizeUsingFont: (NSFont *)font;
 - (int)charWidth;

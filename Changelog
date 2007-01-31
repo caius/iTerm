@@ -1,3 +1,8 @@
+2007-1-30	fabian
+
+	* Fixed loss of settings bug due to full screen mode switchings.
+	* Fixed a bug that causes the text under cursor rendered in wrong font.
+	
 2007-1-29	fabian
 
 	* Now full screen mode uses the current window settings instead of the settings in address book.

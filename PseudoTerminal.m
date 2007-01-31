@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.394 2007-01-31 06:12:31 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.395 2007-01-31 06:41:18 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1706,6 +1706,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	else
 	{
 		PseudoTerminal *normalScreenTerminal = [[PseudoTerminal alloc] init];
+		if ([[[PreferencePanel sharedInstance] window] isVisible]) [[[PreferencePanel sharedInstance] window] setLevel:NSNormalWindowLevel];
 		if (normalScreenTerminal) {
 			PTYSession *currentSession = [self currentSession];
 			[normalScreenTerminal initWindowWithSettingsFrom: self];

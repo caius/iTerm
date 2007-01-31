@@ -2,6 +2,7 @@
 
 	* Fixed loss of settings bug due to full screen mode switchings.
 	* Fixed a bug that causes the text under cursor rendered in wrong font.
+	* Fixed window level for the preference panel under full screen mode transitions.
 	
 2007-1-29	fabian
 

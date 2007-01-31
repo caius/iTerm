@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.153 2007-01-25 07:29:53 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.154 2007-01-31 06:41:18 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -222,8 +222,9 @@ static NSString *NoHandler = @"<No Handler>";
 	[hideScrollbar setState: defaultHideScrollbar?NSOnState:NSOffState];
 	
 	[self showWindow: self];
-	[[self window] setLevel:CGShieldingWindowLevel()];
-	
+	if ([[iTermController sharedInstance] fullScreenTerminal]) [[self window] setLevel:CGShieldingWindowLevel()];
+	else [[self window] setLevel:NSNormalWindowLevel];
+		
 	// Show the window.
 	[[self window] makeKeyAndOrderFront:self];
 	

@@ -66,7 +66,8 @@ static BOOL onScreen = NO;
     [singleInstance loadConfigWindow: nil];
 	
 	[[singleInstance window] setFrameAutosaveName: @"Config Panel"];
-	[[singleInstance window] setLevel:CGShieldingWindowLevel()];
+	if ([[iTermController sharedInstance] fullScreenTerminal]) [[singleInstance window] setLevel:CGShieldingWindowLevel()];
+	else [[singleInstance window] setLevel:NSFloatingWindowLevel];
 	[[singleInstance window] makeKeyAndOrderFront: self];
     onScreen = YES;
 }

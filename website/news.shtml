@@ -21,7 +21,23 @@
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
-<STRONG>Go Full Screen!</STRONG><IMG src="new.gif"> 1/24/07<BR>
+<STRONG>Release 0.9.5</STRONG><IMG src="new.gif">  2/1/07<BR>
+After several months of developping, we proudly present you the latest release of iTerm. Many users
+have provided us with great feed backs and helped us nail down bugs. Lots of thanks to all of you!
+Here is the change list:<BR>
+<UL>
+<LI>Full screen mode.</LI>
+<LI>xterm 256 color support.</LI>
+<LI>Much better wrapping behavior.</LI>
+<LI>Suppor unlimited scrollback size</LI>
+<LI>Option to hide scrollbar.</LI>
+<LI>Press TAB key to open a new session with a command from the Execute field.</LI>
+<LI>Added support for opening .command, .tool, .sh, .zsh, .csh, .pl files as shell scripts.</LI>
+<LI>Greatly enhanced stability.</LI>
+<LI>Lots of other bug fixes and GUI tweaks as usual.</LI>
+</UL>
+
+<STRONG>Go Full Screen!</STRONG> 1/24/07<BR>
 Happy 2007!! We are continuing working on improving our iTerm. The first exciting new feature
 we are introducing in the new year is the support for the full screen mode. You can turn any
 terminal window into full screen. Although the tab bar will be hidden, you can still use

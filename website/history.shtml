@@ -20,6 +20,20 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Version History:</STRONG></FONT>
 <BR><BR>
+<STRONG>Release 0.9.5</STRONG> 2/1/07<BR>
+Change list:<BR>
+<UL>
+<LI>Full screen mode.</LI>
+<LI>xterm 256 color support.</LI>
+<LI>Much better wrapping behavior.</LI>
+<LI>Suppor unlimited scrollback size</LI>
+<LI>Option to hide scrollbar.</LI>
+<LI>Press TAB key to open a new session with a command from the Execute field.</LI>
+<LI>Added support for opening .command, .tool, .sh, .zsh, .csh, .pl files as shell scripts.</LI>
+<LI>Greatly enhanced stability.</LI>
+<LI>Lots of other bug fixes and GUI tweaks as usual.</LI>
+</UL>
+
 <STRONG>Release 0.9.4</STRONG> 12/4/06<BR>
 This version further improves on stability. Further more, we changed the font rendering to make
 it more in line with other Cocoa applications. Lastly, we have an updated Help that reflects the

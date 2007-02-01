@@ -1,3 +1,9 @@
+2007-2-1	fabian
+
+	* Added a default keyboard profile: xterm(OS X).
+	* Fixed a Panther compatibility bug.
+	* 0.9.5 release
+	
 2007-1-30	fabian
 
 	* Fixed loss of settings bug due to full screen mode switchings.

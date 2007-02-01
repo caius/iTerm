@@ -1120,7 +1120,7 @@
 				</dict>
 			</dict>
 		</dict>
-		<key>OS X Terminal.app</key>
+		<key>xterm (OS X)</key>
 		<dict>
 			<key>Key Mappings</key>
 			<dict>
@@ -1131,7 +1131,7 @@
 					<key>Priority</key>
 					<false/>
 					<key>Text</key>
-					<string>OA</string>
+					<string>[A</string>
 				</dict>
 				<key>0xf701-0x200000</key>
 				<dict>
@@ -1140,7 +1140,7 @@
 					<key>Priority</key>
 					<false/>
 					<key>Text</key>
-					<string>OB</string>
+					<string>[B</string>
 				</dict>
 				<key>0xf702-0x200000</key>
 				<dict>
@@ -1149,7 +1149,7 @@
 					<key>Priority</key>
 					<false/>
 					<key>Text</key>
-					<string>OD</string>
+					<string>[D</string>
 				</dict>
 				<key>0xf703-0x200000</key>
 				<dict>
@@ -1158,7 +1158,190 @@
 					<key>Priority</key>
 					<false/>
 					<key>Text</key>
-					<string>OC</string>
+					<string>[C</string>
+				</dict>
+				<key>0xf729-0x0</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<false/>
+					<key>Text</key>
+					<string>[H</string>
+				</dict>
+				<key>0xf72b-0x0</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<false/>
+					<key>Text</key>
+					<string>[F</string>
+				</dict>
+				<key>0x7f-0x0</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>7f</string>
+				</dict>
+				<key>0xf700-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O2A</string>
+				</dict>
+				<key>0xf701-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O2B</string>
+				</dict>
+				<key>0xf702-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O2D</string>
+				</dict>
+				<key>0xf702-0x240000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<integer>1</integer>
+					<key>Text</key>
+					<string>O5D</string>
+				</dict>
+				<key>0xf703-0x220000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O2C</string>
+				</dict>
+				<key>0xf703-0x240000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Priority</key>
+					<integer>1</integer>
+					<key>Text</key>
+					<string>O5C</string>
+				</dict>
+				<key>0xf704-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[11;2~</string>
+				</dict>
+				<key>0xf705-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[12;2~</string>
+				</dict>
+				<key>0xf706-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[13;2~</string>
+				</dict>
+				<key>0xf707-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[14;2~</string>
+				</dict>
+				<key>0xf708-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[15;2~</string>
+				</dict>
+				<key>0xf709-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[17;2~</string>
+				</dict>
+				<key>0xf70a-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[18;2~</string>
+				</dict>
+				<key>0xf70b-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[19;2~</string>
+				</dict>
+				<key>0xf70c-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[20;2~</string>
+				</dict>
+				<key>0xf70d-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[21;2~</string>
+				</dict>
+				<key>0xf70e-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[23;2~</string>
+				</dict>
+				<key>0xf70f-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>[24;2~</string>
+				</dict>
+				<key>0xf729-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O2H</string>
+				</dict>
+				<key>0xf729-0x40000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O5H</string>
+				</dict>
+				<key>0xf72b-0x20000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O2F</string>
+				</dict>
+				<key>0xf72b-0x40000</key>
+				<dict>
+					<key>Action</key>
+					<integer>10</integer>
+					<key>Text</key>
+					<string>O5F</string>
 				</dict>
 			</dict>
 			<key>Option Key</key>
@@ -1188,7 +1371,7 @@
 			<key>Silence Bell</key>
 			<true/>
 			<key>Term Type</key>
-			<string>rxvt</string>
+			<string>xterm-color</string>
 		</dict>
 	</dict>
 </dict>

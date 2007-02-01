@@ -1,120 +1,15 @@
-<STRONG>Changes since 0.9.4</STRONG><BR><BR>
-The build 0.9.4.1329 has following changes:<BR>
-<ul>
-	<LI> Added option to send text in custom key-mapping.</LI>
-	<LI> Added option to disable session-initiated window resize.</LI>
-	<LI> Fixed underline color bug (#1640553).</LI>
-	<LI> Fixed scrolling bug when there is no scrollbar. </LI>
-	<LI> Further tweaking of the full screen mode behavior.</LI>
-</UL>
-
-The build 0.9.4.1324 has following changes:<BR>
-<ul>
-	<LI> Added option to turn off vertical scrollbar.</LI>
-	<LI> Fixed broken Find.</LI>
-	<LI> Fixed tab/scrollbar updating glitch.</LI>
-	<LI> Fixed several other full screen related bug/crashes.</LI>
-</UL>
-
-The build 0.9.4.1323 adds support for a full screen model.<BR><BR>
-
-The build 0.9.4.1322 fixes crashes in 0.9.4.1316. It should still be considered as experimental. Here
-are the change details:<BR>
+<STRONG>Release 0.9.5</STRONG> 2/1/07<BR>
+After several months of developping, we proudly present you the latest release of iTerm. Many users
+have provided us with great feed backs and helped us nail down bugs. Lots of thanks to all of you!
+Here is the change list:<BR>
 <UL>
-	<LI> Fixed a timer function bug that fails to turn of timer after a session is over.</LI>
-	<LI> Fixed a emulation bug related to an unsupported escape sequences.</LI>
-	<LI> Changed the "Use Transparency" behavior. Now it's a per window setting. When it's disabled, any updates of	
-	display behind the terminal window will not cause a refresh.</LI>
+<LI>Full screen mode.</LI>
+<LI>xterm 256 color support.</LI>
+<LI>Much better wrapping behavior.</LI>
+<LI>Suppor unlimited scrollback size</LI>
+<LI>Option to hide scrollbar.</LI>
+<LI>Press TAB key to open a new session with a command from the Execute field.</LI>
+<LI>Added support for opening .command, .tool, .sh, .zsh, .csh, .pl files as shell scripts.</LI>
+<LI>Greatly enhanced stability.</LI>
+<LI>Lots of other bug fixes and GUI tweaks as usual.</LI>
 </UL>
-
-The build 0.9.4.1316 mainly addresses a few problems with the 0.9.4.131x versions. The changes include:<BR>
-<UL>
-	<LI> Fixed a bug that crashes iTerm when a session is closed. </LI>
-	<LI> Changed the timer code in hoping of addressing several CPU related issues.</LI>
-</UL>
-
-The build 0.9.4.1312 fixes many problems in 0.9.4.1311. The changes include:<BR>
-<UL>
-	<LI> Added support for CSI[0i, which prints out the screen.</LI>
-	<LI> Fixed a memory leak in PseudoTerminal.</LI>
-	<LI> Added support for opening .command, .tool, .sh, .zsh, .csh, .pl files as shell scripts.</LI>
-	<LI> Now press TAB in the Execute field will open a new session with the command.</LI>
-	<LI> Fixed a crash when saving/restoring buffers.</LI>
-	<LI> More fixes for resizing behaviors.</LI>
-	<LI> Fixed opening file behavior (#1629686).</LI>
-	<LI> Clear screen now leaves the last line (which can wrap to several lines) intact. (#1575193)</LI>
-	<LI> Fixed a bug of cmd-w closing a terminal tab when preference panel is in the front. (#1618969)</LI>
-	<LI> Fixed hanging-on-printing bug. (#1630780, #1598353)</LI>
-</UL>
-
-Warning: The build 0.9.4.1311 is one of those "risky" updates. You shouldn't rely your critical work on it. The changes
-include:<BR>
-<UL>
-	<LI> Improved wrapping behavior. Resizing window now re-wraps long lines. </LI>
-	<LI> Generally improved resizing behavior.  </LI>
-	<LI> Faster response if you use dynamic titling a lot. </LI>
-	<LI> Reduced CPU usage. </LI>
-</UL>
-
-The build 0.9.4.1306 includes the following changes:<BR>
-<UL>
-	<LI> Improved memory usage for "unlimited" scrollback situation. An upper limit is set to avoid eating up all system memory.</LI>
-</UL>
-
-The build 0.9.4.1303 includes the following changes:<BR>
-<UL>
-	<LI> Added support for xterm's CSI S (SU), CSI T (SD) commands. Nano now works correctly when term type is xterm.</LI>
-	<LI> Added support for unlimited scrollback. Set scroll back lines to -1 or any number larger than 1,000,000.</LI>
-	<LI> Added an option to enable/disable the border at the bottom of windows.</LI>
-	<LI> Fixed initial window size bug (#1623786).</LI>
-	<LI> Fixed the bottom border, so it no longer overlaps with the resizing triangle.</LI>
-</UL>
-
-The build 0.9.4.1221.1 includes the following changes:<BR>
-<UL>
-	<LI> Added a window border when there's no tab bar at the bottom of screen.</LI>
-	<LI> Fixed a selection location bug (#1608727).</LI>
-	<LI> Fixed a scrolling bug (#1619629).</LI>
-	<LI> Fixed a bug that disables dragging of text.</LI>
-	<LI> Updated the "term type" list. Removed xterm that doesn't work for some keys. Now rxvt is used as default.</LI>
-	<LI> Fixed a reverse bold color bug.</LI>
-	<LI> Fixed a few bug that causes crashes.</LI>
-</UL>
-The build 0.9.4.1217 includes the following changes:<BR>
-<UL>
-	<LI> Fixed the tabbar-disappearing bug (#1613110).</LI>
-	<LI> Fixed a bold color bug.</LI>
-	<LI> Fixed transparency bug #1609022.</LI>
-	<LI> Set echok when launching new sessions (#1472673). </LI>
-	<LI> Changed the default for "use default title with dynamic title" to NO.</LI>
-	<LI> Changed the wording for the "dynamic title" option.</LI>
-</UL>
-The build 0.9.4.1208 includes the following changes:<BR>
-<UL>
-	<LI> Added support for xterm's 256-color mode.</LI>
-	<LI> Added an option in the terminal profile to allow default session name not to be overwritten by dynamic tab name changes.</LI>
-	<LI> Double click on a parenthesis now selects everything between the pair of parenthesis.</LI>
-	<LI> Find panel now will set the string system-wide.</LI>
-	<LI> Fixed a wrapping porblem under ANSI terminals.</LI>
-	<LI> Incorporated the data processing thread into the data reading thread.</LI>
-	<LI> Fixed bug that loses changes to 'Characters considered parts of word' text field.</LI>
-	<LI> Fixed the "show cursor" behavior in RESET.</LI>
-	<LI> Fixed tab order bug.</LI>
-	<LI> An attempt to fix the closing window confirmation panel. Please test.</LI>
-</UL>
-
-<STRONG>Release 0.9.4</STRONG> 12/4/06<BR>
-This version further improves on stability. Further more, we changed the font rendering to make
-it more in line with other Cocoa applications. Lastly, we have an updated Help that reflects the
-latest changes in the GUI. We encourage all users who use previous versions to upgrade. New changes 
-include:<BR>
-<UL>
-<LI>New font rendering code.</LI>
-<LI>Updated Help documentation.</LI>
-<LI>Improved support for the wide glyphs, especially for the eastern asian languages.</LI>
-<LI>Added a Google command in the context menu to launch a search session with selected text.</LI>
-<LI>Improved speed.</LI>
-<LI>Enhanced stability.</LI>
-<LI>Other bug fixes and GUI enhancements as usual.</LI>
-</UL>
-<BR>

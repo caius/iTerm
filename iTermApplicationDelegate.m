@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.52 2007-01-25 07:29:53 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.53 2007-02-10 03:22:42 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -256,11 +256,7 @@ static BOOL usingAutoLaunchScript = NO;
 }
 
 - (IBAction)newSession:(id)sender
-{
-	// turn full screen off first
-	//if ([[iTermController sharedInstance] fullScreenTerminal]) 
-	//	[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	
+{	
     [[iTermController sharedInstance] newSession:sender];
 }
 
@@ -291,8 +287,8 @@ static BOOL usingAutoLaunchScript = NO;
 - (IBAction)showBookmarkWindow:(id)sender
 {
 	// turn full screen off first
-	if ([[iTermController sharedInstance] fullScreenTerminal]) 
-		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	//if ([[iTermController sharedInstance] fullScreenTerminal]) 
+	//	[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
 	
     [[iTermBookmarkController sharedInstance] showWindow];
 }
@@ -300,8 +296,8 @@ static BOOL usingAutoLaunchScript = NO;
 - (IBAction)showProfileWindow:(id)sender
 {
 	// turn full screen off first
-	if ([[iTermController sharedInstance] fullScreenTerminal]) 
-		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+	//if ([[iTermController sharedInstance] fullScreenTerminal]) 
+	//	[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
 	
     [[iTermProfileWindowController sharedInstance] showProfilesWindow: nil];
 }

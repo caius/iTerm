@@ -64,6 +64,13 @@
 					<key>Name</key>
 					<string>selection color</string>
 				</dict>
+				<key>selectedTextColor</key>
+				<dict>
+					<key>Description</key>
+					<string>Selected text color</string>
+					<key>Name</key>
+					<string>selected text color</string>
+				</dict>
 				<key>transparency</key>
 				<dict>
 					<key>Description</key>

@@ -68,6 +68,13 @@
 					<key>Type</key>
 					<string>NSColor</string>
 				</dict>
+				<key>selectedTextColor</key>
+				<dict>
+					<key>AppleEventCode</key>
+					<string>Stcol</string>
+					<key>Type</key>
+					<string>NSColor</string>
+				</dict>
 				<key>transparency</key>
 				<dict>
 					<key>AppleEventCode</key>

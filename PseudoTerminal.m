@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.396 2007-02-01 20:01:07 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.397 2007-02-10 03:22:42 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -249,7 +249,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 											  backing: NSBackingStoreBuffered 
 												defer: NO];
 	[self setWindow: myWindow];
-	[myWindow setLevel:CGShieldingWindowLevel()];
+	[myWindow setLevel:NSScreenSaverWindowLevel]; //CGShieldingWindowLevel()];
 	[myWindow release];
 	_fullScreen = YES;
 	[[iTermController sharedInstance] setFullScreenTerminal: self];
@@ -1394,7 +1394,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     {
         aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
 		
-		[[aSession SHELL] writeTask:data];
+		if (![aSession exited]) [[aSession SHELL] writeTask:data];
 		//[[aSession TEXTVIEW] deselect];
     }    
 }
@@ -1427,8 +1427,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	[self setSendInputToAllSessions: ![self sendInputToAllSessions]];
     
-    // cause reloading of menus
-    [[iTermController sharedInstance] setCurrentTerminal: self];
+    // Post a notification to reload menus
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: self userInfo: nil];    
 	[self setWindowTitle];
 }
 
@@ -1526,11 +1526,22 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  __FILE__, __LINE__, aNotification);
 #endif
 	
-    [self windowDidResignMain: aNotification];
+    //[self windowDidResignMain: aNotification];
 	
-    // update the cursor
-    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
-	
+	if (_fullScreen) { 
+		NSWindow *keyWindow = [[NSApplication sharedApplication] keyWindow];
+		
+		if ([[iTermBookmarkController sharedInstance] window] == keyWindow ||
+			[[ITConfigPanelController singleInstance] window] == keyWindow ||
+			[[PreferencePanel sharedInstance] window] == keyWindow)
+			[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+		else
+			[self toggleFullScreen: nil];
+	}
+	else {
+		// update the cursor
+		[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+	}
 }
 
 - (void)windowDidResignMain:(NSNotification *)aNotification
@@ -1539,6 +1550,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowDidResignMain:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
+	if (_fullScreen) [self toggleFullScreen: nil];
 }
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize

@@ -1725,10 +1725,12 @@ static NSImage *warningImage;
 
 - (void)setTimerMode:(int)mode
 {	
+
+	if (EXIT) return;
+	
 	//stop the timer;
-	if (updateTimer || EXIT) {
+	if (updateTimer) {
 		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-		if (EXIT) return;
 	}
 
 	switch (mode) {

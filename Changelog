@@ -1,7 +1,11 @@
+2007-2-10	fabian
+
+	* Fixed a keypad mode problem. Cursor keys should behave better now.
+	
 2007-2-9	fabian
 
 	* Fixed a bug that causes dead session be left open sometimes (#1653347).
-	* Adjust the full screen mode behavior, so you are less likely to be stuck.
+	* Adjusted the full screen mode behavior, so you are less likely to be stuck.
 	* Added selectedTextColor into Applescript.
 	
 2007-2-1	fabian

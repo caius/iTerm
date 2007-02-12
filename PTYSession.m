@@ -516,8 +516,8 @@ static NSImage *warningImage;
 					data = [TERMINAL keyInsert]; break;
 				case NSDeleteFunctionKey:
 					data = [TERMINAL keyDelete]; break;
-				case NSHomeFunctionKey: data = [TERMINAL keyHome]; break;
-				case NSEndFunctionKey: data = [TERMINAL keyEnd]; break;
+				case NSHomeFunctionKey: data = [TERMINAL keyHome:modflag]; break;
+				case NSEndFunctionKey: data = [TERMINAL keyEnd:modflag]; break;
 				case NSPageUpFunctionKey: data = [TERMINAL keyPageUp]; break;
 				case NSPageDownFunctionKey: data = [TERMINAL keyPageDown]; break;
 					

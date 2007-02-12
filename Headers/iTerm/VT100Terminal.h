@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.27 2007-01-07 03:21:52 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.28 2007-02-12 20:21:45 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -303,6 +303,8 @@ typedef enum {
 
     BOOL strictAnsiMode;
     BOOL allowColumnMode;
+	
+	BOOL allowKeypadMode;
     
     unsigned int streamOffset;
     
@@ -340,11 +342,11 @@ typedef enum {
 - (NSData *)keyArrowDown:(unsigned int)modflag;
 - (NSData *)keyArrowLeft:(unsigned int)modflag;
 - (NSData *)keyArrowRight:(unsigned int)modflag;
+- (NSData *)keyHome:(unsigned int)modflag;
+- (NSData *)keyEnd:(unsigned int)modflag;
 - (NSData *)keyInsert;
-- (NSData *)keyHome;
 - (NSData *)keyDelete;
 - (NSData *)keyBackspace;
-- (NSData *)keyEnd;
 - (NSData *)keyPageUp;
 - (NSData *)keyPageDown;
 - (NSData *)keyFunction:(int)no;

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.121 2007-01-23 04:46:12 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.122 2007-02-12 20:21:43 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -38,6 +38,12 @@
 #define DEBUG_ALLOC		0
 #define LOG_UNKNOWN     0
 #define STANDARD_STREAM_SIZE 100000
+#define UNKNOWN		('#')
+
+@implementation VT100Terminal
+
+#define iscontrol(c)  ((c) <= 0x1f) 
+
 /*
  Traditional Chinese (Big5)
  1st   0xa1-0xfe
@@ -47,13 +53,6 @@
  1st   0x81-0xfe
  2nd   0x40-0x7e || 0x80-0xfe
  */
-
-#define UNKNOWN		('#')
-
-@implementation VT100Terminal
-
-#define iscontrol(c)  ((c) <= 0x1f) 
-
 #define iseuccn(c)   ((c) >= 0x81 && (c) <= 0xfe)
 #define isbig5(c)    ((c) >= 0xa1 && (c) <= 0xfe)
 #define issjiskanji(c)  (((c) >= 0x81 && (c) <= 0x9f) ||  \
@@ -77,20 +76,24 @@
 #define CURSOR_SET_UP        "\033OA"
 #define CURSOR_SET_RIGHT     "\033OC"
 #define CURSOR_SET_LEFT      "\033OD"
+#define CURSOR_SET_HOME     "\033OH"
+#define CURSOR_SET_END      "\033OF"
 #define CURSOR_RESET_DOWN    "\033[B"
 #define CURSOR_RESET_UP      "\033[A"
 #define CURSOR_RESET_RIGHT   "\033[C"
 #define CURSOR_RESET_LEFT    "\033[D"
-#define CURSOR_MOD_DOWN      "\033[%dB"
-#define CURSOR_MOD_UP        "\033[%dA"
-#define CURSOR_MOD_RIGHT     "\033[%dC"
-#define CURSOR_MOD_LEFT      "\033[%dD"
+#define CURSOR_RESET_HOME     "\033[H"
+#define CURSOR_RESET_END      "\033[F"
+#define CURSOR_MOD_DOWN      "\033[1;%dB"
+#define CURSOR_MOD_UP        "\033[1;%dA"
+#define CURSOR_MOD_RIGHT     "\033[1;%dC"
+#define CURSOR_MOD_LEFT      "\033[1;%dD"
+#define CURSOR_MOD_HOME     "\033[1;%dH"
+#define CURSOR_MOD_END      "\033[1;%dF"
 
 #define KEY_INSERT           "\033[2~"
 #define KEY_PAGE_UP          "\033[5~"
 #define KEY_PAGE_DOWN        "\033[6~"
-#define KEY_HOME             "\033[1~"
-#define KEY_END              "\033[4~"
 #define KEY_DEL		     "\033[3~"
 #define KEY_BACKSPACE	     "\010"
 
@@ -1329,6 +1332,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	
     strictAnsiMode = NO;
     allowColumnMode = YES;
+	allowKeypadMode = YES;
 	
     streamOffset = 0;
 	
@@ -1370,6 +1374,7 @@ static VT100TCC decode_string(unsigned char *datap,
     if (termType) [termType release];
     termType = [termtype retain];
     
+	allowKeypadMode = [termType rangeOfString:@"xterm"].location != NSNotFound;
     
     int i;
     int r;
@@ -1588,7 +1593,7 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowUp:(unsigned int)modflag
 {
-    if (key_strings[TERMINFO_KEY_UP]) {
+    if (key_strings[TERMINFO_KEY_UP] && !allowKeypadMode) {
         return [NSData dataWithBytes:key_strings[TERMINFO_KEY_UP]
                        length:strlen(key_strings[TERMINFO_KEY_UP])];
     }
@@ -1616,7 +1621,7 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowDown:(unsigned int)modflag
 {
-    if (key_strings[TERMINFO_KEY_DOWN]) {
+    if (key_strings[TERMINFO_KEY_DOWN]  && !allowKeypadMode) {
         return [NSData dataWithBytes:key_strings[TERMINFO_KEY_DOWN]
                               length:strlen(key_strings[TERMINFO_KEY_DOWN])];
     }
@@ -1644,7 +1649,7 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowLeft:(unsigned int)modflag
 {
-    if (key_strings[TERMINFO_KEY_LEFT]) {
+    if (key_strings[TERMINFO_KEY_LEFT]  && !allowKeypadMode) {
         return [NSData dataWithBytes:key_strings[TERMINFO_KEY_LEFT]
                               length:strlen(key_strings[TERMINFO_KEY_LEFT])];
     }
@@ -1672,52 +1677,99 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (NSData *)keyArrowRight:(unsigned int)modflag
 {
-    if (key_strings[TERMINFO_KEY_RIGHT]) {
+    if (key_strings[TERMINFO_KEY_RIGHT]  && !allowKeypadMode) {
         return [NSData dataWithBytes:key_strings[TERMINFO_KEY_RIGHT]
                               length:strlen(key_strings[TERMINFO_KEY_RIGHT])];
     }
     else {
         int mod=0;
-    static char buf[20];
-	
-    if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
-    else if (modflag&NSControlKeyMask) mod=5;
-    else if (modflag&NSShiftKeyMask) mod=2;
-    if (mod) {
-        sprintf(buf,CURSOR_MOD_RIGHT,mod);
-        return [NSData dataWithBytes:buf length:strlen(buf)];
-    }
-    else {
-        if (CURSOR_MODE)
-            return [NSData dataWithBytes:CURSOR_SET_RIGHT
-								  length:conststr_sizeof(CURSOR_SET_RIGHT)];
-        else
-            return [NSData dataWithBytes:CURSOR_RESET_RIGHT
-								  length:conststr_sizeof(CURSOR_RESET_RIGHT)];
-    }
+		static char buf[20];
+		
+		if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+		else if (modflag&NSControlKeyMask) mod=5;
+		else if (modflag&NSShiftKeyMask) mod=2;
+		if (mod) {
+			sprintf(buf,CURSOR_MOD_RIGHT,mod);
+			return [NSData dataWithBytes:buf length:strlen(buf)];
+		}
+		else {
+			if (CURSOR_MODE)
+				return [NSData dataWithBytes:CURSOR_SET_RIGHT
+									  length:conststr_sizeof(CURSOR_SET_RIGHT)];
+			else
+				return [NSData dataWithBytes:CURSOR_RESET_RIGHT
+									  length:conststr_sizeof(CURSOR_RESET_RIGHT)];
+		}
     }
 }
 
-- (NSData *)keyInsert
-{    if (key_strings[TERMINFO_KEY_INS]) {
-    return [NSData dataWithBytes:key_strings[TERMINFO_KEY_INS]
-                          length:strlen(key_strings[TERMINFO_KEY_INS])];
-}
-else {
-    return [NSData dataWithBytes:KEY_INSERT length:conststr_sizeof(KEY_INSERT)];
-}
-}
-
-- (NSData *)keyHome
+- (NSData *)keyHome:(unsigned int)modflag
 {
-    if (key_strings[TERMINFO_KEY_HOME]) {
+    if (key_strings[TERMINFO_KEY_HOME]  && !allowKeypadMode) {
         return [NSData dataWithBytes:key_strings[TERMINFO_KEY_HOME]
                               length:strlen(key_strings[TERMINFO_KEY_HOME])];
     }
     else {
-        return [NSData dataWithBytes:KEY_HOME length:conststr_sizeof(KEY_HOME)];
+        int mod=0;
+		static char buf[20];
+		
+		if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+		else if (modflag&NSControlKeyMask) mod=5;
+		else if (modflag&NSShiftKeyMask) mod=2;
+		if (mod) {
+			sprintf(buf,CURSOR_MOD_HOME,mod);
+			return [NSData dataWithBytes:buf length:strlen(buf)];
+		}
+		else {
+			if (CURSOR_MODE)
+				return [NSData dataWithBytes:CURSOR_SET_HOME
+									  length:conststr_sizeof(CURSOR_SET_HOME)];
+			else
+				return [NSData dataWithBytes:CURSOR_RESET_HOME
+									  length:conststr_sizeof(CURSOR_RESET_HOME)];
+		}
     }
 }
+
+- (NSData *)keyEnd:(unsigned int)modflag
+{
+    if (key_strings[TERMINFO_KEY_END]  && !allowKeypadMode) {
+        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_END]
+                              length:strlen(key_strings[TERMINFO_KEY_END])];
+    }
+    else {
+        int mod=0;
+		static char buf[20];
+		
+		if ((modflag&NSControlKeyMask) && (modflag&NSShiftKeyMask)) mod=6;
+		else if (modflag&NSControlKeyMask) mod=5;
+		else if (modflag&NSShiftKeyMask) mod=2;
+		if (mod) {
+			sprintf(buf,CURSOR_MOD_END,mod);
+			return [NSData dataWithBytes:buf length:strlen(buf)];
+		}
+		else {
+			if (CURSOR_MODE)
+				return [NSData dataWithBytes:CURSOR_SET_END
+									  length:conststr_sizeof(CURSOR_SET_END)];
+			else
+				return [NSData dataWithBytes:CURSOR_RESET_END
+									  length:conststr_sizeof(CURSOR_RESET_END)];
+		}
+    }
+}
+
+- (NSData *)keyInsert
+{    
+	if (key_strings[TERMINFO_KEY_INS]) {
+		return [NSData dataWithBytes:key_strings[TERMINFO_KEY_INS]
+							  length:strlen(key_strings[TERMINFO_KEY_INS])];
+	}
+	else {
+		return [NSData dataWithBytes:KEY_INSERT length:conststr_sizeof(KEY_INSERT)];
+	}
+}
+
 
 - (NSData *)keyDelete
 {
@@ -1742,17 +1794,6 @@ else {
     else {
         return [NSData dataWithBytes:KEY_BACKSPACE length:conststr_sizeof(KEY_BACKSPACE)];
     }
-}
-
-- (NSData *)keyEnd
-{
-	if (key_strings[TERMINFO_KEY_END]) {
-        return [NSData dataWithBytes:key_strings[TERMINFO_KEY_END]
-                              length:strlen(key_strings[TERMINFO_KEY_END])];
-    }
-    else {
-		return [NSData dataWithBytes:KEY_END length:conststr_sizeof(KEY_END)];
-	}
 }
 
 - (NSData *)keyPageUp

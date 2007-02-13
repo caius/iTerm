@@ -1,3 +1,10 @@
+2007-2-12	fabian
+
+	* Fixed a crash that happens when you toggle between the fullscreen and normal modes.
+	* Fixed a "losing char space setting" bug (#1658074).
+	* Adding @ as a valid URL character.
+	* Enhanced numeric keypad behavior. Enter key on the keypad now works under application mode.
+
 2007-2-10	fabian
 
 	* Fixed a keypad mode problem. Cursor keys should behave better now.

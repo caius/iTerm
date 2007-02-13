@@ -563,8 +563,15 @@ static NSImage *warningImage;
 		}
 		else if (unicode == NSEnterCharacter && unmodunicode == NSEnterCharacter)
 		{
-			send_str = (unsigned char*)"\015";  // Enter key -> 0x0d
-			send_strlen = 1;
+			if ([TERMINAL keypadMode] && (modflag & NSNumericPadKeyMask)) {
+				NSData *data = [TERMINAL keypadData: unicode keystr: keystr];
+				send_str = (unsigned char *)[data bytes];
+				send_strlen = [data length];
+			}
+			else {
+				send_str = (unsigned char*)"\015";  // Enter key -> 0x0d
+				send_strlen = 1;
+			}
 		}
 		else
 		{
@@ -577,24 +584,28 @@ static NSImage *warningImage;
 				data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
 			
 			// Check if we are in keypad mode
-			if((modflag & NSNumericPadKeyMask) && [TERMINAL keypadMode])
-			{
-				switch (unicode)
+			if (modflag & NSNumericPadKeyMask) {
+				if ([TERMINAL keypadMode])
 				{
-					case '=':
-						data = [TERMINAL keyPFn: 2];;
-						break;
-					case '/':
-						data = [TERMINAL keyPFn: 3];
-						break;
-					case '*':
-						data = [TERMINAL keyPFn: 4];
-						break;
-					default:
-						data = [TERMINAL keypadData: unicode keystr: keystr];
-						break;
+					switch (unicode)
+					{
+						case '=':
+							data = [TERMINAL keyPFn: 2];;
+							break;
+						case '/':
+							data = [TERMINAL keyPFn: 3];
+							break;
+						case '*':
+							data = [TERMINAL keyPFn: 4];
+							break;
+						default:
+							data = [TERMINAL keypadData: unicode keystr: keystr];
+							break;
+					}
 				}
-			}
+				else
+					data = [TERMINAL keypadData: unicode keystr: keystr];
+			}		
 			
 			
 			if (data != nil ) {

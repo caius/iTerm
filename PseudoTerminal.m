@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.397 2007-02-10 03:22:42 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.398 2007-02-13 05:50:58 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -522,13 +522,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		oldNAFont = [NAFONT retain];
 		fontSizeFollowWindowResize = [aPseudoTerminal fontSizeFollowWindowResize];
 		useTransparency = [aPseudoTerminal useTransparency];
-		[self setCharacterSpacingHorizontal: [aPseudoTerminal charSpacingVertical] 
-                                   vertical: [aPseudoTerminal charSpacingHorizontal]];
+		[self setCharacterSpacingHorizontal: [aPseudoTerminal charSpacingHorizontal] 
+                                   vertical: [aPseudoTerminal charSpacingVertical]];
 		
  		if (_fullScreen) {
 			// we are entering full screen mode. store the original size
 			WIDTH = oldWidth = [aPseudoTerminal width];
 			HEIGHT = oldHeight = [aPseudoTerminal height];
+			charHorizontalSpacingMultiplier = oldCharHorizontalSpacingMultiplier = [aPseudoTerminal charSpacingHorizontal];
+			charVerticalSpacingMultiplier= oldCharVerticalSpacingMultiplier = [aPseudoTerminal charSpacingVertical];
 			aRect = [TABVIEW frame];
 			if (fontSizeFollowWindowResize) {
 				float scale = (aRect.size.height) / HEIGHT / charHeight;
@@ -555,6 +557,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 				// we are exiting full screen mode. restore the original size.
 				WIDTH = [aPseudoTerminal oldWidth];
 				HEIGHT = [aPseudoTerminal oldHeight];
+				charHorizontalSpacingMultiplier =[aPseudoTerminal oldCharSpacingHorizontal];
+				charVerticalSpacingMultiplier= [aPseudoTerminal oldCharSpacingVertical];
 				[self setFont:[aPseudoTerminal oldFont] nafont:[aPseudoTerminal oldNAFont]];
 				
 			}
@@ -726,11 +730,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
     NSTabViewItem *aTabViewItem;
 	int numberOfSessions;
-    
-	/*if (_fullScreen) {
-		[self toggleFullScreen: nil];
-	}*/
-	
+    	
     if([TABVIEW indexOfTabViewItemWithIdentifier: aSession] == NSNotFound)
         return;
     
@@ -935,6 +935,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         PTYSession* session = [[TABVIEW tabViewItemAtIndex:i] identifier];
 		[[session TEXTVIEW] setCharWidth: charWidth];
 		[[session TEXTVIEW] setLineHeight: charHeight];
+		[[session TEXTVIEW] resetCharCache];
     }
 	
 	
@@ -961,6 +962,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	return (charVerticalSpacingMultiplier);
 }
 
+- (float) oldCharSpacingVertical
+{
+	return (oldCharVerticalSpacingMultiplier);
+}
+
+- (float) oldCharSpacingHorizontal
+{
+	return (oldCharHorizontalSpacingMultiplier);
+}
 
 - (void)setWindowSize
 {    
@@ -1536,7 +1546,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			[[PreferencePanel sharedInstance] window] == keyWindow)
 			[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 		else
-			[self toggleFullScreen: nil];
+			if (!_resizeInProgressFlag) [self toggleFullScreen: nil];
 	}
 	else {
 		// update the cursor
@@ -1734,6 +1744,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			PTYSession *aSession;
 			
 			normalScreenTerminal->_resizeInProgressFlag = YES;
+			_resizeInProgressFlag = YES;
 			for(i=0;i<n;i++) {
 				aTabViewItem = [[TABVIEW tabViewItemAtIndex:0] retain];
 				aSession = [aTabViewItem identifier];

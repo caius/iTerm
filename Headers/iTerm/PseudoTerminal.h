@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.54 2007-01-30 00:37:54 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.55 2007-02-13 05:50:58 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -74,7 +74,8 @@
 	
 	// for full screen windows
 	int oldWidth, oldHeight;
-	NSFont *oldFont, *oldNAFont;
+	float oldCharHorizontalSpacingMultiplier, oldCharVerticalSpacingMultiplier;
+    NSFont *oldFont, *oldNAFont;
 }
 
 
@@ -128,6 +129,8 @@
 - (int)charHeight;
 - (float) charSpacingVertical;
 - (float) charSpacingHorizontal;
+- (float) oldCharSpacingVertical;
+- (float) oldCharSpacingHorizontal;
 - (BOOL) useTransparency;
 - (void) setUseTransparency: (BOOL) flag;
 

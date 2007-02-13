@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.122 2007-02-12 20:21:43 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.123 2007-02-13 05:50:58 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -76,30 +76,30 @@
 #define CURSOR_SET_UP        "\033OA"
 #define CURSOR_SET_RIGHT     "\033OC"
 #define CURSOR_SET_LEFT      "\033OD"
-#define CURSOR_SET_HOME     "\033OH"
-#define CURSOR_SET_END      "\033OF"
+#define CURSOR_SET_HOME      "\033OH"
+#define CURSOR_SET_END       "\033OF"
 #define CURSOR_RESET_DOWN    "\033[B"
 #define CURSOR_RESET_UP      "\033[A"
 #define CURSOR_RESET_RIGHT   "\033[C"
 #define CURSOR_RESET_LEFT    "\033[D"
-#define CURSOR_RESET_HOME     "\033[H"
-#define CURSOR_RESET_END      "\033[F"
+#define CURSOR_RESET_HOME    "\033[H"
+#define CURSOR_RESET_END     "\033[F"
 #define CURSOR_MOD_DOWN      "\033[1;%dB"
 #define CURSOR_MOD_UP        "\033[1;%dA"
 #define CURSOR_MOD_RIGHT     "\033[1;%dC"
 #define CURSOR_MOD_LEFT      "\033[1;%dD"
-#define CURSOR_MOD_HOME     "\033[1;%dH"
-#define CURSOR_MOD_END      "\033[1;%dF"
+#define CURSOR_MOD_HOME      "\033[1;%dH"
+#define CURSOR_MOD_END       "\033[1;%dF"
 
 #define KEY_INSERT           "\033[2~"
 #define KEY_PAGE_UP          "\033[5~"
 #define KEY_PAGE_DOWN        "\033[6~"
-#define KEY_DEL		     "\033[3~"
-#define KEY_BACKSPACE	     "\010"
+#define KEY_DEL				 "\033[3~"
+#define KEY_BACKSPACE		 "\010"
 
 #define KEY_PF1		     "\033OP"
 #define KEY_PF2		     "\033OQ"
-#define KEY_PF3	             "\033OR"
+#define KEY_PF3	         "\033OR"
 #define KEY_PF4		     "\033OS"
 
 #define ALT_KP_0		"\033Op"
@@ -112,10 +112,10 @@
 #define ALT_KP_7		"\033Ow"
 #define ALT_KP_8		"\033Ox"
 #define ALT_KP_9		"\033Oy"
-#define ALT_KP_MINUS		"\033Om"
+#define ALT_KP_MINUS	"\033Om"
 #define ALT_KP_PLUS		"\033Ol"
-#define ALT_KP_PERIOD		"\033On"
-#define ALT_KP_ENTER		"\033OM"
+#define ALT_KP_PERIOD	"\033On"
+#define ALT_KP_ENTER	"\033OM"
 
 
 

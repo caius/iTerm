@@ -319,8 +319,11 @@ static BOOL onScreen = NO;
 // background image stuff
 - (IBAction) useBackgroundImage: (id) sender
 {
-	if (![_pseudoTerminal fullScreen]) return;
-
+	if ([_pseudoTerminal fullScreen]) {
+		[useBackgroundImage setState: backgroundImagePath != nil];
+		return;
+	}
+	
     [CONFIG_BACKGROUND setEnabled: ([useBackgroundImage state] == NSOffState)?YES:NO];
     if([useBackgroundImage state]==NSOffState)
     {

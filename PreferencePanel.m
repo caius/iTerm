@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.154 2007-01-31 06:41:18 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.155 2007-02-15 03:23:05 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -119,6 +119,7 @@ static NSString *NoHandler = @"<No Handler>";
     defaultCheckUpdate = [prefs objectForKey:@"SUCheckAtStartup"]?[[prefs objectForKey:@"SUCheckAtStartup"] boolValue]: YES;
 	defaultUseBorder = [prefs objectForKey:@"UseBorder"]?[[prefs objectForKey:@"UseBorder"] boolValue]: NO;
 	defaultHideScrollbar = [prefs objectForKey:@"HideScrollbar"]?[[prefs objectForKey:@"HideScrollbar"] boolValue]: NO;
+	defaultCheckTestRelease = [prefs objectForKey:@"CheckTestRelease"]?[[prefs objectForKey:@"CheckTestRelease"] boolValue]: YES;
 	
 	NSArray *urlArray;
 	NSDictionary *tempDict = [prefs objectForKey:@"URLHandlers"];
@@ -175,6 +176,7 @@ static NSString *NoHandler = @"<No Handler>";
 	[prefs setInteger:defaultCursorType forKey:@"CursorType"];
 	[prefs setBool:defaultUseBorder forKey:@"UseBorder"];
 	[prefs setBool:defaultHideScrollbar forKey:@"HideScrollbar"];
+	[prefs setBool:defaultCheckTestRelease forKey:@"CheckTestRelease"];
 	
 	// save the handlers by converting the bookmark into an index
 	NSMutableDictionary *tempDict = [[NSMutableDictionary alloc] init];
@@ -220,6 +222,7 @@ static NSString *NoHandler = @"<No Handler>";
 	[cursorType selectCellWithTag:defaultCursorType];
 	[useBorder setState: defaultUseBorder?NSOnState:NSOffState];
 	[hideScrollbar setState: defaultHideScrollbar?NSOnState:NSOffState];
+	[checkTestRelease setState: defaultCheckTestRelease?NSOnState:NSOffState];
 	
 	[self showWindow: self];
 	if ([[iTermController sharedInstance] fullScreenTerminal]) [[self window] setLevel:CGShieldingWindowLevel()];
@@ -266,7 +269,22 @@ static NSString *NoHandler = @"<No Handler>";
         defaultWordChars = [[wordChars stringValue] retain];
         defaultQuitWhenAllWindowsClosed = ([quitWhenAllWindowsClosed state] == NSOnState);
         defaultCheckUpdate = ([checkUpdate state] == NSOnState);
-    }
+       
+		if (defaultCheckTestRelease != ([checkTestRelease state] == NSOnState)) {
+		
+			defaultCheckTestRelease = ([checkTestRelease state] == NSOnState);
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+			NSString *appCast = defaultCheckTestRelease ? 
+				[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURL"] : 
+				[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURLForFinalRelease"];
+			[[NSUserDefaults standardUserDefaults] setObject: appCast forKey:@"SUFeedURL"];
+#else
+			NSString *appCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURLForPanther"];
+			[[NSUserDefaults standardUserDefaults] setObject: appCast forKey:@"SUFeedURL"];
+#endif
+		}
+	}
 }
 
 // NSWindow delegate
@@ -396,6 +414,11 @@ static NSString *NoHandler = @"<No Handler>";
 - (BOOL) hideScrollbar
 {
 	return defaultHideScrollbar;
+}
+
+- (BOOL) checkTestRelease
+{
+	return defaultCheckTestRelease;
 }
 
 - (BOOL) quitWhenAllWindowsClosed

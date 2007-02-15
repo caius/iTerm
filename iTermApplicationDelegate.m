@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.53 2007-02-10 03:22:42 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.54 2007-02-15 03:23:05 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -72,19 +72,21 @@ static BOOL usingAutoLaunchScript = NO;
     putenv("TERM_PROGRAM=iTerm.app");
 
 	[self buildScriptMenu:nil];
-	
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-	NSString *patherAppCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURL"];
-	[[NSUserDefaults standardUserDefaults] setObject: patherAppCast forKey:@"SUFeedURL"];
-#else
-	NSString *patherAppCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURLForPanther"];
-	[[NSUserDefaults standardUserDefaults] setObject: patherAppCast forKey:@"SUFeedURL"];
-#endif
-	
+		
 	// read preferences
     [iTermProfileWindowController sharedInstance];
     [iTermBookmarkController sharedInstance];
     [PreferencePanel sharedInstance];
+	
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	NSString *appCast = [[PreferencePanel sharedInstance] checkTestRelease] ? 
+		[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURL"] : 
+		[[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURLForFinalRelease"];
+	[[NSUserDefaults standardUserDefaults] setObject: appCast forKey:@"SUFeedURL"];
+#else
+	NSString *appCast = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"SUFeedURLForPanther"];
+	[[NSUserDefaults standardUserDefaults] setObject: appCast forKey:@"SUFeedURL"];
+#endif
 	
 }
 

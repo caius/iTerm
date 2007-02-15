@@ -126,6 +126,8 @@
 		F62D15F40AA64B2F0075A287 /* PSMTabDragWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = F62D15F00AA64B2F0075A287 /* PSMTabDragWindow.h */; };
 		F62D15F50AA64B2F0075A287 /* PSMTabDragWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F62D15F10AA64B2F0075A287 /* PSMTabDragWindow.m */; };
 		F638C2620AD483BF00BEE23D /* iTerm.strings in Resources */ = {isa = PBXBuildFile; fileRef = FB151F2903648AC401F955DB /* iTerm.strings */; };
+		F657BB6F0B83D58100EA33CC /* appcast_test.xml in Resources */ = {isa = PBXBuildFile; fileRef = F657BB6E0B83D58100EA33CC /* appcast_test.xml */; };
+		F657BB900B83D69400EA33CC /* Changelog_test.xml in Resources */ = {isa = PBXBuildFile; fileRef = F657BB8F0B83D69400EA33CC /* Changelog_test.xml */; };
 		F658C86E06054425000A13D5 /* iTermTerminalProfileMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = F658C86C06054425000A13D5 /* iTermTerminalProfileMgr.m */; };
 		F658CAFB060587A0000A13D5 /* iTermTerminalProfileMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = F658CAFA060587A0000A13D5 /* iTermTerminalProfileMgr.h */; };
 		F67332410AED82E5003D786E /* iTermOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = F673323F0AED82E5003D786E /* iTermOutlineView.h */; };
@@ -330,6 +332,8 @@
 		F64B59D405ED49B600FE8ACB /* sidebar.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sidebar.html; path = website/sidebar.html; sourceTree = "<group>"; };
 		F64B59FA05ED4AA800FE8ACB /* header.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = header.html; path = website/header.html; sourceTree = "<group>"; };
 		F64B5A1705ED4AF000FE8ACB /* footer.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = footer.html; path = website/footer.html; sourceTree = "<group>"; };
+		F657BB6E0B83D58100EA33CC /* appcast_test.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = appcast_test.xml; path = website/appcast_test.xml; sourceTree = "<group>"; };
+		F657BB8F0B83D69400EA33CC /* Changelog_test.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Changelog_test.xml; path = website/Changelog_test.xml; sourceTree = "<group>"; };
 		F658C86C06054425000A13D5 /* iTermTerminalProfileMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermTerminalProfileMgr.m; sourceTree = "<group>"; };
 		F658CAFA060587A0000A13D5 /* iTermTerminalProfileMgr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTermTerminalProfileMgr.h; path = Headers/iTerm/iTermTerminalProfileMgr.h; sourceTree = "<group>"; };
 		F65CCFFA05F7EB0700F04CFF /* screenshot2-m.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "screenshot2-m.jpg"; path = "website/screenshot2-m.jpg"; sourceTree = "<group>"; };
@@ -771,8 +775,10 @@
 				F64B5A1705ED4AF000FE8ACB /* footer.html */,
 				F69D78B405FBEA6D009BC3FC /* faq.shtml */,
 				F6E2DF670AE300AF00D20B3B /* appcast.xml */,
+				F657BB6E0B83D58100EA33CC /* appcast_test.xml */,
 				F6F6430E0AF6D6FB00CE20D0 /* appcast_panther.xml */,
 				F6DA0B5C0AF07B550098EFEB /* Changelog.html */,
+				F657BB8F0B83D69400EA33CC /* Changelog_test.xml */,
 			);
 			name = website;
 			sourceTree = "<group>";
@@ -1011,6 +1017,8 @@
 				DD57633705653C5F00F1905E /* iTerm.plist in Resources */,
 				F6E2DF680AE300AF00D20B3B /* appcast.xml in Resources */,
 				F6CDC4E70AE6D3E2005E7D4F /* folder.png in Resources */,
+				F657BB6F0B83D58100EA33CC /* appcast_test.xml in Resources */,
+				F657BB900B83D69400EA33CC /* Changelog_test.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

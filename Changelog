@@ -1,3 +1,8 @@
+2007-2-14	fabian
+
+	* Fixed a bug that disables the background image setting.
+	* Added an option to prompt for test-releases.
+	
 2007-2-12	fabian
 
 	* Fixed a crash that happens when you toggle between the fullscreen and normal modes.

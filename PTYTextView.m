@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.301 2007-02-13 05:50:58 yfabian Exp $
+// $Id: PTYTextView.m,v 1.302 2007-02-15 03:23:05 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -45,7 +45,6 @@
 
 #include <sys/time.h>
 
-static SInt32 systemVersion;
 static NSCursor* textViewCursor =  nil;
 static float strokeWidth, boldStrokeWidth;
 static int cacheSize;
@@ -54,9 +53,6 @@ static int cacheSize;
 
 + (void) initialize
 {
-	// get system version number
-	// get the system version since there is a useful call in 10.3 and up for getting a blod stroke
-	Gestalt(gestaltSystemVersion,&systemVersion);
     
     NSImage *ibeamImage = [[NSCursor IBeamCursor] image];
     NSPoint hotspot = [[NSCursor IBeamCursor] hotSpot];
@@ -2567,6 +2563,8 @@ static int cacheSize;
 	NSFont *theFont;
 	float sw;
 	BOOL renderBold;
+	BOOL tigerOrLater = (NSAppKitVersionNumber > NSAppKitVersionNumber10_3);
+	NSFontManager *fontManager = [NSFontManager sharedFontManager];
 	
 	//NSLog(@"%s: drawing char %c", __PRETTY_FUNCTION__, carac);
 	//NSLog(@"%@",NSStrokeWidthAttributeName);
@@ -2576,11 +2574,11 @@ static int cacheSize;
 	
 	if(renderBold)
 	{
-		theFont = [[NSFontManager sharedFontManager] convertFont: aFont toHaveTrait: NSBoldFontMask];
+		theFont = [fontManager convertFont: aFont toHaveTrait: NSBoldFontMask];
 		
         // Check if there is native bold support
 		// if conversion was successful, else use our own methods to convert to bold
-		if([[NSFontManager sharedFontManager] fontNamed: [theFont fontName] hasTraits: NSBoldFontMask] == YES)
+		if ([fontManager traitsOfFont:theFont] & NSBoldFontMask) 
 		{
 			sw = antiAlias ? strokeWidth:0;
 			renderBold = NO;
@@ -2596,7 +2594,7 @@ static int cacheSize;
         sw = antiAlias ? strokeWidth:0;
     }
 	
-	if (systemVersion >= 0x00001030 && sw)
+	if (tigerOrLater && sw)
 	{
 		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
 			theFont, NSFontAttributeName,
@@ -2624,7 +2622,7 @@ static int cacheSize;
 	[crap drawAtPoint:NSMakePoint(0,0) withAttributes:attrib];
 	
 	// on older systems, for bold, redraw the character offset by 1 pixel
-	if (renderBold && (systemVersion < 0x00001030 || !antiAlias))
+	if (renderBold && (!tigerOrLater || !antiAlias))
 	{
 		[crap drawAtPoint:NSMakePoint(1,0)  withAttributes:attrib];
 	}

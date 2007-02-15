@@ -6,6 +6,7 @@
             CLASS = PreferencePanel; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                checkTestRelease = NSButton; 
                 checkUpdate = NSButton; 
                 cmdSelection = NSButton; 
                 cursorType = id; 

@@ -164,6 +164,8 @@
 	<key>NSPrincipalClass</key>
 	<string>iTermApplication</string>
 	<key>SUFeedURL</key>
+	<string>http://iterm.sourceforge.net/appcast_test.xml</string>
+	<key>SUFeedURLForFinalRelease</key>
 	<string>http://iterm.sourceforge.net/appcast.xml</string>
 	<key>SUFeedURLForPanther</key>
 	<string>http://iterm.sourceforge.net/appcast_panther.xml</string>

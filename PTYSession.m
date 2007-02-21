@@ -1851,8 +1851,13 @@ static NSImage *warningImage;
 	
     if(text != nil)
     {
-		aString = [NSString stringWithFormat:@"%@\n", text];
-		data = [aString dataUsingEncoding: [TERMINAL encoding]];
+        if ([text characterAtIndex:[text length]-1]==' ') {
+            data = [text dataUsingEncoding: [TERMINAL encoding]];
+        }
+        else {
+            aString = [NSString stringWithFormat:@"%@\n", text];
+            data = [aString dataUsingEncoding: [TERMINAL encoding]];
+        }
     }
 	
     if(contentsOfFile != nil)

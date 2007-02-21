@@ -152,6 +152,7 @@
 "scroll page up"="scroll page up";
 "send ^["="send ^[";
 "send hex code"="send hex code";
+"send"="send";
 "ignore"="ignore";
 "unknown action ID"="unknown action ID";
 
@@ -185,6 +186,7 @@
 /* Bookmarks */
 "Show Bookmark Drawer" = "Show Bookmark Drawer";
 "Hide Bookmark Drawer"="Hide Bookmark Drawer";
+"Delete Bookmark"="Delete Bookmark";
 
 /* Warning */
 "Warning!" = "Warning!";

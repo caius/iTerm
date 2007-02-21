@@ -1,3 +1,8 @@
+2007-2-20   fabian
+
+    * iTerm no longer appends \n if a applescript writes a string ending with a space.
+    * Fixed several localization problems.
+    
 2007-2-14	fabian
 
 	* Fixed a bug that disables the background image setting.

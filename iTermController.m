@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.67 2007-01-25 07:29:53 yfabian Exp $
+// $Id: iTermController.m,v 1.68 2007-02-21 06:29:14 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -319,7 +319,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	
 	if (count>1) {
 		[aMenu addItem:[NSMenuItem separatorItem]];
-		aMenuItem = [[[NSMenuItem alloc] initWithTitle: @"Open All" action:@selector(newSessionsInWindow:) keyEquivalent:@""] autorelease];
+		aMenuItem = [[[NSMenuItem alloc] initWithTitle: NSLocalizedStringFromTableInBundle(@"Open All",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Context Menu") action:@selector(newSessionsInWindow:) keyEquivalent:@""] autorelease];
 		[aMenuItem setKeyEquivalentModifierMask: modifierMask];
 		[aMenuItem setRepresentedObject: theNode];
 		[aMenuItem setTarget: self];

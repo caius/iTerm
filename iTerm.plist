@@ -27,7 +27,7 @@
 	<key>CFBundleExecutable</key>
 	<string>iTerm</string>
 	<key>CFBundleGetInfoString</key>
-	<string>0.9.5.0212</string>
+	<string>0.9.5.0227</string>
 	<key>CFBundleHelpBookFolder</key>
 	<string>iTerm Help</string>
 	<key>CFBundleHelpBookName</key>
@@ -43,7 +43,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.9.5.0212</string>
+	<string>0.9.5.0227</string>
 	<key>CFBundleSignature</key>
 	<string>ITRM</string>
 	<key>CFBundleURLTypes</key>
@@ -154,7 +154,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>0.9.5.0212</string>
+	<string>0.9.5.0227</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
 	<key>NSExtensions</key>
@@ -164,9 +164,9 @@
 	<key>NSPrincipalClass</key>
 	<string>iTermApplication</string>
 	<key>SUFeedURL</key>
-	<string>http://iterm.sourceforge.net/appcast_test.xml</string>
-	<key>SUFeedURLForFinalRelease</key>
 	<string>http://iterm.sourceforge.net/appcast.xml</string>
+	<key>SUFeedURLForFinalRelease</key>
+	<string>http://iterm.sourceforge.net/appcast_final.xml</string>
 	<key>SUFeedURLForPanther</key>
 	<string>http://iterm.sourceforge.net/appcast_panther.xml</string>
 	<key>SmartCrashReports_CompanyName</key>

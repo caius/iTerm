@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.302 2007-02-15 03:23:05 yfabian Exp $
+// $Id: PTYTextView.m,v 1.303 2007-02-27 20:54:55 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2585,7 +2585,7 @@ static int cacheSize;
 		}
 		else
 		{
-			sw = antiAlias?boldStrokeWidth:0;
+			sw = antiAlias? boldStrokeWidth : 0;
 			theFont = aFont;
 		}
 	}

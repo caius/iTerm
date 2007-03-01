@@ -20,15 +20,15 @@
 
 
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
+<FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
 <STRONG>New localization packages</STRONG><IMG src="new.gif">  2/28/07<BR>
 I am no language genius, but I did spend some time learning some Spanish. As I'm trying to improve my Spanish, I decide to make
 a Spanish localization package for the latest version of iTerm. Be warned. Some translations may be awkward or totally wrong. 
 If there are any native Spanish speakers out there, any corrections or advice will be much appreciated (wanna be my penpal? :-)). 
 Muchas gracias!! <BR><BR>
 To download, check our <a href="http://iterm.sourceforge.net/localization.shtml">Localization</a> page. Also updated is the simplified
-Chinese package for the latest iTerm.
+Chinese package for the latest iTerm.<BR><BR>
 
-<FONT SIZE="5"><STRONG>News</STRONG></FONT><BR><BR>
 <STRONG>Release 0.9.5</STRONG><IMG src="new.gif">  2/1/07<BR>
 After several months of developping, we proudly present you the latest release of iTerm. Many users
 have provided us with great feed backs and helped us nail down bugs. Lots of thanks to all of you!

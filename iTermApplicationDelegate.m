@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.55 2007-02-21 06:29:14 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.56 2007-03-01 07:31:32 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -518,7 +518,7 @@ static BOOL usingAutoLaunchScript = NO;
 		else
 		{
 			[toggleBookmarksView setTitle: 
-				NSLocalizedStringFromTableInBundle(@"Hide Bookmarks Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
+				NSLocalizedStringFromTableInBundle(@"Hide Bookmark Drawer", @"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
 		}
 	}
 	else {

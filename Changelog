@@ -1,3 +1,9 @@
+2007-3-13   fabian
+
+    * Fixed a selection bug (#1677708).
+    * Improved Fn key handling (#1676087).
+    * Improved window cycling behavior (#1676009).
+    
 2007-2-20   fabian
 
     * iTerm no longer appends \n if a applescript writes a string ending with a space.

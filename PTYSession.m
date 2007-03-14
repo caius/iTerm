@@ -539,13 +539,20 @@ static NSImage *warningImage;
 				send_str = (unsigned char *)[data bytes];
 				send_strlen = [data length];
 			}
+            else if (keystr != nil) {
+                NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
+                    [keystr dataUsingEncoding:NSUTF8StringEncoding]:
+                    [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
+                send_str = (unsigned char *)[keydat bytes];
+				send_strlen = [keydat length];
+            }
 		}
 		else if ((modflag & NSAlternateKeyMask) && 
 				 ([self optionKey] != OPT_NORMAL))
 		{
 			NSData *keydat = ((modflag & NSControlKeyMask) && unicode>0)?
-			[keystr dataUsingEncoding:NSUTF8StringEncoding]:
-			[unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
+                [keystr dataUsingEncoding:NSUTF8StringEncoding]:
+                [unmodkeystr dataUsingEncoding:NSUTF8StringEncoding];
 			// META combination
 			if (keydat != nil) {
 				send_str = (unsigned char *)[keydat bytes];

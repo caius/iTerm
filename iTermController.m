@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.68 2007-02-21 06:29:14 yfabian Exp $
+// $Id: iTermController.m,v 1.69 2007-03-14 19:08:13 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -194,6 +194,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 - (IBAction) previousTerminal: (id) sender
 {
     unsigned int currentIndex;
+    BOOL looped = NO;
 
     currentIndex = [[self terminals] indexOfObject: FRONT];
     if(FRONT == nil || currentIndex == NSNotFound)
@@ -203,11 +204,16 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     }
 
     // get the previous terminal
-    if(currentIndex == 0)
-	currentIndex = [[self terminals] count] - 1;
-    else
-	currentIndex--;
-
+    do {
+        if(currentIndex == 0) {
+            if (looped) return;
+            currentIndex = [[self terminals] count] - 1;
+            looped = YES;
+        }
+        else
+        currentIndex--;
+    } while ([[[[self terminals] objectAtIndex: currentIndex] window] isMiniaturized]);
+    
     // make sure that terminal's window active
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
     
@@ -215,6 +221,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 - (IBAction)nextTerminal: (id) sender
 {
     unsigned int currentIndex;
+    BOOL looped;
 
     currentIndex = [[self terminals] indexOfObject: FRONT];
     if(FRONT == nil || currentIndex == NSNotFound)
@@ -224,10 +231,15 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     }
 
     // get the next terminal
-    if(currentIndex == [[self terminals] count] - 1)
-	currentIndex = 0;
-    else
-	currentIndex++;
+    do {
+        if(currentIndex == [[self terminals] count] - 1) {
+            if (looped) return;
+            currentIndex = 0;
+            looped = YES;
+        }
+        else
+            currentIndex++;
+    } while ([[[[self terminals] objectAtIndex: currentIndex] window] isMiniaturized]);
 
     // make sure that terminal's window active
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];

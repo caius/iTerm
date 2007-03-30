@@ -21,33 +21,30 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Available Localizations</STRONG></FONT>
 <BR><BR>
-<STRONG>Spanish package for 0.9.5</STRONG> 2/28/2007<BR>
-Download Link: <a href="localizations/Spanish-0.9.5.mpkg.zip">here</a><br><br>
+<STRONG>Traditional Chinese (正體中文)</STRONG><BR>
+Download: 
+<a href="localizations/iTerm_TC_0.9.5.dmg">0.9.5</a>
+<a href="localizations/iTerm_TC_0.9.2.dmg">0.9.2</a>
+<a href="localizations/iTerm_TC_0.9.0.dmg">0.9.0</a><br>
+Contributor: <a href="mailto:shivahuang at gmail dot com no spam">Shiva Huang</a>
 <BR><BR>
 
-<STRONG>Simplified Chinese (简体中文) for 0.9.5</STRONG> 2/28/2007<BR>
-Download Link: <a href="localizations/zh_CN-0.9.5.mpkg.zip">here</a><br><br>
+<STRONG>Simplified Chinese (简体中文)</STRONG><BR>
+Download: 
+<a href="localizations/zh_CN-0.9.5.mpkg.zip">0.9.5</a>
+<a href="localizations/zh_CN-0.9.2.mpkg.zip">0.9.2</a>
+<a href="localizations/zh_CN-0.9.0.zip">0.9.0</a>
 <BR><BR>
 
-<STRONG>Japanese package for 0.9.2</STRONG> 11/7/2006<BR>
-Download Link: <a href="localizations/Japanese-0.9.2.mpkg.zip">here</a><br><br>
+<STRONG>Spanish</STRONG><BR>
+Download: <a href="localizations/Spanish-0.9.5.mpkg.zip">0.9.5</a>
 <BR><BR>
 
-<STRONG>Simplified Chinese (简体中文) for 0.9.2</STRONG> 10/31/2006<BR>
-Download Link: <a href="localizations/zh_CN-0.9.2.mpkg.zip">here</a><br><br>
-<BR><BR>
-
-<STRONG>Traditional Chinese (繁體中文) for 0.9.0</STRONG> 10/12/2006<BR>
-Download Link: <a href="localizations/iTerm_TC_0.9.0.dmg">here</a><br><br>
-Contributed by: <a href="mailto:shivahuang at gmail dot com no spam">Shiva Huang</a><br><BR><BR>
-
-<STRONG>Simplified Chinese (简体中文) for 0.9.0</STRONG> 10/12/2006<BR>
-Download Link: <a href="localizations/zh_CN-0.9.0.zip">here</a><br><br>
-<BR><BR>
-
-<STRONG>Japanese package for 0.9.0</STRONG> 10/11/2006<BR>
-Download Link: <a href="localizations/Japanese-0.9.0.zip">here</a><br><br>
-Contributed by: <a href="mailto:wkagawa at jota.gsc.riken.go.jp no spam">Wataru Kagawa</a><br>
+<STRONG>Japanese</STRONG> Updated on 11/7/2006<BR>
+Download Link:
+<a href="localizations/Japanese-0.9.2.mpkg.zip">0.9.2</a> 
+<a href="localizations/Japanese-0.9.0.zip">0.9.0</a><br>
+Contributor: <a href="wkagawa at jota.gsc.riken.go.jp no spam">Wataru Kagawa</a>
 <BR><BR>
 
 <STRONG>Guide for localization package</STRONG><BR>

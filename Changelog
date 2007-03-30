@@ -1,3 +1,8 @@
+2007-3-15   fabian
+
+    * Changing font size when in full screen mode now changes row/col numbers correctly (#1671723).
+    * Enhanced "Font size follow window size" behavior.
+    
 2007-3-13   fabian
 
     * Fixed a selection bug (#1677708).

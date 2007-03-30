@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.398 2007-02-13 05:50:58 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.399 2007-03-30 00:35:45 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1202,7 +1202,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(newAsciiFont != nil && newNonAsciiFont != nil)
     {
 		[self setFont: newAsciiFont nafont: newNonAsciiFont];		
-		[self resizeWindow: [self width] height: [self height]];
+//		[self resizeWindow: [self width] height: [self height]];
+
+        NSRect frm = [[self window] frame];
+        float rh = frm.size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
+        float rw = frm.size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
+        
+        HEIGHT=[self height]?[self height]:(([[[self window] screen] frame].size.height - rh)/charHeight + 0.5);
+        WIDTH=[self width]?[self width]:(([[[self window] screen] frame].size.width - rw - MARGIN*2)/charWidth + 0.5); 
+        
+        // resize the TABVIEW and TEXTVIEW
+        [self setWindowSize];
     }
     
 	
@@ -1783,14 +1793,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  __FILE__, __LINE__, defaultFrame.size.width, defaultFrame.size.height);
 #endif
 	float scale;
-	
+    
     float nch = [sender frame].size.height - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.height;
 	float wch = [sender frame].size.width - [[[self currentSession] SCROLLVIEW] documentVisibleRect].size.width;
     
     defaultFrame.origin.x = [sender frame].origin.x;
     
     if (fontSizeFollowWindowResize) {
-		scale = (defaultFrame.size.height - nch) / HEIGHT / charHeight;
+        scale = (defaultFrame.size.height - nch) / HEIGHT / charHeight;
 		NSFont *font = [[NSFontManager sharedFontManager] convertFont:FONT toSize:(int)(([FONT pointSize] * scale))];
 		font = [self _getMaxFont:font height:defaultFrame.size.height - nch lines:HEIGHT];
 		NSMutableDictionary *dic = [NSMutableDictionary dictionary];
@@ -1799,8 +1809,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		sz = [@"W" sizeWithAttributes:dic];
 		
 		defaultFrame.size.height = [font defaultLineHeightForFont] * charVerticalSpacingMultiplier * HEIGHT + nch;
-		defaultFrame.size.width = sz.width * charHorizontalSpacingMultiplier * WIDTH + wch;
-		NSLog(@"actual height: %f\t (nch=%f) scale: %f\t new font:%f\told:%f",defaultFrame.size.height,nch,scale, [font pointSize], [FONT pointSize]);
+		defaultFrame.size.width = sz.width * charHorizontalSpacingMultiplier * WIDTH + MARGIN*2 + wch;
+        defaultFrame.origin.y = [sender frame].origin.y + [sender frame].size.height -  defaultFrame.size.height;
+//		NSLog(@"actual height: %f\t (nch=%f) scale: %f\t new font:%f\told:%f",defaultFrame.size.height,nch,scale, [font pointSize], [FONT pointSize]);
 	}
 	else {
         int new_height = (defaultFrame.size.height - nch) / charHeight;
@@ -1810,8 +1821,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		defaultFrame.size.width = ([[PreferencePanel sharedInstance] maxVertically] ? [sender frame].size.width : new_width*charWidth+wch+MARGIN*2);
 		//NSLog(@"actual width: %f, height: %f",defaultFrame.size.width,defaultFrame.size.height);
 	}
-	
-    
+	    
 	return defaultFrame;
 }
 	

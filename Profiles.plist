@@ -1124,60 +1124,6 @@
 		<dict>
 			<key>Key Mappings</key>
 			<dict>
-				<key>0xf700-0x200000</key>
-				<dict>
-					<key>Action</key>
-					<integer>10</integer>
-					<key>Priority</key>
-					<false/>
-					<key>Text</key>
-					<string>[A</string>
-				</dict>
-				<key>0xf701-0x200000</key>
-				<dict>
-					<key>Action</key>
-					<integer>10</integer>
-					<key>Priority</key>
-					<false/>
-					<key>Text</key>
-					<string>[B</string>
-				</dict>
-				<key>0xf702-0x200000</key>
-				<dict>
-					<key>Action</key>
-					<integer>10</integer>
-					<key>Priority</key>
-					<false/>
-					<key>Text</key>
-					<string>[D</string>
-				</dict>
-				<key>0xf703-0x200000</key>
-				<dict>
-					<key>Action</key>
-					<integer>10</integer>
-					<key>Priority</key>
-					<false/>
-					<key>Text</key>
-					<string>[C</string>
-				</dict>
-				<key>0xf729-0x0</key>
-				<dict>
-					<key>Action</key>
-					<integer>10</integer>
-					<key>Priority</key>
-					<false/>
-					<key>Text</key>
-					<string>[H</string>
-				</dict>
-				<key>0xf72b-0x0</key>
-				<dict>
-					<key>Action</key>
-					<integer>10</integer>
-					<key>Priority</key>
-					<false/>
-					<key>Text</key>
-					<string>[F</string>
-				</dict>
 				<key>0x7f-0x0</key>
 				<dict>
 					<key>Action</key>

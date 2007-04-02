@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Shells.h,v 1.2 2007-04-02 16:29:02 dnedrow Exp $
+// $Id: Shells.h,v 1.3 2007-04-02 17:48:45 dnedrow Exp $
 //
 /*!
 	@class Shells
@@ -40,7 +40,7 @@
 	@function getShells
 	@abstract Gets the list of shells
 	@discussion This method is used to retrieve shells listed in /etc/shells.
-	@return NSSet of shells, NULL if empty
+	@return NSSet of shells. Caller should check set size.
 */
 - (NSSet *) getShells;
 

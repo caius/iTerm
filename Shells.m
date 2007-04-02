@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Shells.m,v 1.2 2007-04-02 16:30:20 dnedrow Exp $
+// $Id: Shells.m,v 1.3 2007-04-02 17:18:31 dnedrow Exp $
 //
 /*!
 @class Shells
@@ -76,9 +76,8 @@ NSString *shells;
 	if (!shells) {
 		return (NULL);
 	}
-
-	NSArray *shellArray = [shells componentsSeparatedByString:@"\n"];
-	NSEnumerator *shellEnum = [shellArray objectEnumerator];
+	
+	NSEnumerator *shellEnum = [[shells componentsSeparatedByString:@"\n"] objectEnumerator];
 	NSMutableSet *shellSet;
 	NSString *shell;
 	

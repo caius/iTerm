@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Shells.m,v 1.1 2007-03-19 20:14:17 dnedrow Exp $
+// $Id: Shells.m,v 1.2 2007-04-02 16:30:20 dnedrow Exp $
 //
 /*!
 @class Shells
@@ -69,21 +69,27 @@ NSString *shells;
 	shells = [NSString stringWithContentsOfFile:shellsPath];
 	if (!shells) return (NO);
 	
-#if DEBUG_ALLOC
-	NSArray *shellArray = [shells componentsSeparatedByString:@"\n"];
-	
-	NSEnumerator *nse = [shellArray objectEnumerator];
-	
-	while(shell = [nse nextObject]) {
-		NSLog(shell);
-	}
-#endif
-	
 	return (YES);
 }
 
-- (NSString *) getShells {
-	return shells;
+- (NSSet *) getShells {
+	if (!shells) {
+		return (NULL);
+	}
+
+	NSArray *shellArray = [shells componentsSeparatedByString:@"\n"];
+	NSEnumerator *shellEnum = [shellArray objectEnumerator];
+	NSMutableSet *shellSet;
+	NSString *shell;
+	
+	while((shell = [shellEnum nextObject])) {
+		// Get rid of commented lines
+		if (![shell hasPrefix:@"#"]) {
+			[shellSet addObject:shell];
+		}
+	}
+	
+	return shellSet;
 }
 
 @end

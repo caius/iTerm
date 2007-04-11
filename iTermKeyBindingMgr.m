@@ -182,7 +182,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
 	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
-	allKeys = [keyMappings allKeys];
+	allKeys = [[keyMappings allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 	
 	if(index >= 0 && index < [allKeys count])
 	{
@@ -368,7 +368,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
 	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
-	allKeys = [keyMappings allKeys];
+	allKeys = [[keyMappings allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 	
 	if(index >= 0 && index < [allKeys count])
 	{

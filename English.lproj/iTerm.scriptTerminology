@@ -195,7 +195,7 @@
 				</dict>
 			</dict>
 			<key>Description</key>
-			<string>Executes a command in a session</string>
+			<string>Executes a command in a session (attach a trailing space for commands without carriage return)</string>
 			<key>Name</key>
 			<string>exec</string>
 		</dict>

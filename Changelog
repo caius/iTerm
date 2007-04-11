@@ -1,3 +1,9 @@
+2007-4-11   fabian
+    
+    * Fixed a bug that displays wrong actions when one edits existing key mappings.
+    * Profile lists are now sorted
+    * Key-mapping lists are now sorted.
+    
 2007-3-15   fabian
 
     * Changing font size when in full screen mode now changes row/col numbers correctly (#1671723).

@@ -521,7 +521,6 @@ static BOOL addingKBEntry;
 			[[kbEntryAction itemAtIndex: i] setEnabled: NO];
 			[[kbEntryAction itemAtIndex: i] setAction: nil];
 		}
-		[kbEntryAction selectItemAtIndex: KEY_ACTION_ESCAPE_SEQUENCE];
 		
 	}
 	
@@ -1029,21 +1028,20 @@ static BOOL addingKBEntry;
     
     if (item) {
         id value;
-        NSEnumerator *enumerator;
+        NSArray *allKeys;
 
         switch ([item intValue]) {
             case KEYBOARD_PROFILE_TAB:
-                enumerator = [[[iTermKeyBindingMgr singleInstance] profiles] keyEnumerator];
+                allKeys = [[[[iTermKeyBindingMgr singleInstance] profiles] allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
                 break;
             case TERMINAL_PROFILE_TAB:
-                enumerator = [[[iTermTerminalProfileMgr singleInstance] profiles] keyEnumerator];
+                allKeys = [[[[iTermTerminalProfileMgr singleInstance] profiles] allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
                 break;
             default:
-                enumerator = [[[iTermDisplayProfileMgr singleInstance] profiles] keyEnumerator];
+                allKeys = [[[[iTermDisplayProfileMgr singleInstance] profiles] allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
         }
             
-        while ((value = [enumerator nextObject]) && index>0) 
-            index--;
+        value = [allKeys objectAtIndex: index];
         
         return value;
     }

@@ -1,3 +1,8 @@
+2007-4-23   fabian
+
+    * Fixed a bug when launches multiple-line urls.
+    * Fixed a bug with selection that scrolls out of the view.
+    
 2007-4-11   fabian
     
     * Fixed a bug that displays wrong actions when one edits existing key mappings.

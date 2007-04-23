@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.304 2007-03-14 19:08:13 yfabian Exp $
+// $Id: PTYTextView.m,v 1.305 2007-04-23 21:52:00 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -1899,6 +1899,7 @@ static int cacheSize;
 	
 	if (startX == -1) return nil;
 	[self _updateSelectionLocation];
+	if (startX == -1) return nil;
 	
 	return ([self contentFromX: startX Y: startY ToX: endX Y: endY pad: pad]);
 	
@@ -2976,8 +2977,14 @@ static int cacheSize;
 		x2++;
 		if (x2>=w) y2++, x2=0;
     }
+
+    NSMutableString *url = [[[NSMutableString alloc] initWithString:[self contentFromX:startx Y:starty ToX:endx Y:endy pad: YES]] autorelease];
+	
     
-	return ([self contentFromX:startx Y:starty ToX:endx Y:endy pad: YES]);
+    // Grab the addressbook command
+	[url replaceOccurrencesOfString:@"\n" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, [url length])];
+    
+	return (url);
 	
 }
 

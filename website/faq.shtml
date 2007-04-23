@@ -91,7 +91,7 @@
 	make sure the size (height) of two fonts do not differ greatly, so iTerm won't display
 	a mess of mixed glyphs.<BR><BR></LI>
 <LI><STRONG>The anti-aliasing looks funny. Is there a way to adjust it?</STRONG><BR>
-	Yes, there  is. There is a hidden setting of StokeWidth and BoldStrokeWidth that you can
+	Yes, there  is. There is a hidden setting of StrokeWidth and BoldStrokeWidth that you can
 	play with. See the <a href="http://iterm.sourceforge.net/resource.shtml">Resource</a> page
 	for details. Set them to 0 gives you a standard anti-alias rendering. Any negative number
 	gives you a bolder look.<BR><BR></LI>

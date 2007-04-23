@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.399 2007-03-30 00:35:45 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.400 2007-04-23 21:52:00 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1553,7 +1553,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		
 		if ([[iTermBookmarkController sharedInstance] window] == keyWindow ||
 			[[ITConfigPanelController singleInstance] window] == keyWindow ||
-			[[PreferencePanel sharedInstance] window] == keyWindow)
+			[[PreferencePanel sharedInstance] window] == keyWindow ||
+            ![[keyWindow screen] isEqual:[[self window] screen]])
 			[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 		else
 			if (!_resizeInProgressFlag) [self toggleFullScreen: nil];
@@ -1570,7 +1571,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowDidResignMain:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-	if (_fullScreen) [self toggleFullScreen: nil];
+//	if (_fullScreen) [self toggleFullScreen: nil];
 }
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize

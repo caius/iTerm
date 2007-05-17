@@ -239,6 +239,8 @@ NSString *CommandToolbarItem = @"Command";
     [aPopUpButton addItemWithTitle: @""];
 
     aMenu = [[NSMenu alloc] init];
+    // first menu item is just a space taker
+	[aMenu addItem: [[[NSMenuItem alloc] initWithTitle: @"AAA" action:@selector(newSessionInTabAtIndex:) keyEquivalent:@""] autorelease]];
     [[iTermController sharedInstance] alternativeMenu: aMenu 
                                               forNode: [[ITAddressBookMgr sharedInstance] rootNode] 
                                                target: _pseudoTerminal

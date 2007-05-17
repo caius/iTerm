@@ -1,3 +1,7 @@
+2007-5-16	fabian
+
+	* Fixed a toolbar menu bug (#1716916).
+	
 2007-4-23   fabian
 
     * Fixed a bug when launches multiple-line urls.

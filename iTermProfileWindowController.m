@@ -355,7 +355,7 @@ static BOOL addingKBEntry;
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, profile);
 	
 	keyMappings = [[[[iTermKeyBindingMgr singleInstance] profiles] objectForKey: selectedProfile] objectForKey: @"Key Mappings"];
-	allKeys = [keyMappings allKeys];
+	allKeys = [[keyMappings allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 	
 	if(selectedRow >= 0 && selectedRow < [allKeys count])
 	{
@@ -437,7 +437,12 @@ static BOOL addingKBEntry;
 		case '7':
 		case '8':
 		case '9':
-			index = KEY_NUMERIC_0 + keyCode - '0';
+			if (keyModifiers & NSNumericPadKeyMask)
+				index = KEY_NUMERIC_0 + keyCode - '0';
+			else {
+				index = KEY_HEX_CODE;
+				[kbEntryKeyCode setStringValue: [NSString stringWithFormat:@"0x%x", keyCode]];
+			}
 			break;
 		case '=':
 			index = KEY_NUMERIC_EQUAL;

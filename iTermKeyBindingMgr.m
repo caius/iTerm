@@ -638,7 +638,8 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	NSString *keyString;
 	
 	keyMappings = [[profiles objectForKey: profile] objectForKey: @"Key Mappings"];
-	allKeys = [keyMappings allKeys];
+	allKeys = [[keyMappings allKeys] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+
 	if(index >= 0 && index < [allKeys count])
 	{
 		keyString = [allKeys objectAtIndex: index];

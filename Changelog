@@ -1,3 +1,8 @@
+2007-5-17	fabian
+
+	* Fixed a key mapping problem with number keys (#1720922).
+	* Fixed a key-mapping sorting bug (#1720913).
+	
 2007-5-16	fabian
 
 	* Fixed a toolbar menu bug (#1716916).

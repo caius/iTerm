@@ -1,3 +1,7 @@
+2007-5-21	fabian
+
+	* Changed the default font for NSTextInput display to the non-ASCII font.
+	
 2007-5-17	fabian
 
 	* Fixed a key mapping problem with number keys (#1720922).

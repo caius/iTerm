@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.305 2007-04-23 21:52:00 yfabian Exp $
+// $Id: PTYTextView.m,v 1.306 2007-05-22 04:13:03 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -90,7 +90,7 @@ static int cacheSize;
         [NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor yellowColor], NSBackgroundColorAttributeName,
             [NSColor blackColor], NSForegroundColorAttributeName,
-            font, NSFontAttributeName,
+            nafont, NSFontAttributeName,
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
 	CURSOR=YES;
@@ -494,7 +494,7 @@ static int cacheSize;
         [NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor yellowColor], NSBackgroundColorAttributeName,
             [NSColor blackColor], NSForegroundColorAttributeName,
-            font, NSFontAttributeName,
+            nafont, NSFontAttributeName,
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
 	[self resetCharCache];

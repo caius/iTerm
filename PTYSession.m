@@ -335,6 +335,9 @@ static NSImage *warningImage;
 				[SCREEN putToken:token];
 				newOutput=YES;
 				gettimeofday(&lastOutput, NULL);
+                /*if ([self timerMode] == PAUSE_MODE) {
+                    [self setTimerMode: ([[tabViewItem tabView] selectedTabViewItem] == tabViewItem) ? FAST_MODE : SLOW_MODE];
+                }*/
 			}
 		}
 	} // end token processing loop
@@ -1721,9 +1724,14 @@ static NSImage *warningImage;
         lastInput = now;
     }
 	
-	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
+	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
 		[self setLabelAttribute];
-	
+    }
+    
+    if (![[TEXTVIEW window] isKeyWindow] && now.tv_sec >= lastOutput.tv_sec + 3) {
+            [self setTimerMode: PAUSE_MODE];
+    }
+    
 	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
         [TEXTVIEW refresh];
 		lastUpdate = lastBlink = now;
@@ -1733,12 +1741,19 @@ static NSImage *warningImage;
 		lastUpdate = now;
     }
 	
+   
+    
 	for(i=0; i<[SCREEN scrollUpLines]; i++) {
 		[TEXTVIEW scrollLineUp:nil];
 	}
 	
 	updateCount = 0;
 	[SCREEN resetScrollUpLines];
+}
+
+- (int)timerMode
+{
+    return timerMode;
 }
 
 - (void)setTimerMode:(int)mode
@@ -1751,8 +1766,10 @@ static NSImage *warningImage;
 		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
 	}
 
+    timerMode = mode;
 	switch (mode) {
 		case FAST_MODE:
+            NSLog(@"Entering fast: %@",self);
 			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
 															target:self
 														  selector:@selector(_updateTimerTick:)
@@ -1761,6 +1778,7 @@ static NSImage *warningImage;
 			
 			break;
 		case SLOW_MODE:
+            NSLog(@"Entering slow: %@",self);
 			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.25
 															target:self
 														  selector:@selector(_updateTimerTick:)
@@ -1768,6 +1786,9 @@ static NSImage *warningImage;
 														   repeats:YES] retain]; 
 			
 			break;
+        case PAUSE_MODE:
+            NSLog(@"Entering pause: %@",self);
+            break;
 	}
 	updateCount = 0;
 }

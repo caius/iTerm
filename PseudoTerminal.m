@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.400 2007-04-23 21:52:00 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.401 2007-05-23 18:30:44 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1537,6 +1537,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	// update the cursor
     [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+    if ([[self currentSession] timerMode] != FAST_MODE) {
+        [[self currentSession] setTimerMode: FAST_MODE];
+    }
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification

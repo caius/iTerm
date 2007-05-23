@@ -88,6 +88,7 @@
 	MPSemaphoreID	updateSemaphore;
 	
 	// update timer stuff
+    int timerMode;
 	NSTimer *updateTimer;
 	unsigned int updateCount;
 }
@@ -242,7 +243,8 @@
 - (void)updateDisplay;
 - (void)signalUpdateSemaphore;
 
-enum {FAST_MODE, SLOW_MODE};
+enum {FAST_MODE, SLOW_MODE, PAUSE_MODE};
+- (int) timerMode;
 - (void)setTimerMode:(int)mode;
 
 @end

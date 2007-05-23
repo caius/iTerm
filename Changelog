@@ -1,3 +1,7 @@
+2007-5-23   fabian
+
+    * Added a PASUE_MODE in PTYSession. Now the background sessions' timer stops when there's no activity. CPU usage reducde.
+    
 2007-5-21	fabian
 
 	* Changed the default font for NSTextInput display to the non-ASCII font.
@@ -13,7 +17,7 @@
 	
 2007-4-23   fabian
 
-    * Fixed a bug when launches multiple-line urls.
+    * Fixed a bug when one launches multiple-line urls.
     * Fixed a bug with selection that scrolls out of the view.
     
 2007-4-11   fabian

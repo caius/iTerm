@@ -1,3 +1,7 @@
+2007-5-24   fabian
+
+    * Fixed a timer bug in PTYSession introduced in the last change.
+	
 2007-5-23   fabian
 
     * Added a PASUE_MODE in PTYSession. Now the background sessions' timer stops when there's no activity. CPU usage reducde.

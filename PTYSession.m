@@ -1728,7 +1728,7 @@ static NSImage *warningImage;
 		[self setLabelAttribute];
     }
     
-    if (![[TEXTVIEW window] isKeyWindow] && now.tv_sec >= lastOutput.tv_sec + 3) {
+    if ([parent currentSession] != self && now.tv_sec >= lastOutput.tv_sec + 3) {
             [self setTimerMode: PAUSE_MODE];
     }
     

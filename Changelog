@@ -1,3 +1,8 @@
+2007-06-16	ujwal
+	
+	* Updated version strings so that dev build does not try to download latest version from web site.
+	* Added an import statement in PTYTextView.m to fix a warning.
+
 2007-5-24   fabian
 
     * Fixed a timer bug in PTYSession introduced in the last change.

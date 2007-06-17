@@ -2,6 +2,7 @@
 	
 	* Updated version strings so that dev build does not try to download latest version from web site.
 	* Added an import statement in PTYTextView.m to fix a warning.
+	* Fixed initialization bug in iTermController:-nextTerminal
 
 2007-5-24   fabian
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.69 2007-03-14 19:08:13 yfabian Exp $
+// $Id: iTermController.m,v 1.70 2007-06-17 02:25:13 ujwal Exp $
 /*
  **  iTermController.m
  **
@@ -221,7 +221,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 - (IBAction)nextTerminal: (id) sender
 {
     unsigned int currentIndex;
-    BOOL looped;
+    BOOL looped = NO;
 
     currentIndex = [[self terminals] indexOfObject: FRONT];
     if(FRONT == nil || currentIndex == NSNotFound)

@@ -1793,11 +1793,6 @@ static NSImage *warningImage;
 	updateCount = 0;
 }
 
-- (void)signalUpdateSemaphore
-{
-	MPSignalSemaphore(updateSemaphore);
-}
-
 
 // Notification
 - (void) tabViewWillRedraw: (NSNotification *) aNotification

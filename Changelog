@@ -1,3 +1,7 @@
+2007-08-11	ujwal
+
+	* Removed some unused code.
+
 2007-06-16	ujwal
 	
 	* Updated version strings so that dev build does not try to download latest version from web site.

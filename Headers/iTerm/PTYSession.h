@@ -241,7 +241,6 @@
 
 // Display timer stuff
 - (void)updateDisplay;
-- (void)signalUpdateSemaphore;
 
 enum {FAST_MODE, SLOW_MODE, PAUSE_MODE};
 - (int) timerMode;

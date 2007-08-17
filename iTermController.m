@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.70 2007-06-17 02:25:13 ujwal Exp $
+// $Id: iTermController.m,v 1.71 2007-08-17 09:35:12 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -211,7 +211,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
             looped = YES;
         }
         else
-        currentIndex--;
+            currentIndex--;
     } while ([[[[self terminals] objectAtIndex: currentIndex] window] isMiniaturized]);
     
     // make sure that terminal's window active

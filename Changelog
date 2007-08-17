@@ -1,3 +1,7 @@
+2007-08-14  fabian
+
+    * Change the behavior of the PAUSE_MODE in PTYSession so the labels can still be refreshed.
+    
 2007-08-11	ujwal
 
 	* Removed some unused code.

@@ -1728,7 +1728,7 @@ static NSImage *warningImage;
 		[self setLabelAttribute];
     }
     
-    if ([parent currentSession] != self && now.tv_sec >= lastOutput.tv_sec + 3) {
+    if ([parent currentSession] != self && now.tv_sec >= lastOutput.tv_sec + 3 && [self timerMode] != PAUSE_MODE) {
             [self setTimerMode: PAUSE_MODE];
     }
     
@@ -1741,9 +1741,7 @@ static NSImage *warningImage;
 		lastUpdate = now;
     }
 	
-   
-    
-	for(i=0; i<[SCREEN scrollUpLines]; i++) {
+    for(i=0; i<[SCREEN scrollUpLines]; i++) {
 		[TEXTVIEW scrollLineUp:nil];
 	}
 	
@@ -1769,7 +1767,7 @@ static NSImage *warningImage;
     timerMode = mode;
 	switch (mode) {
 		case FAST_MODE:
-            NSLog(@"Entering fast: %@",self);
+            //NSLog(@"Entering fast: %@",self);
 			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
 															target:self
 														  selector:@selector(_updateTimerTick:)
@@ -1778,7 +1776,7 @@ static NSImage *warningImage;
 			
 			break;
 		case SLOW_MODE:
-            NSLog(@"Entering slow: %@",self);
+            //NSLog(@"Entering slow: %@",self);
 			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.25
 															target:self
 														  selector:@selector(_updateTimerTick:)
@@ -1787,7 +1785,12 @@ static NSImage *warningImage;
 			
 			break;
         case PAUSE_MODE:
-            NSLog(@"Entering pause: %@",self);
+            //NSLog(@"Entering pause: %@",self);
+			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:1
+															target:self
+														  selector:@selector(_updateTimerTick:)
+														  userInfo:nil
+														   repeats:YES] retain]; 
             break;
 	}
 	updateCount = 0;

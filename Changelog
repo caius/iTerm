@@ -1,3 +1,7 @@
+2007-09-08	dnedrow
+
+	* Added private method to PreferencePanel to migrate (copy) old settings to new name.
+	
 2007-08-14  fabian
 
     * Change the behavior of the PAUSE_MODE in PTYSession so the labels can still be refreshed.

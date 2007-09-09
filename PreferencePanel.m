@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.155 2007-02-15 03:23:05 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.156 2007-09-09 01:48:04 dnedrow Exp $
 /*
  **  PreferencePanel.m
  **
@@ -38,6 +38,16 @@
 static float versionNumber;
 static NSString *NoHandler = @"<No Handler>";
 
+@interface
+PreferencePanel (PrivateMethods )
+
+/*
+ Private method to copy old preferences file, iTerm.plist, to new
+ preferences file, net.sourceforge.iTerm.plist
+ */
+- (BOOL) migratePreferences;
+@end
+
 @implementation PreferencePanel
 
 + (PreferencePanel*)sharedInstance;
@@ -57,6 +67,8 @@ static NSString *NoHandler = @"<No Handler>";
 	unsigned int storedMajorVersion = 0, storedMinorVersion = 0, storedMicroVersion = 0;
 
 	self = [super init];
+	
+	[self migratePreferences];
 	
 	[self readPreferences];
 	if(defaultEnableBonjour == YES)
@@ -616,6 +628,29 @@ static NSString *NoHandler = @"<No Handler>";
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
 	defaultWordChars = [[wordChars stringValue] retain];
+}
+
+/*
+ Private method to copy old preferences file, iTerm.plist, to new
+ preferences file, net.sourceforge.iTerm.plist
+ */
+- (BOOL) migratePreferences {
+	
+	NSString *prefDir = [[NSHomeDirectory()
+        stringByAppendingPathComponent:@"Library"]
+        stringByAppendingPathComponent:@"Preferences"];
+	
+	NSString *oldPrefs = [prefDir stringByAppendingPathComponent:@"iTerm.plist"];
+	NSString *newPrefs = [prefDir stringByAppendingPathComponent:@"net.sourceforge.iTerm.plist"];
+	
+	NSFileManager *mgr = [NSFileManager defaultManager];
+	
+	if(([mgr fileExistsAtPath:oldPrefs]) &&
+	   (![mgr fileExistsAtPath:newPrefs])) {
+		[mgr copyPath:oldPrefs toPath:newPrefs handler:nil];
+		return (YES);	
+	}
+	return (NO);	
 }
 
 @end

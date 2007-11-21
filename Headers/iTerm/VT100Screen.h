@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.34 2007-01-17 07:31:20 yfabian Exp $
+// $Id: VT100Screen.h,v 1.35 2007-11-21 05:24:19 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -125,7 +125,7 @@ typedef struct screen_char_t
 
 - (NSString *)description;
 
-- (void)initScreenWithWidth:(int)width Height:(int)height;
+- (screen_char_t*)initScreenWithWidth:(int)width Height:(int)height;
 - (void)resizeWidth:(int)width height:(int)height;
 - (void)reset;
 - (void)setWidth:(int)width height:(int)height;

@@ -219,3 +219,7 @@
 "eg. [OC for ESC [OC." = "eg. [OC for ESC [OC.";
 "eg. 7F for backward delete." = "eg. 7F for backward delete.";
 "use \n for new-line, etc" = "use \n for new-line, etc";
+
+/* Error */
+"Out of memory" = "Out of memory";
+"New sesssion cannot be created. Try smaller buffer sizes." = "New sesssion cannot be created. Try smaller buffer sizes.";

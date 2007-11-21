@@ -928,6 +928,7 @@
 		0464AB0C006CD2EC7F000001 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = BB024D39096EE4080021E793 /* Build configuration list for PBXProject "iTerm" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -942,6 +943,7 @@
 			mainGroup = 0464AB0D006CD2EC7F000001 /* JTerminal */;
 			productRefGroup = 0464AB32006CD2EC7F000001 /* Products */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				874206460564169600CFC3F1 /* iTerm */,
 				874205EE0564168A00CFC3F1 /* iTerm Framework */,

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.401 2007-05-23 18:30:44 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.402 2007-11-21 05:24:17 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -646,36 +646,42 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		HEIGHT = [displayProfileMgr windowRowsForProfile: displayProfile];
 		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
     }
-    [aSession initScreen: [TABVIEW contentRect] width:WIDTH height:HEIGHT];
-    if(FONT == nil) 
-	{
-		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
-			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
-		[self setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
-								   vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
-    }
+    if ([aSession initScreen: [TABVIEW contentRect] width:WIDTH height:HEIGHT]) {
+        if(FONT == nil) 
+        {
+            [self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
+                   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
+            [self setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
+                                       vertical: [displayProfileMgr windowVerticalCharSpacingForProfile: displayProfile]];
+        }
+
+        [aSession setPreferencesFromAddressBookEntry: tempPrefs];
+            
+        [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
+        [[aSession TEXTVIEW] setFont:FONT nafont:NAFONT];
+        [[aSession TEXTVIEW] setAntiAlias: antiAlias];
+        [[aSession TEXTVIEW] setLineHeight: charHeight];
+        [[aSession TEXTVIEW] setLineWidth: WIDTH * charWidth];
+        [[aSession TEXTVIEW] setCharWidth: charWidth];
+        // NSLog(@"%d,%d",WIDTH,HEIGHT);
+            
+        [[aSession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
+
+        // tell the shell about our size
+        [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
+
+        if (title) 
+        {
+            [self setWindowTitle: title];
+            [aSession setName: title];
+            [aSession setDefaultName: title];
+        }
     
-    [aSession setPreferencesFromAddressBookEntry: tempPrefs];
-	 	
-    [[aSession SCREEN] setDisplay:[aSession TEXTVIEW]];
-	[[aSession TEXTVIEW] setFont:FONT nafont:NAFONT];
-	[[aSession TEXTVIEW] setAntiAlias: antiAlias];
-    [[aSession TEXTVIEW] setLineHeight: charHeight];
-    [[aSession TEXTVIEW] setLineWidth: WIDTH * charWidth];
-	[[aSession TEXTVIEW] setCharWidth: charWidth];
-	// NSLog(@"%d,%d",WIDTH,HEIGHT);
-		
-    [[aSession TERMINAL] setTrace:YES];	// debug vt100 escape sequence decode
-	
-    // tell the shell about our size
-    [[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
-	
-    if (title) 
-    {
-        [self setWindowTitle: title];
-        [aSession setName: title];
-		[aSession setDefaultName: title];
     }
+    else {
+        
+        
+    };
 }
 
 - (void)selectSessionAtIndexAction:(id)sender
@@ -1535,7 +1541,9 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     //[self selectSessionAtIndex: [self currentSessionIndex]];
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
-	// update the cursor
+	if (_fullScreen) [[self window] setLevel:NSScreenSaverWindowLevel];
+    
+    // update the cursor
     [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
     if ([[self currentSession] timerMode] != FAST_MODE) {
         [[self currentSession] setTimerMode: FAST_MODE];
@@ -1552,7 +1560,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     //[self windowDidResignMain: aNotification];
 	
 	if (_fullScreen) { 
-		NSWindow *keyWindow = [[NSApplication sharedApplication] keyWindow];
+		/*NSWindow *keyWindow = [[NSApplication sharedApplication] keyWindow];
 		
 		if ([[iTermBookmarkController sharedInstance] window] == keyWindow ||
 			[[ITConfigPanelController singleInstance] window] == keyWindow ||
@@ -1560,7 +1568,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             ![[keyWindow screen] isEqual:[[self window] screen]])
 			[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 		else
-			if (!_resizeInProgressFlag) [self toggleFullScreen: nil];
+			if (!_resizeInProgressFlag) [self toggleFullScreen: nil]; */
+        [[self window] setLevel:NSNormalWindowLevel];
 	}
 	else {
 		// update the cursor
@@ -2768,27 +2777,29 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession setAddressBookEntry: addressbookEntry];
     // Add this session to our term and make it current
     [self appendSession: aSession];
+    if ([aSession SCREEN]) {
+        
+        
+        NSString *cmd;
+        NSArray *arg;
+        NSString *pwd;
+        
+        // Grab the addressbook command
+        cmd = [self _getSessionParameters: [addressbookEntry objectForKey: KEY_COMMAND]];
+        
+        [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
+        
+        pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
+        if([pwd length] <= 0)
+            pwd = NSHomeDirectory();
+        NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
+        
+        [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+        
+        // Start the command        
+        [self startProgram:cmd arguments:arg environment:env];
+    }
     
-    
-    NSString *cmd;
-    NSArray *arg;
-    NSString *pwd;
-	
-    // Grab the addressbook command
-	cmd = [self _getSessionParameters: [addressbookEntry objectForKey: KEY_COMMAND]];
-	
-    [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
-    
-	pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
-	if([pwd length] <= 0)
-		pwd = NSHomeDirectory();
-    NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
-    
-    [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
-    
-    // Start the command        
-    [self startProgram:cmd arguments:arg environment:env];
-	
     [aSession release];
 }
 
@@ -2809,34 +2820,35 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession setAddressBookEntry: addressbookEntry];
     // Add this session to our term and make it current
     [self appendSession: aSession];
-    
-    // We process the cmd to insert URL parts
-    NSMutableString *cmd = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_COMMAND]] autorelease];
-	NSURL *urlRep = [NSURL URLWithString: url];
-	
-    
-    // Grab the addressbook command
-	[cmd replaceOccurrencesOfString:@"$$URL$$" withString:url options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
-	[cmd replaceOccurrencesOfString:@"$$HOST$$" withString:[urlRep host]?[urlRep host]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
-	[cmd replaceOccurrencesOfString:@"$$USER$$" withString:[urlRep user]?[urlRep user]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
-	[cmd replaceOccurrencesOfString:@"$$PASSWORD$$" withString:[urlRep password]?[urlRep password]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
-	[cmd replaceOccurrencesOfString:@"$$PORT$$" withString:[urlRep port]?[[urlRep port] stringValue]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
-	[cmd replaceOccurrencesOfString:@"$$PATH$$" withString:[urlRep path]?[urlRep path]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+    if ([aSession SCREEN]) {
+       
+        // We process the cmd to insert URL parts
+        NSMutableString *cmd = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_COMMAND]] autorelease];
+        NSURL *urlRep = [NSURL URLWithString: url];
+        
+        
+        // Grab the addressbook command
+        [cmd replaceOccurrencesOfString:@"$$URL$$" withString:url options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+        [cmd replaceOccurrencesOfString:@"$$HOST$$" withString:[urlRep host]?[urlRep host]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+        [cmd replaceOccurrencesOfString:@"$$USER$$" withString:[urlRep user]?[urlRep user]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+        [cmd replaceOccurrencesOfString:@"$$PASSWORD$$" withString:[urlRep password]?[urlRep password]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+        [cmd replaceOccurrencesOfString:@"$$PORT$$" withString:[urlRep port]?[[urlRep port] stringValue]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
+        [cmd replaceOccurrencesOfString:@"$$PATH$$" withString:[urlRep path]?[urlRep path]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
 
-	NSArray *arg;
-	NSString *pwd;
-	[PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
-    
-	pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
-	if([pwd length] <= 0)
-		pwd = NSHomeDirectory();
-    NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
-    
-    [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
-    
-    // Start the command        
-    [self startProgram:[self _getSessionParameters: cmd] arguments:arg environment:env];
-	
+        NSArray *arg;
+        NSString *pwd;
+        [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
+        
+        pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
+        if([pwd length] <= 0)
+            pwd = NSHomeDirectory();
+        NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
+        
+        [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+        
+        // Start the command        
+        [self startProgram:[self _getSessionParameters: cmd] arguments:arg environment:env];
+	}
     [aSession release];
 }
 
@@ -2857,20 +2869,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [aSession setAddressBookEntry: addressbookEntry];
     // Add this session to our term and make it current
     [self appendSession: aSession];
-    
-	NSArray *arg;
-	NSString *pwd;
-	[PseudoTerminal breakDown:command cmdPath:&command cmdArgs:&arg];
-    
-	pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
-	if([pwd length] <= 0)
-		pwd = NSHomeDirectory();
-    NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
-    
-    [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
-    
-    // Start the command        
-    [self startProgram:[self _getSessionParameters: command] arguments:arg environment:env];
+    if ([aSession SCREEN]) {
+        NSArray *arg;
+        NSString *pwd;
+        [PseudoTerminal breakDown:command cmdPath:&command cmdArgs:&arg];
+        
+        pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
+        if([pwd length] <= 0)
+            pwd = NSHomeDirectory();
+        NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
+        
+        [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+        
+        // Start the command        
+        [self startProgram:[self _getSessionParameters: command] arguments:arg environment:env];
+    }
 	
     [aSession release];
 }
@@ -2879,7 +2892,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
     // NSLog(@"PseudoTerminal: -appendSession: 0x%x", object);
     [self setupSession: object title: nil];
-    [self insertSession: object atIndex:[TABVIEW numberOfTabViewItems]];
+    if ([object SCREEN]) // screen initialized ok
+        [self insertSession: object atIndex:[TABVIEW numberOfTabViewItems]];
+    else {
+    
+    }
 }
 
 -(void)replaceInSessions:(PTYSession *)object atIndex:(unsigned)index
@@ -2903,8 +2920,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x atIndex: %d", object, index);
-    [self setupSession: object title: nil];
-    [self insertSession: object atIndex: index];
+     if ([object SCREEN]) // screen initialized ok[self setupSession: object title: nil];
+        [self insertSession: object atIndex: index];
+    else {
+        
+        
+    }
 }
 
 -(void)removeFromSessionsAtIndex:(unsigned)index

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.123 2007-02-13 05:50:58 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.124 2007-11-21 05:24:17 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -587,6 +587,14 @@ static VT100TCC decode_csi(unsigned char *datap,
 					result.type = ANSICSI_PRINT;
 					SET_PARAM_DEFAULT(param,0,0);
 					break;
+                case 's':
+                    result.type = ANSICSI_SCP;
+                    SET_PARAM_DEFAULT(param,0,0);
+                    break;
+                case 'u':
+                    result.type = ANSICSI_RCP;
+                    SET_PARAM_DEFAULT(param,0,0);
+                    break;
                 default:
 #if LOG_UNKNOWN
                     NSLog(@"2: Unknown token (%c); %s", param.cmd, datap);

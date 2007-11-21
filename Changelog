@@ -1,3 +1,7 @@
+2007-11-20  fabian
+
+    * Added ESC[s and ESC[u to save and restore cursor, based on the patch from SF's bug report.
+    
 2007-09-08	dnedrow
 
 	* Added private method to PreferencePanel to migrate (copy) old settings to new name.
@@ -15,6 +19,12 @@
 	* Updated version strings so that dev build does not try to download latest version from web site.
 	* Added an import statement in PTYTextView.m to fix a warning.
 	* Fixed initialization bug in iTermController:-nextTerminal
+
+2007-6-11   fabian
+
+    * Aoid crashes when memory runs out.
+    * Removed excessive debug outputs.
+    * Adjustments to the full screen mode. Fixed a crash related (#1725139).
 
 2007-5-24   fabian
 

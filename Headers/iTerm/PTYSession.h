@@ -98,7 +98,7 @@
 - (void) dealloc;
 
 // Session specific methods
-- (void)initScreen: (NSRect) aRect width:(int)width height:(int) height;
+- (BOOL)initScreen: (NSRect) aRect width:(int)width height:(int) height;
 - (void)startProgram:(NSString *)program
 	   arguments:(NSArray *)prog_argv
 	 environment:(NSDictionary *)prog_env;

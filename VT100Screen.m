@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.280 2007-04-11 23:15:41 yfabian Exp $
+// $Id: VT100Screen.m,v 1.281 2007-11-21 05:24:17 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -232,7 +232,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
     return result;
 }
 
--(void) initScreenWithWidth:(int)width Height:(int)height
+-(screen_char_t *) initScreenWithWidth:(int)width Height:(int)height
 {
 	int total_height;
 	int i;
@@ -254,6 +254,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	total_height = HEIGHT + max_scrollback_lines;
 	buffer_lines = (screen_char_t *)malloc(total_height*REAL_WIDTH*sizeof(screen_char_t));
 	
+    if (!buffer_lines) return NULL;
+    
 	// set up our pointers
 	last_buffer_line = buffer_lines + (total_height - 1)*REAL_WIDTH;
 	screen_top = buffer_lines;
@@ -273,7 +275,9 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	// set up our dirty flags buffer
 	dirty=(char*)malloc(HEIGHT*WIDTH*sizeof(char));
 	// force a redraw
-	[self setDirty];		
+	[self setDirty];	
+	
+    return buffer_lines;
 }
 
 
@@ -868,7 +872,13 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 				printPending = YES;
 		}
 		break;
-	
+    case ANSICSI_SCP: 
+        [self saveCursorPosition]; 
+        break;
+    case ANSICSI_RCP: 
+        [self restoreCursorPosition]; 
+        break;	
+    
     // XTERM extensions
     case XTERMCC_WIN_TITLE:
 		if (newWinTitle) [newWinTitle release];
@@ -1705,9 +1715,9 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	int i;
 	screen_char_t *sourceLine, *targetLine;
 	
-//#if DEBUG_METHOD_TRACE
+#if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen scrollUp]", __FILE__, __LINE__);
-//#endif
+#endif
 
     NSParameterAssert(SCROLL_TOP >= 0 && SCROLL_TOP < HEIGHT);
     NSParameterAssert(SCROLL_BOTTOM >= 0 && SCROLL_BOTTOM < HEIGHT);

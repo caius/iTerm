@@ -149,7 +149,7 @@ static NSImage *warningImage;
 }
 
 // Session specific methods
-- (void)initScreen: (NSRect) aRect width:(int)width height:(int) height
+- (BOOL)initScreen: (NSRect) aRect width:(int)width height:(int) height
 {
     NSSize aSize;
 	
@@ -183,27 +183,39 @@ static NSImage *warningImage;
     [SHELL setDelegate:self];
 	
     // initialize the screen
-    [SCREEN initScreenWithWidth:width Height:height];
-	[self setName:@"Shell"];
-	[self setDefaultName:@"Shell"];
+    if ([SCREEN initScreenWithWidth:width Height:height]) {
+        [self setName:@"Shell"];
+        [self setDefaultName:@"Shell"];
 
-	
-    [TEXTVIEW setDataSource: SCREEN];
-    [TEXTVIEW setDelegate: self];
-    [SCROLLVIEW setDocumentView:TEXTVIEW];
-    [TEXTVIEW release];
-    [SCROLLVIEW setDocumentCursor: [PTYTextView textViewCursor]];
+        
+        [TEXTVIEW setDataSource: SCREEN];
+        [TEXTVIEW setDelegate: self];
+        [SCROLLVIEW setDocumentView:TEXTVIEW];
+        [TEXTVIEW release];
+        [SCROLLVIEW setDocumentCursor: [PTYTextView textViewCursor]];
 
-    ai_code=0;
-    antiIdle = NO;
-    newOutput = NO;
-	
-	// register for some notifications	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(tabViewWillRedraw:)
-                                                 name:@"iTermTabViewWillRedraw"
-                                               object:nil];
-		
+        ai_code=0;
+        antiIdle = NO;
+        newOutput = NO;
+        
+        // register for some notifications	
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(tabViewWillRedraw:)
+                                                     name:@"iTermTabViewWillRedraw"
+                                                   object:nil];
+        return YES;
+	}
+	else {
+        [SCREEN release];
+        SCREEN = nil;
+        [TEXTVIEW release];
+        NSRunCriticalAlertPanel(NSLocalizedStringFromTableInBundle(@"Out of memory",@"iTerm", [NSBundle bundleForClass: [self class]], @"Error"),
+                         NSLocalizedStringFromTableInBundle(@"New sesssion cannot be created. Try smaller buffer sizes.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Error"),
+                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
+                         nil, nil);      
+        
+        return NO;
+    }
 }
 
 - (BOOL) isActiveSession

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.71 2007-08-17 09:35:12 yfabian Exp $
+// $Id: iTermController.m,v 1.72 2008-01-30 04:12:21 dnedrow Exp $
 /*
  **  iTermController.m
  **
@@ -43,6 +43,7 @@
 #import <iTerm/iTermGrowlDelegate.h>
 #import <iTermProfileWindowController.h>
 #import <iTermBookmarkController.h>
+#import <iTermSecurityMgr.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
@@ -78,7 +79,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
           __FILE__, __LINE__);
 #endif
     self = [super init];
-
+	
     
     // create the iTerm directory if it does not exist
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -91,16 +92,28 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
         [fileManager createDirectoryAtPath: [SUPPORT_DIRECTORY stringByExpandingTildeInPath] attributes: nil];
     
     terminalWindows = [[NSMutableArray alloc] init];
-		
+	
     // Activate Growl
 	/*
 	 * Need to add routine in iTerm prefs for Growl support and
 	 * PLIST check here.
 	 */
     gd = [iTermGrowlDelegate sharedInstance];
-
+	
+	// Handle user shell checking
+	iTermSecurityMgr *itsm = [iTermSecurityMgr sharedInstance];
+	
+	if(![itsm isShellValid]) {
+		int choice = NSRunAlertPanel(@"Bad User Shell",
+									 @"Shell error message",
+									 @"OK", nil, nil);
+	} else {
+		NSLog(@"%s(%d):-[its isShellValid] returned TRUE",
+			  __FILE__, __LINE__);
+	}	
+	
 	_fullScreenTerminal = nil;
-
+	
     return (self);
 }
 
@@ -110,7 +123,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     NSLog(@"%s(%d):-[iTermController dealloc]",
           __FILE__, __LINE__);
 #endif
-
+	
     // Release the GrowlDelegate
 	if( gd )
 		[gd release];
@@ -165,7 +178,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 			[self launchBookmark:[childNode nodeData] inTerminal:term];
 		}
 	}
-
+	
 	return term;
 }
 
@@ -195,14 +208,14 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 {
     unsigned int currentIndex;
     BOOL looped = NO;
-
+	
     currentIndex = [[self terminals] indexOfObject: FRONT];
     if(FRONT == nil || currentIndex == NSNotFound)
     {
-	NSBeep();
-	return;
+		NSBeep();
+		return;
     }
-
+	
     // get the previous terminal
     do {
         if(currentIndex == 0) {
@@ -211,7 +224,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
             looped = YES;
         }
         else
-            currentIndex--;
+			currentIndex--;
     } while ([[[[self terminals] objectAtIndex: currentIndex] window] isMiniaturized]);
     
     // make sure that terminal's window active
@@ -222,14 +235,14 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 {
     unsigned int currentIndex;
     BOOL looped = NO;
-
+	
     currentIndex = [[self terminals] indexOfObject: FRONT];
     if(FRONT == nil || currentIndex == NSNotFound)
     {
-	NSBeep();
-	return;
+		NSBeep();
+		return;
     }
-
+	
     // get the next terminal
     do {
         if(currentIndex == [[self terminals] count] - 1) {
@@ -240,7 +253,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
         else
             currentIndex++;
     } while ([[[[self terminals] objectAtIndex: currentIndex] window] isMiniaturized]);
-
+	
     // make sure that terminal's window active
     [[[[self terminals] objectAtIndex: currentIndex] window] makeKeyAndOrderFront: self];
 }
@@ -253,8 +266,8 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 - (void) terminalWillClose: (PseudoTerminal *) theTerminalWindow
 {
     if(FRONT == theTerminalWindow)
-	[self setCurrentTerminal: nil];
-
+		[self setCurrentTerminal: nil];
+	
     if(theTerminalWindow)
         [self removeFromTerminalsAtIndex: [terminalWindows indexOfObject: theTerminalWindow]];
 	
@@ -314,12 +327,12 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 					[aMenuItem setKeyEquivalent: shortcut];
 				}
 			}
-
+			
             [aMenuItem setKeyEquivalentModifierMask: modifierMask];
             [aMenuItem setRepresentedObject: dataDict];
 			[aMenuItem setTarget: aTarget];
 			[aMenu addItem: aMenuItem];
-
+			
 			aMenuItem = [[aMenuItem copy] autorelease];
 			[aMenuItem setKeyEquivalentModifierMask: modifierMask | NSAlternateKeyMask];
 			[aMenuItem setAlternate:YES];
@@ -355,7 +368,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	aDict = bookmarkData;
 	if(aDict == nil)
 		aDict = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
-		
+	
 	// Where do we execute this command?
     if(theTerm == nil)
     {
@@ -367,7 +380,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     }
     else
         term = theTerm;
-
+	
 	[term addNewSession: aDict];
 }
 
@@ -403,7 +416,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	aDict = bookmarkData;
 	if(aDict == nil)
 		aDict = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
-		
+	
 	// Where do we execute this command?
     if(theTerm == nil)
     {
@@ -415,22 +428,22 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     }
     else
         term = theTerm;
-		
+	
 	[term addNewSession: aDict withURL: url];
 }
 
 - (void) launchScript: (id) sender
 {
     NSString *fullPath = [NSString stringWithFormat: @"%@/%@", [SCRIPT_DIRECTORY stringByExpandingTildeInPath], [sender title]];
-
+	
 	if ([[[sender title] pathExtension] isEqualToString: @"scpt"]) {
 		NSAppleScript *script;
 		NSDictionary *errorInfo = [NSDictionary dictionary];
 		NSURL *aURL = [NSURL fileURLWithPath: fullPath];
-
+		
 		// Make sure our script suite registry is loaded
 		[NSScriptSuiteRegistry sharedScriptSuiteRegistry];
-
+		
 		script = [[NSAppleScript alloc] initWithContentsOfURL: aURL error: &errorInfo];
 		[script executeAndReturnError: &errorInfo];
 		[script release];
@@ -496,14 +509,14 @@ NSString *terminalsKey = @"terminals";
 - (void) setCurrentTerminal: (PseudoTerminal *) thePseudoTerminal
 {
     FRONT = thePseudoTerminal;
-
+	
     // make sure this window is the key window
     if([thePseudoTerminal windowInited] && [[thePseudoTerminal window] isKeyWindow] == NO)
 		[[thePseudoTerminal window] makeKeyAndOrderFront: self];
-
+	
     // Post a notification
     [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowBecameKey" object: thePseudoTerminal userInfo: nil];    
-
+	
 }
 
 -(void)replaceInTerminals:(PseudoTerminal *)object atIndex:(unsigned)index
@@ -547,8 +560,8 @@ NSString *terminalsKey = @"terminals";
 {
     static NSArray *_kvcKeys = nil;
     if( nil == _kvcKeys ){
-	_kvcKeys = [[NSArray alloc] initWithObjects:
-	    terminalsKey,  nil ];
+		_kvcKeys = [[NSArray alloc] initWithObjects:
+			terminalsKey,  nil ];
     }
     return _kvcKeys;
 }

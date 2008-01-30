@@ -1,3 +1,7 @@
+2008-01-29	dnedrow
+
+	* Added initial handling for shell checking (security enhancement). Does not "fail" on bad shell yet.
+
 2007-11-20  fabian
 
     * Added ESC[s and ESC[u to save and restore cursor, based on the patch from SF's bug report.

@@ -1,6 +1,17 @@
-2008-01-29	dnedrow
+2008-08-21  delx
 
-	* Added initial handling for shell checking (security enhancement). Does not "fail" on bad shell yet.
+	* Compiles & runs!
+	* Better default preferences
+	* Works with TERM=xterm
+	* Sets the COLORFGBG variable
+	* No annoying reverse-video border
+	* tput smso ; clear ; tput rmso -- works as expected
+	* back_tab supported (the key and the function)
+	* new-style xterm altscreens supported
+	* Fixed NSLock warnings on 10.5
+	* Horizontal scroll-wheel doesn't scroll vertically anymore
+	* Improved numeric keypad behaviour, now acts like xterm
+	* Fixed a nasty crashing bug
 
 2007-11-20  fabian
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.308 2008-08-20 17:09:12 delx Exp $
+// $Id: PTYTextView.m,v 1.309 2008-08-20 17:14:39 delx Exp $
 /*
  **  PTYTextView.m
  **
@@ -1401,8 +1401,10 @@ static int cacheSize;
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
-				[task writeTask:[terminal mousePress:([event deltaY] > 0 ? 5:4) withModifiers:[event modifierFlags] atX:rx Y:ry]];
-				return;
+				if([event deltaY] != 0) {
+					[task writeTask:[terminal mousePress:([event deltaY] > 0 ? 5:4) withModifiers:[event modifierFlags] atX:rx Y:ry]];
+					return;
+				}
 				break;
 			case MOUSE_REPORTING_NONE:
 			case MOUSE_REPORTING_HILITE:

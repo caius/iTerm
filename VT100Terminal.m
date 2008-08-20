@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.128 2008-08-20 17:10:48 delx Exp $
+// $Id: VT100Terminal.m,v 1.129 2008-08-20 17:17:31 delx Exp $
 //
 /*
  **  VT100Terminal.m
@@ -2192,6 +2192,9 @@ static VT100TCC decode_string(unsigned char *datap,
 						[SCREEN saveCursorPosition];
 					}
 					else {
+						// XXX - shouldn't really reuse this token, but meh
+						token.u.csi.p[0] = 2;
+						[SCREEN eraseInDisplay:token];
 						[self restoreCursorAttributes];
 						[SCREEN restoreCursorPosition];
 					}

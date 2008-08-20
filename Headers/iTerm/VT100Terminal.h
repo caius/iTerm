@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.30 2008-08-20 17:04:46 delx Exp $
+// $Id: VT100Terminal.h,v 1.31 2008-08-20 17:09:12 delx Exp $
 /*
  **  VT100Terminal.h
  **
@@ -379,6 +379,8 @@ typedef enum {
 
 - (int)foregroundColorCode;
 - (int)backgroundColorCode;
+- (int)foregroundColorCodeReal;
+- (int)backgroundColorCodeReal;
 
 - (NSData *)reportActivePositionWithX:(int)x Y:(int)y;
 - (NSData *)reportStatus;

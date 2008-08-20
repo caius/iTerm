@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.282 2008-08-20 17:03:41 delx Exp $
+// $Id: VT100Screen.m,v 1.283 2008-08-20 17:09:12 delx Exp $
 //
 /*
  **  VT100Screen.m
@@ -263,8 +263,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	scrollback_top = buffer_lines;
 	
 	// set all lines in buffer to default
-	default_fg_code = [TERMINAL foregroundColorCode];
-	default_bg_code = [TERMINAL backgroundColorCode];
+	default_fg_code = [TERMINAL foregroundColorCodeReal];
+	default_bg_code = [TERMINAL backgroundColorCodeReal];
 	default_line_width = WIDTH;
 	aDefaultLine = [self _getDefaultLineWithWidth: WIDTH];
 	for(i = 0; i < HEIGHT; i++)
@@ -739,8 +739,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 			for(j = 0; j < WIDTH; j++)
 			{
 				aLine[j].ch ='E';
-				aLine[j].fg_color = [TERMINAL foregroundColorCode];
-				aLine[j].bg_color = [TERMINAL backgroundColorCode];
+				aLine[j].fg_color = [TERMINAL foregroundColorCodeReal];
+				aLine[j].bg_color = [TERMINAL backgroundColorCodeReal];
 			}
 			aLine[WIDTH].ch = 0;
 		}
@@ -840,8 +840,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
             for(k = 0; k < j; k++)
             {
                 aLine[CURSOR_X+k].ch = 0;
-                aLine[CURSOR_X+k].fg_color = [TERMINAL foregroundColorCode];
-                aLine[CURSOR_X+k].bg_color = [TERMINAL backgroundColorCode];
+                aLine[CURSOR_X+k].fg_color = [TERMINAL foregroundColorCodeReal];
+                aLine[CURSOR_X+k].bg_color = [TERMINAL backgroundColorCodeReal];
             }
             memset(dirty+i,1,j);
         }
@@ -1333,8 +1333,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		for(i = 0; i < n; i++)
 		{
 			aLine[WIDTH-n+i].ch = 0;
-			aLine[WIDTH-n+i].fg_color = [TERMINAL foregroundColorCode];
-			aLine[WIDTH-n+i].bg_color = [TERMINAL backgroundColorCode];
+			aLine[WIDTH-n+i].fg_color = [TERMINAL foregroundColorCodeReal];
+			aLine[WIDTH-n+i].bg_color = [TERMINAL backgroundColorCodeReal];
 		}
 		memset(dirty+idx+CURSOR_X,1,WIDTH-CURSOR_X);
     }
@@ -1451,8 +1451,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		if(aScreenChar >= (buffer_lines + total_height*REAL_WIDTH))
 			aScreenChar = buffer_lines; // wrap around to top of buffer
 		aScreenChar->ch = 0;
-		aScreenChar->fg_color = [TERMINAL foregroundColorCode];
-		aScreenChar->bg_color = [TERMINAL backgroundColorCode];
+		aScreenChar->fg_color = [TERMINAL foregroundColorCodeReal];
+		aScreenChar->bg_color = [TERMINAL backgroundColorCodeReal];
 	}
 	
 	memset(dirty+y1*WIDTH+x1,1,((y2-y1)*WIDTH+(x2-x1))*sizeof(char));
@@ -1500,8 +1500,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	//}
 	//else
 	//{
-		fgCode = [TERMINAL foregroundColorCode];
-		bgCode = [TERMINAL backgroundColorCode];
+		fgCode = [TERMINAL foregroundColorCodeReal];
+		bgCode = [TERMINAL backgroundColorCodeReal];
 	//}
 		
 	
@@ -2205,8 +2205,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	int i;
 	
 	// check if we have to generate a new line
-	if(default_line && default_fg_code == [TERMINAL foregroundColorCode] && 
-	   default_bg_code == [TERMINAL backgroundColorCode] && default_line_width >= width) {
+	if(default_line && default_fg_code == [TERMINAL foregroundColorCodeReal] && 
+	   default_bg_code == [TERMINAL backgroundColorCodeReal] && default_line_width >= width) {
 		return (default_line);
 	}
 	
@@ -2218,14 +2218,14 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	for(i = 0; i < width; i++)
 	{
 		default_line[i].ch = 0;
-		default_line[i].fg_color = [TERMINAL foregroundColorCode];
-		default_line[i].bg_color = [TERMINAL backgroundColorCode];
+		default_line[i].fg_color = [TERMINAL foregroundColorCodeReal];
+		default_line[i].bg_color = [TERMINAL backgroundColorCodeReal];
 	}
 	//Not wrapped by default
 	default_line[width].ch = 0;
 	
-	default_fg_code = [TERMINAL foregroundColorCode];
-	default_bg_code = [TERMINAL backgroundColorCode];
+	default_fg_code = [TERMINAL foregroundColorCodeReal];
+	default_bg_code = [TERMINAL backgroundColorCodeReal];
 	default_line_width = width;
 	return (default_line);
 	

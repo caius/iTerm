@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.307 2007-06-17 01:56:31 ujwal Exp $
+// $Id: PTYTextView.m,v 1.308 2008-08-20 17:09:12 delx Exp $
 /*
  **  PTYTextView.m
  **
@@ -789,7 +789,8 @@ static int cacheSize;
 			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
 		}
 		else {
-			aColor = [self colorForCode:(reversed ? [[dataSource terminal] foregroundColorCode] : [[dataSource terminal] backgroundColorCode])];
+///			aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
+			aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
 			aColor = [aColor colorWithAlphaComponent: trans];
 			[aColor set];
 			NSRectFill(rect);

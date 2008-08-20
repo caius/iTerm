@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.125 2008-08-20 17:03:41 delx Exp $
+// $Id: VT100Terminal.m,v 1.126 2008-08-20 17:04:46 delx Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1421,6 +1421,25 @@ static VT100TCC decode_string(unsigned char *datap,
     }
 }
 
+- (void)saveCursorAttributes
+{
+	saveBold=bold;
+	saveUnder=under;
+	saveBlink=blink;
+	saveReversed=reversed;
+	saveHighlight=highlight;
+	saveCHARSET=CHARSET;
+}
+
+- (void)restoreCursorAttributes
+{
+	bold=saveBold;
+	under=saveUnder;
+	blink=saveBlink;
+	reversed=saveReversed;
+	highlight = saveHighlight;
+	CHARSET=saveCHARSET;
+}
 
 - (void)reset
 {
@@ -2148,7 +2167,25 @@ static VT100TCC decode_string(unsigned char *datap,
                 case 9:  INTERLACE_MODE  = mode; break;
 				case 25: [SCREEN showCursor: mode]; break;
 				case 40: allowColumnMode = mode; break;
-				case 47: if(mode) [SCREEN saveBuffer]; else [SCREEN restoreBuffer]; break; // alternate screen buffer mode
+
+				case 1049:
+					// must save cursor position implicitly
+					if(mode) {
+						[self saveCursorAttributes];
+						[SCREEN saveCursorPosition];
+					}
+					else {
+						[self restoreCursorAttributes];
+						[SCREEN restoreCursorPosition];
+					}
+				case 47:
+					// alternate screen buffer mode
+					if(mode)
+						[SCREEN saveBuffer];
+					else
+						[SCREEN restoreBuffer];
+					break;
+
 				case 1000:
 				/* case 1001: */ /* MOUSE_REPORTING_HILITE not implemented yet */
 				case 1002:
@@ -2186,20 +2223,10 @@ static VT100TCC decode_string(unsigned char *datap,
             XON = NO;
             break;
         case VT100CSI_DECRC:
-            bold=saveBold;
-            under=saveUnder;
-            blink=saveBlink;
-            reversed=saveReversed;
-			highlight = saveHighlight;
-            CHARSET=saveCHARSET;
+        	[self restoreCursorAttributes];
             break;
         case VT100CSI_DECSC:
-            saveBold=bold;
-            saveUnder=under;
-            saveBlink=blink;
-            saveReversed=reversed;
-			saveHighlight=highlight;
-            saveCHARSET=CHARSET;
+        	[self saveCursorAttributes];
             break;
     }
 }

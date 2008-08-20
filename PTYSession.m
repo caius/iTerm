@@ -52,6 +52,7 @@
 @implementation PTYSession
 
 static NSString *TERM_ENVNAME = @"TERM";
+static NSString *COLORFGBG_ENVNAME = @"COLORFGBG";
 static NSString *PWD_ENVNAME = @"PWD";
 static NSString *PWD_ENVVALUE = @"~";
 
@@ -126,6 +127,7 @@ static NSImage *warningImage;
 
 	[icon release];
     [TERM_VALUE release];
+    [COLORFGBG_VALUE release];
     [view release];
     [name release];
     [windowTitle release];
@@ -238,6 +240,9 @@ static NSImage *warningImage;
 #endif
     if ([env objectForKey:TERM_ENVNAME] == nil)
         [env setObject:TERM_VALUE forKey:TERM_ENVNAME];
+
+    if ([env objectForKey:COLORFGBG_ENVNAME] == nil && COLORFGBG_VALUE != nil)
+        [env setObject:COLORFGBG_VALUE forKey:COLORFGBG_ENVNAME];
 	
     if ([env objectForKey:PWD_ENVNAME] == nil)
         [env setObject:[PWD_ENVVALUE stringByExpandingTildeInPath] forKey:PWD_ENVNAME];
@@ -1110,6 +1115,9 @@ static NSImage *warningImage;
     imageFilePath = [displayProfileMgr backgroundImageForProfile: displayProfile];
     if([imageFilePath length] > 0)
 		[self setBackgroundImagePath: imageFilePath];
+
+	// colour scheme
+    [self setCOLORFGBG_VALUE: [displayProfileMgr COLORFGBGForProfile: displayProfile]];
 	
     // transparency
     [self setTransparency: [displayProfileMgr transparencyForProfile: displayProfile]];  
@@ -1298,6 +1306,17 @@ static NSImage *warningImage;
     [TERM_VALUE autorelease];
     TERM_VALUE = [theTERM_VALUE retain];
     [TERMINAL setTermType: theTERM_VALUE];
+}
+
+- (NSString *) COLORFGBG_VALUE
+{
+    return (COLORFGBG_VALUE);
+}
+
+- (void) setCOLORFGBG_VALUE: (NSString *) theCOLORFGBG_VALUE
+{
+    [COLORFGBG_VALUE autorelease];
+    COLORFGBG_VALUE = [theCOLORFGBG_VALUE retain];
 }
 
 - (VT100Screen *) SCREEN

@@ -55,6 +55,7 @@
     PTYTask *SHELL;
     VT100Terminal *TERMINAL;
     NSString *TERM_VALUE;
+    NSString *COLORFGBG_VALUE;
     VT100Screen   *SCREEN;
     BOOL EXIT;
     NSView *view;
@@ -164,6 +165,8 @@
 - (void) setTERMINAL: (VT100Terminal *) theTERMINAL;
 - (NSString *) TERM_VALUE;
 - (void) setTERM_VALUE: (NSString *) theTERM_VALUE;
+- (NSString *) COLORFGBG_VALUE;
+- (void) setCOLORFGBG_VALUE: (NSString *) theCOLORFGBG_VALUE;
 - (VT100Screen *) SCREEN;
 - (void) setSCREEN: (VT100Screen *) theSCREEN;
 - (NSImage *) image;

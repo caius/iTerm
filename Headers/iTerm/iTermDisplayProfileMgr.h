@@ -77,6 +77,8 @@
 - (float) transparencyForProfile: (NSString *) profileName;
 - (void) setTransparency: (float) transparency forProfile: (NSString *) profileName;
 
+- (NSString *) COLORFGBGForProfile: (NSString *) profileName;
+
 - (NSString *) backgroundImageForProfile: (NSString *) profileName;
 - (void) setBackgroundImage: (NSString *) imagePath forProfile: (NSString *) profileName;
 

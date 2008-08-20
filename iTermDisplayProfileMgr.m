@@ -378,6 +378,36 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	[self _setFloatValue: transparency forKey: @"Transparency" inProfile: profileName];
 }
 
+- (NSString *) COLORFGBGForProfile: (NSString *) profileName
+{
+	NSDictionary *aProfile;
+	if([profileName length] <= 0)
+		return (nil);
+
+	NSColor *fgColor;
+	NSColor *bgColor;
+	fgColor = [self color:TYPE_FOREGROUND_COLOR forProfile:profileName];
+	bgColor = [self color:TYPE_BACKGROUND_COLOR forProfile:profileName];
+	if(fgColor == nil || bgColor == nil)
+		return (nil);
+
+	int bgNum = -1;
+	int fgNum = -1; 
+	for(int i = TYPE_ANSI_0_COLOR; i <= TYPE_ANSI_15_COLOR; ++i) {
+		if([fgColor isEqual: [self color:i forProfile:profileName]]) {
+			fgNum = i;
+		}
+		if([bgColor isEqual: [self color:i forProfile:profileName]]) {
+			bgNum = i;
+		}
+	}
+
+	if(bgNum < 0 || fgNum < 0)
+		return (nil);
+
+	return ([[NSString alloc] initWithFormat:@"%d;%d", fgNum, bgNum]);
+}
+
 - (NSString *) backgroundImageForProfile: (NSString *) profileName
 {
 	NSDictionary *aProfile;

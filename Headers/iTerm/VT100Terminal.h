@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.32 2008-08-20 17:10:51 delx Exp $
+// $Id: VT100Terminal.h,v 1.33 2008-08-20 17:20:37 delx Exp $
 /*
  **  VT100Terminal.h
  **
@@ -356,7 +356,6 @@ typedef enum {
 - (NSData *)keyPageUp;
 - (NSData *)keyPageDown;
 - (NSData *)keyFunction:(int)no;
-- (NSData *)keyPFn: (int) n;
 - (NSData *)keypadData: (unichar) unicode keystr: (NSString *) keystr;
 
 - (NSData *)mousePress: (int)button withModifiers: (unsigned int)modflag atX: (int)x Y: (int)y;

@@ -547,8 +547,7 @@ static NSImage *warningImage;
 				case NSPauseFunctionKey:
 					break;
 				case NSClearLineFunctionKey:
-					if([TERMINAL keypadMode])
-						data = [TERMINAL keyPFn: 1];
+					data = [@"\e" dataUsingEncoding: NSUTF8StringEncoding];
 					break;
 			}
 			
@@ -612,26 +611,7 @@ static NSImage *warningImage;
 			
 			// Check if we are in keypad mode
 			if (modflag & NSNumericPadKeyMask) {
-				if ([TERMINAL keypadMode])
-				{
-					switch (unicode)
-					{
-						case '=':
-							data = [TERMINAL keyPFn: 2];;
-							break;
-						case '/':
-							data = [TERMINAL keyPFn: 3];
-							break;
-						case '*':
-							data = [TERMINAL keyPFn: 4];
-							break;
-						default:
-							data = [TERMINAL keypadData: unicode keystr: keystr];
-							break;
-					}
-				}
-				else
-					data = [TERMINAL keypadData: unicode keystr: keystr];
+				data = [TERMINAL keypadData: unicode keystr: keystr];
 			}		
 			
 			

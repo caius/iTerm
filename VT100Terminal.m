@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.129 2008-08-20 17:17:31 delx Exp $
+// $Id: VT100Terminal.m,v 1.130 2008-08-20 17:20:37 delx Exp $
 //
 /*
  **  VT100Terminal.m
@@ -97,11 +97,6 @@
 #define KEY_DEL				 "\033[3~"
 #define KEY_BACKSPACE		 "\010"
 
-#define KEY_PF1		     "\033OP"
-#define KEY_PF2		     "\033OQ"
-#define KEY_PF3	         "\033OR"
-#define KEY_PF4		     "\033OS"
-
 #define ALT_KP_0		"\033Op"
 #define ALT_KP_1		"\033Oq"
 #define ALT_KP_2		"\033Or"
@@ -113,8 +108,11 @@
 #define ALT_KP_8		"\033Ox"
 #define ALT_KP_9		"\033Oy"
 #define ALT_KP_MINUS	"\033Om"
-#define ALT_KP_PLUS		"\033Ol"
+#define ALT_KP_PLUS		"\033Ok"
 #define ALT_KP_PERIOD	"\033On"
+#define ALT_KP_SLASH	"\033Oo"
+#define ALT_KP_STAR		"\033Oj"
+#define ALT_KP_EQUALS	"\033OX"
 #define ALT_KP_ENTER	"\033OM"
 
 
@@ -1914,30 +1912,6 @@ static VT100TCC decode_string(unsigned char *datap,
     return [NSData dataWithBytes:str length:len];
 }
 
-- (NSData *)keyPFn: (int) n
-{
-    NSData *theData;
-    
-    switch (n)
-    {
-		case 4:
-			theData = [NSData dataWithBytes:KEY_PF4 length:conststr_sizeof(KEY_PF4)];
-			break;
-		case 3:
-			theData = [NSData dataWithBytes:KEY_PF3 length:conststr_sizeof(KEY_PF3)];
-			break;
-		case 2:
-			theData = [NSData dataWithBytes:KEY_PF2 length:conststr_sizeof(KEY_PF2)];
-			break;
-		case 1:
-		default:
-			theData = [NSData dataWithBytes:KEY_PF1 length:conststr_sizeof(KEY_PF1)];
-			break;
-    }
-	
-    return (theData);
-}
-
 - (NSData *) keypadData: (unichar) unicode keystr: (NSString *) keystr
 {
     NSData *theData = nil;
@@ -1987,6 +1961,15 @@ static VT100TCC decode_string(unsigned char *datap,
 			break;	    
 		case '.':
 			theData = [NSData dataWithBytes:ALT_KP_PERIOD length:conststr_sizeof(ALT_KP_PERIOD)];
+			break;	    
+		case '/':
+			theData = [NSData dataWithBytes:ALT_KP_SLASH length:conststr_sizeof(ALT_KP_SLASH)];
+			break;	    
+		case '*':
+			theData = [NSData dataWithBytes:ALT_KP_STAR length:conststr_sizeof(ALT_KP_STAR)];
+			break;	    
+		case '=':
+			theData = [NSData dataWithBytes:ALT_KP_EQUALS length:conststr_sizeof(ALT_KP_EQUALS)];
 			break;	    
 		case 0x03:
 			theData = [NSData dataWithBytes:ALT_KP_ENTER length:conststr_sizeof(ALT_KP_ENTER)];

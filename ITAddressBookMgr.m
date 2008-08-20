@@ -132,10 +132,7 @@ static TreeNode *defaultBookmark = nil;
 		[aDict setObject: shell forKey: KEY_DESCRIPTION];
 		[aDict setObject: NSHomeDirectory() forKey: KEY_WORKING_DIRECTORY];
 		[aDict setObject: [[iTermTerminalProfileMgr singleInstance] defaultProfileName] forKey: KEY_TERMINAL_PROFILE];
-		if ([[[iTermKeyBindingMgr singleInstance] profiles] objectForKey: @"xterm (OS X)"]) 
-			[aDict setObject: @"xterm (OS X)" forKey: KEY_KEYBOARD_PROFILE];
-		else
-			[aDict setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
+		[aDict setObject: [[iTermKeyBindingMgr singleInstance] globalProfileName] forKey: KEY_KEYBOARD_PROFILE];
 		[aDict setObject: [[iTermDisplayProfileMgr singleInstance] defaultProfileName] forKey: KEY_DISPLAY_PROFILE];
 		[aDict setObject: @"Yes" forKey: KEY_DEFAULT_BOOKMARK];
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.124 2007-11-21 05:24:17 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.125 2008-08-20 17:03:41 delx Exp $
 //
 /*
  **  VT100Terminal.m
@@ -1356,7 +1356,7 @@ static VT100TCC decode_string(unsigned char *datap,
 #endif
     
     free(STREAM);
-	[streamLock unlock];
+///	[streamLock unlock];
 	[streamLock release];
     [termType release];
 

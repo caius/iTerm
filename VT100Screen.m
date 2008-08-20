@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.281 2007-11-21 05:24:17 yfabian Exp $
+// $Id: VT100Screen.m,v 1.282 2008-08-20 17:03:41 delx Exp $
 //
 /*
  **  VT100Screen.m
@@ -206,6 +206,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		free(temp_buffer);
 	
 
+	[self releaseLock];
 	[screenLock release];
 	
     [printToAnsiString release];

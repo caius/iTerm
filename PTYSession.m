@@ -664,6 +664,13 @@ static NSImage *warningImage;
 				send_str = (unsigned char*)"\037"; // control-/
 				send_strlen = 1;
 			}
+			else if (modflag & NSShiftKeyMask &&
+					 send_strlen == 1 &&
+					 send_str[0] == '\031')
+			{
+				send_str = (unsigned char*)"\033[Z"; // backtab
+				send_strlen = 3;
+			}
 			
 		}
 				

@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.4 2006-02-07 05:10:45 ujwal Exp $
+## $Id: Makefile,v 1.5 2008-08-20 17:02:57 delx Exp $
 ## iTerm Makefile
 ## 2003 Copyright(C) Ujwal S. Setlur
 ##
@@ -8,17 +8,17 @@ CONFIGURATION=Development
 PROJECTNAME=iTerm
 
 all:
-	./iTermBuild.sh -alltargets -configuration $(CONFIGURATION)
+	xcodebuild -alltargets -configuration $(CONFIGURATION)
 
 clean:
-	./iTermBuild.sh -alltargets clean
+	xcodebuild -alltargets clean
 	rm -rf build
 	rm -f *~
 
 Development:
-	./iTermBuild.sh -alltargets -configuration Development
+	xcodebuild -alltargets -configuration Development
 
 Deployment:
-	./iTermBuild.sh -alltargets -configuration Deployment
+	xcodebuild -alltargets -configuration Deployment
 
 

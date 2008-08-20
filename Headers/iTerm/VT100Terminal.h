@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.31 2008-08-20 17:09:12 delx Exp $
+// $Id: VT100Terminal.h,v 1.32 2008-08-20 17:10:51 delx Exp $
 /*
  **  VT100Terminal.h
  **
@@ -127,6 +127,7 @@
 #define ANSICSI_PRINT	 3004	// Print to Ansi
 #define ANSICSI_SCP      3005   // Save cursor position
 #define ANSICSI_RCP      3006   // Restore cursor position
+#define ANSICSI_CBT	     3007	// Back tab
 
 // Toggle between ansi/vt52
 #define STRICT_ANSI_MODE		4000

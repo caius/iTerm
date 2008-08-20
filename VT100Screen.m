@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.283 2008-08-20 17:09:12 delx Exp $
+// $Id: VT100Screen.m,v 1.284 2008-08-20 17:10:47 delx Exp $
 //
 /*
  **  VT100Screen.m
@@ -821,6 +821,9 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
         break;
 
     // ANSI CSI
+    case ANSICSI_CBT:
+        [self backTab];
+        break;
     case ANSICSI_CHA:
         [self cursorToX: token.u.csi.p[0]];
         break;
@@ -1347,6 +1350,19 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 #endif
     if (CURSOR_X > 0) 
         CURSOR_X--;
+}
+
+- (void)backTab
+{
+
+#if DEBUG_METHOD_TRACE
+    NSLog(@"%s(%d):-[VT100Screen backTab]", __FILE__, __LINE__);
+#endif
+
+    CURSOR_X--; // ensure we go to the previous tab in case we are already on one
+    for(;!tabStop[CURSOR_X]&&CURSOR_X>0; CURSOR_X--);
+    if (CURSOR_X < 0)
+		CURSOR_X = 0;
 }
 
 - (void)setTab

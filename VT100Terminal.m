@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.130 2008-08-20 17:20:37 delx Exp $
+// $Id: VT100Terminal.m,v 1.131 2008-08-20 17:21:08 delx Exp $
 //
 /*
  **  VT100Terminal.m
@@ -659,7 +659,7 @@ static VT100TCC decode_xterm(unsigned char *datap,
     datalen -= 2;
     *rmlen=2;
     
-	if (isdigit(*datap)) {
+	if (datalen>0 && isdigit(*datap)) {
         int n = *datap++ - '0';
         datalen--;
         (*rmlen)++;

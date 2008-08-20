@@ -100,11 +100,11 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 		
 		[aProfile setObject: @"Yes" forKey: @"Default Profile"];
 		
-		[self setType: @"ansi" forProfile: defaultName];
-		[self setEncoding: NSASCIIStringEncoding  forProfile: defaultName];
+		[self setType: @"xterm" forProfile: defaultName];
+		[self setEncoding: NSUTF8StringEncoding forProfile: defaultName];
 		[self setScrollbackLines: 1000 forProfile: defaultName];
 		[self setSilenceBell: NO forProfile: defaultName];
-		[self setBlinkCursor: YES forProfile: defaultName];
+		[self setBlinkCursor: NO forProfile: defaultName];
 		[self setCloseOnSessionEnd: YES forProfile: defaultName];
 		[self setDoubleWidth: YES forProfile: defaultName];
 		[self setSendIdleChar: NO forProfile: defaultName];

@@ -198,7 +198,7 @@ NSString *CommandToolbarItem = @"Command";
 - (void)setupToolbar;
 {   
 	_toolbar = [[NSToolbar alloc] initWithIdentifier: @"Terminal Toolbar"];
-    [_toolbar setVisible:true];
+    [_toolbar setVisible:false];
     [_toolbar setDelegate:self];
     [_toolbar setAllowsUserCustomization:YES];
     [_toolbar setAutosavesConfiguration:YES];

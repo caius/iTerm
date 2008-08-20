@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.72 2008-01-30 04:12:21 dnedrow Exp $
+// $Id: iTermController.m,v 1.73 2008-08-20 17:00:34 delx Exp $
 /*
  **  iTermController.m
  **
@@ -43,7 +43,6 @@
 #import <iTerm/iTermGrowlDelegate.h>
 #import <iTermProfileWindowController.h>
 #import <iTermBookmarkController.h>
-#import <iTermSecurityMgr.h>
 
 static NSString* APPLICATION_SUPPORT_DIRECTORY = @"~/Library/Application Support";
 static NSString *SUPPORT_DIRECTORY = @"~/Library/Application Support/iTerm";
@@ -99,18 +98,6 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	 * PLIST check here.
 	 */
     gd = [iTermGrowlDelegate sharedInstance];
-	
-	// Handle user shell checking
-	iTermSecurityMgr *itsm = [iTermSecurityMgr sharedInstance];
-	
-	if(![itsm isShellValid]) {
-		int choice = NSRunAlertPanel(@"Bad User Shell",
-									 @"Shell error message",
-									 @"OK", nil, nil);
-	} else {
-		NSLog(@"%s(%d):-[its isShellValid] returned TRUE",
-			  __FILE__, __LINE__);
-	}	
 	
 	_fullScreenTerminal = nil;
 	

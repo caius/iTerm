@@ -205,15 +205,15 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 	NSNumber *encoding;
 	
 	if([profileName length] <= 0)
-		return (NSASCIIStringEncoding);
+		return (NSUTF8StringEncoding);
 	
 	aProfile = [profiles objectForKey: profileName];
 	if(aProfile == nil)
-		return (NSASCIIStringEncoding);
+		return (NSUTF8StringEncoding);
 	
 	encoding = [aProfile objectForKey: @"Encoding"];
 	if(encoding == nil)
-		return (NSASCIIStringEncoding);
+		return (NSUTF8StringEncoding);
 	
 	return ([encoding unsignedIntValue]);	
 	

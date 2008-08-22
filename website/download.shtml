@@ -22,9 +22,10 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Download:</STRONG></FONT><BR>
 <UL><A HREF="http://sourceforge.net/project/showfiles.php?group_id=67789">iTerm 0.9.5</A>: The latest iTerm release<IMG src="new.gif"><BR>
-<A HREF="http://iterm.sourceforge.net/iTerm_0.9.6.0611.zip">Recent binary build from CVS</A> (0.9.5.0611, English only, <A HREF="http://iterm.sourceforge.net/Changelog.html">changelog</a>)<IMG src="new.gif"><BR>
-This build is Tiger only. (In principle, the CVS code should compile and run under Panther. Howerver, due to the limited resource, ie. my only powerbook G4, I can't test it. Any user contribution will be welcome.)<BR><BR>
+<A HREF="http://iterm.sourceforge.net/iTerm_0.9.5.0821.zip">Recent binary build from CVS</A> (0.9.5.0820, English only, <A HREF="http://iterm.sourceforge.net/Changelog.html">changelog</a>)<IMG src="new.gif"><BR>
+This build is for Tiger or later. (In principle, the CVS code should compile and run under Panther. Howerver, due to the limited resource, ie. my only powerbook G4, I can't test it. Any user contribution will be welcome.)<BR><BR>
 <STRONG>Earlier builds</STRONG><BR>
+<A HREF="http://iterm.sourceforge.net/iTerm_0.9.5.0611.zip">build 0.9.5.0611</A> <BR>
 <A HREF="http://iterm.sourceforge.net/iTerm_0.9.5.0517.zip">build 0.9.5.0517</A> <BR>
 <A HREF="http://iterm.sourceforge.net/iTerm_0.9.5.0315.zip">build 0.9.5.0315</A> <BR>
 </UL>
@@ -45,7 +46,7 @@ voluntary. Any donations will go towards making iTerm better. Thank you.<BR><BR>
 <img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support This Project" /> 
 </a>
 <BR><BR>
-You can also help out by visiting our advertisers -----><BR>
+
 </UL>
 
  

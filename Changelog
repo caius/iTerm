@@ -1,3 +1,7 @@
+2008-08-21 fabian
+
+	* Fixed a bug that causes loss of preferences when upgrade.
+	
 2008-08-21  delx
 
 	* Compiles & runs!

@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.157 2008-08-20 17:06:37 delx Exp $
+// $Id: PreferencePanel.m,v 1.158 2008-08-22 06:30:40 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -124,7 +124,7 @@ PreferencePanel (PrivateMethods )
 	defaultUseCompactLabel = [prefs objectForKey:@"UseCompactLabel"]?[[prefs objectForKey:@"UseCompactLabel"] boolValue]: YES;
 	defaultRefreshRate = [prefs objectForKey:@"RefreshRate"]?[[prefs objectForKey:@"RefreshRate"] intValue]: 25;
 	[defaultWordChars release];
-	defaultWordChars = [prefs objectForKey: @"WordCharacters"]?[[prefs objectForKey: @"WordCharacters"] retain]:@"/-+\~_.";
+	defaultWordChars = [prefs objectForKey: @"WordCharacters"]?[[prefs objectForKey: @"WordCharacters"] retain]:@"/-+\\~_.";
     defaultOpenBookmark = [prefs objectForKey:@"OpenBookmark"]?[[prefs objectForKey:@"OpenBookmark"] boolValue]: NO;
 	defaultQuitWhenAllWindowsClosed = [prefs objectForKey:@"QuitWhenAllWindowsClosed"]?[[prefs objectForKey:@"QuitWhenAllWindowsClosed"] boolValue]: NO;
 	defaultCursorType=[prefs objectForKey:@"CursorType"]?[prefs integerForKey:@"CursorType"]:2;
@@ -647,7 +647,9 @@ PreferencePanel (PrivateMethods )
 	
 	if(([mgr fileExistsAtPath:oldPrefs]) &&
 	   (![mgr fileExistsAtPath:newPrefs])) {
+		NSLog(@"Preference file migrated");
 		[mgr copyPath:oldPrefs toPath:newPrefs handler:nil];
+		[NSUserDefaults resetStandardUserDefaults];
 		return (YES);	
 	}
 	return (NO);	

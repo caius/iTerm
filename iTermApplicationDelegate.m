@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.57 2007-04-23 21:52:00 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.58 2008-08-22 06:30:40 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -74,9 +74,10 @@ static BOOL usingAutoLaunchScript = NO;
 	[self buildScriptMenu:nil];
 		
 	// read preferences
-    [iTermProfileWindowController sharedInstance];
-    [iTermBookmarkController sharedInstance];
     [PreferencePanel sharedInstance];
+	[iTermProfileWindowController sharedInstance];
+    [iTermBookmarkController sharedInstance];
+    
 	
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	NSString *appCast = [[PreferencePanel sharedInstance] checkTestRelease] ? 
@@ -189,7 +190,7 @@ static BOOL usingAutoLaunchScript = NO;
 - (id)init
 {
     self = [super init];
-
+	
     // Add ourselves as an observer for notifications.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadMenus:)

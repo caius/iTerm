@@ -56,7 +56,7 @@ static BOOL addingKBEntry;
     if ((self = [super init]) == nil)
         return nil;
 
-    _prefs = [NSUserDefaults standardUserDefaults];
+	_prefs = [NSUserDefaults standardUserDefaults];
     
     // load saved profiles or default if we don't have any
 	keybindingProfiles = [_prefs objectForKey: @"KeyBindings"];

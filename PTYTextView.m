@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.309 2008-08-20 17:14:39 delx Exp $
+// $Id: PTYTextView.m,v 1.310 2008-08-28 03:47:54 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -964,7 +964,7 @@ static int cacheSize;
 					//draw underline
 					if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
 						[[self colorForCode:(fgcode & 0x1ff)] set];
-						NSRectFill(NSMakeRect(curX,curY-2,charWidth,1));
+						NSRectFill(NSMakeRect(curX,curY-2,double_width?charWidth*2:charWidth,1));
 					}
 				}
 			}

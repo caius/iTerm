@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.m,v 1.8 2006-11-13 08:01:04 yfabian Exp $
+// $Id: NSStringITerm.m,v 1.9 2008-08-28 03:47:54 yfabian Exp $
 /*
  **  NSStringIterm.m
  **
@@ -29,7 +29,7 @@
 #define NSSTRINGJTERMINAL_CLASS_COMPILE
 #import <iTerm/NSStringITerm.h>
 
-#define AMB_CHAR_NUMBER 252
+#define AMB_CHAR_NUMBER (sizeof(ambiguous_chars) / sizeof(unichar))
 
 static const unichar ambiguous_chars[] = {
 	0xa1,
@@ -294,9 +294,90 @@ static const unichar ambiguous_chars[] = {
     return [NSString stringWithFormat:@"%d", num];
 }
 
++ (BOOL)isCJKEncoding:(NSStringEncoding)encoding
+{
+    static NSMutableDictionary *isEncodingCJK = nil; // cache for encoding to isCJK mapping
+    static NSStringEncoding previousEncoding = 1; // ASCII
+    static BOOL isCJK = NO;
+    NSNumber *key, *val;
+    NSString *localeIdentifier;
+    const char *lang;
+
+    if (encoding == previousEncoding) {
+        //NSLog(@"encoding[0x%08lx] is %s, again", encoding, isCJK ? "CJK" : "not CJK");
+        return isCJK;
+    }
+
+    previousEncoding = encoding;
+
+    key = [NSNumber numberWithUnsignedInt:encoding];
+
+    if (isEncodingCJK == nil) {
+        isEncodingCJK = [[NSMutableDictionary alloc] init];
+    }
+    else {
+        val = [isEncodingCJK objectForKey:key];
+
+        if (val != nil) {
+            isCJK = [val boolValue];
+            //NSLog(@"encoding[0x%08lx] is %s, IIRC", encoding, isCJK ? "CJK" : "not CJK");
+            return isCJK;
+        }
+    }
+
+    switch (encoding) {
+      // Simplified Chinese
+      case 0x80000019: // Mac
+      case 0x80000421: // Windows
+      case 0x80000631: // GBK
+      case 0x80000632: // GB 18030
+      case 0x80000930: // EUC
+      // Traditional Chinese
+      case 0x80000002: // Mac
+      case 0x80000423: // Windows
+      case 0x80000931: // EUC
+      case 0x80000A03: // Big5
+      case 0x80000A06: // Big5 HKSCS
+      // Japanese
+      case 0x00000003: // EUC
+      case 0x00000008: // Windows
+      case 0x00000015: // ISO-2022-JP
+      case 0x80000001: // Mac
+      case 0x80000628: // Shift JIS X0213
+      case 0x80000A01: // Shift JIS
+      // Korean
+      case 0x80000003: // Mac
+      case 0x80000422: // Windows
+      case 0x80000840: // ISO-2022-KR
+      case 0x80000940: // EUC
+        isCJK = YES;
+        //NSLog(@"0x%08lx is known to be %s", encoding, isCJK ? "CJK" : "not CJK");
+        break;
+
+      case 0x00000004: // UTF-8
+        localeIdentifier = [[NSLocale currentLocale] localeIdentifier];
+        isCJK = [localeIdentifier hasPrefix:@"ja_"] ||
+          [localeIdentifier hasPrefix:@"kr_"] ||
+          [localeIdentifier hasPrefix:@"zh_"];
+        //NSLog(@"locale[%@] looks %s", localeIdentifier, isCJK ? "CJK" : "not CJK");
+        break;
+
+      default:
+        isCJK = NO;
+        //NSLog(@"encoding[0x%08lx] is not known to be CJK", encoding);
+        break;
+    }
+
+    // Store in cache
+    val = [NSNumber numberWithBool:isCJK];
+    [isEncodingCJK setObject:val forKey:key];
+
+    return isCJK;
+}
+
 + (BOOL)isDoubleWidthCharacter:(unichar)unicode encoding:(NSStringEncoding) e
 {
-	if (unicode <= 0xa0 || (unicode>0x452 && unicode <0x200f))
+	if (unicode <= 0xa0 || (unicode>0x452 && unicode <0x1100))
 		return NO;
     /*
      unicode character width check
@@ -325,11 +406,7 @@ static const unichar ambiguous_chars[] = {
 	
 	/* Ambiguous ones */
 	
-	if ((e)==0x80000019||(e)==0x80000421||(e)==0x80000631||(e)==0x80000632||(e)==0x80000930 || //GB
-		(e)==0x80000002||(e)==0x80000423||(e)==0x80000931||(e)==0x80000a03||(e)==0x80000a06 || //BIG5
-		(e)==0x80000001||(e)==0x8||(e)==0x15 || //JP
-		(e)==0x80000628||(e)==0x80000a01 || //SJIS
-		(e)==0x80000422||(e)==0x80000003||(e)==0x80000840||(e)==0x80000940) //KR
+	if ([self isCJKEncoding:e])
 	{
 		if ((unicode >=0xfe00 && unicode <=0xfe0f) ||
 			(unicode >=0x2776 && unicode <=0x277f) ||

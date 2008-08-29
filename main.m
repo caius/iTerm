@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: main.m,v 1.1.1.1 2002-11-26 04:56:45 ujwal Exp $
+// $Id: main.m,v 1.2 2008-08-29 23:35:29 delx Exp $
 //
 //  main.m
 //  JTerminal
@@ -9,6 +9,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import <iTerm/PreferencePanel.h>
 
 int main(int argc, const char *argv[])
 {

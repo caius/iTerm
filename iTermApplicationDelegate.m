@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.58 2008-08-22 06:30:40 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.59 2008-08-29 23:35:29 delx Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -74,9 +74,10 @@ static BOOL usingAutoLaunchScript = NO;
 	[self buildScriptMenu:nil];
 		
 	// read preferences
-    [PreferencePanel sharedInstance];
+    [PreferencePanel migratePreferences];
 	[iTermProfileWindowController sharedInstance];
     [iTermBookmarkController sharedInstance];
+    [PreferencePanel sharedInstance];
     
 	
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4

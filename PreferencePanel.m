@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.158 2008-08-22 06:30:40 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.159 2008-08-29 23:35:29 delx Exp $
 /*
  **  PreferencePanel.m
  **
@@ -38,16 +38,6 @@
 static float versionNumber;
 static NSString *NoHandler = @"<No Handler>";
 
-@interface
-PreferencePanel (PrivateMethods )
-
-/*
- Private method to copy old preferences file, iTerm.plist, to new
- preferences file, net.sourceforge.iTerm.plist
- */
-- (BOOL) migratePreferences;
-@end
-
 @implementation PreferencePanel
 
 + (PreferencePanel*)sharedInstance;
@@ -62,13 +52,37 @@ PreferencePanel (PrivateMethods )
     return shared;
 }
 
+/*
+ Static method to copy old preferences file, iTerm.plist, to new
+ preferences file, net.sourceforge.iTerm.plist
+ */
++ (BOOL) migratePreferences {
+	
+	NSString *prefDir = [[NSHomeDirectory()
+        stringByAppendingPathComponent:@"Library"]
+        stringByAppendingPathComponent:@"Preferences"];
+	
+	NSString *oldPrefs = [prefDir stringByAppendingPathComponent:@"iTerm.plist"];
+	NSString *newPrefs = [prefDir stringByAppendingPathComponent:@"net.sourceforge.iTerm.plist"];
+	
+	NSFileManager *mgr = [NSFileManager defaultManager];
+	
+	if(([mgr fileExistsAtPath:oldPrefs]) &&
+	   (![mgr fileExistsAtPath:newPrefs])) {
+		NSLog(@"Preference file migrated");
+		[mgr copyPath:oldPrefs toPath:newPrefs handler:nil];
+		[NSUserDefaults resetStandardUserDefaults];
+		return (YES);	
+	}
+	return (NO);	
+}
+
+
 - (id) init
 {
 	unsigned int storedMajorVersion = 0, storedMinorVersion = 0, storedMicroVersion = 0;
 
 	self = [super init];
-	
-	[self migratePreferences];
 	
 	[self readPreferences];
 	if(defaultEnableBonjour == YES)
@@ -628,31 +642,6 @@ PreferencePanel (PrivateMethods )
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
 	defaultWordChars = [[wordChars stringValue] retain];
-}
-
-/*
- Private method to copy old preferences file, iTerm.plist, to new
- preferences file, net.sourceforge.iTerm.plist
- */
-- (BOOL) migratePreferences {
-	
-	NSString *prefDir = [[NSHomeDirectory()
-        stringByAppendingPathComponent:@"Library"]
-        stringByAppendingPathComponent:@"Preferences"];
-	
-	NSString *oldPrefs = [prefDir stringByAppendingPathComponent:@"iTerm.plist"];
-	NSString *newPrefs = [prefDir stringByAppendingPathComponent:@"net.sourceforge.iTerm.plist"];
-	
-	NSFileManager *mgr = [NSFileManager defaultManager];
-	
-	if(([mgr fileExistsAtPath:oldPrefs]) &&
-	   (![mgr fileExistsAtPath:newPrefs])) {
-		NSLog(@"Preference file migrated");
-		[mgr copyPath:oldPrefs toPath:newPrefs handler:nil];
-		[NSUserDefaults resetStandardUserDefaults];
-		return (YES);	
-	}
-	return (NO);	
 }
 
 @end

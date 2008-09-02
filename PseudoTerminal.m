@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.402 2007-11-21 05:24:17 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.403 2008-09-02 14:18:39 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -249,7 +249,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 											  backing: NSBackingStoreBuffered 
 												defer: NO];
 	[self setWindow: myWindow];
-	[myWindow setLevel:NSScreenSaverWindowLevel]; //CGShieldingWindowLevel()];
+	[NSMenu setMenuBarVisible: NO];
 	[myWindow release];
 	_fullScreen = YES;
 	[[iTermController sharedInstance] setFullScreenTerminal: self];
@@ -1541,7 +1541,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     //[self selectSessionAtIndex: [self currentSessionIndex]];
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
-	if (_fullScreen) [[self window] setLevel:NSScreenSaverWindowLevel];
+	if (_fullScreen) [NSMenu setMenuBarVisible: NO];
     
     // update the cursor
     [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
@@ -1569,7 +1569,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 		else
 			if (!_resizeInProgressFlag) [self toggleFullScreen: nil]; */
-        [[self window] setLevel:NSNormalWindowLevel];
+		[NSMenu setMenuBarVisible: YES];
 	}
 	else {
 		// update the cursor
@@ -1753,7 +1753,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	else
 	{
 		PseudoTerminal *normalScreenTerminal = [[PseudoTerminal alloc] init];
-		if ([[[PreferencePanel sharedInstance] window] isVisible]) [[[PreferencePanel sharedInstance] window] setLevel:NSNormalWindowLevel];
+		if ([[[PreferencePanel sharedInstance] window] isVisible]) [NSMenu setMenuBarVisible: YES];
 		if (normalScreenTerminal) {
 			PTYSession *currentSession = [self currentSession];
 			[normalScreenTerminal initWindowWithSettingsFrom: self];

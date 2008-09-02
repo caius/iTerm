@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.59 2008-08-29 23:35:29 delx Exp $
+// $Id: iTermApplicationDelegate.m,v 1.60 2008-09-02 14:21:28 delx Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -675,12 +675,12 @@ static BOOL usingAutoLaunchScript = NO;
     }
 }
 
-- (void)applicationDidResignActive:(NSNotification *)aNotification
-{
-	// turn full screen off first
-	if ([[iTermController sharedInstance] fullScreenTerminal] && [[NSScreen mainScreen] isEqual:[[[[iTermController sharedInstance] fullScreenTerminal] window] screen]]) 
-		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-}
+///- (void)applicationDidResignActive:(NSNotification *)aNotification
+///{
+///	// turn full screen off first
+///	if ([[iTermController sharedInstance] fullScreenTerminal] && [[NSScreen mainScreen] isEqual:[[[[iTermController sharedInstance] fullScreenTerminal] window] screen]]) 
+///		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
+///}
 
 @end
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.310 2008-08-28 03:47:54 yfabian Exp $
+// $Id: PTYTextView.m,v 1.311 2008-09-02 13:01:44 delx Exp $
 /*
  **  PTYTextView.m
  **
@@ -776,6 +776,12 @@ static int cacheSize;
         lastBlink = now;
     }
     
+	// set the background color, used for drawing background and margins
+	aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
+	aColor = [aColor colorWithAlphaComponent: trans];
+	[aColor set];
+
+	// redraw the entire background
 	if (forceUpdate) {
 		if ([[[dataSource session] parent] fullScreen]) {
 			[[[self window] contentView] lockFocus];
@@ -789,14 +795,27 @@ static int cacheSize;
 			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
 		}
 		else {
-///			aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
-			aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
-			aColor = [aColor colorWithAlphaComponent: trans];
-			[aColor set];
 			NSRectFill(rect);
 		}
 	}
-		
+
+	// redraw margins
+	bgRect = NSMakeRect(0, rect.origin.y, MARGIN, rect.size.height);
+	if(hasBGImage) {
+		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+	}
+	else {
+		NSRectFill(bgRect);
+	}
+	bgRect = NSMakeRect(rect.size.width - MARGIN, rect.origin.y, MARGIN, rect.size.height);
+	if(hasBGImage) {
+		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+	}
+	else {
+		NSRectFill(bgRect);
+	}
+
+
 	WIDTH=[dataSource width];
 
 	// Starting from which line?
@@ -811,15 +830,6 @@ static int cacheSize;
 		
     // [self adjustScroll] should've made sure we are at an integer multiple of a line
 	curY=(lineOffset+1)*lineHeight;
-	
-	// redraw margins if we have a background image, otherwise we can still "see" the margin
-	if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
-	{
-		bgRect = NSMakeRect(0, rect.origin.y, MARGIN, rect.size.height);
-		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-		bgRect = NSMakeRect(rect.size.width - MARGIN, rect.origin.y, MARGIN, rect.size.height);
-		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-	}
 	
       
     for(i = 0; i < numLines; i++)

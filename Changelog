@@ -1,3 +1,12 @@
+2008-09-03  delx
+
+	* A few documentation spelling and grammar fixes.
+	* Fixed borders once and for all.
+	* Full-screen mode hides menubar rather than pretending to be
+	  a screensaver. This fixes Apple-Tab and other things.
+	* Fixed enter key on the numeric keypad in keypad app mode
+	* Fixed iTerm so that it can start with no preferences file again
+
 2008-08-27	fabian
 
 	* Incorporated two patches provided by Akinori MUSHA (knu). They fixed two double-width character issues.

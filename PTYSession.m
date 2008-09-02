@@ -587,18 +587,6 @@ static NSImage *warningImage;
 					send_str[i] |= 0x80;
 			}
 		}
-		else if (unicode == NSEnterCharacter && unmodunicode == NSEnterCharacter)
-		{
-			if ([TERMINAL keypadMode] && (modflag & NSNumericPadKeyMask)) {
-				NSData *data = [TERMINAL keypadData: unicode keystr: keystr];
-				send_str = (unsigned char *)[data bytes];
-				send_strlen = [data length];
-			}
-			else {
-				send_str = (unsigned char*)"\015";  // Enter key -> 0x0d
-				send_strlen = 1;
-			}
-		}
 		else
 		{
 			int max = [keystr length];
@@ -609,6 +597,9 @@ static NSImage *warningImage;
 			else
 				data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
 			
+			// Enter key is on numeric keypad, but not marked as such
+			if (unicode == NSEnterCharacter && unmodunicode == NSEnterCharacter)
+				modflag |= NSNumericPadKeyMask;
 			// Check if we are in keypad mode
 			if (modflag & NSNumericPadKeyMask) {
 				data = [TERMINAL keypadData: unicode keystr: keystr];

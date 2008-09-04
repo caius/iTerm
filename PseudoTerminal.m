@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.404 2008-09-04 04:36:34 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.405 2008-09-04 08:24:48 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1526,6 +1526,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 	EXIT = YES;
 	
+	if (_fullScreen) [NSMenu setMenuBarVisible: YES];
 
     [[iTermController sharedInstance] terminalWillClose: self];
 	

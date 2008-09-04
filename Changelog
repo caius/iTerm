@@ -1,3 +1,7 @@
+2008-09-03	fabian
+
+	* Fixed a bug that causes iTerm to crash when executing scripts.
+	
 2008-09-03  delx
 
 	* A few documentation spelling and grammar fixes.

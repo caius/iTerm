@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.403 2008-09-02 14:18:39 delx Exp $
+// $Id: PseudoTerminal.m,v 1.404 2008-09-04 04:36:34 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2920,7 +2920,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 -(void)insertInSessions:(PTYSession *)object atIndex:(unsigned)index
 {
     // NSLog(@"PseudoTerminal: -insertInSessions: 0x%x atIndex: %d", object, index);
-     if ([object SCREEN]) // screen initialized ok[self setupSession: object title: nil];
+	[self setupSession: object title: nil];
+	if ([object SCREEN]) // screen initialized ok
         [self insertSession: object atIndex: index];
     else {
         

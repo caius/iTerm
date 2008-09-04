@@ -598,8 +598,10 @@ static NSImage *warningImage;
 				data = [keystr dataUsingEncoding:NSUTF8StringEncoding];
 			
 			// Enter key is on numeric keypad, but not marked as such
-			if (unicode == NSEnterCharacter && unmodunicode == NSEnterCharacter)
+			if (unicode == NSEnterCharacter && unmodunicode == NSEnterCharacter) {
 				modflag |= NSNumericPadKeyMask;
+				keystr = @"\015";  // Enter key -> 0x0d
+			}
 			// Check if we are in keypad mode
 			if (modflag & NSNumericPadKeyMask) {
 				data = [TERMINAL keypadData: unicode keystr: keystr];

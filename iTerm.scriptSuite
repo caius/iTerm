@@ -71,7 +71,7 @@
 				<key>selectedTextColor</key>
 				<dict>
 					<key>AppleEventCode</key>
-					<string>Stcol</string>
+					<string>Stco</string>
 					<key>Type</key>
 					<string>NSColor</string>
 				</dict>

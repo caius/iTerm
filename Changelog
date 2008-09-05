@@ -1,3 +1,9 @@
+2008-09-04	fabian
+
+	* Removed the close button of the About window (#1916989).
+	* Fixed a script error (#1883879).
+	* Fixed resizing background image problem (#1871380).
+	
 2008-09-03	fabian
 
 	* Fixed a bug that causes iTerm to crash when executing scripts.

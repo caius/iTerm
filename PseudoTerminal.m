@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.405 2008-09-04 08:24:48 delx Exp $
+// $Id: PseudoTerminal.m,v 1.406 2008-09-05 05:59:45 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1130,6 +1130,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			[[aSession SCROLLVIEW] setLineScroll: [[aSession TEXTVIEW] lineHeight]];
 			[[aSession SCROLLVIEW] setPageScroll: 2*[[aSession TEXTVIEW] lineHeight]];
 			[[aSession SCROLLVIEW] setHasVerticalScroller:hasScrollbar];
+			if ([aSession backgroundImagePath]) [aSession setBackgroundImagePath:[aSession backgroundImagePath]]; 
 		}
 		
 		if (!_fullScreen) {

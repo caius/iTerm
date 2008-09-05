@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.406 2008-09-05 05:59:45 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.407 2008-09-05 06:13:16 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2380,7 +2380,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // closes a tab
 - (void) closeTabContextualMenuAction: (id) sender
 {
-    [self closeCurrentSession: [[sender representedObject] identifier]];
+    [self closeSession: [[sender representedObject] identifier]];
 }
 
 - (void) closeTabWithIdentifier: (id) identifier

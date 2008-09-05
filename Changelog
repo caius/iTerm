@@ -3,6 +3,7 @@
 	* Removed the close button of the About window (#1916989).
 	* Fixed a script error (#1883879).
 	* Fixed resizing background image problem (#1871380).
+	* Fixed a bug that closes the wrong tab when using contextual menu. (#1916982)
 	
 2008-09-03	fabian
 

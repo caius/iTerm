@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.284 2008-08-20 17:10:47 delx Exp $
+// $Id: VT100Screen.m,v 1.285 2008-09-05 14:07:13 delx Exp $
 //
 /*
  **  VT100Screen.m
@@ -242,6 +242,8 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[VT100Screen initScreenWithWidth:%d Height:%d]", __FILE__, __LINE__, width, height );
 #endif
+
+	NSParameterAssert(width > 0 && height > 0);
 	
 	WIDTH=width;
 	HEIGHT=height;

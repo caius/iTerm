@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.311 2008-09-02 13:01:44 delx Exp $
+// $Id: PTYTextView.m,v 1.312 2008-09-06 02:07:34 delx Exp $
 /*
  **  PTYTextView.m
  **
@@ -777,7 +777,8 @@ static int cacheSize;
     }
     
 	// set the background color, used for drawing background and margins
-	aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
+///	aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
+	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
 	aColor = [aColor colorWithAlphaComponent: trans];
 	[aColor set];
 

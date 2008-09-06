@@ -243,7 +243,20 @@ static NSImage *warningImage;
 
     if ([env objectForKey:COLORFGBG_ENVNAME] == nil && COLORFGBG_VALUE != nil)
         [env setObject:COLORFGBG_VALUE forKey:COLORFGBG_ENVNAME];
-	
+
+    NSString* locale = [[NSLocale currentLocale] localeIdentifier];
+    CFStringEncoding _encoding = CFStringConvertNSStringEncodingToEncoding([self encoding]);
+    NSString* encoding = (NSString*)CFStringConvertEncodingToIANACharSetName(_encoding);
+    if(encoding != nil)
+        locale = [locale stringByAppendingFormat:@".%@", encoding];
+    [env setObject:locale forKey:@"LANG"];
+    [env setObject:locale forKey:@"LC_COLLATE"];
+    [env setObject:locale forKey:@"LC_CTYPE"];
+    [env setObject:locale forKey:@"LC_MESSAGES"];
+    [env setObject:locale forKey:@"LC_MONETARY"];
+    [env setObject:locale forKey:@"LC_NUMERIC"];
+    [env setObject:locale forKey:@"LC_TIME"];
+
     if ([env objectForKey:PWD_ENVNAME] == nil)
         [env setObject:[PWD_ENVVALUE stringByExpandingTildeInPath] forKey:PWD_ENVNAME];
 	

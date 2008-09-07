@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.285 2008-09-05 14:07:13 delx Exp $
+// $Id: VT100Screen.m,v 1.286 2008-09-07 07:37:04 ujwal Exp $
 //
 /*
  **  VT100Screen.m
@@ -1960,11 +1960,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	if (SHOWBELL)
 	{
 		[SESSION setBell: YES];
-	}
-	if (GROWL) {
-		[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Bell",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-		withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just rang a bell!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[SESSION name],[SESSION realObjectCount]] 
-		andNotification:@"Bells"];
 	}
 }
 

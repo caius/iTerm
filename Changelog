@@ -1,3 +1,8 @@
+2008-09-06	ujwal
+	
+	* Moved Growl notification of session bell from VT100Screen to VT100Session.
+	* Disabled session bell Growl notification when key repeat is detected.
+	
 2008-09-04	fabian
 
 	* Removed the close button of the About window (#1916989).

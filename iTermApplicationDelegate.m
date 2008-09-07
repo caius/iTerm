@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.60 2008-09-02 14:21:28 delx Exp $
+// $Id: iTermApplicationDelegate.m,v 1.61 2008-09-07 22:12:12 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -137,8 +137,20 @@ static BOOL usingAutoLaunchScript = NO;
 	//NSLog(@"%s: %@", __PRETTY_FUNCTION__, filename);
 		
 	if (filename) {
-		NSString *aString = [NSString stringWithFormat:@"\"%@\"", filename];
-		[[iTermController sharedInstance] launchBookmark:nil inTerminal:nil withCommand:aString];
+		// Verify whether filename is a script or a folder
+		BOOL isDir;
+		[[NSFileManager defaultManager] fileExistsAtPath:filename isDirectory:&isDir];
+		if (!isDir) {
+			NSString *aString = [NSString stringWithFormat:@"\"%@\"", filename];
+			[[iTermController sharedInstance] launchBookmark:nil inTerminal:nil withCommand:aString];
+		}
+		else {
+			NSString *aString = [NSString stringWithFormat:@"cd \"%@\"\n", filename];
+			[[iTermController sharedInstance] launchBookmark:nil inTerminal:nil];
+			// Sleeping a while waiting for the login.
+			sleep(1);
+			[[[[iTermController sharedInstance] currentTerminal] currentSession] insertText:aString];
+		}
 	}
 	return (YES);
 }

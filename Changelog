@@ -1,6 +1,7 @@
 2008-09-07	fabian
 
-	* Incorprated the "blur" patch provided by Dean Scarff.
+	* Incorporated the "blur" patch provided by Dean Scarff.
+	* Incorporated the "drop folder" patch provided by Rafael Gaspar (#1789464).
 	
 2008-09-06	ujwal
 	

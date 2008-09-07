@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.312 2008-09-06 02:07:34 delx Exp $
+// $Id: PTYTextView.m,v 1.313 2008-09-07 22:15:44 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2968,7 +2968,7 @@ static int cacheSize;
 - (NSString *) _getURLForX: (int) x 
 					y: (int) y 
 {
-	static char *urlSet = ".?/:;%=&_-,+~#@";
+	static char *urlSet = ".?/:;%=&_-,+~#@!*'()";
 	int x1=x, x2=x, y1=y, y2=y;
 	int startx=-1, starty=-1, endx, endy;
 	int w = [dataSource width];

@@ -134,6 +134,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 		[self setWindowColumns: 80 forProfile: defaultName];
 		[self setWindowRows: 24 forProfile: defaultName];
 		[self setWindowAntiAlias: YES forProfile: defaultName];
+		[self setWindowBlur: NO forProfile: defaultName];
 		[self setWindowHorizontalCharSpacing: 1.0 forProfile: defaultName];
 		[self setWindowVerticalCharSpacing: 1.0 forProfile: defaultName];
 						
@@ -581,6 +582,16 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 - (void) setWindowAntiAlias: (BOOL) antiAlias forProfile: (NSString *) profileName
 {
 	[self _setIntValue: antiAlias forKey: @"Anti Alias" inProfile: profileName];
+}
+
+- (BOOL) windowBlurForProfile: (NSString *) profileName
+{
+	return ([self _intValueForKey: @"Blur" inProfile: profileName]);
+}
+
+- (void) setWindowBlur: (BOOL) blur forProfile: (NSString *) profileName
+{
+	[self _setIntValue: blur forKey: @"Blur" inProfile: profileName];
 }
 
 - (BOOL) disableBoldForProfile: (NSString *) profileName

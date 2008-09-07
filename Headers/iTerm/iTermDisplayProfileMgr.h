@@ -99,6 +99,8 @@
 - (void) setWindowVerticalCharSpacing: (float) spacing forProfile: (NSString *) profileName;
 - (BOOL) windowAntiAliasForProfile: (NSString *) profileName;
 - (void) setWindowAntiAlias: (BOOL) antiAlias forProfile: (NSString *) profileName;
+- (BOOL) windowBlurForProfile: (NSString *) profileName;
+- (void) setWindowBlur: (BOOL) blur forProfile: (NSString *) profileName;
 
 @end
 

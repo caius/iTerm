@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.h,v 1.5 2006-03-26 19:50:48 ujwal Exp $ */
+/* $Id: PTYWindow.h,v 1.6 2008-09-07 21:54:44 yfabian Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.h
@@ -40,6 +40,8 @@
 @interface PTYWindow : NSWindow 
 {
 	IBOutlet NSDrawer *drawer;
+
+	int blurFilter;
 }
 
 - initWithContentRect:(NSRect)contentRect 
@@ -51,4 +53,7 @@
 
 - (NSDrawer *) drawer;
 - (void) setDrawer: (NSDrawer *) aDrawer;
+
+- (void)enableBlur;
+- (void)disableBlur;
 @end

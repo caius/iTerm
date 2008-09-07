@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.407 2008-09-05 06:13:16 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.408 2008-09-07 21:54:41 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -402,6 +402,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             displayProfile = [displayProfileMgr defaultProfileName];
         
 		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
+		[self setBlur: [displayProfileMgr windowBlurForProfile: displayProfile]];
 		[self setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
 			   nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
 		[self setCharacterSpacingHorizontal: [displayProfileMgr windowHorizontalCharSpacingForProfile: displayProfile] 
@@ -516,6 +517,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if (aPseudoTerminal) {
         
 		[self setAntiAlias: [aPseudoTerminal antiAlias]];
+		[self setBlur: [aPseudoTerminal blur]];
 		[self setFont: [aPseudoTerminal font] 
 			   nafont: [aPseudoTerminal nafont]];
 		oldFont = [FONT retain];
@@ -645,6 +647,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		WIDTH = [displayProfileMgr windowColumnsForProfile: displayProfile];
 		HEIGHT = [displayProfileMgr windowRowsForProfile: displayProfile];
 		[self setAntiAlias: [displayProfileMgr windowAntiAliasForProfile: displayProfile]];
+		[self setBlur: [displayProfileMgr windowBlurForProfile: displayProfile]];
     }
     if ([aSession initScreen: [TABVIEW contentRect] width:WIDTH height:HEIGHT]) {
         if(FONT == nil) 
@@ -1302,6 +1305,34 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 }
 
+- (BOOL) blur
+{
+	return (blur);
+}
+
+- (void) setBlur: (BOOL) flag
+{
+	blur = flag;
+	if (blur)
+		[self enableBlur];
+	else
+		[self disableBlur];
+}
+
+- (void) enableBlur
+{
+	id window = [self window];
+	if (!_fullScreen && nil != window && [window respondsToSelector:@selector(enableBlur)])
+		[window enableBlur];
+}
+
+- (void) disableBlur
+{
+	id window = [self window];
+	if (!_fullScreen && nil != window && [window respondsToSelector:@selector(disableBlur)])
+		[window disableBlur];
+}
+
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
 {
 	int i;
@@ -1489,6 +1520,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowDidDeminiaturize:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
+	[self enableBlur];
 }
 
 - (BOOL)windowShouldClose:(NSNotification *)aNotification
@@ -1527,10 +1559,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     }
 	EXIT = YES;
 	
+	[self disableBlur];	
 	if (_fullScreen) [NSMenu setMenuBarVisible: YES];
 
     [[iTermController sharedInstance] terminalWillClose: self];
 	
+}
+
+- (void)windowWillMiniaturize:(NSNotification *)aNotification
+{
+	[self disableBlur];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification

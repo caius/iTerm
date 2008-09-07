@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.55 2007-02-13 05:50:58 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.56 2008-09-07 21:54:44 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -59,6 +59,7 @@
     NSFont *FONT, *NAFONT;
 	BOOL antiAlias;
 	BOOL useTransparency;
+	BOOL blur;
 	
 	BOOL _fullScreen;
     
@@ -133,6 +134,10 @@
 - (float) oldCharSpacingHorizontal;
 - (BOOL) useTransparency;
 - (void) setUseTransparency: (BOOL) flag;
+- (BOOL) blur;
+- (void) setBlur: (BOOL) flag;
+- (void) enableBlur;
+- (void) disableBlur;
 
 // controls which sessions see key events
 - (BOOL) sendInputToAllSessions;
@@ -160,6 +165,7 @@
 - (void)windowDidDeminiaturize:(NSNotification *)aNotification;
 - (BOOL)windowShouldClose:(NSNotification *)aNotification;
 - (void)windowWillClose:(NSNotification *)aNotification;
+- (void)windowWillMiniaturize:(NSNotification *)aNotification;
 - (void)windowDidBecomeKey:(NSNotification *)aNotification;
 - (void)windowDidResignMain:(NSNotification *)aNotification;
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize;

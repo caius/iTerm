@@ -184,6 +184,11 @@ static BOOL onScreen = NO;
     }
 }
 
+- (IBAction) setBlur: (id) sender
+{
+	[_pseudoTerminal setBlur: ([CONFIG_BLUR state] == NSOnState)];
+}
+
 - (IBAction) setBold: (id) sender
 {
 	[[_pseudoTerminal currentSession] setDisableBold: ([boldButton state] == NSOffState)];
@@ -455,6 +460,7 @@ static BOOL onScreen = NO;
     [AI_CODE setIntValue:[currentSession antiCode]];
     
     [CONFIG_ANTIALIAS setState: [[currentSession TEXTVIEW] antiAlias]];
+	[blurButton setState: [_pseudoTerminal blur]];
 	
 	[boldButton setState: ![currentSession disableBold]];
     [CONFIG_BOLD setEnabled:[boldButton state]];

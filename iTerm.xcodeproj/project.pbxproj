@@ -126,6 +126,22 @@
 		F62D15F40AA64B2F0075A287 /* PSMTabDragWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = F62D15F00AA64B2F0075A287 /* PSMTabDragWindow.h */; };
 		F62D15F50AA64B2F0075A287 /* PSMTabDragWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F62D15F10AA64B2F0075A287 /* PSMTabDragWindow.m */; };
 		F638C2620AD483BF00BEE23D /* iTerm.strings in Resources */ = {isa = PBXBuildFile; fileRef = FB151F2903648AC401F955DB /* iTerm.strings */; };
+		F6441F720E748404000EC682 /* CarbonHelpers.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F620E748404000EC682 /* CarbonHelpers.h */; };
+		F6441F730E748404000EC682 /* CGSAccessibility.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F630E748404000EC682 /* CGSAccessibility.h */; };
+		F6441F740E748404000EC682 /* CGSCIFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F640E748404000EC682 /* CGSCIFilter.h */; };
+		F6441F750E748404000EC682 /* CGSConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F650E748404000EC682 /* CGSConnection.h */; };
+		F6441F760E748404000EC682 /* CGSCursor.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F660E748404000EC682 /* CGSCursor.h */; };
+		F6441F770E748404000EC682 /* CGSDebug.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F670E748404000EC682 /* CGSDebug.h */; };
+		F6441F780E748404000EC682 /* CGSDisplays.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F680E748404000EC682 /* CGSDisplays.h */; };
+		F6441F790E748404000EC682 /* CGSHotKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F690E748404000EC682 /* CGSHotKeys.h */; };
+		F6441F7A0E748404000EC682 /* CGSInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F6A0E748404000EC682 /* CGSInternal.h */; };
+		F6441F7B0E748404000EC682 /* CGSMisc.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F6B0E748404000EC682 /* CGSMisc.h */; };
+		F6441F7C0E748404000EC682 /* CGSNotifications.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F6C0E748404000EC682 /* CGSNotifications.h */; };
+		F6441F7D0E748404000EC682 /* CGSRegion.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F6D0E748404000EC682 /* CGSRegion.h */; };
+		F6441F7E0E748404000EC682 /* CGSSession.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F6E0E748404000EC682 /* CGSSession.h */; };
+		F6441F7F0E748404000EC682 /* CGSTransitions.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F6F0E748404000EC682 /* CGSTransitions.h */; };
+		F6441F800E748404000EC682 /* CGSWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F700E748404000EC682 /* CGSWindow.h */; };
+		F6441F810E748404000EC682 /* CGSWorkspace.h in Headers */ = {isa = PBXBuildFile; fileRef = F6441F710E748404000EC682 /* CGSWorkspace.h */; };
 		F658C86E06054425000A13D5 /* iTermTerminalProfileMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = F658C86C06054425000A13D5 /* iTermTerminalProfileMgr.m */; };
 		F658CAFB060587A0000A13D5 /* iTermTerminalProfileMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = F658CAFA060587A0000A13D5 /* iTermTerminalProfileMgr.h */; };
 		F67332410AED82E5003D786E /* iTermOutlineView.h in Headers */ = {isa = PBXBuildFile; fileRef = F673323F0AED82E5003D786E /* iTermOutlineView.h */; };
@@ -324,6 +340,22 @@
 		F63C165A0613A7B200C79EBB /* funnyfont.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = funnyfont.jpg; path = website/funnyfont.jpg; sourceTree = "<group>"; };
 		F63C165B0613A7B200C79EBB /* keymap-m.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "keymap-m.jpg"; path = "website/keymap-m.jpg"; sourceTree = "<group>"; };
 		F63C165C0613A7B200C79EBB /* keymap.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = keymap.jpg; path = website/keymap.jpg; sourceTree = "<group>"; };
+		F6441F620E748404000EC682 /* CarbonHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CarbonHelpers.h; sourceTree = "<group>"; };
+		F6441F630E748404000EC682 /* CGSAccessibility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSAccessibility.h; sourceTree = "<group>"; };
+		F6441F640E748404000EC682 /* CGSCIFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSCIFilter.h; sourceTree = "<group>"; };
+		F6441F650E748404000EC682 /* CGSConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSConnection.h; sourceTree = "<group>"; };
+		F6441F660E748404000EC682 /* CGSCursor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSCursor.h; sourceTree = "<group>"; };
+		F6441F670E748404000EC682 /* CGSDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSDebug.h; sourceTree = "<group>"; };
+		F6441F680E748404000EC682 /* CGSDisplays.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSDisplays.h; sourceTree = "<group>"; };
+		F6441F690E748404000EC682 /* CGSHotKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSHotKeys.h; sourceTree = "<group>"; };
+		F6441F6A0E748404000EC682 /* CGSInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSInternal.h; sourceTree = "<group>"; };
+		F6441F6B0E748404000EC682 /* CGSMisc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSMisc.h; sourceTree = "<group>"; };
+		F6441F6C0E748404000EC682 /* CGSNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSNotifications.h; sourceTree = "<group>"; };
+		F6441F6D0E748404000EC682 /* CGSRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSRegion.h; sourceTree = "<group>"; };
+		F6441F6E0E748404000EC682 /* CGSSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSSession.h; sourceTree = "<group>"; };
+		F6441F6F0E748404000EC682 /* CGSTransitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSTransitions.h; sourceTree = "<group>"; };
+		F6441F700E748404000EC682 /* CGSWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSWindow.h; sourceTree = "<group>"; };
+		F6441F710E748404000EC682 /* CGSWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGSWorkspace.h; sourceTree = "<group>"; };
 		F645F2B00557B868005F354A /* iTerm-sinomac.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "iTerm-sinomac.png"; path = "website/iTerm-sinomac.png"; sourceTree = "<group>"; };
 		F64B59D405ED49B600FE8ACB /* sidebar.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sidebar.html; path = website/sidebar.html; sourceTree = "<group>"; };
 		F64B59FA05ED4AA800FE8ACB /* header.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = header.html; path = website/header.html; sourceTree = "<group>"; };
@@ -457,6 +489,7 @@
 				0464AB1F006CD2EC7F000001 /* Other Sources */,
 				F69E77040AB78B89001EC0FF /* Growl */,
 				DD02571D09CB9363008F320C /* PSMTabBarControl */,
+				F6441F610E748404000EC682 /* CGSInternal */,
 				0464AB22006CD2EC7F000001 /* Interfaces */,
 				0464AB27006CD2EC7F000001 /* Supporting Files */,
 				0464AB2E006CD2EC7F000001 /* External Frameworks and Libraries */,
@@ -679,6 +712,29 @@
 			path = PSMTabBarControl/images;
 			sourceTree = "<group>";
 		};
+		F6441F610E748404000EC682 /* CGSInternal */ = {
+			isa = PBXGroup;
+			children = (
+				F6441F620E748404000EC682 /* CarbonHelpers.h */,
+				F6441F630E748404000EC682 /* CGSAccessibility.h */,
+				F6441F640E748404000EC682 /* CGSCIFilter.h */,
+				F6441F650E748404000EC682 /* CGSConnection.h */,
+				F6441F660E748404000EC682 /* CGSCursor.h */,
+				F6441F670E748404000EC682 /* CGSDebug.h */,
+				F6441F680E748404000EC682 /* CGSDisplays.h */,
+				F6441F690E748404000EC682 /* CGSHotKeys.h */,
+				F6441F6A0E748404000EC682 /* CGSInternal.h */,
+				F6441F6B0E748404000EC682 /* CGSMisc.h */,
+				F6441F6C0E748404000EC682 /* CGSNotifications.h */,
+				F6441F6D0E748404000EC682 /* CGSRegion.h */,
+				F6441F6E0E748404000EC682 /* CGSSession.h */,
+				F6441F6F0E748404000EC682 /* CGSTransitions.h */,
+				F6441F700E748404000EC682 /* CGSWindow.h */,
+				F6441F710E748404000EC682 /* CGSWorkspace.h */,
+			);
+			path = CGSInternal;
+			sourceTree = "<group>";
+		};
 		F69E77040AB78B89001EC0FF /* Growl */ = {
 			isa = PBXGroup;
 			children = (
@@ -826,6 +882,22 @@
 				F69E78920AB7AC85001EC0FF /* iTermGrowlDelegate.h in Headers */,
 				F6B077100ADDB7D400F4BB37 /* iTermBookmarkController.h in Headers */,
 				F67332410AED82E5003D786E /* iTermOutlineView.h in Headers */,
+				F6441F720E748404000EC682 /* CarbonHelpers.h in Headers */,
+				F6441F730E748404000EC682 /* CGSAccessibility.h in Headers */,
+				F6441F740E748404000EC682 /* CGSCIFilter.h in Headers */,
+				F6441F750E748404000EC682 /* CGSConnection.h in Headers */,
+				F6441F760E748404000EC682 /* CGSCursor.h in Headers */,
+				F6441F770E748404000EC682 /* CGSDebug.h in Headers */,
+				F6441F780E748404000EC682 /* CGSDisplays.h in Headers */,
+				F6441F790E748404000EC682 /* CGSHotKeys.h in Headers */,
+				F6441F7A0E748404000EC682 /* CGSInternal.h in Headers */,
+				F6441F7B0E748404000EC682 /* CGSMisc.h in Headers */,
+				F6441F7C0E748404000EC682 /* CGSNotifications.h in Headers */,
+				F6441F7D0E748404000EC682 /* CGSRegion.h in Headers */,
+				F6441F7E0E748404000EC682 /* CGSSession.h in Headers */,
+				F6441F7F0E748404000EC682 /* CGSTransitions.h in Headers */,
+				F6441F800E748404000EC682 /* CGSWindow.h in Headers */,
+				F6441F810E748404000EC682 /* CGSWorkspace.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

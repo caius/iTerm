@@ -733,6 +733,9 @@ static BOOL addingKBEntry;
 	
 	// anti-alias
 	[displayAntiAlias setState: [[iTermDisplayProfileMgr singleInstance] windowAntiAliasForProfile: theProfile]];
+
+	// blur
+	[displayBlur setState: [[iTermDisplayProfileMgr singleInstance] windowBlurForProfile: theProfile]];
 	
 	// window size
 	[displayColTextField setStringValue: [NSString stringWithFormat: @"%d",
@@ -760,6 +763,15 @@ static BOOL addingKBEntry;
 	{
 		[[iTermDisplayProfileMgr singleInstance] setWindowAntiAlias: [sender state] 
 												   forProfile: selectedProfile];
+	}
+}
+
+- (IBAction) displaySetBlur: (id) sender
+{
+	if(sender == displayBlur)
+	{
+		[[iTermDisplayProfileMgr singleInstance] setWindowBlur: [sender state]
+													forProfile: selectedProfile];
 	}
 }
 

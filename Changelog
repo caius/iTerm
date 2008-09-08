@@ -1,3 +1,7 @@
+2008-09-07	ujwal
+
+	* Fixed state of transparency button in configuration window.  State of menu item "Use Transparency" is still confusing.
+
 2008-09-07	fabian
 
 	* Incorporated the "blur" patch provided by Dean Scarff.

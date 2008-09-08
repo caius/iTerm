@@ -1,117 +1,249 @@
-{
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            ACTIONS = {
-                closeWindow = id; 
-                displayBackgroundImage = id; 
-                displayChangeColor = id; 
-                displaySelectFont = id; 
-                displaySelectNAFont = id; 
-                displaySetAntiAlias = id; 
-                displaySetDisableBold = id; 
-                displaySetFontSpacing = id; 
-                kbEntryAdd = id; 
-                kbEntryAddCancel = id; 
-                kbEntryAddConfirm = id; 
-                kbEntryDelete = id; 
-                kbEntryEdit = id; 
-                kbEntrySelectorChanged = id; 
-                kbOptionKeyChanged = id; 
-                profileAdd = id; 
-                profileAddCancel = id; 
-                profileAddConfirm = id; 
-                profileDelete = id; 
-                profileDuplicate = id; 
-                terminalSetAppendTitle = id; 
-                terminalSetBlink = id; 
-                terminalSetCloseOnSessionEnd = id; 
-                terminalSetDoubleWidth = id; 
-                terminalSetEnableGrowl = id; 
-                terminalSetEncoding = id; 
-                terminalSetNoResizing = id; 
-                terminalSetSendIdleChar = id; 
-                terminalSetShowBell = id; 
-                terminalSetSilenceBell = id; 
-                terminalSetType = id; 
-                terminalSetXtermMouseReporting = id; 
-            }; 
-            CLASS = iTermProfileWindowController; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                addKBEntry = NSPanel; 
-                addProfile = NSPanel; 
-                addProfileCategory = NSButton; 
-                deleteButton = id; 
-                displayAnsi0Color = NSColorWell; 
-                displayAnsi10Color = NSColorWell; 
-                displayAnsi11Color = NSColorWell; 
-                displayAnsi12Color = NSColorWell; 
-                displayAnsi13Color = NSColorWell; 
-                displayAnsi14Color = NSColorWell; 
-                displayAnsi15Color = NSColorWell; 
-                displayAnsi1Color = NSColorWell; 
-                displayAnsi2Color = NSColorWell; 
-                displayAnsi3Color = NSColorWell; 
-                displayAnsi4Color = NSColorWell; 
-                displayAnsi5Color = NSColorWell; 
-                displayAnsi6Color = NSColorWell; 
-                displayAnsi7Color = NSColorWell; 
-                displayAnsi8Color = NSColorWell; 
-                displayAnsi9Color = NSColorWell; 
-                displayAntiAlias = NSButton; 
-                displayBGColor = NSColorWell; 
-                displayBackgroundImage = NSImageView; 
-                displayBoldColor = NSColorWell; 
-                displayColTextField = NSTextField; 
-                displayCursorColor = NSColorWell; 
-                displayCursorTextColor = NSColorWell; 
-                displayDisableBold = NSButton; 
-                displayFGColor = NSColorWell; 
-                displayFontAccessoryView = NSView; 
-                displayFontSpacingHeight = NSSlider; 
-                displayFontSpacingWidth = NSSlider; 
-                displayFontTextField = NSTextField; 
-                displayNAFontTextField = NSTextField; 
-                displayRowTextField = NSTextField; 
-                displaySelectedTextColor = NSColorWell; 
-                displaySelectionColor = NSColorWell; 
-                displayTransparency = NSTextField; 
-                displayUseBackgroundImage = NSButton; 
-                duplicateButton = id; 
-                kbEntryAction = NSPopUpButton; 
-                kbEntryDeleteButton = NSButton; 
-                kbEntryHighPriority = id; 
-                kbEntryHint = id; 
-                kbEntryKey = NSPopUpButton; 
-                kbEntryKeyCode = NSTextField; 
-                kbEntryKeyModifierCommand = NSButton; 
-                kbEntryKeyModifierControl = NSButton; 
-                kbEntryKeyModifierOption = NSButton; 
-                kbEntryKeyModifierShift = NSButton; 
-                kbEntryTableView = NSTableView; 
-                kbEntryText = NSTextField; 
-                kbOptionKey = NSMatrix; 
-                profileName = NSTextField; 
-                profileOutline = id; 
-                profileTabView = NSTabView; 
-                terminalAppendTitle = NSButton; 
-                terminalBlink = NSButton; 
-                terminalCloseOnSessionEnd = NSButton; 
-                terminalDoubleWidth = NSButton; 
-                terminalEnableGrowl = id; 
-                terminalEncoding = NSPopUpButton; 
-                terminalIdleChar = NSTextField; 
-                terminalNoResizing = id; 
-                terminalScrollback = NSTextField; 
-                terminalSendIdleChar = NSButton; 
-                terminalShowBell = NSButton; 
-                terminalSilenceBell = NSButton; 
-                terminalType = NSComboBox; 
-                xtermMouseReporting = NSButton; 
-            }; 
-            SUPERCLASS = NSWindowController; 
-        }
-    ); 
-    IBVersion = 1; 
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>closeWindow</key>
+				<string>id</string>
+				<key>displayBackgroundImage</key>
+				<string>id</string>
+				<key>displayChangeColor</key>
+				<string>id</string>
+				<key>displaySelectFont</key>
+				<string>id</string>
+				<key>displaySelectNAFont</key>
+				<string>id</string>
+				<key>displaySetAntiAlias</key>
+				<string>id</string>
+				<key>displaySetBlur</key>
+				<string>id</string>
+				<key>displaySetDisableBold</key>
+				<string>id</string>
+				<key>displaySetFontSpacing</key>
+				<string>id</string>
+				<key>kbEntryAdd</key>
+				<string>id</string>
+				<key>kbEntryAddCancel</key>
+				<string>id</string>
+				<key>kbEntryAddConfirm</key>
+				<string>id</string>
+				<key>kbEntryDelete</key>
+				<string>id</string>
+				<key>kbEntryEdit</key>
+				<string>id</string>
+				<key>kbEntrySelectorChanged</key>
+				<string>id</string>
+				<key>kbOptionKeyChanged</key>
+				<string>id</string>
+				<key>profileAdd</key>
+				<string>id</string>
+				<key>profileAddCancel</key>
+				<string>id</string>
+				<key>profileAddConfirm</key>
+				<string>id</string>
+				<key>profileDelete</key>
+				<string>id</string>
+				<key>profileDuplicate</key>
+				<string>id</string>
+				<key>showProfilesWindow</key>
+				<string>id</string>
+				<key>terminalSetAppendTitle</key>
+				<string>id</string>
+				<key>terminalSetBlink</key>
+				<string>id</string>
+				<key>terminalSetCloseOnSessionEnd</key>
+				<string>id</string>
+				<key>terminalSetDoubleWidth</key>
+				<string>id</string>
+				<key>terminalSetEnableGrowl</key>
+				<string>id</string>
+				<key>terminalSetEncoding</key>
+				<string>id</string>
+				<key>terminalSetNoResizing</key>
+				<string>id</string>
+				<key>terminalSetSendIdleChar</key>
+				<string>id</string>
+				<key>terminalSetShowBell</key>
+				<string>id</string>
+				<key>terminalSetSilenceBell</key>
+				<string>id</string>
+				<key>terminalSetType</key>
+				<string>id</string>
+				<key>terminalSetXtermMouseReporting</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>iTermProfileWindowController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>addKBEntry</key>
+				<string>NSPanel</string>
+				<key>addProfile</key>
+				<string>NSPanel</string>
+				<key>addProfileCategory</key>
+				<string>NSPopUpButton</string>
+				<key>deleteButton</key>
+				<string>NSButton</string>
+				<key>displayAnsi0Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi10Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi11Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi12Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi13Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi14Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi15Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi1Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi2Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi3Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi4Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi5Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi6Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi7Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi8Color</key>
+				<string>NSColorWell</string>
+				<key>displayAnsi9Color</key>
+				<string>NSColorWell</string>
+				<key>displayAntiAlias</key>
+				<string>NSButton</string>
+				<key>displayBGColor</key>
+				<string>NSColorWell</string>
+				<key>displayBackgroundImage</key>
+				<string>NSImageView</string>
+				<key>displayBlur</key>
+				<string>NSButton</string>
+				<key>displayBoldColor</key>
+				<string>NSColorWell</string>
+				<key>displayColTextField</key>
+				<string>NSTextField</string>
+				<key>displayCursorColor</key>
+				<string>NSColorWell</string>
+				<key>displayCursorTextColor</key>
+				<string>NSColorWell</string>
+				<key>displayDisableBold</key>
+				<string>NSButton</string>
+				<key>displayFGColor</key>
+				<string>NSColorWell</string>
+				<key>displayFontAccessoryView</key>
+				<string>NSView</string>
+				<key>displayFontSpacingHeight</key>
+				<string>NSSlider</string>
+				<key>displayFontSpacingWidth</key>
+				<string>NSSlider</string>
+				<key>displayFontTextField</key>
+				<string>NSTextField</string>
+				<key>displayNAFontTextField</key>
+				<string>NSTextField</string>
+				<key>displayRowTextField</key>
+				<string>NSTextField</string>
+				<key>displaySelectedTextColor</key>
+				<string>NSColorWell</string>
+				<key>displaySelectionColor</key>
+				<string>NSColorWell</string>
+				<key>displayTransparency</key>
+				<string>NSTextField</string>
+				<key>displayUseBackgroundImage</key>
+				<string>NSButton</string>
+				<key>duplicateButton</key>
+				<string>NSButton</string>
+				<key>kbEntryAction</key>
+				<string>NSPopUpButton</string>
+				<key>kbEntryDeleteButton</key>
+				<string>NSButton</string>
+				<key>kbEntryHighPriority</key>
+				<string>NSButton</string>
+				<key>kbEntryHint</key>
+				<string>NSTextField</string>
+				<key>kbEntryKey</key>
+				<string>NSPopUpButton</string>
+				<key>kbEntryKeyCode</key>
+				<string>NSTextField</string>
+				<key>kbEntryKeyModifierCommand</key>
+				<string>NSButton</string>
+				<key>kbEntryKeyModifierControl</key>
+				<string>NSButton</string>
+				<key>kbEntryKeyModifierOption</key>
+				<string>NSButton</string>
+				<key>kbEntryKeyModifierShift</key>
+				<string>NSButton</string>
+				<key>kbEntryTableView</key>
+				<string>NSTableView</string>
+				<key>kbEntryText</key>
+				<string>NSTextField</string>
+				<key>kbOptionKey</key>
+				<string>NSMatrix</string>
+				<key>profileName</key>
+				<string>NSTextField</string>
+				<key>profileOutline</key>
+				<string>NSOutlineView</string>
+				<key>profileTabView</key>
+				<string>NSTabView</string>
+				<key>terminalAppendTitle</key>
+				<string>NSButton</string>
+				<key>terminalBlink</key>
+				<string>NSButton</string>
+				<key>terminalCloseOnSessionEnd</key>
+				<string>NSButton</string>
+				<key>terminalDoubleWidth</key>
+				<string>NSButton</string>
+				<key>terminalEnableGrowl</key>
+				<string>NSButton</string>
+				<key>terminalEncoding</key>
+				<string>NSPopUpButton</string>
+				<key>terminalIdleChar</key>
+				<string>NSTextField</string>
+				<key>terminalNoResizing</key>
+				<string>NSButton</string>
+				<key>terminalScrollback</key>
+				<string>NSTextField</string>
+				<key>terminalSendIdleChar</key>
+				<string>NSButton</string>
+				<key>terminalShowBell</key>
+				<string>NSButton</string>
+				<key>terminalSilenceBell</key>
+				<string>NSButton</string>
+				<key>terminalType</key>
+				<string>NSComboBox</string>
+				<key>xtermMouseReporting</key>
+				<string>NSButton</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSWindowController</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>NSObject</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

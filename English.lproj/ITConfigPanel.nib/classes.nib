@@ -1,62 +1,139 @@
-{
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {
-            ACTIONS = {
-                chooseBackgroundImage = id; 
-                setAntiIdle = id; 
-                setAntiIdleCode = id; 
-                setBackgroundColor = id; 
-                setBold = id; 
-                setBoldColor = id; 
-                setCharacterSpacing = id; 
-                setCursorColor = id; 
-                setCursorTextColor = id; 
-                setForegroundColor = id; 
-                setSelectedTextColor = id; 
-                setSelectionColor = id; 
-                setSessionEncoding = id; 
-                setSessionName = id; 
-                setTransparency = id; 
-                setWindowSize = id; 
-                toggleAntiAlias = id; 
-                toggleTransparency = id; 
-                updateProfile = id; 
-                useBackgroundImage = id; 
-                windowConfigFont = id; 
-                windowConfigNAFont = id; 
-            }; 
-            CLASS = ITConfigPanelController; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                "AI_CODE" = id; 
-                "AI_ON" = id; 
-                "CONFIG_ANTIALIAS" = id; 
-                "CONFIG_BACKGROUND" = NSColorWell; 
-                "CONFIG_BOLD" = NSColorWell; 
-                "CONFIG_COL" = id; 
-                "CONFIG_CURSOR" = NSColorWell; 
-                "CONFIG_CURSORTEXT" = NSColorWell; 
-                "CONFIG_ENCODING" = NSPopUpButton; 
-                "CONFIG_EXAMPLE" = id; 
-                "CONFIG_FOREGROUND" = NSColorWell; 
-                "CONFIG_NAEXAMPLE" = id; 
-                "CONFIG_NAME" = id; 
-                "CONFIG_ROW" = id; 
-                "CONFIG_SELECTION" = NSColorWell; 
-                "CONFIG_SELECTIONTEXT" = NSColorWell; 
-                "CONFIG_TRANS2" = id; 
-                "CONFIG_TRANSPARENCY" = id; 
-                backgroundImageView = NSImageView; 
-                boldButton = NSButton; 
-                charHorizontalSpacing = NSSlider; 
-                charVerticalSpacing = NSSlider; 
-                transparencyButton = NSButton; 
-                updateProfileButton = id; 
-                useBackgroundImage = NSButton; 
-            }; 
-            SUPERCLASS = NSWindowController; 
-        }
-    ); 
-    IBVersion = 1; 
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>NSObject</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>chooseBackgroundImage</key>
+				<string>id</string>
+				<key>setAntiIdle</key>
+				<string>id</string>
+				<key>setAntiIdleCode</key>
+				<string>id</string>
+				<key>setBackgroundColor</key>
+				<string>id</string>
+				<key>setBlur</key>
+				<string>id</string>
+				<key>setBold</key>
+				<string>id</string>
+				<key>setBoldColor</key>
+				<string>id</string>
+				<key>setCharacterSpacing</key>
+				<string>id</string>
+				<key>setCursorColor</key>
+				<string>id</string>
+				<key>setCursorTextColor</key>
+				<string>id</string>
+				<key>setForegroundColor</key>
+				<string>id</string>
+				<key>setSelectedTextColor</key>
+				<string>id</string>
+				<key>setSelectionColor</key>
+				<string>id</string>
+				<key>setSessionEncoding</key>
+				<string>id</string>
+				<key>setSessionName</key>
+				<string>id</string>
+				<key>setTransparency</key>
+				<string>id</string>
+				<key>setWindowSize</key>
+				<string>id</string>
+				<key>toggleAntiAlias</key>
+				<string>id</string>
+				<key>toggleTransparency</key>
+				<string>id</string>
+				<key>updateProfile</key>
+				<string>id</string>
+				<key>useBackgroundImage</key>
+				<string>id</string>
+				<key>windowConfigFont</key>
+				<string>id</string>
+				<key>windowConfigNAFont</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>ITConfigPanelController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>AI_CODE</key>
+				<string>id</string>
+				<key>AI_ON</key>
+				<string>id</string>
+				<key>CONFIG_ANTIALIAS</key>
+				<string>id</string>
+				<key>CONFIG_BACKGROUND</key>
+				<string>NSColorWell</string>
+				<key>CONFIG_BLUR</key>
+				<string>id</string>
+				<key>CONFIG_BOLD</key>
+				<string>NSColorWell</string>
+				<key>CONFIG_COL</key>
+				<string>id</string>
+				<key>CONFIG_CURSOR</key>
+				<string>NSColorWell</string>
+				<key>CONFIG_CURSORTEXT</key>
+				<string>NSColorWell</string>
+				<key>CONFIG_ENCODING</key>
+				<string>NSPopUpButton</string>
+				<key>CONFIG_EXAMPLE</key>
+				<string>id</string>
+				<key>CONFIG_FOREGROUND</key>
+				<string>NSColorWell</string>
+				<key>CONFIG_NAEXAMPLE</key>
+				<string>id</string>
+				<key>CONFIG_NAME</key>
+				<string>id</string>
+				<key>CONFIG_ROW</key>
+				<string>id</string>
+				<key>CONFIG_SELECTION</key>
+				<string>NSColorWell</string>
+				<key>CONFIG_SELECTIONTEXT</key>
+				<string>NSColorWell</string>
+				<key>CONFIG_TRANS2</key>
+				<string>id</string>
+				<key>CONFIG_TRANSPARENCY</key>
+				<string>id</string>
+				<key>backgroundImageView</key>
+				<string>NSImageView</string>
+				<key>blurButton</key>
+				<string>NSButton</string>
+				<key>boldButton</key>
+				<string>NSButton</string>
+				<key>charHorizontalSpacing</key>
+				<string>NSSlider</string>
+				<key>charVerticalSpacing</key>
+				<string>NSSlider</string>
+				<key>transparencyButton</key>
+				<string>NSButton</string>
+				<key>updateProfileButton</key>
+				<string>NSButton</string>
+				<key>useBackgroundImage</key>
+				<string>NSButton</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSWindowController</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

@@ -452,7 +452,7 @@ static BOOL onScreen = NO;
 	
     [CONFIG_TRANSPARENCY setFloatValue:([currentSession transparency]*100)];
     [CONFIG_TRANS2 setFloatValue:([currentSession transparency]*100)];
-    [transparencyButton setState: ([currentSession transparency] > 0)?YES:NO];
+    [transparencyButton setState: [_pseudoTerminal useTransparency]];
     [CONFIG_TRANS2 setEnabled:[transparencyButton state]];
     [CONFIG_TRANSPARENCY setEnabled:[transparencyButton state]];
     

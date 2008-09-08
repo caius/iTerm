@@ -1,7 +1,3 @@
-2008-09-07	ujwal
-
-	* Toggling menu item "Use Transparency" toggles transparency of all iterm windows, not just current window.
-
 2008-09-07	fabian
 
 	* Incorporated the "blur" patch provided by Dean Scarff.

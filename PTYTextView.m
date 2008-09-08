@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.313 2008-09-07 22:15:44 yfabian Exp $
+// $Id: PTYTextView.m,v 1.314 2008-09-08 04:47:30 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -111,9 +111,8 @@ static int cacheSize;
 	memset(charImages, 0, cacheSize*sizeof(CharCache));	
     charWidth = 12;
     oldCursorX = oldCursorY = -1;
+	[self resetCharCache];
     
-    [self setUseTransparency: YES];
-		
     return (self);
 }
 
@@ -2520,7 +2519,6 @@ static int cacheSize;
 {
 	transparency = fVal;
 	forceUpdate = YES;
-	useTransparency = fVal >=0.01;
 	[self setNeedsDisplay: YES];
 	[self resetCharCache];
 }

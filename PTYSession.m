@@ -177,6 +177,7 @@ static NSImage *warningImage;
     aSize = [SCROLLVIEW contentSize];
     TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+	[TEXTVIEW setUseTransparency: [parent useTransparency]];
 	
     // assign terminal and task objects
     [SCREEN setShellTask:SHELL];

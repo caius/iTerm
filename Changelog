@@ -3,6 +3,7 @@
 	* Incorporated the "blur" patch provided by Dean Scarff.
 	* Incorporated the "drop folder" patch provided by Rafael Gaspar (#1789464).
 	* Fixed the URL characters (#1773764)
+	* Fixed the transparency setting bug.
 	
 2008-09-06	ujwal
 	

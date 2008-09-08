@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.408 2008-09-07 21:54:41 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.409 2008-09-08 04:47:30 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2626,6 +2626,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (void) _commonInit
 {
 	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
+	[self setUseTransparency: YES];
 		
 }
 

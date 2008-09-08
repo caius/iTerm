@@ -1,6 +1,7 @@
 2008-09-07	ujwal
 
 	* Fixed state of transparency button in configuration window.  State of menu item "Use Transparency" is still confusing.
+	* Toggling menu item "Use Transparency" toggles transparency of all iterm windows, not just current window.
 
 2008-09-07	fabian
 

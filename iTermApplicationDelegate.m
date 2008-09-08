@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.61 2008-09-07 22:12:12 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.62 2008-09-08 05:45:38 ujwal Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -367,9 +367,17 @@ static BOOL usingAutoLaunchScript = NO;
 // transparency
 - (IBAction) useTransparency: (id) sender
 {
-  BOOL b = [[[iTermController sharedInstance] currentTerminal]useTransparency];
-  [[[iTermController sharedInstance] currentTerminal] setUseTransparency: !b];
-  
+	NSArray *myTerminals;
+	PseudoTerminal *thisTerminal;
+	int i;
+	
+	myTerminals = [[iTermController sharedInstance] terminals];
+	for (i = 0; i < [myTerminals count]; i++)
+	{
+		thisTerminal = [myTerminals objectAtIndex:i];
+		[thisTerminal setUseTransparency:![sender state]];
+	}
+	
   // Post a notification
   [[NSNotificationCenter defaultCenter] postNotificationName: @"iTermWindowDidResize" object: self userInfo: nil];    
 }

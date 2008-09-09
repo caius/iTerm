@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.m,v 1.9 2008-08-28 03:47:54 yfabian Exp $
+// $Id: NSStringITerm.m,v 1.10 2008-09-09 22:16:53 yfabian Exp $
 /*
  **  NSStringIterm.m
  **
@@ -301,8 +301,7 @@ static const unichar ambiguous_chars[] = {
     static BOOL isCJK = NO;
     NSNumber *key, *val;
     NSString *localeIdentifier;
-    const char *lang;
-
+    
     if (encoding == previousEncoding) {
         //NSLog(@"encoding[0x%08lx] is %s, again", encoding, isCJK ? "CJK" : "not CJK");
         return isCJK;

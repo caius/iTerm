@@ -381,7 +381,6 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 
 - (NSString *) COLORFGBGForProfile: (NSString *) profileName
 {
-	NSDictionary *aProfile;
 	if([profileName length] <= 0)
 		return (nil);
 

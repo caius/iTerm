@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.315 2008-09-09 21:37:53 yfabian Exp $
+// $Id: PTYTextView.m,v 1.316 2008-09-09 22:16:57 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -663,12 +663,12 @@ static int cacheSize;
     [self scrollRectToVisible: scrollRect];
 }
 
--(void) scrollLinesUp: (int) numberOfLines
+-(void) scrollLinesUp: (int) numberOfLinesUp
 {
     NSRect scrollRect;
     
     scrollRect= [self visibleRect];
-    scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll]*numberOfLines;
+    scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll]*numberOfLinesUp;
     if (scrollRect.origin.y<0) scrollRect.origin.y=0;
     [self scrollRectToVisible: scrollRect];
 }

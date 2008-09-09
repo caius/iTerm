@@ -1745,8 +1745,7 @@ static NSImage *warningImage;
 - (void) updateDisplay
 {
     struct timeval now;
-	int i;
-    	
+	
     gettimeofday(&now, NULL);
 
     if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {

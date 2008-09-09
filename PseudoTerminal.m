@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.410 2008-09-09 04:45:51 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.411 2008-09-09 22:16:59 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -762,19 +762,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal closeCurrentSession]",
           __FILE__, __LINE__);
 #endif
-	PTYSession *aSession = [[TABVIEW selectedTabViewItem] identifier];
-    /*
-    if (![aSession exited])
-    {
-		if ([[PreferencePanel sharedInstance] promptOnClose] &&
-			NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession realObjectCount]],
-							NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
-							NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
-							NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
-							,nil) != NSAlertDefaultReturn) return;
-    }*/
-    
-    [self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
+	[self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
 } 
 
 - (IBAction)previousSession:(id)sender

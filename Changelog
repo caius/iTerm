@@ -2,6 +2,7 @@
 
 	* UI change: mid-button to paste -> mid-button to paste from clipboard.
 	* Now "prompt on Close" only prompts when multiple sessions are open.
+	* Added code to check OS version for the blur stuff.
 
 2008-09-07	fabian
 

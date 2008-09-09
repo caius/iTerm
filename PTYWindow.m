@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.14 2008-09-07 21:54:41 yfabian Exp $ */
+/* $Id: PTYWindow.m,v 1.15 2008-09-09 04:58:50 yfabian Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -27,7 +27,6 @@
  **  along with this program; if not, write to the Free Software
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-
 
 #import <iTerm/PTYWindow.h>
 #import <iTerm/PreferencePanel.h>
@@ -74,6 +73,9 @@
 
 - (void)enableBlur
 {
+	//only works in Leopard (or hopefully later)
+	if (floor(NSAppKitVersionNumber) < 949) return;
+	
 	if (blurFilter)
 		return;
 
@@ -93,6 +95,9 @@
 
 - (void)disableBlur
 {
+	//only works in Leopard (or hopefully later)
+	if (NSAppKitVersionNumber < 949) return;
+
 	if (blurFilter) {
 		CGSConnectionID con = CGSMainConnectionID();
 		if (!con)

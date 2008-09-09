@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.131 2008-08-20 17:21:08 delx Exp $
+// $Id: VT100Terminal.m,v 1.132 2008-09-09 22:02:33 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -958,7 +958,7 @@ static VT100TCC decode_utf8(unsigned char *datap,
 	
     while (len > 0) {
         if (*p>=0x80) {
-            reqbyte = utf8_reqbyte(*datap);
+            reqbyte = utf8_reqbyte(*p);
             if (reqbyte > 0) {
                 if (len >= reqbyte) {
 					p += reqbyte;

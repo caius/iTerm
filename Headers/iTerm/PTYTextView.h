@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.66 2007-01-10 07:42:05 yfabian Exp $
+// $Id: PTYTextView.h,v 1.67 2008-09-09 21:37:54 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -255,6 +255,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) scrollHome;
 - (void) scrollEnd;
 - (void) scrollToSelection;
+- (void) scrollLinesUp: (int) numberOfLines;
+
 
     // Save method
 - (void) saveDocumentAs: (id) sender;

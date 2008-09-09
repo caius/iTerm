@@ -1771,12 +1771,12 @@ static NSImage *warningImage;
 		lastUpdate = now;
     }
 	
-    for(i=0; i<[SCREEN scrollUpLines]; i++) {
-		[TEXTVIEW scrollLineUp:nil];
-	}
-	
-	updateCount = 0;
+    [SCREEN acquireLock];
+    [TEXTVIEW scrollLinesUp:[SCREEN scrollUpLines]];
 	[SCREEN resetScrollUpLines];
+    [SCREEN releaseLock];
+
+    updateCount = 0;
 }
 
 - (int)timerMode

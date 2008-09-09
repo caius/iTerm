@@ -1,3 +1,7 @@
+2008-09-09	fabian
+
+	* Fixed a bug that crashes iTerm when one scrolls up with a lot of new text coming in.
+
 2008-09-08	fabian
 
 	* UI change: mid-button to paste -> mid-button to paste from clipboard.

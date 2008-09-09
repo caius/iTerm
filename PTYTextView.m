@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.314 2008-09-08 04:47:30 yfabian Exp $
+// $Id: PTYTextView.m,v 1.315 2008-09-09 21:37:53 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -658,7 +658,18 @@ static int cacheSize;
     
     scrollRect= [self visibleRect];
     scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll];
+    if (scrollRect.origin.y<0) scrollRect.origin.y=0;
     //NSLog(@"%f/%f",[[self enclosingScrollView] verticalLineScroll],[[self enclosingScrollView] verticalPageScroll]);
+    [self scrollRectToVisible: scrollRect];
+}
+
+-(void) scrollLinesUp: (int) numberOfLines
+{
+    NSRect scrollRect;
+    
+    scrollRect= [self visibleRect];
+    scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll]*numberOfLines;
+    if (scrollRect.origin.y<0) scrollRect.origin.y=0;
     [self scrollRectToVisible: scrollRect];
 }
 

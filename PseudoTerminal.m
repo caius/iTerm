@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.409 2008-09-08 04:47:30 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.410 2008-09-09 04:45:51 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -763,7 +763,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
           __FILE__, __LINE__);
 #endif
 	PTYSession *aSession = [[TABVIEW selectedTabViewItem] identifier];
-    
+    /*
     if (![aSession exited])
     {
 		if ([[PreferencePanel sharedInstance] promptOnClose] &&
@@ -772,7 +772,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 							NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
 							NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
 							,nil) != NSAlertDefaultReturn) return;
-    }
+    }*/
     
     [self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
 } 
@@ -1530,7 +1530,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		  __FILE__, __LINE__, aNotification);
 #endif
 	
-    if([[PreferencePanel sharedInstance] promptOnClose])
+    if([TABVIEW numberOfTabViewItems] > 1 && [[PreferencePanel sharedInstance] promptOnClose])
 		return [self showCloseWindow];
     else
 		return (YES);
@@ -2111,7 +2111,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (BOOL)tabView:(NSTabView*)tabView shouldCloseTabViewItem:(NSTabViewItem *)tabViewItem
 {
-    PTYSession *aSession = [tabViewItem identifier];
+	return YES;
+    /*PTYSession *aSession = [tabViewItem identifier];
     
     return [aSession exited] ||		
         ![[PreferencePanel sharedInstance] promptOnClose] ||
@@ -2119,7 +2120,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
                         NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
-                        ,nil) == NSAlertDefaultReturn);
+                        ,nil) == NSAlertDefaultReturn); */
     
 }
 

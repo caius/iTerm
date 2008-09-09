@@ -1,3 +1,8 @@
+2008-09-08	fabian
+
+	* UI change: mid-button to paste -> mid-button to paste from clipboard.
+	* Now "prompt on Close" only prompts when multiple sessions are open.
+
 2008-09-07	fabian
 
 	* Incorporated the "blur" patch provided by Dean Scarff.

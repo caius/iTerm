@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYScrollView.m,v 1.22 2007-01-30 00:37:53 yfabian Exp $
+// $Id: PTYScrollView.m,v 1.23 2008-09-09 22:10:05 yfabian Exp $
 /*
  **  PTYScrollView.m
  **
@@ -177,6 +177,7 @@
     NSRect scrollRect;
     PTYScroller *verticalScroller = (PTYScroller *)[self verticalScroller];
 	
+    scrollRect= [self documentVisibleRect];
     if(scrollRect.origin.y+scrollRect.size.height < [[self documentView] frame].size.height)
 		[verticalScroller setUserScroll: YES];
     else

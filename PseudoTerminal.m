@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.411 2008-09-09 22:16:59 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.412 2008-09-10 05:04:29 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2487,7 +2487,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[commandField setStringValue:@""];
 }
 
-- (void) updateCurretSessionProfiles
+- (void) updateCurrentSessionProfiles
 {
 	iTermDisplayProfileMgr *displayProfileMgr;
 	NSDictionary *aDict;
@@ -2510,6 +2510,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[displayProfileMgr setWindowNAFont: [self nafont] forProfile: displayProfile];
 	[displayProfileMgr setWindowHorizontalCharSpacing: charHorizontalSpacingMultiplier forProfile: displayProfile];
 	[displayProfileMgr setWindowVerticalCharSpacing: charVerticalSpacingMultiplier forProfile: displayProfile];
+	[displayProfileMgr setWindowBlur: [self blur] forProfile: displayProfile];
 	[displayProfileMgr setWindowAntiAlias: [[current TEXTVIEW] antiAlias] forProfile: displayProfile];
 	[displayProfileMgr setColor: [current foregroundColor] forType: TYPE_FOREGROUND_COLOR forProfile: displayProfile];
 	[displayProfileMgr setColor: [current backgroundColor] forType: TYPE_BACKGROUND_COLOR forProfile: displayProfile];

@@ -197,7 +197,7 @@ static BOOL onScreen = NO;
 
 - (IBAction) updateProfile: (id) sender
 {
-    [_pseudoTerminal updateCurretSessionProfiles];
+    [_pseudoTerminal updateCurrentSessionProfiles];
 }
 
 - (IBAction) setForegroundColor: (id) sender

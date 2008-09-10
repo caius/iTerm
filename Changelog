@@ -4,6 +4,7 @@
     * Fixed a UTF decoding problem (#1867339, by sakamoto).
     * Fixed a bug when detecting user scroll.
     * Cleaned up code for 0.9.5.0909
+	* Fixed a configure panel bug that fails to update the "blur" info.
 
 2008-09-08	fabian
 

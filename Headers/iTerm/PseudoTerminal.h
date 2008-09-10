@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.56 2008-09-07 21:54:44 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.57 2008-09-10 05:04:29 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -98,7 +98,7 @@
 - (NSString *) currentSessionName;
 - (void) setCurrentSessionName: (NSString *) theSessionName;
 
-- (void) updateCurretSessionProfiles;
+- (void) updateCurrentSessionProfiles;
 
 - (void)startProgram:(NSString *)program;
 - (void)startProgram:(NSString *)program

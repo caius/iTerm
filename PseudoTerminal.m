@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.412 2008-09-10 05:04:29 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.413 2008-09-11 06:08:52 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -240,16 +240,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (id)initWithFullScreenWindowNibName: (NSString *) windowNibName
 {
     PTYWindow *myWindow;
-	
+	NSScreen *currentScreen = [[[[iTermController sharedInstance] currentTerminal] window]screen];
     if ((self = [super initWithWindowNibName: windowNibName]) == nil)
 		return nil;
 			
-	myWindow = [[PTYWindow alloc] initWithContentRect: [[NSScreen mainScreen] frame]
+	myWindow = [[PTYWindow alloc] initWithContentRect: [currentScreen frame]
 											styleMask: NSBorderlessWindowMask 
 											  backing: NSBackingStoreBuffered 
 												defer: NO];
 	[self setWindow: myWindow];
-	[NSMenu setMenuBarVisible: NO];
+	if ([NSScreen mainScreen] == currentScreen) [NSMenu setMenuBarVisible: NO];
 	[myWindow release];
 	_fullScreen = YES;
 	[[iTermController sharedInstance] setFullScreenTerminal: self];

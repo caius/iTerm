@@ -3,6 +3,7 @@
 	* Profile name changes or deletion now update bookmarks (bug #1762237).
 	* Add bookmark dialog now clears the text entries, and automatically 
 	  fills profiles from the selected bookmark (#1815642).
+	* Tweaked full screen code to allow it work better with multiple monitors.
 	
 2008-09-09	fabian
 

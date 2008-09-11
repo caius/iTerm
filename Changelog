@@ -4,6 +4,7 @@
 	* Add bookmark dialog now clears the text entries, and automatically 
 	  fills profiles from the selected bookmark (#1815642).
 	* Tweaked full screen code to allow it work better with multiple monitors.
+	* Added "xterm" into the terminal type drop box.
 	
 2008-09-09	fabian
 

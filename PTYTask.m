@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.43 2007-04-11 23:15:41 yfabian Exp $
+// $Id: PTYTask.m,v 1.44 2008-09-11 19:19:40 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -317,9 +317,6 @@ static int writep(int fds, char *buf, size_t len)
 				argv[i + 1] = [[args objectAtIndex:i] cString];
 		}
 		argv[max + 1] = NULL;
-		
-		// set the PATH to something sensible since the inherited path seems to have the user's home directory.
-		setenv("PATH", "/usr/bin:/bin:/usr/sbin:/sbin", 1);
 		
 		if (env != nil ) {
 			NSArray *keys = [env allKeys];

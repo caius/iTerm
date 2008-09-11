@@ -1,3 +1,8 @@
+2008-09-11  fabian
+
+    * Fixed a bug that might crashes iTerm when there's a background image.
+    * No longer override PATH when launching a program.
+    
 2008-09-10	fabian
 
 	* Profile name changes or deletion now update bookmarks (bug #1762237).

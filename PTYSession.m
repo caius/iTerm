@@ -1427,11 +1427,11 @@ static NSImage *warningImage;
 
 - (void) setBackgroundImagePath: (NSString *) imageFilePath
 {
-    [imageFilePath retain];
-    [backgroundImagePath release];
-    backgroundImagePath = nil;
-    
     if([imageFilePath length]) {
+        [imageFilePath retain];
+        [backgroundImagePath release];
+        backgroundImagePath = nil;
+
         if ([imageFilePath isAbsolutePath] == NO)
         {
             NSBundle *myBundle = [NSBundle bundleForClass: [self class]];
@@ -1461,6 +1461,8 @@ static NSImage *warningImage;
     {
         [SCROLLVIEW setDrawsBackground: YES];
         [SCROLLVIEW setBackgroundImage: nil];
+        [backgroundImagePath release];
+        backgroundImagePath = nil;
     }
 
     [TEXTVIEW setForceUpdate: YES];

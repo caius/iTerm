@@ -1,6 +1,8 @@
 2008-09-10	fabian
 
 	* Profile name changes or deletion now update bookmarks (bug #1762237).
+	* Add bookmark dialog now clears the text entries, and automatically 
+	  fills profiles from the selected bookmark (#1815642).
 	
 2008-09-09	fabian
 

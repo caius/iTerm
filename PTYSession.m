@@ -1427,44 +1427,44 @@ static NSImage *warningImage;
 
 - (void) setBackgroundImagePath: (NSString *) imageFilePath
 {
+    [imageFilePath retain];
     [backgroundImagePath release];
-    if([imageFilePath length] > 0 && [imageFilePath isAbsolutePath] == NO)
-    {
-		NSBundle *myBundle = [NSBundle bundleForClass: [self class]];
-		backgroundImagePath = [myBundle pathForResource: imageFilePath ofType: @""];
-		[backgroundImagePath retain];
+    backgroundImagePath = nil;
+    
+    if([imageFilePath length]) {
+        if ([imageFilePath isAbsolutePath] == NO)
+        {
+            NSBundle *myBundle = [NSBundle bundleForClass: [self class]];
+            backgroundImagePath = [myBundle pathForResource: imageFilePath ofType: @""];
+            [imageFilePath release];
+            [backgroundImagePath retain];
+        }
+        else
+        {
+            backgroundImagePath = imageFilePath;
+        }
+        NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
+        if(anImage != nil)
+        {
+            [SCROLLVIEW setDrawsBackground: NO];
+            [SCROLLVIEW setBackgroundImage: anImage];
+            [anImage release];
+        }
+        else
+        {
+            [SCROLLVIEW setDrawsBackground: YES];
+            [backgroundImagePath release];
+            backgroundImagePath = nil;
+        }
     }
     else
     {
-		[imageFilePath retain];
-		backgroundImagePath = imageFilePath;
+        [SCROLLVIEW setDrawsBackground: YES];
+        [SCROLLVIEW setBackgroundImage: nil];
     }
-    if([backgroundImagePath length] > 0)
-    {
-		NSImage *anImage = [[NSImage alloc] initWithContentsOfFile: backgroundImagePath];
-		if(anImage != nil)
-		{
-			[SCROLLVIEW setDrawsBackground: NO];
-			[SCROLLVIEW setBackgroundImage: anImage];
-			[anImage release];
-		}
-		else
-		{
-			[SCROLLVIEW setDrawsBackground: YES];
-			[backgroundImagePath release];
-			backgroundImagePath = nil;
-		}
-    }
-    else
-    {
-		[SCROLLVIEW setDrawsBackground: YES];
-		[SCROLLVIEW setBackgroundImage: nil];
-		[backgroundImagePath release];
-		backgroundImagePath = nil;
-    }
-	
-	[TEXTVIEW setForceUpdate: YES];
-	[TEXTVIEW setNeedsDisplay: YES];
+
+    [TEXTVIEW setForceUpdate: YES];
+    [TEXTVIEW setNeedsDisplay: YES];
 }
 
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.316 2008-09-09 22:16:57 yfabian Exp $
+// $Id: PTYTextView.m,v 1.317 2008-09-11 06:30:11 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2887,7 +2887,9 @@ static int cacheSize;
 {
 	NSString *aString,*wordChars;
 	int tmpX, tmpY, x1, y1, x2, y2;
-    
+    screen_char_t *theLine;
+	int width = [dataSource width];
+	
 	// grab our preference for extra characters to be included in a word
 	wordChars = [[PreferencePanel sharedInstance] wordChars];
 	if(wordChars == nil)
@@ -2905,8 +2907,12 @@ static int cacheSize;
 		tmpX--;
 		if(tmpX < 0 && tmpY > 0)
 		{
-			tmpY--;
-			tmpX = [dataSource width] - 1;
+			theLine = [dataSource getLineAtIndex:tmpY-1];
+			if (theLine[width].ch) // check if there's a hard line break
+			{
+				tmpY--;
+				tmpX = width - 1;
+			}
 		}
 	}
 	if(tmpX != x)
@@ -2916,7 +2922,7 @@ static int cacheSize;
 		tmpX = 0;
 	if(tmpY < 0)
 		tmpY = 0;
-	if(tmpX >= [dataSource width])
+	if(tmpX >= width)
 	{
 		tmpX = 0;
 		tmpY++;
@@ -2934,7 +2940,7 @@ static int cacheSize;
 	// find the end of the word
 	tmpX = x;
 	tmpY = y;
-	while(tmpX < [dataSource width])
+	while(tmpX < width)
 	{
 		aString = [self contentFromX:tmpX Y:tmpY ToX:tmpX Y:tmpY pad: YES];
 		if(([aString length] == 0 || 
@@ -2942,10 +2948,14 @@ static int cacheSize;
 		   [wordChars rangeOfString: aString].length == 0)
 			break;
 		tmpX++;
-		if(tmpX >= [dataSource width] && tmpY < [dataSource numberOfLines])
+		if(tmpX >= width && tmpY < [dataSource numberOfLines])
 		{
-			tmpY++;
-			tmpX = 0;
+			theLine = [dataSource getLineAtIndex:tmpY];
+			if (theLine[width].ch) // check if there's a hard line break
+			{			
+				tmpY++;
+				tmpX = 0;
+			}
 		}
 	}
 	if(tmpX != x)
@@ -2953,13 +2963,13 @@ static int cacheSize;
 	
 	if(tmpX < 0)
 	{
-		tmpX = [dataSource width] - 1;
+		tmpX = width - 1;
 		tmpY--;
 	}
 	if(tmpY < 0)
 		tmpY = 0;		
-	if(tmpX >= [dataSource width])
-		tmpX = [dataSource width] - 1;
+	if(tmpX >= width)
+		tmpX = width - 1;
 	if(tmpY >= [dataSource numberOfLines])
 		tmpY = [dataSource numberOfLines] - 1;
 	if(endx)

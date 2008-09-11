@@ -26,6 +26,7 @@
 	* Incorporated the "drop folder" patch provided by Rafael Gaspar (#1789464).
 	* Fixed the URL characters (#1773764)
 	* Fixed the transparency setting bug.
+	* Fixed "double-click selects pass the EOL" bug (#2065311 & #1765813).
 	
 2008-09-06	ujwal
 	

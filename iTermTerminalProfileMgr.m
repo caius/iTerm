@@ -25,7 +25,8 @@
  */
 
 
-#import "iTerm/iTermTerminalProfileMgr.h"
+#import "ITAddressBookMgr.h"
+#import <iTerm/iTermTerminalProfileMgr.h>
 
 static iTermTerminalProfileMgr *singleInstance = nil;
 
@@ -155,6 +156,7 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 		return;
 	
 	[profiles removeObjectForKey: profileName];
+	[self updateBookmarkProfile: profileName with:@"Default"];
 }
 
 - (BOOL) isDefaultProfile: (NSString *) profileName
@@ -647,6 +649,38 @@ static iTermTerminalProfileMgr *singleInstance = nil;
 		return;
 	
 	[aProfile setObject: [NSNumber numberWithBool: noResizing] forKey: @"No Resizing"];	
+}
+
+- (void) updateBookmarkNode: (TreeNode *)node forProfile: (NSString*) oldProfile with:(NSString*)newProfile
+{
+	int i;
+	TreeNode *child;
+	NSDictionary *aDict;
+	int n = [node numberOfChildren];
+	
+	for (i=0;i<n;i++) {
+		child = [node childAtIndex:i];
+		if ([child isLeaf]) {
+			aDict = [child nodeData];
+			if ([[aDict objectForKey:KEY_TERMINAL_PROFILE] isEqualToString: oldProfile]) {
+				NSMutableDictionary *newBookmark= [[NSMutableDictionary alloc] initWithDictionary: aDict];
+				[newBookmark setObject: newProfile forKey: KEY_TERMINAL_PROFILE];
+				[child setNodeData: newBookmark];
+				[newBookmark release];
+			}
+		}
+		else {
+			[self updateBookmarkNode: child forProfile: oldProfile with:newProfile];
+		}
+	}
+}
+
+- (void) updateBookmarkProfile: (NSString*) oldProfile with:(NSString*)newProfile
+{
+	[self updateBookmarkNode: [[ITAddressBookMgr sharedInstance] rootNode] forProfile: oldProfile with:newProfile];
+	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 }
 
 

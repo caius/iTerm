@@ -1,3 +1,7 @@
+2008-09-10	fabian
+
+	* Profile name changes or deletion now update bookmarks (bug #1762237).
+	
 2008-09-09	fabian
 
 	* Fixed a bug that crashes iTerm when one scrolls up with a lot of new text coming in.

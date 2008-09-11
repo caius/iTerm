@@ -1158,6 +1158,7 @@ static BOOL addingKBEntry;
     }
     else {
         id temp = [[[profileMgr profiles] objectForKey: item] retain];
+		[profileMgr updateBookmarkProfile: item with:object];
         [profileMgr deleteProfileWithName: item];
         [(NSMutableDictionary *)[profileMgr profiles] setObject: temp forKey: object];
         [temp release];

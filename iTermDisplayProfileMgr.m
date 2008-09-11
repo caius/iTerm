@@ -24,6 +24,7 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#import "ITAddressBookMgr.h"
 #import <iTerm/iTermDisplayProfileMgr.h>
 
 static iTermDisplayProfileMgr *singleInstance = nil;
@@ -184,6 +185,7 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 		return;
 	
 	[profiles removeObjectForKey: profileName];
+	[self updateBookmarkProfile: profileName with:@"Default"];
 }
 
 - (BOOL) isDefaultProfile: (NSString *) profileName
@@ -603,7 +605,37 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	[self _setIntValue: bFlag forKey: @"Disable Bold" inProfile: profileName];
 }
 
+- (void) updateBookmarkNode: (TreeNode *)node forProfile: (NSString*) oldProfile with:(NSString*)newProfile
+{
+	int i;
+	TreeNode *child;
+	NSDictionary *aDict;
+	int n = [node numberOfChildren];
+	
+	for (i=0;i<n;i++) {
+		child = [node childAtIndex:i];
+		if ([child isLeaf]) {
+			aDict = [child nodeData];
+			if ([[aDict objectForKey:KEY_DISPLAY_PROFILE] isEqualToString: oldProfile]) {
+				NSMutableDictionary *newBookmark= [[NSMutableDictionary alloc] initWithDictionary: aDict];
+				[newBookmark setObject: newProfile forKey: KEY_DISPLAY_PROFILE];
+				[child setNodeData: newBookmark];
+				[newBookmark release];
+			}
+		}
+		else {
+			[self updateBookmarkNode: child forProfile: oldProfile with:newProfile];
+		}
+	}
+}
 
+- (void) updateBookmarkProfile: (NSString*) oldProfile with:(NSString*)newProfile
+{
+	[self updateBookmarkNode: [[ITAddressBookMgr sharedInstance] rootNode] forProfile: oldProfile with:newProfile];
+
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
+}
 
 @end
 

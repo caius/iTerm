@@ -24,6 +24,7 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#import "ITAddressBookMgr.h"
 #import <iTerm/iTermKeyBindingMgr.h>
 
 static iTermKeyBindingMgr *singleInstance = nil;
@@ -153,6 +154,7 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	if([aString length] > 0)
 	{
 		[profiles removeObjectForKey: aString];
+		[self updateBookmarkProfile: aString with:@"Default"];
 	}
 }
 
@@ -723,6 +725,38 @@ static iTermKeyBindingMgr *singleInstance = nil;
 	
 	
 	return (retCode);
+}
+
+- (void) updateBookmarkNode: (TreeNode *)node forProfile: (NSString*) oldProfile with:(NSString*)newProfile
+{
+	int i;
+	TreeNode *child;
+	NSDictionary *aDict;
+	int n = [node numberOfChildren];
+	
+	for (i=0;i<n;i++) {
+		child = [node childAtIndex:i];
+		if ([child isLeaf]) {
+			aDict = [child nodeData];
+			if ([[aDict objectForKey:KEY_KEYBOARD_PROFILE] isEqualToString: oldProfile]) {
+				NSMutableDictionary *newBookmark= [[NSMutableDictionary alloc] initWithDictionary: aDict];
+				[newBookmark setObject: newProfile forKey: KEY_KEYBOARD_PROFILE];
+				[child setNodeData: newBookmark];
+				[newBookmark release];
+			}
+		}
+		else {
+			[self updateBookmarkNode: child forProfile: oldProfile with:newProfile];
+		}
+	}
+}
+
+- (void) updateBookmarkProfile: (NSString*) oldProfile with:(NSString*)newProfile
+{
+	[self updateBookmarkNode: [[ITAddressBookMgr sharedInstance] rootNode] forProfile: oldProfile with:newProfile];
+	
+	// Post a notification for all listeners that bookmarks have changed
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermReloadAddressBook" object: nil userInfo: nil];    		
 }
 
 @end

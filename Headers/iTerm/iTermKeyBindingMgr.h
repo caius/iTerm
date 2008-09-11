@@ -25,6 +25,7 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import <Tree.h>
 
 // Key Definitions
 #define KEY_CURSOR_DOWN					0
@@ -142,6 +143,9 @@
 			highPriority: (BOOL *) highPriority
 					text: (NSString **) text 
 				 profile: (NSString *)profile;
+
+- (void) updateBookmarkNode: (TreeNode *)node forProfile: (NSString*) oldProfile with:(NSString*)newProfile;
+- (void) updateBookmarkProfile: (NSString*) oldProfile with:(NSString*)newProfile;
 
 @end
 

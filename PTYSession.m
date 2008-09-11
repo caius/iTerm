@@ -245,7 +245,7 @@ static NSImage *warningImage;
     if ([env objectForKey:COLORFGBG_ENVNAME] == nil && COLORFGBG_VALUE != nil)
         [env setObject:COLORFGBG_VALUE forKey:COLORFGBG_ENVNAME];
 
-    NSString* locale = [[NSLocale currentLocale] localeIdentifier];
+    NSString* locale = [[NSLocale systemLocale] localeIdentifier];
     CFStringEncoding _encoding = CFStringConvertNSStringEncodingToEncoding([self encoding]);
     NSString* encoding = (NSString*)CFStringConvertEncodingToIANACharSetName(_encoding);
     if(encoding != nil)

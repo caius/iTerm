@@ -25,7 +25,7 @@
  */
 
 #import <Foundation/Foundation.h>
-
+#import <Tree.h>
 
 @interface iTermTerminalProfileMgr : NSObject {
 
@@ -75,6 +75,9 @@
 - (void) setAppendTitle: (BOOL) appendTitle forProfile: (NSString *) profileName;
 - (BOOL) noResizingForProfile: (NSString *) profileName;
 - (void) setNoResizing: (BOOL) noResizing forProfile: (NSString *) profileName;
+
+- (void) updateBookmarkNode: (TreeNode *)node forProfile: (NSString*) oldProfile with:(NSString*)newProfile;
+- (void) updateBookmarkProfile: (NSString*) oldProfile with:(NSString*)newProfile;
 
 @end
 

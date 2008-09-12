@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.413 2008-09-11 06:08:52 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.414 2008-09-12 15:25:51 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -249,7 +249,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 											  backing: NSBackingStoreBuffered 
 												defer: NO];
 	[self setWindow: myWindow];
-	if ([NSScreen mainScreen] == currentScreen) [NSMenu setMenuBarVisible: NO];
+	[self hideMenuBar];
 	[myWindow release];
 	_fullScreen = YES;
 	[[iTermController sharedInstance] setFullScreenTerminal: self];
@@ -1565,11 +1565,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowDidBecomeKey:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-	
     //[self selectSessionAtIndex: [self currentSessionIndex]];
     [[iTermController sharedInstance] setCurrentTerminal: self];
 	
-	if (_fullScreen) [NSMenu setMenuBarVisible: NO];
+	if (_fullScreen) [self hideMenuBar];
     
     // update the cursor
     [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
@@ -2680,6 +2679,21 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 	
 	return completeCommand;
+}
+
+- (void) hideMenuBar
+{
+	NSScreen* menubarScreen = nil;
+	NSScreen* currentScreen = nil;
+
+	if([[NSScreen screens] count] == 0)
+		return;
+
+	menubarScreen = [[NSScreen screens] objectAtIndex:0];
+	currentScreen = [NSScreen mainScreen];
+
+	if(currentScreen == menubarScreen)
+		[NSMenu setMenuBarVisible: NO];
 }
 
 

@@ -1,7 +1,8 @@
 2008-09-13  delx
 
-    * Check if locale exists before setting LANG environment variables
+    * Check if locale exists before setting LANG environment variables (#2102884)
     * ISO8859-* and eucXX encodings will get correct environment variables
+    * Keep menubar when setting full screen mode in a secondary screen (#2090939)
     
 
 2008-09-11  fabian

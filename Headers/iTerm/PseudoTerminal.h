@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.57 2008-09-10 05:04:29 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.58 2008-09-12 15:25:53 delx Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -239,6 +239,7 @@
 - (NSFont *) _getMaxFont:(NSFont* ) font 
 				  height:(float) height
 				   lines:(float) lines;
+- (void) hideMenuBar;
 
 @end
 

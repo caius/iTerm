@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.286 2008-09-07 07:37:04 ujwal Exp $
+// $Id: VT100Screen.m,v 1.287 2008-09-12 21:40:45 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -2107,6 +2107,11 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 - (int)changeSize
 {
 	return changeSize;
+}
+
+- (void)setChangeSize:(int)change
+{
+    changeSize = change;
 }
 
 - (int)newWidth

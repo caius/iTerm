@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.414 2008-09-12 15:25:51 delx Exp $
+// $Id: PseudoTerminal.m,v 1.415 2008-09-12 21:40:44 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1111,12 +1111,14 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			[[thisWindow contentView] unlockFocus];*/
 		}			
 		
-		int i;
+		int i, c;
 		for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
 		{
 			PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
 			[aSession setObjectCount:i+1];
+            c = [[aSession SCREEN] changeSize];
 			[[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
+            [[aSession SCREEN] setChangeSize:c];
 			[[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
 			[[aSession SCROLLVIEW] setLineScroll: [[aSession TEXTVIEW] lineHeight]];
 			[[aSession SCROLLVIEW] setPageScroll: 2*[[aSession TEXTVIEW] lineHeight]];

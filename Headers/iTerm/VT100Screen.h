@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.36 2008-08-20 17:10:48 delx Exp $
+// $Id: VT100Screen.h,v 1.37 2008-09-12 21:40:55 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -218,6 +218,7 @@ typedef struct screen_char_t
 
 // UI stuff
 - (int)changeSize;
+- (void)setChangeSize:(int)change;
 - (int)newWidth;
 - (int)newHeight;
 - (void) resetChangeSize;

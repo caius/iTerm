@@ -357,16 +357,17 @@ static NSImage *warningImage;
 				//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
 			}
 			else {
+                int r;
 				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN printPending]) {
-					MPWaitOnSemaphore(updateSemaphore, kDurationForever);
+					r=MPWaitOnSemaphore(updateSemaphore, kDurationForever);
+                    if (r==kMPDeletedErr) break;
 				}
 				
-				[SCREEN putToken:token];
-				newOutput=YES;
-				gettimeofday(&lastOutput, NULL);
-                /*if ([self timerMode] == PAUSE_MODE) {
-                    [self setTimerMode: ([[tabViewItem tabView] selectedTabViewItem] == tabViewItem) ? FAST_MODE : SLOW_MODE];
-                }*/
+                if (r!=kMPDeletedErr) {
+                    [SCREEN putToken:token];
+                    newOutput=YES;
+                    gettimeofday(&lastOutput, NULL);
+                }
 			}
 		}
 	} // end token processing loop

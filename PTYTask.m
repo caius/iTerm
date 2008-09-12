@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.44 2008-09-11 19:19:40 yfabian Exp $
+// $Id: PTYTask.m,v 1.45 2008-09-12 21:40:44 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -164,6 +164,9 @@ static int writep(int fds, char *buf, size_t len)
 		FD_ZERO(&rfds);
 		FD_ZERO(&efds);
 		
+        // check if the session has been terminated
+        if (boss->FILDES==-1) break;
+        
 		FD_SET(boss->FILDES, &rfds);
 		FD_SET(boss->FILDES, &efds);
 		

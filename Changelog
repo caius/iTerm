@@ -1,3 +1,8 @@
+2008-09-12  fabian
+
+    * Fixed a bug in PTYTask that causes crashes when a session is terminated.
+    * Fixed a bug related to window resizing deadlocks.
+
 2008-09-13  delx
 
     * Check if locale exists before setting LANG environment variables (#2102884)

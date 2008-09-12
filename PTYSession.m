@@ -245,18 +245,16 @@ static NSImage *warningImage;
     if ([env objectForKey:COLORFGBG_ENVNAME] == nil && COLORFGBG_VALUE != nil)
         [env setObject:COLORFGBG_VALUE forKey:COLORFGBG_ENVNAME];
 
-    NSString* locale = [[NSLocale systemLocale] localeIdentifier];
-    CFStringEncoding _encoding = CFStringConvertNSStringEncodingToEncoding([self encoding]);
-    NSString* encoding = (NSString*)CFStringConvertEncodingToIANACharSetName(_encoding);
-    if(encoding != nil)
-        locale = [locale stringByAppendingFormat:@".%@", encoding];
-    [env setObject:locale forKey:@"LANG"];
-    [env setObject:locale forKey:@"LC_COLLATE"];
-    [env setObject:locale forKey:@"LC_CTYPE"];
-    [env setObject:locale forKey:@"LC_MESSAGES"];
-    [env setObject:locale forKey:@"LC_MONETARY"];
-    [env setObject:locale forKey:@"LC_NUMERIC"];
-    [env setObject:locale forKey:@"LC_TIME"];
+    NSString* locale = [self _getLocale];
+    if(locale != nil) {
+        [env setObject:locale forKey:@"LANG"];
+        [env setObject:locale forKey:@"LC_COLLATE"];
+        [env setObject:locale forKey:@"LC_CTYPE"];
+        [env setObject:locale forKey:@"LC_MESSAGES"];
+        [env setObject:locale forKey:@"LC_MONETARY"];
+        [env setObject:locale forKey:@"LC_NUMERIC"];
+        [env setObject:locale forKey:@"LC_TIME"];
+    }
 
     if ([env objectForKey:PWD_ENVNAME] == nil)
         [env setObject:[PWD_ENVVALUE stringByExpandingTildeInPath] forKey:PWD_ENVNAME];
@@ -1972,6 +1970,40 @@ static NSImage *warningImage;
 @end
 
 @implementation PTYSession (Private)
+
+- (NSString*)_getLocale
+{
+	// Keep a copy of the current locale setting for this process
+	char* backupLocale = setlocale(LC_CTYPE, NULL);
+
+	// Start with the locale
+	NSString* locale = [[NSLocale currentLocale] localeIdentifier];
+
+	// Append the encoding
+	CFStringEncoding cfEncoding = CFStringConvertNSStringEncodingToEncoding([self encoding]);
+	NSString* ianaEncoding = (NSString*)CFStringConvertEncodingToIANACharSetName(cfEncoding);
+	if(ianaEncoding != nil) {
+		// Mangle the names slightly
+		NSMutableString* encoding = [[NSMutableString alloc] initWithString:ianaEncoding];
+		[encoding replaceOccurrencesOfString:@"ISO-" withString:@"ISO" options:0 range:NSMakeRange(0, [encoding length])];
+		[encoding replaceOccurrencesOfString:@"EUC-" withString:@"euc" options:0 range:NSMakeRange(0, [encoding length])];
+
+		NSString* test = [locale stringByAppendingFormat:@".%@", encoding];
+		if(NULL != setlocale(LC_CTYPE, [test UTF8String]))
+			locale = test;
+
+		[encoding release];
+	}
+
+	// Check the locale is valid
+	if(NULL == setlocale(LC_CTYPE, [locale UTF8String]))
+		locale = nil;
+
+	// Restore locale and return
+	setlocale(LC_CTYPE, backupLocale);
+	return locale;
+}
+
 
 //Update the display if necessary
 - (void)_updateTimerTick:(NSTimer *)aTimer

@@ -264,6 +264,7 @@ enum {FAST_MODE, SLOW_MODE, PAUSE_MODE};
 
 @interface PTYSession (Private)
 
+- (NSString*)_getLocale;
 - (void)_updateTimerTick:(NSTimer *)aTimer;
 
 @end

@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.15 2008-09-09 04:58:50 yfabian Exp $ */
+/* $Id: PTYWindow.m,v 1.16 2008-09-12 14:22:22 delx Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -96,7 +96,7 @@
 - (void)disableBlur
 {
 	//only works in Leopard (or hopefully later)
-	if (NSAppKitVersionNumber < 949) return;
+	if (floor(NSAppKitVersionNumber) < 949) return;
 
 	if (blurFilter) {
 		CGSConnectionID con = CGSMainConnectionID();

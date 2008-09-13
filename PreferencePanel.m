@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.159 2008-08-29 23:35:29 delx Exp $
+// $Id: PreferencePanel.m,v 1.160 2008-09-13 00:07:17 delx Exp $
 /*
  **  PreferencePanel.m
  **
@@ -251,8 +251,7 @@ static NSString *NoHandler = @"<No Handler>";
 	[checkTestRelease setState: defaultCheckTestRelease?NSOnState:NSOffState];
 	
 	[self showWindow: self];
-	if ([[iTermController sharedInstance] fullScreenTerminal]) [[self window] setLevel:CGShieldingWindowLevel()];
-	else [[self window] setLevel:NSNormalWindowLevel];
+	[[self window] setLevel:NSNormalWindowLevel];
 		
 	// Show the window.
 	[[self window] makeKeyAndOrderFront:self];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.415 2008-09-12 21:40:44 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.416 2008-09-13 00:07:17 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -252,7 +252,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[self hideMenuBar];
 	[myWindow release];
 	_fullScreen = YES;
-	[[iTermController sharedInstance] setFullScreenTerminal: self];
 		
 	[self _commonInit];
 	
@@ -977,7 +976,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSPoint topLeft;
 	float max_height;
 	BOOL vmargin_added = NO;
-	BOOL hasScrollbar = [[iTermController sharedInstance] fullScreenTerminal] != self && ![[PreferencePanel sharedInstance] hideScrollbar];
+	BOOL hasScrollbar = ![[PreferencePanel sharedInstance] hideScrollbar];
 		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize] (%d,%d)", __FILE__, __LINE__, WIDTH, HEIGHT );
@@ -1732,9 +1731,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 // Bookmarks
 - (IBAction) toggleFullScreen: (id) sender
 {
-	if ([[iTermController sharedInstance] fullScreenTerminal] != self) {
-		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	}
 	if (!_fullScreen) {
 		PseudoTerminal *fullScreenTerminal = [[PseudoTerminal alloc] initWithFullScreenWindowNibName:@"PseudoTerminal"];
 		if (fullScreenTerminal) {
@@ -1775,7 +1771,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			fullScreenTerminal->_resizeInProgressFlag = NO;
 			[[fullScreenTerminal tabView] selectTabViewItemWithIdentifier:currentSession];
 			[fullScreenTerminal setWindowSize];
-			[[iTermController sharedInstance] setFullScreenTerminal: fullScreenTerminal];
 			[[self window] close];
 		}
 	}
@@ -1817,7 +1812,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			normalScreenTerminal->_resizeInProgressFlag = NO;
 			[normalScreenTerminal setWindowSize];
 			[[normalScreenTerminal tabView] selectTabViewItemWithIdentifier:currentSession];
-			[[iTermController sharedInstance] setFullScreenTerminal: nil];
 			[[self window] close];
 		}
 	}

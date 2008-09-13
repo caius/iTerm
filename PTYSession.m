@@ -165,7 +165,7 @@ static NSImage *warningImage;
 		
     // Allocate a scrollview
     SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
-    [SCROLLVIEW setHasVerticalScroller:[[iTermController sharedInstance] fullScreenTerminal] != parent && ![[PreferencePanel sharedInstance] hideScrollbar]];
+    [SCROLLVIEW setHasVerticalScroller:![[PreferencePanel sharedInstance] hideScrollbar]];
     NSParameterAssert(SCROLLVIEW != nil);
     [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 	

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.64 2008-09-09 04:45:51 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.65 2008-09-13 00:07:17 delx Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -264,10 +264,6 @@ static BOOL usingAutoLaunchScript = NO;
 // Action methods
 - (IBAction)newWindow:(id)sender
 {
-	// turn full screen off first
-	if ([[iTermController sharedInstance] fullScreenTerminal]) 
-		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	
     [[iTermController sharedInstance] newWindow:sender];
 }
 
@@ -279,19 +275,11 @@ static BOOL usingAutoLaunchScript = NO;
 // navigation
 - (IBAction) previousTerminal: (id) sender
 {
-	// turn full screen off first
-//	if ([[iTermController sharedInstance] fullScreenTerminal]) 
-//		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	
     [[iTermController sharedInstance] previousTerminal:sender];
 }
 
 - (IBAction) nextTerminal: (id) sender
 {
-	// turn full screen off first
-//	if ([[iTermController sharedInstance] fullScreenTerminal]) 
-//		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	
     [[iTermController sharedInstance] nextTerminal:sender];
 }
 
@@ -302,19 +290,11 @@ static BOOL usingAutoLaunchScript = NO;
 
 - (IBAction)showBookmarkWindow:(id)sender
 {
-	// turn full screen off first
-	//if ([[iTermController sharedInstance] fullScreenTerminal]) 
-	//	[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	
     [[iTermBookmarkController sharedInstance] showWindow];
 }
 
 - (IBAction)showProfileWindow:(id)sender
 {
-	// turn full screen off first
-	//if ([[iTermController sharedInstance] fullScreenTerminal]) 
-	//	[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	
     [[iTermProfileWindowController sharedInstance] showProfilesWindow: nil];
 }
 
@@ -463,10 +443,6 @@ static BOOL usingAutoLaunchScript = NO;
 // size
 - (IBAction) returnToDefaultSize: (id) sender
 {
-	// turn full screen off first
-	if ([[iTermController sharedInstance] fullScreenTerminal]) 
-		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-	
     PseudoTerminal *frontTerminal = [[iTermController sharedInstance] currentTerminal];
     NSDictionary *abEntry = [[frontTerminal currentSession] addressBookEntry];
     NSString *displayProfile = [abEntry objectForKey: KEY_DISPLAY_PROFILE];
@@ -685,13 +661,6 @@ static BOOL usingAutoLaunchScript = NO;
         [scriptMenuItem setTitle: NSLocalizedStringFromTableInBundle(@"Script",@"iTerm", [NSBundle bundleForClass: [iTermController class]], @"Script")];
     }
 }
-
-///- (void)applicationDidResignActive:(NSNotification *)aNotification
-///{
-///	// turn full screen off first
-///	if ([[iTermController sharedInstance] fullScreenTerminal] && [[NSScreen mainScreen] isEqual:[[[[iTermController sharedInstance] fullScreenTerminal] window] screen]]) 
-///		[[[iTermController sharedInstance] fullScreenTerminal] toggleFullScreen:nil];
-///}
 
 @end
 

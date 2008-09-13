@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.73 2008-08-20 17:00:34 delx Exp $
+// $Id: iTermController.m,v 1.74 2008-09-13 00:07:17 delx Exp $
 /*
  **  iTermController.m
  **
@@ -98,8 +98,6 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	 * PLIST check here.
 	 */
     gd = [iTermGrowlDelegate sharedInstance];
-	
-	_fullScreenTerminal = nil;
 	
     return (self);
 }
@@ -257,8 +255,6 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	
     if(theTerminalWindow)
         [self removeFromTerminalsAtIndex: [terminalWindows indexOfObject: theTerminalWindow]];
-	
-	if (theTerminalWindow == _fullScreenTerminal) _fullScreenTerminal = nil;
 }
 
 // Build sorted list of encodings
@@ -444,16 +440,6 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 - (PTYTextView *) frontTextView
 {
     return ([[FRONT currentSession] TEXTVIEW]);
-}
-
-- (PseudoTerminal *) fullScreenTerminal
-{
-	return _fullScreenTerminal;
-}
-
-- (void) setFullScreenTerminal:(PseudoTerminal *)terminal
-{
-	_fullScreenTerminal = terminal;
 }
 
 

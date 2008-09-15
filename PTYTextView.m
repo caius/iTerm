@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.317 2008-09-11 06:30:11 yfabian Exp $
+// $Id: PTYTextView.m,v 1.318 2008-09-15 20:58:31 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -45,10 +45,12 @@
 #import <iTerm/Tree.h>
 
 #include <sys/time.h>
+#include <math.h>
 
 static NSCursor* textViewCursor =  nil;
 static float strokeWidth, boldStrokeWidth;
 static int cacheSize;
+static int cacheCellSize;
 
 @implementation PTYTextView
 
@@ -71,6 +73,9 @@ static int cacheSize;
     strokeWidth = [[PreferencePanel sharedInstance] strokeWidth];
     boldStrokeWidth = [[PreferencePanel sharedInstance] boldStrokeWidth];
     cacheSize = [[PreferencePanel sharedInstance] cacheSize];
+    if (cacheSize < 256) cacheSize=256;
+    cacheCellSize = cacheSize/96;
+    if (cacheCellSize<8) cacheCellSize=8;
 }
 
 + (NSCursor *) textViewCursor
@@ -2660,14 +2665,13 @@ static int cacheSize;
 	[image unlockFocus];
 } // renderChar
 
-#define  CELLSIZE (cacheSize/256)
+
 - (NSImage *) _getCharImage:(unichar) code color:(unsigned int)fg bgColor:(unsigned int)bg doubleWidth:(BOOL) dw
 {
 	int i;
 	int j;
 	NSImage *image;
 	unsigned int c = fg;
-	unsigned short int seed[3];
 	
 	if (fg == SELECTED_TEXT) {
 		c = SELECTED_TEXT;
@@ -2684,12 +2688,13 @@ static int cacheSize;
 		j = 0;
 	}
 	else {
-		seed[0]=code; seed[1] = c; seed[2] = bg;
-		i = nrand48(seed) % (cacheSize-CELLSIZE-0x5f) + 0x5f;
-		//srand( code<<16 + c<<8 + bg);
-		//i = rand() % (CACHESIZE-CELLSIZE);
-		for(j = 0;(charImages[i].code!=code || charImages[i].color!=c || charImages[i].bgColor != bg) && charImages[i].image && j<CELLSIZE; i++, j++);
+        unsigned long seed;
+        
+        seed=((code<<8 & 0xff0000)+code+((c&0xff)<<24)+((bg&0xff)<<8)); 
+		i = seed % (cacheSize-cacheCellSize-0x60) + 0x60;
+		for(j = 0;(charImages[i].code!=code || charImages[i].color!=c || charImages[i].bgColor != bg) && charImages[i].image && j<cacheCellSize; i++, j++);
 	}
+   
 	if (!charImages[i].image) {
 		//  NSLog(@"add into cache");
 		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*(dw?2:1), lineHeight)];
@@ -2706,19 +2711,19 @@ static int cacheSize;
 		
 		return image;
 	}
-	else if (j>=CELLSIZE) {
+	else if (j>=cacheCellSize) {
 		// NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
 		int t=1;
-		for(j=2; j<=CELLSIZE; j++) {	//find a least used one, and replace it with new char
+		for(j=2; j<=cacheCellSize; j++) {	//find a least used one, and replace it with new char
 			if (charImages[i-j].count < charImages[i-t].count) t = j;
 		}
 		t = i - t;
 		[charImages[t].image release];
 		image=charImages[t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*(dw?2:1), lineHeight)];
 		charImages[t].code=code;
-		charImages[i].bgColor=bg;
+		charImages[t].bgColor=bg;
 		charImages[t].color=c;
-		for(j=1; j<=CELLSIZE; j++) {	//reset the cache count
+		for(j=1; j<=cacheCellSize; j++) {	//reset the cache count
 			charImages[i-j].count -= charImages[t].count;
 		}
 		charImages[t].count=1;

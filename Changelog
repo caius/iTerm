@@ -1,3 +1,7 @@
+2008-09-15  fabian
+
+    * Fixed a bug in the character cache handlings of PTYTextView.
+    
 2008-09-12  fabian
 
     * Fixed a bug in PTYTask that causes crashes when a session is terminated.

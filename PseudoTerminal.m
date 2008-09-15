@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.416 2008-09-13 00:07:17 delx Exp $
+// $Id: PseudoTerminal.m,v 1.417 2008-09-15 06:32:29 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -976,7 +976,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSPoint topLeft;
 	float max_height;
 	BOOL vmargin_added = NO;
-	BOOL hasScrollbar = ![[PreferencePanel sharedInstance] hideScrollbar];
+	BOOL hasScrollbar = !_fullScreen && ![[PreferencePanel sharedInstance] hideScrollbar];
 		
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PseudoTerminal setWindowSize] (%d,%d)", __FILE__, __LINE__, WIDTH, HEIGHT );

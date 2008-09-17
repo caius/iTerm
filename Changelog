@@ -1,6 +1,10 @@
+2008-09-17  fabian
+
+    * UI change: now there's separate close warning option plus a ">1" tab option.
+    
 2008-09-15  fabian
 
-    * Fixed a bug in the character cache handlings of PTYTextView.
+    * Fixed a bug in the character cache handlings of PTYTextView. A new hash function is used.
     
 2008-09-12  fabian
 

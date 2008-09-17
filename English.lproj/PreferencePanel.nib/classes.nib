@@ -48,6 +48,8 @@
 				<string>NSButton</string>
 				<key>middleButtonPastesFromClipboard</key>
 				<string>NSButton</string>
+				<key>onlyWhenMoreTabs</key>
+				<string>id</string>
 				<key>openBookmark</key>
 				<string>NSButton</string>
 				<key>promptOnClose</key>

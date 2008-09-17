@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.417 2008-09-15 06:32:29 delx Exp $
+// $Id: PseudoTerminal.m,v 1.418 2008-09-17 20:23:15 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -761,7 +761,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal closeCurrentSession]",
           __FILE__, __LINE__);
 #endif
-	[self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
+    PTYSession *aSession = [[TABVIEW selectedTabViewItem] identifier];
+    
+    if ([aSession exited] ||		
+        ![[PreferencePanel sharedInstance] promptOnClose] || [[PreferencePanel sharedInstance] onlyWhenMoreTabs] ||
+        (NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession realObjectCount]],
+                     NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
+                     NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
+                     NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
+                     ,nil) == NSAlertDefaultReturn)) 
+        [self closeSession:[[TABVIEW selectedTabViewItem] identifier]];
 } 
 
 - (IBAction)previousSession:(id)sender
@@ -1518,8 +1527,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowShouldClose:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-	
-    if([TABVIEW numberOfTabViewItems] > 1 && [[PreferencePanel sharedInstance] promptOnClose])
+        
+    if ([[PreferencePanel sharedInstance] promptOnClose] && (![[PreferencePanel sharedInstance] onlyWhenMoreTabs] || [TABVIEW numberOfTabViewItems] > 1))
 		return [self showCloseWindow];
     else
 		return (YES);
@@ -2094,16 +2103,15 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (BOOL)tabView:(NSTabView*)tabView shouldCloseTabViewItem:(NSTabViewItem *)tabViewItem
 {
-	return YES;
-    /*PTYSession *aSession = [tabViewItem identifier];
+	PTYSession *aSession = [tabViewItem identifier];
     
     return [aSession exited] ||		
-        ![[PreferencePanel sharedInstance] promptOnClose] ||
+        ![[PreferencePanel sharedInstance] promptOnClose] || [[PreferencePanel sharedInstance] onlyWhenMoreTabs] ||
         (NSRunAlertPanel([NSString stringWithFormat:@"%@ #%d", [aSession name], [aSession realObjectCount]],
                         NSLocalizedStringFromTableInBundle(@"This session will be closed.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close Session"),
                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
                         NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
-                        ,nil) == NSAlertDefaultReturn); */
+                        ,nil) == NSAlertDefaultReturn);
     
 }
 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.65 2008-09-13 00:07:17 delx Exp $
+// $Id: iTermApplicationDelegate.m,v 1.66 2008-09-17 20:23:15 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -115,10 +115,12 @@ static BOOL usingAutoLaunchScript = NO;
 {
 	NSArray *terminals;
 	
+    terminals = [[iTermController sharedInstance] terminals];
+    
 	// Display prompt if we need to
-	terminals = [[iTermController sharedInstance] terminals];
-    if(([terminals count] >1 || 
-	    [[[[iTermController sharedInstance] currentTerminal] tabView] numberOfTabViewItems] > 1 ) && [[PreferencePanel sharedInstance] promptOnClose] && 
+    if ([[PreferencePanel sharedInstance] promptOnClose] && (![[PreferencePanel sharedInstance] onlyWhenMoreTabs] || [terminals count] >1 || 
+                                                             [[[[iTermController sharedInstance] currentTerminal] tabView] numberOfTabViewItems] > 1 )
+        && 
 	    NSRunAlertPanel(NSLocalizedStringFromTableInBundle(@"Quit iTerm?",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
 					   NSLocalizedStringFromTableInBundle(@"All sessions will be closed",@"iTerm", [NSBundle bundleForClass: [self class]], @"Close window"),
 					   NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),

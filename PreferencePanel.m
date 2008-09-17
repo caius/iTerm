@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.160 2008-09-13 00:07:17 delx Exp $
+// $Id: PreferencePanel.m,v 1.161 2008-09-17 20:23:15 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -130,6 +130,7 @@ static NSString *NoHandler = @"<No Handler>";
 	defaultPasteFromClipboard=[prefs objectForKey:@"PasteFromClipboard"]?[[prefs objectForKey:@"PasteFromClipboard"] boolValue]:YES;
     defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: NO;
+    defaultOnlyWhenMoreTabs = [prefs objectForKey:@"OnlyWhenMoreTabs"]?[[prefs objectForKey:@"OnlyWhenMoreTabs"] boolValue]: NO;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
 	defaultEnableBonjour = [prefs objectForKey:@"EnableRendezvous"]?[[prefs objectForKey:@"EnableRendezvous"] boolValue]: YES;
 	defaultEnableGrowl = [prefs objectForKey:@"EnableGrowl"]?[[prefs objectForKey:@"EnableGrowl"] boolValue]: NO;
@@ -184,6 +185,7 @@ static NSString *NoHandler = @"<No Handler>";
 	[prefs setInteger:defaultWindowStyle forKey:@"WindowStyle"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
+    [prefs setBool:defaultOnlyWhenMoreTabs forKey:@"OnlyWhenMoreTabs"];
     [prefs setBool:defaultFocusFollowsMouse forKey:@"FocusFollowsMouse"];
 	[prefs setBool:defaultEnableBonjour forKey:@"EnableRendezvous"];
 	[prefs setBool:defaultEnableGrowl forKey:@"EnableGrowl"];
@@ -234,6 +236,7 @@ static NSString *NoHandler = @"<No Handler>";
 	[middleButtonPastesFromClipboard setState:defaultPasteFromClipboard?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
+	[onlyWhenMoreTabs setState:defaultOnlyWhenMoreTabs?NSOnState:NSOffState];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
 	[enableBonjour setState: defaultEnableBonjour?NSOnState:NSOffState];
 	[enableGrowl setState: defaultEnableGrowl?NSOnState:NSOffState];
@@ -283,6 +286,7 @@ static NSString *NoHandler = @"<No Handler>";
         defaultCopySelection=([selectionCopiesText state]==NSOnState);
         defaultPasteFromClipboard=([middleButtonPastesFromClipboard state]==NSOnState);
         defaultPromptOnClose = ([promptOnClose state] == NSOnState);
+        defaultOnlyWhenMoreTabs = ([onlyWhenMoreTabs state] == NSOnState);
         defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
         defaultEnableBonjour = ([enableBonjour state] == NSOnState);
         defaultEnableGrowl = ([enableGrowl state] == NSOnState);
@@ -377,6 +381,11 @@ static NSString *NoHandler = @"<No Handler>";
 - (BOOL)promptOnClose
 {
     return (defaultPromptOnClose);
+}
+
+- (BOOL)onlyWhenMoreTabs
+{
+    return (defaultOnlyWhenMoreTabs);
 }
 
 - (BOOL) focusFollowsMouse

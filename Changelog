@@ -1,6 +1,8 @@
 2008-09-17  fabian
 
     * UI change: now there's separate close warning option plus a ">1" tab option.
+    * Minor UI change: now the resize control is also hidden if the scroll bar is hidden.
+    * Minor UI change: the optional bottom border's color is now windowFrameColor.
     
 2008-09-15  fabian
 

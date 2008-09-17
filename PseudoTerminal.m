@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.418 2008-09-17 20:23:15 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.419 2008-09-17 23:16:39 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1017,6 +1017,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 									hasHorizontalScroller:NO
 									  hasVerticalScroller:hasScrollbar
 											   borderType:NSNoBorder];
+            [thisWindow setShowsResizeIndicator: hasScrollbar];
 		#if 0
 			NSLog(@"%s: scrollview content size %.1f, %.1f", __PRETTY_FUNCTION__,
 				  size.width, size.height);
@@ -1148,7 +1149,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 			if (vmargin_added) {
 				[[thisWindow contentView] lockFocus];
-				[[NSColor windowBackgroundColor] set];
+				[[NSColor windowFrameColor] set];
 				NSRectFill(NSMakeRect(0,0,vsize.width,VMARGIN));
 				[[thisWindow contentView] unlockFocus];
 			}

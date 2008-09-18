@@ -80,10 +80,9 @@ static BOOL editingBookmark = NO;
 	if([self window] == nil)
         [self initWithWindowNibName: @"Bookmarks"];
 
-    [bookmarksView setDoubleAction: @selector(editBookmark:)];	
-    
     [[self window] setDelegate: self]; // also forces window to load
 	[self outlineViewSelectionDidChange:nil];
+    [bookmarksView setDoubleAction:@selector(launchSession:)];
     [self showWindow: self];
 }
 
@@ -171,12 +170,13 @@ static BOOL editingBookmark = NO;
     return [[ITAddressBookMgr sharedInstance] objectForKey:[tableColumn identifier] inItem: item];
 }
 
+/*
 // Optional method: needed to allow editing.
 - (void)outlineView:(NSOutlineView *)olv setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item  
 {
 	[[ITAddressBookMgr sharedInstance] setObjectValue: object forKey:[tableColumn identifier] inItem: item];	
 }
-
+*/
 // ================================================================
 //  NSOutlineView data source methods. (dragging related)
 // ================================================================
@@ -425,7 +425,8 @@ static BOOL editingBookmark = NO;
 	selectedItem = [bookmarksView itemAtRow: selectedRow];
 	if(selectedItem != nil && [selectedItem isLeaf])
 	{
-		[[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] inTerminal: [sender selectedSegment] ? nil :[[iTermController sharedInstance] currentTerminal]];
+		[[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] 
+                                              inTerminal: sender!=bookmarksView?([sender selectedSegment] ? nil :[[iTermController sharedInstance] currentTerminal]):[[iTermController sharedInstance] currentTerminal]];
 	}
 }
 

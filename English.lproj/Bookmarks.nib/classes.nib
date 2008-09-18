@@ -1,45 +1,107 @@
-{
-    IBClasses = (
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
-        {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
-        {
-            ACTIONS = {
-                addBookmark = id; 
-                addBookmarkCancel = id; 
-                addBookmarkConfirm = id; 
-                addBookmarkFolder = id; 
-                addBookmarkFolderCancel = id; 
-                addBookmarkFolderConfirm = id; 
-                closeWindow = id; 
-                deleteBookmark = id; 
-                deleteBookmarkCancel = id; 
-                deleteBookmarkConfirm = id; 
-                deleteBookmarkFolder = id; 
-                editBookmark = id; 
-                launchSession = id; 
-                setDefaultSession = id; 
-            }; 
-            CLASS = iTermBookmarkController; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                addBookmarkFolderPanel = NSPanel; 
-                bookmarkCommand = NSTextField; 
-                bookmarkDeleteButton = NSButton; 
-                bookmarkDisplayProfile = NSPopUpButton; 
-                bookmarkEditButton = NSButton; 
-                bookmarkFolderName = NSTextField; 
-                bookmarkKeyboardProfile = NSPopUpButton; 
-                bookmarkName = NSTextField; 
-                bookmarkShortcut = NSPopUpButton; 
-                bookmarkTerminalProfile = NSPopUpButton; 
-                bookmarkWorkingDirectory = NSTextField; 
-                bookmarksView = NSOutlineView; 
-                defaultSessionButton = NSButton; 
-                editBookmarkPanel = NSPanel; 
-                launchButton = id; 
-            }; 
-            SUPERCLASS = NSWindowController; 
-        }
-    ); 
-    IBVersion = 1; 
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>CLASS</key>
+			<string>NSSegmentedControl</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSControl</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>NSObject</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
+				<key>addBookmark</key>
+				<string>id</string>
+				<key>addBookmarkCancel</key>
+				<string>id</string>
+				<key>addBookmarkConfirm</key>
+				<string>id</string>
+				<key>addBookmarkFolder</key>
+				<string>id</string>
+				<key>addBookmarkFolderCancel</key>
+				<string>id</string>
+				<key>addBookmarkFolderConfirm</key>
+				<string>id</string>
+				<key>closeWindow</key>
+				<string>id</string>
+				<key>deleteBookmark</key>
+				<string>id</string>
+				<key>deleteBookmarkCancel</key>
+				<string>id</string>
+				<key>deleteBookmarkConfirm</key>
+				<string>id</string>
+				<key>deleteBookmarkFolder</key>
+				<string>id</string>
+				<key>editBookmark</key>
+				<string>id</string>
+				<key>launchSession</key>
+				<string>id</string>
+				<key>setDefaultSession</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>iTermBookmarkController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>addBookmarkFolderPanel</key>
+				<string>NSPanel</string>
+				<key>bookmarkCommand</key>
+				<string>NSTextField</string>
+				<key>bookmarkDeleteButton</key>
+				<string>NSButton</string>
+				<key>bookmarkDisplayProfile</key>
+				<string>NSPopUpButton</string>
+				<key>bookmarkEditButton</key>
+				<string>NSButton</string>
+				<key>bookmarkFolderName</key>
+				<string>NSTextField</string>
+				<key>bookmarkKeyboardProfile</key>
+				<string>NSPopUpButton</string>
+				<key>bookmarkName</key>
+				<string>NSTextField</string>
+				<key>bookmarkShortcut</key>
+				<string>NSPopUpButton</string>
+				<key>bookmarkTerminalProfile</key>
+				<string>NSPopUpButton</string>
+				<key>bookmarkWorkingDirectory</key>
+				<string>NSTextField</string>
+				<key>bookmarksView</key>
+				<string>NSOutlineView</string>
+				<key>defaultSessionButton</key>
+				<string>NSButton</string>
+				<key>deleteBookmarkPanel</key>
+				<string>NSPanel</string>
+				<key>editBookmarkPanel</key>
+				<string>NSPanel</string>
+				<key>launchButton</key>
+				<string>NSSegmentedControl</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSWindowController</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

@@ -1,3 +1,7 @@
+2008-09-18  fabian
+
+    * Minor UI change: Double-clicking a bookmark item now launches it.
+    
 2008-09-17  fabian
 
     * UI change: now there's separate close warning option plus a ">1" tab option.

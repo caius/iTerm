@@ -1,6 +1,7 @@
 2008-09-18  fabian
 
     * Minor UI change: Double-clicking a bookmark item now launches it.
+    * UI change: Now bookmarks are sorted alphabetically.
     
 2008-09-17  fabian
 

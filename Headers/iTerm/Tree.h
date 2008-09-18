@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.h,v 1.3 2006-10-20 05:40:08 yfabian Exp $
+// $Id: Tree.h,v 1.4 2008-09-18 18:03:05 yfabian Exp $
 //
 /*
  **  Tree.h
@@ -83,6 +83,7 @@
 
 - (void)recursiveSortChildren;
     // sort children using the compare: method in TreeNodeData
+- (NSComparisonResult) compare: (id) comparator;
 
 - (int) indexForNode: (id) node;
 - (id) nodeForIndex: (int) index;

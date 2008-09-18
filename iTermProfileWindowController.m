@@ -108,6 +108,7 @@ static BOOL addingKBEntry;
 	[profileOutline deselectAll:nil];
 	[deleteButton setEnabled:NO];
     [duplicateButton setEnabled:NO];
+    [kbEntryTableView setDoubleAction:@selector(kbEntryEdit:)];
 
 	[self showWindow: self];
 }

@@ -6,6 +6,7 @@
     * UI change: The bookmarks window now has a column for shortcut key.
     * Minor UI change: Added shortcut key for menu Reset and Return to Default Size.
     * UI change: Double-clicking the tab bar now launches new tab.
+    * UI change: Double-clicking the key-binding list now opens the edit sheet.
     
 2008-09-17  fabian
 

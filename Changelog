@@ -4,6 +4,7 @@
     * UI change: Now bookmarks are sorted alphabetically.
     * UI change: Now you can open all items in a bookmark folder from the bookmark window.
     * UI change: The bookmarks window now has a column for shortcut key.
+    * Minor UI change: Added shortcut key for menu Reset and Return to Default Size.
     
 2008-09-17  fabian
 

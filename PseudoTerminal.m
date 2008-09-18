@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.419 2008-09-17 23:16:39 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.420 2008-09-18 20:04:39 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2389,6 +2389,11 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 	[tabView selectTabViewItem:tabViewItem];
 	[ITConfigPanelController show];
+}
+
+- (void)tabViewDoubleClickTabBar:(NSTabView *)tabView
+{
+    [self addNewSession: [[ITAddressBookMgr sharedInstance] defaultBookmarkData]];
 }
 
 - (void) setLabelColor: (NSColor *) color forTabViewItem: tabViewItem

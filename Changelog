@@ -2,6 +2,7 @@
 
     * Minor UI change: Double-clicking a bookmark item now launches it.
     * UI change: Now bookmarks are sorted alphabetically.
+    * UI change: Now you can open all items in a bookmark folder from the bookmark window.
     
 2008-09-17  fabian
 

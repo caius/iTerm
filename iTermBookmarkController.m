@@ -124,14 +124,7 @@ static BOOL editingBookmark = NO;
 			[bookmarkEditButton setEnabled: YES];
             [launchButton setEnabled: YES];
 		}
-		// check for folder
-		else if([[ITAddressBookMgr sharedInstance] isExpandable: selectedItem])
-		{
-			[bookmarkEditButton setEnabled: NO];
-			[defaultSessionButton setEnabled: NO];
-            [launchButton setEnabled: NO];
-        }		
-		else
+		else 
 		{
 			[defaultSessionButton setState: NSOffState];
 			[defaultSessionButton setEnabled: YES];
@@ -170,13 +163,13 @@ static BOOL editingBookmark = NO;
     return [[ITAddressBookMgr sharedInstance] objectForKey:[tableColumn identifier] inItem: item];
 }
 
-/*
+
 // Optional method: needed to allow editing.
 - (void)outlineView:(NSOutlineView *)olv setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item  
 {
 	[[ITAddressBookMgr sharedInstance] setObjectValue: object forKey:[tableColumn identifier] inItem: item];	
 }
-*/
+
 // ================================================================
 //  NSOutlineView data source methods. (dragging related)
 // ================================================================
@@ -235,6 +228,11 @@ static BOOL editingBookmark = NO;
     return YES;
 }
 
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+    // Only folder names can be changed directly
+    return ([[ITAddressBookMgr sharedInstance] isExpandable: item]);
+}
 
 // Bookmark actions
 - (IBAction) addBookmarkFolder: (id) sender
@@ -423,11 +421,27 @@ static BOOL editingBookmark = NO;
 	
 
 	selectedItem = [bookmarksView itemAtRow: selectedRow];
-	if(selectedItem != nil && [selectedItem isLeaf])
-	{
-		[[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] 
-                                              inTerminal: sender!=bookmarksView?([sender selectedSegment] ? nil :[[iTermController sharedInstance] currentTerminal]):[[iTermController sharedInstance] currentTerminal]];
-	}
+	if(selectedItem != nil) {
+        if ([selectedItem isLeaf])
+        {
+            [[iTermController sharedInstance] launchBookmark: [selectedItem nodeData] 
+                                                  inTerminal: sender!=bookmarksView?([sender selectedSegment] ? nil :[[iTermController sharedInstance] currentTerminal]):[[iTermController sharedInstance] currentTerminal]];
+        }
+        else if (sender!=bookmarksView) {
+            NSEnumerator *nodeEnum = [[selectedItem children] objectEnumerator];
+            TreeNode *node = nil;
+            BOOL first=YES;
+            while((node=[nodeEnum nextObject])) {
+                if ([node isLeaf])
+                {
+                    [[iTermController sharedInstance] launchBookmark: [node nodeData] 
+                                                          inTerminal: [sender selectedSegment] && first ? nil :[[iTermController sharedInstance] currentTerminal]];
+                    first=NO;
+                }
+            }
+            
+        }
+    }
 }
 
 @end

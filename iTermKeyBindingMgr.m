@@ -153,8 +153,8 @@ static iTermKeyBindingMgr *singleInstance = nil;
 {
 	if([aString length] > 0)
 	{
-		[profiles removeObjectForKey: aString];
 		[self updateBookmarkProfile: aString with:@"Default"];
+		[profiles removeObjectForKey: aString];
 	}
 }
 

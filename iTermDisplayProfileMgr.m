@@ -184,8 +184,8 @@ static iTermDisplayProfileMgr *singleInstance = nil;
 	if([profileName length] <= 0)
 		return;
 	
-	[profiles removeObjectForKey: profileName];
 	[self updateBookmarkProfile: profileName with:@"Default"];
+	[profiles removeObjectForKey: profileName];
 }
 
 - (BOOL) isDefaultProfile: (NSString *) profileName

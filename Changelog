@@ -7,6 +7,7 @@
     * Minor UI change: Added shortcut key for menu Reset and Return to Default Size.
     * UI change: Double-clicking the tab bar now launches new tab.
     * UI change: Double-clicking the key-binding list now opens the edit sheet.
+    * Fixed a bug that crashes iTerm when a profile is deleted.
     
 2008-09-17  fabian
 

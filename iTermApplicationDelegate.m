@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.66 2008-09-17 20:23:15 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.67 2008-09-21 01:41:17 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -41,6 +41,7 @@
 #import <iTermDisplayProfileMgr.h>
 #import <Tree.h>
 
+#include <unistd.h>
 
 static NSString *SCRIPT_DIRECTORY = @"~/Library/Application Support/iTerm/Scripts";
 static NSString* AUTO_LAUNCH_SCRIPT = @"~/Library/Application Support/iTerm/AutoLaunch.scpt";

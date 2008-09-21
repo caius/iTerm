@@ -1,3 +1,7 @@
+2008-09-20	fabian
+
+	* Added support ESC\ as the end of string to VT100Terminal.
+	
 2008-09-18  fabian
 
     * Minor UI change: Double-clicking a bookmark item now launches it.

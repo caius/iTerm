@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.132 2008-09-09 22:02:33 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.133 2008-09-21 01:41:16 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -677,20 +677,28 @@ static VT100TCC decode_xterm(unsigned char *datap,
             unrecognized=YES;
         }
         else {
+			BOOL str_end=NO;;
             c=s;
             datalen--;
             datap++;
             (*rmlen)++;
             while (*datap!=0x007&&datalen>0) {
+				if (*datap==0x1b && datalen>2 && *(datap+1)=='\\') { 
+					datap++;
+					datalen--;
+					(*rmlen)++;
+					str_end=YES;
+					break;
+				}
 				if (c-s<MAX_BUFFER_LENGTH) {
 					*c=*datap;
 					c++;
 				}
-                datalen--;
+				datalen--;
                 datap++;
                 (*rmlen)++;
             }
-            if (*datap!=0x007 || datalen==0) {
+            if ((*datap!=0x007 && !str_end) || datalen==0) {
                 if (datalen>0) unrecognized=YES;
                 else {
                     *rmlen=0;
@@ -730,8 +738,10 @@ static VT100TCC decode_xterm(unsigned char *datap,
                 result.type = ITERM_GROWL;
                 break;
             case 2:
-            default:
                 result.type = XTERMCC_WIN_TITLE;
+				break;
+            default:
+				result.type = VT100_NOTSUPPORT;
 				break;
         }
 		//        NSLog(@"result: %d[%@],%d",result.type,result.u.string,*rmlen);

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.420 2008-09-18 20:04:39 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.421 2008-09-22 19:13:12 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1519,7 +1519,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal windowDidDeminiaturize:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-	[self enableBlur];
+	[self setBlur: blur];
 }
 
 - (BOOL)windowShouldClose:(NSNotification *)aNotification

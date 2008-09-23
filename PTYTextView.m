@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.318 2008-09-15 20:58:31 yfabian Exp $
+// $Id: PTYTextView.m,v 1.319 2008-09-23 13:11:04 delx Exp $
 /*
  **  PTYTextView.m
  **
@@ -777,7 +777,7 @@ static int cacheCellSize;
 	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
 	BOOL fillBG = NO;
     
-    float trans = useTransparency ? 1.0 - transparency : 1.0;
+    float alpha = [self _opacity];
     
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
@@ -794,7 +794,7 @@ static int cacheCellSize;
 	// set the background color, used for drawing background and margins
 ///	aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
 	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
-	aColor = [aColor colorWithAlphaComponent: trans];
+	aColor = [aColor colorWithAlphaComponent: alpha];
 	[aColor set];
 
 	// redraw the entire background
@@ -905,7 +905,7 @@ static int cacheCellSize;
 					}
 					if (fillBG) {
 						aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
-						aColor = [aColor colorWithAlphaComponent: trans];
+						aColor = [aColor colorWithAlphaComponent: alpha];
 						[aColor set];
 						NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 					}
@@ -933,7 +933,7 @@ static int cacheCellSize;
 					}
 					if (fillBG) {
 						aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
-						aColor = [aColor colorWithAlphaComponent: trans];
+						aColor = [aColor colorWithAlphaComponent: alpha];
 						[aColor set];
 						NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 					}
@@ -956,7 +956,7 @@ static int cacheCellSize;
 			}
 			if (fillBG) {
 				aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
-				aColor = [aColor colorWithAlphaComponent: trans];
+				aColor = [aColor colorWithAlphaComponent: alpha];
 				[aColor set];
 				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 			}
@@ -1033,7 +1033,7 @@ static int cacheCellSize;
 			// get the cursor line
 			theLine = [dataSource getLineAtScreenIndex: y1];
 			
-			[[[self defaultCursorColor] colorWithAlphaComponent: trans] set];
+			[[[self defaultCursorColor] colorWithAlphaComponent: alpha] set];
 
 			switch ([[PreferencePanel sharedInstance] cursorType]) {
 				case CURSOR_BOX:
@@ -2592,6 +2592,16 @@ static int cacheCellSize;
 //
 @implementation PTYTextView (Private)
 
+- (float) _opacity
+{
+	// Disable transparency in full-screen mode to prevent ugly grey
+	// backgrounds instead of white
+	if (useTransparency && ![[[dataSource session] parent] fullScreen])
+		return 1.0 - transparency;
+	else
+		return 1.0;
+}
+
 - (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withBGColor:(NSColor*)bgColor withFont:(NSFont*)aFont bold:(int)bold
 {
 	NSString  *crap;
@@ -2651,7 +2661,7 @@ static int cacheCellSize;
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	if (bgColor) {
-		bgColor = [bgColor colorWithAlphaComponent: (useTransparency ? 1.0 - transparency : 1.0)];
+		bgColor = [bgColor colorWithAlphaComponent: [self _opacity]];
 		[bgColor set];
 		NSRectFill(NSMakeRect(0,0,[image size].width,[image size].height));
 	}

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.67 2008-09-09 21:37:54 yfabian Exp $
+// $Id: PTYTextView.h,v 1.68 2008-09-23 13:11:04 delx Exp $
 //
 /*
  **  PTYTextView.h
@@ -318,6 +318,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (BOOL) _findMatchingParenthesis: (NSString *) parenthesis withX:(int)X Y:(int)Y;
 - (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent;
 - (void) _dragText: (NSString *) aString forEvent: (NSEvent *) theEvent;
+- (float) _opacity;
 
 @end
 

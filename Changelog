@@ -1,6 +1,8 @@
 2008-09-23	delx
 
-	* Transparency doesn't work in full-screen, so disable it.
+	* Backed out duplicate change.
+	* Don't allow toggling transparency in full screen mode
+	* Full screen windows get a window title
 
 2008-09-22  fabian
     

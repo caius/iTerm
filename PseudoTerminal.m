@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.423 2008-09-23 06:27:27 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.424 2008-09-23 23:27:31 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1384,6 +1384,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void) setUseTransparency: (BOOL) flag
 {
+	if (_fullScreen) return;
+
 	useTransparency = flag;
 	[[self window] setAlphaValue:flag?0.9999:1];
 	
@@ -1782,6 +1784,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			fullScreenTerminal->_resizeInProgressFlag = NO;
 			[[fullScreenTerminal tabView] selectTabViewItemWithIdentifier:currentSession];
 			[fullScreenTerminal setWindowSize];
+			[fullScreenTerminal setWindowTitle];
 			[[self window] close];
 		}
 	}

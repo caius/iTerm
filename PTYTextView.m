@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.319 2008-09-23 13:11:04 delx Exp $
+// $Id: PTYTextView.m,v 1.320 2008-09-23 23:26:36 delx Exp $
 /*
  **  PTYTextView.m
  **
@@ -777,7 +777,7 @@ static int cacheCellSize;
 	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
 	BOOL fillBG = NO;
     
-    float alpha = [self _opacity];
+    float alpha = useTransparency ? 1.0 - transparency : 1.0;
     
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
@@ -2592,16 +2592,6 @@ static int cacheCellSize;
 //
 @implementation PTYTextView (Private)
 
-- (float) _opacity
-{
-	// Disable transparency in full-screen mode to prevent ugly grey
-	// backgrounds instead of white
-	if (useTransparency && ![[[dataSource session] parent] fullScreen])
-		return 1.0 - transparency;
-	else
-		return 1.0;
-}
-
 - (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withBGColor:(NSColor*)bgColor withFont:(NSFont*)aFont bold:(int)bold
 {
 	NSString  *crap;
@@ -2661,7 +2651,7 @@ static int cacheCellSize;
 	[image lockFocus];
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	if (bgColor) {
-		bgColor = [bgColor colorWithAlphaComponent: [self _opacity]];
+		bgColor = [bgColor colorWithAlphaComponent: useTransparency ? 1.0 - transparency : 1.0];
 		[bgColor set];
 		NSRectFill(NSMakeRect(0,0,[image size].width,[image size].height));
 	}

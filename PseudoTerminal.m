@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.421 2008-09-22 19:13:12 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.422 2008-09-23 04:18:47 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1774,6 +1774,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 				[[aSession TEXTVIEW] setCharWidth: [fullScreenTerminal charWidth]];
 				[[aSession TEXTVIEW] setLineHeight: [fullScreenTerminal charHeight]];
 				[[aSession TEXTVIEW] setLineWidth: [fullScreenTerminal width] * [fullScreenTerminal charWidth]];
+				[[aSession TEXTVIEW] setUseTransparency: NO];
 				
 				// release the tabViewItem
 				[aTabViewItem release];
@@ -1815,6 +1816,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 				[[aSession TEXTVIEW] setCharWidth: [normalScreenTerminal charWidth]];
 				[[aSession TEXTVIEW] setLineHeight: [normalScreenTerminal charHeight]];
 				[[aSession TEXTVIEW] setLineWidth: [normalScreenTerminal width] * [normalScreenTerminal charWidth]];
+				[[aSession TEXTVIEW] setUseTransparency: [self useTransparency]];
 				
 				// release the tabViewItem
 				[aTabViewItem release];

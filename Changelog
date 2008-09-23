@@ -1,6 +1,7 @@
 2008-09-22  fabian
     
     * Fixed a bug that enables blur when de-miniaturizing windows.
+	* Disable transparency in the full screen mode.
     
 2008-09-20	fabian
 

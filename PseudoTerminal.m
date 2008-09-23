@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.422 2008-09-23 04:18:47 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.423 2008-09-23 06:27:27 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2140,6 +2140,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [[aSession TEXTVIEW] setFont:[term font] nafont:[term nafont]];
     [[aSession TEXTVIEW] setCharWidth: [term charWidth]];
     [[aSession TEXTVIEW] setLineHeight: [term charHeight]];
+	[[aSession TEXTVIEW] setUseTransparency: [term useTransparency]];
     [[aSession TEXTVIEW] setLineWidth: [term width] * [term charWidth]];
     if ([[term tabView] numberOfTabViewItems] == 1) [term setWindowSize];
 

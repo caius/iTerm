@@ -31,12 +31,13 @@
 
 <FONT SIZE="5"><STRONG>Features:</STRONG></FONT><BR>
 <UL>
-<LI>Native Cocoa application that runs both on Tiger and Panther.</LI>
+<LI>Native Cocoa application that runs on Leopard, Tiger and Panther.</LI>
   <UL>
     <LI>Native OS X user interface</LI>
     <LI>Support for both PowerPC and Intel Macs</LI>
 	<LI>Applescript support</LI>
 	<LI>Transparent windows and custom background pictures</LI>
+    <LI>The full window mode provides a distraction free environment.</LI>
     <LI>Bonjour support</LI>
   </UL>
 <LI>Complete VT100 emulation, with additional support for most common xterm and 

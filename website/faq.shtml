@@ -20,6 +20,10 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>FAQ</STRONG></FONT><BR>
 <UL>
+<LI><STRONG>My preferences are lost after I upgraded!</STRONG><BR>
+    Please quit your iTerm. Then go to ~/Library/Preferences/, and copy or rename
+    iTerm.plist to net.sourceforge.iTerm.plist.<BR><BR>
+    
 <LI><STRONG>Why my arrow/HOME/END keys are not working?</STRONG><BR>
 
     <I>NOTES: </I>In one of the old beta (or beta-beta?) versions, I have included a Terminal

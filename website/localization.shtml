@@ -21,6 +21,9 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Available Localizations</STRONG></FONT>
 <BR><BR>
+
+Warning: These packages are incompatible with the new 0.9.6 version<BR><BR>
+
 <STRONG>Dutch</STRONG><BR>
 Download: 
 <a href="localizations/Dutch-0.9.5.mpkg.zip">0.9.5</a>

@@ -20,6 +20,32 @@
 <TD VALIGN="TOP" BGCOLOR="#FFFFFF">
 <FONT SIZE="5"><STRONG>Version History:</STRONG></FONT>
 <BR><BR>
+<STRONG>Release 0.9.6</STRONG><IMG src="new.gif">  9/24/08<BR>
+This is our first release after Leopard was released. Besides the Leopard support, 
+0.9.6 has the following features and fixes:<BR>
+<UL>
+<LI>"Blur" effect for transparent windows</LI>
+<LI>Full screen mode now supports Spaces and multi-monitor setups.</LI>
+<LI>Automatically set up the locale in terminal sessions.</LI>
+<LI>Dropping a folder to the iTerm icon opens a new sesssion in the folder path.</LI>
+<LI>A bunch of UI improvements, including:</LI>
+    <UL>
+    <LI>New option to prompt a warning when a multi-tab window is to be closed.</LI>
+    <LI>Double-clicking the tab bar now launches a new session.</LI>
+    <LI>Bookmarks are now sorted alphabetically.</LI>
+    <LI>Double-clicking in the bookmark window now launches a bookmark.</LI>
+    <LI>Editing profile names is now correctly implemented.</LI>
+    </UL>
+<LI>As usual, there are many bug fixes including</LI>
+    <UL>
+    <LI>Several keyboard issues are fixed.</LI>
+    <LI>Several fixes for the UTF and double-width characters.</LI>
+    <LI>No more execessive log entries in the system log.</LI>
+    <LI>Fixed a bug that crashes iTerm when using Applescripts.</LI>
+    <LI>Greatly enhanced stability.</LI>
+    </UL>
+</UL>
+
 <STRONG>Release 0.9.5</STRONG> 2/1/07<BR>
 Change list:<BR>
 <UL>

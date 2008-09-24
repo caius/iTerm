@@ -1,4 +1,4 @@
-// $Id: NSStringITerm.m,v 1.10 2008-09-09 22:16:53 yfabian Exp $
+// $Id: NSStringITerm.m,v 1.11 2008-09-24 22:35:38 yfabian Exp $
 /*
  **  NSStringIterm.m
  **
@@ -354,11 +354,15 @@ static const unichar ambiguous_chars[] = {
         break;
 
       case 0x00000004: // UTF-8
+ #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
         localeIdentifier = [[NSLocale currentLocale] localeIdentifier];
         isCJK = [localeIdentifier hasPrefix:@"ja_"] ||
           [localeIdentifier hasPrefix:@"kr_"] ||
           [localeIdentifier hasPrefix:@"zh_"];
         //NSLog(@"locale[%@] looks %s", localeIdentifier, isCJK ? "CJK" : "not CJK");
+#else
+        return NO;
+#endif
         break;
 
       default:

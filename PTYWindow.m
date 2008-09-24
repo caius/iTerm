@@ -1,5 +1,5 @@
 /* -*- mode:objc -*- */
-/* $Id: PTYWindow.m,v 1.16 2008-09-12 14:22:22 delx Exp $ */
+/* $Id: PTYWindow.m,v 1.17 2008-09-24 22:35:39 yfabian Exp $ */
 /* Incorporated into iTerm.app by Ujwal S. Setlur */
 /*
  **  PTYWindow.m
@@ -73,6 +73,7 @@
 
 - (void)enableBlur
 {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	//only works in Leopard (or hopefully later)
 	if (floor(NSAppKitVersionNumber) < 949) return;
 	
@@ -91,10 +92,12 @@
 	CGSSetCIFilterValuesFromDictionary(con, blurFilter, (CFDictionaryRef)optionsDict);
 
 	CGSAddWindowFilter(con, [self windowNumber], blurFilter, kCGWindowFilterUnderlay);
+#endif
 }
 
 - (void)disableBlur
 {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	//only works in Leopard (or hopefully later)
 	if (floor(NSAppKitVersionNumber) < 949) return;
 
@@ -107,6 +110,7 @@
 		CGSReleaseCIFilter(CGSMainConnectionID(), blurFilter);
 		blurFilter = 0;
 	}
+#endif
 }
 
 - (void)toggleToolbarShown:(id)sender

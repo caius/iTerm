@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.320 2008-09-23 23:26:36 delx Exp $
+// $Id: PTYTextView.m,v 1.321 2008-09-24 22:35:39 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -2599,7 +2599,7 @@ static int cacheCellSize;
 	NSFont *theFont;
 	float sw;
 	BOOL renderBold;
-	BOOL tigerOrLater = (NSAppKitVersionNumber > NSAppKitVersionNumber10_3);
+	BOOL tigerOrLater = (floor(NSAppKitVersionNumber) > 743); //NSAppKitVersionNumber10_3);
 	NSFontManager *fontManager = [NSFontManager sharedFontManager];
 	
 	//NSLog(@"%s: drawing char %c", __PRETTY_FUNCTION__, carac);

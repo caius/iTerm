@@ -1,3 +1,8 @@
+2008-09-24  fabian
+
+    * Cleaned up for the 0.9.6 release.
+    * Fixed a few Panther building problems (haven't tested under Panther).
+    
 2008-09-23	delx
 
 	* Backed out duplicate change.

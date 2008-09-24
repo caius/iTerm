@@ -245,6 +245,7 @@ static NSImage *warningImage;
     if ([env objectForKey:COLORFGBG_ENVNAME] == nil && COLORFGBG_VALUE != nil)
         [env setObject:COLORFGBG_VALUE forKey:COLORFGBG_ENVNAME];
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
     NSString* locale = [self _getLocale];
     if(locale != nil) {
         [env setObject:locale forKey:@"LANG"];
@@ -255,7 +256,7 @@ static NSImage *warningImage;
         [env setObject:locale forKey:@"LC_NUMERIC"];
         [env setObject:locale forKey:@"LC_TIME"];
     }
-
+#endif
     if ([env objectForKey:PWD_ENVNAME] == nil)
         [env setObject:[PWD_ENVVALUE stringByExpandingTildeInPath] forKey:PWD_ENVNAME];
 	
@@ -357,7 +358,7 @@ static NSImage *warningImage;
 				//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
 			}
 			else {
-                int r;
+                int r=0;
 				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN printPending]) {
 					r=MPWaitOnSemaphore(updateSemaphore, kDurationForever);
                     if (r==kMPDeletedErr) break;
@@ -1972,6 +1973,7 @@ static NSImage *warningImage;
 
 @implementation PTYSession (Private)
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 - (NSString*)_getLocale
 {
 	// Keep a copy of the current locale setting for this process
@@ -2004,7 +2006,7 @@ static NSImage *warningImage;
 	setlocale(LC_CTYPE, backupLocale);
 	return locale;
 }
-
+#endif
 
 //Update the display if necessary
 - (void)_updateTimerTick:(NSTimer *)aTimer

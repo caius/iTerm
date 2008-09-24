@@ -3,6 +3,7 @@
 	* Backed out duplicate change.
 	* Don't allow toggling transparency in full screen mode
 	* Full screen windows get a window title
+	* Restore windows to correct positions after full screen
 
 2008-09-22  fabian
     

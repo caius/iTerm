@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.424 2008-09-23 23:27:31 delx Exp $
+// $Id: PseudoTerminal.m,v 1.425 2008-09-24 08:47:35 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -137,7 +137,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (id)initWithWindowNibName: (NSString *) windowNibName
 {
-    int i;
 	NSScrollView *aScrollView;
 	NSTableColumn *aTableColumn;
 	NSSize aSize;
@@ -214,18 +213,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[myDrawer setContentView: aScrollView];
 	[aScrollView release];
 	
-    
-    // Look for an available window position
-    for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
-    {
-		if(windowPositions[i] == 0)
-		{
-			[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", i]];
-			windowPositions[i] = (unsigned int) self;
-			break;
-		}
-    }
-	     
 	[self _commonInit];
 	
 #if DEBUG_ALLOC
@@ -265,7 +252,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (id)init
 {
-    return ([self initWithWindowNibName: @"PseudoTerminal"]);
+	self = ([self initWithWindowNibName: @"PseudoTerminal"]);
+
+	// Look for an available window position
+	for (int i = 0; i < CACHED_WINDOW_POSITIONS; i++)
+	{
+		if(windowPositions[i] == 0)
+		{
+			[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", i]];
+			windowPositions[i] = (unsigned int) self;
+			break;
+		}
+	}
+
+	return self;
 }
 
 
@@ -448,6 +448,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(TABVIEW != nil)
 		return;
 	
+	// Take over the window position
+	for (int i = 0; i < CACHED_WINDOW_POSITIONS; i++)
+	{
+		if (windowPositions[i] == (unsigned int)aPseudoTerminal)
+		{
+			if (!_fullScreen)
+				[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", i]];
+			windowPositions[i] = (unsigned int)self;
+			break;
+		}
+	}
+
     if (!_fullScreen) {
 		_toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
 		if ([[self window] respondsToSelector:@selector(setBottomCornerRounded:)])
@@ -1790,7 +1802,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 	else
 	{
-		PseudoTerminal *normalScreenTerminal = [[PseudoTerminal alloc] init];
+		PseudoTerminal *normalScreenTerminal = [[PseudoTerminal alloc] initWithWindowNibName: @"PseudoTerminal"];
 		if ([[[PreferencePanel sharedInstance] window] isVisible]) [NSMenu setMenuBarVisible: YES];
 		if (normalScreenTerminal) {
 			PTYSession *currentSession = [self currentSession];

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.33 2008-08-20 17:20:37 delx Exp $
+// $Id: VT100Terminal.h,v 1.34 2008-09-30 06:21:12 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -118,6 +118,13 @@
 #define XTERMCC_LOWER        99
 #define XTERMCC_SU			 100	 // scroll up
 #define XTERMCC_SD			 101     // scroll down
+#define XTERMCC_REPORT_WIN_STATE	102
+#define XTERMCC_REPORT_WIN_POS		103
+#define XTERMCC_REPORT_WIN_PIX_SIZE	104
+#define XTERMCC_REPORT_WIN_SIZE		105
+#define XTERMCC_REPORT_SCREEN_SIZE	106
+#define XTERMCC_REPORT_ICON_TITLE	107
+#define XTERMCC_REPORT_WIN_TITLE	108
 
 // Some ansi stuff
 #define ANSICSI_CHA	     3000	// Cursor Horizontal Absolute
@@ -272,7 +279,6 @@ typedef enum {
     NSString          *termType;
     NSStringEncoding  ENCODING;
     VT100Screen       *SCREEN;
-	NSLock			  *streamLock;
 
 	unsigned char     *STREAM;
 	int				  current_stream_length;
@@ -382,7 +388,7 @@ typedef enum {
 - (int)foregroundColorCodeReal;
 - (int)backgroundColorCodeReal;
 
-- (NSData *)reportActivePositionWithX:(int)x Y:(int)y;
+- (NSData *)reportActivePositionWithX:(int)x Y:(int)y withQuestion:(BOOL)q;
 - (NSData *)reportStatus;
 - (NSData *)reportDeviceAttribute;
 - (NSData *)reportSecondaryDeviceAttribute;

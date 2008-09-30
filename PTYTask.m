@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.46 2008-09-24 22:35:39 yfabian Exp $
+// $Id: PTYTask.m,v 1.47 2008-09-30 06:21:09 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -43,6 +43,9 @@
 #import <sys/time.h>
 
 #import <iTerm/PTYTask.h>
+
+
+static char readbuf[4096];
 
 @implementation PTYTask
 
@@ -136,113 +139,6 @@ static int writep(int fds, char *buf, size_t len)
     return result;
 }
 
-+ (void)_processReadThread:(PTYTask *)boss
-{
-	NSAutoreleasePool *arPool = [[NSAutoreleasePool alloc] init];;
-    BOOL exitf = NO;
-    int sts;
-	int iterationCount = 0;
-	char readbuf[4096];
-	fd_set rfds,efds;
-	
-#if DEBUG_THREAD
-    NSLog(@"%s(%d):+[PTYTask _processReadThread:%@] start",
-		  __FILE__, __LINE__, [boss description]);
-#endif
-	
-    
-    /*
-	 data receive loop
-	 */
-	iterationCount = 0; 
-    while (exitf == NO) 
-	{
-		
-		// periodically refresh our autorelease pool
-		iterationCount++;			
-		
-		FD_ZERO(&rfds);
-		FD_ZERO(&efds);
-		
-        // check if the session has been terminated
-        if (boss->FILDES==-1) {
-            sts=-1;
-            break;
-        }
-        
-		FD_SET(boss->FILDES, &rfds);
-		FD_SET(boss->FILDES, &efds);
-		
-		sts = select(boss->FILDES + 1, &rfds, NULL, &efds, NULL);
-		
-		if (sts < 0) {
-			break;
-		}
-		else if (FD_ISSET(boss->FILDES, &efds)) {
-			sts = read(boss->FILDES, readbuf, 1);
-#if 0 // debug
-			fprintf(stderr, "read except:%d byte ", sts);
-			if (readbuf[0] & TIOCPKT_FLUSHREAD)
-				fprintf(stderr, "TIOCPKT_FLUSHREAD ");
-			if (readbuf[0] & TIOCPKT_FLUSHWRITE)
-				fprintf(stderr, "TIOCPKT_FLUSHWRITE ");
-			if (readbuf[0] & TIOCPKT_STOP)
-				fprintf(stderr, "TIOCPKT_STOP ");
-			if (readbuf[0] & TIOCPKT_START)
-				fprintf(stderr, "TIOCPKT_START ");
-			if (readbuf[0] & TIOCPKT_DOSTOP)
-				fprintf(stderr, "TIOCPKT_DOSTOP ");
-			if (readbuf[0] & TIOCPKT_NOSTOP)
-				fprintf(stderr, "TIOCPKT_NOSTOP ");
-			fprintf(stderr, "\n");
-#endif
-			if (sts == 0) {
-				// session close
-				exitf = YES;
-			}
-		}
-		else if (FD_ISSET(boss->FILDES, &rfds)) {
-			sts = read(boss->FILDES, readbuf, sizeof(readbuf));
-			
-            if (sts == 0) 
-			{
-				exitf = YES;
-            }
-			
-            if (sts > 1) {
-                [boss setHasOutput: YES];
-				[boss readTask:readbuf+1 length:sts-1];
-            }
-            else
-                [boss setHasOutput: NO];
-			
-		}
-		
-		// periodically refresh our autorelease pool
-		if((iterationCount % 50) == 0)
-		{
-			[arPool release];
-			arPool = [[NSAutoreleasePool alloc] init];
-			iterationCount = 0;
-		}
-		
-    }
-	
-	if(sts >= 0) 
-        [boss brokenPipe];
-			
-	[arPool release];
-	
-#if DEBUG_THREAD
-    NSLog(@"%s(%d):+[PTYTask _processReadThread:] finish",
-		  __FILE__, __LINE__);
-#endif
-		
-    MPSignalSemaphore(boss->threadEndSemaphore);
-	
-	[NSThread exit];
-}
-
 - (id)init
 {
 #if DEBUG_ALLOC
@@ -260,10 +156,6 @@ static int writep(int fds, char *buf, size_t len)
     LOG_HANDLE = nil;
     hasOutput = NO;
     
-    // allocate a semaphore to coordinate with thread
-	MPCreateBinarySemaphore(&threadEndSemaphore);
-	
-	
     return self;
 }
 
@@ -278,14 +170,8 @@ static int writep(int fds, char *buf, size_t len)
 	if (FILDES >= 0)
 		close(FILDES);
 
-    MPWaitOnSemaphore(threadEndSemaphore, kDurationForever);
-    MPDeleteSemaphore(threadEndSemaphore);
-	
     [TTY release];
     [PATH release];
-	
-	
-    
     [super dealloc];
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
@@ -357,11 +243,75 @@ static int writep(int fds, char *buf, size_t len)
     TTY = [[NSString stringWithCString:ttyname] retain];
     NSParameterAssert(TTY != nil);
 	
-	// spawn a thread to do the read task
-    [NSThread detachNewThreadSelector:@selector(_processReadThread:)
-            	             toTarget: [PTYTask class]
-						   withObject:self];
 }
+
+- (void)processRead
+{
+    int sts;
+	fd_set rfds,efds;
+	struct timeval timeout={0,0};
+	
+#if DEBUG_THREAD
+    NSLog(@"%s(%d):+[PTYTask _processReadThread:%@] start",
+		  __FILE__, __LINE__, [boss description]);
+#endif
+	
+    
+	FD_ZERO(&rfds);
+	FD_ZERO(&efds);
+	
+	// check if the session has been terminated
+	if (FILDES==-1) {
+		[self brokenPipe];
+		return;
+	}
+	
+	FD_SET(FILDES, &rfds);
+	FD_SET(FILDES, &efds);
+	
+	sts = select(FILDES + 1, &rfds, NULL, &efds, &timeout);
+	
+	if (sts < 0) {
+		[self brokenPipe];
+		return;
+	}
+	else if (FD_ISSET(FILDES, &efds)) {
+		sts = read(FILDES, readbuf, 1);
+#if 0 // debug
+		fprintf(stderr, "read except:%d byte ", sts);
+		if (readbuf[0] & TIOCPKT_FLUSHREAD)
+			fprintf(stderr, "TIOCPKT_FLUSHREAD ");
+		if (readbuf[0] & TIOCPKT_FLUSHWRITE)
+			fprintf(stderr, "TIOCPKT_FLUSHWRITE ");
+		if (readbuf[0] & TIOCPKT_STOP)
+			fprintf(stderr, "TIOCPKT_STOP ");
+		if (readbuf[0] & TIOCPKT_START)
+			fprintf(stderr, "TIOCPKT_START ");
+		if (readbuf[0] & TIOCPKT_DOSTOP)
+			fprintf(stderr, "TIOCPKT_DOSTOP ");
+		if (readbuf[0] & TIOCPKT_NOSTOP)
+			fprintf(stderr, "TIOCPKT_NOSTOP ");
+		fprintf(stderr, "\n");
+#endif
+		if (sts == 0) {
+			[self brokenPipe];
+			return;
+		}
+	}
+	else if (FD_ISSET(FILDES, &rfds)) {
+		BOOL hasNewOutput = NO;
+		do {
+			sts = read(FILDES, readbuf, sizeof(readbuf));
+			
+			if (sts > 1) {
+				hasNewOutput = YES;
+				[self readTask:readbuf+1 length:sts-1];
+			}
+		} while (sts>=sizeof(readbuf));
+		[self setHasOutput: hasNewOutput];
+	}
+}
+
 
 - (BOOL) hasOutput
 {

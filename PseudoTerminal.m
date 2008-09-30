@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.425 2008-09-24 08:47:35 delx Exp $
+// $Id: PseudoTerminal.m,v 1.426 2008-09-30 06:21:09 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -56,7 +56,6 @@
 #import <PSMTabBarControl.h>
 #import <PSMTabStyle.h>
 #import <iTermBookmarkController.h>
-#import <iTermOutlineView.h>
 #import <iTerm/iTermGrowlDelegate.h>
 #include <unistd.h>
 
@@ -197,7 +196,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	aRect = NSZeroRect;
 	aRect.size = aSize;
 	
-	bookmarksView = [[iTermOutlineView alloc] initWithFrame:aRect];
+	bookmarksView = [[NSOutlineView alloc] initWithFrame:aRect];
 	aTableColumn = [[NSTableColumn alloc] initWithIdentifier: @"Name"];
 	[[aTableColumn headerCell] setStringValue: NSLocalizedStringFromTableInBundle(@"Bookmarks",@"iTerm", [NSBundle bundleForClass: [self class]], @"Bookmarks")];
 	[bookmarksView addTableColumn: aTableColumn];
@@ -1132,14 +1131,12 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			[[thisWindow contentView] unlockFocus];*/
 		}			
 		
-		int i, c;
+		int i;
 		for (i=0;i<[TABVIEW numberOfTabViewItems];i++) 
 		{
 			PTYSession *aSession = [[TABVIEW tabViewItemAtIndex: i] identifier];
 			[aSession setObjectCount:i+1];
-            c = [[aSession SCREEN] changeSize];
 			[[aSession SCREEN] resizeWidth:WIDTH height:HEIGHT];
-            [[aSession SCREEN] setChangeSize:c];
 			[[aSession SHELL] setWidth:WIDTH  height:HEIGHT];
 			[[aSession SCROLLVIEW] setLineScroll: [[aSession TEXTVIEW] lineHeight]];
 			[[aSession SCROLLVIEW] setPageScroll: 2*[[aSession TEXTVIEW] lineHeight]];
@@ -1581,7 +1578,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void)windowWillMiniaturize:(NSNotification *)aNotification
 {
-	[self disableBlur];
+	//[self disableBlur];
 }
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification

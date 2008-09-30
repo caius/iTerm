@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.133 2008-09-21 01:41:16 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.134 2008-09-30 06:21:10 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -120,6 +120,7 @@
 #define KEY_FUNCTION_FORMAT  "\033[%d~"
 
 #define REPORT_POSITION      "\033[%d;%dR"
+#define REPORT_POSITION_Q    "\033[?%d;%dR"
 #define REPORT_STATUS        "\033[0n"
 // Device Attribute : VT100 with Advanced Video Option
 #define REPORT_WHATAREYOU    "\033[?1;2c"
@@ -338,7 +339,7 @@ static size_t getCSIParam(unsigned char *datap,
 		else {
             switch (*datap) {
                 case VT100CC_ENQ: break;
-                case VT100CC_BEL: [SCREEN setBell]; break;
+                case VT100CC_BEL: [SCREEN activateBell]; break;
                 case VT100CC_BS:  [SCREEN backSpace]; break;
                 case VT100CC_HT:  [SCREEN setTab]; break;
                 case VT100CC_LF:
@@ -543,6 +544,27 @@ static VT100TCC decode_csi(unsigned char *datap,
                             break;
                         case 6:
                             result.type = XTERMCC_LOWER;
+                            break;
+                        case 11:
+                            result.type = XTERMCC_REPORT_WIN_STATE;
+                            break;
+                        case 13:
+                            result.type = XTERMCC_REPORT_WIN_POS;
+                            break;
+                        case 14:
+                            result.type = XTERMCC_REPORT_WIN_PIX_SIZE;
+                            break;
+                        case 18:
+                            result.type = XTERMCC_REPORT_WIN_SIZE;
+                            break;
+                        case 19:
+                            result.type = XTERMCC_REPORT_SCREEN_SIZE;
+                            break;
+                        case 20:
+                            result.type = XTERMCC_REPORT_ICON_TITLE;
+                            break;
+                        case 21:
+                            result.type = XTERMCC_REPORT_WIN_TITLE;
                             break;
 						default:
 							result.type = VT100_NOTSUPPORT;
@@ -1320,8 +1342,6 @@ static VT100TCC decode_string(unsigned char *datap,
     STREAM = malloc(total_stream_length);
 	current_stream_length = 0;
 
-	streamLock = [[NSLock alloc] init];
-    
     termType = nil;
     for(i = 0; i < TERMINFO_KEYS; i ++) {
         key_strings[i]=NULL;
@@ -1368,8 +1388,6 @@ static VT100TCC decode_string(unsigned char *datap,
 #endif
     
     free(STREAM);
-///	[streamLock unlock];
-	[streamLock release];
     [termType release];
 
 	int i;
@@ -1524,14 +1542,11 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (void)cleanStream
 {
-	[streamLock lock];
 	current_stream_length = 0;
-	[streamLock unlock];
 }
 
 - (void)putStreamData:(char *)data length: (int)length
 {
-	[streamLock lock];
 	if (current_stream_length + length > total_stream_length) {
 		int n = (length + current_stream_length) / STANDARD_STREAM_SIZE;
 		
@@ -1543,7 +1558,6 @@ static VT100TCC decode_string(unsigned char *datap,
 	current_stream_length += length;
     if(current_stream_length == 0)
 		streamOffset = 0;
-	[streamLock unlock];
 }
 
 - (VT100TCC)getNextToken
@@ -1552,10 +1566,6 @@ static VT100TCC decode_string(unsigned char *datap,
     size_t datalen;
     VT100TCC result;
 
-	// acquire lock
-	[streamLock lock];
-
-	
 #if 0
     NSLog(@"buffer data = %s", STREAM);
 #endif
@@ -1622,10 +1632,6 @@ static VT100TCC decode_string(unsigned char *datap,
 			streamOffset += rmlen;
 		}
     }
-	
- 	
-	// release lock
-	[streamLock unlock];
 	
     return result;
 }
@@ -2127,11 +2133,11 @@ static VT100TCC decode_string(unsigned char *datap,
     return BG_COLORCODE;
 }
 
-- (NSData *)reportActivePositionWithX:(int)x Y:(int)y
+- (NSData *)reportActivePositionWithX:(int)x Y:(int)y withQuestion:(BOOL)q
 {
     char buf[64];
 	
-    snprintf(buf, sizeof(buf), REPORT_POSITION, y, x);
+    snprintf(buf, sizeof(buf), q?REPORT_POSITION_Q:REPORT_POSITION, y, x);
 	
     return [NSData dataWithBytes:buf length:strlen(buf)];
 }

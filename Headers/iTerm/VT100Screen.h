@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.h,v 1.37 2008-09-12 21:40:55 yfabian Exp $
+// $Id: VT100Screen.h,v 1.38 2008-09-30 06:21:12 yfabian Exp $
 /*
  **  VT100Screen.h
  **
@@ -30,8 +30,6 @@
 #import <Cocoa/Cocoa.h>
 #import <iTerm/VT100Terminal.h>
 
-enum { NO_CHANGE, CHANGE, CHANGE_PIXEL };
-	
 @class PTYTask;
 @class PTYSession;
 @class PTYTextView;
@@ -104,19 +102,11 @@ typedef struct screen_char_t
 	BOOL printToAnsi;		// YES=ON, NO=OFF, default=NO;
 	NSMutableString *printToAnsiString;
 	
-	NSLock *screenLock;
-
 	// Growl stuff
 	iTermGrowlDelegate* gd;
 	
 	// UI related
-	int changeSize;
-	int newWidth,  newHeight;
-	NSString *newWinTitle;
-	NSString *newIconTitle;
-	BOOL bell;
 	int scrollUpLines;
-	BOOL printPending;
 }
 
 
@@ -155,11 +145,6 @@ typedef struct screen_char_t
 - (screen_char_t *) getLineAtScreenIndex: (int) theIndex;
 - (char *) dirty;
 - (NSString *) getLineString: (screen_char_t *) theLine;
-
-// lock
-- (void) acquireLock;
-- (void) releaseLock;
-- (BOOL) tryLock;
 
 // edit screen buffer
 - (void)putToken:(VT100TCC)token;
@@ -217,19 +202,8 @@ typedef struct screen_char_t
 - (void) printStringToAnsi: (NSString *) aString;
 
 // UI stuff
-- (int)changeSize;
-- (void)setChangeSize:(int)change;
-- (int)newWidth;
-- (int)newHeight;
-- (void) resetChangeSize;
-- (NSString *) newWinTitle;
-- (NSString *) newIconTitle;
-- (void) resetChangeTitle;
-- (void) updateBell;
-- (void) setBell;
 - (int) scrollUpLines;
 - (void) resetScrollUpLines;
-- (BOOL) printPending;
 - (void) doPrint;
 
 // double width

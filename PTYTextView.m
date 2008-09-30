@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.321 2008-09-24 22:35:39 yfabian Exp $
+// $Id: PTYTextView.m,v 1.322 2008-09-30 06:21:09 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -532,11 +532,7 @@ static int cacheCellSize;
 
 - (void) setDataSource: (id) aDataSource
 {
-    id temp = dataSource;
-    
-    [temp acquireLock];
     dataSource = aDataSource;
-    [temp releaseLock];
 }
 
 - (id) delegate
@@ -616,10 +612,8 @@ static int cacheCellSize;
     
     if(dataSource != nil)
     {
-		[dataSource acquireLock];
-        numberOfLines = [dataSource numberOfLines];
-		[dataSource releaseLock];
-
+		numberOfLines = [dataSource numberOfLines];
+		
         height = numberOfLines * lineHeight;
 		aFrame = [self frame];
 		
@@ -782,9 +776,6 @@ static int cacheCellSize;
     if(lineHeight <= 0 || lineWidth <= 0)
         return;
     
-	// get lock on source 
-    if (![dataSource tryLock]) return;
-	
     gettimeofday(&now, NULL);
     if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
         blinkShow = !blinkShow;
@@ -1104,8 +1095,6 @@ static int cacheCellSize;
 	
 
 	forceUpdate=NO;
-    [dataSource releaseLock];
-	
 }
 
 - (void)keyDown:(NSEvent *)event

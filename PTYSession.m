@@ -109,10 +109,6 @@ static NSImage *warningImage;
 	gd = [iTermGrowlDelegate sharedInstance];
     growlIdle = growlNewOutput = NO;
 	
-	// allocate a semaphore to coordinate UI update
-	MPCreateBinarySemaphore(&updateSemaphore);
-
-	
     return (self);
 }
 
@@ -122,9 +118,6 @@ static NSImage *warningImage;
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
 	
-	// release the data processing semaphore
-	MPDeleteSemaphore(updateSemaphore);
-
 	[icon release];
     [TERM_VALUE release];
     [COLORFGBG_VALUE release];
@@ -265,14 +258,20 @@ static NSImage *warningImage;
 			  environment:env
 					width:[SCREEN width]
 				   height:[SCREEN height]];
+	
+	dataTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002
+													target:SHELL
+												  selector:@selector(processRead)
+												  userInfo:nil
+												   repeats:YES] retain];
 
 	/*updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
 													target:self
 												  selector:@selector(_updateTimerTick:)
 												  userInfo:nil
-												   repeats:YES] retain]; 
+												   repeats:YES] retain]; */
 	
-	updateCount = 0; */
+	updateCount = 0;
 		
 }
 
@@ -290,6 +289,10 @@ static NSImage *warningImage;
 	if (updateTimer) {
 		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
 	}
+	if (dataTimer) {
+		[dataTimer invalidate]; [dataTimer release]; dataTimer = nil;
+	}
+	
 	// final update of display
 	[self updateDisplay];
     
@@ -335,6 +338,7 @@ static NSImage *warningImage;
 
 - (void)readTask:(char *)buf length:(int)length
 {
+	BOOL hasOutput = NO;
 	
 	if (buf == NULL || EXIT)
         return;
@@ -358,20 +362,14 @@ static NSImage *warningImage;
 				//NSLog(@"%s(%d):not support token", __FILE__ , __LINE__);
 			}
 			else {
-                int r=0;
-				while ([SCREEN changeSize] != NO_CHANGE || [SCREEN printPending]) {
-					r=MPWaitOnSemaphore(updateSemaphore, kDurationForever);
-                    if (r==kMPDeletedErr) break;
-				}
-				
-                if (r!=kMPDeletedErr) {
-                    [SCREEN putToken:token];
-                    newOutput=YES;
-                    gettimeofday(&lastOutput, NULL);
-                }
+				[SCREEN putToken:token];
+				hasOutput = YES;
 			}
 		}
 	} // end token processing loop
+
+	if (hasOutput) gettimeofday(&lastOutput, NULL);
+	newOutput|=hasOutput;
 }
 
 - (void)brokenPipe
@@ -379,7 +377,20 @@ static NSImage *warningImage;
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
 #endif
-	EXIT = YES;
+	[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
+	withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
+	andNotification:@"Broken Pipes"];
+	
+	[self setLabelAttribute];
+	
+	[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	if ([self autoClose]) {
+		[parent closeSession: self];
+	}
+	else
+	{
+		[self updateDisplay];
+	}
 }
 
 - (BOOL) hasKeyMappingForEvent: (NSEvent *) event highPriority: (BOOL) priority
@@ -1772,10 +1783,8 @@ static NSImage *warningImage;
 		lastUpdate = now;
     }
 	
-    [SCREEN acquireLock];
     [TEXTVIEW scrollLinesUp:[SCREEN scrollUpLines]];
 	[SCREEN resetScrollUpLines];
-    [SCREEN releaseLock];
 
     updateCount = 0;
 }
@@ -2011,74 +2020,12 @@ static NSImage *warningImage;
 //Update the display if necessary
 - (void)_updateTimerTick:(NSTimer *)aTimer
 {   
-	if (EXIT) {
-		[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
-							  withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
-							  andNotification:@"Broken Pipes"];
-		
-		[self setLabelAttribute];
-		
-		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-		if ([self autoClose]) {
-			[parent closeSession: self];
-		}
-		else
-		{
-			[self updateDisplay];
-		}
-	}
-	else {
-		if ([SCREEN printPending]) {
-			[SCREEN doPrint];
-			MPSignalSemaphore(updateSemaphore);
-		}
-		
-		[SCREEN acquireLock];
-		NSString *newTitle;
-		if (newTitle=[SCREEN newWinTitle]) 
-		{
-			//NSLog(@"setting window title to %@", token.u.string);
-			if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [addressBookEntry objectForKey: @"Terminal Profile"]]) 
-				newTitle = [NSString stringWithFormat:@"%@: %@", defaultName, newTitle];
-			[self setWindowTitle: newTitle];
-		}
-		if (newTitle=[SCREEN newIconTitle])
-		{
-			//NSLog(@"setting session title to %@", token.u.string);
-			if ([[iTermTerminalProfileMgr singleInstance] appendTitleForProfile: [addressBookEntry objectForKey: @"Terminal Profile"]]) 
-				newTitle = [NSString stringWithFormat:@"%@: %@", defaultName, newTitle];
-			[self setName: newTitle];
-		}
-		[SCREEN resetChangeTitle];
-		[SCREEN releaseLock];
-	
-		[SCREEN updateBell];
-		
-		switch ([SCREEN changeSize]) {
-			case CHANGE:
-				[parent resizeWindow:[SCREEN newWidth] height:[SCREEN newHeight]];
-				[SCREEN resetChangeSize];
-				// signal the UI updating thread
-				MPSignalSemaphore(updateSemaphore);
-				//[TEXTVIEW scrollEnd];
-				break;
-			case CHANGE_PIXEL:
-				[parent resizeWindowToPixelsWidth:[SCREEN newWidth] height:[SCREEN newHeight]];
-				[SCREEN resetChangeSize];
-				// signal the UI updating thread
-				MPSignalSemaphore(updateSemaphore);
-				//[TEXTVIEW scrollEnd];
-				break;
-		}
-		
-		if ([[TEXTVIEW window] isKeyWindow] && [parent currentSession] == self)
-			[self updateDisplay];
-		else if (!(updateCount%4))
-			[self updateDisplay];
+	if ([[TEXTVIEW window] isKeyWindow] && [parent currentSession] == self)
+		[self updateDisplay];
+	else if (!(updateCount%4))
+		[self updateDisplay];
 
-		updateCount++;
-	}
-	
+	updateCount++;
 }
 
 @end

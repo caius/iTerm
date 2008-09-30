@@ -85,12 +85,10 @@
     BOOL newOutput;
     BOOL growlIdle, growlNewOutput;
 		
-	// semaphore to coordinate updating UI
-	MPSemaphoreID	updateSemaphore;
-	
 	// update timer stuff
     int timerMode;
 	NSTimer *updateTimer;
+	NSTimer *dataTimer;
 	unsigned int updateCount;
 }
 

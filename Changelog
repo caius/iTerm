@@ -1,3 +1,15 @@
+2009-09-29	fabian
+
+	* Implemented xterm's window report sequences.
+	
+2008-09-28	fabian
+
+	* now iTerm uses just one thread to avoid synchronization problem.
+	* Removed all the locks/semaphores, coz we no longer need them
+	* Fixed a bug of processing wrapping text.
+	* Fixed DECCOLM: now screens are correctly cleared.
+
+
 2008-09-24  fabian
 
     * Cleaned up for the 0.9.6 release.

@@ -378,6 +378,11 @@ static BOOL editingBookmark = NO;
 	
 }
 
+- (IBAction) sortBookmark: (id) sender
+{
+	[[[ITAddressBookMgr sharedInstance] rootNode] recursiveSortChildren];
+	[bookmarksView reloadData];
+}
 
 // NSWindow delegate
 - (void)windowWillLoad

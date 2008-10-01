@@ -57,6 +57,8 @@
 				<string>id</string>
 				<key>setDefaultSession</key>
 				<string>id</string>
+				<key>sortBookmark</key>
+				<string>id</string>
 			</dict>
 			<key>CLASS</key>
 			<string>iTermBookmarkController</string>

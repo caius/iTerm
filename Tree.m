@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: Tree.m,v 1.7 2008-09-18 18:03:04 yfabian Exp $
+// $Id: Tree.m,v 1.8 2008-10-01 03:57:40 yfabian Exp $
 //
 /*
  **  Tree.m
@@ -213,13 +213,13 @@
 {
     [nodeChildren insertObject:child atIndex:index];
     [child setNodeParent: self];
-    [nodeChildren sortUsingSelector:@selector(compare:)];
+    //[nodeChildren sortUsingSelector:@selector(compare:)];
 }
 
 - (void)insertChildren:(NSArray*)children atIndex:(int)index {
     [nodeChildren insertObjectsFromArray: children atIndex: index];
     [children makeObjectsPerformSelector:@selector(setNodeParent:) withObject:self];
-    [nodeChildren sortUsingSelector:@selector(compare:)];
+    //[nodeChildren sortUsingSelector:@selector(compare:)];
 }
 
 - (void)_removeChildrenIdenticalTo:(NSArray*)children {

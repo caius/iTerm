@@ -152,7 +152,7 @@ static TreeNode *defaultBookmark = nil;
 		[bookmarks insertChild: bonjourGroup atIndex: [bookmarks numberOfChildren]];
 	}	
 
-    [bookmarks recursiveSortChildren];
+    //[bookmarks recursiveSortChildren];
 }
 
 - (NSDictionary *) bookmarks

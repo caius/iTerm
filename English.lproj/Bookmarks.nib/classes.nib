@@ -68,6 +68,8 @@
 			<dict>
 				<key>addBookmarkFolderPanel</key>
 				<string>NSPanel</string>
+				<key>addFolderPanelTitle</key>
+				<string>NSTextField</string>
 				<key>bookmarkCommand</key>
 				<string>NSTextField</string>
 				<key>bookmarkDeleteButton</key>

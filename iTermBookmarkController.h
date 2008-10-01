@@ -32,6 +32,7 @@
 	IBOutlet NSPopUpButton *bookmarkDisplayProfile;
 	NSArray	 		*draggedNodes;
 	IBOutlet NSButton *defaultSessionButton;
+	IBOutlet NSTextField *addFolderPanelTitle;
 }
 
 + (iTermBookmarkController*)sharedInstance;

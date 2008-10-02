@@ -274,21 +274,23 @@ static BOOL editingBookmark = NO;
 
 	if ([bookmarksView selectedRow]!=-1) {
 		id selectedItem = [bookmarksView itemAtRow: [bookmarksView selectedRow]];
-		NSString *terminalProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_TERMINAL_PROFILE inItem: selectedItem];
-		NSString *keyboardProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_KEYBOARD_PROFILE inItem: selectedItem];
-		NSString *displayProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_DISPLAY_PROFILE inItem: selectedItem];
-		
-		if([bookmarkTerminalProfile indexOfItemWithTitle: terminalProfile] < 0)
-			terminalProfile = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]], @"Terminal Profiles");
-		[bookmarkTerminalProfile selectItemWithTitle: terminalProfile];
-		
-		if([bookmarkKeyboardProfile indexOfItemWithTitle: keyboardProfile] < 0)
-			keyboardProfile = NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
-		[bookmarkKeyboardProfile selectItemWithTitle: keyboardProfile];
-		
-		if([bookmarkDisplayProfile indexOfItemWithTitle: displayProfile] < 0)
-			displayProfile = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]], @"Display Profiles");
-		[bookmarkDisplayProfile selectItemWithTitle: displayProfile];
+		if ([selectedItem isLeaf]) {
+			NSString *terminalProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_TERMINAL_PROFILE inItem: selectedItem];
+			NSString *keyboardProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_KEYBOARD_PROFILE inItem: selectedItem];
+			NSString *displayProfile = [[ITAddressBookMgr sharedInstance] objectForKey: KEY_DISPLAY_PROFILE inItem: selectedItem];
+			
+			if([bookmarkTerminalProfile indexOfItemWithTitle: terminalProfile] < 0)
+				terminalProfile = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]], @"Terminal Profiles");
+			[bookmarkTerminalProfile selectItemWithTitle: terminalProfile];
+			
+			if([bookmarkKeyboardProfile indexOfItemWithTitle: keyboardProfile] < 0)
+				keyboardProfile = NSLocalizedStringFromTableInBundle(@"Global",@"iTerm", [NSBundle bundleForClass: [self class]], @"Key Binding Profiles");
+			[bookmarkKeyboardProfile selectItemWithTitle: keyboardProfile];
+			
+			if([bookmarkDisplayProfile indexOfItemWithTitle: displayProfile] < 0)
+				displayProfile = NSLocalizedStringFromTableInBundle(@"Default",@"iTerm", [NSBundle bundleForClass: [self class]], @"Display Profiles");
+			[bookmarkDisplayProfile selectItemWithTitle: displayProfile];
+		}
 	}
 
 	[NSApp beginSheet: editBookmarkPanel

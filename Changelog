@@ -1,6 +1,9 @@
 2009-09-30	fabian
 
 	* Bookmark sort now an option.
+	* Folder name in bookmarks window is now editable.
+	* Double-clicking folder names to expand/collapse them.
+	* Fixed a bug that stops one to create a bbookmark in an empty folder.
 	
 2009-09-29	fabian
 

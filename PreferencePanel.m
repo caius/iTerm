@@ -1,4 +1,4 @@
-// $Id: PreferencePanel.m,v 1.161 2008-09-17 20:23:15 yfabian Exp $
+// $Id: PreferencePanel.m,v 1.162 2008-10-02 03:48:36 yfabian Exp $
 /*
  **  PreferencePanel.m
  **
@@ -237,6 +237,7 @@ static NSString *NoHandler = @"<No Handler>";
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[onlyWhenMoreTabs setState:defaultOnlyWhenMoreTabs?NSOnState:NSOffState];
+	[onlyWhenMoreTabs setEnabled: defaultPromptOnClose];
 	[focusFollowsMouse setState: defaultFocusFollowsMouse?NSOnState:NSOffState];
 	[enableBonjour setState: defaultEnableBonjour?NSOnState:NSOffState];
 	[enableGrowl setState: defaultEnableGrowl?NSOnState:NSOffState];
@@ -287,7 +288,8 @@ static NSString *NoHandler = @"<No Handler>";
         defaultPasteFromClipboard=([middleButtonPastesFromClipboard state]==NSOnState);
         defaultPromptOnClose = ([promptOnClose state] == NSOnState);
         defaultOnlyWhenMoreTabs = ([onlyWhenMoreTabs state] == NSOnState);
-        defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
+        [onlyWhenMoreTabs setEnabled: defaultPromptOnClose];
+		defaultFocusFollowsMouse = ([focusFollowsMouse state] == NSOnState);
         defaultEnableBonjour = ([enableBonjour state] == NSOnState);
         defaultEnableGrowl = ([enableGrowl state] == NSOnState);
         defaultCmdSelection = ([cmdSelection state] == NSOnState);
@@ -298,7 +300,7 @@ static NSString *NoHandler = @"<No Handler>";
         defaultWordChars = [[wordChars stringValue] retain];
         defaultQuitWhenAllWindowsClosed = ([quitWhenAllWindowsClosed state] == NSOnState);
         defaultCheckUpdate = ([checkUpdate state] == NSOnState);
-       
+        
 		if (defaultCheckTestRelease != ([checkTestRelease state] == NSOnState)) {
 		
 			defaultCheckTestRelease = ([checkTestRelease state] == NSOnState);

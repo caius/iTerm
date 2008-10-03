@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.47 2008-09-30 06:21:09 yfabian Exp $
+// $Id: PTYTask.m,v 1.48 2008-10-03 07:31:42 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -299,16 +299,33 @@ static int writep(int fds, char *buf, size_t len)
 		}
 	}
 	else if (FD_ISSET(FILDES, &rfds)) {
-		BOOL hasNewOutput = NO;
+		struct timeval t;
+		double t1;
+		int sum=0;
+		gettimeofday(&t, NULL);
+		t1=t.tv_sec+t.tv_usec*0.0000001+0.004;
+		timeout.tv_usec=5;
 		do {
 			sts = read(FILDES, readbuf, sizeof(readbuf));
-			
+			sum+=sts;
 			if (sts > 1) {
-				hasNewOutput = YES;
+				hasOutput = YES;
 				[self readTask:readbuf+1 length:sts-1];
+				gettimeofday(&t, NULL);
+				if (t.tv_sec+t.tv_usec*0.0000001>t1) break;
+				sts = select(FILDES + 1, &rfds, NULL, &efds, &timeout);
+				if (FD_ISSET(FILDES, &efds)) {
+					sts = read(FILDES, readbuf, 1);
+					if (sts == 0) {
+						[self brokenPipe];
+						return;
+					}
+					else break;
+				}
 			}
-		} while (sts>=sizeof(readbuf));
-		[self setHasOutput: hasNewOutput];
+			else break;
+		} while (FD_ISSET(FILDES, &rfds));
+		NSLog(@"read: %d bytes", sum);
 	}
 }
 

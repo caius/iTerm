@@ -89,7 +89,7 @@ static NSImage *warningImage;
     if((self = [super init]) == nil)
         return (nil);
 	
-    gettimeofday(&lastInput, NULL);
+	gettimeofday(&lastInput, NULL);
     lastOutput = lastBlink = lastUpdate = lastInput;
     antiIdle=EXIT=NO;
     
@@ -259,18 +259,6 @@ static NSImage *warningImage;
 					width:[SCREEN width]
 				   height:[SCREEN height]];
 	
-	dataTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002
-													target:SHELL
-												  selector:@selector(processRead)
-												  userInfo:nil
-												   repeats:YES] retain];
-
-	/*updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
-													target:self
-												  selector:@selector(_updateTimerTick:)
-												  userInfo:nil
-												   repeats:YES] retain]; */
-	
 	updateCount = 0;
 		
 }
@@ -288,9 +276,6 @@ static NSImage *warningImage;
 	//stop the timer;
 	if (updateTimer) {
 		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-	}
-	if (dataTimer) {
-		[dataTimer invalidate]; [dataTimer release]; dataTimer = nil;
 	}
 	
 	// final update of display
@@ -338,8 +323,6 @@ static NSImage *warningImage;
 
 - (void)readTask:(char *)buf length:(int)length
 {
-	BOOL hasOutput = NO;
-	
 	if (buf == NULL || EXIT)
         return;
 	
@@ -363,13 +346,12 @@ static NSImage *warningImage;
 			}
 			else {
 				[SCREEN putToken:token];
-				hasOutput = YES;
 			}
 		}
 	} // end token processing loop
-
-	if (hasOutput) gettimeofday(&lastOutput, NULL);
-	newOutput|=hasOutput;
+	
+	gettimeofday(&lastOutput, NULL);
+	newOutput=YES;
 }
 
 - (void)brokenPipe
@@ -691,8 +673,8 @@ static NSImage *warningImage;
     }
 	
 	// let the update thred update display if a key is being held down
-	if([TEXTVIEW keyIsARepeat] == NO)
-		[self updateDisplay];
+	/*if([TEXTVIEW keyIsARepeat] == NO)
+		[self updateDisplay];*/
 }
 
 - (BOOL)willHandleEvent: (NSEvent *) theEvent
@@ -803,8 +785,8 @@ static NSImage *warningImage;
 		[self writeTask:data];
 
 	// let the update thred update display if a key is being held down
-	if([TEXTVIEW keyIsARepeat] == NO)
-		[self updateDisplay];
+	/*if([TEXTVIEW keyIsARepeat] == NO)
+		[self updateDisplay];*/
 }
 
 - (void)insertNewline:(id)sender
@@ -987,14 +969,14 @@ static NSImage *warningImage;
 	}
     else if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) 
     {
-        if (now.tv_sec - lastOutput.tv_sec > 2) {
+        if (now.tv_sec > lastOutput.tv_sec+2) {
             if(isProcessing)
                 [self setIsProcessing: NO];
 
             if (newOutput)
 			{
 				// Idle after new output
-                if (!growlIdle && now.tv_sec - lastOutput.tv_sec > 60) {
+                if (!growlIdle && now.tv_sec > lastOutput.tv_sec+1) {
                     [gd growlNotify:NSLocalizedStringFromTableInBundle(@"Idle",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
                     withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d becomes idle.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]]  
                     andNotification:@"Idle"];
@@ -1758,10 +1740,10 @@ static NSImage *warningImage;
 - (void) updateDisplay
 {
     struct timeval now;
-	
-    gettimeofday(&now, NULL);
 
-    if (antiIdle && now.tv_sec >= lastInput.tv_sec + 60) {
+	gettimeofday(&now, NULL);
+	
+    if (antiIdle && now.tv_sec >= lastInput.tv_sec+60) {
         [self writeTask:[NSData dataWithBytes:&ai_code length:1]];
         lastInput = now;
     }
@@ -1770,71 +1752,22 @@ static NSImage *warningImage;
 		[self setLabelAttribute];
     }
     
-    if ([parent currentSession] != self && now.tv_sec >= lastOutput.tv_sec + 3 && [self timerMode] != PAUSE_MODE) {
-            [self setTimerMode: PAUSE_MODE];
+	if ([parent currentSession] == self) {
+		if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
+			[TEXTVIEW refresh];
+			lastUpdate = lastBlink = now;
+		}
+		else if (lastOutput.tv_sec*1000+lastOutput.tv_usec/1000 >= lastUpdate.tv_sec*1000 + lastUpdate.tv_usec/1000 + 10) {
+			[TEXTVIEW refresh];
+			lastUpdate = now;
+			if ([SCREEN scrollUpLines]) {
+				[TEXTVIEW scrollLinesUp:[SCREEN scrollUpLines]];
+				[SCREEN resetScrollUpLines];
+			}
+		}
     }
-    
-	if ([[TEXTVIEW window] isKeyWindow] && now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
-        [TEXTVIEW refresh];
-		lastUpdate = lastBlink = now;
-	}
-	else if (lastOutput.tv_sec > lastUpdate.tv_sec || (lastOutput.tv_sec == lastUpdate.tv_sec &&lastOutput.tv_usec > lastUpdate.tv_usec) ) {
-        [TEXTVIEW refresh];
-		lastUpdate = now;
-    }
-	
-    [TEXTVIEW scrollLinesUp:[SCREEN scrollUpLines]];
-	[SCREEN resetScrollUpLines];
-
-    updateCount = 0;
 }
 
-- (int)timerMode
-{
-    return timerMode;
-}
-
-- (void)setTimerMode:(int)mode
-{	
-
-	if (EXIT) return;
-	
-	//stop the timer;
-	if (updateTimer) {
-		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-	}
-
-    timerMode = mode;
-	switch (mode) {
-		case FAST_MODE:
-            //NSLog(@"Entering fast: %@",self);
-			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.002 * [[PreferencePanel sharedInstance] refreshRate]
-															target:self
-														  selector:@selector(_updateTimerTick:)
-														  userInfo:nil
-														   repeats:YES] retain]; 
-			
-			break;
-		case SLOW_MODE:
-            //NSLog(@"Entering slow: %@",self);
-			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:0.25
-															target:self
-														  selector:@selector(_updateTimerTick:)
-														  userInfo:nil
-														   repeats:YES] retain]; 
-			
-			break;
-        case PAUSE_MODE:
-            //NSLog(@"Entering pause: %@",self);
-			updateTimer = [[NSTimer scheduledTimerWithTimeInterval:1
-															target:self
-														  selector:@selector(_updateTimerTick:)
-														  userInfo:nil
-														   repeats:YES] retain]; 
-            break;
-	}
-	updateCount = 0;
-}
 
 
 // Notification

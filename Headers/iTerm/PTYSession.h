@@ -86,9 +86,7 @@
     BOOL growlIdle, growlNewOutput;
 		
 	// update timer stuff
-    int timerMode;
 	NSTimer *updateTimer;
-	NSTimer *dataTimer;
 	unsigned int updateCount;
 }
 
@@ -242,10 +240,6 @@
 
 // Display timer stuff
 - (void)updateDisplay;
-
-enum {FAST_MODE, SLOW_MODE, PAUSE_MODE};
-- (int) timerMode;
-- (void)setTimerMode:(int)mode;
 
 @end
 

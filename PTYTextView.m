@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.322 2008-09-30 06:21:09 yfabian Exp $
+// $Id: PTYTextView.m,v 1.323 2008-10-03 07:31:42 yfabian Exp $
 /*
  **  PTYTextView.m
  **
@@ -991,10 +991,6 @@ static int cacheCellSize;
 		}
 		curY+=lineHeight;
 	}
-	
-	
-    // Double check if dataSource is still available
-    if (!dataSource) return;
 	
 	x1=[dataSource cursorX]-1;
 	y1=[dataSource cursorY]-1;

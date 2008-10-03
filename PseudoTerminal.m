@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.426 2008-09-30 06:21:09 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.427 2008-10-03 07:31:42 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1594,9 +1594,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     
     // update the cursor
     [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
-    if ([[self currentSession] timerMode] != FAST_MODE) {
-        [[self currentSession] setTimerMode: FAST_MODE];
-    }
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
@@ -2060,7 +2057,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
     if (![[self currentSession] exited]) {
 		[[self currentSession] resetStatus];
-		[[[tabView selectedTabViewItem] identifier] setTimerMode: SLOW_MODE];
 	}
     
 }
@@ -2074,7 +2070,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[[tabViewItem identifier] resetStatus];
 	[[[tabViewItem identifier] SCREEN] setDirty];
 	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
-	[[tabViewItem identifier] setTimerMode: FAST_MODE];
 	if (_fullScreen) {
 		[[[self window] contentView] lockFocus];
 		[[NSColor blackColor] set];
@@ -2721,6 +2716,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[NSMenu setMenuBarVisible: NO];
 }
 
+- (void) processRead
+{
+	PTYSession *aSession;
+	int n = [TABVIEW numberOfTabViewItems];
+	int i;
+	
+	for(i=0;i<n;i++) {
+		aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
+		[[aSession SHELL] processRead];
+		[aSession updateDisplay];
+	}
+}
 
 @end
 

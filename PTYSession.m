@@ -672,9 +672,6 @@ static NSImage *warningImage;
 		}
     }
 	
-	// let the update thred update display if a key is being held down
-	/*if([TEXTVIEW keyIsARepeat] == NO)
-		[self updateDisplay];*/
 }
 
 - (BOOL)willHandleEvent: (NSEvent *) theEvent

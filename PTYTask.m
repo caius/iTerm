@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.48 2008-10-03 07:31:42 yfabian Exp $
+// $Id: PTYTask.m,v 1.49 2008-10-07 23:09:56 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -43,6 +43,7 @@
 #import <sys/time.h>
 
 #import <iTerm/PTYTask.h>
+#import <iTerm/PreferencePanel.h>
 
 
 static char readbuf[4096];
@@ -155,6 +156,7 @@ static int writep(int fds, char *buf, size_t len)
     LOG_PATH = nil;
     LOG_HANDLE = nil;
     hasOutput = NO;
+    updateTimer = nil;
     
     return self;
 }
@@ -164,6 +166,12 @@ static int writep(int fds, char *buf, size_t len)
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+    
+ 	if (updateTimer) {
+		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
+	}
+    
     if (PID > 0)
 		kill(PID, SIGKILL);
     
@@ -240,6 +248,17 @@ static int writep(int fds, char *buf, size_t len)
     sts = ioctl(FILDES, TIOCPKT, &one);
     NSParameterAssert(sts >= 0);
 	
+    dataHandle = [[NSFileHandle alloc] 
+                       initWithFileDescriptor:FILDES];
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:self
+           selector:@selector(processRead)
+               name:NSFileHandleDataAvailableNotification
+             object:nil];
+    [dataHandle waitForDataInBackgroundAndNotify];
+    
+    
+    
     TTY = [[NSString stringWithCString:ttyname] retain];
     NSParameterAssert(TTY != nil);
 	
@@ -303,7 +322,7 @@ static int writep(int fds, char *buf, size_t len)
 		double t1;
 		int sum=0;
 		gettimeofday(&t, NULL);
-		t1=t.tv_sec+t.tv_usec*0.0000001+0.004;
+		t1=t.tv_sec+t.tv_usec*0.000001+(0.001+0.001 * [[PreferencePanel sharedInstance] refreshRate]);
 		timeout.tv_usec=5;
 		do {
 			sts = read(FILDES, readbuf, sizeof(readbuf));
@@ -312,7 +331,7 @@ static int writep(int fds, char *buf, size_t len)
 				hasOutput = YES;
 				[self readTask:readbuf+1 length:sts-1];
 				gettimeofday(&t, NULL);
-				if (t.tv_sec+t.tv_usec*0.0000001>t1) break;
+				if (t.tv_sec+t.tv_usec*0.000001>t1) break;
 				sts = select(FILDES + 1, &rfds, NULL, &efds, &timeout);
 				if (FD_ISSET(FILDES, &efds)) {
 					sts = read(FILDES, readbuf, 1);
@@ -325,8 +344,16 @@ static int writep(int fds, char *buf, size_t len)
 			}
 			else break;
 		} while (FD_ISSET(FILDES, &rfds));
-		NSLog(@"read: %d bytes", sum);
+		//NSLog(@"read: %d bytes", sum);
 	}
+    [dataHandle waitForDataInBackgroundAndNotify];
+    if (!updateTimer) {
+        updateTimer = [[NSTimer scheduledTimerWithTimeInterval:(0.001+0.001 * [[PreferencePanel sharedInstance] refreshRate])
+                                                      target:self
+                                                    selector:@selector(updateDisplay)
+                                                    userInfo:nil
+                                                     repeats:NO] retain];
+    }
 }
 
 
@@ -408,6 +435,7 @@ static int writep(int fds, char *buf, size_t len)
 
 - (void)brokenPipe
 {
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
     if ([DELEGATEOBJECT respondsToSelector:@selector(brokenPipe)]) {
         [DELEGATEOBJECT brokenPipe];
     }
@@ -511,6 +539,17 @@ static int writep(int fds, char *buf, size_t len)
 - (NSString *)description
 {
     return [NSString stringWithFormat:@"PTYTask(pid %d, fildes %d)", PID, FILDES];
+}
+
+@end
+
+@implementation PTYTask (Private)
+
+- (void) updateDisplay
+{   
+    [DELEGATEOBJECT updateDisplay];
+    [updateTimer release];
+    updateTimer = nil;
 }
 
 @end

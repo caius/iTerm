@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.11 2008-09-30 06:21:12 yfabian Exp $
+// $Id: PTYTask.h,v 1.12 2008-10-07 23:09:57 yfabian Exp $
 /*
  **  PTYTask.h
  **
@@ -46,8 +46,10 @@
 
     NSString *LOG_PATH;
     NSFileHandle *LOG_HANDLE;
+    NSFileHandle *dataHandle;
     BOOL hasOutput;
     BOOL firstOutput;
+    NSTimer *updateTimer;
 
 }
 

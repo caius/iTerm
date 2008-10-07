@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.75 2008-10-03 07:31:42 yfabian Exp $
+// $Id: iTermController.m,v 1.76 2008-10-07 23:09:56 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -99,7 +99,7 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	 */
     gd = [iTermGrowlDelegate sharedInstance];
 	
-	dataTimer = [[NSTimer scheduledTimerWithTimeInterval:0.01
+	dataTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
 												  target:self
 												selector:@selector(processRead)
 												userInfo:nil
@@ -560,6 +560,7 @@ NSString *terminalsKey = @"terminals";
 	
     while ((term=[en_window nextObject])) {
         [term processRead];
+//        [[term currentSession] updateDisplay];
     }
 }
 

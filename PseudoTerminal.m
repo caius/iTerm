@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.427 2008-10-03 07:31:42 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.428 2008-10-07 23:09:56 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2724,7 +2724,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	for(i=0;i<n;i++) {
 		aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
-		[[aSession SHELL] processRead];
+		//[[aSession SHELL] processRead];
 		[aSession updateDisplay];
 	}
 }

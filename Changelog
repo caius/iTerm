@@ -1,3 +1,8 @@
+2009-10-07  fabian
+
+    * We now use NSConnection to monitor session activity in PTYTask.m. The CPU
+      usage is very low even with lots of tabs open.
+    
 2009-10-01	fabian
 
 	* Tweaked close confirmation behavior.

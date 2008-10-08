@@ -2,6 +2,7 @@
 
     * We now use NSConnection to monitor session activity in PTYTask.m. The CPU
       usage is very low even with lots of tabs open.
+	* Allow bookmark names to include macros defined by $$ (bug #2142459).
     
 2009-10-01	fabian
 

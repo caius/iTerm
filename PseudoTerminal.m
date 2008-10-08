@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.428 2008-10-07 23:09:56 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.429 2008-10-08 04:30:47 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2666,23 +2666,22 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	[self setWindowSize];
 }
 
-- (NSString *) _getSessionParameters: (NSString *) command
+- (void) _getSessionParameters: (NSMutableString *) command withName:(NSMutableString *)name
 {
-	NSMutableString *completeCommand = [[NSMutableString alloc] initWithString:command];
 	NSRange r1, r2, currentRange;
 	
 	
 	while (1)
 	{
-		currentRange = NSMakeRange(0,[completeCommand length]);
-		r1 = [completeCommand rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
+		currentRange = NSMakeRange(0,[command length]);
+		r1 = [command rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
 		if (r1.location == NSNotFound) break;
 		currentRange.location = r1.location + 2;
 		currentRange.length -= r1.location + 2;
-		r2 = [completeCommand rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
+		r2 = [command rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
 		if (r2.location == NSNotFound) break;
 		
-		[parameterName setStringValue: [completeCommand substringWithRange:NSMakeRange(r1.location+2, r2.location - r1.location-2)]];
+		[parameterName setStringValue: [command substringWithRange:NSMakeRange(r1.location+2, r2.location - r1.location-2)]];
 		[parameterValue setStringValue:@""];
 		[NSApp beginSheet: parameterPanel
 		   modalForWindow: [self window]
@@ -2695,10 +2694,36 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[NSApp endSheet:parameterPanel];
 		[parameterPanel orderOut:self];
 
-		[completeCommand replaceOccurrencesOfString:[completeCommand  substringWithRange:NSMakeRange(r1.location, r2.location - r1.location+2)] withString:[parameterValue stringValue] options:NSLiteralSearch range:NSMakeRange(0,[completeCommand length])];
+		[name replaceOccurrencesOfString:[command  substringWithRange:NSMakeRange(r1.location, r2.location - r1.location+2)] withString:[parameterValue stringValue] options:NSLiteralSearch range:NSMakeRange(0,[name length])];
+		[command replaceOccurrencesOfString:[command  substringWithRange:NSMakeRange(r1.location, r2.location - r1.location+2)] withString:[parameterValue stringValue] options:NSLiteralSearch range:NSMakeRange(0,[command length])];
 	}
 	
-	return completeCommand;
+	while (1)
+	{
+		currentRange = NSMakeRange(0,[name length]);
+		r1 = [name rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
+		if (r1.location == NSNotFound) break;
+		currentRange.location = r1.location + 2;
+		currentRange.length -= r1.location + 2;
+		r2 = [name rangeOfString:@"$$" options:NSLiteralSearch range:currentRange];
+		if (r2.location == NSNotFound) break;
+		
+		[parameterName setStringValue: [name substringWithRange:NSMakeRange(r1.location+2, r2.location - r1.location-2)]];
+		[parameterValue setStringValue:@""];
+		[NSApp beginSheet: parameterPanel
+		   modalForWindow: [self window]
+			modalDelegate: self
+		   didEndSelector: nil
+			  contextInfo: nil];
+		
+		[NSApp runModalForWindow:parameterPanel];
+		
+		[NSApp endSheet:parameterPanel];
+		[parameterPanel orderOut:self];
+		
+		[name replaceOccurrencesOfString:[name  substringWithRange:NSMakeRange(r1.location, r2.location - r1.location+2)] withString:[parameterValue stringValue] options:NSLiteralSearch range:NSMakeRange(0,[name length])];
+	}
+	
 }
 
 - (void) hideMenuBar
@@ -2856,14 +2881,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [self appendSession: aSession];
     if ([aSession SCREEN]) {
         
-        
-        NSString *cmd;
+        NSMutableString *cmd, *name;
         NSArray *arg;
         NSString *pwd;
         
         // Grab the addressbook command
-        cmd = [self _getSessionParameters: [addressbookEntry objectForKey: KEY_COMMAND]];
-        
+		cmd = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_COMMAND]] autorelease];
+		name = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_NAME]] autorelease];
+        // Get session parameters
+		[self _getSessionParameters: cmd withName:name];
+		
         [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
         
         pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
@@ -2871,7 +2898,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             pwd = NSHomeDirectory();
         NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
         
-        [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+        [self setCurrentSessionName:name];	
         
         // Start the command        
         [self startProgram:cmd arguments:arg environment:env];
@@ -2901,7 +2928,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
        
         // We process the cmd to insert URL parts
         NSMutableString *cmd = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_COMMAND]] autorelease];
-        NSURL *urlRep = [NSURL URLWithString: url];
+        NSMutableString *name = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_NAME]] autorelease];
+		NSURL *urlRep = [NSURL URLWithString: url];
         
         
         // Grab the addressbook command
@@ -2912,7 +2940,18 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         [cmd replaceOccurrencesOfString:@"$$PORT$$" withString:[urlRep port]?[[urlRep port] stringValue]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
         [cmd replaceOccurrencesOfString:@"$$PATH$$" withString:[urlRep path]?[urlRep path]:@"" options:NSLiteralSearch range:NSMakeRange(0, [cmd length])];
 
-        NSArray *arg;
+		// Update the addressbook title
+		[name replaceOccurrencesOfString:@"$$URL$$" withString:url options:NSLiteralSearch range:NSMakeRange(0, [name length])];
+		[name replaceOccurrencesOfString:@"$$HOST$$" withString:[urlRep host]?[urlRep host]:@"" options:NSLiteralSearch range:NSMakeRange(0, [name length])];
+		[name replaceOccurrencesOfString:@"$$USER$$" withString:[urlRep user]?[urlRep user]:@"" options:NSLiteralSearch range:NSMakeRange(0, [name length])];
+		[name replaceOccurrencesOfString:@"$$PASSWORD$$" withString:[urlRep password]?[urlRep password]:@"" options:NSLiteralSearch range:NSMakeRange(0, [name length])];
+		[name replaceOccurrencesOfString:@"$$PORT$$" withString:[urlRep port]?[[urlRep port] stringValue]:@"" options:NSLiteralSearch range:NSMakeRange(0, [name length])];
+		[name replaceOccurrencesOfString:@"$$PATH$$" withString:[urlRep path]?[urlRep path]:@"" options:NSLiteralSearch range:NSMakeRange(0, [name length])];
+        
+		// Get remaining session parameters
+		[self _getSessionParameters: cmd withName:name];
+		
+		NSArray *arg;
         NSString *pwd;
         [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
         
@@ -2921,10 +2960,10 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             pwd = NSHomeDirectory();
         NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
         
-        [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+        [self setCurrentSessionName: name];	
         
         // Start the command        
-        [self startProgram:[self _getSessionParameters: cmd] arguments:arg environment:env];
+        [self startProgram:cmd arguments:arg environment:env];
 	}
     [aSession release];
 }
@@ -2947,19 +2986,28 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     // Add this session to our term and make it current
     [self appendSession: aSession];
     if ([aSession SCREEN]) {
+        
+		NSMutableString *cmd, *name;
         NSArray *arg;
         NSString *pwd;
-        [PseudoTerminal breakDown:command cmdPath:&command cmdArgs:&arg];
+        
+		// Grab the addressbook command
+		cmd = [[[NSMutableString alloc] initWithString:command] autorelease];
+		name = [[[NSMutableString alloc] initWithString:[addressbookEntry objectForKey: KEY_NAME]] autorelease];
+        // Get session parameters
+		[self _getSessionParameters: cmd withName:name];
+		
+		[PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
         
         pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
         if([pwd length] <= 0)
             pwd = NSHomeDirectory();
         NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
         
-        [self setCurrentSessionName:[addressbookEntry objectForKey: KEY_NAME]];	
+        [self setCurrentSessionName:name];	
         
         // Start the command        
-        [self startProgram:[self _getSessionParameters: command] arguments:arg environment:env];
+        [self startProgram:cmd arguments:arg environment:env];
     }
 	
     [aSession release];

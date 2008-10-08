@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.59 2008-10-03 07:31:43 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.60 2008-10-08 05:54:50 yfabian Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -240,7 +240,7 @@
 				  height:(float) height
 				   lines:(float) lines;
 - (void) hideMenuBar;
-- (void) processRead;
+- (void) processRefresh;
 
 @end
 

@@ -259,8 +259,6 @@ static NSImage *warningImage;
 					width:[SCREEN width]
 				   height:[SCREEN height]];
 	
-	updateCount = 0;
-		
 }
 
 
@@ -272,11 +270,6 @@ static NSImage *warningImage;
     
 	EXIT = YES;
 	[SHELL stop];	
-	
-	//stop the timer;
-	if (updateTimer) {
-		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-	}
 	
 	// final update of display
 	[self updateDisplay];
@@ -365,7 +358,6 @@ static NSImage *warningImage;
 	
 	[self setLabelAttribute];
 	
-	[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
 	if ([self autoClose]) {
 		[parent closeSession: self];
 	}
@@ -1946,16 +1938,5 @@ static NSImage *warningImage;
 	return locale;
 }
 #endif
-
-//Update the display if necessary
-- (void)_updateTimerTick:(NSTimer *)aTimer
-{   
-	if ([[TEXTVIEW window] isKeyWindow] && [parent currentSession] == self)
-		[self updateDisplay];
-	else if (!(updateCount%4))
-		[self updateDisplay];
-
-	updateCount++;
-}
 
 @end

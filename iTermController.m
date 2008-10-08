@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.76 2008-10-07 23:09:56 yfabian Exp $
+// $Id: iTermController.m,v 1.77 2008-10-08 05:54:50 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -99,9 +99,9 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	 */
     gd = [iTermGrowlDelegate sharedInstance];
 	
-	dataTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
+	refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
 												  target:self
-												selector:@selector(processRead)
+												selector:@selector(processRefresh)
 												userInfo:nil
 												 repeats:YES] retain];
 	
@@ -119,8 +119,8 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	if( gd )
 		[gd release];
     
-	if (dataTimer) {
-		[dataTimer invalidate]; [dataTimer release]; dataTimer = nil;
+	if (refreshTimer) {
+		[refreshTimer invalidate]; [refreshTimer release]; refreshTimer = nil;
 	}
 	
     [terminalWindows removeAllObjects];
@@ -553,14 +553,13 @@ NSString *terminalsKey = @"terminals";
 
 @implementation iTermController (Private)
 
-- (void) processRead
+- (void) processRefresh
 {   
 	PseudoTerminal *term;
 	NSEnumerator *en_window = [terminalWindows objectEnumerator];
 	
     while ((term=[en_window nextObject])) {
-        [term processRead];
-//        [[term currentSession] updateDisplay];
+        [term processRefresh];
     }
 }
 

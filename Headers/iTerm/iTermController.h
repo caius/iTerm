@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.h,v 1.28 2008-10-03 07:31:43 yfabian Exp $
+// $Id: iTermController.h,v 1.29 2008-10-08 05:54:50 yfabian Exp $
 /*
  **  iTermController.h
  **
@@ -40,7 +40,7 @@
     NSMutableArray *terminalWindows;
     id FRONT;
 	ItermGrowlDelegate *gd;
-	NSTimer *dataTimer;
+	NSTimer *refreshTimer;
 }
 
 + (iTermController*)sharedInstance;
@@ -89,6 +89,6 @@
 
 @interface iTermController (Private)
 
-- (void) processRead;
+- (void) processRefresh;
 
 @end

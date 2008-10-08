@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.49 2008-10-07 23:09:56 yfabian Exp $
+// $Id: PTYTask.m,v 1.50 2008-10-08 05:54:50 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -178,6 +178,7 @@ static int writep(int fds, char *buf, size_t len)
 	if (FILDES >= 0)
 		close(FILDES);
 
+	[dataHandle release];
     [TTY release];
     [PATH release];
     [super dealloc];
@@ -248,7 +249,10 @@ static int writep(int fds, char *buf, size_t len)
     sts = ioctl(FILDES, TIOCPKT, &one);
     NSParameterAssert(sts >= 0);
 	
-    dataHandle = [[NSFileHandle alloc] 
+    TTY = [[NSString stringWithCString:ttyname] retain];
+    NSParameterAssert(TTY != nil);
+	
+	dataHandle = [[NSFileHandle alloc] 
                        initWithFileDescriptor:FILDES];
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
     [nc addObserver:self
@@ -256,12 +260,6 @@ static int writep(int fds, char *buf, size_t len)
                name:NSFileHandleDataAvailableNotification
              object:nil];
     [dataHandle waitForDataInBackgroundAndNotify];
-    
-    
-    
-    TTY = [[NSString stringWithCString:ttyname] retain];
-    NSParameterAssert(TTY != nil);
-	
 }
 
 - (void)processRead

@@ -85,9 +85,6 @@
     BOOL newOutput;
     BOOL growlIdle, growlNewOutput;
 		
-	// update timer stuff
-	NSTimer *updateTimer;
-	unsigned int updateCount;
 }
 
 // init/dealloc
@@ -257,6 +254,5 @@
 @interface PTYSession (Private)
 
 - (NSString*)_getLocale;
-- (void)_updateTimerTick:(NSTimer *)aTimer;
 
 @end

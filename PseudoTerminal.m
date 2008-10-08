@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.429 2008-10-08 04:30:47 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.430 2008-10-08 05:54:50 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -2741,7 +2741,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 		[NSMenu setMenuBarVisible: NO];
 }
 
-- (void) processRead
+- (void) processRefresh
 {
 	PTYSession *aSession;
 	int n = [TABVIEW numberOfTabViewItems];
@@ -2749,7 +2749,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	for(i=0;i<n;i++) {
 		aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
-		//[[aSession SHELL] processRead];
 		[aSession updateDisplay];
 	}
 }

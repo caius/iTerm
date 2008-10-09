@@ -1,6 +1,7 @@
 2009-10-08	fabian
 
 	* Fixed a bug that causes the bell icon never shows.
+	* Pasting DOS-format strings now no longer have extra new lines.
 	
 2009-10-07  fabian
 

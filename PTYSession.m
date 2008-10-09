@@ -880,7 +880,8 @@ static NSImage *warningImage;
 	
     if ([aString length] > 0)
     {
-        NSData *strdata = [[aString stringReplaceSubstringFrom:@"\n" to:@"\r"]
+		NSString *tempString = [aString stringReplaceSubstringFrom:@"\r\n" to:@"\r"];
+        NSData *strdata = [[tempString stringReplaceSubstringFrom:@"\n" to:@"\r"]
                                     dataUsingEncoding:[TERMINAL encoding]
 								 allowLossyConversion:YES];
 		

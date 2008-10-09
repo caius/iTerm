@@ -1,3 +1,7 @@
+2009-10-08	fabian
+
+	* Fixed a bug that causes the bell icon never shows.
+	
 2009-10-07  fabian
 
     * We now use NSFileHandle to monitor session activity in PTYTask.m. The CPU

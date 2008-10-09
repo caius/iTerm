@@ -72,8 +72,11 @@ static NSImage *warningImage;
 
 	thisBundle = [NSBundle bundleForClass: [self class]];
 	imagePath = [thisBundle pathForResource:@"important" ofType:@"png"];
-	warningImage = [[NSImage alloc] initByReferencingFile: imagePath];	
-
+	if (imagePath) {
+		warningImage = [[NSImage alloc] initByReferencingFile: imagePath];	
+		NSLog(@"%@\n%@",imagePath,warningImage);
+	}
+	
     normalStateColor = [NSColor blackColor];
     chosenStateColor = [NSColor blackColor];
     idleStateColor = [NSColor redColor];
@@ -1005,7 +1008,7 @@ static NSImage *warningImage;
         newOutput = NO;
         [parent setLabelColor: chosenStateColor forTabViewItem: tabViewItem];
     }
-    [self setBell:NO];
+    //[self setBell:NO];
 }
 
 - (BOOL) bell

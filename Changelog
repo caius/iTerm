@@ -1,3 +1,7 @@
+2009-10-12	fabian
+
+	* If the preference panel loses focus, we now close font menu to avoid confuse.
+	
 2009-10-08	fabian
 
 	* Fixed a bug that causes the bell icon never shows.

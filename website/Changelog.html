@@ -1,3 +1,21 @@
+Version <STRONG>0.9.6.1012</STRONG> includes the following changes:
+<UL>
+	<LI> Greatly enhanced stability. All the "scrollup" crashes should no longer happen.</LI>
+	<LI> Reduced CPU usage when multiple sessions are open.</LI>
+	<LI> Implemented xterm's window report sequences.</LI>
+	<LI> Bookmark sort now an option.</LI>
+	<LI> Folder name in bookmarks window is now editable.</LI>
+	<LI> Double-clicking folder names in the bookmark window to expand/collapse them.</LI>
+	<LI> Fixed a bug that stops one to create a bbookmark in an empty folder.</LI>
+	<LI> Tweaked close confirmation behavior.</LI>
+	<LI> Allow bookmark names to include macros defined by $$ (bug #2142459).</LI>
+	<LI> Fixed a bug that causes the bell icon never shows.</LI>
+	<LI> Pasting DOS-format strings now no longer have extra new lines.</LI>
+	<LI> Fixed a bug of processing wrapping text.</LI>
+	<LI> Fixed DECCOLM: now screens are correctly cleared.</LI>
+	<LI> If the preference panel loses focus, we now close font menu to avoid confuse.</LI>
+</UL>
+
 <STRONG>Release 0.9.6</STRONG> 9/24/08<BR><BR>
 This is our first release after Leopard was released. Besides the Leopard support, 
 0.9.6 has the following features and fixes:<BR>
@@ -22,131 +40,4 @@ This is our first release after Leopard was released. Besides the Leopard suppor
     <LI>Fixed a bug that crashes iTerm when using Applescripts.</LI>
     <LI>Greatly enhanced stability.</LI>
     </UL>
-</UL>
-
-Version <STRONG>0.9.5.0915</STRONG> includes the following changes:
-<UL>
-	<LI> Support for multiple full screen terminals, works better with multiple monitors.</LI>
-	<LI> Fixed profile name changes to update bookmarks (#1762237).</LI>
-	<LI> Add bookmark dialog now clears the text entries, and automatically fills profiles from the selected bookmark (#1815642).</LI>
-	<LI> Check if locale exists before setting LANG environment variables (#2102884)</LI>
-	<LI> ISO8859-* and eucXX encodings will get correct environment variables</LI>
-	<LI> Various other minor fixes (see the Changlog file)</LI>
-</UL>
-
-Version <STRONG>0.9.5.0909</STRONG> includes the following changes:
-<UL>
-    <LI> NEW: "blur" effect for transparent windows (Leopard only).</LI>
-    <LI> NEW: Drop a folder to the dock icon to open a shell with its path.</LI>
-	<LI> Now ask for confirmation when one closes multiple tabs/windows.</LI>
-    <LI> Now automatically set up locales when launching a shell.</LI>
-	<LI> Fixed a bug that causes iTerm to crash when executing scripts.</LI>
-	<LI> Fixed the transparency setting bug.</LI>
-    <LI> Fixed a bug that crashes iTerm when one scrolls up with a lot of new text coming in.</LI>
-	<LI> Fixed enter key on the numeric keypad in keypad app mode.</LI>
-	<LI> Disabled session bell Growl notification when key repeat is detected.</LI>
-	<LI> Fixed resizing background image problem (#1871380).</LI>
-	<LI> Fixed a bug that closes the wrong tab when using contextual menu. (#1916982)</LI>
-	<LI> Full-screen mode tweaks.</LI>
-	<LI> A variety of other minor fixes and improvements (see Changlog)</LI>
-</UL>    
-
-Version <STRONG>0.9.5.0902</STRONG> includes the following changes:
-<UL>
-	<LI> A few documentation spelling and grammar fixes.</LI>
-	<LI> Fixed borders once and for all.</LI>
-	<LI> Full-screen mode hides menubar rather than pretending to be
-	  a screensaver. This fixes Apple-Tab and other things.</LI>
-	<LI> Fixed enter key on the numeric keypad in keypad app mode</LI>
-	<LI> Fixed iTerm so that it can start with no preferences file again</LI>
-	<LI> Fixed two double-width character related bugs.</LI>
-</UL>
-
-Version <STRONG>0.9.5.0821</STRONG> includes the following changes:
-<UL>
-	<LI> Fixed a bug in 0.9.5.0821 that causes loss of preferences when upgrade.</LI>
-</UL>
-
-Version <STRONG>0.9.5.0820</STRONG> includes the following changes:
-<UL>
-	<LI> Better default preferences</LI>
-	<LI> Works with TERM=xterm</LI>
-	<LI> Sets the COLORFGBG variable</LI>
-	<LI> No annoying reverse-video border</LI>
-	<LI> tput smso ; clear ; tput rmso -- works as expected</LI>
-	<LI> back_tab supported (the key and the function)</LI>
-	<LI> new-style xterm altscreens supported</LI>
-	<LI> Fixed NSLock warnings on 10.5</LI>
-	<LI> Horizontal scroll-wheel doesn't scroll vertically anymore</LI>
-	<LI> Improved numeric keypad behaviour, now acts like xterm</LI>
-	<LI> Fixed a nasty crashing bug</LI>
-</UL>
-	
-Version <STRONG>0.9.5.0611</STRONG> includes the following changes:
-<UL>
-    <LI> Aoid crashes when memory runs out.</LI>
-    <LI> Removed excessive debug outputs.</LI>
-    <LI> Adjustments to the full screen mode. Fixed a crash related (#1725139).</LI>
-    <LI> Reduced CPU Usage.</LI>
-    <LI> Changed the default font for NSTextInput display to the non-ASCII font.</LI>
-</UL>
-
-Version <STRONG>0.9.5.0517</STRONG> addresses these two bugs in 0516 build:
-<UL>
-    <LI> Fixed a key mapping problem with number keys (#1720922). </LI>
-	<LI> Fixed a key-mapping sorting bug (#1720913). </LI>
-</UL>
-
-Version <STRONG>0.9.5.0516</STRONG> includes the following changes:
-<UL>
-    <LI> Key mappings and Profiles are sorted alphabetically in the their settings window.</LI>
-    <LI> Fixed a bug when launches multiple-line urls.</LI>
-    <LI> Fixed a bug with selection that scrolls out of the view.</LI>
-    <LI> Fixed a toolbar menu bug (#1716916).</LI>
-    <LI> Tweaks of the full screen behavior.</LI>
-</UL>
-
-Version <STRONG>0.9.5.0315</STRONG> includes the following changes:
-<UL>
-    <LI> Changing font size when in full screen mode now changes row/col numbers correctly (#1671723).</LI>
-    <LI> Enhanced "Font size follow window size" behavior.</LI>
-    <LI> Fixed a selection bug (#1677708).</LI>
-    <LI> Improved Fn key handling (#1676087).</LI>
-    <LI> Improved window cycling behavior (#1676009).</LI>
-</UL>
-
-Version <STRONG>0.9.5.0227</STRONG> includes the following changes:
-<UL>
-	<LI> Fixed a crash that happens when you toggle between the fullscreen and normal modes.</LI>
-	<LI> Fixed a "losing char space setting" bug (#1658074).</LI>
-	<LI> Adding @ as a valid URL character.</LI>
-	<LI> Enhanced numeric keypad behavior. Enter key on the keypad now works under application mode.</LI>
-    <LI> iTerm no longer appends \n if a applescript writes a string ending with a space.</LI>
-    <LI> Fixed several localization problems.</LI>
-    <LI> Fixed a bug that disables the background image setting.</LI>
-	<LI> Added an option to prompt for test-releases.</LI>
-</UL>
-
-Version <STRONG>0.9.5.0210</STRONG> includes the following changes:
-<UL>
-	<LI> Fixed a keypad mode problem. Cursor keys should behave better now.</LI>
-	<LI> Fixed a bug that causes dead session be left open sometimes (#1653347).</LI>
-	<LI> Adjusted the full screen mode behavior, so you are less likely to be stuck.</LI>
-	<LI> Added selectedTextColor into Applescript.</LI>
-</UL>
-
-<STRONG>Release 0.9.5</STRONG> 2/1/07<BR>
-After several months of developping, we proudly present you the latest release of iTerm. Many users
-have provided us with great feed backs and helped us nail down bugs. Lots of thanks to all of you!
-Here is the change list:<BR>
-<UL>
-<LI>Full screen mode.</LI>
-<LI>xterm 256 color support.</LI>
-<LI>Much better wrapping behavior.</LI>
-<LI>Support for unlimited scrollback size</LI>
-<LI>Option to hide scrollbar.</LI>
-<LI>Press TAB key to open a new session with a command from the Execute field.</LI>
-<LI>Added support for opening .command, .tool, .sh, .zsh, .csh, .pl files as shell scripts.</LI>
-<LI>Greatly enhanced stability.</LI>
-<LI>Lots of other bug fixes and GUI tweaks as usual.</LI>
 </UL>

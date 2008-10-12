@@ -74,7 +74,7 @@ static NSImage *warningImage;
 	imagePath = [thisBundle pathForResource:@"important" ofType:@"png"];
 	if (imagePath) {
 		warningImage = [[NSImage alloc] initByReferencingFile: imagePath];	
-		NSLog(@"%@\n%@",imagePath,warningImage);
+		//NSLog(@"%@\n%@",imagePath,warningImage);
 	}
 	
     normalStateColor = [NSColor blackColor];

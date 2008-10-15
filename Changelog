@@ -1,3 +1,7 @@
+2009-10-14	fabian
+
+	* The anti-idle is no longer sent to all tabs when "send input to all tabs" is on.
+	
 2009-10-12	fabian
 
 	* If the preference panel loses focus, we now close font menu to avoid confuse.

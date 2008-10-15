@@ -1737,7 +1737,7 @@ static NSImage *warningImage;
 	gettimeofday(&now, NULL);
 	
     if (antiIdle && now.tv_sec >= lastInput.tv_sec+60) {
-        [self writeTask:[NSData dataWithBytes:&ai_code length:1]];
+        [SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
         lastInput = now;
     }
 	

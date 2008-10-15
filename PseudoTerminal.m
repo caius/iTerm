@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.430 2008-10-08 05:54:50 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.431 2008-10-15 05:47:30 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1592,6 +1592,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	
 	if (_fullScreen) [self hideMenuBar];
     
+	if ([NSFontPanel sharedFontPanelExists]) [[NSFontPanel sharedFontPanel] close];
+	
     // update the cursor
     [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
 }

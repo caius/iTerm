@@ -1182,10 +1182,6 @@ static BOOL addingKBEntry;
         }
 }
 
-- (void)windowDidResignKey:(NSNotification *)notification
-{
-	if ([NSFontPanel sharedFontPanelExists]) [[NSFontPanel sharedFontPanel] close];
-}
 
 @end
 

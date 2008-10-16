@@ -174,6 +174,7 @@
 		F6B077110ADDB7D400F4BB37 /* iTermBookmarkController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */; };
 		F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */; };
 		F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */; };
+		F6C9AFF00EA70D0200D318A8 /* sort.png in Resources */ = {isa = PBXBuildFile; fileRef = F6C9AFEF0EA70D0200D318A8 /* sort.png */; };
 		F6CDC4E70AE6D3E2005E7D4F /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = F6CDC4E60AE6D3E2005E7D4F /* folder.png */; };
 		F6DA0AFD0AF066EE0098EFEB /* edit.png in Resources */ = {isa = PBXBuildFile; fileRef = F6DA0AFC0AF066EE0098EFEB /* edit.png */; };
 		F6E2DEDA0AE2F67200D20B3B /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6E2DED70AE2F67200D20B3B /* Sparkle.framework */; };
@@ -401,6 +402,7 @@
 		F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermBookmarkController.m; sourceTree = "<group>"; };
 		F6B0788F0ADDF1BE00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Bookmarks.nib; sourceTree = "<group>"; };
 		F6B07D980ADE1B9B00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/ProfilesWindow.nib; sourceTree = "<group>"; };
+		F6C9AFEF0EA70D0200D318A8 /* sort.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sort.png; path = images/sort.png; sourceTree = "<group>"; };
 		F6CDC4E60AE6D3E2005E7D4F /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = folder.png; path = images/folder.png; sourceTree = "<group>"; };
 		F6D936F40B0E763F00106855 /* iTerm_header.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = iTerm_header.png; path = website/iTerm_header.png; sourceTree = "<group>"; };
 		F6DA0AFC0AF066EE0098EFEB /* edit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = edit.png; path = images/edit.png; sourceTree = "<group>"; };
@@ -594,6 +596,7 @@
 				FB094A18033D58BD01F955DB /* new.png */,
 				FB896717038D935801F955DB /* newwin.png */,
 				8786A96E052CEC220073D10E /* script.png */,
+				F6C9AFEF0EA70D0200D318A8 /* sort.png */,
 				DD48F1C703EBB1C400A8A065 /* iTerm.scriptSuite */,
 				DD48F1CC03EBB20500A8A065 /* iTerm.scriptTerminology */,
 				FB151F2903648AC401F955DB /* iTerm.strings */,
@@ -1065,6 +1068,7 @@
 				F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */,
 				F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */,
 				F6DA0AFD0AF066EE0098EFEB /* edit.png in Resources */,
+				F6C9AFF00EA70D0200D318A8 /* sort.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.68 2008-10-02 03:48:36 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.69 2008-10-16 05:50:32 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -132,6 +132,7 @@ static BOOL usingAutoLaunchScript = NO;
 	// save preferences
 	[[PreferencePanel sharedInstance] savePreferences];
 	
+	[[iTermController sharedInstance] dealloc];
     return (YES);
 }
 
@@ -260,7 +261,7 @@ static BOOL usingAutoLaunchScript = NO;
 - (void) dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-
+	
     [super dealloc];
 }
 

@@ -1,3 +1,7 @@
+2009-10-15	fabian
+
+	* Made a simple icon for the sort button in the bookmarks window.
+	
 2009-10-14	fabian
 
 	* The anti-idle is no longer sent to all tabs when "send input to all tabs" is on.

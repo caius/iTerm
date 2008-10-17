@@ -1,3 +1,13 @@
+2009-10-16	fabian
+
+	* Improved URL handling for ssh/ftp/telnet
+		1.  If there is no handler specified, iTerm will launch ssh/ftp/telnet using the 
+			default OS X program with default session settings.
+		2.  You can also specify a url handler bookmark, and put $$ as its command. Then 
+			iTerm will use the default OS X program with customized terminal/display/keyboard 
+			settings.
+		3.	The old way still works.
+		
 2009-10-15	fabian
 
 	* Made a simple icon for the sort button in the bookmarks window.

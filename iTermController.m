@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermController.m,v 1.77 2008-10-08 05:54:50 yfabian Exp $
+// $Id: iTermController.m,v 1.78 2008-10-17 04:02:45 yfabian Exp $
 /*
  **  iTermController.m
  **
@@ -407,8 +407,35 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
     NSDictionary *aDict;
 	
 	aDict = bookmarkData;
-	if(aDict == nil)
-		aDict = [[ITAddressBookMgr sharedInstance] defaultBookmarkData];
+	if(aDict == nil || [[aDict objectForKey:KEY_COMMAND] isEqualToString:@"$$"]) {
+		NSMutableDictionary *tempDict = [NSMutableDictionary dictionaryWithDictionary: aDict ? aDict : [[ITAddressBookMgr sharedInstance] defaultBookmarkData]];
+		NSURL *urlRep = [NSURL URLWithString: url];
+		NSString *urlType = [urlRep scheme];
+		
+		if ([urlType compare:@"ssh" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+			NSMutableString *tempString = [NSMutableString stringWithString:@"ssh "];
+			if ([urlRep user]) [tempString appendFormat:@"-l %@ ", [urlRep user]];
+			if ([urlRep port]) [tempString appendFormat:@"-p %@ ", [urlRep port]];
+			if ([urlRep host]) [tempString appendString:[urlRep host]];
+			[tempDict setObject:tempString forKey:KEY_COMMAND];
+			aDict = tempDict;
+		}
+		else if ([urlType compare:@"ftp" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+			NSMutableString *tempString = [NSMutableString stringWithFormat:@"ftp %@", url];
+			[tempDict setObject:tempString forKey:KEY_COMMAND];
+			aDict = tempDict;
+		}
+		else if ([urlType compare:@"telnet" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+			NSMutableString *tempString = [NSMutableString stringWithString:@"telnet "];
+			if ([urlRep user]) [tempString appendFormat:@"-l %@ ", [urlRep user]];
+			if ([urlRep host]) {
+				[tempString appendString:[urlRep host]];
+				if ([urlRep port]) [tempString appendFormat:@" %@", [urlRep port]];
+			}
+			[tempDict setObject:tempString forKey:KEY_COMMAND];
+			aDict = tempDict;
+		}
+	}
 	
 	// Where do we execute this command?
     if(theTerm == nil)

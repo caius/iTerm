@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.50 2008-10-08 05:54:50 yfabian Exp $
+// $Id: PTYTask.m,v 1.51 2008-10-17 05:55:25 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -244,6 +244,12 @@ static int writep(int fds, char *buf, size_t len)
     }
     else if (PID < (pid_t)0) {
 		NSLog(@"%@ %s", progpath, strerror(errno));
+		NSRunCriticalAlertPanel(NSLocalizedStringFromTableInBundle(@"Unable to Fork!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Fork Error"),
+						NSLocalizedStringFromTableInBundle(@"iTerm cannot launch the program for this session.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Fork Error"),
+						NSLocalizedStringFromTableInBundle(@"Close Session",@"iTerm", [NSBundle bundleForClass: [self class]], @"Fork Error"),
+						nil,nil);
+		[[DELEGATEOBJECT parent] closeSession:DELEGATEOBJECT];
+		return;
     }
 	
     sts = ioctl(FILDES, TIOCPKT, &one);

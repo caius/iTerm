@@ -227,3 +227,8 @@
 /* Security Warnings */
 "Bad User Shell" = "Bad User Shell";
 "The shell for this account is not a valid shell as defined in /etc/shells. Contact your system administrator." = "The shell for this account is not matched by a valid shell as defined in /etc/shells. Contact your system administrator.";
+
+/* Fork Error*/
+"Unable to Fork!"="Unable to Fork!";
+"iTerm cannot launch the program for this session."="iTerm cannot launch the program for this session.";
+"Close Session"="Close Session";

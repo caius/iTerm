@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.431 2008-10-15 05:47:30 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.432 2008-10-17 04:46:13 yfabian Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1193,7 +1193,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 #endif
 	NSString *temp = title ? title : @"Session";
 	
-	[[self window] setTitle: [self sendInputToAllSessions] ? [NSString stringWithFormat:@">>%@<<", temp] : temp];
+	[[self window] setTitle: [self sendInputToAllSessions] ? [NSString stringWithFormat:@"☛%@", temp] : temp];
+	[[self window] setBackgroundColor:[self sendInputToAllSessions] ?[NSColor highlightColor]:nil];
 }
 
 // increases or dcreases font size

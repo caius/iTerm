@@ -7,7 +7,9 @@
 			iTerm will use the default OS X program with customized terminal/display/keyboard 
 			settings.
 		3.	The old way still works.
-		
+	* iTerm no longer sends a growl alert for a bell event if the winodw is the key window.
+	* Highlight window when it's in the "send input to all tab" mode.
+	
 2009-10-15	fabian
 
 	* Made a simple icon for the sort button in the bookmarks window.

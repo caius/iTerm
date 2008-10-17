@@ -1024,7 +1024,7 @@ static NSImage *warningImage;
         if (bell)
 		{
             [self setIcon: warningImage];
-			if([TEXTVIEW keyIsARepeat] == NO)
+			if([TEXTVIEW keyIsARepeat] == NO && ![[TEXTVIEW window] isKeyWindow])
 				[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Bell",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
 				withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just rang a bell!",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
 				andNotification:@"Bells"];			

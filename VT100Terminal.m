@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.134 2008-09-30 06:21:10 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.135 2008-10-20 05:30:28 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -898,6 +898,27 @@ static VT100TCC decode_other(unsigned char *datap,
 		case 'c':
 			result.type = VT100CSI_RIS;
 			*rmlen = 2;
+			break;
+		case ' ':
+			if (c2<0) {
+				result.type = VT100_WAIT;
+			}
+			else {
+				switch (c2) {
+					case 'L':
+					case 'M':
+					case 'N':
+					case 'F':
+					case 'G':
+						*rmlen = 3;
+						result.type = VT100_NOTSUPPORT;
+						break;
+					default:
+						*rmlen = 1;
+						result.type = VT100_NOTSUPPORT;
+						break;
+				}
+			}
 			break;
 			
 		default:

@@ -1,3 +1,7 @@
+2009-10-19	fabian
+	
+	* Added handling of ESC SP L/M/N/F/G sequences. Right now, they don't do anything.
+	
 2009-10-16	fabian
 
 	* Improved URL handling for ssh/ftp/telnet

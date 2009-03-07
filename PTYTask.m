@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.51 2008-10-17 05:55:25 yfabian Exp $
+// $Id: PTYTask.m,v 1.52 2008-10-24 05:25:00 yfabian Exp $
 //
 /*
  **  PTYTask.m
@@ -156,7 +156,9 @@ static int writep(int fds, char *buf, size_t len)
     LOG_PATH = nil;
     LOG_HANDLE = nil;
     hasOutput = NO;
-    updateTimer = nil;
+    updateTimer = writeTimer =nil;
+	inputBuffer = NULL;
+	inputBufferLen = 0;
     
     return self;
 }
@@ -171,12 +173,18 @@ static int writep(int fds, char *buf, size_t len)
  	if (updateTimer) {
 		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
 	}
+	if (writeTimer) {
+		[writeTimer invalidate]; [writeTimer release]; writeTimer = nil;
+	}
+	
     
     if (PID > 0)
 		kill(PID, SIGKILL);
     
 	if (FILDES >= 0)
 		close(FILDES);
+	
+	if (inputBuffer) free(inputBuffer);
 
 	[dataHandle release];
     [TTY release];
@@ -258,6 +266,7 @@ static int writep(int fds, char *buf, size_t len)
     TTY = [[NSString stringWithCString:ttyname] retain];
     NSParameterAssert(TTY != nil);
 	
+	fcntl(FILDES,F_SETFL,O_NONBLOCK);
 	dataHandle = [[NSFileHandle alloc] 
                        initWithFileDescriptor:FILDES];
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -336,6 +345,10 @@ static int writep(int fds, char *buf, size_t len)
 				[self readTask:readbuf+1 length:sts-1];
 				gettimeofday(&t, NULL);
 				if (t.tv_sec+t.tv_usec*0.000001>t1) break;
+				FD_ZERO(&rfds);
+				FD_ZERO(&efds);
+				FD_SET(FILDES, &rfds);
+				FD_SET(FILDES, &efds);
 				sts = select(FILDES + 1, &rfds, NULL, &efds, &timeout);
 				if (FD_ISSET(FILDES, &efds)) {
 					sts = read(FILDES, readbuf, 1);
@@ -360,6 +373,66 @@ static int writep(int fds, char *buf, size_t len)
     }
 }
 
+- (void)processWrite
+{
+	int len=1024;
+	int sts;
+	fd_set wfds;
+	struct timeval t, tv = {0, 1000};
+	void *temp;
+	double t1;
+	BOOL written=NO;
+    
+	if (inputBuffer) {
+		
+		gettimeofday(&t, NULL);
+		t1=t.tv_sec+t.tv_usec*0.000001+0.01;
+		
+		temp=inputBuffer;
+		do {
+			FD_ZERO(&wfds);
+			FD_SET(FILDES, &wfds);
+			sts = select(FILDES + 1, NULL, &wfds, NULL, &tv);
+			if (sts>0) {
+				if (inputBufferLen<len) len = inputBufferLen;
+				sts = write(FILDES, (char *)temp, len);
+				if (sts > 0 ) {
+					inputBufferLen -= sts;
+					temp+=sts;
+					written = YES;
+				}
+			}
+			gettimeofday(&t, NULL);
+			if (t.tv_sec+t.tv_usec*0.000001>t1) break;
+		} while (inputBufferLen>0);
+		
+		if (inputBufferLen>0) {
+			if (written) {
+				void *temp2 = malloc(inputBufferLen);
+				memcpy(temp2, temp, inputBufferLen);
+				free(inputBuffer);
+				inputBuffer=temp2;
+			}
+			[writeTimer autorelease];
+			writeTimer = [[NSTimer scheduledTimerWithTimeInterval:0.01
+														   target:self
+														 selector:@selector(processWrite)
+														 userInfo:nil
+														  repeats:NO] retain];
+		}
+		else {
+			free(inputBuffer);
+			inputBuffer=NULL;
+			inputBufferLen=0;
+			[writeTimer autorelease];
+			writeTimer = nil;
+		}
+	}
+	else {
+		[writeTimer autorelease];
+		writeTimer = nil;
+	}
+}
 
 - (BOOL) hasOutput
 {
@@ -423,17 +496,34 @@ static int writep(int fds, char *buf, size_t len)
 {
     const void *datap = [data bytes];
     size_t len = [data length];
-    int sts;
-    
+     
 #if DEBUG_METHOD_TRACE
     NSLog(@"%s(%d):-[PTYTask writeTask:%@]", __FILE__, __LINE__, data);
 #endif
 	
     if(FILDES >= 0) {
-        sts = writep(FILDES, (char *)datap, len);
-        if (sts < 0 ) {
-            NSLog(@"%s(%d): writep() %s", __FILE__, __LINE__, strerror(errno));
-        }
+		if (inputBuffer || len > 1024) {
+			void *temp;
+			temp = realloc(inputBuffer, inputBufferLen+len); 
+			if (temp) {
+				inputBuffer = temp;
+				memcpy(inputBuffer+inputBufferLen, datap, len);
+				inputBufferLen += len;
+			}
+			if (!writeTimer) {
+				writeTimer = [[NSTimer scheduledTimerWithTimeInterval:0.001
+																target:self
+															  selector:@selector(processWrite)
+															  userInfo:nil
+															   repeats:NO] retain];
+			}
+		}
+		else {
+			int sts = writep(FILDES, (char *)datap, len);
+			if (sts < 0 ) {
+				NSLog(@"%s(%d): writep() %s", __FILE__, __LINE__, strerror(errno));
+			}
+		}
     }
 }
 

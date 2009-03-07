@@ -162,25 +162,12 @@ static BOOL onScreen = NO;
 
 - (IBAction) setTransparency: (id) sender
 {
-    float tr;
-    
-    if (sender == transparencyButton) {
-        [_pseudoTerminal setUseTransparency: [transparencyButton state] == NSOnState];
-        [CONFIG_TRANS2 setEnabled:[transparencyButton state]];
-        [CONFIG_TRANSPARENCY setEnabled:[transparencyButton state]];
-    }
-    else {
-        tr = [sender floatValue];
-    
-        [[_pseudoTerminal currentSession] setTransparency:  tr/100.0];
-        if(sender == CONFIG_TRANS2)
-            [CONFIG_TRANSPARENCY setFloatValue:tr];
-        else if (sender == CONFIG_TRANSPARENCY)
-            [CONFIG_TRANS2 setFloatValue:tr];
-        [transparencyButton setState: tr!=0];
-        [_pseudoTerminal setUseTransparency: [transparencyButton state] == NSOnState];
-        
-    }
+	int tr = [sender intValue];
+	[[_pseudoTerminal currentSession] setTransparency: (float)tr/100.0];
+	if(sender == CONFIG_TRANS2)
+		[CONFIG_TRANSPARENCY setIntValue:tr];
+	else if (sender == CONFIG_TRANSPARENCY)
+		[CONFIG_TRANS2 setIntValue:tr];
 }
 
 - (IBAction) setBlur: (id) sender
@@ -449,11 +436,8 @@ static BOOL onScreen = NO;
 	}
 	[CONFIG_ENCODING selectItemAtIndex: [CONFIG_ENCODING indexOfItemWithTag: [[currentSession TERMINAL] encoding]]];
 	
-    [CONFIG_TRANSPARENCY setFloatValue:([currentSession transparency]*100)];
-    [CONFIG_TRANS2 setFloatValue:([currentSession transparency]*100)];
-    [transparencyButton setState: [_pseudoTerminal useTransparency]];
-    [CONFIG_TRANS2 setEnabled:[transparencyButton state]];
-    [CONFIG_TRANSPARENCY setEnabled:[transparencyButton state]];
+    [CONFIG_TRANSPARENCY setIntValue:((int)([currentSession transparency]*100))];
+    [CONFIG_TRANS2 setIntValue:((int)([currentSession transparency]*100))];
     
     [AI_ON setState:[currentSession antiIdle]?NSOnState:NSOffState];
     [AI_CODE setIntValue:[currentSession antiCode]];

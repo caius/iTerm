@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.h,v 1.34 2008-09-30 06:21:12 yfabian Exp $
+// $Id: VT100Terminal.h,v 1.35 2008-10-21 05:43:52 yfabian Exp $
 /*
  **  VT100Terminal.h
  **
@@ -125,6 +125,7 @@
 #define XTERMCC_REPORT_SCREEN_SIZE	106
 #define XTERMCC_REPORT_ICON_TITLE	107
 #define XTERMCC_REPORT_WIN_TITLE	108
+#define XTERMCC_SET_RGB	109
 
 // Some ansi stuff
 #define ANSICSI_CHA	     3000	// Cursor Horizontal Absolute
@@ -395,6 +396,7 @@ typedef enum {
 
 - (void)_setMode:(VT100TCC)token;
 - (void)_setCharAttr:(VT100TCC)token;
+- (void)_setRGB:(VT100TCC)token;
 
 - (void) setScreen:(VT100Screen *)sc;
 @end

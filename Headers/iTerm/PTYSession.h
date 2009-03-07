@@ -220,7 +220,7 @@
 - (void) setDisableBold: (BOOL) boldFlag;
 - (BOOL) disableBold;
 - (void) setDisableBold: (BOOL) boldFlag;
-- (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
+- (void) setColorTable:(int) index color:(NSColor *) c;
 - (int) optionKey;
 
 // Session status

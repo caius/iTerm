@@ -1,5 +1,5 @@
 ##
-## $Id: Makefile,v 1.6 2008-09-22 23:39:13 delx Exp $
+## $Id: Makefile,v 1.8 2009-02-06 14:31:07 delx Exp $
 ## iTerm Makefile
 ## 2003 Copyright(C) Ujwal S. Setlur
 ##
@@ -8,21 +8,20 @@ CONFIGURATION=Development
 PROJECTNAME=iTerm
 
 all:
-	umask 0022 && \
-	xcodebuild -alltargets -configuration $(CONFIGURATION)
+	xcodebuild -alltargets -configuration $(CONFIGURATION) && \
+	chmod -R go+rX build
 
 clean:
-	umask 0022 && \
 	xcodebuild -alltargets clean
 	rm -rf build
 	rm -f *~
 
 Development:
-	umask 0022 && \
-	xcodebuild -alltargets -configuration Development
+	xcodebuild -alltargets -configuration Development && \
+	chmod -R go+rX build/Development
 
 Deployment:
-	umask 0022 && \
-	xcodebuild -alltargets -configuration Deployment
+	xcodebuild -alltargets -configuration Deployment && \
+	chmod -R go+rX build/Deployment
 
 

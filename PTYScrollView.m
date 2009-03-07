@@ -213,10 +213,4 @@
     }
 }
 
-- (void)reflectScrolledClipView:(NSClipView *)aClipView
-{
-	[super reflectScrolledClipView: aClipView];
-	[[self documentView] setForceUpdate: YES];
-}
-
 @end

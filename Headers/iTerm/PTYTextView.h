@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.h,v 1.69 2008-09-23 23:27:31 delx Exp $
+// $Id: PTYTextView.h,v 1.70 2008-10-21 05:43:52 yfabian Exp $
 //
 /*
  **  PTYTextView.h
@@ -89,7 +89,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
     
     NSFont *font;
     NSFont *nafont;
-    NSColor* colorTable[16];
+    NSColor* colorTable[256];
     NSColor* defaultFGColor;
     NSColor* defaultBGColor;
     NSColor* defaultBoldColor;
@@ -196,7 +196,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) setFGColor:(NSColor*)color;
 - (void) setBGColor:(NSColor*)color;
 - (void) setBoldColor:(NSColor*)color;
-- (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c;
+- (void) setColorTable:(int) index color:(NSColor *) c;
 - (void) setSelectionColor: (NSColor *) aColor;
 - (void)setCursorColor:(NSColor*) color;
 - (void) setSelectedTextColor: (NSColor *) aColor;

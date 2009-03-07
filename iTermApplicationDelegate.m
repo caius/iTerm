@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: iTermApplicationDelegate.m,v 1.69 2008-10-16 05:50:32 yfabian Exp $
+// $Id: iTermApplicationDelegate.m,v 1.70 2008-10-23 04:57:13 yfabian Exp $
 /*
  **  iTermApplicationDelegate.m
  **
@@ -455,10 +455,10 @@ static BOOL usingAutoLaunchScript = NO;
     if(displayProfile == nil)
         displayProfile = [displayProfileMgr defaultProfileName];
     
-    [frontTerminal resizeWindow: [displayProfileMgr windowColumnsForProfile: displayProfile]
-                         height: [displayProfileMgr windowRowsForProfile: displayProfile]];
     [frontTerminal setFont: [displayProfileMgr windowFontForProfile: displayProfile] 
                     nafont: [displayProfileMgr windowNAFontForProfile: displayProfile]];
+    [frontTerminal resizeWindow: [displayProfileMgr windowColumnsForProfile: displayProfile]
+                         height: [displayProfileMgr windowRowsForProfile: displayProfile]];
 					
 }
 

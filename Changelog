@@ -1,8 +1,47 @@
-2009-10-19	fabian
+2009-02-09  delx
+	* Corrected xterm mouse scroll wheel button reporting (#2254084)
+
+2009-02-07  delx
+	* Fixed rendering bug with bold characters
+	* Restore window title bar colour when leaving sendInputToAllTabs
+
+2009-01-16  delx
+	* Terminal window title bar displays "Session" if an empty title is set
+	* Makefile ensures that permissions on build products are correct
+
+2008-11-24  delx
+	* ITConfigPanel can now only set transparency in integer multiples
+	* ITConfigPanel font spacing now snaps to ticks
+
+2008-11-21  delx
+	* Fixed the screen blanking bug on setWindowTitle (#2188028)
+	* Improved the layout of ITConfigPanel
+	* Removed "Use transparency" button from ITConfigPanel as it was causing
+	  confusion. To disable transparency just set it to 0%.
+
+2008-10-23	fabian
+
+	* Fixed a problem with pasting a big chunk of stuff.
+	  
+2008-10-22	fabian
+
+	* Detached tabs now keep their size/font settings.
+	* Removed the writing threads to avoid potential sync problems.
+	* Now iTerm automatically restores its window title after a window resizes.
+	
+2008-10-21	fabian
+
+	* I think I finally nailed down the "scroll up/down" crash!
+	
+2008-10-20	fabian
+
+	* Incorporated the color template patch provided by Walter Dšrwald.
+	
+2008-10-19	fabian
 	
 	* Added handling of ESC SP L/M/N/F/G sequences. Right now, they don't do anything.
 	
-2009-10-16	fabian
+2008-10-16	fabian
 
 	* Improved URL handling for ssh/ftp/telnet
 		1.  If there is no handler specified, iTerm will launch ssh/ftp/telnet using the 
@@ -15,43 +54,43 @@
 	* Highlight window when it's in the "send input to all tab" mode.
 	* Better handling of "fork" errors.
 	
-2009-10-15	fabian
+2008-10-15	fabian
 
 	* Made a simple icon for the sort button in the bookmarks window.
 	
-2009-10-14	fabian
+2008-10-14	fabian
 
 	* The anti-idle is no longer sent to all tabs when "send input to all tabs" is on.
 	* Fixed a newly introduced bug that disable manually change the font size.
 	
-2009-10-12	fabian
+2008-10-12	fabian
 
 	* If the preference panel loses focus, we now close font menu to avoid confuse.
 	
-2009-10-08	fabian
+2008-10-08	fabian
 
 	* Fixed a bug that causes the bell icon never shows.
 	* Pasting DOS-format strings now no longer have extra new lines.
 	
-2009-10-07  fabian
+2008-10-07  fabian
 
     * We now use NSFileHandle to monitor session activity in PTYTask.m. The CPU
       usage is very low even with lots of tabs open.
 	* Allow bookmark names to include macros defined by $$ (bug #2142459).
     * Cleaned up code. 
 	
-2009-10-01	fabian
+2008-10-01	fabian
 
 	* Tweaked close confirmation behavior.
 	
-2009-09-30	fabian
+2008-09-30	fabian
 
 	* Bookmark sort now an option.
 	* Folder name in bookmarks window is now editable.
 	* Double-clicking folder names to expand/collapse them.
 	* Fixed a bug that stops one to create a bbookmark in an empty folder.
 	
-2009-09-29	fabian
+2008-09-29	fabian
 
 	* Implemented xterm's window report sequences.
 	

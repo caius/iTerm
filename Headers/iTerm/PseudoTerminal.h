@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.h,v 1.60 2008-10-08 05:54:50 yfabian Exp $
+// $Id: PseudoTerminal.h,v 1.62 2009-02-06 15:07:24 delx Exp $
 /*
  **  PseudoTerminal.h
  **
@@ -67,8 +67,12 @@
 	BOOL sendInputToAllSessions;
 	BOOL fontSizeFollowWindowResize;
 	BOOL suppressContextualMenu;
+	BOOL tempTitle;
 	
 	BOOL EXIT;
+
+	// For send input to all sessions highlighting
+	NSColor *normalBackgroundColor;
 	
 	// flags
 	BOOL _resizeInProgressFlag;
@@ -138,6 +142,8 @@
 - (void) setBlur: (BOOL) flag;
 - (void) enableBlur;
 - (void) disableBlur;
+- (BOOL) tempTitle;
+- (void) resetTempTitle;
 
 // controls which sessions see key events
 - (BOOL) sendInputToAllSessions;

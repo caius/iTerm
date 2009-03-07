@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Screen.m,v 1.288 2008-09-30 06:21:10 yfabian Exp $
+// $Id: VT100Screen.m,v 1.289 2008-10-22 00:43:30 yfabian Exp $
 //
 /*
  **  VT100Screen.m
@@ -1756,7 +1756,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		if(sourceLine < targetLine)
 		{
 			// screen area is not wrapped; direct memmove
-			memmove(screen_top+SCROLL_TOP*REAL_WIDTH, screen_top+(SCROLL_TOP+1)*REAL_WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*REAL_WIDTH*sizeof(screen_char_t));
+			memmove(sourceLine, sourceLine+REAL_WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*REAL_WIDTH*sizeof(screen_char_t));
 		}
 		else
 		{
@@ -1799,7 +1799,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		if(sourceLine < targetLine)
 		{
 			// screen area is not wrapped; direct memmove
-			memmove(screen_top+(SCROLL_TOP+1)*REAL_WIDTH, screen_top+SCROLL_TOP*REAL_WIDTH, (SCROLL_BOTTOM-SCROLL_TOP)*REAL_WIDTH*sizeof(screen_char_t));
+			memmove(sourceLine+REAL_WIDTH, sourceLine, (SCROLL_BOTTOM-SCROLL_TOP)*REAL_WIDTH*sizeof(screen_char_t));
 		}
 		else
 		{

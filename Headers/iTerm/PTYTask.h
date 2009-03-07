@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.h,v 1.12 2008-10-07 23:09:57 yfabian Exp $
+// $Id: PTYTask.h,v 1.14 2008-10-24 05:25:58 yfabian Exp $
 /*
  **  PTYTask.h
  **
@@ -49,7 +49,10 @@
     NSFileHandle *dataHandle;
     BOOL hasOutput;
     BOOL firstOutput;
-    NSTimer *updateTimer;
+    NSTimer *updateTimer, *writeTimer;
+	
+	void *inputBuffer;
+	int inputBufferLen;
 
 }
 
@@ -88,4 +91,5 @@
 - (NSString *)description;
 
 - (void) processRead;
+- (void) processWrite;
 @end

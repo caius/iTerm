@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PTYTextView.m,v 1.323 2008-10-03 07:31:42 yfabian Exp $
+// $Id: PTYTextView.m,v 1.325 2009-02-06 14:33:17 delx Exp $
 /*
  **  PTYTextView.m
  **
@@ -177,7 +177,7 @@ static int cacheCellSize;
 		[self removeTrackingRect:trackingRectTag];
 	
     [[NSNotificationCenter defaultCenter] removeObserver:self];    
-    for(i=0;i<16;i++) {
+    for(i=0;i<256;i++) {
         [colorTable[i] release];
     }
     [defaultFGColor release];
@@ -378,17 +378,18 @@ static int cacheCellSize;
     return defaultCursorColor;
 }
 
-- (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
+- (void) setColorTable:(int) index color:(NSColor *) c
 {
-	int idx=(hili?1:0)*8+index;
-	
-    [colorTable[idx] release];
+    [colorTable[index] release];
     [c retain];
-    colorTable[idx]=c;
-	[self _clearCacheForColor: idx];
-	[self _clearCacheForColor: (BOLD_MASK | idx)];
-	[self _clearCacheForBGColor: idx];
+    colorTable[index]=c;
+	[self _clearCacheForColor: index];
+	[self _clearCacheForColor: (BOLD_MASK | index)];
+	[self _clearCacheForBGColor: index];
 	
+	[self resetCharCache];
+	forceUpdate = YES;
+
 	[self setNeedsDisplay: YES];
 }
 
@@ -421,22 +422,7 @@ static int cacheCellSize;
     }
     else 
     {
-		index &= 0xff;
-		
-        if (index<16) {
-			color=colorTable[index];
-		}
-		else if (index<232) {
-			index -= 16;
-			color=[NSColor colorWithCalibratedRed:(index/36) ? ((index/36)*40+55)/256.0:0 
-											green:(index%36)/6 ? (((index%36)/6)*40+55)/256.0:0 
-											 blue:(index%6) ?((index%6)*40+55)/256.0:0
-											alpha:1];
-		}
-		else {
-			index -= 232;
-			color=[NSColor colorWithCalibratedWhite:(index*10+8)/256.0 alpha:1];
-		}
+		color = colorTable[index & 0xff];
     }
 	
     return color;
@@ -679,6 +665,9 @@ static int cacheCellSize;
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalLineScroll];
     [self scrollRectToVisible: scrollRect];
+
+    forceUpdate = YES;
+    [self setNeedsDisplay: YES];
 }
 
 -(void) scrollPageUp: (id) sender
@@ -697,6 +686,9 @@ static int cacheCellSize;
     scrollRect= [self visibleRect];
     scrollRect.origin.y+= scrollRect.size.height - [[self enclosingScrollView] verticalPageScroll];
     [self scrollRectToVisible: scrollRect];
+
+    forceUpdate = YES;
+    [self setNeedsDisplay: YES];
 }
 
 -(void) scrollHome
@@ -723,6 +715,9 @@ static int cacheCellSize;
 		aFrame.size.height = lineHeight;
 		[self scrollRectToVisible: aFrame];
     }
+
+    forceUpdate = YES;
+    [self setNeedsDisplay: YES];
 }
 
 - (void)scrollToSelection
@@ -1413,7 +1408,7 @@ static int cacheCellSize;
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
 				if([event deltaY] != 0) {
-					[task writeTask:[terminal mousePress:([event deltaY] > 0 ? 5:4) withModifiers:[event modifierFlags] atX:rx Y:ry]];
+					[task writeTask:[terminal mousePress:([event deltaY] > 0 ? 4:5) withModifiers:[event modifierFlags] atX:rx Y:ry]];
 					return;
 				}
 				break;
@@ -2715,7 +2710,7 @@ static int cacheCellSize;
 		
 		[self _renderChar: image 
 				withChar: code
-			   withColor: [self colorForCode: c & 0x1ff] //turn off bold mask
+			   withColor: [self colorForCode: c]
 			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
 				withFont: dw?nafont:font
 					bold: c & BOLD_MASK];

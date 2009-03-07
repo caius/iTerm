@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: PseudoTerminal.m,v 1.432 2008-10-17 04:46:13 yfabian Exp $
+// $Id: PseudoTerminal.m,v 1.437 2009-02-06 15:07:23 delx Exp $
 //
 /*
  **  PseudoTerminal.m
@@ -1191,10 +1191,17 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle:%@]",
           __FILE__, __LINE__, title);
 #endif
-	NSString *temp = title ? title : @"Session";
+	NSString *temp = [title length] > 0 ? title : @"Session";
 	
-	[[self window] setTitle: [self sendInputToAllSessions] ? [NSString stringWithFormat:@"☛%@", temp] : temp];
-	[[self window] setBackgroundColor:[self sendInputToAllSessions] ?[NSColor highlightColor]:nil];
+	if([self sendInputToAllSessions]) {
+		temp = [NSString stringWithFormat:@"☛%@", temp];
+		[[self window] setBackgroundColor: [NSColor highlightColor]];
+	}
+	else {
+		[[self window] setBackgroundColor: normalBackgroundColor];
+	}
+
+	[[self window] setTitle: temp];
 }
 
 // increases or dcreases font size
@@ -1340,6 +1347,16 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	id window = [self window];
 	if (!_fullScreen && nil != window && [window respondsToSelector:@selector(disableBlur)])
 		[window disableBlur];
+}
+
+- (BOOL) tempTitle
+{
+	return tempTitle;
+}
+
+- (void) resetTempTitle
+{
+	tempTitle = NO;
 }
 
 - (void)setFont:(NSFont *)font nafont:(NSFont *)nafont
@@ -1711,7 +1728,8 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 			
 			[self setFont:font nafont:nafont];
 			NSString *aTitle = [NSString stringWithFormat:@"%@ (%.0f)", [[self currentSession] name], [font pointSize]];
-			[self setWindowTitle: aTitle];    
+			[self setWindowTitle: aTitle];
+			tempTitle = YES;
 
 		}
         
@@ -1731,6 +1749,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
             // Display the new size in the window title.
             NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[self currentSession] name], WIDTH, HEIGHT];
             [self setWindowTitle: aTitle];
+			tempTitle = YES;
             [self setWindowSize];
     	}
 	}	
@@ -2371,7 +2390,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(term == nil)
 		return nil;
 	
-	[term initWindowWithAddressbook: [aSession addressBookEntry]];
+	[term initWindowWithSettingsFrom: self];
 	
     [[iTermController sharedInstance] addInTerminals: term];
 	[term release];
@@ -2639,7 +2658,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 {
 	charHorizontalSpacingMultiplier = charVerticalSpacingMultiplier = 1.0;
 	[self setUseTransparency: YES];
-		
+	normalBackgroundColor = [[self window] backgroundColor];
 }
 
 - (NSFont *) _getMaxFont:(NSFont* ) font 

@@ -1,5 +1,5 @@
 // -*- mode:objc -*-
-// $Id: VT100Terminal.m,v 1.135 2008-10-20 05:30:28 yfabian Exp $
+// $Id: VT100Terminal.m,v 1.136 2008-10-21 05:43:52 yfabian Exp $
 //
 /*
  **  VT100Terminal.m
@@ -761,6 +761,9 @@ static VT100TCC decode_xterm(unsigned char *datap,
                 break;
             case 2:
                 result.type = XTERMCC_WIN_TITLE;
+				break;
+				case 4:
+				result.type = XTERMCC_SET_RGB;
 				break;
             default:
 				result.type = VT100_NOTSUPPORT;
@@ -1623,6 +1626,7 @@ static VT100TCC decode_string(unsigned char *datap,
 			result.position = datap;
 			[self _setMode:result];
 			[self _setCharAttr:result];
+			[self _setRGB:result];
 		}
 		else {
             if (isString(datap,ENCODING)) {
@@ -2024,8 +2028,8 @@ static VT100TCC decode_string(unsigned char *datap,
 	static char buf[7];
 	char cb;
 	
-	cb = button % 3;
-	if (button > 3) cb += 64;
+	cb = button;
+	if (button > 3) cb += 64 - 4; // Subtract 4 for scroll wheel buttons
 	if (modflag & NSControlKeyMask) cb += 16;
 	if (modflag & NSShiftKeyMask) cb += 4;
 	if (modflag & NSAlternateKeyMask) cb += 8;
@@ -2361,6 +2365,49 @@ static VT100TCC decode_string(unsigned char *datap,
 	}
 }
 
+
+- (void)_setRGB:(VT100TCC)token
+{
+	if (token.type == XTERMCC_SET_RGB) {
+		// The format of this command is "<index>;rgb:<redhex>/<greenhex>/<bluehex>", e.g. "105;rgb:00/cc/ff"
+		const char *s = [token.u.string UTF8String];
+		int index = 0;
+		while (isdigit(*s))
+			index = 10*index + *s++ - '0';
+		if (*s++ != ';')
+			return;
+		if (*s++ != 'r')
+			return;
+		if (*s++ != 'g')
+			return;
+		if (*s++ != 'b')
+			return;
+		if (*s++ != ':')
+			return;
+		int r = 0, g = 0, b = 0;
+
+		while (isxdigit(*s))
+			r = 16*r + (*s>='a' ? *s++ - 'a' + 10 : *s>='A' ? *s++ - 'A' + 10 : *s++ - '0');
+		
+		if (*s++ != '/')
+			return;
+		
+		while (isxdigit(*s))
+			g = 16*g + (*s>='a' ? *s++ - 'a' + 10 : *s>='A' ? *s++ - 'A' + 10 : *s++ - '0');
+		
+		if (*s++ != '/')
+			return;
+		
+		while (isxdigit(*s))
+			b = 16*b + (*s>='a' ? *s++ - 'a' + 10 : *s>='A' ? *s++ - 'A' + 10 : *s++ - '0');
+		
+		if (index >= 16 && index <= 255 && // ignore assigns to the systems colors or outside the palette
+			 r >= 0 && r <= 255 && g >= 0 && g <= 255 && b >= 0 && b <= 255) { // ignore bad colors
+			[[SCREEN session] setColorTable:index
+											  color:[NSColor colorWithCalibratedRed:r/256.0 green:g/256.0 blue:b/256.0 alpha:1]];
+		}
+	}
+}
 
 - (void) setScreen:(VT100Screen*) sc
 {

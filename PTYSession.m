@@ -467,9 +467,11 @@ static NSImage *warningImage;
 				break;	
 			case KEY_ACTION_SCROLL_END:
 				[TEXTVIEW scrollEnd];
+				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
 				break;
 			case KEY_ACTION_SCROLL_HOME:
 				[TEXTVIEW scrollHome];
+				[(PTYScrollView *)[TEXTVIEW enclosingScrollView] detectUserScroll]; 
 				break;
 			case KEY_ACTION_SCROLL_LINE_DOWN:
 				[TEXTVIEW scrollLineDown: self];
@@ -881,16 +883,9 @@ static NSImage *warningImage;
     if ([aString length] > 0)
     {
 		NSString *tempString = [aString stringReplaceSubstringFrom:@"\r\n" to:@"\r"];
-        NSData *strdata = [[tempString stringReplaceSubstringFrom:@"\n" to:@"\r"]
-                                    dataUsingEncoding:[TERMINAL encoding]
-								 allowLossyConversion:YES];
-		
-		// Do this in a new thread since we do not want to block the read code.
-		[NSThread detachNewThreadSelector:@selector(_processWriteDataThread:) toTarget:self withObject:strdata];
-		PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
-		
-		[TEXTVIEW scrollEnd];
-		[ptys setUserScroll: NO];				
+		[self writeTask: [[tempString stringReplaceSubstringFrom:@"\n" to:@"\r"]
+						  dataUsingEncoding:[TERMINAL encoding]
+						  allowLossyConversion:YES]];
     }
     else
 		NSBeep();
@@ -1092,10 +1087,19 @@ static NSImage *warningImage;
 		colorTable[1][i] = [displayProfileMgr color: (i + TYPE_ANSI_8_COLOR)  forProfile: displayProfile];
 	}	
     for(i=0;i<8;i++) {
-        [self setColorTable:i highLight:NO color:colorTable[0][i]];
-        [self setColorTable:i highLight:YES color:colorTable[1][i]];
+        [self setColorTable:i color:colorTable[0][i]];
+        [self setColorTable:i+8 color:colorTable[1][i]];
     }
-		
+	for (i=0;i<216;++i) {
+		[self setColorTable:i+16 color:[NSColor colorWithCalibratedRed:(i/36) ? ((i/36)*40+55)/256.0:0 
+												  green:(i%36)/6 ? (((i%36)/6)*40+55)/256.0:0 
+													blue:(i%6) ?((i%6)*40+55)/256.0:0
+												  alpha:1]];
+	}
+	for (i=0;i<24;++i) {
+		[self setColorTable:i+232 color:[NSColor colorWithCalibratedWhite:(i*10+8)/256.0 alpha:1]];
+	}
+	
     // background image
     imageFilePath = [displayProfileMgr backgroundImageForProfile: displayProfile];
     if([imageFilePath length] > 0)
@@ -1560,9 +1564,9 @@ static NSImage *warningImage;
 	
 }
 
-- (void) setColorTable:(int) index highLight:(BOOL)hili color:(NSColor *) c
+- (void) setColorTable:(int) index color:(NSColor *) c
 {
-    [TEXTVIEW setColorTable:index highLight:hili color:c];
+    [TEXTVIEW setColorTable:index color:c];
 }
 
 - (BOOL) antiIdle
@@ -1748,6 +1752,10 @@ static NSImage *warningImage;
 	if ([parent currentSession] == self) {
 		if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
 			[TEXTVIEW refresh];
+			if ([parent tempTitle]) {
+				[parent setWindowTitle: windowTitle];
+				[parent resetTempTitle];
+			}
 			lastUpdate = lastBlink = now;
 		}
 		else if (lastOutput.tv_sec*1000+lastOutput.tv_usec/1000 >= lastUpdate.tv_sec*1000 + lastUpdate.tv_usec/1000 + 10) {
@@ -1868,36 +1876,10 @@ static NSImage *warningImage;
 			i += 50000;
 		}
 		
-		// do this in a new thread so that we don't get stuck.
-		[NSThread detachNewThreadSelector:@selector(_processWriteDataThread:) toTarget:self withObject:data];
-		// Make sure we scroll down to the end
-		PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
-		
-		[TEXTVIEW scrollEnd];
-		[ptys setUserScroll: NO];		
+		[self writeTask: data];
     }
 }
 
-// this is only used for non keyboard events
--(void)_processWriteDataThread: (NSData *) data
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-    // check if we want to send this input to all the sessions
-    if([parent sendInputToAllSessions] == NO)
-    {
-		if (!EXIT) {
-			[SHELL writeTask: data];
-		}
-    }
-    else
-    {
-		// send to all sessions
-		[parent sendInputToAllSessions: data];
-    }
-	
-	[pool release];
-}
 
 -(void)handleTerminateScriptCommand: (NSScriptCommand *)command
 {

@@ -1,3 +1,10 @@
+2009-03-07  delx
+	* Dramatically improve scrolling speed
+	* Scroll on new input stops/starts on pushing home/end respectively
+	* Set magic defaults to allow antialiasing on small fonts. Previously
+	  even if antialiasing was enabled in iTerm, OSX would force it off
+	  for smaller fonts. You can do this manually from the Info panel.
+
 2009-02-09  delx
 	* Corrected xterm mouse scroll wheel button reporting (#2254084)
 

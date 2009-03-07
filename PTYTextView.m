@@ -91,7 +91,10 @@ static int cacheCellSize;
     	
     self = [super initWithFrame: aRect];
     dataSource=_delegate=markedTextAttributes=NULL;
-    
+
+    oldVisibleRect = NSZeroRect;
+    oldVisibleSet = NO;
+
     [self setMarkedTextAttributes:
         [NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor yellowColor], NSBackgroundColorAttributeName,
@@ -393,7 +396,7 @@ static int cacheCellSize;
 	[self setNeedsDisplay: YES];
 }
 
-- (NSColor *) colorForCode:(unsigned int) index 
+- (NSColor *) colorForCode:(int) index 
 {
     NSColor *color;
 	
@@ -626,13 +629,18 @@ static int cacheCellSize;
 - (NSRect)adjustScroll:(NSRect)proposedVisibleRect
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView adjustScroll]", __FILE__, __LINE__ );
+	NSLog(@"%s(%d):-[PTYTextView adjustScroll]", __FILE__, __LINE__ );
 #endif
 	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
 
 	if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
-        forceUpdate = YES; // we have to update everything if there's a background image
-    
+		forceUpdate = YES; // we have to update everything if there's a background image
+
+	if(!oldVisibleSet) {
+		oldVisibleRect = [self visibleRect];
+		oldVisibleSet = YES;
+	}
+
 	[self setNeedsDisplay:YES];
 	return proposedVisibleRect;
 }
@@ -665,9 +673,6 @@ static int cacheCellSize;
     scrollRect= [self visibleRect];
     scrollRect.origin.y+=[[self enclosingScrollView] verticalLineScroll];
     [self scrollRectToVisible: scrollRect];
-
-    forceUpdate = YES;
-    [self setNeedsDisplay: YES];
 }
 
 -(void) scrollPageUp: (id) sender
@@ -686,9 +691,6 @@ static int cacheCellSize;
     scrollRect= [self visibleRect];
     scrollRect.origin.y+= scrollRect.size.height - [[self enclosingScrollView] verticalPageScroll];
     [self scrollRectToVisible: scrollRect];
-
-    forceUpdate = YES;
-    [self setNeedsDisplay: YES];
 }
 
 -(void) scrollHome
@@ -714,9 +716,6 @@ static int cacheCellSize;
 		aFrame.size.width = [self frame].size.width;
 		aFrame.size.height = lineHeight;
 		[self scrollRectToVisible: aFrame];
-
-		forceUpdate = YES;
-		[self setNeedsDisplay: YES];
     }
 }
 
@@ -749,34 +748,35 @@ static int cacheCellSize;
 		  [self frame].origin.x, [self frame].origin.y, [self frame].size.width, [self frame].size.height);
 #endif
 		
-    int numLines, i, j, lineOffset, WIDTH;
+	int numLines, i, j, lineOffset, WIDTH;
 	int startScreenLineIndex,line;
-    screen_char_t *theLine;
+	screen_char_t *theLine;
 	NSRect bgRect;
 	NSColor *aColor;
-	char  *dirty = NULL;
+	char *dirty = NULL;
 	BOOL need_draw;
 	float curX, curY;
 	unsigned int bgcode = 0, fgcode = 0;
 	int y1, x1;
 	BOOL double_width;
-	BOOL reversed = [[dataSource terminal] screenMode]; 
-    struct timeval now;
+	BOOL reversed = [[dataSource terminal] screenMode];
+	struct timeval now;
+	int oldTopLine, oldBottomLine;
 	int bgstart;
+	BOOL bgfill = NO;
 	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
-	BOOL fillBG = NO;
-    
-    float alpha = useTransparency ? 1.0 - transparency : 1.0;
-    
-    if(lineHeight <= 0 || lineWidth <= 0)
-        return;
-    
-    gettimeofday(&now, NULL);
-    if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
-        blinkShow = !blinkShow;
-        lastBlink = now;
-    }
-    
+
+	float alpha = useTransparency ? 1.0 - transparency : 1.0;
+
+	if(lineHeight <= 0 || lineWidth <= 0)
+		return;
+
+	gettimeofday(&now, NULL);
+	if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
+		blinkShow = !blinkShow;
+		lastBlink = now;
+	}
+
 	// set the background color, used for drawing background and margins
 ///	aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
 	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
@@ -822,22 +822,25 @@ static int cacheCellSize;
 
 	// Starting from which line?
 	lineOffset = rect.origin.y/lineHeight;
-    
+
 	// How many lines do we need to draw?
 	numLines = ceil(rect.size.height/lineHeight);
 
 	// Which line is our screen start?
 	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
-    //NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
+	//NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
 		
-    // [self adjustScroll] should've made sure we are at an integer multiple of a line
+	// [self adjustScroll] should've made sure we are at an integer multiple of a line
 	curY=(lineOffset+1)*lineHeight;
 	
-      
-    for(i = 0; i < numLines; i++)
-    {
+	// Visible rectangle movement due to scrolling
+	oldTopLine = oldVisibleRect.origin.y / lineHeight;
+	oldBottomLine = oldTopLine + oldVisibleRect.size.height / lineHeight;
+
+	for(i = 0; i < numLines; i++)
+	{
 		curX = MARGIN;
-        line = i + lineOffset;
+		line = i + lineOffset;
 		
 		if(line >= [dataSource numberOfLines])
 		{
@@ -850,111 +853,72 @@ static int cacheCellSize;
 		//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
 		
 		// Check if we are drawing a line in scrollback buffer
-		if (line < startScreenLineIndex) 
+		if (line < startScreenLineIndex)
 		{
 			//NSLog(@"Buffer: %d",line);
 			dirty = nil;
 		}
-		else 
-		{ 
+		else
+		{
 			// get the dirty flags
 			dirty=[dataSource dirty]+(line-startScreenLineIndex)*WIDTH;
 			//NSLog(@"Screen: %d",(line-startScreenLineIndex));
 		}	
-		
-		//draw background here
+
+
+		// Draw background for dirty characters here
+		// Contiguous sections of background with the same colour
+		// are combined into runs and draw as one operation
 		bgstart = -1;
-		
-		for(j = 0; j < WIDTH; j++) 
-		{
-			if (theLine[j].ch == 0xffff) 
+		for(j = 0; j < WIDTH; j++) {
+			need_draw = (theLine[j].ch != 0xffff) && (
+				(line <= oldTopLine || line >= oldBottomLine) ||
+				(forceUpdate) ||
+				(dirty && dirty[j]) ||
+				(theLine[j].fg_color & BLINK_MASK)
+			);
+			bgfill = (bgcode & SELECTION_MASK) ||
+				(reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage);
+
+			if(need_draw && bgstart < 0) {
+				// Start new run
+				bgstart = j;
+				bgcode = theLine[j].bg_color & 0x3ff;
+			}
+
+			if(need_draw && theLine[j].bg_color == bgcode && j+1 < WIDTH) {
+				// Continue the run
 				continue;
-			
-			// Check if we need to redraw the background
-			// do something to define need_draw
-			need_draw = ((line < startScreenLineIndex || dirty[j] || forceUpdate) 
-                         && (theLine[j].ch == 0 || // it's a space, so we have to redraw the bg
-                             (theLine[j].bg_color & SELECTION_MASK) || // selected, redraw the bg
-                             hasBGImage)) // there's a background image
-                || (!blinkShow &&(theLine[j].fg_color & BLINK_MASK)); // force to draw if it's the off-phase of blinking
-			
-			// if we don't have to update next char, finish pending jobs
-			if (!need_draw)
-			{
-				if (bgstart >= 0) 
-				{
-					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
-					// if we have a background image and we are using the background image, redraw image
-					if( hasBGImage)
-					{
-						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-					}
-					if (fillBG) {
-						aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
-						aColor = [aColor colorWithAlphaComponent: alpha];
-						[aColor set];
-						NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
-					}
-				}						
+			}
+			else if(bgstart >= 0) {
+				// This run is finished, draw it
+				if(j+1 == WIDTH) j = j+1; // Be sure to fill the last char of each line
+				bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
 				bgstart = -1;
-			}
-			else 
-			{
-				if (bgstart < 0) { // any left over job?
-					bgstart = j; 
-					bgcode = theLine[j].bg_color & 0x3ff;
-					fillBG = (bgcode & SELECTION_MASK) || 
-                        (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || 
-                        (theLine[j].fg_color & BLINK_MASK && !blinkShow && // off-phase of a blink character?
-                            (!hasBGImage || bgcode!=DEFAULT_BG_COLOR_CODE)); // No draw if it has a bg image or the background color is the default
+
+				if(hasBGImage) {
+					[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 				}
-				else if (theLine[j].bg_color != bgcode || ((bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||bgcode!=DEFAULT_BG_COLOR_CODE))) != fillBG) 
-				{ 
-					//background change
-					bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
-					// if we have a background image and we are using the background image, redraw image
-					if( hasBGImage)
-					{
-						[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-					}
-					if (fillBG) {
-						aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
-						aColor = [aColor colorWithAlphaComponent: alpha];
-						[aColor set];
-						NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
-					}
-					bgstart = j; 
-					bgcode = theLine[j].bg_color & 0x3ff; 
-					fillBG = (bgcode & SELECTION_MASK) || (theLine[j].ch == 0 && (reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage)) || (theLine[j].fg_color & BLINK_MASK && !blinkShow && (!hasBGImage ||bgcode!=DEFAULT_BG_COLOR_CODE));
+				if(bgfill) {
+					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
+					aColor = [aColor colorWithAlphaComponent: alpha];
+					[aColor set];
+					NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 				}
-				
 			}
 		}
-		
-		// finish pending jobs
-		if (bgstart >= 0) 
+
+		// draw all dirty characters
+		for(j = 0; j < WIDTH; j++)
 		{
-			bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
-			// if we have a background image and we are using the background image, redraw image
-			if( hasBGImage)
+			need_draw = (theLine[j].ch != 0xffff) && (
+				(line <= oldTopLine || line >= oldBottomLine) ||
+				(forceUpdate) ||
+				(dirty && dirty[j]) ||
+				(theLine[j].fg_color & BLINK_MASK)
+			);
+			if (need_draw)
 			{
-				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-			}
-			if (fillBG) {
-				aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode]; 
-				aColor = [aColor colorWithAlphaComponent: alpha];
-				[aColor set];
-				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
-			}
-		}
-		
-		//draw all char
-		for(j = 0; j < WIDTH; j++) 
-		{
-			need_draw = (theLine[j].ch != 0xffff) && 
-				(line < startScreenLineIndex || forceUpdate || dirty[j] || (theLine[j].fg_color & BLINK_MASK));
-			if (need_draw) 
-			{ 
 				double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
 
 				if (reversed) {
@@ -967,10 +931,10 @@ static int cacheCellSize;
 				if((theLine[j].bg_color & SELECTION_MASK) && ((theLine[j].fg_color & 0x3ff) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0x3ff); // check for bold
 				else
-					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ? 
+					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ?
 						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : (theLine[j].fg_color & 0x3ff);
 				
-				if (blinkShow || !(theLine[j].fg_color & BLINK_MASK)) 
+				if (blinkShow || !(theLine[j].fg_color & BLINK_MASK))
 				{
 					[self _drawCharacter:theLine[j].ch fgColor:fgcode bgColor:bgcode AtX:curX Y:curY doubleWidth: double_width];
 					//draw underline
@@ -1036,17 +1000,17 @@ static int cacheCellSize;
 					unichar aChar = theLine[x1].ch;
 					if (aChar)
 					{
-						if (aChar == 0xffff && x1>0) 
+						if (aChar == 0xffff && x1>0)
 						{
 							i--;
 							x1--;
 							aChar = theLine[x1].ch;
 						}
 						double_width = (x1 < WIDTH-1) && (theLine[x1+1].ch == 0xffff);
-						[self _drawCharacter: aChar 
+						[self _drawCharacter: aChar
 									 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0x1ff)
 									 bgColor: -1 // not to draw any background
-										 AtX: x1 * charWidth + MARGIN 
+										 AtX: x1 * charWidth + MARGIN
 										   Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
 								 doubleWidth: double_width];
 					}
@@ -1086,6 +1050,8 @@ static int cacheCellSize;
 	
 
 	forceUpdate=NO;
+	oldVisibleRect = [self visibleRect];
+	oldVisibleSet = NO;
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -2646,7 +2612,7 @@ static int cacheCellSize;
 } // renderChar
 
 
-- (NSImage *) _getCharImage:(unichar) code color:(unsigned int)fg bgColor:(unsigned int)bg doubleWidth:(BOOL) dw
+- (NSImage *) _getCharImage:(unichar) code color:(int)fg bgColor:(int)bg doubleWidth:(BOOL) dw
 {
 	int i;
 	int j;
@@ -2663,6 +2629,7 @@ static int cacheCellSize;
 		c &= 0x3ff; // turn of all masks except for bold and default fg color
 	}
 	if (!code) return nil;
+
 	if (code>=0x20 && code<0x7f && c == DEFAULT_FG_COLOR_CODE && bg == DEFAULT_BG_COLOR_CODE) {
 		i = code - 0x20;
 		j = 0;
@@ -2675,7 +2642,22 @@ static int cacheCellSize;
 		for(j = 0;(charImages[i].code!=code || charImages[i].color!=c || charImages[i].bgColor != bg) && charImages[i].image && j<cacheCellSize; i++, j++);
 	}
    
-	if (!charImages[i].image) {
+	if (j>=cacheCellSize) {
+		// NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
+		int t=1;
+		for(j=2; j<=cacheCellSize; j++) {	//find a least used one, and replace it with new char
+			if (charImages[i-j].count < charImages[i-t].count) t = j;
+		}
+		t = i - t;
+		for(j=1; j<=cacheCellSize; j++) {	//reset the cache count
+			charImages[i-j].count -= charImages[t].count;
+		}
+		[charImages[t].image release];
+		charImages[t].image = nil;
+		i = t;
+	}
+
+	if(!charImages[i].image) {
 		//  NSLog(@"add into cache");
 		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*(dw?2:1), lineHeight)];
 		charImages[i].code=code;
@@ -2689,31 +2671,6 @@ static int cacheCellSize;
 				withFont: dw?nafont:font
 					bold: c&BOLD_MASK];
 		
-		return image;
-	}
-	else if (j>=cacheCellSize) {
-		// NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
-		int t=1;
-		for(j=2; j<=cacheCellSize; j++) {	//find a least used one, and replace it with new char
-			if (charImages[i-j].count < charImages[i-t].count) t = j;
-		}
-		t = i - t;
-		[charImages[t].image release];
-		image=charImages[t].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*(dw?2:1), lineHeight)];
-		charImages[t].code=code;
-		charImages[t].bgColor=bg;
-		charImages[t].color=c;
-		for(j=1; j<=cacheCellSize; j++) {	//reset the cache count
-			charImages[i-j].count -= charImages[t].count;
-		}
-		charImages[t].count=1;
-		
-		[self _renderChar: image 
-				withChar: code
-			   withColor: [self colorForCode: c]
-			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
-				withFont: dw?nafont:font
-					bold: c & BOLD_MASK];
 		return image;
 	}
 	else {

@@ -1,9 +1,11 @@
 2009-03-07  delx
-	* Dramatically improve scrolling speed
+	* Dramatically improve scrolling speed, iTerm no longer redraws the
+	  whole terminal when scrolled, only the lines that have changed
 	* Scroll on new input stops/starts on pushing home/end respectively
 	* Set magic defaults to allow antialiasing on small fonts. Previously
 	  even if antialiasing was enabled in iTerm, OSX would force it off
 	  for smaller fonts. You can do this manually from the Info panel.
+	* Cleaned up [PTYTextView drawRect]
 
 2009-02-09  delx
 	* Corrected xterm mouse scroll wheel button reporting (#2254084)

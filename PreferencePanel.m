@@ -122,6 +122,10 @@ static NSString *NoHandler = @"<No Handler>";
 - (void) readPreferences
 {
     prefs = [NSUserDefaults standardUserDefaults];
+
+	// Force antialiasing to be allowed on small font sizes
+	[prefs setInteger:1 forKey:@"AppleAntiAliasingThreshold"];
+	[prefs setInteger:1 forKey:@"AppleSmoothFixedFontsSizeThreshold"];
          
 	defaultWindowStyle=[prefs objectForKey:@"WindowStyle"]?[prefs integerForKey:@"WindowStyle"]:0;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;

@@ -301,13 +301,7 @@ static NSImage *warningImage;
     if([parent sendInputToAllSessions] == NO)
     {
 		if (!EXIT) {
-			PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
-			
     		[SHELL writeTask: data];
-			// Make sure we scroll down to the end
-			//[TEXTVIEW deselect];
-			[TEXTVIEW scrollEnd];
-			[ptys setUserScroll: NO];		
 		}
     }
     else

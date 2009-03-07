@@ -714,10 +714,10 @@ static int cacheCellSize;
 		aFrame.size.width = [self frame].size.width;
 		aFrame.size.height = lineHeight;
 		[self scrollRectToVisible: aFrame];
-    }
 
-    forceUpdate = YES;
-    [self setNeedsDisplay: YES];
+		forceUpdate = YES;
+		[self setNeedsDisplay: YES];
+    }
 }
 
 - (void)scrollToSelection

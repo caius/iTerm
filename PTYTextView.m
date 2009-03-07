@@ -852,17 +852,12 @@ static int cacheCellSize;
 		theLine = [dataSource getLineAtIndex:line];
 		//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
 		
-		// Check if we are drawing a line in scrollback buffer
-		if (line < startScreenLineIndex)
-		{
-			//NSLog(@"Buffer: %d",line);
+		// Get the dirty flags, if in a scrollback buffer assume dirty
+		// and force redraw of this line. Needed for _selectFromX
+		if (line < startScreenLineIndex) {
 			dirty = nil;
-		}
-		else
-		{
-			// get the dirty flags
+		} else {
 			dirty=[dataSource dirty]+(line-startScreenLineIndex)*WIDTH;
-			//NSLog(@"Screen: %d",(line-startScreenLineIndex));
 		}	
 
 
@@ -870,25 +865,26 @@ static int cacheCellSize;
 		// Contiguous sections of background with the same colour
 		// are combined into runs and draw as one operation
 		bgstart = -1;
-		for(j = 0; j < WIDTH; j++) {
+		j = 0;
+		while(j < WIDTH) {
 			need_draw = (theLine[j].ch != 0xffff) && (
 				(line <= oldTopLine || line >= oldBottomLine) ||
 				(forceUpdate) ||
-				(dirty && dirty[j]) ||
+				(!dirty || dirty[j]) ||
 				(theLine[j].fg_color & BLINK_MASK)
 			);
-			bgfill = (bgcode & SELECTION_MASK) ||
-				(reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage);
 
 			if(need_draw && bgstart < 0) {
 				// Start new run
 				bgstart = j;
 				bgcode = theLine[j].bg_color & 0x3ff;
+				bgfill = (bgcode & SELECTION_MASK) ||
+					(reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage);
 			}
 
 			if(need_draw && theLine[j].bg_color == bgcode && j+1 < WIDTH) {
 				// Continue the run
-				continue;
+				j++;
 			}
 			else if(bgstart >= 0) {
 				// This run is finished, draw it
@@ -905,6 +901,12 @@ static int cacheCellSize;
 					[aColor set];
 					NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 				}
+				// Return to top of loop without j++ so this character
+				// gets the chance to start its own run
+			}
+			else {
+				// Don't need to draw and not on a run, move to next char
+				j++;
 			}
 		}
 
@@ -914,7 +916,7 @@ static int cacheCellSize;
 			need_draw = (theLine[j].ch != 0xffff) && (
 				(line <= oldTopLine || line >= oldBottomLine) ||
 				(forceUpdate) ||
-				(dirty && dirty[j]) ||
+				(!dirty || dirty[j]) ||
 				(theLine[j].fg_color & BLINK_MASK)
 			);
 			if (need_draw)

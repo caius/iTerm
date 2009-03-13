@@ -6,6 +6,10 @@
 	  previously have required clearing the cache happen faster.
 	* Fixed high density background colors:
 	  $ echo -ne '\e[46m LD \e[106m HI \e[00m\n'
+	* Refactored the selection handling. It no longer touches VT100Screen,
+	  instead keeping a copy of the start & end points of the current and last
+	  drawn selection. This saves [PTYTextView drawRect] from having to treat
+	  all characters in the scrollback buffer as dirty.
 
 2009-03-07  delx
 	* Dramatically improve scrolling speed, iTerm no longer redraws the

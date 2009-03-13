@@ -99,11 +99,12 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
     VT100Screen *dataSource;
     id _delegate;
 	
-    //selection
-    int startX, startY, endX, endY;
+	//selection
+	int startX, startY, endX, endY;
+	int oldStartX, oldStartY, oldEndX, oldEndY;
 	BOOL mouseDown;
 	BOOL mouseDragged;
-    char selectMode;
+	char selectMode;
 	BOOL mouseDownOnSelection;
 	NSEvent *mouseDownEvent;
 		
@@ -286,8 +287,6 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) _savePanelDidEnd: (NSSavePanel *) theSavePanel returnCode: (int) theReturnCode contextInfo: (void *) theContextInfo;
 
 - (void) _scrollToLine:(int)line;
-- (void) _selectFromX:(int)startx Y:(int)starty toX:(int)endx Y:(int)endy;
-- (void) _updateSelectionLocation;
 - (NSString *) _getWordForX: (int) x 
 					y: (int) y 
 			   startX: (int *) startx 
@@ -300,8 +299,8 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) _openURL: (NSString *) aURLString;
 - (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase wrapping: (BOOL) wrapping;
 - (BOOL) _findMatchingParenthesis: (NSString *) parenthesis withX:(int)X Y:(int)Y;
-- (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent;
 - (void) _dragText: (NSString *) aString forEvent: (NSEvent *) theEvent;
+- (BOOL) _isCharSelectedInRow:(int)row col:(int)col checkOld:(BOOL)old;
 
 @end
 

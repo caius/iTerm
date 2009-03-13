@@ -98,11 +98,11 @@ static BOOL tigerOrLater;
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
 	CURSOR=YES;
-	lastFindX = startX = -1;
-    markedText=nil;
-    gettimeofday(&lastBlink, NULL);
+	lastFindX = oldStartX = startX = -1;
+	markedText=nil;
+	gettimeofday(&lastBlink, NULL);
 	[[self window] useOptimizedDrawing:YES];
-	    	
+
 	// register for drag and drop
 	[self registerForDraggedTypes: [NSArray arrayWithObjects:
         NSFilenamesPboardType,
@@ -703,7 +703,7 @@ static BOOL tigerOrLater;
 	NSRect bgRect;
 	NSColor *aColor;
 	char *dirty = NULL;
-	BOOL need_draw;
+	BOOL need_draw, selected;
 	float curX, curY;
 	unsigned int bgcode = 0, fgcode = 0;
 	int y1, x1;
@@ -712,7 +712,7 @@ static BOOL tigerOrLater;
 	struct timeval now;
 	int oldTopLine, oldBottomLine;
 	int bgstart;
-	BOOL bgfill = NO;
+	BOOL bgselected = NO;
 	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
 
 	float alpha = useTransparency ? 1.0 - transparency : 1.0;
@@ -770,7 +770,6 @@ static BOOL tigerOrLater;
 		NSRectFill(bgRect);
 	}
 
-
 	WIDTH=[dataSource width];
 
 	// Starting from which line?
@@ -805,8 +804,7 @@ static BOOL tigerOrLater;
 		theLine = [dataSource getLineAtIndex:line];
 		//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
 		
-		// Get the dirty flags, if in a scrollback buffer assume dirty
-		// and force redraw of this line. Needed for _selectFromX
+		// Get the dirty flags. If in a scrollback buffer assume not dirty
 		if (line < startScreenLineIndex) {
 			dirty = nil;
 		} else {
@@ -820,22 +818,23 @@ static BOOL tigerOrLater;
 		bgstart = -1;
 		j = 0;
 		while(j <= WIDTH) {
+			selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
 			need_draw = (j != WIDTH && theLine[j].ch != 0xffff) && (
+				(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
 				(line <= oldTopLine || line >= oldBottomLine) ||
 				(forceUpdate) ||
-				(!dirty || dirty[j]) ||
+				(dirty && dirty[j]) ||
 				(theLine[j].fg_color & BLINK_MASK)
 			);
 
 			if(need_draw && bgstart < 0) {
 				// Start new run
 				bgstart = j;
-				bgcode = theLine[j].bg_color & 0x3ff;
-				bgfill = (bgcode & SELECTION_MASK) ||
-					(reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage);
+				bgcode = theLine[j].bg_color;
+				bgselected = selected;
 			}
 
-			if(need_draw && theLine[j].bg_color == bgcode) {
+			if(need_draw && bgselected == selected && theLine[j].bg_color == bgcode) {
 				// Continue the run
 				j++;
 			}
@@ -847,12 +846,10 @@ static BOOL tigerOrLater;
 				if(hasBGImage) {
 					[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 				}
-				if(bgfill) {
-					aColor = (bgcode & SELECTION_MASK) ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
-					aColor = [aColor colorWithAlphaComponent: alpha];
-					[aColor set];
-					NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
-				}
+				aColor = bgselected ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
+				aColor = [aColor colorWithAlphaComponent: alpha];
+				[aColor set];
+				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 				// Return to top of loop without j++ so this character
 				// gets the chance to start its own run
 			}
@@ -865,12 +862,15 @@ static BOOL tigerOrLater;
 		// draw all dirty characters
 		for(j = 0; j < WIDTH; j++)
 		{
+			selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
 			need_draw = (theLine[j].ch != 0xffff) && (
+				(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
 				(line <= oldTopLine || line >= oldBottomLine) ||
 				(forceUpdate) ||
-				(!dirty || dirty[j]) ||
+				(dirty && dirty[j]) ||
 				(theLine[j].fg_color & BLINK_MASK)
 			);
+
 			if (need_draw)
 			{
 				double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
@@ -882,18 +882,18 @@ static BOOL tigerOrLater;
 					bgcode = theLine[j].bg_color;
 				
 				// switch colors if text is selected
-				if((theLine[j].bg_color & SELECTION_MASK) && ((theLine[j].fg_color & 0x3ff) == DEFAULT_FG_COLOR_CODE))
-					fgcode = SELECTED_TEXT | ((theLine[j].fg_color & BOLD_MASK) & 0x3ff); // check for bold
+				if(selected && ((theLine[j].fg_color) == DEFAULT_FG_COLOR_CODE))
+					fgcode = SELECTED_TEXT | (theLine[j].fg_color & BOLD_MASK); // check for bold
 				else
 					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ?
-						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : (theLine[j].fg_color & 0x3ff);
+						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : theLine[j].fg_color;
 				
 				if (blinkShow || !(theLine[j].fg_color & BLINK_MASK))
 				{
 					[self _drawCharacter:theLine[j].ch fgColor:fgcode bgColor:bgcode AtX:curX Y:curY doubleWidth: double_width];
 					//draw underline
 					if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
-						[[self colorForCode:(fgcode & 0x1ff)] set];
+						[[self colorForCode:fgcode] set];
 						NSRectFill(NSMakeRect(curX,curY-2,double_width?charWidth*2:charWidth,1));
 					}
 				}
@@ -962,7 +962,7 @@ static BOOL tigerOrLater;
 						}
 						double_width = (x1 < WIDTH-1) && (theLine[x1+1].ch == 0xffff);
 						[self _drawCharacter: aChar
-									 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:(theLine[x1].fg_color & 0x1ff)
+									 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:theLine[x1].fg_color
 									 bgColor: -1 // not to draw any background
 										 AtX: x1 * charWidth + MARGIN
 										   Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
@@ -1006,6 +1006,7 @@ static BOOL tigerOrLater;
 	forceUpdate=NO;
 	oldVisibleRect = [self visibleRect];
 	oldVisibleSet = NO;
+	oldStartX=startX; oldStartY=startY; oldEndX=endX; oldEndY=endY;
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -1431,7 +1432,7 @@ static BOOL tigerOrLater;
             endY = y;
         }
 		// check if we clicked inside a selection for a possible drag
-		else if(startX > -1 && [self _mouseDownOnSelection: event] == YES)
+		else if(startX > -1 && [self _isCharSelectedInRow:y col:x checkOld:NO])
 		{
 			mouseDownOnSelection = YES;
 			[super mouseDown: event];
@@ -1501,9 +1502,6 @@ static BOOL tigerOrLater;
             startY = endY = y;
         }            
 	}
-	    
-    if (startX>-1 && (startX != endX || startY!=endY)) 
-        [self _selectFromX:startX Y:startY toX:endX Y:endY];
 
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
@@ -1575,7 +1573,6 @@ static BOOL tigerOrLater;
 			 [event clickCount] < 2 && !mouseDragged) 
 	{		
 		startX=-1;
-        
         if(([event modifierFlags] & NSCommandKeyMask) && [[PreferencePanel sharedInstance] cmdSelection] &&
            [mouseDownEvent locationInWindow].x == [event locationInWindow].x &&
            [mouseDownEvent locationInWindow].y == [event locationInWindow].y)
@@ -1591,16 +1588,14 @@ static BOOL tigerOrLater;
 	//  endX = [dataSource width] - 1;
 	
 	
-	[self _selectFromX:startX Y:startY toX:endX Y:endY];
-    if (startX!=-1&&_delegate) {
+	if (startX!=-1&&_delegate) {
 		// if we want to copy our selection, do so
-        if([[PreferencePanel sharedInstance] copySelection])
-            [self copy: self];
-        // handle command click on URL
-    }
+		if([[PreferencePanel sharedInstance] copySelection])
+			[self copy: self];
+	}
 	
-    selectMode = SELECT_CHAR;
-	[self setNeedsDisplay: YES];
+	selectMode = SELECT_CHAR;
+	[self setNeedsDisplay:YES];
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -1726,9 +1721,8 @@ static BOOL tigerOrLater;
             }
             break;
     }
-            
-    [self _selectFromX:startX Y:startY toX:endX Y:endY];
-	[self setNeedsDisplay: YES];
+
+	[self setNeedsDisplay:YES];
 	//NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }
 
@@ -1801,7 +1795,6 @@ static BOOL tigerOrLater;
 	startX = startY = 0;
 	endX = [dataSource width] - 1;
 	endY = [dataSource numberOfLines] - 1;
-	[self _selectFromX:startX Y:startY toX:endX Y:endY];
 	[self setNeedsDisplay: YES];
 }
 
@@ -1809,10 +1802,8 @@ static BOOL tigerOrLater;
 {
 	if (startX>=0) {
 		startX = -1;
-		[self _selectFromX:-1 Y:0 toX:0 Y:0];
 	}
 }
-
 
 - (NSString *) selectedText
 {
@@ -1828,9 +1819,6 @@ static BOOL tigerOrLater;
 #endif
 	
 	if (startX == -1) return nil;
-	[self _updateSelectionLocation];
-	if (startX == -1) return nil;
-	
 	return ([self contentFromX: startX Y: startY ToX: endX Y: endY pad: pad]);
 	
 }
@@ -2574,107 +2562,6 @@ static BOOL tigerOrLater;
 }
 
 
-- (void) _selectFromX:(int)startx Y:(int)starty toX:(int)endx Y:(int)endy
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView _selectFromX:%d Y:%d toX:%d Y:%d]", __FILE__, __LINE__, startx, starty, endx, endy);
-#endif
-
-	int bfHeight;
-	int width, height, x, y, idx, startIdx, endIdx;
-	unsigned int newbg;
-	char *dirty;
-	screen_char_t *theLine;
-	
-	width = [dataSource width];
-	height = [dataSource numberOfLines];
-	bfHeight = height - [dataSource height];
-	if (startX == -1) startIdx = endIdx = width*height+1;
-	else {
-		startIdx = startx + starty * width;
-		endIdx = endx + endy * width;
-		if (startIdx > endIdx) {
-			idx = startIdx;
-			startIdx = endIdx;
-			endIdx = idx;
-		}
-	}
-	
-	for (idx=y=0; y<height; y++) {
-		theLine = [dataSource getLineAtIndex: y];
-		
-		if (y < bfHeight) 
-		{
-			dirty = NULL;
-		} 
-		else 
-		{
-			dirty = [dataSource dirty] + (y - bfHeight) * width;
-		}
-		for(x=0; x < width; x++, idx++) 
-		{
-			if (idx >= startIdx && idx<=endIdx) 
-				newbg = theLine[x].bg_color | SELECTION_MASK;
-			else
-				newbg = theLine[x].bg_color & ~SELECTION_MASK;
-			if (newbg != theLine[x].bg_color) 
-			{
-				theLine[x].bg_color = newbg;
-				if (dirty) dirty[x] = 1;
-			}
-		}		
-	}
-}
-
-- (void) _updateSelectionLocation
-{
-#if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView _selectFromX:%d Y:%d toX:%d Y:%d]", __FILE__, __LINE__, startx, starty, endx, endy);
-#endif
-	
-	int width, height, x, y;
-	screen_char_t *theLine;
-	BOOL foundSelection = NO;
-	
-	if (startX < 0) return;
-	
-	width = [dataSource width];
-	height = [dataSource numberOfLines];
-	for (y=0; y<height; y++) {
-		theLine = [dataSource getLineAtIndex: y];
-		
-		for(x=0; x < width; x++) 
-		{
-			if (theLine[x].bg_color & SELECTION_MASK) {
-				if (!foundSelection) {
-					startX = x;
-					startY = y;
-					foundSelection = YES;
-				}
-			}
-			else if (foundSelection) {
-				endX = x - 1;
-				endY = y;
-				if (endX < 0) {
-					endX = width - 1;
-					endY --;
-				}
-				return;
-			}
-		}		
-	}
-	if (foundSelection) {
-		endX = width - 1;
-		endY = height - 1;
-	}
-	else {
-		startX=-1;
-	}
-	
-	return;
-		
-}
-
 - (unichar) _getCharacterAtX:(int) x Y:(int) y
 {
 	screen_char_t *theLine;
@@ -3117,7 +3004,6 @@ static BOOL tigerOrLater;
 		endY = anIndex/[dataSource width];
 		
 		
-		[self _selectFromX:startX Y:startY toX:endX Y:endY];
 		[self _scrollToLine:endY];
         [self setForceUpdate:YES];
 		
@@ -3178,33 +3064,34 @@ static BOOL tigerOrLater;
 		
 }
 
-- (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent
+- (BOOL) _isCharSelectedInRow:(int)row col:(int)col checkOld:(BOOL)old
 {
-	NSPoint locationInWindow, locationInView;
-	int row, col;
-	unsigned int theBackgroundAttribute;
-	BOOL result;
-	screen_char_t *theLine;
-	
-	locationInWindow = [theEvent locationInWindow];
-	
-	locationInView = [self convertPoint: locationInWindow fromView: nil];
-	col = (locationInView.x - MARGIN)/charWidth;
-	row = locationInView.y/lineHeight;
-	
-	theLine = [dataSource getLineAtIndex: row];
-	
-	theBackgroundAttribute = theLine[col].bg_color;
-	
-	
-	
-	if(theBackgroundAttribute & SELECTION_MASK)
-		result = YES;
-	else
-		result = FALSE;
-		
-	return (result);
-	
+	int _startX=startX, _startY=startY, _endX=endX, _endY=endY;
+	if(!old) {
+		_startY=startY; _startX=startX; _endY=endY; _endX=endX;
+	} else {
+		_startY=oldStartY; _startX=oldStartX; _endY=oldEndY; _endX=oldEndX;
+	}
+
+	if(_startX == -1 || (_startY == _endY && _startX == _endX)) {
+		return NO;
+	}
+	if (_startY>_endY||(_startY==_endY&&_startX>_endX)) {
+        int t;
+        t=_startY; _startY=_endY; _endY=t;
+        t=_startX; _startX=_endX; _endX=t;
+	}
+	if(row == _startY && _startY == _endY) {
+		return (col >= _startX && col <= _endX);
+	} else if(row == _startY && col >= _startX) {
+		return YES;
+	} else if(row == _endY && col <= _endX) {
+		return YES;
+	} else if(row > _startY && row < _endY) {
+		return YES;
+	} else {
+		return NO;
+	}
 }
 
 @end

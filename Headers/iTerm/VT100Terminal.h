@@ -246,7 +246,6 @@ typedef enum {
 
 // for background colors
 #define DEFAULT_BG_COLOR_CODE	0x101
-#define SELECTION_MASK 0x200
 
 // terminfo stuff
 enum {

@@ -2142,7 +2142,7 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (int)backgroundColorCode
 {
-    return (reversed?FG_COLORCODE:BG_COLORCODE);
+    return (reversed?FG_COLORCODE:BG_COLORCODE+highlight*8);
 }
 
 - (int)foregroundColorCodeReal

@@ -4,6 +4,8 @@
 	  bug that was triggered by changing OSX's ColorSync calibration profiles,
 	  eg when switching to a new monitor. It also makes operations that would
 	  previously have required clearing the cache happen faster.
+	* Fixed high density background colors:
+	  $ echo -ne '\e[46m LD \e[106m HI \e[00m\n'
 
 2009-03-07  delx
 	* Dramatically improve scrolling speed, iTerm no longer redraws the

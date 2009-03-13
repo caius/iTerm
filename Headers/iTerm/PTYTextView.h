@@ -38,15 +38,6 @@
 
 @class VT100Screen;
 
-typedef struct 
-{
-	int code;
-	int color;
-	int bgColor;
-	NSImage *image;
-	int count;
-} CharCache;
-	
 enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 
 @interface PTYTextView : NSView <NSTextInput>
@@ -120,9 +111,6 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	int lastFindX, lastFindY;
 	
 	BOOL reportingMouseDown;
-	
-	//cache
-	CharCache	*charImages;
 	
 	// blinking cursor
 	BOOL blinkingCursor;
@@ -287,8 +275,6 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types;
 - (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;	
 
-- (void)resetCharCache;
-
 @end
 
 //
@@ -309,13 +295,9 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 				 endX: (int *) endx 
 				 endY: (int *) endy;
 - (NSString *) _getURLForX: (int) x y: (int) y;
-- (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withBGColor:(NSColor*)color withFont:(NSFont*)aFont bold:(int)bold;
-- (NSImage *) _getCharImage:(unichar) code color:(int)fg bgColor:(int)bg doubleWidth:(BOOL) dw;
 - (void) _drawCharacter:(unichar)c fgColor:(int)fg bgColor:(int)bg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
 - (BOOL) _isBlankLine: (int) y;
 - (void) _openURL: (NSString *) aURLString;
-- (void) _clearCacheForColor:(int)colorIndex;
-- (void) _clearCacheForBGColor:(int)colorIndex;
 - (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase wrapping: (BOOL) wrapping;
 - (BOOL) _findMatchingParenthesis: (NSString *) parenthesis withX:(int)X Y:(int)Y;
 - (BOOL) _mouseDownOnSelection: (NSEvent *) theEvent;

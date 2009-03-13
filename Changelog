@@ -1,3 +1,10 @@
+2009-03-13  delx
+	* Remove character caching code. Testing shows the drawing to run just
+	  as fast without it. This reduces code complexity and colour reproduction
+	  bug that was triggered by changing OSX's ColorSync calibration profiles,
+	  eg when switching to a new monitor. It also makes operations that would
+	  previously have required clearing the cache happen faster.
+
 2009-03-07  delx
 	* Dramatically improve scrolling speed, iTerm no longer redraws the
 	  whole terminal when scrolled, only the lines that have changed

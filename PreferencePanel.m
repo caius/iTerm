@@ -505,11 +505,6 @@ static NSString *NoHandler = @"<No Handler>";
     return [prefs objectForKey:@"BoldStrokeWidth"]?[[prefs objectForKey:@"BoldStrokeWidth"] floatValue]:-2;
 }
 
-- (int) cacheSize
-{
-    return [prefs objectForKey:@"CacheSize"]?[[prefs objectForKey:@"CacheSize"] intValue]:2048;
-}
-
 - (NSString *) searchCommand
 {
 	return [prefs objectForKey:@"SearchCommand"]?[prefs objectForKey:@"SearchCommand"]:@"http://google.com/search?q=%@";

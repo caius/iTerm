@@ -49,8 +49,6 @@
 
 static NSCursor* textViewCursor =  nil;
 static float strokeWidth, boldStrokeWidth;
-static int cacheSize;
-static int cacheCellSize;
 
 @implementation PTYTextView
 
@@ -72,10 +70,6 @@ static int cacheCellSize;
     textViewCursor = [[NSCursor alloc] initWithImage:aCursorImage hotSpot:hotspot];
     strokeWidth = [[PreferencePanel sharedInstance] strokeWidth];
     boldStrokeWidth = [[PreferencePanel sharedInstance] boldStrokeWidth];
-    cacheSize = [[PreferencePanel sharedInstance] cacheSize];
-    if (cacheSize < 256) cacheSize=256;
-    cacheCellSize = cacheSize/96;
-    if (cacheCellSize<8) cacheCellSize=8;
 }
 
 + (NSCursor *) textViewCursor
@@ -113,14 +107,7 @@ static int cacheCellSize;
         NSFilenamesPboardType,
         NSStringPboardType,
         nil]];
-	
-	// init the cache
-	charImages = (CharCache *)malloc(sizeof(CharCache)*cacheSize);
-	memset(charImages, 0, cacheSize*sizeof(CharCache));	
-    charWidth = 12;
-    oldCursorX = oldCursorY = -1;
-	[self resetCharCache];
-    
+
     return (self);
 }
 
@@ -194,9 +181,6 @@ static int cacheCellSize;
     [markedTextAttributes release];
 	[markedText release];
 	
-    [self resetCharCache];
-	free(charImages);
-	
     [super dealloc];
     
 #if DEBUG_ALLOC
@@ -237,7 +221,6 @@ static int cacheCellSize;
 #endif
     antiAlias = antiAliasFlag;
 	forceUpdate = YES;
-	[self resetCharCache];
 	[self setNeedsDisplay: YES];
 }
 
@@ -250,7 +233,6 @@ static int cacheCellSize;
 {
 	disableBold = boldFlag;
 	forceUpdate = YES;
-	[self resetCharCache];
 	[self setNeedsDisplay: YES];
 }
 
@@ -291,7 +273,6 @@ static int cacheCellSize;
     [defaultFGColor release];
     [color retain];
     defaultFGColor=color;
-	[self resetCharCache];
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 	// reset our default character attributes    
@@ -305,7 +286,6 @@ static int cacheCellSize;
 	//    bg = [bg colorWithAlphaComponent: [[SESSION backgroundColor] alphaComponent]];
 	//    fg = [fg colorWithAlphaComponent: [[SESSION foregroundColor] alphaComponent]];
 	forceUpdate = YES;
-	[self resetCharCache];
 	[self setNeedsDisplay: YES];
 }
 
@@ -314,7 +294,6 @@ static int cacheCellSize;
     [defaultBoldColor release];
     [color retain];
     defaultBoldColor=color;
-	[self resetCharCache];
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 }
@@ -333,8 +312,6 @@ static int cacheCellSize;
 	[selectedTextColor release];
 	[aColor retain];
 	selectedTextColor = aColor;
-	[self _clearCacheForColor: SELECTED_TEXT];
-	[self _clearCacheForColor: SELECTED_TEXT | BOLD_MASK];
 	forceUpdate = YES;
 
 	[self setNeedsDisplay: YES];
@@ -345,7 +322,6 @@ static int cacheCellSize;
 	[cursorTextColor release];
 	[aColor retain];
 	cursorTextColor = aColor;
-	[self _clearCacheForColor: CURSOR_TEXT];
 	
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
@@ -386,11 +362,6 @@ static int cacheCellSize;
     [colorTable[index] release];
     [c retain];
     colorTable[index]=c;
-	[self _clearCacheForColor: index];
-	[self _clearCacheForColor: (BOLD_MASK | index)];
-	[self _clearCacheForBGColor: index];
-	
-	[self resetCharCache];
 	forceUpdate = YES;
 
 	[self setNeedsDisplay: YES];
@@ -491,7 +462,6 @@ static int cacheCellSize;
             nafont, NSFontAttributeName,
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
-	[self resetCharCache];
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
 }
@@ -502,16 +472,6 @@ static int cacheCellSize;
 		[[ITConfigPanelController singleInstance] changeFont:fontManager];
 	else
 		[super changeFont:fontManager];
-}
-
-- (void) resetCharCache
-{
-	int loop;
-	for (loop=0;loop<cacheSize;loop++)
-    {
-		[charImages[loop].image release];
-		charImages[loop].image=nil;
-    }
 }
 
 - (id) dataSource
@@ -2484,7 +2444,6 @@ static int cacheCellSize;
 	transparency = fVal;
 	forceUpdate = YES;
 	[self setNeedsDisplay: YES];
-	[self resetCharCache];
 }
 
 - (BOOL) useTransparency
@@ -2497,7 +2456,6 @@ static int cacheCellSize;
   useTransparency = flag;
   forceUpdate = YES;
   [self setNeedsDisplay: YES];
-  [self resetCharCache];
 }
 
 // service stuff
@@ -2540,8 +2498,19 @@ static int cacheCellSize;
 //
 @implementation PTYTextView (Private)
 
-- (void) _renderChar:(NSImage *)image withChar:(unichar) carac withColor:(NSColor*)color withBGColor:(NSColor*)bgColor withFont:(NSFont*)aFont bold:(int)bold
+- (void) _drawCharacter:(unichar)code fgColor:(int)fg bgColor:(int)bg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
 {
+	if (!code) {
+		return;
+	}
+
+	//NSLog(@"%s: %c(%d)",__PRETTY_FUNCTION__, code,code);
+	//
+	BOOL hasBGImage = ([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil);
+	BOOL noBG = bg==-1 || (bg&SELECTION_MASK) || (hasBGImage && bg == DEFAULT_BG_COLOR_CODE);
+		
+	NSColor* bgColor;
+	NSColor* color;
 	NSString  *crap;
 	NSDictionary *attrib;
 	NSFont *theFont;
@@ -2550,15 +2519,14 @@ static int cacheCellSize;
 	BOOL tigerOrLater = (floor(NSAppKitVersionNumber) > 743); //NSAppKitVersionNumber10_3);
 	NSFontManager *fontManager = [NSFontManager sharedFontManager];
 	
-	//NSLog(@"%s: drawing char %c", __PRETTY_FUNCTION__, carac);
-	//NSLog(@"%@",NSStrokeWidthAttributeName);
-	
-	theFont = aFont;
-	renderBold = bold && ![self disableBold];
+	theFont = dw?nafont:font;
+	renderBold = (code&BOLD_MASK) && ![self disableBold];
+	bgColor = noBG ? nil : [self colorForCode:bg];
+	color = [self colorForCode: fg];
 	
 	if(renderBold)
 	{
-		theFont = [fontManager convertFont: aFont toHaveTrait: NSBoldFontMask];
+		theFont = [fontManager convertFont: theFont toHaveTrait: NSBoldFontMask];
 		
         // Check if there is native bold support
 		// if conversion was successful, else use our own methods to convert to bold
@@ -2570,7 +2538,6 @@ static int cacheCellSize;
 		else
 		{
 			sw = antiAlias? boldStrokeWidth : 0;
-			theFont = aFont;
 		}
 	}
     else 
@@ -2595,109 +2562,14 @@ static int cacheCellSize;
 	}
 	
 	
-	crap = [NSString stringWithCharacters:&carac length:1];		
-	[image lockFocus];
+	crap = [NSString stringWithCharacters:&code length:1];		
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
-	if (bgColor) {
-		bgColor = [bgColor colorWithAlphaComponent: useTransparency ? 1.0 - transparency : 1.0];
-		[bgColor set];
-		NSRectFill(NSMakeRect(0,0,[image size].width,[image size].height));
-	}
-	[crap drawAtPoint:NSMakePoint(0,0) withAttributes:attrib];
+	[crap drawAtPoint:NSMakePoint(X,Y-lineHeight) withAttributes:attrib];
 	
 	// on older systems, for bold, redraw the character offset by 1 pixel
 	if (renderBold && (!tigerOrLater || !antiAlias))
 	{
-		[crap drawAtPoint:NSMakePoint(1,0)  withAttributes:attrib];
-	}
-	[image unlockFocus];
-} // renderChar
-
-
-- (NSImage *) _getCharImage:(unichar) code color:(int)fg bgColor:(int)bg doubleWidth:(BOOL) dw
-{
-	int i;
-	int j;
-	NSImage *image;
-	unsigned int c = fg;
-	
-	if (fg == SELECTED_TEXT) {
-		c = SELECTED_TEXT;
-	}
-	else if (fg == CURSOR_TEXT) {
-		c = CURSOR_TEXT;
-	}
-	else {
-		c &= 0x3ff; // turn of all masks except for bold and default fg color
-	}
-	if (!code) return nil;
-
-	if (code>=0x20 && code<0x7f && c == DEFAULT_FG_COLOR_CODE && bg == DEFAULT_BG_COLOR_CODE) {
-		i = code - 0x20;
-		j = 0;
-	}
-	else {
-        unsigned long seed;
-        
-        seed=((code<<8 & 0xff0000)+code+((c&0xff)<<24)+((bg&0xff)<<8)); 
-		i = seed % (cacheSize-cacheCellSize-0x60) + 0x60;
-		for(j = 0;(charImages[i].code!=code || charImages[i].color!=c || charImages[i].bgColor != bg) && charImages[i].image && j<cacheCellSize; i++, j++);
-	}
-   
-	if (j>=cacheCellSize) {
-		// NSLog(@"new char, but cache full (%d, %d, %d)", code, c, i);
-		int t=1;
-		for(j=2; j<=cacheCellSize; j++) {	//find a least used one, and replace it with new char
-			if (charImages[i-j].count < charImages[i-t].count) t = j;
-		}
-		t = i - t;
-		for(j=1; j<=cacheCellSize; j++) {	//reset the cache count
-			charImages[i-j].count -= charImages[t].count;
-		}
-		[charImages[t].image release];
-		charImages[t].image = nil;
-		i = t;
-	}
-
-	if(!charImages[i].image) {
-		//  NSLog(@"add into cache");
-		image=charImages[i].image=[[NSImage alloc]initWithSize:NSMakeSize(charWidth*(dw?2:1), lineHeight)];
-		charImages[i].code=code;
-		charImages[i].color=c;
-		charImages[i].bgColor=bg;
-		charImages[i].count=1;
-		[self _renderChar: image 
-				withChar: code
-			   withColor: [self colorForCode: c]
-			  withBGColor: (bg == -1 ? nil : [self colorForCode: bg])
-				withFont: dw?nafont:font
-					bold: c&BOLD_MASK];
-		
-		return image;
-	}
-	else {
-		//		NSLog(@"already in cache");
-		charImages[i].count++;
-		return charImages[i].image;
-	}
-	
-}
-
-- (void) _drawCharacter:(unichar)c fgColor:(int)fg bgColor:(int)bg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
-{
-	NSImage *image;
-	BOOL bgImage = ([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil);
-	BOOL noBg = bg==-1 || (bg&SELECTION_MASK) || (bgImage && bg == DEFAULT_BG_COLOR_CODE);
-		
-	if (c) {
-		//NSLog(@"%s: %c(%d)",__PRETTY_FUNCTION__, c,c);
-
-		image=[self _getCharImage:c 
-						   color:fg
-						  bgColor:noBg ? -1: bg
-					 doubleWidth:dw];
-		
-		[image compositeToPoint:NSMakePoint(X,Y) operation: bgImage || (bg&SELECTION_MASK) || bg==-1 ? NSCompositeSourceOver:NSCompositeCopy];
+		[crap drawAtPoint:NSMakePoint(X+1,Y-lineHeight)  withAttributes:attrib];
 	}
 }	
 
@@ -3136,30 +3008,6 @@ static int cacheCellSize;
 	else 
 		[[NSWorkspace sharedWorkspace] openURL:url];
 		
-}
-
-- (void) _clearCacheForColor:(int)colorIndex
-{
-	int i;
-
-	for ( i = 0 ; i < cacheSize; i++) {
-		if (charImages[i].color == colorIndex) {
-			[charImages[i].image release];
-			charImages[i].image = nil;
-		}
-	}
-}
-
-- (void) _clearCacheForBGColor:(int)colorIndex
-{
-	int i;
-	
-	for ( i = 0 ; i < cacheSize; i++) {
-		if (charImages[i].bgColor == colorIndex) {
-			[charImages[i].image release];
-			charImages[i].image = nil;
-		}
-	}
 }
 
 - (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase wrapping: (BOOL) wrapping

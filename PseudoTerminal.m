@@ -951,7 +951,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
         PTYSession* session = [[TABVIEW tabViewItemAtIndex:i] identifier];
 		[[session TEXTVIEW] setCharWidth: charWidth];
 		[[session TEXTVIEW] setLineHeight: charHeight];
-		[[session TEXTVIEW] resetCharCache];
     }
 	
 	

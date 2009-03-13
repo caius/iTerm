@@ -139,7 +139,6 @@ typedef enum { CURSOR_UNDERLINE, CURSOR_VERTICAL, CURSOR_BOX } ITermCursorType;
 - (int) optimumTabWidth;
 - (float) strokeWidth;
 - (float) boldStrokeWidth;
-- (int) cacheSize;
 - (NSString *) searchCommand;
 
 @end

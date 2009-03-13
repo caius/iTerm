@@ -1167,7 +1167,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 	}
 
 	[[[self currentSession] TEXTVIEW] setForceUpdate: YES];
-	[[[self currentSession] SCROLLVIEW] setNeedsDisplay: YES];
 	[tabBarControl update];
 	
 }

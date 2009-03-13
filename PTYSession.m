@@ -1454,7 +1454,6 @@ static NSImage *warningImage;
     }
 
     [TEXTVIEW setForceUpdate: YES];
-    [TEXTVIEW setNeedsDisplay: YES];
 }
 
 

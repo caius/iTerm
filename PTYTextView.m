@@ -49,12 +49,12 @@
 
 static NSCursor* textViewCursor =  nil;
 static float strokeWidth, boldStrokeWidth;
+static BOOL tigerOrLater;
 
 @implementation PTYTextView
 
 + (void) initialize
 {
-    
     NSImage *ibeamImage = [[NSCursor IBeamCursor] image];
     NSPoint hotspot = [[NSCursor IBeamCursor] hotSpot];
     NSImage *aCursorImage = [ibeamImage copy];
@@ -70,6 +70,7 @@ static float strokeWidth, boldStrokeWidth;
     textViewCursor = [[NSCursor alloc] initWithImage:aCursorImage hotSpot:hotspot];
     strokeWidth = [[PreferencePanel sharedInstance] strokeWidth];
     boldStrokeWidth = [[PreferencePanel sharedInstance] boldStrokeWidth];
+    tigerOrLater = (floor(NSAppKitVersionNumber) > 743); //NSAppKitVersionNumber10_3);
 }
 
 + (NSCursor *) textViewCursor
@@ -216,12 +217,11 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setAntiAlias: (BOOL) antiAliasFlag
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView setAntiAlias: %d]",
-          __FILE__, __LINE__, antiAliasFlag);
+	NSLog(@"%s(%d):-[PTYTextView setAntiAlias: %d]",
+		  __FILE__, __LINE__, antiAliasFlag);
 #endif
-    antiAlias = antiAliasFlag;
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	antiAlias = antiAliasFlag;
+	[self setForceUpdate:YES];
 }
 
 - (BOOL) disableBold
@@ -232,8 +232,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setDisableBold: (BOOL) boldFlag
 {
 	disableBold = boldFlag;
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[self setForceUpdate:YES];
 }
 
 
@@ -270,11 +269,10 @@ static float strokeWidth, boldStrokeWidth;
 
 - (void) setFGColor:(NSColor*)color
 {
-    [defaultFGColor release];
-    [color retain];
-    defaultFGColor=color;
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[defaultFGColor release];
+	[color retain];
+	defaultFGColor=color;
+	[self setForceUpdate:YES];
 	// reset our default character attributes    
 }
 
@@ -285,26 +283,23 @@ static float strokeWidth, boldStrokeWidth;
     defaultBGColor=color;
 	//    bg = [bg colorWithAlphaComponent: [[SESSION backgroundColor] alphaComponent]];
 	//    fg = [fg colorWithAlphaComponent: [[SESSION foregroundColor] alphaComponent]];
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[self setForceUpdate:YES];
 }
 
 - (void) setBoldColor: (NSColor*)color
 {
-    [defaultBoldColor release];
-    [color retain];
-    defaultBoldColor=color;
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[defaultBoldColor release];
+	[color retain];
+	defaultBoldColor=color;
+	[self setForceUpdate:YES];
 }
 
 - (void) setCursorColor: (NSColor*)color
 {
-    [defaultCursorColor release];
-    [color retain];
-    defaultCursorColor=color;
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[defaultCursorColor release];
+	[color retain];
+	defaultCursorColor=color;
+	[self setForceUpdate:YES];
 }
 
 - (void) setSelectedTextColor: (NSColor *) aColor
@@ -312,9 +307,7 @@ static float strokeWidth, boldStrokeWidth;
 	[selectedTextColor release];
 	[aColor retain];
 	selectedTextColor = aColor;
-	forceUpdate = YES;
-
-	[self setNeedsDisplay: YES];
+	[self setForceUpdate:YES];
 }
 
 - (void) setCursorTextColor:(NSColor*) aColor
@@ -322,9 +315,7 @@ static float strokeWidth, boldStrokeWidth;
 	[cursorTextColor release];
 	[aColor retain];
 	cursorTextColor = aColor;
-	
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[self setForceUpdate:YES];
 }
 
 - (NSColor *) cursorTextColor
@@ -359,12 +350,10 @@ static float strokeWidth, boldStrokeWidth;
 
 - (void) setColorTable:(int) index color:(NSColor *) c
 {
-    [colorTable[index] release];
-    [c retain];
-    colorTable[index]=c;
-	forceUpdate = YES;
-
-	[self setNeedsDisplay: YES];
+	[colorTable[index] release];
+	[c retain];
+	colorTable[index]=c;
+	[self setForceUpdate:YES];
 }
 
 - (NSColor *) colorForCode:(int) index 
@@ -419,12 +408,10 @@ static float strokeWidth, boldStrokeWidth;
     NSLog(@"%s(%d):-[PTYTextView setSelectionColor:%@]",
           __FILE__, __LINE__,aColor);
 #endif
-    
-    [selectionColor release];
-    [aColor retain];
-    selectionColor=aColor;
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[selectionColor release];
+	[aColor retain];
+	selectionColor=aColor;
+	[self setForceUpdate:YES];
 }
 
 
@@ -462,8 +449,7 @@ static float strokeWidth, boldStrokeWidth;
             nafont, NSFontAttributeName,
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[self setForceUpdate:YES];
 }
 
 - (void)changeFont:(id)fontManager
@@ -527,6 +513,9 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setForceUpdate: (BOOL) flag
 {
 	forceUpdate = flag;
+	if(forceUpdate) {
+		[self setNeedsDisplay:YES];
+	}
 }
 
 
@@ -730,6 +719,10 @@ static float strokeWidth, boldStrokeWidth;
 
 	if(lineHeight <= 0 || lineWidth <= 0)
 		return;
+
+	// Configure graphics
+	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
+	[[NSGraphicsContext currentContext] setCompositingOperation: NSCompositeCopy];
 
 	gettimeofday(&now, NULL);
 	if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
@@ -2442,20 +2435,18 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setTransparency: (float) fVal
 {
 	transparency = fVal;
-	forceUpdate = YES;
-	[self setNeedsDisplay: YES];
+	[self setForceUpdate:YES];
 }
 
 - (BOOL) useTransparency
 {
-  return useTransparency;
+	return useTransparency;
 }
 
 - (void) setUseTransparency: (BOOL) flag
 {
-  useTransparency = flag;
-  forceUpdate = YES;
-  [self setNeedsDisplay: YES];
+	useTransparency = flag;
+	[self setForceUpdate:YES];
 }
 
 // service stuff
@@ -2506,9 +2497,6 @@ static float strokeWidth, boldStrokeWidth;
 
 	//NSLog(@"%s: %c(%d)",__PRETTY_FUNCTION__, code,code);
 	//
-	BOOL hasBGImage = ([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil);
-	BOOL noBG = bg==-1 || (bg&SELECTION_MASK) || (hasBGImage && bg == DEFAULT_BG_COLOR_CODE);
-		
 	NSColor* bgColor;
 	NSColor* color;
 	NSString  *crap;
@@ -2516,13 +2504,17 @@ static float strokeWidth, boldStrokeWidth;
 	NSFont *theFont;
 	float sw;
 	BOOL renderBold;
-	BOOL tigerOrLater = (floor(NSAppKitVersionNumber) > 743); //NSAppKitVersionNumber10_3);
+	BOOL hasBGImage = ([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil);
 	NSFontManager *fontManager = [NSFontManager sharedFontManager];
 	
 	theFont = dw?nafont:font;
 	renderBold = (code&BOLD_MASK) && ![self disableBold];
-	bgColor = noBG ? nil : [self colorForCode:bg];
 	color = [self colorForCode: fg];
+	if(bg==-1 || (hasBGImage && bg == DEFAULT_BG_COLOR_CODE)) {
+		bgColor = nil;
+	} else {
+		bgColor = [self colorForCode:bg];
+	}
 	
 	if(renderBold)
 	{
@@ -2563,7 +2555,6 @@ static float strokeWidth, boldStrokeWidth;
 	
 	
 	crap = [NSString stringWithCharacters:&code length:1];		
-	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	[crap drawAtPoint:NSMakePoint(X,Y-lineHeight) withAttributes:attrib];
 	
 	// on older systems, for bold, redraw the character offset by 1 pixel
@@ -2580,7 +2571,6 @@ static float strokeWidth, boldStrokeWidth;
 	aFrame.origin.y = line * lineHeight;
 	aFrame.size.width = [self frame].size.width;
 	aFrame.size.height = lineHeight;
-	//forceUpdate = YES;
 	[self scrollRectToVisible: aFrame];
 }
 
@@ -3131,7 +3121,6 @@ static float strokeWidth, boldStrokeWidth;
 		[self _selectFromX:startX Y:startY toX:endX Y:endY];
 		[self _scrollToLine:endY];
         [self setForceUpdate:YES];
-		[self setNeedsDisplay:YES];
 		
 		return (YES);
 	}

@@ -819,8 +819,8 @@ static BOOL tigerOrLater;
 		// are combined into runs and draw as one operation
 		bgstart = -1;
 		j = 0;
-		while(j < WIDTH) {
-			need_draw = (theLine[j].ch != 0xffff) && (
+		while(j <= WIDTH) {
+			need_draw = (j != WIDTH && theLine[j].ch != 0xffff) && (
 				(line <= oldTopLine || line >= oldBottomLine) ||
 				(forceUpdate) ||
 				(!dirty || dirty[j]) ||
@@ -835,13 +835,12 @@ static BOOL tigerOrLater;
 					(reversed || bgcode!=DEFAULT_BG_COLOR_CODE || !hasBGImage);
 			}
 
-			if(need_draw && theLine[j].bg_color == bgcode && j+1 < WIDTH) {
+			if(need_draw && theLine[j].bg_color == bgcode) {
 				// Continue the run
 				j++;
 			}
 			else if(bgstart >= 0) {
 				// This run is finished, draw it
-				if(j+1 == WIDTH) j = j+1; // Be sure to fill the last char of each line
 				bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
 				bgstart = -1;
 

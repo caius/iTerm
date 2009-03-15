@@ -297,6 +297,8 @@ static NSImage *warningImage;
 
 - (void)writeTask:(NSData *)data
 {
+	[TEXTVIEW deselect];
+
 	// check if we want to send this input to all the sessions
     if([parent sendInputToAllSessions] == NO)
     {

@@ -514,6 +514,7 @@ static BOOL tigerOrLater;
 {
 	forceUpdate = flag;
 	if(forceUpdate) {
+		[self deselect];
 		[self setNeedsDisplay:YES];
 	}
 }
@@ -547,30 +548,28 @@ static BOOL tigerOrLater;
 	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 	NSRect aFrame;
 	int height;
-    
-    if(dataSource != nil)
-    {
+
+	if(dataSource != nil)
+	{
 		numberOfLines = [dataSource numberOfLines];
-		
-        height = numberOfLines * lineHeight;
+
+		height = numberOfLines * lineHeight;
 		aFrame = [self frame];
-		
-        if(height != aFrame.size.height)
-        {
-            
+
+		if(height != aFrame.size.height)
+		{
 			//NSLog(@"%s: 0x%x; new number of lines = %d; resizing height from %f to %d", 
 			//	  __PRETTY_FUNCTION__, self, numberOfLines, [self frame].size.height, height);
-            aFrame.size.height = height;
-            [self setFrame: aFrame];
+			aFrame.size.height = height;
+			[self setFrame: aFrame];
 			if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) 
 			{
 				[self scrollEnd];
 			}
-        }
-				
-		
+		}
+
 		[self setNeedsDisplay: YES];
-    }
+	}
 	
 }
 
@@ -1092,7 +1091,7 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 
 		int bnum = [event buttonNumber];
 		if (bnum == 2) bnum = 1;
@@ -1102,7 +1101,7 @@ static BOOL tigerOrLater;
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
 				reportingMouseDown = YES;
-				[task writeTask:[terminal mousePress:bnum withModifiers:[event modifierFlags] atX:rx Y:ry]];
+				[session writeTask:[terminal mousePress:bnum withModifiers:[event modifierFlags] atX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1135,13 +1134,13 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
-				[task writeTask:[terminal mouseReleaseAtX:rx Y:ry]];
+				[session writeTask:[terminal mouseReleaseAtX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1170,7 +1169,7 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		int bnum = [event buttonNumber];
 		if (bnum == 2) bnum = 1;
@@ -1179,7 +1178,7 @@ static BOOL tigerOrLater;
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
-				[task writeTask:[terminal mouseMotion:bnum withModifiers:[event modifierFlags] atX:rx Y:ry]];
+				[session writeTask:[terminal mouseMotion:bnum withModifiers:[event modifierFlags] atX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1212,14 +1211,14 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
 				reportingMouseDown = YES;
-				[task writeTask:[terminal mousePress:2 withModifiers:[event modifierFlags] atX:rx Y:ry]];
+				[session writeTask:[terminal mousePress:2 withModifiers:[event modifierFlags] atX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1248,13 +1247,13 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
-				[task writeTask:[terminal mouseReleaseAtX:rx Y:ry]];
+				[session writeTask:[terminal mouseReleaseAtX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1283,13 +1282,13 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
-				[task writeTask:[terminal mouseMotion:2 withModifiers:[event modifierFlags] atX:rx Y:ry]];
+				[session writeTask:[terminal mouseMotion:2 withModifiers:[event modifierFlags] atX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1322,14 +1321,14 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
 				if([event deltaY] != 0) {
-					[task writeTask:[terminal mousePress:([event deltaY] > 0 ? 4:5) withModifiers:[event modifierFlags] atX:rx Y:ry]];
+					[session writeTask:[terminal mousePress:([event deltaY] > 0 ? 4:5) withModifiers:[event modifierFlags] atX:rx Y:ry]];
 					return;
 				}
 				break;
@@ -1388,14 +1387,14 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
 				reportingMouseDown = YES;
-				[task writeTask:[terminal mousePress:0 withModifiers:[event modifierFlags] atX:rx Y:ry]];
+				[session writeTask:[terminal mousePress:0 withModifiers:[event modifierFlags] atX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1539,13 +1538,13 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_NORMAL:
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
-				[task writeTask:[terminal mouseReleaseAtX:rx Y:ry]];
+				[session writeTask:[terminal mouseReleaseAtX:rx Y:ry]];
 				return;
 				break;
 			case MOUSE_REPORTING_NONE:
@@ -1628,12 +1627,12 @@ static BOOL tigerOrLater;
 		if (rx < 0) rx = -1;
 		if (ry < 0) ry = -1;
 		VT100Terminal *terminal = [dataSource terminal];
-		PTYTask *task = [dataSource shellTask];
+		PTYSession* session = [dataSource session];
 		
 		switch ([terminal mouseMode]) {
 			case MOUSE_REPORTING_BUTTON_MOTION:
 			case MOUSE_REPORTING_ALL_MOTION:
-				[task writeTask:[terminal mouseMotion:0 withModifiers:[event modifierFlags] atX:rx Y:ry]];
+				[session writeTask:[terminal mouseMotion:0 withModifiers:[event modifierFlags] atX:rx Y:ry]];
 			case MOUSE_REPORTING_NORMAL:
 				return;
 				break;
@@ -1802,6 +1801,7 @@ static BOOL tigerOrLater;
 {
 	if (startX>=0) {
 		startX = -1;
+		[self setNeedsDisplay: YES];
 	}
 }
 

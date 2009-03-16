@@ -2496,7 +2496,7 @@ static BOOL tigerOrLater;
 	NSFontManager *fontManager = [NSFontManager sharedFontManager];
 	
 	theFont = dw?nafont:font;
-	renderBold = (code&BOLD_MASK) && ![self disableBold];
+	renderBold = (fg&BOLD_MASK) && ![self disableBold];
 	color = [self colorForCode: fg];
 	if(bg==-1 || (hasBGImage && bg == DEFAULT_BG_COLOR_CODE)) {
 		bgColor = nil;

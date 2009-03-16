@@ -294,7 +294,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 				 endX: (int *) endx 
 				 endY: (int *) endy;
 - (NSString *) _getURLForX: (int) x y: (int) y;
-- (void) _drawCharacter:(unichar)c fgColor:(int)fg bgColor:(int)bg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
+- (void) _drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;
 - (BOOL) _isBlankLine: (int) y;
 - (void) _openURL: (NSString *) aURLString;
 - (BOOL) _findString: (NSString *) aString forwardDirection: (BOOL) direction ignoringCase: (BOOL) ignoreCase wrapping: (BOOL) wrapping;

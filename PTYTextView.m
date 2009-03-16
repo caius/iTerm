@@ -356,12 +356,12 @@ static BOOL tigerOrLater;
 	[self setForceUpdate:YES];
 }
 
-- (NSColor *) colorForCode:(int) index 
+- (NSColor *) colorForCode:(int) index
 {
-    NSColor *color;
+	NSColor *color;
 	
-	if (index&DEFAULT_FG_COLOR_CODE) // special colors?
-    {
+	if (index & DEFAULT_FG_COLOR_CODE) {
+		// special colors?
 		switch (index) {
 			case SELECTED_TEXT:
 				color = selectedTextColor;
@@ -373,23 +373,22 @@ static BOOL tigerOrLater;
 				color = defaultBGColor;
 				break;
 			default:
-				if(index&BOLD_MASK)
-				{
+				if(index & BOLD_MASK) {
 					color = index-BOLD_MASK == DEFAULT_BG_COLOR_CODE ? defaultBGColor : [self defaultBoldColor];
 				}
-				else
-				{
+				else {
 					color = defaultFGColor;
 				}
 		}
-    }
-    else 
-    {
+	}
+	else {
+		if((index & BOLD_MASK) && (index % 256 < 8)) {
+			index = index - BOLD_MASK + 8;
+		}
 		color = colorTable[index & 0xff];
-    }
+	}
 	
-    return color;
-    
+	return color;
 }
 
 - (NSColor *) selectionColor
@@ -882,12 +881,6 @@ static BOOL tigerOrLater;
 
 			if (need_draw)
 			{
-				if (reversed) {
-					bgcode = theLine[j].bg_color == DEFAULT_BG_COLOR_CODE ? DEFAULT_FG_COLOR_CODE : theLine[j].bg_color;
-				}
-				else
-					bgcode = theLine[j].bg_color;
-				
 				// switch colors if text is selected
 				if(selected && ((theLine[j].fg_color) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | (theLine[j].fg_color & BOLD_MASK); // check for bold
@@ -897,7 +890,7 @@ static BOOL tigerOrLater;
 				
 				if (blinkShow || !(theLine[j].fg_color & BLINK_MASK))
 				{
-					[self _drawCharacter:theLine[j].ch fgColor:fgcode bgColor:bgcode AtX:curX Y:curY doubleWidth: double_width];
+					[self _drawCharacter:theLine[j].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
 					//draw underline
 					if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
 						[[self colorForCode:fgcode] set];
@@ -965,7 +958,6 @@ static BOOL tigerOrLater;
 					if(aChar) {
 						[self _drawCharacter: aChar
 							fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:theLine[x1].fg_color
-							bgColor: -1 // not to draw any background
 							AtX: x1 * charWidth + MARGIN
 							Y: (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight
 							doubleWidth: double_width];
@@ -2477,7 +2469,7 @@ static BOOL tigerOrLater;
 //
 @implementation PTYTextView (Private)
 
-- (void) _drawCharacter:(unichar)code fgColor:(int)fg bgColor:(int)bg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
+- (void) _drawCharacter:(unichar)code fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
 {
 	if (!code) {
 		return;
@@ -2485,69 +2477,54 @@ static BOOL tigerOrLater;
 
 	//NSLog(@"%s: %c(%d)",__PRETTY_FUNCTION__, code,code);
 	//
-	NSColor* bgColor;
 	NSColor* color;
 	NSString  *crap;
 	NSDictionary *attrib;
 	NSFont *theFont;
 	float sw;
 	BOOL renderBold;
-	BOOL hasBGImage = ([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil);
 	NSFontManager *fontManager = [NSFontManager sharedFontManager];
-	
+
 	theFont = dw?nafont:font;
 	renderBold = (fg&BOLD_MASK) && ![self disableBold];
 	color = [self colorForCode: fg];
-	if(bg==-1 || (hasBGImage && bg == DEFAULT_BG_COLOR_CODE)) {
-		bgColor = nil;
-	} else {
-		bgColor = [self colorForCode:bg];
-	}
 	
-	if(renderBold)
-	{
+	if(renderBold) {
 		theFont = [fontManager convertFont: theFont toHaveTrait: NSBoldFontMask];
 		
-        // Check if there is native bold support
+		// Check if there is native bold support
 		// if conversion was successful, else use our own methods to convert to bold
-		if ([fontManager traitsOfFont:theFont] & NSBoldFontMask) 
-		{
+		if ([fontManager traitsOfFont:theFont] & NSBoldFontMask) {
 			sw = antiAlias ? strokeWidth:0;
 			renderBold = NO;
 		}
-		else
-		{
+		else {
 			sw = antiAlias? boldStrokeWidth : 0;
 		}
 	}
-    else 
-    {
-        sw = antiAlias ? strokeWidth:0;
-    }
-	
-	if (tigerOrLater && sw)
-	{
+	else {
+		sw = antiAlias ? strokeWidth:0;
+	}
+
+	if (tigerOrLater && sw) {
 		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
 			theFont, NSFontAttributeName,
 			color, NSForegroundColorAttributeName,
 			[NSNumber numberWithFloat: sw], @"NSStrokeWidth",
 			nil];
 	}
-	else
-	{
+	else {
 		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
 			theFont, NSFontAttributeName,
 			color, NSForegroundColorAttributeName,
 			nil];		
 	}
-	
-	
+
 	crap = [NSString stringWithCharacters:&code length:1];		
 	[crap drawAtPoint:NSMakePoint(X,Y) withAttributes:attrib];
 	
 	// on older systems, for bold, redraw the character offset by 1 pixel
-	if (renderBold && (!tigerOrLater || !antiAlias))
-	{
+	if (renderBold && (!tigerOrLater || !antiAlias)) {
 		[crap drawAtPoint:NSMakePoint(X+1,Y)  withAttributes:attrib];
 	}
 }	

@@ -303,9 +303,9 @@ typedef enum {
     
     int FG_COLORCODE;
     int BG_COLORCODE;
-    int	bold, under, blink, reversed, highlight;
+    int	bold, under, blink, reversed;
 
-    int saveBold, saveUnder, saveBlink, saveReversed, saveHighlight;
+    int saveBold, saveUnder, saveBlink, saveReversed;
     int saveCHARSET;
     
     BOOL TRACE;

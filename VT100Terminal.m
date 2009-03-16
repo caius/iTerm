@@ -1387,7 +1387,6 @@ static VT100TCC decode_string(unsigned char *datap,
     XON = YES;
     bold=blink=reversed=under=0;
     saveBold=saveBlink=saveReversed=saveUnder = 0;
-    highlight = saveHighlight = NO;
     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
 	MOUSE_MODE = MOUSE_REPORTING_NONE;
@@ -1481,7 +1480,6 @@ static VT100TCC decode_string(unsigned char *datap,
 	saveUnder=under;
 	saveBlink=blink;
 	saveReversed=reversed;
-	saveHighlight=highlight;
 	saveCHARSET=CHARSET;
 }
 
@@ -1491,7 +1489,6 @@ static VT100TCC decode_string(unsigned char *datap,
 	under=saveUnder;
 	blink=saveBlink;
 	reversed=saveReversed;
-	highlight = saveHighlight;
 	CHARSET=saveCHARSET;
 }
 
@@ -1512,7 +1509,6 @@ static VT100TCC decode_string(unsigned char *datap,
     XON = YES;
     bold=blink=reversed=under=0;
     saveBold=saveBlink=saveReversed=saveUnder = 0;
-    highlight = saveHighlight = NO;
     FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
     BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
 	MOUSE_MODE = MOUSE_REPORTING_NONE;
@@ -2134,23 +2130,17 @@ static VT100TCC decode_string(unsigned char *datap,
 
 - (int)foregroundColorCode
 {
-	if (FG_COLORCODE % 256 >7)
-		return (reversed?BG_COLORCODE:FG_COLORCODE)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
-	else
-		return (reversed?BG_COLORCODE:FG_COLORCODE+(highlight?1:bold)*8)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
+	return (reversed?BG_COLORCODE:FG_COLORCODE)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
 }
 
 - (int)backgroundColorCode
 {
-    return (reversed?FG_COLORCODE:BG_COLORCODE+highlight*8);
+    return (reversed?FG_COLORCODE:BG_COLORCODE);
 }
 
 - (int)foregroundColorCodeReal
 {
-	if (FG_COLORCODE % 256 >7)
-		return (FG_COLORCODE)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
-	else
-		return (FG_COLORCODE+(highlight?1:bold)*8)+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
+	return FG_COLORCODE+bold*BOLD_MASK+under*UNDER_MASK+blink*BLINK_MASK;
 }
 
 - (int)backgroundColorCodeReal
@@ -2282,7 +2272,7 @@ static VT100TCC decode_string(unsigned char *datap,
 		
         if (token.u.csi.count == 0) {
             // all attribute off
-            bold=under=blink=reversed=highlight=0;
+            bold=under=blink=reversed=0;
 			FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
 			BG_COLORCODE = DEFAULT_BG_COLOR_CODE; 
         }
@@ -2293,7 +2283,7 @@ static VT100TCC decode_string(unsigned char *datap,
                 switch (n) {
 					case VT100CHARATTR_ALLOFF:
 						// all attribute off
-						bold=under=blink=reversed=highlight=0;
+						bold=under=blink=reversed=0;
 						FG_COLORCODE = DEFAULT_FG_COLOR_CODE;
 						BG_COLORCODE = DEFAULT_BG_COLOR_CODE;
 						break;
@@ -2344,20 +2334,16 @@ static VT100TCC decode_string(unsigned char *datap,
 						// 8 color support
 						if (n>=VT100CHARATTR_FG_BLACK&&n<=VT100CHARATTR_FG_WHITE) {
 							FG_COLORCODE = n - VT100CHARATTR_FG_BASE - COLORCODE_BLACK;
-							highlight = 0;
 						}
 						else if (n>=VT100CHARATTR_BG_BLACK&&n<=VT100CHARATTR_BG_WHITE) {
 							BG_COLORCODE = n - VT100CHARATTR_BG_BASE - COLORCODE_BLACK;
-							highlight = 0;
 						}
 						// 16 color support
 						if (n>=VT100CHARATTR_FG_HI_BLACK&&n<=VT100CHARATTR_FG_HI_WHITE) {
-							FG_COLORCODE = n - VT100CHARATTR_FG_HI_BASE - COLORCODE_BLACK;
-							highlight = 1;
+							FG_COLORCODE = n - VT100CHARATTR_FG_HI_BASE - COLORCODE_BLACK + 8;
 						}
 						else if (n>=VT100CHARATTR_BG_HI_BLACK&&n<=VT100CHARATTR_BG_HI_WHITE) {
-							BG_COLORCODE = n - VT100CHARATTR_BG_HI_BASE - COLORCODE_BLACK;
-							highlight = 1;
+							BG_COLORCODE = n - VT100CHARATTR_BG_HI_BASE - COLORCODE_BLACK + 8;
 						}
                 }
             }

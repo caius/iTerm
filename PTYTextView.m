@@ -817,7 +817,10 @@ static BOOL tigerOrLater;
 		bgstart = -1;
 		j = 0;
 		while(j <= WIDTH) {
-			if(theLine[j].ch == 0xffff) continue;
+			if(theLine[j].ch == 0xffff) {
+				j++;
+				continue;
+			}
 
 			selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
 			need_draw = (j != WIDTH) && (

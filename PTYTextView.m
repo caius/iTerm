@@ -782,7 +782,7 @@ static BOOL tigerOrLater;
 	//NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
 		
 	// [self adjustScroll] should've made sure we are at an integer multiple of a line
-	curY=(lineOffset+1)*lineHeight;
+	curY=lineOffset*lineHeight;
 	
 	// Visible rectangle movement due to scrolling
 	oldTopLine = oldVisibleRect.origin.y / lineHeight;
@@ -817,14 +817,17 @@ static BOOL tigerOrLater;
 		bgstart = -1;
 		j = 0;
 		while(j <= WIDTH) {
+			if(theLine[j].ch == 0xffff) continue;
+
 			selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
-			need_draw = (j != WIDTH && theLine[j].ch != 0xffff) && (
+			need_draw = (j != WIDTH) && (
 				(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
 				(line <= oldTopLine || line >= oldBottomLine) ||
 				(forceUpdate) ||
 				(dirty && dirty[j]) ||
 				(theLine[j].fg_color & BLINK_MASK)
 			);
+			double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
 
 			if(need_draw && bgstart < 0) {
 				// Start new run
@@ -835,11 +838,11 @@ static BOOL tigerOrLater;
 
 			if(need_draw && bgselected == selected && theLine[j].bg_color == bgcode) {
 				// Continue the run
-				j++;
+				j+=(double_width?2:1);
 			}
 			else if(bgstart >= 0) {
 				// This run is finished, draw it
-				bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY-lineHeight,ceil((j-bgstart)*charWidth),lineHeight);
+				bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY,ceil((j-bgstart)*charWidth),lineHeight);
 				bgstart = -1;
 
 				if(hasBGImage) {
@@ -849,31 +852,33 @@ static BOOL tigerOrLater;
 				aColor = [aColor colorWithAlphaComponent: alpha];
 				[aColor set];
 				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
-				// Return to top of loop without j++ so this character
-				// gets the chance to start its own run
+				// Return to top of loop without incrementing j so this
+				// character gets the chance to start its own run
 			}
 			else {
 				// Don't need to draw and not on a run, move to next char
-				j++;
+				j+=(double_width?2:1);
 			}
 		}
 
 		// draw all dirty characters
 		for(j = 0; j < WIDTH; j++)
 		{
+			if(theLine[j].ch == 0xffff) continue;
+
 			selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
-			need_draw = (theLine[j].ch != 0xffff) && (
+			need_draw = (
 				(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
 				(line <= oldTopLine || line >= oldBottomLine) ||
 				(forceUpdate) ||
 				(dirty && dirty[j]) ||
 				(theLine[j].fg_color & BLINK_MASK)
 			);
+			double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
+
 
 			if (need_draw)
 			{
-				double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
-
 				if (reversed) {
 					bgcode = theLine[j].bg_color == DEFAULT_BG_COLOR_CODE ? DEFAULT_FG_COLOR_CODE : theLine[j].bg_color;
 				}
@@ -899,7 +904,7 @@ static BOOL tigerOrLater;
 			}
 			if(line >= startScreenLineIndex) dirty[j]=0;
 			
-			curX+=charWidth;
+			curX+=charWidth*(double_width?2:1);
 		}
 		curY+=lineHeight;
 	}
@@ -929,58 +934,51 @@ static BOOL tigerOrLater;
 
 		if (showCursor && x1<[dataSource width] && x1>=0 && y1>=0 && y1<[dataSource height]) {
 			i = y1*[dataSource width]+x1;
+			curX = floor(x1 * charWidth + MARGIN);
+			curY = (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight - cursorHeight;
 			// get the cursor line
 			theLine = [dataSource getLineAtScreenIndex: y1];
-			
+			double_width = 0;
+			unichar aChar = theLine[x1].ch;
+			if (aChar) {
+				if (aChar == 0xffff && x1>0) {
+					i--;
+					x1--;
+					aChar = theLine[x1].ch;
+				}
+				double_width = (x1 < WIDTH-1) && (theLine[x1+1].ch == 0xffff);
+			}
 			[[[self defaultCursorColor] colorWithAlphaComponent: alpha] set];
 
 			switch ([[PreferencePanel sharedInstance] cursorType]) {
 				case CURSOR_BOX:
-					if([[self window] isKeyWindow])
-					{
-						NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
-											  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-											  ceil(cursorWidth), cursorHeight));
-					}
-					else
-					{
-						NSFrameRect(NSMakeRect(floor(x1 * charWidth + MARGIN),
-											  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-											  ceil(cursorWidth), cursorHeight));
-						
+					// draw the box
+					if([[self window] isKeyWindow]) {
+						NSRectFill(NSMakeRect(curX, curY, ceil(cursorWidth*(double_width?2:1)), cursorHeight));
+					} else {
+						NSFrameRect(NSMakeRect(curX, curY, ceil(cursorWidth*(double_width?2:1)), cursorHeight));
 					}
 					// draw any character on cursor if we need to
-					unichar aChar = theLine[x1].ch;
-					if (aChar)
-					{
-						if (aChar == 0xffff && x1>0)
-						{
-							i--;
-							x1--;
-							aChar = theLine[x1].ch;
-						}
-						double_width = (x1 < WIDTH-1) && (theLine[x1+1].ch == 0xffff);
+					if(aChar) {
 						[self _drawCharacter: aChar
-									 fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:theLine[x1].fg_color
-									 bgColor: -1 // not to draw any background
-										 AtX: x1 * charWidth + MARGIN
-										   Y: (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight
-								 doubleWidth: double_width];
+							fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:theLine[x1].fg_color
+							bgColor: -1 // not to draw any background
+							AtX: x1 * charWidth + MARGIN
+							Y: (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight
+							doubleWidth: double_width];
 					}
-						
+
 					break;
+
 				case CURSOR_VERTICAL:
-					NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
-										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-										  1, cursorHeight));
+					NSRectFill(NSMakeRect(curX, curY, 1, cursorHeight));
 					break;
+
 				case CURSOR_UNDERLINE:
-					NSRectFill(NSMakeRect(floor(x1 * charWidth + MARGIN),
-										  (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight + (lineHeight - cursorHeight) - 2,
-										  ceil(cursorWidth), 2));
+					NSRectFill(NSMakeRect(curX, curY+lineHeight-2, ceil(cursorWidth*(double_width?2:1)), 2));
 					break;
 			}
-					
+
 			([dataSource dirty]+y1*WIDTH)[x1] = 1; //cursor loc is dirty
 			
 		}
@@ -2542,12 +2540,12 @@ static BOOL tigerOrLater;
 	
 	
 	crap = [NSString stringWithCharacters:&code length:1];		
-	[crap drawAtPoint:NSMakePoint(X,Y-lineHeight) withAttributes:attrib];
+	[crap drawAtPoint:NSMakePoint(X,Y) withAttributes:attrib];
 	
 	// on older systems, for bold, redraw the character offset by 1 pixel
 	if (renderBold && (!tigerOrLater || !antiAlias))
 	{
-		[crap drawAtPoint:NSMakePoint(X+1,Y-lineHeight)  withAttributes:attrib];
+		[crap drawAtPoint:NSMakePoint(X+1,Y)  withAttributes:attrib];
 	}
 }	
 

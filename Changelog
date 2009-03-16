@@ -1,3 +1,7 @@
+2009-03-16 delx
+	* The cursor is now double-width when over a double-width character.
+	* Fixed selection of wide chars after breaking it on 2009-03-13
+
 2009-03-13  delx
 	* Remove character caching code. Testing shows the drawing to run just
 	  as fast without it. This reduces code complexity and colour reproduction

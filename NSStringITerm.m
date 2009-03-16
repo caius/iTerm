@@ -261,27 +261,6 @@ static const unichar ambiguous_chars[] = {
 	0x25e4,
 	0x25e5,
 	0x25ef,
-	0x2605,
-	0x2606,
-	0x2609,
-	0x260e,
-	0x260f,
-	0x261c,
-	0x261e,
-	0x2640,
-	0x2642,
-	0x2660,
-	0x2661,
-	0x2663,
-	0x2664,
-	0x2665,
-	0x2667,
-	0x2668,
-	0x2669,
-	0x266a,
-	0x266c,
-	0x266d,
-	0x266f,
 	0x273d,
 	0xfffd,
 };
@@ -382,15 +361,14 @@ static const unichar ambiguous_chars[] = {
 {
 	if (unicode <= 0xa0 || (unicode>0x452 && unicode <0x1100))
 		return NO;
-    /*
-     unicode character width check
-     see. http://www.unicode.org
-     EastAsianWidth-3.2.0.txt 
-     */
+	// Unicode character width check.
+	// Character ranges: http://www.alanwood.net/unicode/unicode_samples.html
+	// Also: http://www.unicode.org
+	// EastAsianWidth-3.2.0.txt
     if ((unicode >= 0x1100 &&  unicode <= 0x115f) || // Hangule choseong
         unicode == 0x2329 ||	// left pointing angle bracket
         unicode == 0x232a ||	// right pointing angle bracket
-        //(unicode >= 0x2500 && unicode <= 0x267f) || // Box lines, Miscellaneous symbols, etc
+        (unicode >= 0x2600 && unicode <= 0x26C3) || // Miscellaneous symbols, etc
         (unicode >= 0x2e80 && unicode <= 0x2fff) || // 
         (unicode >= 0x3000 && unicode <= 0x303E) ||
 		(unicode >= 0x3041 && unicode <= 0x33ff) || // HIRAGANA, KATAKANA, BOPOMOFO, Hangul, etc

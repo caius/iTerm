@@ -50,6 +50,7 @@
 static NSCursor* textViewCursor =  nil;
 static float strokeWidth, boldStrokeWidth;
 static BOOL tigerOrLater;
+static BOOL leopardOrLater;
 
 @implementation PTYTextView
 
@@ -71,6 +72,7 @@ static BOOL tigerOrLater;
     strokeWidth = [[PreferencePanel sharedInstance] strokeWidth];
     boldStrokeWidth = [[PreferencePanel sharedInstance] boldStrokeWidth];
     tigerOrLater = (floor(NSAppKitVersionNumber) > 743); //NSAppKitVersionNumber10_3);
+    leopardOrLater = (floor(NSAppKitVersionNumber) > 824); //NSAppKitVersionNumber10_5);
 }
 
 + (NSCursor *) textViewCursor
@@ -540,6 +542,15 @@ static BOOL tigerOrLater;
 	if(trackingRectTag)
 		[self removeTrackingRect:trackingRectTag];
 	trackingRectTag = [self addTrackingRect:[self visibleRect] owner: self userData: nil assumeInside: NO];
+}
+
+// We override this for OS releases before Leopard
+- (void) scrollRectToVisible:(NSRect)rect
+{
+	[super scrollRectToVisible:rect];
+	if(leopardOrLater) return;
+
+	[self setForceUpdate:YES];
 }
 
 - (void) refresh

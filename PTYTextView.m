@@ -2331,6 +2331,9 @@ static BOOL tigerOrLater;
 			curX = MARGIN + bgstart*charWidth;
 
 			for(k = bgstart; k < j; k++) {
+				if(theLine[k].ch == 0xffff) continue;
+				double_width = k<WIDTH-1 && (theLine[k+1].ch == 0xffff);
+
 				if(selected && ((theLine[k].fg_color) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | (theLine[k].fg_color & BOLD_MASK); // check for bold
 				else

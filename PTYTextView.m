@@ -2345,7 +2345,7 @@ static BOOL tigerOrLater;
 					//draw underline
 					if (theLine[k].fg_color & UNDER_MASK && theLine[k].ch) {
 						[[self colorForCode:fgcode] set];
-						NSRectFill(NSMakeRect(curX,curY-2,double_width?charWidth*2:charWidth,1));
+						NSRectFill(NSMakeRect(curX,curY+lineHeight-2,double_width?charWidth*2:charWidth,1));
 					}
 				}
 				curX+=charWidth*(double_width?2:1);

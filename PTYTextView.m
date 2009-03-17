@@ -689,31 +689,16 @@ static BOOL tigerOrLater;
 - (void)drawRect:(NSRect)rect
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(0x%x):-[PTYTextView drawRect:(%f,%f,%f,%f) frameRect: (%f,%f,%f,%f)]",
-          __PRETTY_FUNCTION__, self,
-          rect.origin.x, rect.origin.y, rect.size.width, rect.size.height,
-		  [self frame].origin.x, [self frame].origin.y, [self frame].size.width, [self frame].size.height);
+	NSLog(@"%s(0x%x):-[PTYTextView drawRect:(%f,%f,%f,%f) frameRect: (%f,%f,%f,%f)]",
+		__PRETTY_FUNCTION__, self,
+		rect.origin.x, rect.origin.y, rect.size.width, rect.size.height,
+		[self frame].origin.x, [self frame].origin.y, [self frame].size.width, [self frame].size.height);
 #endif
-		
-	int numLines, i, j, lineOffset, WIDTH;
-	int startScreenLineIndex,line;
-	screen_char_t *theLine;
-	NSRect bgRect;
-	NSColor *aColor;
-	char *dirty = NULL;
-	BOOL need_draw, selected;
-	float curX, curY;
-	unsigned int bgcode = 0, fgcode = 0;
-	int y1, x1;
-	BOOL double_width;
-	BOOL reversed = [[dataSource terminal] screenMode];
-	struct timeval now;
-	int oldTopLine, oldBottomLine;
-	int bgstart;
-	BOOL bgselected = NO;
-	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
 
-	float alpha = useTransparency ? 1.0 - transparency : 1.0;
+	int i;
+	int numLines;
+	int lineOffset;
+	struct timeval now;
 
 	if(lineHeight <= 0 || lineWidth <= 0)
 		return;
@@ -722,53 +707,15 @@ static BOOL tigerOrLater;
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	[[NSGraphicsContext currentContext] setCompositingOperation: NSCompositeCopy];
 
+	// Blinking
 	gettimeofday(&now, NULL);
 	if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
 		blinkShow = !blinkShow;
 		lastBlink = now;
 	}
 
-	// set the background color, used for drawing background and margins
-///	aColor = [self colorForCode:[[dataSource terminal] backgroundColorCodeReal]];
-	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
-	aColor = [aColor colorWithAlphaComponent: alpha];
-	[aColor set];
-
-	// redraw the entire background
-	if (forceUpdate) {
-		if ([[[dataSource session] parent] fullScreen]) {
-			[[[self window] contentView] lockFocus];
-			[[NSColor blackColor] set];
-			NSRectFill([[self window] frame]);
-			[[[self window] contentView] unlockFocus];
-		}
-		
-		if(hasBGImage)
-		{
-			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
-		}
-		else {
-			NSRectFill(rect);
-		}
-	}
-
-	// redraw margins
-	bgRect = NSMakeRect(0, rect.origin.y, MARGIN, rect.size.height);
-	if(hasBGImage) {
-		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-	}
-	else {
-		NSRectFill(bgRect);
-	}
-	bgRect = NSMakeRect(rect.size.width - MARGIN, rect.origin.y, MARGIN, rect.size.height);
-	if(hasBGImage) {
-		[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-	}
-	else {
-		NSRectFill(bgRect);
-	}
-
-	WIDTH=[dataSource width];
+	// Draw the background color/image if needed
+	[self _drawBackgroundRect:rect];
 
 	// Starting from which line?
 	lineOffset = rect.origin.y/lineHeight;
@@ -776,225 +723,16 @@ static BOOL tigerOrLater;
 	// How many lines do we need to draw?
 	numLines = ceil(rect.size.height/lineHeight);
 
-	// Which line is our screen start?
-	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
-	//NSLog(@"%f+%f->%d+%d", rect.origin.y,rect.size.height,lineOffset,numLines);
-		
-	// [self adjustScroll] should've made sure we are at an integer multiple of a line
-	curY=lineOffset*lineHeight;
-	
-	// Visible rectangle movement due to scrolling
-	oldTopLine = oldVisibleRect.origin.y / lineHeight;
-	oldBottomLine = oldTopLine + oldVisibleRect.size.height / lineHeight;
-
-	for(i = 0; i < numLines; i++)
-	{
-		curX = MARGIN;
-		line = i + lineOffset;
-		
-		if(line >= [dataSource numberOfLines])
-		{
-			//NSLog(@"%s (0x%x): illegal line index %d >= %d", __PRETTY_FUNCTION__, self, line, [dataSource numberOfLines]);
-			break;
-		}
-		
-		// get the line
-		theLine = [dataSource getLineAtIndex:line];
-		//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
-		
-		// Get the dirty flags. If in a scrollback buffer assume not dirty
-		if (line < startScreenLineIndex) {
-			dirty = nil;
-		} else {
-			dirty=[dataSource dirty]+(line-startScreenLineIndex)*WIDTH;
-		}	
-
-
-		// Draw background for dirty characters here
-		// Contiguous sections of background with the same colour
-		// are combined into runs and draw as one operation
-		bgstart = -1;
-		j = 0;
-		while(j <= WIDTH) {
-			if(theLine[j].ch == 0xffff) {
-				j++;
-				continue;
-			}
-
-			selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
-			need_draw = (j != WIDTH) && (
-				(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
-				(line <= oldTopLine || line >= oldBottomLine) ||
-				(forceUpdate) ||
-				(dirty && dirty[j]) ||
-				(theLine[j].fg_color & BLINK_MASK)
-			);
-			double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
-
-			if(need_draw && bgstart < 0) {
-				// Start new run
-				bgstart = j;
-				bgcode = theLine[j].bg_color;
-				bgselected = selected;
-			}
-
-			if(need_draw && bgselected == selected && theLine[j].bg_color == bgcode) {
-				// Continue the run
-				j+=(double_width?2:1);
-			}
-			else if(bgstart >= 0) {
-				// This run is finished, draw it
-				bgRect = NSMakeRect(floor(curX+bgstart*charWidth),curY,ceil((j-bgstart)*charWidth),lineHeight);
-				bgstart = -1;
-
-				if(hasBGImage) {
-					[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
-				}
-				aColor = bgselected ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
-				aColor = [aColor colorWithAlphaComponent: alpha];
-				[aColor set];
-				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
-				// Return to top of loop without incrementing j so this
-				// character gets the chance to start its own run
-			}
-			else {
-				// Don't need to draw and not on a run, move to next char
-				j+=(double_width?2:1);
-			}
-		}
-
-		// draw all dirty characters
-		for(j = 0; j < WIDTH; j++)
-		{
-			if(theLine[j].ch == 0xffff) continue;
-
-			selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
-			need_draw = (
-				(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
-				(line <= oldTopLine || line >= oldBottomLine) ||
-				(forceUpdate) ||
-				(dirty && dirty[j]) ||
-				(theLine[j].fg_color & BLINK_MASK)
-			);
-			double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
-
-
-			if (need_draw)
-			{
-				// switch colors if text is selected
-				if(selected && ((theLine[j].fg_color) == DEFAULT_FG_COLOR_CODE))
-					fgcode = SELECTED_TEXT | (theLine[j].fg_color & BOLD_MASK); // check for bold
-				else
-					fgcode = (reversed && theLine[j].fg_color & DEFAULT_FG_COLOR_CODE) ?
-						(DEFAULT_BG_COLOR_CODE | (theLine[j].fg_color & BOLD_MASK)) : theLine[j].fg_color;
-				
-				if (blinkShow || !(theLine[j].fg_color & BLINK_MASK))
-				{
-					[self _drawCharacter:theLine[j].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
-					//draw underline
-					if (theLine[j].fg_color & UNDER_MASK && theLine[j].ch) {
-						[[self colorForCode:fgcode] set];
-						NSRectFill(NSMakeRect(curX,curY-2,double_width?charWidth*2:charWidth,1));
-					}
-				}
-			}
-			if(line >= startScreenLineIndex) dirty[j]=0;
-			
-			curX+=charWidth*(double_width?2:1);
-		}
-		curY+=lineHeight;
+	// Draw each line
+	for(i = 0; i < numLines; i++) {
+		[self _drawLine:(i + lineOffset) AtY:(lineOffset+i)*lineHeight];
 	}
-	
-	x1=[dataSource cursorX]-1;
-	y1=[dataSource cursorY]-1;
-	
-	//draw cursor	
-	float cursorWidth, cursorHeight;				
-				
-	if(charWidth < charWidthWithoutSpacing)
-		cursorWidth = charWidth;
-	else
-		cursorWidth = charWidthWithoutSpacing;
-	
-	if(lineHeight < charHeightWithoutSpacing)
-		cursorHeight = lineHeight;
-	else
-		cursorHeight = charHeightWithoutSpacing;
+	[dataSource resetDirty];
 
-	if (CURSOR) {
-			
-		if([self blinkingCursor] && [[self window] isKeyWindow] && x1==oldCursorX && y1==oldCursorY)
-			showCursor = blinkShow;
-		else
-			showCursor = YES;
+	// Draw cursor
+	[self _drawCursor];
 
-		if (showCursor && x1<[dataSource width] && x1>=0 && y1>=0 && y1<[dataSource height]) {
-			i = y1*[dataSource width]+x1;
-			curX = floor(x1 * charWidth + MARGIN);
-			curY = (y1+[dataSource numberOfLines]-[dataSource height]+1)*lineHeight - cursorHeight;
-			// get the cursor line
-			theLine = [dataSource getLineAtScreenIndex: y1];
-			double_width = 0;
-			unichar aChar = theLine[x1].ch;
-			if (aChar) {
-				if (aChar == 0xffff && x1>0) {
-					i--;
-					x1--;
-					aChar = theLine[x1].ch;
-				}
-				double_width = (x1 < WIDTH-1) && (theLine[x1+1].ch == 0xffff);
-			}
-			[[[self defaultCursorColor] colorWithAlphaComponent: alpha] set];
-
-			switch ([[PreferencePanel sharedInstance] cursorType]) {
-				case CURSOR_BOX:
-					// draw the box
-					if([[self window] isKeyWindow]) {
-						NSRectFill(NSMakeRect(curX, curY, ceil(cursorWidth*(double_width?2:1)), cursorHeight));
-					} else {
-						NSFrameRect(NSMakeRect(curX, curY, ceil(cursorWidth*(double_width?2:1)), cursorHeight));
-					}
-					// draw any character on cursor if we need to
-					if(aChar) {
-						[self _drawCharacter: aChar
-							fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:theLine[x1].fg_color
-							AtX: x1 * charWidth + MARGIN
-							Y: (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight
-							doubleWidth: double_width];
-					}
-
-					break;
-
-				case CURSOR_VERTICAL:
-					NSRectFill(NSMakeRect(curX, curY, 1, cursorHeight));
-					break;
-
-				case CURSOR_UNDERLINE:
-					NSRectFill(NSMakeRect(curX, curY+lineHeight-2, ceil(cursorWidth*(double_width?2:1)), 2));
-					break;
-			}
-
-			([dataSource dirty]+y1*WIDTH)[x1] = 1; //cursor loc is dirty
-			
-		}
-	}
-	
-	oldCursorX = x1;
-	oldCursorY = y1;
-	
-	// draw any text for NSTextInput
-	if([self hasMarkedText]) {
-		int len;
-		
-		len=[markedText length];
-		if (len>[dataSource width]-x1) len=[dataSource width]-x1;
-		[markedText drawInRect:NSMakeRect(floor(x1 * charWidth + MARGIN),
-										  (y1+[dataSource numberOfLines]-[dataSource height])*lineHeight + (lineHeight - cursorHeight),
-										  ceil((WIDTH-x1)*cursorWidth),cursorHeight)];
-		memset([dataSource dirty]+y1*[dataSource width]+x1, 1,[dataSource width]-x1>len*2?len*2:[dataSource width]-x1); //len*2 is an over-estimation, but safe
-	}
-	
-
+	// Update state for next draw
 	forceUpdate=NO;
 	oldVisibleRect = [self visibleRect];
 	oldVisibleSet = NO;
@@ -2469,6 +2207,252 @@ static BOOL tigerOrLater;
 //
 @implementation PTYTextView (Private)
 
+- (void) _drawBackgroundRect:(NSRect)rect
+{
+	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
+	NSColor *aColor;
+	float alpha = useTransparency ? 1.0 - transparency : 1.0;
+
+	// Set the background color, used for drawing background and margins
+	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
+	aColor = [aColor colorWithAlphaComponent: alpha];
+	[aColor set];
+
+	// Redraw the entire background
+	if (forceUpdate) {
+		if ([[[dataSource session] parent] fullScreen]) {
+			[[[self window] contentView] lockFocus];
+			[[NSColor blackColor] set];
+			NSRectFill([[self window] frame]);
+			[[[self window] contentView] unlockFocus];
+		}
+		
+		if(hasBGImage) {
+			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
+		}
+		else {
+			NSRectFill(rect);
+		}
+	}
+
+}
+
+- (void) _drawLine:(int)line AtY:(float)curY
+{
+	int WIDTH, HEIGHT;
+	int j, k;
+	screen_char_t* theLine;
+	int startScreenLineIndex;
+	int oldTopLine, oldBottomLine;
+	float curX;
+	char *dirty = NULL;
+	BOOL need_draw, selected;
+	unsigned int bgcode = 0, fgcode = 0;
+	BOOL double_width;
+	BOOL reversed = [[dataSource terminal] screenMode];
+	int bgstart;
+	BOOL bgselected = NO;
+	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
+	float alpha = useTransparency ? 1.0 - transparency : 1.0;
+	NSColor *aColor;
+	NSRect bgRect;
+
+	WIDTH = [dataSource width];
+	HEIGHT = [dataSource height];
+
+	// Which line is our screen start?
+	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
+
+	// Visible rectangle movement due to scrolling
+	oldTopLine = oldVisibleRect.origin.y / lineHeight;
+	oldBottomLine = oldTopLine + oldVisibleRect.size.height / lineHeight;
+
+	if(line >= [dataSource numberOfLines]) {
+		//NSLog(@"%s (0x%x): illegal line index %d >= %d", __PRETTY_FUNCTION__, self, line, [dataSource numberOfLines]);
+		return;
+	}
+	
+	// get the line
+	theLine = [dataSource getLineAtIndex:line];
+	//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
+	
+	// Get the dirty flags. If in a scrollback buffer assume not dirty
+	if (line < startScreenLineIndex) {
+		dirty = nil;
+	} else {
+		dirty=[dataSource dirty]+(line-startScreenLineIndex)*WIDTH;
+	}	
+
+	// Draw background for dirty characters here
+	// Contiguous sections of background with the same colour
+	// are combined into runs and draw as one operation
+	bgstart = -1;
+	j = 0;
+	while(j <= WIDTH) {
+		if(theLine[j].ch == 0xffff) {
+			j++;
+			continue;
+		}
+
+		selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
+		need_draw = (j != WIDTH) && (
+			(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
+			(line <= oldTopLine || line >= oldBottomLine) ||
+			(forceUpdate) ||
+			(dirty && dirty[j]) ||
+			(theLine[j].fg_color & BLINK_MASK)
+		);
+		double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
+
+		if(need_draw && bgstart < 0) {
+			// Start new run
+			bgstart = j;
+			bgcode = theLine[j].bg_color;
+			bgselected = selected;
+		}
+
+		if(need_draw && bgselected == selected && theLine[j].bg_color == bgcode) {
+			// Continue the run
+			j+=(double_width?2:1);
+		}
+		else if(bgstart >= 0) {
+			// This run is finished, draw it
+			bgRect = NSMakeRect(floor(MARGIN+bgstart*charWidth),curY,ceil((j-bgstart)*charWidth),lineHeight);
+
+			if(hasBGImage) {
+				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
+			}
+			aColor = bgselected ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
+			aColor = [aColor colorWithAlphaComponent: alpha];
+			[aColor set];
+			NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
+
+			// Now draw characters over the top
+			curX = MARGIN + bgstart*charWidth;
+
+			for(k = bgstart; k < j; k++) {
+				if(selected && ((theLine[k].fg_color) == DEFAULT_FG_COLOR_CODE))
+					fgcode = SELECTED_TEXT | (theLine[k].fg_color & BOLD_MASK); // check for bold
+				else
+					fgcode = (reversed && theLine[k].fg_color & DEFAULT_FG_COLOR_CODE) ?
+						(DEFAULT_BG_COLOR_CODE | (theLine[k].fg_color & BOLD_MASK)) : theLine[k].fg_color;
+
+				if (blinkShow || !(theLine[k].fg_color & BLINK_MASK)) {
+					[self _drawCharacter:theLine[k].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];
+					//draw underline
+					if (theLine[k].fg_color & UNDER_MASK && theLine[k].ch) {
+						[[self colorForCode:fgcode] set];
+						NSRectFill(NSMakeRect(curX,curY-2,double_width?charWidth*2:charWidth,1));
+					}
+				}
+				curX+=charWidth*(double_width?2:1);
+			}
+
+			bgstart = -1;
+			// Return to top of loop without incrementing j so this
+			// character gets the chance to start its own run
+		}
+		else {
+			// Don't need to draw and not on a run, move to next char
+			j+=(double_width?2:1);
+		}
+	}
+}
+
+- (void) _drawCursor
+{
+	int WIDTH, HEIGHT;
+	screen_char_t* theLine;
+	int y1, x1;
+	float cursorWidth, cursorHeight;
+	float curX, curY;
+	BOOL double_width;
+	float alpha = useTransparency ? 1.0 - transparency : 1.0;
+
+	WIDTH = [dataSource width];
+	HEIGHT = [dataSource height];
+	x1=[dataSource cursorX]-1;
+	y1=[dataSource cursorY]-1;
+
+	if(charWidth < charWidthWithoutSpacing)
+		cursorWidth = charWidth;
+	else
+		cursorWidth = charWidthWithoutSpacing;
+	
+	if(lineHeight < charHeightWithoutSpacing)
+		cursorHeight = lineHeight;
+	else
+		cursorHeight = charHeightWithoutSpacing;
+
+	if([self blinkingCursor] && [[self window] isKeyWindow] && x1==oldCursorX && y1==oldCursorY)
+		showCursor = blinkShow;
+	else
+		showCursor = YES;
+
+	if(CURSOR) {
+		if (showCursor && x1<WIDTH && x1>=0 && y1>=0 && y1<HEIGHT) {
+			curX = floor(x1 * charWidth + MARGIN);
+			curY = (y1+[dataSource numberOfLines]-HEIGHT+1)*lineHeight - cursorHeight;
+			// get the cursor line
+			theLine = [dataSource getLineAtScreenIndex: y1];
+			double_width = 0;
+			unichar aChar = theLine[x1].ch;
+			if (aChar) {
+				if (aChar == 0xffff && x1>0) {
+					x1--;
+					aChar = theLine[x1].ch;
+				}
+				double_width = (x1 < WIDTH-1) && (theLine[x1+1].ch == 0xffff);
+			}
+			[[[self defaultCursorColor] colorWithAlphaComponent: alpha] set];
+
+			switch ([[PreferencePanel sharedInstance] cursorType]) {
+				case CURSOR_BOX:
+					// draw the box
+					if([[self window] isKeyWindow]) {
+						NSRectFill(NSMakeRect(curX, curY, ceil(cursorWidth*(double_width?2:1)), cursorHeight));
+					} else {
+						NSFrameRect(NSMakeRect(curX, curY, ceil(cursorWidth*(double_width?2:1)), cursorHeight));
+					}
+					// draw any character on cursor if we need to
+					if(aChar) {
+						[self _drawCharacter: aChar
+							fgColor: [[self window] isKeyWindow]?CURSOR_TEXT:theLine[x1].fg_color
+							AtX: x1 * charWidth + MARGIN
+							Y: (y1+[dataSource numberOfLines]-HEIGHT)*lineHeight
+							doubleWidth: double_width];
+					}
+
+					break;
+
+				case CURSOR_VERTICAL:
+					NSRectFill(NSMakeRect(curX, curY, 1, cursorHeight));
+					break;
+
+				case CURSOR_UNDERLINE:
+					NSRectFill(NSMakeRect(curX, curY+lineHeight-2, ceil(cursorWidth*(double_width?2:1)), 2));
+					break;
+			}
+
+			([dataSource dirty]+y1*WIDTH)[x1] = 1; //cursor loc is dirty
+		}
+	}
+
+	oldCursorX = x1;
+	oldCursorY = y1;
+
+	// draw any text for NSTextInput
+	if([self hasMarkedText]) {
+		int len=[markedText length];
+		if (len>WIDTH-x1) len=WIDTH-x1;
+		[markedText drawInRect:NSMakeRect(floor(x1 * charWidth + MARGIN),
+				(y1+[dataSource numberOfLines]-HEIGHT)*lineHeight + (lineHeight - cursorHeight),
+				ceil((WIDTH-x1)*cursorWidth),cursorHeight)];
+		memset([dataSource dirty]+y1*WIDTH+x1, 1,WIDTH-x1>len*2?len*2:WIDTH-x1); //len*2 is an over-estimation, but safe
+	}
+
+}
+
 - (void) _drawCharacter:(unichar)code fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw
 {
 	if (!code) {
@@ -2478,12 +2462,12 @@ static BOOL tigerOrLater;
 	//NSLog(@"%s: %c(%d)",__PRETTY_FUNCTION__, code,code);
 	//
 	NSColor* color;
-	NSString  *crap;
-	NSDictionary *attrib;
-	NSFont *theFont;
+	NSString* crap;
+	NSDictionary* attrib;
+	NSFont* theFont;
 	float sw;
 	BOOL renderBold;
-	NSFontManager *fontManager = [NSFontManager sharedFontManager];
+	NSFontManager* fontManager = [NSFontManager sharedFontManager];
 
 	theFont = dw?nafont:font;
 	renderBold = (fg&BOLD_MASK) && ![self disableBold];

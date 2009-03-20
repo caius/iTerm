@@ -2968,7 +2968,11 @@ static BOOL leopardOrLater;
 		{
 			anIndex = x1;
 		}
-				
+
+
+		[self _scrollToLine:endY];
+		[self setForceUpdate:YES];
+
 		// calculate index of start of found range
 		anIndex += foundRange.location;
 		startX = lastFindX = anIndex % [dataSource width];
@@ -2978,11 +2982,7 @@ static BOOL leopardOrLater;
 		anIndex += foundRange.length - 1;
 		endX = anIndex % [dataSource width];
 		endY = anIndex/[dataSource width];
-		
-		
-		[self _scrollToLine:endY];
-        [self setForceUpdate:YES];
-		
+
 		return (YES);
 	}
 	

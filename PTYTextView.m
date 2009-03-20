@@ -2221,7 +2221,9 @@ static BOOL leopardOrLater;
 - (void) _drawBackgroundRect:(NSRect)rect
 {
 	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
+	NSRect leftMargin, rightMargin;
 	NSColor *aColor;
+	PTYScrollView* scrollView = [self enclosingScrollView];
 	float alpha = useTransparency ? 1.0 - transparency : 1.0;
 
 	// Set the background color, used for drawing background and margins
@@ -2239,13 +2241,24 @@ static BOOL leopardOrLater;
 		}
 		
 		if(hasBGImage) {
-			[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: rect];
+			[scrollView drawBackgroundImageRect: rect];
 		}
 		else {
 			NSRectFill(rect);
 		}
 	}
-
+	// Redraw margins
+	else {
+		leftMargin = NSMakeRect(0, rect.origin.y, MARGIN, rect.size.height);
+		rightMargin = NSMakeRect(rect.size.width - MARGIN, rect.origin.y, MARGIN, rect.size.height);
+		if(hasBGImage) {
+			[scrollView drawBackgroundImageRect:leftMargin];
+			[scrollView drawBackgroundImageRect:rightMargin];
+		} else {
+			NSRectFill(leftMargin);
+			NSRectFill(rightMargin);
+		}
+	}
 }
 
 - (void) _drawLine:(int)line AtY:(float)curY
@@ -2329,11 +2342,6 @@ static BOOL leopardOrLater;
 		else if(bgstart >= 0) {
 			// This run is finished, draw it
 			bgRect = NSMakeRect(floor(MARGIN+bgstart*charWidth),curY,ceil((j-bgstart)*charWidth),lineHeight);
-
-			// Fill in the right margin to cover overdraw from last char on line
-			if(j==WIDTH) {
-				bgRect.size.width += MARGIN;
-			}
 
 			if(hasBGImage) {
 				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];

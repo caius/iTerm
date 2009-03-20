@@ -943,7 +943,7 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     [dic setObject:font forKey:NSFontAttributeName];
     sz = [@"W" sizeWithAttributes:dic];
 	
-	charWidth = (sz.width * charHorizontalSpacingMultiplier);
+	charWidth = ceil(sz.width * charHorizontalSpacingMultiplier);
 	charHeight = ([font defaultLineHeightForFont] * charVerticalSpacingMultiplier);
 
 	for(i=0;i<[TABVIEW numberOfTabViewItems]; i++) 

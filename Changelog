@@ -1,3 +1,10 @@
+2009-03-20 delx
+	* charWidth is now set with ceil() rather than being truncated. This
+	  should make wider characters fit correctly.
+	* If char j on a line is dirty, force redraw of j+1 also. This ensures
+	  that any subpixel rendering that is done does not leave trails on the
+	  next character.
+
 2009-03-16 delx
 	* The cursor is now double-width when over a double-width character.
 	* Fixed selection of wide chars after breaking it on 2009-03-13

@@ -2330,6 +2330,11 @@ static BOOL leopardOrLater;
 			// This run is finished, draw it
 			bgRect = NSMakeRect(floor(MARGIN+bgstart*charWidth),curY,ceil((j-bgstart)*charWidth),lineHeight);
 
+			// Fill in the right margin to cover overdraw from last char on line
+			if(j==WIDTH) {
+				bgRect.size.width += MARGIN;
+			}
+
 			if(hasBGImage) {
 				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 			}

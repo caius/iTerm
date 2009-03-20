@@ -2308,7 +2308,7 @@ static BOOL leopardOrLater;
 		selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
 		need_draw = (j != WIDTH) && (
 			(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
-			(line <= oldTopLine || line >= oldBottomLine) ||
+			(line < oldTopLine || line >= oldBottomLine) ||
 			(forceUpdate) ||
 			(dirty && (dirty[j] || (j>0 && dirty[j-1]))) ||
 			(theLine[j].fg_color & BLINK_MASK)
@@ -2345,7 +2345,7 @@ static BOOL leopardOrLater;
 				if(theLine[k].ch == 0xffff) continue;
 				double_width = k<WIDTH-1 && (theLine[k+1].ch == 0xffff);
 
-				if(selected && ((theLine[k].fg_color) == DEFAULT_FG_COLOR_CODE))
+				if(bgselected && ((theLine[k].fg_color) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | (theLine[k].fg_color & BOLD_MASK); // check for bold
 				else
 					fgcode = (reversed && theLine[k].fg_color & DEFAULT_FG_COLOR_CODE) ?

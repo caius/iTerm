@@ -1,3 +1,8 @@
+2009-03-23 delx
+	* Smarter placement of new terminal windows. It is aware of multiple
+	  monitors as well as workspaces (Spaces). Windows are positioned on
+	  screen so they have the smallest overlap with any other window.
+
 2009-03-20 delx
 	* charWidth is now set with ceil() rather than being truncated. This
 	  should make wider characters fit correctly.

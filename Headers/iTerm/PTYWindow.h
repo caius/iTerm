@@ -42,6 +42,7 @@
 	IBOutlet NSDrawer *drawer;
 
 	int blurFilter;
+	BOOL layoutDone;
 }
 
 - initWithContentRect:(NSRect)contentRect 
@@ -54,6 +55,12 @@
 - (NSDrawer *) drawer;
 - (void) setDrawer: (NSDrawer *) aDrawer;
 
+- (void)smartLayout;
+
 - (void)enableBlur;
 - (void)disableBlur;
+
+- (int)screenNumber;
+
 @end
+

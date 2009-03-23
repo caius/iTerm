@@ -30,10 +30,13 @@
 
 #import <iTerm/PTYWindow.h>
 #import <iTerm/PreferencePanel.h>
+#import <iTerm/PseudoTerminal.h>
+#import <iTerm/iTermController.h>
 #import <CGSInternal.h>
 
 #define DEBUG_METHOD_ALLOC	0
 #define DEBUG_METHOD_TRACE	0
+
 
 @implementation PTYWindow
 
@@ -66,7 +69,9 @@
     {
 		[self setAlphaValue:0.9999];
 		blurFilter = 0;
+		layoutDone = NO;
     }
+
     return self;
 }
 
@@ -111,6 +116,98 @@
 		blurFilter = 0;
 	}
 #endif
+}
+
+- (int)screenNumber
+{
+	return [[[[self screen] deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
+}
+
+- (void)smartLayout
+{
+	NSEnumerator* iterator;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+	CGSConnectionID con = CGSMainConnectionID();
+	if (!con) return;
+	CGSWorkspaceID currentSpace = -1;
+	CGSGetWorkspace(con, &currentSpace);
+#endif
+
+	int currentScreen = [self screenNumber];
+	NSRect screenRect = [[self screen] visibleFrame];
+
+	// Get a list of relevant windows, same screen & workspace
+	NSMutableArray* windows = [[NSMutableArray alloc] init];
+	iterator = [[[iTermController sharedInstance] terminals] objectEnumerator];
+	PseudoTerminal* term;
+	while(term = [iterator nextObject]) {
+		PTYWindow* otherWindow = (PTYWindow*)[term window];
+		if(otherWindow == self) continue;
+
+		int otherScreen = [otherWindow screenNumber];
+		if(otherScreen != currentScreen) continue;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+		CGSWorkspaceID otherSpace = -1;
+		CGSGetWindowWorkspace(con, [otherWindow windowNumber], &otherSpace);
+		if(otherSpace != currentSpace) continue;
+#endif
+
+		[windows addObject:otherWindow];
+	}
+
+
+	// Find the spot on screen with the lowest window intersection
+	float bestIntersect = INFINITY;
+	NSRect bestFrame = [self frame];
+	NSRect testFrame = [self frame];
+
+	for(
+		int y = screenRect.size.height - [self frame].size.height;
+		y > screenRect.origin.y;
+		y -= 50
+	) {
+		for(
+			int x = screenRect.origin.x;
+			x < screenRect.origin.x + screenRect.size.width - [self frame].size.width;
+			x += 50
+		) {
+			testFrame.origin.y = y;
+			testFrame.origin.x = x;
+
+			iterator = [windows objectEnumerator];
+			PTYWindow* other;
+			float badness = 0.0f;
+			while(other = [iterator nextObject]) {
+				NSRect otherFrame = [other frame];
+				NSRect intersection = NSIntersectionRect(testFrame, otherFrame);
+				badness += intersection.size.width * intersection.size.height;
+			}
+
+			if(badness < bestIntersect) {
+				bestIntersect = badness;
+				bestFrame = testFrame;
+			}
+
+			// Shortcut if we've found an empty spot
+			if(bestIntersect == 0) {
+				goto end;
+			}
+		}
+	}
+
+end:
+	[super setFrameOrigin:bestFrame.origin];
+}
+
+- (void)makeKeyAndOrderFront:(id)sender
+{
+	if(!layoutDone) {
+		layoutDone = YES;
+		[self smartLayout];
+	}
+	[super makeKeyAndOrderFront:sender];
 }
 
 - (void)toggleToolbarShown:(id)sender

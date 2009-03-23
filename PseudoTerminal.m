@@ -78,10 +78,6 @@ NSString *sessionsKey = @"sessions";
 #define TABVIEW_LEFT_RIGHT_OFFSET		29
 #define TOOLBAR_OFFSET					0
 
-// just to keep track of available window positions
-#define CACHED_WINDOW_POSITIONS		100
-static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];  
-
 @implementation PseudoTerminal
 
 // Utility
@@ -252,17 +248,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 - (id)init
 {
 	self = ([self initWithWindowNibName: @"PseudoTerminal"]);
-
-	// Look for an available window position
-	for (int i = 0; i < CACHED_WINDOW_POSITIONS; i++)
-	{
-		if(windowPositions[i] == 0)
-		{
-			[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", i]];
-			windowPositions[i] = (unsigned int) self;
-			break;
-		}
-	}
 
 	return self;
 }
@@ -447,18 +432,6 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
     if(TABVIEW != nil)
 		return;
 	
-	// Take over the window position
-	for (int i = 0; i < CACHED_WINDOW_POSITIONS; i++)
-	{
-		if (windowPositions[i] == (unsigned int)aPseudoTerminal)
-		{
-			if (!_fullScreen)
-				[[self window] setFrameAutosaveName: [NSString stringWithFormat: @"iTerm Window %d", i]];
-			windowPositions[i] = (unsigned int)self;
-			break;
-		}
-	}
-
     if (!_fullScreen) {
 		_toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
 		if ([[self window] respondsToSelector:@selector(setBottomCornerRounded:)])
@@ -1564,32 +1537,20 @@ static unsigned int windowPositions[CACHED_WINDOW_POSITIONS];
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-    int i;
-    
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal windowWillClose:%@]",
+	NSLog(@"%s(%d):-[PseudoTerminal windowWillClose:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-	
+
 	// tabBarControl is holding on to us, so we have to tell it to let go
 	[tabBarControl setDelegate: nil];
-	
-    // Release our window postion
-    for (i = 0; i < CACHED_WINDOW_POSITIONS; i++)
-    {
-		if(windowPositions[i] == (unsigned int) self)
-		{
-			windowPositions[i] = 0;
-			break;
-		}
-    }
+
 	EXIT = YES;
-	
+
 	[self disableBlur];	
 	if (_fullScreen) [NSMenu setMenuBarVisible: YES];
 
-    [[iTermController sharedInstance] terminalWillClose: self];
-	
+	[[iTermController sharedInstance] terminalWillClose: self];
 }
 
 - (void)windowWillMiniaturize:(NSNotification *)aNotification

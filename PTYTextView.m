@@ -2326,7 +2326,11 @@ static BOOL leopardOrLater;
 			(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
 			(line < oldTopLine || line >= oldBottomLine) ||
 			(forceUpdate) ||
-			(dirty && (dirty[j] || (j>0 && dirty[j-1]))) ||
+			(dirty && (
+				dirty[j] ||
+				(j+1<WIDTH && dirty[j+1]) ||
+				(j>0 && dirty[j-1])
+			)) ||
 			(theLine[j].fg_color & BLINK_MASK)
 		);
 		double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);

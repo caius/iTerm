@@ -2220,11 +2220,14 @@ static BOOL leopardOrLater;
 
 - (void) _drawBackgroundRect:(NSRect)rect
 {
-	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
 	NSRect leftMargin, rightMargin;
 	NSColor *aColor;
-	PTYScrollView* scrollView = [self enclosingScrollView];
+	PTYScrollView* scrollView;
+	BOOL hasBGImage;
 	float alpha = useTransparency ? 1.0 - transparency : 1.0;
+
+	scrollView = (PTYScrollView*)[self enclosingScrollView];
+	hasBGImage =  [scrollView backgroundImage] != nil;
 
 	// Set the background color, used for drawing background and margins
 	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
@@ -2358,11 +2361,11 @@ static BOOL leopardOrLater;
 				if(theLine[k].ch == 0xffff) continue;
 				double_width = k<WIDTH-1 && (theLine[k+1].ch == 0xffff);
 
-				if(bgselected && ((theLine[k].fg_color) == DEFAULT_FG_COLOR_CODE))
+				if(bgselected && ((theLine[k].fg_color & 0x3ff) == DEFAULT_FG_COLOR_CODE))
 					fgcode = SELECTED_TEXT | (theLine[k].fg_color & BOLD_MASK); // check for bold
 				else
 					fgcode = (reversed && theLine[k].fg_color & DEFAULT_FG_COLOR_CODE) ?
-						(DEFAULT_BG_COLOR_CODE | (theLine[k].fg_color & BOLD_MASK)) : theLine[k].fg_color;
+						(DEFAULT_BG_COLOR_CODE | (theLine[k].fg_color & BOLD_MASK)) : theLine[k].fg_color & 0x3ff;
 
 				if (blinkShow || !(theLine[k].fg_color & BLINK_MASK)) {
 					[self _drawCharacter:theLine[k].ch fgColor:fgcode AtX:curX Y:curY doubleWidth: double_width];

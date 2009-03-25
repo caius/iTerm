@@ -36,6 +36,7 @@
 
 #define DEBUG_METHOD_ALLOC	0
 #define DEBUG_METHOD_TRACE	0
+#define DEBUG_WINDOW_LAYOUT 0
 
 
 @implementation PTYWindow
@@ -135,7 +136,7 @@
 #endif
 
 	int currentScreen = [self screenNumber];
-	NSRect screenRect = [[self screen] visibleFrame];
+	NSRect screenRect = [[self screen] frame];
 
 	// Get a list of relevant windows, same screen & workspace
 	NSMutableArray* windows = [[NSMutableArray alloc] init];
@@ -161,38 +162,58 @@
 	// Find the spot on screen with the lowest window intersection
 	float bestIntersect = INFINITY;
 	NSRect bestFrame = [self frame];
-	NSRect testFrame = [self frame];
 
-	for(
-		int y = screenRect.size.height - [self frame].size.height;
-		y > screenRect.origin.y;
-		y -= 50
-	) {
-		for(
-			int x = screenRect.origin.x;
-			x < screenRect.origin.x + screenRect.size.width - [self frame].size.width;
-			x += 50
-		) {
-			testFrame.origin.y = y;
-			testFrame.origin.x = x;
+	NSRect placementRect = NSMakeRect(
+		screenRect.origin.x,
+		screenRect.origin.y,
+		screenRect.size.width-[self frame].size.width,
+		screenRect.size.height-[self frame].size.height
+	);
 
-			iterator = [windows objectEnumerator];
-			PTYWindow* other;
-			float badness = 0.0f;
-			while(other = [iterator nextObject]) {
-				NSRect otherFrame = [other frame];
-				NSRect intersection = NSIntersectionRect(testFrame, otherFrame);
-				badness += intersection.size.width * intersection.size.height;
-			}
+	for(int x = 0; x < placementRect.size.width/2; x += 50) {
+		for(int y = 0; y < placementRect.size.height/2; y += 50) {
+			NSRect testRects[4] = {[self frame]};
 
-			if(badness < bestIntersect) {
-				bestIntersect = badness;
-				bestFrame = testFrame;
-			}
+			// Top Left
+			testRects[0].origin.x = placementRect.origin.x + x;
+			testRects[0].origin.y = placementRect.origin.y + placementRect.size.height - y;
 
-			// Shortcut if we've found an empty spot
-			if(bestIntersect == 0) {
-				goto end;
+			// Top Right
+			testRects[1] = testRects[0];
+			testRects[1].origin.x = placementRect.origin.x + placementRect.size.width - x;
+			
+			// Bottom Right
+			testRects[2] = testRects[1];
+			testRects[2].origin.y = placementRect.origin.y + y;
+			
+			// Bottom Left
+			testRects[3] = testRects[0];
+			testRects[3].origin.y = testRects[2].origin.y;
+			
+			for(int i = 0; i < sizeof(testRects)/sizeof(NSRect); i++) {
+				iterator = [windows objectEnumerator];
+				PTYWindow* other;
+				float badness = 0.0f;
+				while(other = [iterator nextObject]) {
+					NSRect otherFrame = [other frame];
+					NSRect intersection = NSIntersectionRect(testRects[i], otherFrame);
+					badness += intersection.size.width * intersection.size.height;
+				}
+
+#if DEBUG_WINDOW_LAYOUT
+				static const char const * names[] = {"TL", "TR", "BR", "BL"};
+				NSLog(@"%s: testRect:%@, bad:%.2f", names[i], NSStringFromRect(testRects[i]), badness);
+#endif
+
+				if(badness < bestIntersect) {
+					bestIntersect = badness;
+					bestFrame = testRects[i];
+				}
+
+				// Shortcut if we've found an empty spot
+				if(bestIntersect == 0) {
+					goto end;
+				}
 			}
 		}
 	}

@@ -219,6 +219,7 @@
 	}
 
 end:
+	[windows release];
 	[super setFrameOrigin:bestFrame.origin];
 }
 

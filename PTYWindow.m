@@ -223,6 +223,11 @@ end:
 	[super setFrameOrigin:bestFrame.origin];
 }
 
+- (void)setLayoutDone
+{
+	layoutDone = YES;
+}
+
 - (void)makeKeyAndOrderFront:(id)sender
 {
 	if(!layoutDone) {

@@ -78,9 +78,10 @@
 	BOOL _resizeInProgressFlag;
 	
 	// for full screen windows
+	NSRect oldFrame;
 	int oldWidth, oldHeight;
 	float oldCharHorizontalSpacingMultiplier, oldCharVerticalSpacingMultiplier;
-    NSFont *oldFont, *oldNAFont;
+	NSFont *oldFont, *oldNAFont;
 }
 
 
@@ -126,6 +127,7 @@
 - (void) setAntiAlias: (BOOL) bAntiAlias;
 - (int)width;
 - (int)height;
+- (NSRect)oldFrame;
 - (int)oldWidth;
 - (int)oldHeight;
 - (void)setWidth:(int)width height:(int)height;

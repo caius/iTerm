@@ -409,10 +409,6 @@ NSString *sessionsKey = @"sessions";
 		[TABVIEW setFrame: aRect];
 	}
 	else {
-		aRect = [TABVIEW frame];
-		aRect.origin.x = 0;
-		aRect.origin.y = 0;
-		[TABVIEW setFrame: aRect];		
 		aRect = [tabBarControl frame];
 		aRect.origin.x = 0;
 		aRect.origin.y = [TABVIEW frame].size.height;
@@ -431,7 +427,10 @@ NSString *sessionsKey = @"sessions";
 	// sanity check
     if(TABVIEW != nil)
 		return;
-	
+
+	// Don't try to do smart layout this time
+	[(PTYWindow*)[self window] setLayoutDone];
+
     if (!_fullScreen) {
 		_toolbarController = [[PTToolbarController alloc] initWithPseudoTerminal:self];
 		if ([[self window] respondsToSelector:@selector(setBottomCornerRounded:)])
@@ -512,6 +511,7 @@ NSString *sessionsKey = @"sessions";
 		
  		if (_fullScreen) {
 			// we are entering full screen mode. store the original size
+			oldFrame = [[aPseudoTerminal window] frame];
 			WIDTH = oldWidth = [aPseudoTerminal width];
 			HEIGHT = oldHeight = [aPseudoTerminal height];
 			charHorizontalSpacingMultiplier = oldCharHorizontalSpacingMultiplier = [aPseudoTerminal charSpacingHorizontal];
@@ -540,6 +540,7 @@ NSString *sessionsKey = @"sessions";
 		else {
 			if ([aPseudoTerminal fullScreen]) {
 				// we are exiting full screen mode. restore the original size.
+				[[self window] setFrame:[aPseudoTerminal oldFrame] display:NO];
 				WIDTH = [aPseudoTerminal oldWidth];
 				HEIGHT = [aPseudoTerminal oldHeight];
 				charHorizontalSpacingMultiplier =[aPseudoTerminal oldCharSpacingHorizontal];
@@ -561,10 +562,6 @@ NSString *sessionsKey = @"sessions";
 		[TABVIEW setFrame: aRect];
 	}
 	else {
-		aRect = [TABVIEW frame];
-		aRect.origin.x = 0;
-		aRect.origin.y = 0;
-		[TABVIEW setFrame: aRect];		
 		aRect = [tabBarControl frame];
 		aRect.origin.x = 0;
 		aRect.origin.y = [TABVIEW frame].size.height;
@@ -898,7 +895,12 @@ NSString *sessionsKey = @"sessions";
     return HEIGHT;
 }
 
-- (int)oldWidth;
+- (NSRect)oldFrame
+{
+    return oldFrame;
+}
+
+- (int)oldWidth
 {
     return oldWidth;
 }

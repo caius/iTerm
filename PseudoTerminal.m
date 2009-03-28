@@ -540,7 +540,9 @@ NSString *sessionsKey = @"sessions";
 		else {
 			if ([aPseudoTerminal fullScreen]) {
 				// we are exiting full screen mode. restore the original size.
+				_resizeInProgressFlag = YES;
 				[[self window] setFrame:[aPseudoTerminal oldFrame] display:NO];
+				_resizeInProgressFlag = NO;
 				WIDTH = [aPseudoTerminal oldWidth];
 				HEIGHT = [aPseudoTerminal oldHeight];
 				charHorizontalSpacingMultiplier =[aPseudoTerminal oldCharSpacingHorizontal];

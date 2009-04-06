@@ -136,7 +136,7 @@
 #endif
 
 	int currentScreen = [self screenNumber];
-	NSRect screenRect = [[self screen] frame];
+	NSRect screenRect = [[self screen] visibleFrame];
 
 	// Get a list of relevant windows, same screen & workspace
 	NSMutableArray* windows = [[NSMutableArray alloc] init];

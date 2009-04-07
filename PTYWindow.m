@@ -28,6 +28,8 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#define WINDOW_NAME @"iTerm Window 0"
+
 #import <iTerm/PTYWindow.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/PseudoTerminal.h>
@@ -182,13 +184,13 @@
 			testRects[1] = testRects[0];
 			testRects[1].origin.x = placementRect.origin.x + placementRect.size.width - x;
 			
-			// Bottom Right
-			testRects[2] = testRects[1];
+			// Bottom Left
+			testRects[2] = testRects[0];
 			testRects[2].origin.y = placementRect.origin.y + y;
 			
-			// Bottom Left
-			testRects[3] = testRects[0];
-			testRects[3].origin.y = testRects[2].origin.y;
+			// Bottom Right
+			testRects[3] = testRects[1];
+			testRects[3].origin.y = placementRect.origin.y + y;
 			
 			for(int i = 0; i < sizeof(testRects)/sizeof(NSRect); i++) {
 				iterator = [windows objectEnumerator];
@@ -201,7 +203,7 @@
 				}
 
 #if DEBUG_WINDOW_LAYOUT
-				static const char const * names[] = {"TL", "TR", "BR", "BL"};
+				static const char const * names[] = {"TL", "TR", "BL", "BR"};
 				NSLog(@"%s: testRect:%@, bad:%.2f", names[i], NSStringFromRect(testRects[i]), badness);
 #endif
 
@@ -232,9 +234,25 @@ end:
 {
 	if(!layoutDone) {
 		layoutDone = YES;
-		[self smartLayout];
+		if([[[iTermController sharedInstance] terminals] count] == 1) {
+			NSRect frame = [self frame];
+			[self setFrameUsingName:WINDOW_NAME];
+			frame.origin = [self frame].origin;
+			frame.origin.y += [self frame].size.height - frame.size.height;
+			[self setFrame:frame display:NO];
+		} else {
+			[self smartLayout];
+		}
 	}
 	[super makeKeyAndOrderFront:sender];
+}
+
+- (void)close
+{
+	if([[[iTermController sharedInstance] terminals] count] == 1) {
+		[self saveFrameUsingName:WINDOW_NAME];
+	}
+	[super close];
 }
 
 - (void)toggleToolbarShown:(id)sender

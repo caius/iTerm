@@ -2539,11 +2539,11 @@ static BOOL leopardOrLater;
 	}
 
 	crap = [NSString stringWithCharacters:&code length:1];		
-	[crap drawAtPoint:NSMakePoint(X,Y) withAttributes:attrib];
+	[crap drawWithRect:NSMakeRect(X,Y+[theFont ascender], 0, 0) options:0 attributes:attrib];
 	
 	// on older systems, for bold, redraw the character offset by 1 pixel
 	if (renderBold && (!tigerOrLater || !antiAlias)) {
-		[crap drawAtPoint:NSMakePoint(X+1,Y)  withAttributes:attrib];
+		[crap drawWithRect:NSMakeRect(X+1,Y+[theFont ascender], 0, 0) options:0 attributes:attrib];
 	}
 }	
 

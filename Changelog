@@ -1,3 +1,6 @@
+2009-04-07 ujwal
+	* Fixed crash on quitting.
+
 2009-03-28 delx
 	* Guaranteed restoration of old window position upon exiting fullscreen
 

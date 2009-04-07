@@ -132,7 +132,7 @@ static BOOL usingAutoLaunchScript = NO;
 	// save preferences
 	[[PreferencePanel sharedInstance] savePreferences];
 	
-	[[iTermController sharedInstance] dealloc];
+	[[iTermController sharedInstance] release];
     return (YES);
 }
 

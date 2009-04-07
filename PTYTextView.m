@@ -2353,10 +2353,12 @@ static BOOL leopardOrLater;
 			if(hasBGImage) {
 				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 			}
-			aColor = bgselected ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
-			aColor = [aColor colorWithAlphaComponent: alpha];
-			[aColor set];
-			NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
+			if(bgcode != DEFAULT_BG_COLOR_CODE || !hasBGImage) {
+				aColor = bgselected ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
+				aColor = [aColor colorWithAlphaComponent: alpha];
+				[aColor set];
+				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
+			}
 
 			// Now draw characters over the top
 			curX = MARGIN + bgstart*charWidth;

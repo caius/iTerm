@@ -1873,7 +1873,7 @@ NSString *sessionsKey = @"sessions";
 
 - (void)windowWillShowInitial
 {
-	PTYWindow* window = [self window];
+	PTYWindow* window = (PTYWindow*)[self window];
 	if([[[iTermController sharedInstance] terminals] count] == 1) {
 		NSRect frame = [window frame];
 		[window setFrameUsingName:WINDOW_NAME];

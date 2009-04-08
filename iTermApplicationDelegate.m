@@ -116,8 +116,8 @@ static BOOL usingAutoLaunchScript = NO;
 {
 	NSArray *terminals;
 	
-    terminals = [[iTermController sharedInstance] terminals];
-    
+	terminals = [[iTermController sharedInstance] terminals];
+
 	// Display prompt if we need to
     if ([[PreferencePanel sharedInstance] promptOnClose] && [terminals count] && (![[PreferencePanel sharedInstance] onlyWhenMoreTabs] || [terminals count] >1 || 
                                                              [[[[iTermController sharedInstance] currentTerminal] tabView] numberOfTabViewItems] > 1 )
@@ -128,12 +128,14 @@ static BOOL usingAutoLaunchScript = NO;
 					   NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel")
 					   ,nil)!=NSAlertDefaultReturn)
 		return (NO);
-    
+
+	// Ensure [iTermController dealloc] is called before prefs are saved
+	[[iTermController sharedInstance] release];
+
 	// save preferences
 	[[PreferencePanel sharedInstance] savePreferences];
-	
-	[[iTermController sharedInstance] release];
-    return (YES);
+
+	return (YES);
 }
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename

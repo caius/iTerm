@@ -248,7 +248,6 @@
 				  height:(float) height
 				   lines:(float) lines;
 - (void) hideMenuBar;
-- (void) processRefresh;
 
 @end
 

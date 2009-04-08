@@ -99,34 +99,24 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	 */
     gd = [iTermGrowlDelegate sharedInstance];
 	
-	refreshTimer = [[NSTimer scheduledTimerWithTimeInterval:0.5
-												  target:self
-												selector:@selector(processRefresh)
-												userInfo:nil
-												 repeats:YES] retain];
-	
     return (self);
 }
 
 - (void) dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s(%d):-[iTermController dealloc]",
-          __FILE__, __LINE__);
+	NSLog(@"%s(%d):-[iTermController dealloc]",
+		__FILE__, __LINE__);
 #endif
-	
-    // Release the GrowlDelegate
+
+	// Release the GrowlDelegate
 	if( gd )
 		[gd release];
-    
-	if (refreshTimer) {
-		[refreshTimer invalidate]; [refreshTimer release]; refreshTimer = nil;
-	}
-	
-    [terminalWindows removeAllObjects];
-    [terminalWindows release];
-    
-    [super dealloc];
+
+	[terminalWindows removeAllObjects];
+	[terminalWindows release];
+
+	[super dealloc];
 }
 
 // Action methods
@@ -578,16 +568,3 @@ NSString *terminalsKey = @"terminals";
 
 @end
 
-@implementation iTermController (Private)
-
-- (void) processRefresh
-{   
-	PseudoTerminal *term;
-	NSEnumerator *en_window = [terminalWindows objectEnumerator];
-	
-    while ((term=[en_window nextObject])) {
-        [term processRefresh];
-    }
-}
-
-@end

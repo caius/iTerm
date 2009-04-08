@@ -40,7 +40,6 @@
     NSMutableArray *terminalWindows;
     id FRONT;
 	ItermGrowlDelegate *gd;
-	NSTimer *refreshTimer;
 }
 
 + (iTermController*)sharedInstance;
@@ -86,9 +85,3 @@
 
 @end
 
-
-@interface iTermController (Private)
-
-- (void) processRefresh;
-
-@end

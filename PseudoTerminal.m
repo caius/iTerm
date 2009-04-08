@@ -834,6 +834,7 @@ NSString *sessionsKey = @"sessions";
 	[oldFont release];
 	[oldNAFont release];
 		
+	[[self window] close];
 	
     [_toolbarController release];
     
@@ -2724,18 +2725,6 @@ NSString *sessionsKey = @"sessions";
 
 	if(currentScreen == menubarScreen)
 		[NSMenu setMenuBarVisible: NO];
-}
-
-- (void) processRefresh
-{
-	PTYSession *aSession;
-	int n = [TABVIEW numberOfTabViewItems];
-	int i;
-	
-	for(i=0;i<n;i++) {
-		aSession = [[TABVIEW tabViewItemAtIndex:i] identifier];
-		[aSession updateDisplay];
-	}
 }
 
 @end

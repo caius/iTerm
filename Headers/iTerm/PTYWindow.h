@@ -56,7 +56,6 @@
 - (void) setDrawer: (NSDrawer *) aDrawer;
 
 - (void)smartLayout;
-- (void)close;
 - (void)setLayoutDone;
 
 - (void)enableBlur;

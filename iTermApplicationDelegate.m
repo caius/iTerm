@@ -130,7 +130,7 @@ static BOOL usingAutoLaunchScript = NO;
 		return (NO);
 
 	// Ensure [iTermController dealloc] is called before prefs are saved
-	[[iTermController sharedInstance] release];
+	[iTermController sharedInstanceRelease];
 
 	// save preferences
 	[[PreferencePanel sharedInstance] savePreferences];

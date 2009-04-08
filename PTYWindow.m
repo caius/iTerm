@@ -28,8 +28,6 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#define WINDOW_NAME @"iTerm Window 0"
-
 #import <iTerm/PTYWindow.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/PseudoTerminal.h>
@@ -234,25 +232,9 @@ end:
 {
 	if(!layoutDone) {
 		layoutDone = YES;
-		if([[[iTermController sharedInstance] terminals] count] == 1) {
-			NSRect frame = [self frame];
-			[self setFrameUsingName:WINDOW_NAME];
-			frame.origin = [self frame].origin;
-			frame.origin.y += [self frame].size.height - frame.size.height;
-			[self setFrame:frame display:NO];
-		} else {
-			[self smartLayout];
-		}
+		[[self delegate] windowWillShowInitial];
 	}
 	[super makeKeyAndOrderFront:sender];
-}
-
-- (void)close
-{
-	if([[[iTermController sharedInstance] terminals] count] == 1) {
-		[self saveFrameUsingName:WINDOW_NAME];
-	}
-	[super close];
 }
 
 - (void)toggleToolbarShown:(id)sender

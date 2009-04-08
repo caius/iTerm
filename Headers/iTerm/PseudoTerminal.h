@@ -69,8 +69,6 @@
 	BOOL suppressContextualMenu;
 	BOOL tempTitle;
 	
-	BOOL EXIT;
-
 	// For send input to all sessions highlighting
 	NSColor *normalBackgroundColor;
 	
@@ -181,6 +179,7 @@
 - (void) resizeWindow:(int)w height:(int)h;
 - (void) resizeWindowToPixelsWidth:(int)w height:(int)h;
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)defaultFrame;
+- (void)windowWillShowInitial;
 
 // Contextual menu
 - (void) menuForEvent:(NSEvent *)theEvent menu: (NSMenu *) theMenu;

@@ -32,6 +32,8 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
+#define WINDOW_NAME @"iTerm Window 0"
+
 #import <iTerm/iTerm.h>
 #import <iTerm/PseudoTerminal.h>
 #import <iTerm/PTYScrollView.h>
@@ -813,7 +815,7 @@ NSString *sessionsKey = @"sessions";
     return ([TABVIEW indexOfTabViewItem:[TABVIEW selectedTabViewItem]]);
 }
 
-- (void)dealloc
+- (void) dealloc
 {
 #if DEBUG_ALLOC
     NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
@@ -833,12 +835,10 @@ NSString *sessionsKey = @"sessions";
 	[NAFONT release];
 	[oldFont release];
 	[oldNAFont release];
-		
-	[[self window] close];
-	
-    [_toolbarController release];
-    
-    [super dealloc];
+
+	[_toolbarController release];
+
+	[super dealloc];
 }
 
 - (void)startProgram:(NSString *)program
@@ -1550,10 +1550,13 @@ NSString *sessionsKey = @"sessions";
 	// tabBarControl is holding on to us, so we have to tell it to let go
 	[tabBarControl setDelegate: nil];
 
-	EXIT = YES;
-
 	[self disableBlur];	
 	if (_fullScreen) [NSMenu setMenuBarVisible: YES];
+
+	// Save frame position for last window
+	if([[[iTermController sharedInstance] terminals] count] == 1) {
+		[[self window] saveFrameUsingName:WINDOW_NAME];
+	}
 
 	[[iTermController sharedInstance] terminalWillClose: self];
 }
@@ -1867,7 +1870,21 @@ NSString *sessionsKey = @"sessions";
 	    
 	return defaultFrame;
 }
-	
+
+- (void)windowWillShowInitial
+{
+	PTYWindow* window = [self window];
+	if([[[iTermController sharedInstance] terminals] count] == 1) {
+		NSRect frame = [window frame];
+		[window setFrameUsingName:WINDOW_NAME];
+		frame.origin = [window frame].origin;
+		frame.origin.y += [window frame].size.height - frame.size.height;
+		[window setFrame:frame display:NO];
+	} else {
+		[window smartLayout];
+	}
+}
+
 // Close Window
 - (BOOL)showCloseWindow
 {

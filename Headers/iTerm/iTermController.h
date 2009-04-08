@@ -43,6 +43,7 @@
 }
 
 + (iTermController*)sharedInstance;
++ (void)sharedInstanceRelease;
 
 // actions are forwarded form application
 - (IBAction)newWindow:(id)sender;

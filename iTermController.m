@@ -59,14 +59,26 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 
 @implementation iTermController
 
+static iTermController* shared = nil;
+static BOOL initDone = NO;
+
 + (iTermController*)sharedInstance;
 {
-    static iTermController* shared = nil;
-    
-    if (!shared)
-        shared = [[iTermController alloc] init];
-    
-    return shared;
+	if(!shared && !initDone) {
+		shared = [[iTermController alloc] init];
+		initDone = YES;
+	}
+	if(!shared && initDone) {
+		NSLog(@"Bad call to [iTermController sharedInstance]");
+	}
+
+	return shared;
+}
+
++ (void)sharedInstanceRelease
+{
+	[shared release];
+	shared = nil;
 }
 
 
@@ -108,13 +120,20 @@ static int _compareEncodingByLocalizedName(id a, id b, void *unused)
 	NSLog(@"%s(%d):-[iTermController dealloc]",
 		__FILE__, __LINE__);
 #endif
+	NSEnumerator* iterator;
+	PseudoTerminal* terminal;
+
+	// Close all terminal windows
+	iterator = [terminalWindows objectEnumerator];
+	while(terminal = [iterator nextObject]) {
+		[[terminal window] close];
+	}
+	NSAssert([terminalWindows count] == 0, @"Expected terminals to be gone");
+	[terminalWindows release];
 
 	// Release the GrowlDelegate
-	if( gd )
+	if(gd)
 		[gd release];
-
-	[terminalWindows removeAllObjects];
-	[terminalWindows release];
 
 	[super dealloc];
 }

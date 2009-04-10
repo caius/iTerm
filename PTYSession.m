@@ -94,6 +94,7 @@ static NSImage *warningImage;
 	lastOutput = lastBlink = lastInput;
 	EXIT=NO;
 
+	updateTimer = nil;
 	antiIdleTimer = nil;
 	addressBookEntry=nil;
 
@@ -110,7 +111,6 @@ static NSImage *warningImage;
 	// Need Growl plist stuff
 	gd = [iTermGrowlDelegate sharedInstance];
 	growlIdle = growlNewOutput = NO;
-
 
 	return (self);
 }
@@ -131,6 +131,8 @@ static NSImage *warningImage;
 	[backgroundImagePath release];
 	[antiIdleTimer invalidate];
 	[antiIdleTimer release];
+	[updateTimer invalidate];
+	[updateTimer release];
 
 	[SHELL release];
 	SHELL = nil;
@@ -200,12 +202,6 @@ static NSImage *warningImage;
 				selector:@selector(tabViewWillRedraw:)
 				name:@"iTermTabViewWillRedraw" object:nil];
 		
-		/* Make sure we have a display timer */
-		NSTimeInterval timeout = (0.01 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
-		updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
-														target:self selector:@selector(updateDisplay) userInfo:nil
-													   repeats:YES] retain];
-		
 		return YES;
 	}
 	else {
@@ -273,35 +269,33 @@ static NSImage *warningImage;
 
 - (void) terminate
 {
-			
 	// deregister from the notification center
-	[[NSNotificationCenter defaultCenter] removeObserver:self];    
-    
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+
 	EXIT = YES;
 	[SHELL stop];	
-	
+
 	// final update of display
 	[self updateDisplay];
-    
-    [addressBookEntry release];
-    addressBookEntry = nil;
-	
-    [TEXTVIEW setDataSource: nil];
-	[TEXTVIEW setDelegate: nil];
-    [TEXTVIEW removeFromSuperview];
 
-    [SHELL setDelegate:nil];
-    [SCREEN setShellTask:nil];
-    [SCREEN setSession: nil];
-    [SCREEN setTerminal: nil];
-    [TERMINAL setScreen: nil];
+	[addressBookEntry release];
+	addressBookEntry = nil;
+	
+	[TEXTVIEW setDataSource: nil];
+	[TEXTVIEW setDelegate: nil];
+	[TEXTVIEW removeFromSuperview];
+
+	[SHELL setDelegate:nil];
+	[SCREEN setShellTask:nil];
+	[SCREEN setSession: nil];
+	[SCREEN setTerminal: nil];
+	[TERMINAL setScreen: nil];
 
 	[updateTimer invalidate];
 	[updateTimer release];
 	updateTimer = nil;	
-    
-    parent = nil;
-	
+
+	parent = nil;
 }
 
 - (void)writeTask:(NSData *)data
@@ -358,6 +352,14 @@ static NSImage *warningImage;
 
 	gettimeofday(&lastOutput, NULL);
 	newOutput=YES;
+
+	// Make sure the screen gets redrawn at some point
+	if(!updateTimer) {
+		NSTimeInterval timeout = (0.001 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
+		updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
+				target:self selector:@selector(updateDisplay) userInfo:nil
+				repeats:NO] retain];
+	}
 }
 
 - (void)brokenPipe
@@ -1772,6 +1774,9 @@ static NSImage *warningImage;
 			}
 		}
 	}
+
+	[updateTimer release];
+	updateTimer = nil;
 }
 
 - (void)doAntiIdle

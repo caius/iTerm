@@ -1,3 +1,15 @@
+2009-04-10 delx
+	* Revert to old force screen update behaviour for 10.4
+	* Fix overwriting of static window titles (#2744363)
+	* Fixed a bug when pasting more than 1024 characters of text
+	* Rewrote bits of PTYTask
+
+2009-04-07 delx
+	* Fixed non-Monaco font drawing
+	* Fixed regression, default bg color was drawn over background image
+	* Don't position windows in the dock area
+	* Save last window position and reopen first window in that location
+
 2009-04-07 ujwal
 	* Fixed crash on quitting.
 

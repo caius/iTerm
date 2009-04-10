@@ -48,7 +48,6 @@
 	NSFileHandle* LOG_HANDLE;
 	NSFileHandle* dataHandle;
 	BOOL hasOutput;
-	NSTimer* updateTimer;
 	NSTimer* writeTimer;
 
 	NSMutableData* writeBuffer;

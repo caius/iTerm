@@ -45,7 +45,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#define DEBUG_ALLOC           0
+#define DEBUG_ALLOC           1
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 
@@ -199,6 +199,13 @@ static NSImage *warningImage;
 		[[NSNotificationCenter defaultCenter] addObserver:self
 				selector:@selector(tabViewWillRedraw:)
 				name:@"iTermTabViewWillRedraw" object:nil];
+		
+		/* Make sure we have a display timer */
+		NSTimeInterval timeout = (0.01 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
+		updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
+														target:self selector:@selector(updateDisplay) userInfo:nil
+													   repeats:YES] retain];
+		
 		return YES;
 	}
 	else {
@@ -212,6 +219,8 @@ static NSImage *warningImage;
 
 		return NO;
 	}
+	
+	
 }
 
 - (BOOL) isActiveSession
@@ -287,6 +296,9 @@ static NSImage *warningImage;
     [SCREEN setTerminal: nil];
     [TERMINAL setScreen: nil];
 
+	[updateTimer invalidate];
+	[updateTimer release];
+	updateTimer = nil;	
     
     parent = nil;
 	

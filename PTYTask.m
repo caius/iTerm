@@ -102,7 +102,7 @@ static void setup_tty_param(
 	LOG_PATH = nil;
 	LOG_HANDLE = nil;
 	hasOutput = NO;
-	updateTimer = writeTimer = nil;
+	writeTimer = nil;
 	writeBuffer = [[NSMutableData alloc] init];
 
 	return self;
@@ -115,9 +115,6 @@ static void setup_tty_param(
 #endif
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
 
-	if (updateTimer) {
-		[updateTimer invalidate]; [updateTimer release]; updateTimer = nil;
-	}
 	if (writeTimer) {
 		[writeTimer invalidate]; [writeTimer release]; writeTimer = nil;
 	}
@@ -134,9 +131,6 @@ static void setup_tty_param(
 	[TTY release];
 	[PATH release];
 	[super dealloc];
-#if DEBUG_ALLOC
-	NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
-#endif
 }
 
 - (void)launchWithPath:(NSString *)progpath
@@ -155,6 +149,8 @@ static void setup_tty_param(
 #if DEBUG_METHOD_TRACE
 	NSLog(@"%s(%d):-[launchWithPath:%@ arguments:%@ environment:%@ width:%d height:%d", __FILE__, __LINE__, progpath, args, env, width, height);
 #endif
+		
+	
 	setup_tty_param(&term, &win, width, height);
 	PID = forkpty(&FILDES, ttyname, &term, &win);
 	if (PID == (pid_t)0) {
@@ -236,16 +232,8 @@ static void setup_tty_param(
 	if(length == 0 || (bytesread < 0 && !(errno == EAGAIN || errno == EINTR))) {
 		[self brokenPipe];
 		return;
-	}
-
-	/* Ensure there will be a screen update at some point in the future */
-	if(!updateTimer) {
-		NSTimeInterval timeout = (0.01 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
-		updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
-				target:self selector:@selector(updateDisplay) userInfo:nil
-				repeats:NO] retain];
-	}
-
+	}	
+	
 	/* Ask for notifications when more data is available */
 	[dataHandle waitForDataInBackgroundAndNotify];
 }
@@ -441,16 +429,3 @@ static void setup_tty_param(
 
 @end
 
-@implementation PTYTask (Private)
-
-- (void)updateDisplay
-{
-	if([DELEGATEOBJECT respondsToSelector:@selector(updateDisplay)]) {
-		[DELEGATEOBJECT performSelector:@selector(updateDisplay)];
-	}
-	[updateTimer invalidate];
-	[updateTimer release];
-	updateTimer = nil;
-}
-
-@end

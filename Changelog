@@ -1,3 +1,7 @@
+2009-04-10 ujwal
+	* Moved display update timer from PTYTask to PTYSession. PTYTask should 
+	  have no knowledge of display logic. Timer is now a repeating timer.
+
 2009-04-10 delx
 	* Revert to old force screen update behaviour for 10.4
 	* Fix overwriting of static window titles (#2744363)

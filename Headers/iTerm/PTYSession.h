@@ -61,6 +61,7 @@
 	NSView* view;
 	PTYScrollView* SCROLLVIEW;
 	PTYTextView* TEXTVIEW;
+	NSTimer *updateTimer;
 
 	// anti-idle
 	NSTimer* antiIdleTimer;

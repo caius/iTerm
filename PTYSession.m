@@ -1775,6 +1775,9 @@ static NSImage *warningImage;
 		}
 	}
 
+	// Display has been updated, so we don't want the updateTimer
+	// (if it exists) to fire
+	[updateTimer invalidate];
 	[updateTimer release];
 	updateTimer = nil;
 }

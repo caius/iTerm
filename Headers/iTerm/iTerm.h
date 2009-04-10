@@ -31,4 +31,7 @@
 
 #define NSLogRect(aRect)	NSLog(@"Rect = %f,%f,%f,%f", (aRect).origin.x, (aRect).origin.y, (aRect).size.width, (aRect).size.height)
 
+#define OSX_TIGERORLATER (floor(NSAppKitVersionNumber) > 743)
+#define OSX_LEOPARDORLATER (floor(NSAppKitVersionNumber) > 824)
+
 #endif // _ITERM_H_

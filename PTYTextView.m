@@ -49,8 +49,6 @@
 
 static NSCursor* textViewCursor =  nil;
 static float strokeWidth, boldStrokeWidth;
-static BOOL tigerOrLater;
-static BOOL leopardOrLater;
 
 @implementation PTYTextView
 
@@ -71,8 +69,6 @@ static BOOL leopardOrLater;
     textViewCursor = [[NSCursor alloc] initWithImage:aCursorImage hotSpot:hotspot];
     strokeWidth = [[PreferencePanel sharedInstance] strokeWidth];
     boldStrokeWidth = [[PreferencePanel sharedInstance] boldStrokeWidth];
-    tigerOrLater = (floor(NSAppKitVersionNumber) > 743); //NSAppKitVersionNumber10_3);
-    leopardOrLater = (floor(NSAppKitVersionNumber) > 824); //NSAppKitVersionNumber10_5);
 }
 
 + (NSCursor *) textViewCursor
@@ -542,15 +538,6 @@ static BOOL leopardOrLater;
 	if(trackingRectTag)
 		[self removeTrackingRect:trackingRectTag];
 	trackingRectTag = [self addTrackingRect:[self visibleRect] owner: self userData: nil assumeInside: NO];
-}
-
-// We override this for OS releases before Leopard
-- (void) scrollRectToVisible:(NSRect)rect
-{
-	[super scrollRectToVisible:rect];
-	if(leopardOrLater) return;
-
-	[self setForceUpdate:YES];
 }
 
 - (void) refresh
@@ -2526,7 +2513,7 @@ static BOOL leopardOrLater;
 		sw = antiAlias ? strokeWidth:0;
 	}
 
-	if (tigerOrLater && sw) {
+	if (OSX_TIGERORLATER && sw) {
 		attrib=[NSDictionary dictionaryWithObjectsAndKeys:
 			theFont, NSFontAttributeName,
 			color, NSForegroundColorAttributeName,
@@ -2544,7 +2531,7 @@ static BOOL leopardOrLater;
 	[crap drawWithRect:NSMakeRect(X,Y+[theFont ascender], 0, 0) options:0 attributes:attrib];
 	
 	// on older systems, for bold, redraw the character offset by 1 pixel
-	if (renderBold && (!tigerOrLater || !antiAlias)) {
+	if (renderBold && (!OSX_TIGERORLATER || !antiAlias)) {
 		[crap drawWithRect:NSMakeRect(X+1,Y+[theFont ascender], 0, 0) options:0 attributes:attrib];
 	}
 }	

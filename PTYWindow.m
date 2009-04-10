@@ -28,6 +28,7 @@
  **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#import <iTerm/iTerm.h>
 #import <iTerm/PTYWindow.h>
 #import <iTerm/PreferencePanel.h>
 #import <iTerm/PseudoTerminal.h>
@@ -80,8 +81,8 @@
 - (void)enableBlur
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
-	//only works in Leopard (or hopefully later)
-	if (floor(NSAppKitVersionNumber) < 949) return;
+	// Only works in Leopard (or hopefully later)
+	if (!OSX_LEOPARDORLATER) return;
 	
 	if (blurFilter)
 		return;
@@ -105,7 +106,7 @@
 {
 #if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
 	//only works in Leopard (or hopefully later)
-	if (floor(NSAppKitVersionNumber) < 949) return;
+	if (!OSX_LEOPARDORLATER) return;
 
 	if (blurFilter) {
 		CGSConnectionID con = CGSMainConnectionID();

@@ -31,6 +31,7 @@
 #define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 
+#import <iTerm/iTerm.h>
 #import <iTerm/PTYScrollView.h>
 #import <iTerm/PTYTextView.h>
 
@@ -212,5 +213,15 @@
 		[self setNeedsDisplay: YES];
     }
 }
+
+- (void)reflectScrolledClipView:(NSClipView *)aClipView
+{
+	if(OSX_LEOPARDORLATER) return;
+
+	// OS releases before Leopard need to do a complete redraw
+	[super reflectScrolledClipView: aClipView];
+	[[self documentView] setForceUpdate: YES];
+}
+
 
 @end

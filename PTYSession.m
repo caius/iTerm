@@ -45,7 +45,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 
-#define DEBUG_ALLOC           1
+#define DEBUG_ALLOC           0
 #define DEBUG_METHOD_TRACE    0
 #define DEBUG_KEYDOWNDUMP     0
 

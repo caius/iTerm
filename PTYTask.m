@@ -240,7 +240,7 @@ static void setup_tty_param(
 
 	/* Ensure there will be a screen update at some point in the future */
 	if(!updateTimer) {
-		float timeout = (0.01 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
+		NSTimeInterval timeout = (0.01 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
 		updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
 				target:self selector:@selector(updateDisplay) userInfo:nil
 				repeats:NO] retain];

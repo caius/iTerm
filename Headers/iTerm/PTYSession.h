@@ -40,51 +40,50 @@
 @class iTermGrowlDelegate;
 
 @interface PTYSession : NSResponder
-{        
-    // Owning tab view item
-    NSTabViewItem *tabViewItem;
-	
-    // tty device
-    NSString *tty;
-    
-    PseudoTerminal *parent;  // parent controller
-    NSString *name;
-	NSString *defaultName;
-    NSString *windowTitle;
-	
-    PTYTask *SHELL;
-    VT100Terminal *TERMINAL;
-    NSString *TERM_VALUE;
-    NSString *COLORFGBG_VALUE;
-    VT100Screen   *SCREEN;
-    BOOL EXIT;
-    NSView *view;
-    PTYScrollView *SCROLLVIEW;
-    PTYTextView *TEXTVIEW;
-    
-    // anti-idle
-    BOOL antiIdle;
-    char ai_code;
+{
+	// Owning tab view item
+	NSTabViewItem* tabViewItem;
 
-    BOOL autoClose;
-    BOOL doubleWidth;
+	// tty device
+	NSString* tty;
+
+	PseudoTerminal* parent;  // parent controller
+	NSString* name;
+	NSString* defaultName;
+	NSString* windowTitle;
+
+	PTYTask* SHELL;
+	VT100Terminal* TERMINAL;
+	NSString* TERM_VALUE;
+	NSString* COLORFGBG_VALUE;
+	VT100Screen* SCREEN;
+	BOOL EXIT;
+	NSView* view;
+	PTYScrollView* SCROLLVIEW;
+	PTYTextView* TEXTVIEW;
+
+	// anti-idle
+	NSTimer* antiIdleTimer;
+	char ai_code;
+
+	BOOL autoClose;
+	BOOL doubleWidth;
 	BOOL xtermMouseReporting;
-    int bell;
+	int bell;
 
-    NSString *backgroundImagePath;
-    NSDictionary *addressBookEntry;
+	NSString* backgroundImagePath;
+	NSDictionary* addressBookEntry;
 
 	// Growl stuff
 	iTermGrowlDelegate* gd;
-    
-    // Status reporting
-    struct timeval lastInput, lastOutput, lastUpdate, lastBlink;
-    int objectCount;
-	NSImage *icon;
+
+	// Status reporting
+	struct timeval lastInput, lastOutput, lastBlink;
+	int objectCount;
+	NSImage* icon;
 	BOOL isProcessing;
-    BOOL newOutput;
-    BOOL growlIdle, growlNewOutput;
-		
+	BOOL newOutput;
+	BOOL growlIdle, growlNewOutput;
 }
 
 // init/dealloc
@@ -236,6 +235,7 @@
 
 // Display timer stuff
 - (void)updateDisplay;
+- (void)doAntiIdle;
 
 @end
 

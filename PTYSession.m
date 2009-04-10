@@ -65,7 +65,7 @@ static NSColor *deadStateColor;
 
 static NSImage *warningImage;
 
-+ (void) initialize
++ (void)initialize
 {
 	NSBundle *thisBundle;
 	NSString *imagePath;
@@ -76,145 +76,142 @@ static NSImage *warningImage;
 		warningImage = [[NSImage alloc] initByReferencingFile: imagePath];	
 		//NSLog(@"%@\n%@",imagePath,warningImage);
 	}
-	
-    normalStateColor = [NSColor blackColor];
-    chosenStateColor = [NSColor blackColor];
-    idleStateColor = [NSColor redColor];
-    newOutputStateColor = [NSColor purpleColor];
-    deadStateColor = [NSColor grayColor];
-    
+
+	normalStateColor = [NSColor blackColor];
+	chosenStateColor = [NSColor blackColor];
+	idleStateColor = [NSColor redColor];
+	newOutputStateColor = [NSColor purpleColor];
+	deadStateColor = [NSColor grayColor];
 }
 
 // init/dealloc
-- (id) init
+- (id)init
 {
-	
-    if((self = [super init]) == nil)
-        return (nil);
-	
+	if((self = [super init]) == nil)
+		return (nil);
+
 	gettimeofday(&lastInput, NULL);
-    lastOutput = lastBlink = lastUpdate = lastInput;
-    antiIdle=EXIT=NO;
-    
-    addressBookEntry=nil;
-	
+	lastOutput = lastBlink = lastInput;
+	EXIT=NO;
+
+	antiIdleTimer = nil;
+	addressBookEntry=nil;
+
 #if DEBUG_ALLOC
-    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
-#endif    
-		
-    // Allocate screen, shell, and terminal objects
-    SHELL = [[PTYTask alloc] init];
-    TERMINAL = [[VT100Terminal alloc] init];
-    SCREEN = [[VT100Screen alloc] init];
-    NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
+	NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
+#endif
+
+	// Allocate screen, shell, and terminal objects
+	SHELL = [[PTYTask alloc] init];
+	TERMINAL = [[VT100Terminal alloc] init];
+	SCREEN = [[VT100Screen alloc] init];
+	NSParameterAssert(SHELL != nil && TERMINAL != nil && SCREEN != nil);	
 
 	// Need Growl plist stuff
 	gd = [iTermGrowlDelegate sharedInstance];
-    growlIdle = growlNewOutput = NO;
-	
-    return (self);
+	growlIdle = growlNewOutput = NO;
+
+
+	return (self);
 }
 
-- (void) dealloc
+- (void)dealloc
 {
 #if DEBUG_ALLOC
-    NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
+	NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
 #endif
-	
+
 	[icon release];
-    [TERM_VALUE release];
-    [COLORFGBG_VALUE release];
-    [view release];
-    [name release];
-    [windowTitle release];
-    [addressBookEntry release];
-    [backgroundImagePath release];
-	
-	
-    [SHELL release];
-    SHELL = nil;
+	[TERM_VALUE release];
+	[COLORFGBG_VALUE release];
+	[view release];
+	[name release];
+	[windowTitle release];
+	[addressBookEntry release];
+	[backgroundImagePath release];
+	[antiIdleTimer invalidate];
+	[antiIdleTimer release];
+
+	[SHELL release];
+	SHELL = nil;
 	[SCREEN release];
-    SCREEN = nil;
-    [TERMINAL release];
-    TERMINAL = nil;    
-    
+	SCREEN = nil;
+	[TERMINAL release];
+	TERMINAL = nil;
+
 	[[NSNotificationCenter defaultCenter] removeObserver: self];
-	
-    [super dealloc];    
+
+	[super dealloc];	
 #if DEBUG_ALLOC
-    NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
+	NSLog(@"%s: 0x%x, done", __PRETTY_FUNCTION__, self);
 #endif
 }
 
 // Session specific methods
 - (BOOL)initScreen: (NSRect) aRect width:(int)width height:(int) height
 {
-    NSSize aSize;
-	
+	NSSize aSize;
+
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession initScreen]",
-          __FILE__, __LINE__);
+	NSLog(@"%s(%d):-[PTYSession initScreen]", __FILE__, __LINE__);
 #endif
-	
-	
-    [SCREEN setSession:self];
-		
-    // Allocate a scrollview
-    SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
-    [SCROLLVIEW setHasVerticalScroller:![parent fullScreen] && ![[PreferencePanel sharedInstance] hideScrollbar]];
-    NSParameterAssert(SCROLLVIEW != nil);
-    [SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-	
-		
-    // assign the main view
-    view = SCROLLVIEW;
-    
-    // Allocate a text view
-    aSize = [SCROLLVIEW contentSize];
-    TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
+
+	[SCREEN setSession:self];
+
+	// Allocate a scrollview
+	SCROLLVIEW = [[PTYScrollView alloc] initWithFrame: NSMakeRect(0, 0, aRect.size.width, aRect.size.height)];
+	[SCROLLVIEW setHasVerticalScroller:![parent fullScreen] && ![[PreferencePanel sharedInstance] hideScrollbar]];
+	NSParameterAssert(SCROLLVIEW != nil);
+	[SCROLLVIEW setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+
+	// assign the main view
+	view = SCROLLVIEW;
+
+	// Allocate a text view
+	aSize = [SCROLLVIEW contentSize];
+	TEXTVIEW = [[PTYTextView alloc] initWithFrame: NSMakeRect(0, 0, aSize.width, aSize.height)];
 	[TEXTVIEW setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
 	[TEXTVIEW setUseTransparency: [parent useTransparency]];
-	
-    // assign terminal and task objects
-    [SCREEN setShellTask:SHELL];
-    [SCREEN setTerminal:TERMINAL];
-    [TERMINAL setScreen: SCREEN];
-    [SHELL setDelegate:self];
-	
-    // initialize the screen
-    if ([SCREEN initScreenWithWidth:width Height:height]) {
-        [self setName:@"Shell"];
-        [self setDefaultName:@"Shell"];
 
-        
-        [TEXTVIEW setDataSource: SCREEN];
-        [TEXTVIEW setDelegate: self];
-        [SCROLLVIEW setDocumentView:TEXTVIEW];
-        [TEXTVIEW release];
-        [SCROLLVIEW setDocumentCursor: [PTYTextView textViewCursor]];
+	// assign terminal and task objects
+	[SCREEN setShellTask:SHELL];
+	[SCREEN setTerminal:TERMINAL];
+	[TERMINAL setScreen: SCREEN];
+	[SHELL setDelegate:self];
 
-        ai_code=0;
-        antiIdle = NO;
-        newOutput = NO;
-        
-        // register for some notifications	
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(tabViewWillRedraw:)
-                                                     name:@"iTermTabViewWillRedraw"
-                                                   object:nil];
-        return YES;
+	// initialize the screen
+	if ([SCREEN initScreenWithWidth:width Height:height]) {
+		[self setName:@"Shell"];
+		[self setDefaultName:@"Shell"];
+
+		[TEXTVIEW setDataSource: SCREEN];
+		[TEXTVIEW setDelegate: self];
+		[SCROLLVIEW setDocumentView:TEXTVIEW];
+		[TEXTVIEW release];
+		[SCROLLVIEW setDocumentCursor: [PTYTextView textViewCursor]];
+
+		ai_code=0;
+		[antiIdleTimer release];
+		antiIdleTimer = nil;
+		newOutput = NO;
+
+		// register for some notifications	
+		[[NSNotificationCenter defaultCenter] addObserver:self
+				selector:@selector(tabViewWillRedraw:)
+				name:@"iTermTabViewWillRedraw" object:nil];
+		return YES;
 	}
 	else {
-        [SCREEN release];
-        SCREEN = nil;
-        [TEXTVIEW release];
-        NSRunCriticalAlertPanel(NSLocalizedStringFromTableInBundle(@"Out of memory",@"iTerm", [NSBundle bundleForClass: [self class]], @"Error"),
-                         NSLocalizedStringFromTableInBundle(@"New sesssion cannot be created. Try smaller buffer sizes.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Error"),
-                         NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
-                         nil, nil);      
-        
-        return NO;
-    }
+		[SCREEN release];
+		SCREEN = nil;
+		[TEXTVIEW release];
+		NSRunCriticalAlertPanel(NSLocalizedStringFromTableInBundle(@"Out of memory",@"iTerm", [NSBundle bundleForClass: [self class]], @"Error"),
+						 NSLocalizedStringFromTableInBundle(@"New sesssion cannot be created. Try smaller buffer sizes.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Error"),
+						 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"OK"),
+						 nil, nil);
+
+		return NO;
+	}
 }
 
 - (BOOL) isActiveSession
@@ -1564,7 +1561,7 @@ static NSImage *warningImage;
 
 - (BOOL) antiIdle
 {
-    return antiIdle;
+	return antiIdleTimer ? YES : NO;
 }
 
 - (int) antiCode
@@ -1574,7 +1571,17 @@ static NSImage *warningImage;
 
 - (void) setAntiIdle:(BOOL)set
 {
-    antiIdle=set;
+	if(set == [self antiIdle]) return;
+
+	if(set) {
+		antiIdleTimer = [[NSTimer scheduledTimerWithTimeInterval:30
+				target:self selector:@selector(doAntiIdle) userInfo:nil
+				repeats:YES] retain];
+	} else {
+		[antiIdleTimer invalidate];
+		[antiIdleTimer release];
+		antiIdleTimer = nil;
+	}
 }
 
 - (void) setAntiCode:(int)code
@@ -1727,41 +1734,44 @@ static NSImage *warningImage;
     }
 }
 
-- (void) updateDisplay
+- (void)updateDisplay
 {
-    struct timeval now;
-
-	gettimeofday(&now, NULL);
-	
-    if (antiIdle && now.tv_sec >= lastInput.tv_sec+60) {
-        [SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
-        lastInput = now;
-    }
-	
 	if([[tabViewItem tabView] selectedTabViewItem] != tabViewItem) {
 		[self setLabelAttribute];
-    }
-    
-	if ([parent currentSession] == self) {
-		if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
+	}
+
+	if([parent currentSession] == self) {
+		struct timeval now;
+		gettimeofday(&now, NULL);
+
+		if(now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
 			[TEXTVIEW refresh];
-			if ([parent tempTitle]) {
+			if([parent tempTitle]) {
 				[parent setWindowTitle];
 				[parent resetTempTitle];
 			}
-			lastUpdate = lastBlink = now;
+			lastBlink = now;
 		}
-		else if (lastOutput.tv_sec*1000+lastOutput.tv_usec/1000 >= lastUpdate.tv_sec*1000 + lastUpdate.tv_usec/1000 + 10) {
+		else {
 			[TEXTVIEW refresh];
-			lastUpdate = now;
-			if ([SCREEN scrollUpLines]) {
+			if([SCREEN scrollUpLines]) {
 				[TEXTVIEW scrollLinesUp:[SCREEN scrollUpLines]];
 				[SCREEN resetScrollUpLines];
 			}
 		}
-    }
+	}
 }
 
+- (void)doAntiIdle
+{
+	struct timeval now;
+	gettimeofday(&now, NULL);
+
+	if(now.tv_sec >= lastInput.tv_sec+60) {
+		[SHELL writeTask:[NSData dataWithBytes:&ai_code length:1]];
+		lastInput = now;
+	}
+}
 
 
 // Notification

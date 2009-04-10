@@ -216,11 +216,11 @@
 
 - (void)reflectScrolledClipView:(NSClipView *)aClipView
 {
-	if(OSX_LEOPARDORLATER) return;
-
-	// OS releases before Leopard need to do a complete redraw
 	[super reflectScrolledClipView: aClipView];
-	[[self documentView] setForceUpdate: YES];
+	if(!OSX_LEOPARDORLATER) {
+		// OS releases before Leopard need to do a complete redraw
+		[[self documentView] setForceUpdate: YES];
+	}
 }
 
 

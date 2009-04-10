@@ -103,8 +103,8 @@
 - (void) setPreferencesFromAddressBookEntry: (NSDictionary *) aePrefs;
 
 // PTYTask
-- (void)writeTask:(NSData *)data;
-- (void)readTask:(char *)buf length:(int)length;
+- (void)writeTask:(NSData*)data;
+- (void)readTask:(char*)data length:(unsigned int)length;
 - (void)brokenPipe;
 
 // PTYTextView
@@ -132,7 +132,6 @@
 
 // misc
 - (void) handleOptionClick: (NSEvent *) theEvent;
-- (void) doIdleTasks;
 
 
 // Contextual menu

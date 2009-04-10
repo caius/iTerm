@@ -317,22 +317,23 @@ static NSImage *warningImage;
     }
 }
 
-- (void)readTask:(char *)buf length:(int)length
+- (void)readTask:(char*)data length:(unsigned int)length
 {
-	if (buf == NULL || EXIT)
-        return;
-	
+	if(length == 0 || EXIT)
+		return;
+
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__, [[[NSString alloc] initWithBytes: buf length:length encoding: nil] autorelease] );
+	NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__,
+		[[NSString alloc] initWithBytes:data length:length encoding:nil]);
 #endif
-	
-    [TERMINAL putStreamData:buf length:length];	
-	
+
+	[TERMINAL putStreamData:data length:length];
+
 	VT100TCC token;
-	
+
 	// while loop to process all the tokens we can get
 	while(!EXIT && TERMINAL && ((token = [TERMINAL getNextToken]),
-								token.type != VT100_WAIT && token.type != VT100CC_NULL))
+			token.type != VT100_WAIT && token.type != VT100CC_NULL))
 	{
 		// process token
 		if (token.type != VT100_SKIP)
@@ -345,7 +346,7 @@ static NSImage *warningImage;
 			}
 		}
 	} // end token processing loop
-	
+
 	gettimeofday(&lastOutput, NULL);
 	newOutput=YES;
 }
@@ -735,11 +736,6 @@ static NSImage *warningImage;
     
     // trigger an update of the display.
     [SCREEN updateScreen];
-}
-
-// do any idle tasks here
-- (void) doIdleTasks
-{
 }
 
 - (void)insertText:(NSString *)string
@@ -1869,7 +1865,7 @@ static NSImage *warningImage;
     {
 		int i = 0;
 		// wait here until we have had some output
-		while([SHELL firstOutput] == NO && i < 1000000)
+		while([SHELL hasOutput] == NO && i < 1000000)
 		{
 			usleep(50000);
 			i += 50000;

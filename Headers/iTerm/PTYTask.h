@@ -37,23 +37,21 @@
 
 @interface PTYTask : NSObject
 {
-    pid_t PID;
-    int FILDES;
-    int STATUS;
-    id DELEGATEOBJECT;
-    NSString *TTY;
-    NSString *PATH;
+	pid_t PID;
+	int FILDES;
+	int STATUS;
+	id DELEGATEOBJECT;
+	NSString* TTY;
+	NSString* PATH;
 
-    NSString *LOG_PATH;
-    NSFileHandle *LOG_HANDLE;
-    NSFileHandle *dataHandle;
-    BOOL hasOutput;
-    BOOL firstOutput;
-    NSTimer *updateTimer, *writeTimer;
-	
-	void *inputBuffer;
-	int inputBufferLen;
+	NSString* LOG_PATH;
+	NSFileHandle* LOG_HANDLE;
+	NSFileHandle* dataHandle;
+	BOOL hasOutput;
+	NSTimer* updateTimer;
+	NSTimer* writeTimer;
 
+	NSMutableData* writeBuffer;
 }
 
 - (id)init;
@@ -68,9 +66,8 @@
 - (void)setDelegate:(id)object;
 - (id)delegate;
 
-- (void) doIdleTasks;
-- (void)readTask:(char *)buf length:(int)length;
-- (void)writeTask:(NSData *)data;
+- (void)readTask:(char*)data length:(unsigned int)length;
+- (void)writeTask:(NSData*)data;
 - (void)brokenPipe;
 - (void)sendSignal:(int)signo;
 - (void)setWidth:(int)width height:(int)height;
@@ -83,10 +80,7 @@
 - (BOOL)loggingStartWithPath:(NSString *)path;
 - (void)loggingStop;
 - (BOOL)logging;
-- (BOOL) hasOutput;
-- (void) setHasOutput: (BOOL) flag;
-- (BOOL) firstOutput;
-- (void) setFirstOutput: (BOOL) flag;
+- (BOOL)hasOutput;
 
 - (NSString *)description;
 

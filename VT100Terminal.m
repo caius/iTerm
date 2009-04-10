@@ -1565,7 +1565,7 @@ static VT100TCC decode_string(unsigned char *datap,
 	current_stream_length = 0;
 }
 
-- (void)putStreamData:(char *)data length: (int)length
+- (void)putStreamData:(const char*)data length: (int)length
 {
 	if (current_stream_length + length > total_stream_length) {
 		int n = (length + current_stream_length) / STANDARD_STREAM_SIZE;

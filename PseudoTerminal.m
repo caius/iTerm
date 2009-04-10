@@ -659,9 +659,9 @@ NSString *sessionsKey = @"sessions";
 
         if (title) 
         {
-            [self setWindowTitle: title];
             [aSession setName: title];
             [aSession setDefaultName: title];
+            [self setWindowTitle];
         }
     
     }
@@ -774,7 +774,8 @@ NSString *sessionsKey = @"sessions";
 
 - (NSString *) currentSessionName
 {
-    return ([[[TABVIEW selectedTabViewItem] identifier] defaultName]);
+	PTYSession* session = [self currentSession];
+	return [session windowTitle] ? [session windowTitle] : [session defaultName];
 }
 
 - (void) setCurrentSessionName: (NSString *) theSessionName
@@ -1156,9 +1157,7 @@ NSString *sessionsKey = @"sessions";
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle]",
           __FILE__, __LINE__);
 #endif
-    NSString *title = [[self currentSession] windowTitle] ? [[self currentSession] windowTitle] : [self currentSessionName];
-	
-	[self setWindowTitle: title];
+	[self setWindowTitle: [self currentSessionName]];
 }
 
 - (void) setWindowTitle: (NSString *)title
@@ -1167,17 +1166,20 @@ NSString *sessionsKey = @"sessions";
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle:%@]",
           __FILE__, __LINE__, title);
 #endif
-	NSString *temp = [title length] > 0 ? title : @"Session";
-	
+	if([title length] == 0) {
+		NSLog(@"ack");
+	}
+	NSParameterAssert([title length] > 0);
+
 	if([self sendInputToAllSessions]) {
-		temp = [NSString stringWithFormat:@"☛%@", temp];
+		title = [NSString stringWithFormat:@"☛%@", title];
 		[[self window] setBackgroundColor: [NSColor highlightColor]];
 	}
 	else {
 		[[self window] setBackgroundColor: normalBackgroundColor];
 	}
 
-	[[self window] setTitle: temp];
+	[[self window] setTitle: title];
 }
 
 // increases or dcreases font size
@@ -1694,7 +1696,7 @@ NSString *sessionsKey = @"sessions";
 			nafont = [self _getMaxFont:nafont height:frame.size.height lines:HEIGHT];
 			
 			[self setFont:font nafont:nafont];
-			NSString *aTitle = [NSString stringWithFormat:@"%@ (%.0f)", [[self currentSession] name], [font pointSize]];
+			NSString *aTitle = [NSString stringWithFormat:@"%@ (%.0f)", [self currentSessionName], [font pointSize]];
 			[self setWindowTitle: aTitle];
 			tempTitle = YES;
 
@@ -1714,7 +1716,7 @@ NSString *sessionsKey = @"sessions";
             WIDTH = w;
             HEIGHT = h;
             // Display the new size in the window title.
-            NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [[self currentSession] name], WIDTH, HEIGHT];
+            NSString *aTitle = [NSString stringWithFormat:@"%@ (%d,%d)", [self currentSessionName], WIDTH, HEIGHT];
             [self setWindowTitle: aTitle];
 			tempTitle = YES;
             [self setWindowSize];

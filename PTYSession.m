@@ -1246,17 +1246,15 @@ static NSImage *warningImage;
 - (void) setWindowTitle: (NSString *) theTitle
 {
 	if ([theTitle isEqualToString:windowTitle]) return;
-	
-    [windowTitle autorelease];
-    windowTitle = nil;
-    
-    if(theTitle != nil)
-    {
+
+	[windowTitle autorelease];
+	windowTitle = nil;
+
+	if(theTitle != nil && [theTitle length] > 0)
 		windowTitle = [theTitle retain];
-		if([[self parent] currentSession] == self)
-			//[[[self parent] window] setTitle: windowTitle];
-            [[self parent] setWindowTitle: theTitle];
-    }
+
+	if([[self parent] currentSession] == self)
+		[[self parent] setWindowTitle];
 }
 
 - (PTYTask *) SHELL
@@ -1748,7 +1746,7 @@ static NSImage *warningImage;
 		if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
 			[TEXTVIEW refresh];
 			if ([parent tempTitle]) {
-				[parent setWindowTitle: windowTitle];
+				[parent setWindowTitle];
 				[parent resetTempTitle];
 			}
 			lastUpdate = lastBlink = now;

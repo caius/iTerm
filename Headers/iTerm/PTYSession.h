@@ -237,6 +237,7 @@
 // Display timer stuff
 - (void)updateDisplay;
 - (void)doAntiIdle;
+- (void)scheduleUpdateSoon:(BOOL)soon;
 
 @end
 

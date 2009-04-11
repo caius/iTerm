@@ -353,13 +353,8 @@ static NSImage *warningImage;
 	gettimeofday(&lastOutput, NULL);
 	newOutput=YES;
 
-	// Make sure the screen gets redrawn at some point
-	if(!updateTimer) {
-		NSTimeInterval timeout = (0.001 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
-		updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
-				target:self selector:@selector(updateDisplay) userInfo:nil
-				repeats:NO] retain];
-	}
+	// Make sure the screen gets redrawn soonish
+	[self scheduleUpdateSoon:YES];
 }
 
 - (void)brokenPipe
@@ -1775,11 +1770,27 @@ static NSImage *warningImage;
 		}
 	}
 
-	// Display has been updated, so we don't want the updateTimer
-	// (if it exists) to fire
-	[updateTimer invalidate];
-	[updateTimer release];
-	updateTimer = nil;
+	[self scheduleUpdateSoon:NO];
+}
+
+- (void)scheduleUpdateSoon:(BOOL)soon
+{
+	// This method ensures regular updates for text blinking, but allows
+	// for quicker (soon=YES) updates to draw newly read text from PTYTask
+
+	if(updateTimer) {
+		[updateTimer invalidate];
+		[updateTimer release];
+		updateTimer = nil;
+	}
+
+	NSTimeInterval timeout = 0.5;
+	if(soon) {
+		timeout = (0.001 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
+	}
+	updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
+			target:self selector:@selector(updateDisplay) userInfo:nil
+			repeats:NO] retain];
 }
 
 - (void)doAntiIdle

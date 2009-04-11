@@ -1778,11 +1778,8 @@ static NSImage *warningImage;
 	// This method ensures regular updates for text blinking, but allows
 	// for quicker (soon=YES) updates to draw newly read text from PTYTask
 
-	if(updateTimer) {
-		[updateTimer invalidate];
-		[updateTimer release];
-		updateTimer = nil;
-	}
+	[updateTimer invalidate];
+	[updateTimer release];
 
 	NSTimeInterval timeout = 0.5;
 	if(soon) {

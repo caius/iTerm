@@ -2340,7 +2340,7 @@ static float strokeWidth, boldStrokeWidth;
 			if(hasBGImage) {
 				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 			}
-			if(bgcode != DEFAULT_BG_COLOR_CODE || !hasBGImage) {
+			if(!hasBGImage || bgcode != DEFAULT_BG_COLOR_CODE || bgselected) {
 				aColor = bgselected ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
 				aColor = [aColor colorWithAlphaComponent: alpha];
 				[aColor set];

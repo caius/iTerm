@@ -1,3 +1,6 @@
+2009-04-15 delx
+	* Fixed selection highlighting when using background images (#2762076)
+
 2009-04-10 ujwal
 	* Moved display update timer from PTYTask to PTYSession. PTYTask should 
 	  have no knowledge of display logic. Timer is now a repeating timer.

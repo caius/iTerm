@@ -11,6 +11,10 @@ all:
 	xcodebuild -alltargets -configuration $(CONFIGURATION) && \
 	chmod -R go+rX build
 
+zip: Deployment
+	cd build/Deployment && \
+	zip -r iTerm.app.zip iTerm.app
+
 clean:
 	xcodebuild -alltargets clean
 	rm -rf build

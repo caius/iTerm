@@ -85,9 +85,6 @@ static float strokeWidth, boldStrokeWidth;
     self = [super initWithFrame: aRect];
     dataSource=_delegate=markedTextAttributes=NULL;
 
-    oldVisibleRect = NSZeroRect;
-    oldVisibleSet = NO;
-
     [self setMarkedTextAttributes:
         [NSDictionary dictionaryWithObjectsAndKeys:
             [NSColor yellowColor], NSBackgroundColorAttributeName,
@@ -96,6 +93,7 @@ static float strokeWidth, boldStrokeWidth;
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
 	CURSOR=YES;
+	drawAllowed = YES;
 	lastFindX = oldStartX = startX = -1;
 	markedText=nil;
 	gettimeofday(&lastBlink, NULL);
@@ -219,7 +217,7 @@ static float strokeWidth, boldStrokeWidth;
 		  __FILE__, __LINE__, antiAliasFlag);
 #endif
 	antiAlias = antiAliasFlag;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (BOOL) disableBold
@@ -230,7 +228,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setDisableBold: (BOOL) boldFlag
 {
 	disableBold = boldFlag;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 
@@ -270,7 +268,7 @@ static float strokeWidth, boldStrokeWidth;
 	[defaultFGColor release];
 	[color retain];
 	defaultFGColor=color;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 	// reset our default character attributes    
 }
 
@@ -281,7 +279,7 @@ static float strokeWidth, boldStrokeWidth;
     defaultBGColor=color;
 	//    bg = [bg colorWithAlphaComponent: [[SESSION backgroundColor] alphaComponent]];
 	//    fg = [fg colorWithAlphaComponent: [[SESSION foregroundColor] alphaComponent]];
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) setBoldColor: (NSColor*)color
@@ -289,7 +287,7 @@ static float strokeWidth, boldStrokeWidth;
 	[defaultBoldColor release];
 	[color retain];
 	defaultBoldColor=color;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) setCursorColor: (NSColor*)color
@@ -297,7 +295,7 @@ static float strokeWidth, boldStrokeWidth;
 	[defaultCursorColor release];
 	[color retain];
 	defaultCursorColor=color;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) setSelectedTextColor: (NSColor *) aColor
@@ -305,7 +303,7 @@ static float strokeWidth, boldStrokeWidth;
 	[selectedTextColor release];
 	[aColor retain];
 	selectedTextColor = aColor;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (void) setCursorTextColor:(NSColor*) aColor
@@ -313,7 +311,7 @@ static float strokeWidth, boldStrokeWidth;
 	[cursorTextColor release];
 	[aColor retain];
 	cursorTextColor = aColor;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (NSColor *) cursorTextColor
@@ -351,7 +349,7 @@ static float strokeWidth, boldStrokeWidth;
 	[colorTable[index] release];
 	[c retain];
 	colorTable[index]=c;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (NSColor *) colorForCode:(int) index
@@ -408,7 +406,7 @@ static float strokeWidth, boldStrokeWidth;
 	[selectionColor release];
 	[aColor retain];
 	selectionColor=aColor;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 
@@ -446,7 +444,7 @@ static float strokeWidth, boldStrokeWidth;
             nafont, NSFontAttributeName,
             [NSNumber numberWithInt:2],NSUnderlineStyleAttributeName,
             NULL]];
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (void)changeFont:(id)fontManager
@@ -507,67 +505,133 @@ static float strokeWidth, boldStrokeWidth;
 	charWidth = width;
 }
 
-- (void) setForceUpdate: (BOOL) flag
+- (void)updateDirtyRects
 {
-	forceUpdate = flag;
-	if(forceUpdate) {
-		[self deselect];
-		[self setNeedsDisplay:YES];
-	}
-}
+	int WIDTH = [dataSource width];
+	char* dirty;
+	int lineStart;
+	int lineEnd;
 
+	// Check each line for dirty selected text
+	// If any is found then deselect everything
+	dirty = [dataSource dirty];
+	lineStart = [dataSource numberOfLines] - [dataSource height];
+	lineEnd = [dataSource numberOfLines];
+	for(int y = lineStart; y < lineEnd && startX >= 0; y++) {
+		for(int x = 0; x < WIDTH; x++) {
+			if(dirty[x] && [self _isCharSelectedInRow:y col:x checkOld:NO]) {
+				// Don't call [self deselect] as it would recurse back here
+				startX = -1;
+				break;
+			}
+		}
+		dirty += WIDTH;
+	}
+
+	// Visible chars that have changed selection status are dirty
+	lineStart = [self visibleRect].origin.y / lineHeight;
+	lineEnd = lineStart + ceil([self visibleRect].size.height / lineHeight);
+	if(lineStart < 0) lineStart = 0;
+	if(lineEnd > [dataSource numberOfLines]) lineEnd = [dataSource numberOfLines];
+	for(int y = lineStart; y < lineEnd; y++) {
+		for(int x = 0; x < WIDTH; x++) {
+			BOOL isSelected = [self _isCharSelectedInRow:y col:x checkOld:NO];
+			BOOL wasSelected = [self _isCharSelectedInRow:y col:x checkOld:YES];
+			if(isSelected != wasSelected) {
+				NSRect dirtyRect = [self visibleRect];
+				dirtyRect.origin.y = y*lineHeight;
+				dirtyRect.size.height = lineHeight;
+				[self setNeedsDisplayInRect:dirtyRect];
+				break;
+			}
+		}
+	}
+	oldStartX=startX; oldStartY=startY; oldEndX=endX; oldEndY=endY;
+
+	// Redraw lines with dirty characters
+	dirty = [dataSource dirty];
+	lineStart = [dataSource numberOfLines] - [dataSource height];
+	lineEnd = [dataSource numberOfLines];
+	for(int y = lineStart; y < lineEnd; y++) {
+		for(int x = 0; x < WIDTH; x++) {
+			if(dirty[x]) {
+				NSRect dirtyRect = [self visibleRect];
+				dirtyRect.origin.y = y*lineHeight;
+				dirtyRect.size.height = lineHeight;
+				[self setNeedsDisplayInRect:dirtyRect];
+				break;
+			}
+		}
+		dirty += WIDTH;
+	}
+	[dataSource resetDirty];
+}
 
 // We override this method since both refresh and window resize can conflict resulting in this happening twice
 // So we do not allow the size to be set larger than what the data source can fill
-- (void) setFrameSize: (NSSize) aSize
+- (void)setFrameSize:(NSSize)frameSize
 {
-	//NSLog(@"%s (0x%x): setFrameSize to (%f,%f)", __PRETTY_FUNCTION__, self, aSize.width, aSize.height);
+	// Force the height to always be correct
+	frameSize.height = [dataSource numberOfLines] * lineHeight;
+	[super setFrameSize:frameSize];
 
-	NSSize anotherSize = aSize;
-	
-	anotherSize.height = [dataSource numberOfLines] * lineHeight;
+	if(![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) {
+		[self scrollEnd];
+	}
 
-	[super setFrameSize: anotherSize];
-	
-    if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) 
-    {
-        [self scrollEnd];
-    }
-    
 	// reset tracking rect
-	if(trackingRectTag)
+	if(trackingRectTag) {
 		[self removeTrackingRect:trackingRectTag];
-	trackingRectTag = [self addTrackingRect:[self visibleRect] owner: self userData: nil assumeInside: NO];
+	}
+	trackingRectTag = [self addTrackingRect:[self visibleRect] owner:self userData:nil assumeInside:NO];
 }
 
-- (void) refresh
+- (void)refresh
 {
-	//NSLog(@"%s: 0x%x", __PRETTY_FUNCTION__, self);
-	NSRect aFrame;
-	int height;
+	if(dataSource == nil) return;
 
-	if(dataSource != nil)
-	{
-		numberOfLines = [dataSource numberOfLines];
+	int height = [dataSource numberOfLines] * lineHeight;
+	NSRect frame = [self frame];
 
-		height = numberOfLines * lineHeight;
-		aFrame = [self frame];
-
-		if(height != aFrame.size.height)
-		{
-			//NSLog(@"%s: 0x%x; new number of lines = %d; resizing height from %f to %d", 
-			//	  __PRETTY_FUNCTION__, self, numberOfLines, [self frame].size.height, height);
-			aFrame.size.height = height;
-			[self setFrame: aFrame];
-			if (![(PTYScroller *)([[self enclosingScrollView] verticalScroller]) userScroll]) 
-			{
-				[self scrollEnd];
-			}
+	// Grow to allow space for drawing the new lines
+	if(height != frame.size.height) {
+		// XXX - EPIC HACK below
+		// NSClipView has setCopiesOnScroll:YES by default. According to Apple
+		// this means it will do a quick copy of all the unchanged portion of
+		// the view when scrolling. It will then expose the new section causing
+		// drawRect to be called with it.
+		// NSClipView does not seem to be doing it's job. The setFrame call below
+		// exposes the *entire* visible rectangle. This has the obvious
+		// performance penalty of forcing a full screen redraw whenever the
+		// frame is extended due to scrolling, eg a new line appears in the
+		// terminal. To work around this we disable drawing during the frame
+		// resize and then manually expose the new portion of the frame.
+		float diff = height - frame.size.height;
+		NSRect old = [self visibleRect];
+		if(diff > 0) {
+			drawAllowed = NO;
+			[self displayIfNeeded];
 		}
 
-		[self setNeedsDisplay: YES];
+		// Resize the frame
+		frame.size.height = height;
+		[self setFrame:frame];
+
+		// XXX - resume hack
+		NSRect new = [self visibleRect];
+		if(diff > 0) {
+			[self display];
+			drawAllowed = YES;
+
+			NSRect dirty = new;
+			dirty.origin.y = old.origin.y + old.size.height;
+			dirty.size.height = new.origin.y + new.size.height - dirty.origin.y;
+			[self setNeedsDisplayInRect:dirty];
+		}
 	}
-	
+
+	// Mark dirty chars for redraw
+	[self updateDirtyRects];
 }
 
 
@@ -577,16 +641,6 @@ static float strokeWidth, boldStrokeWidth;
 	NSLog(@"%s(%d):-[PTYTextView adjustScroll]", __FILE__, __LINE__ );
 #endif
 	proposedVisibleRect.origin.y=(int)(proposedVisibleRect.origin.y/lineHeight+0.5)*lineHeight;
-
-	if([(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil)
-		forceUpdate = YES; // we have to update everything if there's a background image
-
-	if(!oldVisibleSet) {
-		oldVisibleRect = [self visibleRect];
-		oldVisibleSet = YES;
-	}
-
-	[self setNeedsDisplay:YES];
 	return proposedVisibleRect;
 }
 
@@ -650,18 +704,15 @@ static float strokeWidth, boldStrokeWidth;
 - (void)scrollEnd
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView scrollEnd]", __FILE__, __LINE__ );
+	NSLog(@"%s(%d):-[PTYTextView scrollEnd]", __FILE__, __LINE__ );
 #endif
-    
-    if (numberOfLines > 0)
-    {
-        NSRect aFrame;
-		aFrame.origin.x = 0;
-		aFrame.origin.y = (numberOfLines - 1) * lineHeight;
-		aFrame.size.width = [self frame].size.width;
-		aFrame.size.height = lineHeight;
-		[self scrollRectToVisible: aFrame];
-    }
+
+	if([dataSource numberOfLines] <= 0) return;
+
+	NSRect lastLine = [self visibleRect];
+	lastLine.origin.y = ([dataSource numberOfLines] - 1) * lineHeight;
+	lastLine.size.height = lineHeight;
+	[self scrollRectToVisible:lastLine];
 }
 
 - (void)scrollToSelection
@@ -693,48 +744,42 @@ static float strokeWidth, boldStrokeWidth;
 		[self frame].origin.x, [self frame].origin.y, [self frame].size.width, [self frame].size.height);
 #endif
 
-	int i;
-	int numLines;
-	int lineOffset;
-	struct timeval now;
-
-	if(lineHeight <= 0 || lineWidth <= 0)
-		return;
+	if(!drawAllowed) return;
+	if(lineHeight <= 0 || lineWidth <= 0) return;
 
 	// Configure graphics
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	[[NSGraphicsContext currentContext] setCompositingOperation: NSCompositeCopy];
 
 	// Blinking
+	struct timeval now;
 	gettimeofday(&now, NULL);
 	if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
 		blinkShow = !blinkShow;
 		lastBlink = now;
 	}
 
-	// Draw the background color/image if needed
-	[self _drawBackgroundRect:rect];
+	// Where to start drawing?
+	int lineStart = rect.origin.y / lineHeight;
+	int lineEnd = lineStart + ceil(rect.size.height / lineHeight);
 
-	// Starting from which line?
-	lineOffset = rect.origin.y/lineHeight;
-
-	// How many lines do we need to draw?
-	numLines = ceil(rect.size.height/lineHeight);
+	// Ensure valid line ranges
+	if(lineStart < 0) lineStart = 0;
+	if(lineEnd > [dataSource numberOfLines]) lineEnd = [dataSource numberOfLines];
 
 	// Draw each line
-	for(i = 0; i < numLines; i++) {
-		[self _drawLine:(i + lineOffset) AtY:(lineOffset+i)*lineHeight];
+	for(int line = lineStart; line < lineEnd; line++) {
+		NSRect lineRect = [self visibleRect];
+		lineRect.origin.y = line*lineHeight;
+		lineRect.size.height = lineHeight;
+		if([self needsToDrawRect:lineRect]) {
+///			NSLog(@"drawing %d", line);
+			[self _drawLine:line AtY:line*lineHeight];
+		}
 	}
-	[dataSource resetDirty];
 
 	// Draw cursor
 	[self _drawCursor];
-
-	// Update state for next draw
-	forceUpdate=NO;
-	oldVisibleRect = [self visibleRect];
-	oldVisibleSet = NO;
-	oldStartX=startX; oldStartY=startY; oldEndX=endX; oldEndY=endY;
 }
 
 - (void)keyDown:(NSEvent *)event
@@ -1233,7 +1278,7 @@ static float strokeWidth, boldStrokeWidth;
 
     if([_delegate respondsToSelector: @selector(willHandleEvent:)] && [_delegate willHandleEvent: event])
         [_delegate handleEvent: event];
-	[self setNeedsDisplay: YES];
+	[self updateDirtyRects];
 	
 }
 
@@ -1323,7 +1368,7 @@ static float strokeWidth, boldStrokeWidth;
 	}
 	
 	selectMode = SELECT_CHAR;
-	[self setNeedsDisplay:YES];
+	[self updateDirtyRects];
 }
 
 - (void)mouseDragged:(NSEvent *)event
@@ -1406,7 +1451,7 @@ static float strokeWidth, boldStrokeWidth;
 		y--;
 	}
     if (y<0) y=0;
-    if (y>=[dataSource numberOfLines]) y=numberOfLines - 1;
+    if (y>=[dataSource numberOfLines]) y=[dataSource numberOfLines] - 1;
     
     switch (selectMode) {
         case SELECT_CHAR:
@@ -1450,7 +1495,7 @@ static float strokeWidth, boldStrokeWidth;
             break;
     }
 
-	[self setNeedsDisplay:YES];
+	[self updateDirtyRects];
 	//NSLog(@"(%d,%d)-(%d,%d)",startX,startY,endX,endY);
 }
 
@@ -1523,14 +1568,14 @@ static float strokeWidth, boldStrokeWidth;
 	startX = startY = 0;
 	endX = [dataSource width] - 1;
 	endY = [dataSource numberOfLines] - 1;
-	[self setNeedsDisplay: YES];
+	[self updateDirtyRects];
 }
 
 - (void) deselect
 {
 	if (startX>=0) {
 		startX = -1;
-		[self setNeedsDisplay: YES];
+		[self updateDirtyRects];
 	}
 }
 
@@ -2018,7 +2063,7 @@ static float strokeWidth, boldStrokeWidth;
     }
 	IM_INPUT_MARKEDRANGE = NSMakeRange(0,[markedText length]);
     IM_INPUT_SELRANGE = selRange;
-	[self setNeedsDisplay: YES];
+	[self updateDirtyRects];
 }
 
 - (void)unmarkText
@@ -2151,7 +2196,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setTransparency: (float) fVal
 {
 	transparency = fVal;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 - (BOOL) useTransparency
@@ -2162,7 +2207,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setUseTransparency: (BOOL) flag
 {
 	useTransparency = flag;
-	[self setForceUpdate:YES];
+	[self setNeedsDisplay:YES];
 }
 
 // service stuff
@@ -2205,62 +2250,13 @@ static float strokeWidth, boldStrokeWidth;
 //
 @implementation PTYTextView (Private)
 
-- (void) _drawBackgroundRect:(NSRect)rect
-{
-	NSRect leftMargin, rightMargin;
-	NSColor *aColor;
-	PTYScrollView* scrollView;
-	BOOL hasBGImage;
-	float alpha = useTransparency ? 1.0 - transparency : 1.0;
-
-	scrollView = (PTYScrollView*)[self enclosingScrollView];
-	hasBGImage =  [scrollView backgroundImage] != nil;
-
-	// Set the background color, used for drawing background and margins
-	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
-	aColor = [aColor colorWithAlphaComponent: alpha];
-	[aColor set];
-
-	// Redraw the entire background
-	if (forceUpdate) {
-		if ([[[dataSource session] parent] fullScreen]) {
-			[[[self window] contentView] lockFocus];
-			[[NSColor blackColor] set];
-			NSRectFill([[self window] frame]);
-			[[[self window] contentView] unlockFocus];
-		}
-		
-		if(hasBGImage) {
-			[scrollView drawBackgroundImageRect: rect];
-		}
-		else {
-			NSRectFill(rect);
-		}
-	}
-	// Redraw margins
-	else {
-		leftMargin = NSMakeRect(0, rect.origin.y, MARGIN, rect.size.height);
-		rightMargin = NSMakeRect(rect.size.width - MARGIN, rect.origin.y, MARGIN, rect.size.height);
-		if(hasBGImage) {
-			[scrollView drawBackgroundImageRect:leftMargin];
-			[scrollView drawBackgroundImageRect:rightMargin];
-		} else {
-			NSRectFill(leftMargin);
-			NSRectFill(rightMargin);
-		}
-	}
-}
-
 - (void) _drawLine:(int)line AtY:(float)curY
 {
 	int WIDTH, HEIGHT;
 	int j, k;
 	screen_char_t* theLine;
-	int startScreenLineIndex;
-	int oldTopLine, oldBottomLine;
 	float curX;
-	char *dirty = NULL;
-	BOOL need_draw, selected;
+	BOOL selected;
 	unsigned int bgcode = 0, fgcode = 0;
 	BOOL double_width;
 	BOOL reversed = [[dataSource terminal] screenMode];
@@ -2275,29 +2271,11 @@ static float strokeWidth, boldStrokeWidth;
 	HEIGHT = [dataSource height];
 
 	// Which line is our screen start?
-	startScreenLineIndex=[dataSource numberOfLines] - [dataSource height];
 
-	// Visible rectangle movement due to scrolling
-	oldTopLine = oldVisibleRect.origin.y / lineHeight;
-	oldBottomLine = oldTopLine + oldVisibleRect.size.height / lineHeight;
-
-	if(line >= [dataSource numberOfLines]) {
-		//NSLog(@"%s (0x%x): illegal line index %d >= %d", __PRETTY_FUNCTION__, self, line, [dataSource numberOfLines]);
-		return;
-	}
-	
 	// get the line
 	theLine = [dataSource getLineAtIndex:line];
 	//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
 	
-	// Get the dirty flags. If in a scrollback buffer assume not dirty
-	if (line < startScreenLineIndex) {
-		dirty = nil;
-	} else {
-		dirty=[dataSource dirty]+(line-startScreenLineIndex)*WIDTH;
-	}	
-
-	// Draw background for dirty characters here
 	// Contiguous sections of background with the same colour
 	// are combined into runs and draw as one operation
 	bgstart = -1;
@@ -2309,27 +2287,16 @@ static float strokeWidth, boldStrokeWidth;
 		}
 
 		selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
-		need_draw = (j != WIDTH) && (
-			(selected != [self _isCharSelectedInRow:line col:j checkOld:YES]) ||
-			(line < oldTopLine || line >= oldBottomLine) ||
-			(forceUpdate) ||
-			(dirty && (
-				dirty[j] ||
-				(j+1<WIDTH && dirty[j+1]) ||
-				(j>0 && dirty[j-1])
-			)) ||
-			(theLine[j].fg_color & BLINK_MASK)
-		);
 		double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
 
-		if(need_draw && bgstart < 0) {
+		if(j != WIDTH && bgstart < 0) {
 			// Start new run
 			bgstart = j;
 			bgcode = theLine[j].bg_color;
 			bgselected = selected;
 		}
 
-		if(need_draw && bgselected == selected && theLine[j].bg_color == bgcode) {
+		if(j != WIDTH && bgselected == selected && theLine[j].bg_color == bgcode) {
 			// Continue the run
 			j+=(double_width?2:1);
 		}
@@ -2978,19 +2945,18 @@ static float strokeWidth, boldStrokeWidth;
 			anIndex = x1;
 		}
 
-
-		[self _scrollToLine:endY];
-		[self setForceUpdate:YES];
-
 		// calculate index of start of found range
 		anIndex += foundRange.location;
 		startX = lastFindX = anIndex % [dataSource width];
 		startY = lastFindY = anIndex/[dataSource width];
-		
+
 		// end of found range
 		anIndex += foundRange.length - 1;
 		endX = anIndex % [dataSource width];
 		endY = anIndex/[dataSource width];
+
+		[self _scrollToLine:endY];
+		[self setNeedsDisplay:YES];
 
 		return (YES);
 	}

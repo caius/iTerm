@@ -1145,7 +1145,7 @@ NSString *sessionsKey = @"sessions";
 		_resizeInProgressFlag = NO;
 	}
 
-	[[[self currentSession] TEXTVIEW] setForceUpdate: YES];
+	[[[self currentSession] TEXTVIEW] setNeedsDisplay:YES];
 	[tabBarControl update];
 	
 }
@@ -1571,44 +1571,35 @@ NSString *sessionsKey = @"sessions";
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal windowDidBecomeKey:%@]",
+	NSLog(@"%s(%d):-[PseudoTerminal windowDidBecomeKey:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-    //[self selectSessionAtIndex: [self currentSessionIndex]];
-    [[iTermController sharedInstance] setCurrentTerminal: self];
-	
+	//[self selectSessionAtIndex: [self currentSessionIndex]];
+	[[iTermController sharedInstance] setCurrentTerminal: self];
+
 	if (_fullScreen) [self hideMenuBar];
-    
+
 	if ([NSFontPanel sharedFontPanelExists]) [[NSFontPanel sharedFontPanel] close];
-	
-    // update the cursor
-    [[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+
+	// update the cursor
+	[[[self currentSession] TEXTVIEW] updateDirtyRects];
 }
 
 - (void) windowDidResignKey: (NSNotification *)aNotification
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PseudoTerminal windowDidResignKey:%@]",
+	NSLog(@"%s(%d):-[PseudoTerminal windowDidResignKey:%@]",
 		  __FILE__, __LINE__, aNotification);
 #endif
-	
-    //[self windowDidResignMain: aNotification];
-	
+
+	//[self windowDidResignMain: aNotification];
+
 	if (_fullScreen) { 
-		/*NSWindow *keyWindow = [[NSApplication sharedApplication] keyWindow];
-		
-		if ([[iTermBookmarkController sharedInstance] window] == keyWindow ||
-			[[ITConfigPanelController singleInstance] window] == keyWindow ||
-			[[PreferencePanel sharedInstance] window] == keyWindow ||
-            ![[keyWindow screen] isEqual:[[self window] screen]])
-			[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
-		else
-			if (!_resizeInProgressFlag) [self toggleFullScreen: nil]; */
 		[NSMenu setMenuBarVisible: YES];
 	}
 	else {
 		// update the cursor
-		[[[self currentSession] TEXTVIEW] setNeedsDisplay: YES];
+		[[[self currentSession] TEXTVIEW] updateDirtyRects];
 	}
 }
 
@@ -2073,7 +2064,6 @@ NSString *sessionsKey = @"sessions";
 #endif
     
 	[[tabViewItem identifier] resetStatus];
-	[[[tabViewItem identifier] SCREEN] setDirty];
 	[[[tabViewItem identifier] TEXTVIEW] setNeedsDisplay: YES];
 	if (_fullScreen) {
 		[[[self window] contentView] lockFocus];
@@ -2243,8 +2233,7 @@ NSString *sessionsKey = @"sessions";
         [textviewImage setFlipped: YES];
         [textviewImage lockFocus];
         //draw the background flipped, which is actually the right way up
-        [[[tabViewItem identifier] TEXTVIEW] setForceUpdate: YES];
-        [[[tabViewItem identifier] TEXTVIEW] drawRect: viewRect];
+		[[[tabViewItem identifier] TEXTVIEW] drawRect:viewRect];
         [textviewImage unlockFocus];
         
         [viewImage lockFocus];

@@ -510,11 +510,10 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	if(dirty)
 		free(dirty);
 	dirty=(char*)malloc(height*width*sizeof(char));
+
+	// An immediate refresh is needed so that the size of TEXTVIEW can be
+	// adjusted to fit the new size
 	[self setDirty];
-    
-    // An immediate refresh is needed so that the size of TEXTVIEW can be adjusted to fit the new size
-    [display refresh];
- 
 }
 
 - (void) reset
@@ -1014,7 +1013,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	}
 	
 	[self setDirty];
-	[self updateScreen];
 }
 
 - (void) saveBuffer
@@ -2049,11 +2047,9 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 
 - (void)blink
 {
-	
-    if (memchr(dirty, 1, WIDTH*HEIGHT)) {
-        [self updateScreen];
-    }     
-	
+	if (memchr(dirty, 1, WIDTH*HEIGHT)) {
+		[display updateDirtyRects];
+	}
 }
 
 - (int) cursorX
@@ -2082,11 +2078,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 }
 
 
-- (void) updateScreen
-{
-    [display refresh];
-}
-
 - (char	*)dirty			
 {
 	return dirty; 
@@ -2101,7 +2092,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 - (void)setDirty
 {
 //	memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
-	[display setForceUpdate: YES];
+	[display setNeedsDisplay:YES];
 }
 
 - (int) scrollUpLines

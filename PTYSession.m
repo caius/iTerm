@@ -300,8 +300,6 @@ static NSImage *warningImage;
 
 - (void)writeTask:(NSData *)data
 {
-	[TEXTVIEW deselect];
-
 	// check if we want to send this input to all the sessions
     if([parent sendInputToAllSessions] == NO)
     {
@@ -741,7 +739,7 @@ static NSImage *warningImage;
     }
     
     // trigger an update of the display.
-    [SCREEN updateScreen];
+	[TEXTVIEW setNeedsDisplay:YES];
 }
 
 - (void)insertText:(NSString *)string
@@ -1455,7 +1453,7 @@ static NSImage *warningImage;
         backgroundImagePath = nil;
     }
 
-    [TEXTVIEW setForceUpdate: YES];
+    [TEXTVIEW setNeedsDisplay:YES];
 }
 
 
@@ -1806,7 +1804,7 @@ static NSImage *warningImage;
 - (void) tabViewWillRedraw: (NSNotification *) aNotification
 {
 	if([aNotification object] == [[self tabViewItem] tabView])
-		[TEXTVIEW setForceUpdate: YES];
+		[TEXTVIEW setNeedsDisplay:YES];
 }
 
 @end

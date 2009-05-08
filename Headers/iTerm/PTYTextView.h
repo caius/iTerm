@@ -68,17 +68,14 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
     NSDictionary *markedTextAttributes;
     NSAttributedString *markedText;
 	
-    BOOL CURSOR;
-	BOOL forceUpdate;
+	BOOL CURSOR;
+	BOOL drawAllowed;
 	
     // geometry
-    NSRect oldVisibleRect;
-    BOOL oldVisibleSet;
 	float lineHeight;
     float lineWidth;
 	float charWidth;
 	float charWidthWithoutSpacing, charHeightWithoutSpacing;
-	int numberOfLines;
     
     NSFont *font;
     NSFont *nafont;
@@ -210,7 +207,7 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 
 - (void) refresh;
 - (void) setFrameSize: (NSSize) aSize;
-- (void) setForceUpdate: (BOOL) flag;
+- (void) updateDirtyRects;
 - (void) showCursor;
 - (void) hideCursor;
 
@@ -294,7 +291,6 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 				 endX: (int *) endx 
 				 endY: (int *) endy;
 - (NSString *) _getURLForX: (int) x y: (int) y;
-- (void) _drawBackgroundRect:(NSRect)rect;
 - (void) _drawLine:(int)line AtY:(float)curY;
 - (void) _drawCursor;
 - (void) _drawCharacter:(unichar)c fgColor:(int)fg AtX:(float)X Y:(float)Y doubleWidth:(BOOL) dw;

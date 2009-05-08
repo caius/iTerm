@@ -214,14 +214,4 @@
     }
 }
 
-- (void)reflectScrolledClipView:(NSClipView *)aClipView
-{
-	[super reflectScrolledClipView: aClipView];
-	if(!OSX_LEOPARDORLATER) {
-		// OS releases before Leopard need to do a complete redraw
-		[[self documentView] setForceUpdate: YES];
-	}
-}
-
-
 @end

@@ -1,3 +1,14 @@
+2009-05-08 delx
+	* PTYTextView now uses the Cocoa drawing machinery as Apple intended.
+	  This means dirty flagged chars are converted into dirty rectangles.
+	  No more forceUpdate, drawRect draws the rectangle it is given. It does
+	  check needsToDrawRect for each line to avoid overdrawing.  This should
+	  hopefully make drawing more reliable on Tiger and Leopard.
+	* Selected text will now be invalidated only one of the characters in the
+	  selection is changed.
+	* The end result of these changes should be fast drawing on all OSes
+	  with all the features of previous versions restored.
+
 2009-04-15 delx
 	* Fixed selection highlighting when using background images (#2762076)
 

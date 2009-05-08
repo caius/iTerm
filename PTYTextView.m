@@ -2252,42 +2252,43 @@ static float strokeWidth, boldStrokeWidth;
 
 - (void) _drawLine:(int)line AtY:(float)curY
 {
-	int WIDTH, HEIGHT;
-	int j, k;
-	screen_char_t* theLine;
-	float curX;
-	BOOL selected;
-	unsigned int bgcode = 0, fgcode = 0;
-	BOOL double_width;
-	BOOL reversed = [[dataSource terminal] screenMode];
-	int bgstart;
-	BOOL bgselected = NO;
-	BOOL hasBGImage = [(PTYScrollView *)[self enclosingScrollView] backgroundImage] != nil;
+	int WIDTH = [dataSource width];
+	screen_char_t* theLine = [dataSource getLineAtIndex:line];
+	PTYScrollView* scrollView = (PTYScrollView*)[self enclosingScrollView];
+	BOOL hasBGImage = [scrollView backgroundImage] != nil;
 	float alpha = useTransparency ? 1.0 - transparency : 1.0;
-	NSColor *aColor;
-	NSRect bgRect;
-
-	WIDTH = [dataSource width];
-	HEIGHT = [dataSource height];
-
-	// Which line is our screen start?
-
-	// get the line
-	theLine = [dataSource getLineAtIndex:line];
-	//NSLog(@"the line = '%@'", [dataSource getLineString:theLine]);
+	BOOL reversed = [[dataSource terminal] screenMode];
+	NSColor *aColor = nil;
 	
+	// Redraw margins
+	NSRect leftMargin = NSMakeRect(0, curY, MARGIN, lineHeight);
+	NSRect rightMargin = leftMargin;
+	leftMargin.origin.x = [self visibleRect].size.width - MARGIN;
+	aColor = [self colorForCode:DEFAULT_BG_COLOR_CODE];
+	aColor = [aColor colorWithAlphaComponent:alpha];
+	[aColor set];
+	if(hasBGImage) {
+		[scrollView drawBackgroundImageRect:leftMargin];
+		[scrollView drawBackgroundImageRect:rightMargin];
+	} else {
+		NSRectFill(leftMargin);
+		NSRectFill(rightMargin);
+	}
+
 	// Contiguous sections of background with the same colour
 	// are combined into runs and draw as one operation
-	bgstart = -1;
-	j = 0;
+	int bgstart = -1;
+	int j = 0;
+	unsigned int bgcode = 0, fgcode = 0;
+	BOOL bgselected = NO;
 	while(j <= WIDTH) {
 		if(theLine[j].ch == 0xffff) {
 			j++;
 			continue;
 		}
 
-		selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
-		double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
+		BOOL selected = [self _isCharSelectedInRow:line col:j checkOld:NO];
+		BOOL double_width = j<WIDTH-1 && (theLine[j+1].ch == 0xffff);
 
 		if(j != WIDTH && bgstart < 0) {
 			// Start new run
@@ -2302,22 +2303,22 @@ static float strokeWidth, boldStrokeWidth;
 		}
 		else if(bgstart >= 0) {
 			// This run is finished, draw it
-			bgRect = NSMakeRect(floor(MARGIN+bgstart*charWidth),curY,ceil((j-bgstart)*charWidth),lineHeight);
+			NSRect bgRect = NSMakeRect(floor(MARGIN+bgstart*charWidth),curY,ceil((j-bgstart)*charWidth),lineHeight);
 
 			if(hasBGImage) {
 				[(PTYScrollView *)[self enclosingScrollView] drawBackgroundImageRect: bgRect];
 			}
 			if(!hasBGImage || bgcode != DEFAULT_BG_COLOR_CODE || bgselected) {
 				aColor = bgselected ? selectionColor : [self colorForCode: (reversed && bgcode == DEFAULT_BG_COLOR_CODE) ? DEFAULT_FG_COLOR_CODE: bgcode];
-				aColor = [aColor colorWithAlphaComponent: alpha];
+				aColor = [aColor colorWithAlphaComponent:alpha];
 				[aColor set];
 				NSRectFillUsingOperation(bgRect, hasBGImage?NSCompositeSourceOver:NSCompositeCopy);
 			}
 
 			// Now draw characters over the top
-			curX = MARGIN + bgstart*charWidth;
+			float curX = MARGIN + bgstart*charWidth;
 
-			for(k = bgstart; k < j; k++) {
+			for(int k = bgstart; k < j; k++) {
 				if(theLine[k].ch == 0xffff) continue;
 				double_width = k<WIDTH-1 && (theLine[k+1].ch == 0xffff);
 

@@ -468,12 +468,12 @@ static NSString *NoHandler = @"<No Handler>";
 
 // The following are preferences with no UI, but accessible via "defaults read/write"
 // examples:
-//  defaults write iTerm UseUnevenTabs -bool true
-//  defaults write iTerm MinTabWidth -int 100        
-//  defaults write iTerm MinCompactTabWidth -int 120
-//  defaults write iTerm OptimumTabWidth -int 100
-//  defaults write iTerm StrokeWidth -float -1
-//  defaults write iTerm BoldStrokeWidth -float -3
+//  defaults write net.sourceforge.iTerm UseUnevenTabs -bool true
+//  defaults write net.sourceforge.iTerm MinTabWidth -int 100        
+//  defaults write net.sourceforge.iTerm MinCompactTabWidth -int 120
+//  defaults write net.sourceforge.iTerm OptimumTabWidth -int 100
+//  defaults write net.sourceforge.iTerm StrokeWidth -float -1
+//  defaults write net.sourceforge.iTerm BoldStrokeWidth -float -3
 
 - (BOOL) useUnevenTabs
 {

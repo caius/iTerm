@@ -85,4 +85,5 @@
 
 - (void) processRead;
 - (void) processWrite;
+- (NSString *)getWorkingDirectory;
 @end

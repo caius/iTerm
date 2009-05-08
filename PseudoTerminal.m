@@ -2848,7 +2848,13 @@ NSString *sessionsKey = @"sessions";
     // NSLog(@"PseudoTerminal: -addInSessions: 0x%x", object);
     PTYSession *aSession;
     NSString *terminalProfile;
+    NSString *oldCWD = nil;
     
+    /* Get currently selected tabviewitem */
+    if ([self currentSession]) {
+        oldCWD = [[[self currentSession] SHELL] getWorkingDirectory];
+    }
+
     terminalProfile = [addressbookEntry objectForKey: KEY_TERMINAL_PROFILE];
 	if(terminalProfile == nil)
 		terminalProfile = [[iTermTerminalProfileMgr singleInstance] defaultProfileName];	
@@ -2875,8 +2881,13 @@ NSString *sessionsKey = @"sessions";
         [PseudoTerminal breakDown:cmd cmdPath:&cmd cmdArgs:&arg];
         
         pwd = [addressbookEntry objectForKey: KEY_WORKING_DIRECTORY];
-        if([pwd length] <= 0)
-            pwd = NSHomeDirectory();
+        if([pwd length] <= 0) {
+            if (oldCWD) {
+                pwd = oldCWD;
+            } else {
+                pwd = NSHomeDirectory();
+            }
+        }
         NSDictionary *env=[NSDictionary dictionaryWithObject: pwd forKey:@"PWD"];
         
         [self setCurrentSessionName:name];	

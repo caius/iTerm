@@ -8,6 +8,10 @@
 	  selection is changed.
 	* The end result of these changes should be fast drawing on all OSes
 	  with all the features of previous versions restored.
+	* If no working directory is specified then new tabs will open in the
+	  same directory as the previous session. This doesn't work with the
+	  default settings yet. Need to execute the user's login shell directly
+	  rather than using 'login -fp' to do it for us.
 
 2009-04-15 delx
 	* Fixed selection highlighting when using background images (#2762076)

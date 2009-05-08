@@ -441,9 +441,6 @@ static NSImage *warningImage;
     
     //NSLog(@"event:%@ (%x+%x)[%@][%@]:%x(%c) <%d>", event,modflag,keycode,keystr,unmodkeystr,unicode,unicode,(modflag & NSNumericPadKeyMask));
     
-    // Clear the bell
-    [self setBell: NO];
-	
 	// Check if we have a custom key mapping for this event
 	keyBindingAction = [[iTermKeyBindingMgr singleInstance] actionForKeyCode: unmodunicode 
 																   modifiers: modflag 
@@ -764,13 +761,8 @@ static NSImage *warningImage;
 		  __FILE__, __LINE__, mstring);
 #endif
 	
-    //if([TERMINAL encoding] != NSUTF8StringEncoding) {
-    //    data = [mstring dataUsingEncoding:[TERMINAL encoding]
-    //                allowLossyConversion:YES];
-    //} else {
-    //    char *fs_str = (char *)[mstring fileSystemRepresentation];
-    //    data = [NSData dataWithBytes:fs_str length:strlen(fs_str)];
-    //}
+    // Clear the bell
+    [self setBell: NO];
     
     data = [mstring dataUsingEncoding:[TERMINAL encoding]
 				 allowLossyConversion:YES];

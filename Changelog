@@ -12,6 +12,7 @@
 	  same directory as the previous session. This doesn't work with the
 	  default settings yet. Need to execute the user's login shell directly
 	  rather than using 'login -fp' to do it for us.
+	* Clear the bell symbol upon any key press
 
 2009-04-15 delx
 	* Fixed selection highlighting when using background images (#2762076)

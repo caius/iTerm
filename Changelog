@@ -13,6 +13,7 @@
 	  default settings yet. Need to execute the user's login shell directly
 	  rather than using 'login -fp' to do it for us.
 	* Clear the bell symbol upon any key press
+	* Converted to XCode 3.1 project format and IB 3.0 XIBs
 
 2009-04-15 delx
 	* Fixed selection highlighting when using background images (#2762076)

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -26,7 +26,6 @@
 		874206060564168A00CFC3F1 /* ITAddressBookMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = 20E74F4804E9089700000106 /* ITAddressBookMgr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		874206070564168A00CFC3F1 /* ITViewLocalizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 20B8892A04E9342100000106 /* ITViewLocalizer.h */; };
 		874206080564168A00CFC3F1 /* ITConfigPanelController.h in Headers */ = {isa = PBXBuildFile; fileRef = 20B8891904E924CD00000106 /* ITConfigPanelController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		8742060C0564168A00CFC3F1 /* PseudoTerminal.nib in Resources */ = {isa = PBXBuildFile; fileRef = E813FB86029754BB03A80106 /* PseudoTerminal.nib */; };
 		8742060D0564168A00CFC3F1 /* iTerm.png in Resources */ = {isa = PBXBuildFile; fileRef = FBBB8B60039FC04E01F955DB /* iTerm.png */; };
 		8742060E0564168A00CFC3F1 /* addressbook.png in Resources */ = {isa = PBXBuildFile; fileRef = FB094A14033D58AE01F955DB /* addressbook.png */; };
 		8742060F0564168A00CFC3F1 /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = FB094A16033D58B601F955DB /* close.png */; };
@@ -38,9 +37,6 @@
 		874206170564168A00CFC3F1 /* iTerm.scriptSuite in Resources */ = {isa = PBXBuildFile; fileRef = DD48F1C703EBB1C400A8A065 /* iTerm.scriptSuite */; };
 		874206180564168A00CFC3F1 /* iTerm.scriptTerminology in Resources */ = {isa = PBXBuildFile; fileRef = DD48F1CC03EBB20500A8A065 /* iTerm.scriptTerminology */; };
 		874206190564168A00CFC3F1 /* iTerm.strings in Resources */ = {isa = PBXBuildFile; fileRef = FB151F2903648AC401F955DB /* iTerm.strings */; };
-		8742061B0564168A00CFC3F1 /* PreferencePanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 870EAAB504325A880073D10E /* PreferencePanel.nib */; };
-		8742061C0564168A00CFC3F1 /* FindPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 870BCD83047070AC0073D10E /* FindPanel.nib */; };
-		8742061D0564168A00CFC3F1 /* ITConfigPanel.nib in Resources */ = {isa = PBXBuildFile; fileRef = 8723EDEC04EAADBB0073D10E /* ITConfigPanel.nib */; };
 		8742061E0564168A00CFC3F1 /* iTerm-Aqua.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DD9C1AE2051F45C000A8A065 /* iTerm-Aqua.jpg */; };
 		874206200564168A00CFC3F1 /* PseudoTerminal.m in Sources */ = {isa = PBXBuildFile; fileRef = FBD0AD0A0337A5B701F955DB /* PseudoTerminal.m */; };
 		874206210564168A00CFC3F1 /* PTYScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CF755F026DDA6303A80106 /* PTYScrollView.m */; };
@@ -62,7 +58,6 @@
 		874206390564168A00CFC3F1 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0464AB2F006CD2EC7F000001 /* AppKit.framework */; };
 		8742063A0564168A00CFC3F1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0464AB30006CD2EC7F000001 /* Foundation.framework */; };
 		874206490564169600CFC3F1 /* iTermApplicationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 20D5CC6304E7AA0500000106 /* iTermApplicationDelegate.h */; };
-		8742064B0564169600CFC3F1 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = E813FB7D0297522703A80106 /* MainMenu.nib */; };
 		8742064C0564169600CFC3F1 /* iTerm Help in Resources */ = {isa = PBXBuildFile; fileRef = DD8CF2DD03CDD34B00A8A065 /* iTerm Help */; };
 		8742064D0564169600CFC3F1 /* iTerm.icns in Resources */ = {isa = PBXBuildFile; fileRef = E8EDCE69015E0A5703000001 /* iTerm.icns */; };
 		8742064F0564169600CFC3F1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E8CF757F026DDAD703A80106 /* main.m */; };
@@ -73,6 +68,13 @@
 		8742069F0564170000CFC3F1 /* iTerm.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 874206430564168A00CFC3F1 /* iTerm.framework */; };
 		8787B0DA05FD160F00901149 /* iTermProfileWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8787B0D805FD160F00901149 /* iTermProfileWindowController.m */; };
 		8787B14005FD191400901149 /* iTermProfileWindowController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8787B13F05FD191400901149 /* iTermProfileWindowController.h */; };
+		9325FF480FB54DF1004EC67C /* PseudoTerminal.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9325FF3C0FB54DF1004EC67C /* PseudoTerminal.xib */; };
+		9325FF490FB54DF1004EC67C /* ProfilesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9325FF3E0FB54DF1004EC67C /* ProfilesWindow.xib */; };
+		9325FF4A0FB54DF1004EC67C /* PreferencePanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9325FF400FB54DF1004EC67C /* PreferencePanel.xib */; };
+		9325FF4B0FB54DF1004EC67C /* ITConfigPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9325FF420FB54DF1004EC67C /* ITConfigPanel.xib */; };
+		9325FF4C0FB54DF1004EC67C /* FindPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9325FF440FB54DF1004EC67C /* FindPanel.xib */; };
+		9325FF4D0FB54DF1004EC67C /* Bookmarks.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9325FF460FB54DF1004EC67C /* Bookmarks.xib */; };
+		9325FF500FB54E00004EC67C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9325FF4E0FB54E00004EC67C /* MainMenu.xib */; };
 		DD02573F09CB9399008F320C /* PSMAquaTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02572409CB9398008F320C /* PSMAquaTabStyle.h */; };
 		DD02574009CB9399008F320C /* PSMAquaTabStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = DD02572509CB9398008F320C /* PSMAquaTabStyle.m */; };
 		DD02574109CB9399008F320C /* PSMMetalTabStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = DD02572609CB9398008F320C /* PSMMetalTabStyle.h */; };
@@ -172,8 +174,6 @@
 		F69E816F0ABB4A2B001EC0FF /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = F69E79110AB8CDB3001EC0FF /* Growl.framework */; };
 		F6B077100ADDB7D400F4BB37 /* iTermBookmarkController.h in Headers */ = {isa = PBXBuildFile; fileRef = F6B0770E0ADDB7D400F4BB37 /* iTermBookmarkController.h */; };
 		F6B077110ADDB7D400F4BB37 /* iTermBookmarkController.m in Sources */ = {isa = PBXBuildFile; fileRef = F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */; };
-		F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */; };
-		F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */ = {isa = PBXBuildFile; fileRef = F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */; };
 		F6C9AFF00EA70D0200D318A8 /* sort.png in Resources */ = {isa = PBXBuildFile; fileRef = F6C9AFEF0EA70D0200D318A8 /* sort.png */; };
 		F6CDC4E70AE6D3E2005E7D4F /* folder.png in Resources */ = {isa = PBXBuildFile; fileRef = F6CDC4E60AE6D3E2005E7D4F /* folder.png */; };
 		F6DA0AFD0AF066EE0098EFEB /* edit.png in Resources */ = {isa = PBXBuildFile; fileRef = F6DA0AFC0AF066EE0098EFEB /* edit.png */; };
@@ -239,9 +239,6 @@
 		20D5CC6404E7AA0500000106 /* iTermApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermApplicationDelegate.m; sourceTree = "<group>"; };
 		20E74F4804E9089700000106 /* ITAddressBookMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ITAddressBookMgr.h; sourceTree = "<group>"; };
 		20E74F4904E9089700000106 /* ITAddressBookMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ITAddressBookMgr.m; sourceTree = "<group>"; };
-		870BCD84047070AC0073D10E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/FindPanel.nib; sourceTree = "<group>"; };
-		870EAAB604325A880073D10E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/PreferencePanel.nib; sourceTree = "<group>"; };
-		8723EDED04EAADBB0073D10E /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/ITConfigPanel.nib; sourceTree = "<group>"; };
 		872EBC5304E42E320073D10E /* NSStringITerm.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NSStringITerm.h; path = Headers/iTerm/NSStringITerm.h; sourceTree = "<group>"; };
 		872EBC5404E42E320073D10E /* PTYTextView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYTextView.h; path = Headers/iTerm/PTYTextView.h; sourceTree = "<group>"; };
 		872EBC5704E42E320073D10E /* PTYTabView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PTYTabView.h; path = Headers/iTerm/PTYTabView.h; sourceTree = "<group>"; };
@@ -262,6 +259,13 @@
 		8786A96E052CEC220073D10E /* script.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = script.png; path = images/script.png; sourceTree = "<group>"; };
 		8787B0D805FD160F00901149 /* iTermProfileWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermProfileWindowController.m; sourceTree = "<group>"; };
 		8787B13F05FD191400901149 /* iTermProfileWindowController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTermProfileWindowController.h; path = Headers/iTerm/iTermProfileWindowController.h; sourceTree = "<group>"; };
+		9325FF3D0FB54DF1004EC67C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/PseudoTerminal.xib; sourceTree = "<group>"; };
+		9325FF3F0FB54DF1004EC67C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/ProfilesWindow.xib; sourceTree = "<group>"; };
+		9325FF410FB54DF1004EC67C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/PreferencePanel.xib; sourceTree = "<group>"; };
+		9325FF430FB54DF1004EC67C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/ITConfigPanel.xib; sourceTree = "<group>"; };
+		9325FF450FB54DF1004EC67C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/FindPanel.xib; sourceTree = "<group>"; };
+		9325FF470FB54DF1004EC67C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/Bookmarks.xib; sourceTree = "<group>"; };
+		9325FF4F0FB54E00004EC67C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		DD02572409CB9398008F320C /* PSMAquaTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMAquaTabStyle.h; sourceTree = "<group>"; };
 		DD02572509CB9398008F320C /* PSMAquaTabStyle.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PSMAquaTabStyle.m; sourceTree = "<group>"; };
 		DD02572609CB9398008F320C /* PSMMetalTabStyle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = PSMMetalTabStyle.h; sourceTree = "<group>"; };
@@ -310,13 +314,11 @@
 		DD8EC82F06095CDA0085A27D /* Tree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tree.m; sourceTree = "<group>"; };
 		DD8EC958060980C90085A27D /* Tree.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Tree.h; path = Headers/iTerm/Tree.h; sourceTree = "<group>"; };
 		DD9C1AE2051F45C000A8A065 /* iTerm-Aqua.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "iTerm-Aqua.jpg"; path = "images/iTerm-Aqua.jpg"; sourceTree = "<group>"; };
-		DDB79A9A0612BBBF00EAE159 /* Profiles.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = Profiles.plist; sourceTree = "<group>"; };
+		DDB79A9A0612BBBF00EAE159 /* Profiles.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Profiles.plist; sourceTree = "<group>"; };
 		DDDB7ABD05D7736600E197C2 /* iTermKeyBindingMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermKeyBindingMgr.m; sourceTree = "<group>"; };
 		DDDB7AD605D773B400E197C2 /* iTermKeyBindingMgr.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTermKeyBindingMgr.h; path = Headers/iTerm/iTermKeyBindingMgr.h; sourceTree = "<group>"; };
 		DDF0FD63062916F70080EF74 /* iTermApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermApplication.h; sourceTree = "<group>"; };
 		DDF0FD64062916F70080EF74 /* iTermApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermApplication.m; sourceTree = "<group>"; };
-		E813FB7E0297522703A80106 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
-		E813FB87029754BB03A80106 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/PseudoTerminal.nib; sourceTree = "<group>"; };
 		E8A66F030272453F03A80106 /* iTermController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = iTermController.m; sourceTree = "<group>"; };
 		E8CF755F026DDA6303A80106 /* PTYScrollView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYScrollView.m; sourceTree = "<group>"; };
 		E8CF7560026DDA6303A80106 /* PTYTask.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = PTYTask.m; sourceTree = "<group>"; };
@@ -372,14 +374,12 @@
 		F69E77240AB78C26001EC0FF /* GrowlVersionUtilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GrowlVersionUtilities.h; path = Growl/GrowlVersionUtilities.h; sourceTree = "<group>"; };
 		F69E77260AB78C26001EC0FF /* NSURLAdditions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NSURLAdditions.h; path = Growl/NSURLAdditions.h; sourceTree = "<group>"; };
 		F69E77270AB78C26001EC0FF /* NSURLAdditions.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = NSURLAdditions.m; path = Growl/NSURLAdditions.m; sourceTree = "<group>"; };
-		F69E774A0AB78CDB001EC0FF /* Growl-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Growl-Info.plist"; sourceTree = "<group>"; };
+		F69E774A0AB78CDB001EC0FF /* Growl-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Growl-Info.plist"; sourceTree = "<group>"; };
 		F69E788C0AB7AC6D001EC0FF /* iTermGrowlDelegate.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = iTermGrowlDelegate.m; sourceTree = "<group>"; };
 		F69E78910AB7AC85001EC0FF /* iTermGrowlDelegate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = iTermGrowlDelegate.h; sourceTree = "<group>"; };
 		F69E79110AB8CDB3001EC0FF /* Growl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Growl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6B0770E0ADDB7D400F4BB37 /* iTermBookmarkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermBookmarkController.h; sourceTree = "<group>"; };
 		F6B0770F0ADDB7D400F4BB37 /* iTermBookmarkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermBookmarkController.m; sourceTree = "<group>"; };
-		F6B0788F0ADDF1BE00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/Bookmarks.nib; sourceTree = "<group>"; };
-		F6B07D980ADE1B9B00F4BB37 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/ProfilesWindow.nib; sourceTree = "<group>"; };
 		F6C9AFEF0EA70D0200D318A8 /* sort.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sort.png; path = images/sort.png; sourceTree = "<group>"; };
 		F6CDC4E60AE6D3E2005E7D4F /* folder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = folder.png; path = images/folder.png; sourceTree = "<group>"; };
 		F6DA0AFC0AF066EE0098EFEB /* edit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = edit.png; path = images/edit.png; sourceTree = "<group>"; };
@@ -534,13 +534,13 @@
 		0464AB22006CD2EC7F000001 /* Interfaces */ = {
 			isa = PBXGroup;
 			children = (
-				E813FB7D0297522703A80106 /* MainMenu.nib */,
-				E813FB86029754BB03A80106 /* PseudoTerminal.nib */,
-				870EAAB504325A880073D10E /* PreferencePanel.nib */,
-				870BCD83047070AC0073D10E /* FindPanel.nib */,
-				8723EDEC04EAADBB0073D10E /* ITConfigPanel.nib */,
-				F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */,
-				F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */,
+				9325FF4E0FB54E00004EC67C /* MainMenu.xib */,
+				9325FF3C0FB54DF1004EC67C /* PseudoTerminal.xib */,
+				9325FF3E0FB54DF1004EC67C /* ProfilesWindow.xib */,
+				9325FF400FB54DF1004EC67C /* PreferencePanel.xib */,
+				9325FF420FB54DF1004EC67C /* ITConfigPanel.xib */,
+				9325FF440FB54DF1004EC67C /* FindPanel.xib */,
+				9325FF460FB54DF1004EC67C /* Bookmarks.xib */,
 				E8EDCE69015E0A5703000001 /* iTerm.icns */,
 				FBBB8B60039FC04E01F955DB /* iTerm.png */,
 				DD9C1AE2051F45C000A8A065 /* iTerm-Aqua.jpg */,
@@ -912,7 +912,7 @@
 		0464AB0C006CD2EC7F000001 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = BB024D39096EE4080021E793 /* Build configuration list for PBXProject "iTerm" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -941,7 +941,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8742060C0564168A00CFC3F1 /* PseudoTerminal.nib in Resources */,
 				8742060D0564168A00CFC3F1 /* iTerm.png in Resources */,
 				8742060E0564168A00CFC3F1 /* addressbook.png in Resources */,
 				8742060F0564168A00CFC3F1 /* close.png in Resources */,
@@ -953,9 +952,6 @@
 				874206170564168A00CFC3F1 /* iTerm.scriptSuite in Resources */,
 				874206180564168A00CFC3F1 /* iTerm.scriptTerminology in Resources */,
 				874206190564168A00CFC3F1 /* iTerm.strings in Resources */,
-				8742061B0564168A00CFC3F1 /* PreferencePanel.nib in Resources */,
-				8742061C0564168A00CFC3F1 /* FindPanel.nib in Resources */,
-				8742061D0564168A00CFC3F1 /* ITConfigPanel.nib in Resources */,
 				8742061E0564168A00CFC3F1 /* iTerm-Aqua.jpg in Resources */,
 				DD57633105653C2E00F1905E /* iTerm_Framework.plist in Resources */,
 				DDB79A9B0612BBBF00EAE159 /* Profiles.plist in Resources */,
@@ -981,10 +977,14 @@
 				DD02578B09CB93C2008F320C /* TabNewMetalPressed.png in Resources */,
 				DD02578C09CB93C2008F320C /* TabNewMetalRollover.png in Resources */,
 				DD02578D09CB93C2008F320C /* Warning.png in Resources */,
-				F6B078900ADDF1BE00F4BB37 /* Bookmarks.nib in Resources */,
-				F6B07D990ADE1B9B00F4BB37 /* ProfilesWindow.nib in Resources */,
 				F6DA0AFD0AF066EE0098EFEB /* edit.png in Resources */,
 				F6C9AFF00EA70D0200D318A8 /* sort.png in Resources */,
+				9325FF480FB54DF1004EC67C /* PseudoTerminal.xib in Resources */,
+				9325FF490FB54DF1004EC67C /* ProfilesWindow.xib in Resources */,
+				9325FF4A0FB54DF1004EC67C /* PreferencePanel.xib in Resources */,
+				9325FF4B0FB54DF1004EC67C /* ITConfigPanel.xib in Resources */,
+				9325FF4C0FB54DF1004EC67C /* FindPanel.xib in Resources */,
+				9325FF4D0FB54DF1004EC67C /* Bookmarks.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -993,11 +993,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F638C2620AD483BF00BEE23D /* iTerm.strings in Resources */,
-				8742064B0564169600CFC3F1 /* MainMenu.nib in Resources */,
 				8742064C0564169600CFC3F1 /* iTerm Help in Resources */,
 				8742064D0564169600CFC3F1 /* iTerm.icns in Resources */,
 				DD57633705653C5F00F1905E /* iTerm.plist in Resources */,
 				F6CDC4E70AE6D3E2005E7D4F /* folder.png in Resources */,
+				9325FF500FB54E00004EC67C /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1116,28 +1116,60 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		870BCD83047070AC0073D10E /* FindPanel.nib */ = {
+		9325FF3C0FB54DF1004EC67C /* PseudoTerminal.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				870BCD84047070AC0073D10E /* English */,
+				9325FF3D0FB54DF1004EC67C /* English */,
 			);
-			name = FindPanel.nib;
+			name = PseudoTerminal.xib;
 			sourceTree = "<group>";
 		};
-		870EAAB504325A880073D10E /* PreferencePanel.nib */ = {
+		9325FF3E0FB54DF1004EC67C /* ProfilesWindow.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				870EAAB604325A880073D10E /* English */,
+				9325FF3F0FB54DF1004EC67C /* English */,
 			);
-			name = PreferencePanel.nib;
+			name = ProfilesWindow.xib;
 			sourceTree = "<group>";
 		};
-		8723EDEC04EAADBB0073D10E /* ITConfigPanel.nib */ = {
+		9325FF400FB54DF1004EC67C /* PreferencePanel.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				8723EDED04EAADBB0073D10E /* English */,
+				9325FF410FB54DF1004EC67C /* English */,
 			);
-			name = ITConfigPanel.nib;
+			name = PreferencePanel.xib;
+			sourceTree = "<group>";
+		};
+		9325FF420FB54DF1004EC67C /* ITConfigPanel.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9325FF430FB54DF1004EC67C /* English */,
+			);
+			name = ITConfigPanel.xib;
+			sourceTree = "<group>";
+		};
+		9325FF440FB54DF1004EC67C /* FindPanel.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9325FF450FB54DF1004EC67C /* English */,
+			);
+			name = FindPanel.xib;
+			sourceTree = "<group>";
+		};
+		9325FF460FB54DF1004EC67C /* Bookmarks.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9325FF470FB54DF1004EC67C /* English */,
+			);
+			name = Bookmarks.xib;
+			sourceTree = "<group>";
+		};
+		9325FF4E0FB54E00004EC67C /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9325FF4F0FB54E00004EC67C /* English */,
+			);
+			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
 		DD48F1CC03EBB20500A8A065 /* iTerm.scriptTerminology */ = {
@@ -1154,38 +1186,6 @@
 				DD8CF2DE03CDD34C00A8A065 /* iTerm Help */,
 			);
 			name = "iTerm Help";
-			sourceTree = "<group>";
-		};
-		E813FB7D0297522703A80106 /* MainMenu.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E813FB7E0297522703A80106 /* English */,
-			);
-			name = MainMenu.nib;
-			sourceTree = "<group>";
-		};
-		E813FB86029754BB03A80106 /* PseudoTerminal.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E813FB87029754BB03A80106 /* English */,
-			);
-			name = PseudoTerminal.nib;
-			sourceTree = "<group>";
-		};
-		F6B0788E0ADDF1BE00F4BB37 /* Bookmarks.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F6B0788F0ADDF1BE00F4BB37 /* English */,
-			);
-			name = Bookmarks.nib;
-			sourceTree = "<group>";
-		};
-		F6B07D970ADE1B9B00F4BB37 /* ProfilesWindow.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F6B07D980ADE1B9B00F4BB37 /* English */,
-			);
-			name = ProfilesWindow.nib;
 			sourceTree = "<group>";
 		};
 		FB151F2903648AC401F955DB /* iTerm.strings */ = {
@@ -1422,7 +1422,7 @@
 				GENERATE_PROFILING_CODE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = macosx10.4;
 			};
 			name = Development;
 		};
@@ -1440,7 +1440,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = macosx10.4;
 			};
 			name = Deployment;
 		};
@@ -1458,7 +1458,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = macosx10.4;
 			};
 			name = Default;
 		};
@@ -1480,7 +1480,6 @@
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				JAVA_COMPILER_DEBUGGING_SYMBOLS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
-				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = (
 					"-seg1addr",
@@ -1530,7 +1529,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = iTerm.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
-				OPTIMIZATION_CFLAGS = "-O3";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = iTerm;
@@ -1557,7 +1555,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.2;
 				PREBINDING = YES;
-				SDKROOT = /Developer/SDKs/MacOSX10.3.9.sdk;
+				SDKROOT = macosx10.3.9;
 			};
 			name = "Deployment <= 10.3";
 		};

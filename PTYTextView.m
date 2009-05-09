@@ -593,6 +593,14 @@ static float strokeWidth, boldStrokeWidth;
 	int height = [dataSource numberOfLines] * lineHeight;
 	NSRect frame = [self frame];
 
+	// Blinking
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	if(now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
+		blinkShow = !blinkShow;
+		lastBlink = now;
+	}
+
 	// Grow to allow space for drawing the new lines
 	if(height != frame.size.height) {
 		// XXX - EPIC HACK below
@@ -750,14 +758,6 @@ static float strokeWidth, boldStrokeWidth;
 	// Configure graphics
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	[[NSGraphicsContext currentContext] setCompositingOperation: NSCompositeCopy];
-
-	// Blinking
-	struct timeval now;
-	gettimeofday(&now, NULL);
-	if (now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
-		blinkShow = !blinkShow;
-		lastBlink = now;
-	}
 
 	// Where to start drawing?
 	int lineStart = rect.origin.y / lineHeight;
@@ -2424,9 +2424,9 @@ static float strokeWidth, boldStrokeWidth;
 					NSRectFill(NSMakeRect(curX, curY+lineHeight-2, ceil(cursorWidth*(double_width?2:1)), 2));
 					break;
 			}
-
-			([dataSource dirty]+y1*WIDTH)[x1] = 1; //cursor loc is dirty
 		}
+
+		([dataSource dirty]+y1*WIDTH)[x1] = 1; //cursor loc is dirty
 	}
 
 	oldCursorX = x1;

@@ -14,6 +14,8 @@
 	  rather than using 'login -fp' to do it for us.
 	* Clear the bell symbol upon any key press
 	* Converted to XCode 3.1 project format and IB 3.0 XIBs
+	* Report as xterm patch level 95 so Vim detects ttymouse=xterm2, also
+	  increased default refresh rate.
 
 2009-04-15 delx
 	* Fixed selection highlighting when using background images (#2762076)

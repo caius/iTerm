@@ -125,7 +125,7 @@
 // Device Attribute : VT100 with Advanced Video Option
 #define REPORT_WHATAREYOU    "\033[?1;2c"
 // Secondary Device Attribute: VT100
-#define REPORT_SDA			 "\033[1;0;0c"
+#define REPORT_SDA			 "\033[>0;95;c"
 #define REPORT_VT52          "\033/Z"
 
 #define MOUSE_REPORT_FORMAT	"\033[M%c%c%c"

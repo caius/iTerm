@@ -304,6 +304,7 @@ static NSImage *warningImage;
     if([parent sendInputToAllSessions] == NO)
     {
 		if (!EXIT) {
+			[self setBell: NO];
 			PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
 			[SHELL writeTask: data];
 			// Make sure we scroll down to the end
@@ -760,9 +761,6 @@ static NSImage *warningImage;
     NSLog(@"%s(%d):-[PTYSession insertText:%@]",
 		  __FILE__, __LINE__, mstring);
 #endif
-	
-    // Clear the bell
-    [self setBell: NO];
     
     data = [mstring dataUsingEncoding:[TERMINAL encoding]
 				 allowLossyConversion:YES];

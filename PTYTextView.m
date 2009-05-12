@@ -94,6 +94,7 @@ static float strokeWidth, boldStrokeWidth;
             NULL]];
 	CURSOR=YES;
 	drawAllowed = YES;
+	paintBlack = NO;
 	lastFindX = oldStartX = startX = -1;
 	markedText=nil;
 	gettimeofday(&lastBlink, NULL);
@@ -240,6 +241,16 @@ static float strokeWidth, boldStrokeWidth;
 - (void) setBlinkingCursor: (BOOL) bFlag
 {
 	blinkingCursor = bFlag;
+}
+
+- (BOOL) paintBlack
+{
+	return paintBlack;
+}
+
+- (void) setPaintBlack: (BOOL) flag
+{
+	paintBlack = flag;
 }
 
 
@@ -760,6 +771,15 @@ static float strokeWidth, boldStrokeWidth;
 	// Configure graphics
 	[[NSGraphicsContext currentContext] setShouldAntialias: antiAlias];
 	[[NSGraphicsContext currentContext] setCompositingOperation: NSCompositeCopy];
+
+	// Paint the content view black after our PseudoTerminal enters fullscreen
+	if(paintBlack) {
+		paintBlack = NO;
+		[[[self window] contentView] lockFocus];
+		[[NSColor blackColor] set];
+		NSRectFill([[self window] frame]);
+		[[[self window] contentView] unlockFocus];
+	}
 
 	// Where to start drawing?
 	int lineStart = rect.origin.y / lineHeight;

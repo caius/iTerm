@@ -1765,6 +1765,8 @@ NSString *sessionsKey = @"sessions";
 				[[aSession TEXTVIEW] setLineHeight: [fullScreenTerminal charHeight]];
 				[[aSession TEXTVIEW] setLineWidth: [fullScreenTerminal width] * [fullScreenTerminal charWidth]];
 				[[aSession TEXTVIEW] setUseTransparency: NO];
+				[[aSession TEXTVIEW] setPaintBlack: YES];
+				[[aSession TEXTVIEW] setNeedsDisplay: YES];
 				
 				// release the tabViewItem
 				[aTabViewItem release];

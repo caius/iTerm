@@ -676,16 +676,6 @@ static float strokeWidth, boldStrokeWidth;
     [self scrollRectToVisible: scrollRect];
 }
 
--(void) scrollLinesUp: (int) numberOfLinesUp
-{
-    NSRect scrollRect;
-    
-    scrollRect= [self visibleRect];
-    scrollRect.origin.y-=[[self enclosingScrollView] verticalLineScroll]*numberOfLinesUp;
-    if (scrollRect.origin.y<0) scrollRect.origin.y=0;
-    [self scrollRectToVisible: scrollRect];
-}
-
 -(void) scrollLineDown: (id) sender
 {
     NSRect scrollRect;

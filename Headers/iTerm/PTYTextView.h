@@ -246,7 +246,6 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) scrollHome;
 - (void) scrollEnd;
 - (void) scrollToSelection;
-- (void) scrollLinesUp: (int) numberOfLines;
 
 
     // Save method

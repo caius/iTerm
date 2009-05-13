@@ -173,8 +173,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
     // Need Growl plist stuff
 	gd = [iTermGrowlDelegate sharedInstance];
 
-	scrollUpLines = 0;
-
     return self;
 }
 
@@ -1282,10 +1280,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 			if ([self _addLineToScrollback]) {
 				// scroll buffer overflow, entire screen needs to be redrawn
 				[self setDirty];
-				if ([(PTYScroller *)([[display enclosingScrollView] verticalScroller]) userScroll]) 
-				{
-					scrollUpLines++;
-				}
 			}
 			else{
 				// top line can move into scroll area; we need to draw only bottom line
@@ -2093,16 +2087,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 {
 //	memset(dirty,1,WIDTH*HEIGHT*sizeof(char));
 	[display setNeedsDisplay:YES];
-}
-
-- (int) scrollUpLines
-{
-	return scrollUpLines;
-}
-
-- (void) resetScrollUpLines
-{
-	scrollUpLines = 0;
 }
 
 - (void) doPrint

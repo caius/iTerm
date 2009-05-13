@@ -1751,10 +1751,6 @@ static NSImage *warningImage;
 		}
 		else {
 			[TEXTVIEW refresh];
-			if([SCREEN scrollUpLines]) {
-				[TEXTVIEW scrollLinesUp:[SCREEN scrollUpLines]];
-				[SCREEN resetScrollUpLines];
-			}
 		}
 	}
 

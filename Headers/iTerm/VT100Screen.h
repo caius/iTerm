@@ -104,9 +104,6 @@ typedef struct screen_char_t
 	
 	// Growl stuff
 	iTermGrowlDelegate* gd;
-	
-	// UI related
-	int scrollUpLines;
 }
 
 
@@ -201,8 +198,6 @@ typedef struct screen_char_t
 - (void) printStringToAnsi: (NSString *) aString;
 
 // UI stuff
-- (int) scrollUpLines;
-- (void) resetScrollUpLines;
 - (void) doPrint;
 
 // double width

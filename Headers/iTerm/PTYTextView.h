@@ -70,7 +70,6 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 	
 	BOOL CURSOR;
 	BOOL drawAllowed;
-	BOOL paintBlack;
 	
     // geometry
 	float lineHeight;
@@ -172,8 +171,6 @@ enum { SELECT_CHAR, SELECT_WORD, SELECT_LINE };
 - (void) setDisableBold: (BOOL) boldFlag;
 - (BOOL) blinkingCursor;
 - (void) setBlinkingCursor: (BOOL) bFlag;
-- (BOOL) paintBlack;
-- (void) setPaintBlack: (BOOL) flag;
 
 //color stuff
 - (NSColor *) defaultFGColor;

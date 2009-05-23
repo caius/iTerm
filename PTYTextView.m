@@ -519,7 +519,9 @@ static float strokeWidth, boldStrokeWidth;
 	for(int y = lineStart; y < lineEnd && startX >= 0; y++) {
 		for(int x = 0; x < WIDTH; x++) {
 			BOOL isSelected = [self _isCharSelectedInRow:y col:x checkOld:NO];
-			BOOL isCursor = x == [dataSource cursorX]-1 && y == [dataSource cursorY]-1;
+			int cursorX = [dataSource cursorX] - 1;
+			int cursorY = [dataSource cursorY] + [dataSource numberOfLines] - [dataSource height] - 1;
+			BOOL isCursor = (x == cursorX && y == cursorY);
 			if(dirty[x] && isSelected && !isCursor) {
 				// Don't call [self deselect] as it would recurse back here
 				startX = -1;

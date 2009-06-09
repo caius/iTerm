@@ -947,14 +947,14 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	case XTERMCC_REPORT_ICON_TITLE:
 		{
 			char buf[64];
-			snprintf(buf, sizeof(buf), "\033L%s\033\\", [[SESSION name] UTF8String]);
+			snprintf(buf, sizeof(buf), "\033]L%s\033\\", [[SESSION name] UTF8String]);
 			[SHELL writeTask: [NSData dataWithBytes:buf length:strlen(buf)]];
 		}
 		break;
 	case XTERMCC_REPORT_WIN_TITLE:
 		{
 			char buf[64];
-			snprintf(buf, sizeof(buf), "\033l%s\033\\", [[SESSION windowTitle] UTF8String]);
+			snprintf(buf, sizeof(buf), "\033]l%s\033\\", [[SESSION windowTitle] UTF8String]);
 			[SHELL writeTask: [NSData dataWithBytes:buf length:strlen(buf)]];
 		}
 		break;

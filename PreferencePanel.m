@@ -126,6 +126,7 @@ static NSString *NoHandler = @"<No Handler>";
 	// Force antialiasing to be allowed on small font sizes
 	[prefs setInteger:1 forKey:@"AppleAntiAliasingThreshold"];
 	[prefs setInteger:1 forKey:@"AppleSmoothFixedFontsSizeThreshold"];
+	[prefs setInteger:0 forKey:@"AppleScrollAnimationEnabled"];
          
 	defaultWindowStyle=[prefs objectForKey:@"WindowStyle"]?[prefs integerForKey:@"WindowStyle"]:0;
     defaultTabViewType=[prefs objectForKey:@"TabViewType"]?[prefs integerForKey:@"TabViewType"]:0;

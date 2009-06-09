@@ -1,3 +1,7 @@
+2009-06-09 delx
+	* Always disable Apple's smooth scrolling to avoid drawing corruption
+	* Fixed xterm window title reporting
+
 2009-05-08 delx
 	* PTYTextView now uses the Cocoa drawing machinery as Apple intended.
 	  This means dirty flagged chars are converted into dirty rectangles.

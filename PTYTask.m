@@ -32,6 +32,9 @@
 #define DEBUG_ALLOC         0
 #define DEBUG_METHOD_TRACE  0
 
+
+#define MAXRW 2048
+
 #import <Foundation/Foundation.h>
 
 #include <unistd.h>
@@ -230,12 +233,10 @@ static TaskNotifier* taskNotifier = nil;
 		while(task = [iter nextObject]) {
 			int fd = [task fd];
 			if(FD_ISSET(fd, &rfds)) {
-				[NSThread detachNewThreadSelector:@selector(processRead)
-						toTarget:task withObject:nil];
+				[task processRead];
 			}
 			if(FD_ISSET(fd, &wfds)) {
-				[NSThread detachNewThreadSelector:@selector(processWrite)
-						toTarget:task withObject:nil];
+				[task processWrite];
 			}
 			if(FD_ISSET(fd, &efds)) {
 				[task brokenPipe];
@@ -314,10 +315,6 @@ setup_tty_param(
 	logHandle = nil;
 	hasOutput = NO;
 
-	rLock = [[NSLock alloc] init];
-	wLock = [[NSLock alloc] init];
-	isReading = NO;
-	isWriting = NO;
 	writeBuffer = [[NSMutableData alloc] init];
 
 	return self;
@@ -337,8 +334,6 @@ setup_tty_param(
 		close(fd);
 
 	[writeBuffer release];
-	[rLock release];
-	[wLock release];
 	[tty release];
 	[path release];
 	[super dealloc];
@@ -417,12 +412,12 @@ setup_tty_param(
 
 - (BOOL)wantsRead
 {
-	return !isReading;
+	return YES;
 }
 
 - (BOOL)wantsWrite
 {
-	return !isWriting && [writeBuffer length] > 0;
+	return [writeBuffer length] > 0;
 }
 
 - (void)processRead
@@ -431,32 +426,20 @@ setup_tty_param(
 	NSLog(@"%s(%d):+[PTYTask processRead]", __FILE__, __LINE__);
 #endif
 
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	[rLock lock];
-	isReading = YES;
+	// Only write up to MAXRW bytes, then release control
+	NSMutableData* data = [NSMutableData dataWithLength:MAXRW];
+	ssize_t bytesread = read(fd, [data mutableBytes], MAXRW);
 
-	char buf[2048];
-	ssize_t bytesread;
-	unsigned int length = 0;
-
-	/* Read as much as possible (non-blocking) */
-	while((bytesread = read(fd, buf, sizeof(buf))) > 0) {
-		hasOutput = YES;
-		/* Push data to terminal */
-		[self readTask:[NSData dataWithBytesNoCopy:buf length:bytesread freeWhenDone:NO]];
-		length += bytesread;
-	}
-
-	/* No more data for us? */
+	// No data?
 	if(bytesread < 0 && !(errno == EAGAIN || errno == EINTR)) {
 		[self brokenPipe];
 		return;
 	}
 
-	isReading = NO;
-	[[TaskNotifier sharedInstance] unblock];
-	[rLock unlock];
-	[pool drain];
+	// Send data to the terminal
+	[data setLength:bytesread];
+	hasOutput = YES;
+	[self readTask:data];
 }
 
 - (void)processWrite
@@ -466,32 +449,22 @@ setup_tty_param(
 			__FILE__, __LINE__, [writeBuffer length]);
 #endif
 
-	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-	[wLock lock];
-	isWriting = YES;
-
-	/* Write as much of writeBuffer as possible (non-blocking) */
+	// Only write up to MAXRW bytes, then release control
 	const char* ptr = [writeBuffer mutableBytes];
-	unsigned int toWrite = [writeBuffer length];
-	while(toWrite > 0) {
-		ssize_t written = write(fd, ptr, toWrite);
-		if(written < 0) {
-			break;
-		}
-		ptr += written;
-		toWrite -= written;
+	unsigned int length = [writeBuffer length];
+	if(length > MAXRW) length = MAXRW;
+	ssize_t written = write(fd, [writeBuffer mutableBytes], length);
+
+	// No data?
+	if(written < 0 && !(errno == EAGAIN || errno == EINTR)) {
+		[self brokenPipe];
+		return;
 	}
 
-	/* Create a new data object for the leftover bytes */
-	NSMutableData* temp = [[NSMutableData alloc] initWithCapacity:toWrite];
-	[temp appendBytes:ptr length:toWrite];
-	[writeBuffer release];
-	writeBuffer = temp;
-
-	isWriting = NO;
-	[[TaskNotifier sharedInstance] unblock];
-	[wLock unlock];
-	[pool drain];
+	// Shrink the writeBuffer
+	length = [writeBuffer length] - written;
+	memmove(ptr, ptr+written, length);
+	[writeBuffer setLength:length];
 }
 
 - (BOOL)hasOutput

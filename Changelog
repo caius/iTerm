@@ -1,9 +1,9 @@
-2009-06-10 delx
+2009-06-11 delx
 	* PTYTask spawns a separate thread to call select() on all the pipes.
 	  Previously NSFileHandle would create a new thread of each pipe that
 	  was being waited on.
-	* PTYTask creates a new thread whenever it needs to perform a read or
-	  write operation on a pipe. This greatly improves interactivity.
+	* This extra thread is used to perform read/write operations in 2048-byte
+	  chunks from each pipe. This greatly improves interactivity.
 	* Entering a different runloop mode no longer blocks PTYTask read/write
 	  or drawing. Fixes #2682132
 

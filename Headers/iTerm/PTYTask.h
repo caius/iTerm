@@ -46,11 +46,7 @@
 	NSString* path;
 	BOOL hasOutput;
 
-	NSLock* rLock;
-	NSLock* wLock;
 	NSMutableData* writeBuffer;
-	BOOL isReading;
-	BOOL isWriting;
 
 	NSString* logPath;
 	NSFileHandle* logHandle;

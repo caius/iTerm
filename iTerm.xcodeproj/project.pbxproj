@@ -114,8 +114,6 @@
 		DD02578D09CB93C2008F320C /* Warning.png in Resources */ = {isa = PBXBuildFile; fileRef = DD02577109CB93C2008F320C /* Warning.png */; };
 		DD46BAC605FD689F00027283 /* iTermDisplayProfileMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = DD46BAC405FD689F00027283 /* iTermDisplayProfileMgr.m */; };
 		DD46BB5505FD6B9B00027283 /* iTermDisplayProfileMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = DD46BB5405FD6B9B00027283 /* iTermDisplayProfileMgr.h */; };
-		DD57633105653C2E00F1905E /* iTerm_Framework.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD57633005653C2E00F1905E /* iTerm_Framework.plist */; };
-		DD57633705653C5F00F1905E /* iTerm.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD57633605653C5F00F1905E /* iTerm.plist */; };
 		DD8EC83106095CDA0085A27D /* Tree.m in Sources */ = {isa = PBXBuildFile; fileRef = DD8EC82F06095CDA0085A27D /* Tree.m */; };
 		DD8EC959060980C90085A27D /* Tree.h in Headers */ = {isa = PBXBuildFile; fileRef = DD8EC958060980C90085A27D /* Tree.h */; };
 		DDB79A9B0612BBBF00EAE159 /* Profiles.plist in Resources */ = {isa = PBXBuildFile; fileRef = DDB79A9A0612BBBF00EAE159 /* Profiles.plist */; };
@@ -854,6 +852,7 @@
 				8742061F0564168A00CFC3F1 /* Sources */,
 				874206380564168A00CFC3F1 /* Frameworks */,
 				8742063B0564168A00CFC3F1 /* Rez */,
+				93BD205B0FE16E360059656D /* Update SVN Revision */,
 			);
 			buildRules = (
 			);
@@ -876,6 +875,7 @@
 				874206510564169600CFC3F1 /* Frameworks */,
 				874206550564169600CFC3F1 /* Rez */,
 				874206560564169600CFC3F1 /* CopyFiles */,
+				93BD20450FE16DD50059656D /* Update SVN Revision */,
 			);
 			buildRules = (
 			);
@@ -953,7 +953,6 @@
 				874206180564168A00CFC3F1 /* iTerm.scriptTerminology in Resources */,
 				874206190564168A00CFC3F1 /* iTerm.strings in Resources */,
 				8742061E0564168A00CFC3F1 /* iTerm-Aqua.jpg in Resources */,
-				DD57633105653C2E00F1905E /* iTerm_Framework.plist in Resources */,
 				DDB79A9B0612BBBF00EAE159 /* Profiles.plist in Resources */,
 				DD02577409CB93C2008F320C /* AquaTabClose_Front.tif in Resources */,
 				DD02577509CB93C2008F320C /* AquaTabClose_Front_Pressed.tif in Resources */,
@@ -995,7 +994,6 @@
 				F638C2620AD483BF00BEE23D /* iTerm.strings in Resources */,
 				8742064C0564169600CFC3F1 /* iTerm Help in Resources */,
 				8742064D0564169600CFC3F1 /* iTerm.icns in Resources */,
-				DD57633705653C5F00F1905E /* iTerm.plist in Resources */,
 				F6CDC4E70AE6D3E2005E7D4F /* folder.png in Resources */,
 				9325FF500FB54E00004EC67C /* MainMenu.xib in Resources */,
 			);
@@ -1026,6 +1024,39 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXRezBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		93BD20450FE16DD50059656D /* Update SVN Revision */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Update SVN Revision";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec ./updateVersion.py";
+			showEnvVarsInLog = 0;
+		};
+		93BD205B0FE16E360059656D /* Update SVN Revision */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Update SVN Revision";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exec ./updateVersion.py";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8742061F0564168A00CFC3F1 /* Sources */ = {

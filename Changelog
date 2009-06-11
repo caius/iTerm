@@ -6,6 +6,9 @@
 	  chunks from each pipe. This greatly improves interactivity.
 	* Entering a different runloop mode no longer blocks PTYTask read/write
 	  or drawing. Fixes #2682132
+	* Automatically set the version number in target plist as part of the
+	  xcode build phase. Dev versions get svn revisions & Deployment gets
+	  the current date.
 
 2009-06-09 delx
 	* Always disable Apple's smooth scrolling to avoid drawing corruption

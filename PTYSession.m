@@ -319,17 +319,17 @@ static NSImage *warningImage;
     }
 }
 
-- (void)readTask:(char*)data length:(unsigned int)length
+- (void)readTask:(NSData*)data
 {
-	if(length == 0 || EXIT)
+	if([data length] == 0 || EXIT)
 		return;
 
 #if DEBUG_METHOD_TRACE
 	NSLog(@"%s(%d):-[PTYSession readTask:%@]", __FILE__, __LINE__,
-		[[NSString alloc] initWithBytes:data length:length encoding:nil]);
+		[[NSString alloc] initWithBytes:[data bytes] length:[data length] encoding:nil]);
 #endif
 
-	[TERMINAL putStreamData:data length:length];
+	[TERMINAL putStreamData:data];
 
 	VT100TCC token;
 
@@ -1761,6 +1761,10 @@ static NSImage *warningImage;
 {
 	// This method ensures regular updates for text blinking, but allows
 	// for quicker (soon=YES) updates to draw newly read text from PTYTask
+	
+///	if([updateTimer isValid] && [[updateTimer userInfo] intValue]) {
+///		return;
+///	}
 
 	[updateTimer invalidate];
 	[updateTimer release];
@@ -1769,8 +1773,10 @@ static NSImage *warningImage;
 	if(soon) {
 		timeout = (0.001 + 0.001*[[PreferencePanel sharedInstance] refreshRate]);
 	}
+
 	updateTimer = [[NSTimer scheduledTimerWithTimeInterval:timeout
-			target:self selector:@selector(updateDisplay) userInfo:nil
+			target:self selector:@selector(updateDisplay)
+			userInfo:[NSNumber numberWithInt:soon?1:0]
 			repeats:NO] retain];
 }
 

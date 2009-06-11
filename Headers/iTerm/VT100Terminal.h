@@ -342,7 +342,7 @@ typedef enum {
 - (void)setEncoding:(NSStringEncoding)encoding;
 
 - (void)cleanStream;
-- (void)putStreamData:(const char*)data length: (int)length;
+- (void)putStreamData:(NSData*)data;
 - (VT100TCC)getNextToken;
 
 - (void)saveCursorAttributes;

@@ -28,62 +28,69 @@
  */
 
 /*
-  Delegate
-      readTask:
-      brokenPipe
+	Delegate
+		readTask:
+		brokenPipe
+		closeSession:
 */
 
 #import <Foundation/Foundation.h>
 
 @interface PTYTask : NSObject
 {
-	pid_t PID;
-	int FILDES;
-	int STATUS;
-	id DELEGATEOBJECT;
-	NSString* TTY;
-	NSString* PATH;
-
-	NSString* LOG_PATH;
-	NSFileHandle* LOG_HANDLE;
-	NSFileHandle* dataHandle;
+	pid_t pid;
+	int fd;
+	int status;
+	id delegate;
+	NSString* tty;
+	NSString* path;
 	BOOL hasOutput;
-	NSTimer* writeTimer;
 
+	NSLock* rLock;
+	NSLock* wLock;
 	NSMutableData* writeBuffer;
+	BOOL isReading;
+	BOOL isWriting;
+
+	NSString* logPath;
+	NSFileHandle* logHandle;
 }
 
 - (id)init;
 - (void)dealloc;
 
-- (void)launchWithPath:(NSString *)progpath
-	     arguments:(NSArray *)args
-	   environment:(NSDictionary *)env
-		 width:(int)width
-		height:(int)height;
+- (void)launchWithPath:(NSString*)progpath
+		arguments:(NSArray*)args environment:(NSDictionary*)env
+		width:(int)width height:(int)height;
 
 - (void)setDelegate:(id)object;
 - (id)delegate;
-
-- (void)readTask:(char*)data length:(unsigned int)length;
+- (void)readTask:(NSData*)data;
 - (void)writeTask:(NSData*)data;
-- (void)brokenPipe;
+
 - (void)sendSignal:(int)signo;
 - (void)setWidth:(int)width height:(int)height;
-- (pid_t)pid;
 - (int)wait;
 - (void)stop;
+
+- (int)fd;
+- (pid_t)pid;
 - (int)status;
-- (NSString *)tty;
-- (NSString *)path;
-- (BOOL)loggingStartWithPath:(NSString *)path;
+- (NSString*)tty;
+- (NSString*)path;
+- (NSString*)getWorkingDirectory;
+- (NSString*)description;
+
+- (BOOL)loggingStartWithPath:(NSString*)path;
 - (void)loggingStop;
 - (BOOL)logging;
 - (BOOL)hasOutput;
 
-- (NSString *)description;
+- (BOOL)wantsRead;
+- (BOOL)wantsWrite;
+- (void)brokenPipe;
+- (void)processRead;
+- (void)processWrite;
 
-- (void) processRead;
-- (void) processWrite;
-- (NSString *)getWorkingDirectory;
 @end
+

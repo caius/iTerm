@@ -104,7 +104,7 @@
 
 // PTYTask
 - (void)writeTask:(NSData*)data;
-- (void)readTask:(char*)data length:(unsigned int)length;
+- (void)readTask:(NSData*)data;
 - (void)brokenPipe;
 
 // PTYTextView

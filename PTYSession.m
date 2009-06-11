@@ -359,14 +359,15 @@ static NSImage *warningImage;
 - (void)brokenPipe
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
+	NSLog(@"%s(%d):-[PTYSession brokenPipe]", __FILE__, __LINE__);
 #endif
 	[gd growlNotify:NSLocalizedStringFromTableInBundle(@"Broken Pipe",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts")
 	withDescription:[NSString stringWithFormat:NSLocalizedStringFromTableInBundle(@"Session %@ #%d just terminated.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Growl Alerts"),[self name],[self realObjectCount]] 
 	andNotification:@"Broken Pipes"];
-	
+
+	EXIT=YES;
 	[self setLabelAttribute];
-	
+
 	if ([self autoClose]) {
 		[parent closeSession: self];
 	}

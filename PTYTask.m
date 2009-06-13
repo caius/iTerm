@@ -1,6 +1,4 @@
 // -*- mode:objc -*-
-// $Id: PTYTask.m,v 1.52 2008-10-24 05:25:00 yfabian Exp $
-//
 /*
  **  PTYTask.m
  **
@@ -199,6 +197,8 @@ static TaskNotifier* taskNotifier = nil;
 		iter = [tasks objectEnumerator];
 		while(task = [iter nextObject]) {
 			int fd = [task fd];
+			if(fd < 0)
+				continue;
 			if(fd > highfd)
 				highfd = fd;
 			if([task wantsRead])
@@ -232,15 +232,14 @@ static TaskNotifier* taskNotifier = nil;
 		iter = [tasks objectEnumerator];
 		while(task = [iter nextObject]) {
 			int fd = [task fd];
-			if(FD_ISSET(fd, &rfds)) {
+			if(fd < 0)
+				continue;
+			if(FD_ISSET(fd, &rfds))
 				[task processRead];
-			}
-			if(FD_ISSET(fd, &wfds)) {
+			if(FD_ISSET(fd, &wfds))
 				[task processWrite];
-			}
-			if(FD_ISSET(fd, &efds)) {
+			if(FD_ISSET(fd, &efds))
 				[task brokenPipe];
-			}
 		}
 
 		[innerPool drain];
@@ -451,6 +450,9 @@ setup_tty_param(
 			__FILE__, __LINE__, [writeBuffer length]);
 #endif
 
+	// Retain to prevent the object from being released during this method
+	// Lock to protect the writeBuffer from the main thread
+	[self retain];
 	[writeLock lock];
 
 	// Only write up to MAXRW bytes, then release control
@@ -470,7 +472,9 @@ setup_tty_param(
 	memmove(ptr, ptr+written, length);
 	[writeBuffer setLength:length];
 
+	// Clean up locks
 	[writeLock unlock];
+	[self autorelease];
 }
 
 - (BOOL)hasOutput
@@ -510,12 +514,11 @@ setup_tty_param(
 	NSLog(@"%s(%d):-[PTYTask writeTask:%@]", __FILE__, __LINE__, data);
 #endif
 
+	// Write as much as we can now through the non-blocking pipe
+	// Lock to protect the writeBuffer from the IO thread
 	[writeLock lock];
-
-	/* Write as much as we can now through the non-blocking pipe */
 	[writeBuffer appendData:data];
 	[[TaskNotifier sharedInstance] unblock];
-
 	[writeLock unlock];
 }
 

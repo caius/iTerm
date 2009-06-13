@@ -46,6 +46,7 @@
 	NSString* path;
 	BOOL hasOutput;
 
+	NSLock* writeLock;
 	NSMutableData* writeBuffer;
 
 	NSString* logPath;

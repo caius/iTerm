@@ -316,6 +316,7 @@ setup_tty_param(
 	hasOutput = NO;
 
 	writeBuffer = [[NSMutableData alloc] init];
+	writeLock = [[NSLock alloc] init];
 
 	return self;
 }
@@ -333,6 +334,7 @@ setup_tty_param(
 	if (fd >= 0)
 		close(fd);
 
+	[writeLock release];
 	[writeBuffer release];
 	[tty release];
 	[path release];
@@ -449,6 +451,8 @@ setup_tty_param(
 			__FILE__, __LINE__, [writeBuffer length]);
 #endif
 
+	[writeLock lock];
+
 	// Only write up to MAXRW bytes, then release control
 	const char* ptr = [writeBuffer mutableBytes];
 	unsigned int length = [writeBuffer length];
@@ -465,6 +469,8 @@ setup_tty_param(
 	length = [writeBuffer length] - written;
 	memmove(ptr, ptr+written, length);
 	[writeBuffer setLength:length];
+
+	[writeLock unlock];
 }
 
 - (BOOL)hasOutput
@@ -504,9 +510,13 @@ setup_tty_param(
 	NSLog(@"%s(%d):-[PTYTask writeTask:%@]", __FILE__, __LINE__, data);
 #endif
 
+	[writeLock lock];
+
 	/* Write as much as we can now through the non-blocking pipe */
 	[writeBuffer appendData:data];
 	[[TaskNotifier sharedInstance] unblock];
+
+	[writeLock unlock];
 }
 
 - (void)brokenPipe

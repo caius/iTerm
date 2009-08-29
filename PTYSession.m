@@ -940,7 +940,8 @@ static NSImage *warningImage;
     if ([self exited])
 	{
         // dead
-        [parent setLabelColor: deadStateColor forTabViewItem: tabViewItem];
+// todo: add a preference for this
+        // [parent setLabelColor: deadStateColor forTabViewItem: tabViewItem];
         if(isProcessing)
 			[self setIsProcessing: NO];
 	}
@@ -960,12 +961,14 @@ static NSImage *warningImage;
                     growlIdle = YES;
                     growlNewOutput = NO;
                 }
-                [parent setLabelColor: idleStateColor forTabViewItem: tabViewItem];
+// todo: add a preference for this
+                // [parent setLabelColor: idleStateColor forTabViewItem: tabViewItem];
 			}
             else
 			{
 				// normal state
-                [parent setLabelColor: normalStateColor forTabViewItem: tabViewItem];
+// todo: add a preference for this
+                // [parent setLabelColor: normalStateColor forTabViewItem: tabViewItem];
 			}
         }
         else 
@@ -980,8 +983,8 @@ static NSImage *warningImage;
                     andNotification:@"New Output"];
                     growlNewOutput=YES;
                 }
-                
-                [parent setLabelColor: newOutputStateColor forTabViewItem: tabViewItem];
+// todo: add a preference for this
+                // [parent setLabelColor: newOutputStateColor forTabViewItem: tabViewItem];
             }
         }
     }
@@ -991,7 +994,8 @@ static NSImage *warningImage;
 			[self setIsProcessing: NO];
         growlNewOutput=NO;
         newOutput = NO;
-        [parent setLabelColor: chosenStateColor forTabViewItem: tabViewItem];
+// todo: add a preference for this
+        // [parent setLabelColor: chosenStateColor forTabViewItem: tabViewItem];
     }
     //[self setBell:NO];
 }

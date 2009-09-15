@@ -1,3 +1,9 @@
+2009-09-15 delx
+	* Fixed handling of overflow on full scrollback
+	* Update text selection so it stays correct
+	* Only redraw the new line, not the whole screen
+	* Pay better attention to refresh rate timer
+
 2009-06-11 delx
 	* PTYTask spawns a separate thread to call select() on all the pipes.
 	  Previously NSFileHandle would create a new thread of each pipe that

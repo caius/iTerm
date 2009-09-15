@@ -1012,7 +1012,6 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	}
 	
 	[self setDirty];
-	[[self display] refresh];
 }
 
 - (void) saveBuffer

@@ -161,6 +161,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 
     max_scrollback_lines = DEFAULT_SCROLLBACK;
 	dynamic_scrollback_size = NO;
+	scrollback_overflow = 0;
     [self clearTabStop];
     
     // set initial tabs
@@ -1007,10 +1008,11 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 		
 		current_scrollback_lines = 0;
 		scrollback_top = screen_top;
-		
+		scrollback_overflow = 0;
 	}
 	
 	[self setDirty];
+	[[self display] refresh];
 }
 
 - (void) saveBuffer
@@ -1275,21 +1277,15 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	{
 		total_height = max_scrollback_lines + HEIGHT;
         
+		// top line can move into scroll area; we need to draw only bottom line
+		//dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
+		memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
+		memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
+
 		// try to add top line to scroll area
-		if(max_scrollback_lines > 0) {
-			if ([self _addLineToScrollback]) {
-				// scroll buffer overflow, entire screen needs to be redrawn
-				[self setDirty];
-			}
-			else{
-				// top line can move into scroll area; we need to draw only bottom line
-				//dirty[WIDTH*(CURSOR_Y-1)*sizeof(char)+CURSOR_X-1]=1;
-				memmove(dirty, dirty+WIDTH*sizeof(char), WIDTH*(HEIGHT-1)*sizeof(char));
-				memset(dirty+WIDTH*(HEIGHT-1)*sizeof(char),1,WIDTH*sizeof(char));			
-			};
+		if(max_scrollback_lines == 0 || [self _addLineToScrollback]) {
+			scrollback_overflow++;
 		}
-		else
-			[self setDirty];
 		
 		// Increment screen_top pointer
 		screen_top = incrementLinePointer(buffer_lines, screen_top, total_height, WIDTH, &wrap);
@@ -2071,6 +2067,15 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
     return (num_lines_in_scrollback+HEIGHT);
 }
 
+- (int)scrollbackOverflow
+{
+	return scrollback_overflow;
+}
+
+- (void)resetScrollbackOverflow
+{
+	scrollback_overflow = 0;
+}
 
 - (char	*)dirty			
 {

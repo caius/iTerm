@@ -516,7 +516,7 @@ static float strokeWidth, boldStrokeWidth;
 	dirty = [dataSource dirty];
 	lineStart = [dataSource numberOfLines] - [dataSource height];
 	lineEnd = [dataSource numberOfLines];
-	for(int y = lineStart; y < lineEnd && startX >= 0; y++) {
+	for(int y = lineStart; y < lineEnd && startX > -1; y++) {
 		for(int x = 0; x < WIDTH; x++) {
 			BOOL isSelected = [self _isCharSelectedInRow:y col:x checkOld:NO];
 			int cursorX = [dataSource cursorX] - 1;
@@ -593,6 +593,9 @@ static float strokeWidth, boldStrokeWidth;
 {
 	if(dataSource == nil) return;
 
+	int scrollbackOverflow = [dataSource scrollbackOverflow];
+	[dataSource resetScrollbackOverflow];
+
 	int height = [dataSource numberOfLines] * lineHeight;
 	NSRect frame = [self frame];
 
@@ -638,6 +641,22 @@ static float strokeWidth, boldStrokeWidth;
 			dirty.origin.y = old.origin.y + old.size.height;
 			dirty.size.height = new.origin.y + new.size.height - dirty.origin.y;
 			[self setNeedsDisplayInRect:dirty];
+		}
+	}
+	// Handle scrollback overflows
+	else if(scrollbackOverflow > 0) {
+		// Keep correct selection highlighted
+		startY -= scrollbackOverflow;
+		if(startY < 0) startX = -1;
+		endY -= scrollbackOverflow;
+		oldStartY -= scrollbackOverflow;
+		if(oldStartY < 0) oldStartX = -1;
+		oldEndY -= scrollbackOverflow;
+
+		// Shift the old content upwards
+		if(scrollbackOverflow < [dataSource height]) {
+			float amount = [[self enclosingScrollView] verticalLineScroll] * scrollbackOverflow;
+			[self scrollRect:[self visibleRect] by:NSMakeSize(0, -amount)];
 		}
 	}
 
@@ -1354,7 +1373,7 @@ static float strokeWidth, boldStrokeWidth;
 	//  endX = [dataSource width] - 1;
 	
 	
-	if (startX!=-1&&_delegate) {
+	if (startX > -1 && _delegate) {
 		// if we want to copy our selection, do so
 		if([[PreferencePanel sharedInstance] copySelection])
 			[self copy: self];
@@ -1566,7 +1585,7 @@ static float strokeWidth, boldStrokeWidth;
 
 - (void) deselect
 {
-	if (startX>=0) {
+	if (startX > -1) {
 		startX = -1;
 		[self updateDirtyRects];
 	}
@@ -1585,7 +1604,7 @@ static float strokeWidth, boldStrokeWidth;
     NSLog(@"%s]", __PRETTY_FUNCTION__);
 #endif
 	
-	if (startX == -1) return nil;
+	if (startX <= -1) return nil;
 	return ([self contentFromX: startX Y: startY ToX: endX Y: endY pad: pad]);
 	
 }
@@ -1633,7 +1652,7 @@ static float strokeWidth, boldStrokeWidth;
     NSLog(@"%s: %@]", __PRETTY_FUNCTION__, sender );
 #endif
     
-    if (startX >= 0 && [_delegate respondsToSelector:@selector(pasteString:)])
+    if (startX > -1 && [_delegate respondsToSelector:@selector(pasteString:)])
         [_delegate pasteString:[self selectedText]];
 	
 }
@@ -1669,7 +1688,7 @@ static float strokeWidth, boldStrokeWidth;
 			 ([item action]==@selector(print:) && [item tag] == 1)) // print selection
     {
         //        NSLog(@"selected range:%d",[self selectedRange].length);
-        return (startX>=0);
+        return (startX > -1);
     }
     else
         return NO;
@@ -3018,7 +3037,7 @@ static float strokeWidth, boldStrokeWidth;
 		_startY=oldStartY; _startX=oldStartX; _endY=oldEndY; _endX=oldEndX;
 	}
 
-	if(_startX == -1 || (_startY == _endY && _startX == _endX)) {
+	if(_startX <= -1 || (_startY == _endY && _startX == _endX)) {
 		return NO;
 	}
 	if (_startY>_endY||(_startY==_endY&&_startX>_endX)) {

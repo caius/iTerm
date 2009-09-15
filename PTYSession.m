@@ -1763,9 +1763,9 @@ static NSImage *warningImage;
 	// This method ensures regular updates for text blinking, but allows
 	// for quicker (soon=YES) updates to draw newly read text from PTYTask
 	
-///	if([updateTimer isValid] && [[updateTimer userInfo] intValue]) {
-///		return;
-///	}
+	if([updateTimer isValid] && [[updateTimer userInfo] intValue]) {
+		return;
+	}
 
 	[updateTimer invalidate];
 	[updateTimer release];

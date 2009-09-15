@@ -96,7 +96,8 @@ typedef struct screen_char_t
     unsigned int  max_scrollback_lines;
 	// current number of lines in scrollback buffer
 	unsigned int current_scrollback_lines;
-		
+	// how many scrollback lines have been lost due to overflow
+	int scrollback_overflow;
 	
 	// print to ansi...
 	BOOL printToAnsi;		// YES=ON, NO=OFF, default=NO;
@@ -184,10 +185,13 @@ typedef struct screen_char_t
 - (void)insertLines: (int)n;
 - (void)deleteLines: (int)n;
 - (void)blink;
-- (int) cursorX;
-- (int) cursorY;
+- (int)cursorX;
+- (int)cursorY;
 
-- (int) numberOfLines;
+- (int)numberOfLines;
+
+- (int)scrollbackOverflow;
+- (void)resetScrollbackOverflow;
 
 - (void)resetDirty;
 - (void)setDirty;

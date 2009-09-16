@@ -86,8 +86,8 @@ typedef struct screen_char_t
 	screen_char_t *scrollback_top;
 	
 	// default line stuff
-	char default_bg_code;
-	char default_fg_code;
+	int default_bg_code;
+	int default_fg_code;
 	int default_line_width;
 
 	//scroll back stuff

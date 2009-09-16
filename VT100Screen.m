@@ -2134,35 +2134,33 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 
 // returns a line set to default character and attributes
 // released when session is closed
-- (screen_char_t *) _getDefaultLineWithWidth: (int) width
+- (screen_char_t*)_getDefaultLineWithWidth:(int)width
 {
-	int i;
-	
 	// check if we have to generate a new line
-	if(default_line && default_fg_code == [TERMINAL foregroundColorCodeReal] && 
-	   default_bg_code == [TERMINAL backgroundColorCodeReal] && default_line_width >= width) {
-		return (default_line);
-	}
-	
-	if(default_line)
-		free(default_line);
-	
-	default_line = (screen_char_t *)malloc((width+1)*sizeof(screen_char_t));
-	
-	for(i = 0; i < width; i++)
+	if(default_line && default_line_width >= width &&
+		default_fg_code == [TERMINAL foregroundColorCodeReal] &&
+		default_bg_code == [TERMINAL backgroundColorCodeReal])
 	{
-		default_line[i].ch = 0;
-		default_line[i].fg_color = [TERMINAL foregroundColorCodeReal];
-		default_line[i].bg_color = [TERMINAL backgroundColorCodeReal];
+		return default_line;
 	}
-	//Not wrapped by default
-	default_line[width].ch = 0;
-	
+
 	default_fg_code = [TERMINAL foregroundColorCodeReal];
 	default_bg_code = [TERMINAL backgroundColorCodeReal];
 	default_line_width = width;
-	return (default_line);
-	
+
+	if(default_line)
+		free(default_line);
+	default_line = (screen_char_t*)malloc((width+1)*sizeof(screen_char_t));
+
+	for(int i = 0; i < width; i++) {
+		default_line[i].ch = 0;
+		default_line[i].fg_color = default_fg_code;
+		default_line[i].bg_color = default_bg_code;
+	}
+	//Not wrapped by default
+	default_line[width].ch = 0;
+
+	return default_line;
 }
 
 

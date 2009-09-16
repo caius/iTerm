@@ -1,5 +1,6 @@
 2009-09-16 delx
 	* Fixed CMD-num tab switching (#2271203)
+	* Improved performance, blank lines are no longer constantly regenerated
 
 2009-09-15 delx
 	* Fixed handling of overflow on full scrollback

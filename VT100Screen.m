@@ -1678,11 +1678,9 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	if(temp_buffer) {
 		ALT_SAVE_CURSOR_X = CURSOR_X;
 		ALT_SAVE_CURSOR_Y = CURSOR_Y;
-		NSLog(@"alt save %d %d", CURSOR_X, CURSOR_Y);
 	} else {
 		SAVE_CURSOR_X = CURSOR_X;
 		SAVE_CURSOR_Y = CURSOR_Y;
-		NSLog(@"nrm save %d %d", CURSOR_X, CURSOR_Y);
 	}
 
 	for(int i = 0; i < 4; i++)
@@ -1698,11 +1696,9 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	if(temp_buffer) {
 		CURSOR_X = ALT_SAVE_CURSOR_X;
 		CURSOR_Y = ALT_SAVE_CURSOR_Y;
-		NSLog(@"alt load %d %d", CURSOR_X, CURSOR_Y);
 	} else {
 		CURSOR_X = SAVE_CURSOR_X;
 		CURSOR_Y = SAVE_CURSOR_Y;
-		NSLog(@"nrm load %d %d", CURSOR_X, CURSOR_Y);
 	}
 
 	for(int i = 0; i < 4; i++)

@@ -298,25 +298,23 @@ static NSImage *warningImage;
 	parent = nil;
 }
 
-- (void)writeTask:(NSData *)data
+- (void)writeTask:(NSData*)data
 {
 	// check if we want to send this input to all the sessions
-    if([parent sendInputToAllSessions] == NO)
-    {
+	if([parent sendInputToAllSessions] == NO) {
 		if (!EXIT) {
 			[self setBell: NO];
-			PTYScroller *ptys=(PTYScroller *)[SCROLLVIEW verticalScroller];
+			PTYScroller* ptys=(PTYScroller*)[SCROLLVIEW verticalScroller];
 			[SHELL writeTask: data];
 			// Make sure we scroll down to the end
 			[TEXTVIEW scrollEnd];
 			[ptys setUserScroll: NO];
 		}
-    }
-    else
-    {
+	}
+	else {
 		// send to all sessions
 		[parent sendInputToAllSessions: data];
-    }
+	}
 }
 
 - (void)readTask:(NSData*)data

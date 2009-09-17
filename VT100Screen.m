@@ -1026,21 +1026,18 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	[self setDirty];
 }
 
-- (void) saveBuffer
-{	
-	int size=REAL_WIDTH*HEIGHT;
-	
+- (void)saveBuffer
+{
 #if DEBUG_METHOD_TRACE
 	NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif	
-	
-	if (temp_buffer) 
-		free(temp_buffer);
-	
+#endif
+
+	if(temp_buffer) free(temp_buffer);
+
+	int size=REAL_WIDTH*HEIGHT;
 	int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
-	
-	temp_buffer=(screen_char_t *)malloc(size*(sizeof(screen_char_t)));
-	if (n <= 0)
+	temp_buffer = (screen_char_t*)malloc(size*(sizeof(screen_char_t)));
+	if(n <= 0)
 		memcpy(temp_buffer, screen_top, size*sizeof(screen_char_t));
 	else {
 		memcpy(temp_buffer, screen_top, (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
@@ -1048,28 +1045,24 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	}
 }
 
-- (void) restoreBuffer
-{	
-	
+- (void)restoreBuffer
+{
 #if DEBUG_METHOD_TRACE
 	NSLog(@"%s", __PRETTY_FUNCTION__);
-#endif	
-	
-	if (!temp_buffer) 
-		return;
+#endif
+
+	if(!temp_buffer) return;
 
 	int n = (screen_top - buffer_lines)/REAL_WIDTH - max_scrollback_lines;
-
-	if (n<=0)
+	if(n <= 0)
 		memcpy(screen_top, temp_buffer, REAL_WIDTH*HEIGHT*sizeof(screen_char_t));
 	else {
 		memcpy(screen_top, temp_buffer, (HEIGHT-n)*REAL_WIDTH*sizeof(screen_char_t));
 		memcpy(buffer_lines, temp_buffer+(HEIGHT-n)*REAL_WIDTH, n*REAL_WIDTH*sizeof(screen_char_t));
 	}
-	
-		
+
 	[self setDirty];
-	
+
 	free(temp_buffer);
 	temp_buffer = NULL;
 }

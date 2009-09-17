@@ -2204,14 +2204,14 @@ static VT100TCC decode_string(unsigned char *datap,
 					if(mode) {
 						[self saveCursorAttributes];
 						[SCREEN saveCursorPosition];
+						[SCREEN saveBuffer];
 					}
 					else {
-						// XXX - shouldn't really reuse this token, but meh
-						token.u.csi.p[0] = 2;
-						[SCREEN eraseInDisplay:token];
+						[SCREEN restoreBuffer];
 						[self restoreCursorAttributes];
 						[SCREEN restoreCursorPosition];
 					}
+					break;
 				case 47:
 					// alternate screen buffer mode
 					if(mode)

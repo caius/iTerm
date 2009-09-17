@@ -52,6 +52,8 @@ typedef struct screen_char_t
     int CURSOR_Y;
     int SAVE_CURSOR_X;
     int SAVE_CURSOR_Y;
+    int ALT_SAVE_CURSOR_X;
+    int ALT_SAVE_CURSOR_Y;
     int SCROLL_TOP;
     int SCROLL_BOTTOM;
     BOOL tabStop[TABWINDOW];

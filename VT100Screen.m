@@ -145,6 +145,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 
     CURSOR_X = CURSOR_Y = 0;
     SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
+    ALT_SAVE_CURSOR_X = ALT_SAVE_CURSOR_Y = 0;
     SCROLL_TOP = 0;
     SCROLL_BOTTOM = HEIGHT - 1;
 
@@ -236,6 +237,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	HEIGHT=height;
 	CURSOR_X = CURSOR_Y = 0;
 	SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
+	ALT_SAVE_CURSOR_X = ALT_SAVE_CURSOR_Y = 0;
 	SCROLL_TOP = 0;
 	SCROLL_BOTTOM = HEIGHT - 1;	
 	blinkShow=YES;
@@ -329,6 +331,7 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
         HEIGHT = height;
         CURSOR_X = CURSOR_Y = 0;
         SAVE_CURSOR_X = SAVE_CURSOR_Y = 0;
+        ALT_SAVE_CURSOR_X = ALT_SAVE_CURSOR_Y = 0;
         SCROLL_TOP = 0;
         SCROLL_BOTTOM = HEIGHT - 1;
     }
@@ -489,20 +492,27 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	SCROLL_BOTTOM = HEIGHT - 1;
 	
 	// adjust X coordinate of cursor
-	if (CURSOR_X >= width) 
+	if (CURSOR_X >= width)
 		CURSOR_X = width-1;
-	if (SAVE_CURSOR_X >= width) 
+	if (SAVE_CURSOR_X >= width)
 		SAVE_CURSOR_X = width-1;
-	if (CURSOR_Y >= height) 
+	if (ALT_SAVE_CURSOR_X >= width)
+		ALT_SAVE_CURSOR_X = width-1;
+	if (CURSOR_Y >= height)
 		CURSOR_Y = height-1;
-	if (SAVE_CURSOR_Y >= height) 
+	if (SAVE_CURSOR_Y >= height)
 		SAVE_CURSOR_Y = height-1;
+	if (ALT_SAVE_CURSOR_Y >= height)
+		ALT_SAVE_CURSOR_Y = height-1;
 	
 	// if we did the resize in SAVE_BUFFER mode, too bad, get rid of it
-	if (temp_buffer) 
-	{
+	if(temp_buffer) {
+		screen_char_t* aDefaultLine = [self _getDefaultLineWithWidth:WIDTH];
 		free(temp_buffer);
-		temp_buffer=NULL;
+		temp_buffer = (screen_char_t*)malloc(REAL_WIDTH*HEIGHT*(sizeof(screen_char_t)));
+		for(i = 0; i < HEIGHT; i++) {
+			memcpy(temp_buffer+i*REAL_WIDTH, aDefaultLine, REAL_WIDTH*sizeof(screen_char_t));
+		}
 	}
 	
 	// force a redraw
@@ -520,20 +530,22 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 	// reset terminal scroll top and bottom
 	SCROLL_TOP = 0;
 	SCROLL_BOTTOM = HEIGHT - 1;
-	
+
 	[self clearScreen];
-    [self clearTabStop];
-    SAVE_CURSOR_X = 0;
+	[self clearTabStop];
+	SAVE_CURSOR_X = 0;
+	ALT_SAVE_CURSOR_X = 0;
 	CURSOR_Y = 0;
 	SAVE_CURSOR_Y = 0;
-	
-    // set initial tabs
-    int i;
-    for(i = TABSIZE; i < TABWINDOW; i += TABSIZE)
-        tabStop[i] = YES;
-	
-    for(i=0;i<4;i++) saveCharset[i]=charset[i]=0;
-	
+	ALT_SAVE_CURSOR_Y = 0;
+
+	// set initial tabs
+	for(int i = TABSIZE; i < TABWINDOW; i += TABSIZE)
+		tabStop[i] = YES;
+
+	for(int i = 0; i < 4; i++)
+		saveCharset[i]=charset[i]=0;
+
 	[self showCursor: YES];
 }
 
@@ -1650,42 +1662,54 @@ static __inline__ screen_char_t *incrementLinePointer(screen_char_t *buf_start, 
 
 - (void)saveCursorPosition
 {
-    int i;
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen saveCursorPosition]", 
-		  __FILE__, __LINE__);
+	NSLog(@"%s(%d):-[VT100Screen saveCursorPosition]", __FILE__, __LINE__);
 #endif
-	
-    if(CURSOR_X < 0)
+
+	if(CURSOR_X < 0)
 		CURSOR_X = 0;
-    if(CURSOR_X >= WIDTH)
+	if(CURSOR_X >= WIDTH)
 		CURSOR_X = WIDTH-1;
-    if(CURSOR_Y < 0)
+	if(CURSOR_Y < 0)
 		CURSOR_Y = 0;
-    if(CURSOR_Y >= HEIGHT)
+	if(CURSOR_Y >= HEIGHT)
 		CURSOR_Y = HEIGHT;
-	
-    SAVE_CURSOR_X = CURSOR_X;
-    SAVE_CURSOR_Y = CURSOR_Y;
-	
-    for(i=0;i<4;i++) saveCharset[i]=charset[i];
-	
+
+	if(temp_buffer) {
+		ALT_SAVE_CURSOR_X = CURSOR_X;
+		ALT_SAVE_CURSOR_Y = CURSOR_Y;
+		NSLog(@"alt save %d %d", CURSOR_X, CURSOR_Y);
+	} else {
+		SAVE_CURSOR_X = CURSOR_X;
+		SAVE_CURSOR_Y = CURSOR_Y;
+		NSLog(@"nrm save %d %d", CURSOR_X, CURSOR_Y);
+	}
+
+	for(int i = 0; i < 4; i++)
+		saveCharset[i]=charset[i];
 }
 
 - (void)restoreCursorPosition
 {
-    int i;
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[VT100Screen restoreCursorPosition]", 
-		  __FILE__, __LINE__);
+	NSLog(@"%s(%d):-[VT100Screen restoreCursorPosition]", __FILE__, __LINE__);
 #endif
-    CURSOR_X = SAVE_CURSOR_X;
-    CURSOR_Y = SAVE_CURSOR_Y;
-	
-    for(i=0;i<4;i++) charset[i]=saveCharset[i];
-    
-    NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
-    NSParameterAssert(CURSOR_Y >= 0 && CURSOR_Y < HEIGHT);
+
+	if(temp_buffer) {
+		CURSOR_X = ALT_SAVE_CURSOR_X;
+		CURSOR_Y = ALT_SAVE_CURSOR_Y;
+		NSLog(@"alt load %d %d", CURSOR_X, CURSOR_Y);
+	} else {
+		CURSOR_X = SAVE_CURSOR_X;
+		CURSOR_Y = SAVE_CURSOR_Y;
+		NSLog(@"nrm load %d %d", CURSOR_X, CURSOR_Y);
+	}
+
+	for(int i = 0; i < 4; i++)
+		charset[i]=saveCharset[i];
+
+	NSParameterAssert(CURSOR_X >= 0 && CURSOR_X < WIDTH);
+	NSParameterAssert(CURSOR_Y >= 0 && CURSOR_Y < HEIGHT);
 }
 
 - (void)setTopBottom:(VT100TCC)token

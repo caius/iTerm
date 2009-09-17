@@ -869,7 +869,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void) otherMouseDown: (NSEvent *) event
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s: %@]", __PRETTY_FUNCTION__, sender );
+	NSLog(@"%s: %@]", __PRETTY_FUNCTION__, event);
 #endif
 
     NSPoint locationInWindow, locationInTextView;
@@ -989,7 +989,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void) rightMouseDown: (NSEvent *) event
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s: %@]", __PRETTY_FUNCTION__, sender );
+	NSLog(@"%s: %@]", __PRETTY_FUNCTION__, event);
 #endif
 	
     NSPoint locationInWindow, locationInTextView;
@@ -1099,7 +1099,7 @@ static float strokeWidth, boldStrokeWidth;
 - (void)scrollWheel:(NSEvent *)event
 {
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s: %@]", __PRETTY_FUNCTION__, sender );
+	NSLog(@"%s: %@]", __PRETTY_FUNCTION__, event);
 #endif
 	
     NSPoint locationInWindow, locationInTextView;
@@ -1623,7 +1623,7 @@ static float strokeWidth, boldStrokeWidth;
 {
 	
 #if DEBUG_METHOD_TRACE
-    NSLog(@"%s(%d):-[PTYTextView copy:%@]", __FILE__, __LINE__, sender );
+	NSLog(@"%s(%d):-[PTYTextView content]", __FILE__, __LINE__);
 #endif
     	
 	return [self contentFromX:0 Y:0 ToX:[dataSource width]-1 Y:[dataSource numberOfLines]-1 pad: NO];

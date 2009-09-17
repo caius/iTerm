@@ -645,6 +645,9 @@ static float strokeWidth, boldStrokeWidth;
 	}
 	// Handle scrollback overflows
 	else if(scrollbackOverflow > 0) {
+		NSScrollView* scrollView = [self enclosingScrollView];
+		float amount = [scrollView verticalLineScroll] * scrollbackOverflow;
+
 		// Keep correct selection highlighted
 		startY -= scrollbackOverflow;
 		if(startY < 0) startX = -1;
@@ -653,9 +656,16 @@ static float strokeWidth, boldStrokeWidth;
 		if(oldStartY < 0) oldStartX = -1;
 		oldEndY -= scrollbackOverflow;
 
+		// Keep the users' current scroll position
+		if([(PTYScroller*)([scrollView verticalScroller]) userScroll]) {
+			NSRect scrollRect = [self visibleRect];
+			scrollRect.origin.y -= amount;
+			if(scrollRect.origin.y < 0) scrollRect.origin.y = 0;
+			[self scrollRectToVisible:scrollRect];
+		}
+
 		// Shift the old content upwards
 		if(scrollbackOverflow < [dataSource height]) {
-			float amount = [[self enclosingScrollView] verticalLineScroll] * scrollbackOverflow;
 			[self scrollRect:[self visibleRect] by:NSMakeSize(0, -amount)];
 		}
 	}

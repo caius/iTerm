@@ -1174,10 +1174,6 @@ NSString *sessionsKey = @"sessions";
 
 	if([self sendInputToAllSessions]) {
 		title = [NSString stringWithFormat:@"☛%@", title];
-		[[self window] setBackgroundColor: [NSColor highlightColor]];
-	}
-	else {
-		[[self window] setBackgroundColor: normalBackgroundColor];
 	}
 
 	[[self window] setTitle: title];
@@ -1481,7 +1477,13 @@ NSString *sessionsKey = @"sessions";
 									 NSLocalizedStringFromTableInBundle(@"Keyboard input will be sent to all sessions in this terminal.",@"iTerm", [NSBundle bundleForClass: [self class]], @"Keyboard Input"), 
 									 NSLocalizedStringFromTableInBundle(@"OK",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profile"), 
                                      NSLocalizedStringFromTableInBundle(@"Cancel",@"iTerm", [NSBundle bundleForClass: [self class]], @"Cancel"), nil) == NSAlertDefaultReturn);
-	
+
+	if(sendInputToAllSessions) {
+		[[self window] setBackgroundColor: [NSColor highlightColor]];
+	}
+	else {
+		[[self window] setBackgroundColor: normalBackgroundColor];
+	}
 }
 
 - (IBAction) toggleInputToAllSessions: (id) sender

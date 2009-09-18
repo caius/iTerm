@@ -1164,81 +1164,82 @@ static NSImage *warningImage;
     return ([self tty]);
 }
 
-- (void) setUniqueID: (NSString *)uniqueID
+- (void) setUniqueID:(NSString*)uniqueID
 {
     NSLog(@"Not allowed to set unique ID");
 }
 
-- (NSString *) defaultName
+- (NSString*)defaultName
 {
-    return (defaultName);
+	return defaultName;
 }
 
-- (void) setDefaultName: (NSString *) theName
+- (void)setDefaultName:(NSString*)theName
 {
-    if([defaultName isEqualToString: theName])
+	if([defaultName isEqualToString:theName])
 		return;
-    
-    if(defaultName)
-    {		
+
+	if(defaultName) {
 		// clear the window title if it is not different
-		if([self windowTitle] == nil || [name isEqualToString: [self windowTitle]])
-			[self setWindowTitle: nil];
-        [defaultName release];
-        defaultName = nil;
-    }
-    if (!theName)
-		theName = NSLocalizedStringFromTableInBundle(@"Untitled",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles");
-	
+		if(windowTitle == nil || [name isEqualToString:windowTitle])
+			windowTitle = nil;
+		[defaultName release];
+		defaultName = nil;
+	}
+	if(!theName) {
+		theName = NSLocalizedStringFromTableInBundle(@"Untitled",@"iTerm",
+			[NSBundle bundleForClass:[self class]], @"Profiles");
+	}
+
 	defaultName = [theName retain];
 }
 
-- (NSString *) name
+- (NSString*)name
 {
-    return (name);
+	return name;
 }
 
-- (void) setName: (NSString *) theName
+- (void)setName:(NSString*)theName
 {
-    if([name isEqualToString: theName])
+	if([name isEqualToString:theName])
 		return;
-    
-    if(name)
-    {		
+
+	if(name) {
 		// clear the window title if it is not different
-		if([self windowTitle] == nil || [name isEqualToString: [self windowTitle]])
-			[self setWindowTitle: nil];
-        [name release];
-        name = nil;
-    }
-    if (!theName)
-		theName = NSLocalizedStringFromTableInBundle(@"Untitled",@"iTerm", [NSBundle bundleForClass: [self class]], @"Profiles");
-	
+		if([name isEqualToString:windowTitle])
+			windowTitle = nil;
+		[name release];
+		name = nil;
+	}
+	if(!theName) {
+		theName = NSLocalizedStringFromTableInBundle(@"Untitled",@"iTerm",
+			[NSBundle bundleForClass:[self class]], @"Profiles");
+	}
+
 	name = [theName retain];
 	// sync the window title if it is not set to something else
-	if([self windowTitle] == nil)
-		[self setWindowTitle: theName];
-   
-	
-	[tabViewItem setLabel: name];
-	[self setBell: NO];
-    
-	
-    // get the session submenu to be rebuilt
-    if([[iTermController sharedInstance] currentTerminal] == [self parent])
-    {
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"iTermNameOfSessionDidChange" object: [self parent] userInfo: nil];
-    }
+	if(windowTitle == nil)
+		[self setWindowTitle:theName];
+
+	[tabViewItem setLabel:name];
+	[self setBell:NO];
+
+	// get the session submenu to be rebuilt
+	if([[iTermController sharedInstance] currentTerminal] == [self parent]) {
+		[[NSNotificationCenter defaultCenter]
+			postNotificationName:@"iTermNameOfSessionDidChange"
+			object:[self parent] userInfo:nil];
+	}
 }
 
-- (NSString *) windowTitle
+- (NSString*)windowTitle
 {
-    return (windowTitle);
+    return windowTitle;
 }
 
-- (void) setWindowTitle: (NSString *) theTitle
+- (void)setWindowTitle:(NSString*)theTitle
 {
-	if ([theTitle isEqualToString:windowTitle]) return;
+	if([theTitle isEqualToString:windowTitle]) return;
 
 	[windowTitle autorelease];
 	windowTitle = nil;

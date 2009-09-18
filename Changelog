@@ -1,5 +1,6 @@
 2009-09-17 delx
 	* Save cursor position separately for alternate screens (#2833765)
+	* Show correct window titles (#2765347)
 
 2009-09-16 delx
 	* Fixed CMD-num tab switching (#2271203)

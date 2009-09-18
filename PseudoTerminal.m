@@ -1167,9 +1167,6 @@ NSString *sessionsKey = @"sessions";
     NSLog(@"%s(%d):-[PseudoTerminal setWindowTitle:%@]",
           __FILE__, __LINE__, title);
 #endif
-	if([title length] == 0) {
-		NSLog(@"ack");
-	}
 	NSParameterAssert([title length] > 0);
 
 	if([self sendInputToAllSessions]) {

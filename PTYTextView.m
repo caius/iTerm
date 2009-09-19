@@ -605,6 +605,7 @@ static float strokeWidth, boldStrokeWidth;
 	if(now.tv_sec*10+now.tv_usec/100000 >= lastBlink.tv_sec*10+lastBlink.tv_usec/100000+7) {
 		blinkShow = !blinkShow;
 		lastBlink = now;
+		[self setNeedsDisplay:YES];
 	}
 
 	if(height != frame.size.height) {

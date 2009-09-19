@@ -607,8 +607,8 @@ static float strokeWidth, boldStrokeWidth;
 		lastBlink = now;
 	}
 
-	// Grow to allow space for drawing the new lines
 	if(height != frame.size.height) {
+		// Grow to allow space for drawing the new lines
 		// XXX - EPIC HACK below
 		// NSClipView has setCopiesOnScroll:YES by default. According to Apple
 		// this means it will do a quick copy of all the unchanged portion of
@@ -643,10 +643,11 @@ static float strokeWidth, boldStrokeWidth;
 			[self setNeedsDisplayInRect:dirty];
 		}
 	}
-	// Handle scrollback overflows
 	else if(scrollbackOverflow > 0) {
 		NSScrollView* scrollView = [self enclosingScrollView];
+		NSClipView* clipView = [scrollView contentView];
 		float amount = [scrollView verticalLineScroll] * scrollbackOverflow;
+		BOOL userScroll = [(PTYScroller*)([scrollView verticalScroller]) userScroll];
 
 		// Keep correct selection highlighted
 		startY -= scrollbackOverflow;
@@ -656,22 +657,27 @@ static float strokeWidth, boldStrokeWidth;
 		if(oldStartY < 0) oldStartX = -1;
 		oldEndY -= scrollbackOverflow;
 
-		// Keep the users' current scroll position
-		if([(PTYScroller*)([scrollView verticalScroller]) userScroll]) {
+		// Keep the users' current scroll position, nothing to redraw
+		if(userScroll) {
 			NSRect scrollRect = [self visibleRect];
 			scrollRect.origin.y -= amount;
 			if(scrollRect.origin.y < 0) scrollRect.origin.y = 0;
+			[clipView setCopiesOnScroll:NO];
 			[self scrollRectToVisible:scrollRect];
+			[clipView setCopiesOnScroll:YES];
+			return;
 		}
 
 		// Shift the old content upwards
-		if(scrollbackOverflow < [dataSource height]) {
+		if(scrollbackOverflow < [dataSource height] && !userScroll) {
 			[self scrollRect:[self visibleRect] by:NSMakeSize(0, -amount)];
 		}
-	}
 
-	// Mark dirty chars for redraw
-	[self updateDirtyRects];
+		[self updateDirtyRects];
+	}
+	else {
+		[self updateDirtyRects];
+	}
 }
 
 

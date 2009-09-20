@@ -940,8 +940,8 @@ static NSImage *warningImage;
     if ([self exited])
 	{
         // dead
-// todo: add a preference for this
-        // [parent setLabelColor: deadStateColor forTabViewItem: tabViewItem];
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HilightTab"])
+          [parent setLabelColor: deadStateColor forTabViewItem: tabViewItem];
         if(isProcessing)
 			[self setIsProcessing: NO];
 	}
@@ -961,14 +961,14 @@ static NSImage *warningImage;
                     growlIdle = YES;
                     growlNewOutput = NO;
                 }
-// todo: add a preference for this
-                // [parent setLabelColor: idleStateColor forTabViewItem: tabViewItem];
+          if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HilightTab"])
+            [parent setLabelColor: idleStateColor forTabViewItem: tabViewItem];
 			}
             else
 			{
 				// normal state
-// todo: add a preference for this
-                // [parent setLabelColor: normalStateColor forTabViewItem: tabViewItem];
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HilightTab"])
+          [parent setLabelColor: normalStateColor forTabViewItem: tabViewItem];
 			}
         }
         else 
@@ -983,8 +983,8 @@ static NSImage *warningImage;
                     andNotification:@"New Output"];
                     growlNewOutput=YES;
                 }
-// todo: add a preference for this
-                // [parent setLabelColor: newOutputStateColor forTabViewItem: tabViewItem];
+              if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HilightTab"])
+                [parent setLabelColor: newOutputStateColor forTabViewItem: tabViewItem];
             }
         }
     }
@@ -994,8 +994,8 @@ static NSImage *warningImage;
 			[self setIsProcessing: NO];
         growlNewOutput=NO;
         newOutput = NO;
-// todo: add a preference for this
-        // [parent setLabelColor: chosenStateColor forTabViewItem: tabViewItem];
+        if ([[NSUserDefaults standardUserDefaults] boolForKey:@"HilightTab"])
+          [parent setLabelColor: chosenStateColor forTabViewItem: tabViewItem];
     }
     //[self setBell:NO];
 }

@@ -133,7 +133,8 @@ static NSString *NoHandler = @"<No Handler>";
     if (defaultTabViewType>1) defaultTabViewType = 0;
     defaultCopySelection=[prefs objectForKey:@"CopySelection"]?[[prefs objectForKey:@"CopySelection"] boolValue]:YES;
 	defaultPasteFromClipboard=[prefs objectForKey:@"PasteFromClipboard"]?[[prefs objectForKey:@"PasteFromClipboard"] boolValue]:YES;
-    defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
+  defaultHideTab=[prefs objectForKey:@"HideTab"]?[[prefs objectForKey:@"HideTab"] boolValue]: YES;
+  defaultHilightTab=[prefs objectForKey:@"HilightTab"]?[[prefs objectForKey:@"HilightTab"] boolValue]: YES;
     defaultPromptOnClose = [prefs objectForKey:@"PromptOnClose"]?[[prefs objectForKey:@"PromptOnClose"] boolValue]: NO;
     defaultOnlyWhenMoreTabs = [prefs objectForKey:@"OnlyWhenMoreTabs"]?[[prefs objectForKey:@"OnlyWhenMoreTabs"] boolValue]: NO;
     defaultFocusFollowsMouse = [prefs objectForKey:@"FocusFollowsMouse"]?[[prefs objectForKey:@"FocusFollowsMouse"] boolValue]: NO;
@@ -186,7 +187,8 @@ static NSString *NoHandler = @"<No Handler>";
 {
     [prefs setBool:defaultCopySelection forKey:@"CopySelection"];
 	[prefs setBool:defaultPasteFromClipboard forKey:@"PasteFromClipboard"];
-    [prefs setBool:defaultHideTab forKey:@"HideTab"];
+  [prefs setBool:defaultHideTab forKey:@"HideTab"];
+  [prefs setBool:defaultHilightTab forKey:@"HilightTab"];
 	[prefs setInteger:defaultWindowStyle forKey:@"WindowStyle"];
     [prefs setInteger:defaultTabViewType forKey:@"TabViewType"];
     [prefs setBool:defaultPromptOnClose forKey:@"PromptOnClose"];
@@ -240,6 +242,7 @@ static NSString *NoHandler = @"<No Handler>";
     [selectionCopiesText setState:defaultCopySelection?NSOnState:NSOffState];
 	[middleButtonPastesFromClipboard setState:defaultPasteFromClipboard?NSOnState:NSOffState];
     [hideTab setState:defaultHideTab?NSOnState:NSOffState];
+  [hilightTab setState:defaultHilightTab?NSOnState:NSOffState];
     [promptOnClose setState:defaultPromptOnClose?NSOnState:NSOffState];
 	[onlyWhenMoreTabs setState:defaultOnlyWhenMoreTabs?NSOnState:NSOffState];
 	[onlyWhenMoreTabs setEnabled: defaultPromptOnClose];
@@ -273,6 +276,7 @@ static NSString *NoHandler = @"<No Handler>";
     if (sender == windowStyle || 
         sender == tabPosition ||
         sender == hideTab ||
+        sender == hilightTab ||
         sender == useCompactLabel ||
 		sender == cursorType ||
 		sender == useBorder ||
@@ -282,6 +286,7 @@ static NSString *NoHandler = @"<No Handler>";
         defaultTabViewType=[tabPosition indexOfSelectedItem];
         defaultUseCompactLabel = ([useCompactLabel state] == NSOnState);
         defaultHideTab=([hideTab state]==NSOnState);
+      defaultHilightTab=([hilightTab state]==NSOnState);
 		defaultCursorType = [[cursorType selectedCell] tag];
         defaultUseBorder = ([useBorder state] == NSOnState);
         defaultHideScrollbar = ([hideScrollbar state] == NSOnState);
@@ -368,6 +373,11 @@ static NSString *NoHandler = @"<No Handler>";
 - (BOOL) hideTab
 {
     return (defaultHideTab);
+}
+
+- (BOOL) hilightTab
+{
+  return (defaultHilightTab);
 }
 
 - (void) setTabViewType: (NSTabViewType) type
